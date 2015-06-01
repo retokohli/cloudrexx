@@ -29,7 +29,7 @@ class MediaEventListener extends DefaultEventListener
 {
 
     /**
-     * @param MediaBrowserConfiguration $mediaBrowserConfiguration
+     * @param MediaSourceManager $mediaBrowserConfiguration
      */
     public function mediasourceLoad(
         MediaSourceManager $mediaBrowserConfiguration
@@ -37,25 +37,17 @@ class MediaEventListener extends DefaultEventListener
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('Media');
         for ($i = 1; $i < 5; $i++) {
-            $mediaType = new MediaSource();
-            $mediaType->setName('media' . $i);
-            $mediaType->setHumanName(
-                $_ARRAYLANG['TXT_MEDIA_ARCHIVE'] . ' ' . $i
-            );
+            $mediaType = new MediaSource('media' . $i,$_ARRAYLANG['TXT_MEDIA_ARCHIVE'] . ' ' . $i, array(
+                call_user_func(
+                    array($this->cx, 'getWebsiteMediaarchive' . $i . 'Path')
+                ),
+                call_user_func(
+                    array(
+                        $this->cx, 'getWebsiteMediaarchive' . $i . 'WebPath'
+                    )
+                ),
+            ),array(7, 39, 38));
 
-            $mediaType->setDirectory(
-                array(
-                    call_user_func(
-                        array($this->cx, 'getWebsiteMediaarchive' . $i . 'Path')
-                    ),
-                    call_user_func(
-                        array(
-                            $this->cx, 'getWebsiteMediaarchive' . $i . 'WebPath'
-                        )
-                    ),
-                )
-            );
-            $mediaType->setAccessIds(array(7, 39, 38));
             $mediaBrowserConfiguration->addMediaType($mediaType);
         }
     }

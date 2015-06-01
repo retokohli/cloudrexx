@@ -1,7 +1,6 @@
 <?php
 
 /**
- * Class GalleryEventListener
  * EventListener for Gallery
  * 
  * @copyright   Comvation AG
@@ -62,14 +61,10 @@ class GalleryEventListener extends DefaultEventListener {
     {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('Gallery');
-        $mediaType = new MediaSource();
-        $mediaType->setName('gallery');
-        $mediaType->setHumanName($_ARRAYLANG['TXT_THUMBNAIL_GALLERY']);
-        $mediaType->setDirectory(array(
+        $mediaType = new MediaSource('gallery',$_ARRAYLANG['TXT_THUMBNAIL_GALLERY'],array(
             $this->cx->getWebsiteImagesGalleryPath(),
-            $this->cx->getWebsiteImagesGalleryWebPath(),
+            $this->cx->getWebsiteImagesGalleryWebPath(),array(12,67)
         ));
-        $mediaType->setAccessIds(array(12,67));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 

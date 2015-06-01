@@ -1,10 +1,7 @@
 <?php
-
 /**
- * Class MediaBrowserEventListener
- *
- * @copyright   Comvation AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   Comvation AG 
+ * @author Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
  */
 
@@ -30,16 +27,10 @@ class MediaBrowserEventListener extends DefaultEventListener
     ) {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        $mediaType = new MediaSource();
-        $mediaType->setName('files');
-        $mediaType->setHumanName($_ARRAYLANG['TXT_FILEBROWSER_FILES']);
-        $mediaType->setDirectory(
-            array(
-                $this->cx->getWebsiteImagesContentPath(),
-                $this->cx->getWebsiteImagesContentWebPath(),
-            )
-        );
-        $mediaType->setPosition(1);
+        $mediaType = new MediaSource('files',$_ARRAYLANG['TXT_FILEBROWSER_FILES'],   array(
+            $this->cx->getWebsiteImagesContentPath(),
+            $this->cx->getWebsiteImagesContentWebPath(),
+        ),array(), 1);
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 }

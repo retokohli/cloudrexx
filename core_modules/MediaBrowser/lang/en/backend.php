@@ -69,34 +69,34 @@ $_ARRAYLANG['TXT_FILEBROWSER_DOWNLOADS']                      = "Digital Asset M
 $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_NAME'] = "Directory name";
 
 $_ARRAYLANG['TXT_FILEBROWSER_START_FILE_UPLOADER']
-                                                              = "or start File Uploader...";
-$_ARRAYLANG['TXT_FILEBROWSER_FILE_ACTIONS']                   = "Actions";
-$_ARRAYLANG['TXT_FILEBROWSER_FILE_RENAME']                    = "Rename";
-$_ARRAYLANG['TXT_FILEBROWSER_FILE_REMOVE']                    = "Remove";
-$_ARRAYLANG['TXT_FILEBROWSER_FILE_REMOVE_FILE']                    = "Remove file";
-$_ARRAYLANG['TXT_FILEBROWSER_RELOAD']                         = "Refresh";
-$_ARRAYLANG['TXT_FILEBROWSER_EXTENDED_FILE_SEARCH']           = "Regex search";
+                                                       = "or start File Uploader...";
+$_ARRAYLANG['TXT_FILEBROWSER_FILE_ACTIONS']            = "Actions";
+$_ARRAYLANG['TXT_FILEBROWSER_FILE_RENAME']             = "Rename";
+$_ARRAYLANG['TXT_FILEBROWSER_FILE_REMOVE']             = "Remove";
+$_ARRAYLANG['TXT_FILEBROWSER_FILE_REMOVE_FILE']        = "Remove file";
+$_ARRAYLANG['TXT_FILEBROWSER_RELOAD']                  = "Refresh";
+$_ARRAYLANG['TXT_FILEBROWSER_EXTENDED_FILE_SEARCH']    = "Regex search";
 $_ARRAYLANG['TXT_FILEBROWSER_EXTENDED_FILE_SEARCH_EXPLANATION']
-                                                              = "If the regex search is active you can search files with a regular expression.";
-$_ARRAYLANG['TXT_FILEBROWSER_SELECT_THUMBNAIL']               = "Choose thumbnail";
-$_ARRAYLANG['TXT_FILEBROWSER_CANCEL']                         = "Cancel";
-$_ARRAYLANG['TXT_FILEBROWSER_ARE_YOU_SURE']                   = "Are you sure?";
+                                                       = "If the regex search is active you can search files with a regular expression.";
+$_ARRAYLANG['TXT_FILEBROWSER_SELECT_THUMBNAIL']        = "Choose thumbnail";
+$_ARRAYLANG['TXT_FILEBROWSER_CANCEL']                  = "Cancel";
+$_ARRAYLANG['TXT_FILEBROWSER_ARE_YOU_SURE']            = "Are you sure?";
 $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_MEDIUM_SIZE']
-                                                              = "Medium thumnail (%spx width)";
+                                                       = "Medium thumnail (%spx width)";
 $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_LARGE_SIZE']
-                                                              = "Big thumbnail (%spx width)";
+                                                       = "Big thumbnail (%spx width)";
 $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_THUMBNAIL_SIZE']
-                                                              = "Thumnail (%spx width)";
-$_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_ORIGINAL_SIZE']        = "Original size";
-$_ARRAYLANG['TXT_FILEBROWSER_START_FILE_UPLOADER']            = "or start File Uploader...";
-$_ARRAYLANG['TXT_FILEBROWSER_CHOOSE_FILE']                    = "Choose File";
-$_ARRAYLANG['TXT_FILEBROWSER_FILE_SIZE']                      = "Size";
-$_ARRAYLANG['TXT_FILEBROWSER_FILE_NAME']                      = "Name";
-$_ARRAYLANG['TXT_FILEBROWSER_FILE_ACTIONS']                   = "Actions";
-$_ARRAYLANG['TXT_FILEBROWSER_WYSIWYG']                        = "Wysiwyg";
-$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER']               = "Drag file here";
-$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_OR']            = "or";
-$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK']         = "Choose picture from your pc";
-$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_BUTTON']                  = "Upload";
-$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_WATING']                  = "Contrexx is uploading your data...";
-$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FINISHED']                = "Contrexx has uploaded all your data.";
+                                                       = "Thumnail (%spx width)";
+$_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_ORIGINAL_SIZE'] = "Original size";
+$_ARRAYLANG['TXT_FILEBROWSER_START_FILE_UPLOADER']     = "or start File Uploader...";
+$_ARRAYLANG['TXT_FILEBROWSER_CHOOSE_FILE']             = "Choose File";
+$_ARRAYLANG['TXT_FILEBROWSER_FILE_SIZE']               = "Size";
+$_ARRAYLANG['TXT_FILEBROWSER_FILE_NAME']               = "Name";
+$_ARRAYLANG['TXT_FILEBROWSER_FILE_ACTIONS']            = "Actions";
+$_ARRAYLANG['TXT_FILEBROWSER_WYSIWYG']                 = "Wysiwyg";
+$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER']        = "Drag file here";
+$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_OR']     = "or";
+$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK']  = "Choose picture from your pc";
+$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_BUTTON']           = "Upload";
+$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_WATING']           = "Your data is being uploaded...";
+$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FINISHED']         = "All your data has uploaded.";

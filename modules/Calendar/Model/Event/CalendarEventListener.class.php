@@ -1,7 +1,6 @@
 <?php
 
 /**
- * Class CalendarEventListener
  * EventListener for Calendar
  * 
  * @copyright   Comvation AG
@@ -38,14 +37,10 @@ class CalendarEventListener extends DefaultEventListener {
     public function mediasourceLoad(MediaSourceManager $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
-        $mediaType = new MediaSource();
-        $mediaType->setName('calendar');
-        $mediaType->setHumanName($_ARRAYLANG['TXT_CALENDAR']);
-        $mediaType->setDirectory(array(
+        $mediaType = new MediaSource('calendar',$_ARRAYLANG['TXT_CALENDAR'],array(
             $this->cx->getWebsiteImagesCalendarPath(),
             $this->cx->getWebsiteImagesCalendarWebPath(),
-        ));
-        $mediaType->setAccessIds(array(16));
+        ),array(16));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 }

@@ -14,8 +14,8 @@
 namespace Cx\Core_Modules\MediaBrowser\Testing\UnitTest;
 
 use Cx\Core\Core\Controller\Cx;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
 use Cx\Core\Test\Model\Entity\ContrexxTestCase;
-use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
 
 /**
  * FileSystemTest
@@ -31,8 +31,11 @@ class FileSystemTest extends ContrexxTestCase
      */
     public function testPathchecker()
     {
-        $this->assertTrue(FileSystem::isVirtualPath('files/Movies'));
-        $this->assertTrue(!FileSystem::isVirtualPath('/var/www/contrexx/images/content/Movies'));
+        $this->assertTrue(MediaSourceManager::isVirtualPath('files/Movies'));
+        $this->assertTrue(!MediaSourceManager::isVirtualPath(
+            '/var/www/contrexx/images/content/Movies'
+        )
+        );
     }
 
     /**
@@ -41,9 +44,21 @@ class FileSystemTest extends ContrexxTestCase
     public function testSubdirectoryCheck()
     {
         $cx = Cx::instanciate();
-        $this->assertTrue(FileSystem::isSubdirectory($cx->getWebsitePath().'/images', 'files/'));
-        $this->assertFalse(FileSystem::isSubdirectory($cx->getWebsitePath().'/media', 'files/'));
-        $this->assertFalse(FileSystem::isSubdirectory($cx->getWebsitePath().'/images', 'media5/'));
+        $this->assertTrue(
+            MediaSourceManager::isSubdirectory(
+                $cx->getWebsitePath() . '/images', 'files/'
+            )
+        );
+        $this->assertFalse(
+            MediaSourceManager::isSubdirectory(
+                $cx->getWebsitePath() . '/media', 'files/'
+            )
+        );
+        $this->assertFalse(
+            MediaSourceManager::isSubdirectory(
+                $cx->getWebsitePath() . '/images', 'media5/'
+            )
+        );
     }
 
 

@@ -1,7 +1,6 @@
 <?php
 
 /**
- * Class ShopEventListener
  * EventListener for Shop
  * 
  * @copyright   Comvation AG
@@ -57,10 +56,7 @@ class ShopEventListener extends DefaultEventListener {
     {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        $mediaType = new MediaSource();
-        $mediaType->setName('shop');
-        $mediaType->setHumanName($_ARRAYLANG['TXT_FILEBROWSER_SHOP']);
-        $mediaType->setDirectory(array(
+        $mediaType = new MediaSource('shop',$_ARRAYLANG['TXT_FILEBROWSER_SHOP'],array(
             $this->cx->getWebsiteImagesShopPath(),
             $this->cx->getWebsiteImagesShopWebPath(),
         ));

@@ -397,7 +397,7 @@
     max-width: 350px;
 }
 
-.uploader-modal .form-control, .media-browser-modal-window .form-control {
+.form-control, .form-control, .bootbox .form-control {
     display: block;
     width: 100%;
     height: 34px;
@@ -415,49 +415,49 @@
     transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
-.uploader-modal .form-control:focus, .media-browser-modal-window .form-control:focus {
+.form-control:focus {
     border-color: #66afe9;
     outline: 0;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
 }
 
-.uploader-modal .form-control::-moz-placeholder, .media-browser-modal-window .form-control::-moz-placeholder {
+.form-control::-moz-placeholder {
     color: #777;
     opacity: 1;
 }
 
-.uploader-modal .form-control:-ms-input-placeholder, .media-browser-modal-window .form-control:-ms-input-placeholder {
+.form-control:-ms-input-placeholder {
     color: #777;
 }
 
-.uploader-modal .form-control::-webkit-input-placeholder, .media-browser-modal-window .form-control::-webkit-input-placeholder {
+.form-control::-webkit-input-placeholder {
     color: #777;
 }
 
-.uploader-modal .form-control[disabled], .media-browser-modal-window .form-control[disabled], .uploader-modal .form-control[readonly], .media-browser-modal-window .form-control[readonly], .uploader-modal fieldset[disabled] .form-control, .media-browser-modal-window fieldset[disabled] .form-control {
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
     cursor: not-allowed;
     background-color: #eee;
     opacity: 1;
 }
 
-.uploader-modal textarea.form-control, .media-browser-modal-window textarea.form-control {
+textarea.form-control {
     height: auto;
 }
 
-.uploader-modal input[type="date"].input-sm, .media-browser-modal-window input[type="date"].input-sm, .uploader-modal input[type="time"].input-sm, .media-browser-modal-window input[type="time"].input-sm, .uploader-modal input[type="datetime-local"].input-sm, .media-browser-modal-window input[type="datetime-local"].input-sm, .uploader-modal input[type="month"].input-sm, .media-browser-modal-window input[type="month"].input-sm {
+input[type="date"].input-sm, input[type="date"].input-sm, input[type="time"].input-sm, input[type="time"].input-sm, input[type="datetime-local"].input-sm, input[type="datetime-local"].input-sm, input[type="month"].input-sm, input[type="month"].input-sm {
     line-height: 30px;
 }
 
-.uploader-modal input[type="date"].input-lg, .media-browser-modal-window input[type="date"].input-lg, .uploader-modal input[type="time"].input-lg, .media-browser-modal-window input[type="time"].input-lg, .uploader-modal input[type="datetime-local"].input-lg, .media-browser-modal-window input[type="datetime-local"].input-lg, .uploader-modal input[type="month"].input-lg, .media-browser-modal-window input[type="month"].input-lg {
+input[type="date"].input-lg, input[type="date"].input-lg, input[type="time"].input-lg, input[type="time"].input-lg, input[type="datetime-local"].input-lg, input[type="datetime-local"].input-lg, input[type="month"].input-lg, input[type="month"].input-lg {
     line-height: 46px;
 }
 
-.uploader-modal .form-group, .media-browser-modal-window .form-group {
+.form-group, .form-group {
     margin-bottom: 15px;
 }
 
-.uploader-modal .radio, .media-browser-modal-window .radio, .uploader-modal .checkbox, .media-browser-modal-window .checkbox {
+.radio, .checkbox {
     position: relative;
     display: block;
     min-height: 20px;
@@ -465,24 +465,24 @@
     margin-bottom: 10px;
 }
 
-.uploader-modal .radio label, .media-browser-modal-window .radio label, .uploader-modal .checkbox label, .media-browser-modal-window .checkbox label {
+.radio label, .checkbox label {
     padding-left: 20px;
     margin-bottom: 0;
     font-weight: normal;
     cursor: pointer;
 }
 
-.uploader-modal .radio input[type="radio"], .media-browser-modal-window .radio input[type="radio"], .uploader-modal .radio-inline input[type="radio"], .media-browser-modal-window .radio-inline input[type="radio"], .uploader-modal .checkbox input[type="checkbox"], .media-browser-modal-window .checkbox input[type="checkbox"], .uploader-modal .checkbox-inline input[type="checkbox"], .media-browser-modal-window .checkbox-inline input[type="checkbox"] {
+.radio input[type="radio"], .radio input[type="radio"], .radio-inline input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
     position: absolute;
     margin-left: -20px;
     margin-top: 4px;
 }
 
-.uploader-modal .radio + .radio, .media-browser-modal-window .radio + .radio, .uploader-modal .checkbox + .checkbox, .media-browser-modal-window .checkbox + .checkbox {
+.radio + .radio, .checkbox + .checkbox {
     margin-top: -5px;
 }
 
-.uploader-modal .radio-inline, .media-browser-modal-window .radio-inline, .uploader-modal .checkbox-inline, .media-browser-modal-window .checkbox-inline {
+.radio-inline, .checkbox-inline {
     display: inline-block;
     padding-left: 20px;
     margin-bottom: 0;
@@ -491,23 +491,23 @@
     cursor: pointer;
 }
 
-.uploader-modal .radio-inline + .radio-inline, .media-browser-modal-window .radio-inline + .radio-inline, .uploader-modal .checkbox-inline + .checkbox-inline, .media-browser-modal-window .checkbox-inline + .checkbox-inline {
+.radio-inline + .radio-inline, .checkbox-inline + .checkbox-inline {
     margin-top: 0;
     margin-left: 10px;
 }
 
-.uploader-modal .form-control-static, .media-browser-modal-window .form-control-static {
+.form-control-static {
     padding-top: 7px;
     padding-bottom: 7px;
     margin-bottom: 0;
 }
 
-.uploader-modal .form-control-static.input-lg, .media-browser-modal-window .form-control-static.input-lg, .uploader-modal .form-control-static.input-sm, .media-browser-modal-window .form-control-static.input-sm {
+.form-control-static.input-lg, .form-control-static.input-sm {
     padding-left: 0;
     padding-right: 0;
 }
 
-.uploader-modal .input-sm, .media-browser-modal-window .input-sm, .uploader-modal .form-horizontal .form-group-sm .form-control, .media-browser-modal-window .form-horizontal .form-group-sm .form-control {
+.input-sm, .form-horizontal .form-group-sm .form-control {
     height: 30px;
     padding: 5px 10px;
     font-size: 12px;
@@ -515,16 +515,16 @@
     border-radius: 3px;
 }
 
-.uploader-modal select.input-sm, .media-browser-modal-window select.input-sm {
+select.input-sm {
     height: 30px;
     line-height: 30px;
 }
 
-.uploader-modal textarea.input-sm, .media-browser-modal-window textarea.input-sm, .uploader-modal select[multiple].input-sm, .media-browser-modal-window select[multiple].input-sm {
+textarea.input-sm, select[multiple].input-sm, {
     height: auto;
 }
 
-.uploader-modal .input-lg, .media-browser-modal-window .input-lg, .uploader-modal .form-horizontal .form-group-lg .form-control, .media-browser-modal-window .form-horizontal .form-group-lg .form-control {
+.input-lg, .form-horizontal .form-group-lg .form-control {
     height: 46px;
     padding: 10px 16px;
     font-size: 18px;
@@ -532,24 +532,24 @@
     border-radius: 6px;
 }
 
-.uploader-modal select.input-lg, .media-browser-modal-window select.input-lg {
+select.input-lg {
     height: 46px;
     line-height: 46px;
 }
 
-.uploader-modal textarea.input-lg, .media-browser-modal-window textarea.input-lg, .uploader-modal select[multiple].input-lg, .media-browser-modal-window select[multiple].input-lg {
+textarea.input-lg, select[multiple].input-lg {
     height: auto;
 }
 
-.uploader-modal .has-feedback, .media-browser-modal-window .has-feedback {
+.has-feedback {
     position: relative;
 }
 
-.uploader-modal .has-feedback .form-control, .media-browser-modal-window .has-feedback .form-control {
+.has-feedback .form-control {
     padding-right: 42.5px;
 }
 
-.uploader-modal .form-control-feedback, .media-browser-modal-window .form-control-feedback {
+.form-control-feedback {
     position: absolute;
     top: 25px;
     right: 0;
@@ -561,64 +561,64 @@
     text-align: center;
 }
 
-.uploader-modal .input-lg + .form-control-feedback, .media-browser-modal-window .input-lg + .form-control-feedback {
+.input-lg + .form-control-feedback {
     width: 46px;
     height: 46px;
     line-height: 46px;
 }
 
-.uploader-modal .input-sm + .form-control-feedback, .media-browser-modal-window .input-sm + .form-control-feedback {
+.input-sm + .form-control-feedback {
     width: 30px;
     height: 30px;
     line-height: 30px;
 }
 
-.uploader-modal .form-horizontal .radio, .media-browser-modal-window .form-horizontal .radio, .uploader-modal .form-horizontal .checkbox, .media-browser-modal-window .form-horizontal .checkbox, .uploader-modal .form-horizontal .radio-inline, .media-browser-modal-window .form-horizontal .radio-inline, .uploader-modal .form-horizontal .checkbox-inline, .media-browser-modal-window .form-horizontal .checkbox-inline {
+.form-horizontal .radio, .form-horizontal .checkbox, .form-horizontal .radio-inline, .form-horizontal .checkbox-inline {
     margin-top: 0;
     margin-bottom: 0;
     padding-top: 7px;
 }
 
-.uploader-modal .form-horizontal .radio, .media-browser-modal-window .form-horizontal .radio, .uploader-modal .form-horizontal .checkbox, .media-browser-modal-window .form-horizontal .checkbox {
+.form-horizontal .radio, .form-horizontal .checkbox {
     min-height: 27px;
 }
 
-.uploader-modal .form-horizontal .form-group, .media-browser-modal-window .form-horizontal .form-group {
+.form-horizontal .form-group {
     margin-left: -15px;
     margin-right: -15px;
 }
 
 @media (min-width: 768px) {
-    .uploader-modal .form-horizontal .control-label, .media-browser-modal-window .form-horizontal .control-label {
+    .form-horizontal .control-label, .form-horizontal .control-label {
         text-align: right;
         margin-bottom: 0;
         padding-top: 7px;
     }
 }
 
-.uploader-modal .form-horizontal .has-feedback .form-control-feedback, .media-browser-modal-window .form-horizontal .has-feedback .form-control-feedback {
+.form-horizontal .has-feedback .form-control-feedback, .form-horizontal .has-feedback .form-control-feedback {
     top: 0;
     right: 15px;
 }
 
 @media (min-width: 768px) {
-    .uploader-modal .form-horizontal .form-group-lg .control-label, .media-browser-modal-window .form-horizontal .form-group-lg .control-label {
+    .form-horizontal .form-group-lg .control-label, .form-horizontal .form-group-lg .control-label {
         padding-top: 14.3px;
     }
 }
 
 @media (min-width: 768px) {
-    .uploader-modal .form-horizontal .form-group-sm .control-label, .media-browser-modal-window .form-horizontal .form-group-sm .control-label {
+    .form-horizontal .form-group-sm .control-label {
         padding-top: 6px;
     }
 }
 
-.uploader-modal .clearfix:before, .media-browser-modal-window .clearfix:before, .uploader-modal .clearfix:after, .media-browser-modal-window .clearfix:after, .uploader-modal .form-horizontal .form-group:before, .media-browser-modal-window .form-horizontal .form-group:before, .uploader-modal .form-horizontal .form-group:after, .media-browser-modal-window .form-horizontal .form-group:after {
+.clearfix:before, .clearfix:before, .clearfix:after, .clearfix:after, .form-horizontal .form-group:before, .form-horizontal .form-group:before, .form-horizontal .form-group:after, .form-horizontal .form-group:after {
     content: " ";
     display: table;
 }
 
-.uploader-modal .clearfix:after, .media-browser-modal-window .clearfix:after, .uploader-modal .form-horizontal .form-group:after, .media-browser-modal-window .form-horizontal .form-group:after {
+.clearfix:after, .clearfix:after, .form-horizontal .form-group:after, .form-horizontal .form-group:after {
     clear: both;
 }
 
@@ -640,13 +640,13 @@
     visibility: hidden;
 }
 
-.uploader-modal .form-control, .media-browser-modal-window .form-control {
+.uploader-modal .form-control, .media-browser-modal-window .form-control, .bootbox * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
 
-.uploader-modal .modal .btn, .media-browser-modal-window .modal .btn, .uploader-modal .btn, .media-browser-modal-window .btn {
+.modal .btn, .btn, .bootbox .btn {
     color: #fff;
     height: auto;
     display: inline-block;
@@ -669,25 +669,25 @@
     text-shadow: none;
 }
 
-.uploader-modal .btn.active:focus, .media-browser-modal-window .btn.active:focus, .uploader-modal .btn:active:focus, .media-browser-modal-window .btn:active:focus, .uploader-modal .btn:focus, .media-browser-modal-window .btn:focus {
+.btn.active:focus, .btn.active:focus, .btn:active:focus, .btn:active:focus, .btn:focus, .btn:focus {
     outline: thin dotted;
     outline: 5px auto -webkit-focus-ring-color;
     outline-offset: -2px;
 }
 
-.uploader-modal .btn:focus, .media-browser-modal-window .btn:focus, .uploader-modal .btn:hover, .media-browser-modal-window .btn:hover {
+.btn:focus, .btn:focus, .btn:hover, .btn:hover {
     color: #333;
     text-decoration: none;
 }
 
-.uploader-modal .btn.active, .media-browser-modal-window .btn.active, .uploader-modal .btn:active, .media-browser-modal-window .btn:active {
+.btn.active, .btn:active, .btn:active {
     background-image: none;
     outline: 0;
     -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
 }
 
-.uploader-modal .btn.disabled, .media-browser-modal-window .btn.disabled, .uploader-modal .btn[disabled], .media-browser-modal-window .btn[disabled], .uploader-modal fieldset[disabled] .btn, .media-browser-modal-window fieldset[disabled] .btn {
+.btn.disabled, .btn[disabled], .btn[disabled], fieldset[disabled] .btn, fieldset[disabled] .btn {
     pointer-events: none;
     cursor: not-allowed;
     filter: alpha(opacity=65);
@@ -696,249 +696,249 @@
     opacity: .65;
 }
 
-.uploader-modal .modal .btn-default, .media-browser-modal-window .modal .btn-default, .uploader-modal .btn-default, .media-browser-modal-window .btn-default {
+.modal .btn-default, .btn-default, .btn-default {
     color: #333;
     background-color: #fff;
     border-color: #ccc;
 }
 
-.uploader-modal .btn-default.active, .media-browser-modal-window .btn-default.active, .uploader-modal .btn-default:active, .media-browser-modal-window .btn-default:active, .uploader-modal .btn-default:focus, .media-browser-modal-window .btn-default:focus, .uploader-modal .btn-default:hover, .media-browser-modal-window .btn-default:hover, .uploader-modal .open .dropdown-toggle.btn-default, .media-browser-modal-window .open .dropdown-toggle.btn-default {
+.btn-default.active, .btn-default.active, .btn-default:active, .btn-default:active, .btn-default:focus, .btn-default:focus, .btn-default:hover, .btn-default:hover, .open .dropdown-toggle.btn-default, .open .dropdown-toggle.btn-default {
     color: #333;
     background-color: #ebebeb;
     border-color: #adadad;
 }
 
-.uploader-modal .btn-default.active, .media-browser-modal-window .btn-default.active, .uploader-modal .btn-default:active, .media-browser-modal-window .btn-default:active, .uploader-modal .open .dropdown-toggle.btn-default, .media-browser-modal-window .open .dropdown-toggle.btn-default {
+.btn-default.active, .btn-default:active, .open .dropdown-toggle.btn-default {
     background-image: none;
 }
 
-.uploader-modal .btn-default.disabled, .media-browser-modal-window .btn-default.disabled, .uploader-modal .btn-default.disabled.active, .media-browser-modal-window .btn-default.disabled.active, .uploader-modal .btn-default.disabled:active, .media-browser-modal-window .btn-default.disabled:active, .uploader-modal .btn-default.disabled:focus, .media-browser-modal-window .btn-default.disabled:focus, .uploader-modal .btn-default.disabled:hover, .media-browser-modal-window .btn-default.disabled:hover, .uploader-modal .btn-default[disabled], .media-browser-modal-window .btn-default[disabled], .uploader-modal .btn-default[disabled].active, .media-browser-modal-window .btn-default[disabled].active, .uploader-modal .btn-default[disabled]:active, .media-browser-modal-window .btn-default[disabled]:active, .uploader-modal .btn-default[disabled]:focus, .media-browser-modal-window .btn-default[disabled]:focus, .uploader-modal .btn-default[disabled]:hover, .media-browser-modal-window .btn-default[disabled]:hover, .uploader-modal fieldset[disabled] .btn-default, .media-browser-modal-window fieldset[disabled] .btn-default, .uploader-modal fieldset[disabled] .btn-default.active, .media-browser-modal-window fieldset[disabled] .btn-default.active, .uploader-modal fieldset[disabled] .btn-default:active, .media-browser-modal-window fieldset[disabled] .btn-default:active, .uploader-modal fieldset[disabled] .btn-default:focus, .media-browser-modal-window fieldset[disabled] .btn-default:focus, .uploader-modal fieldset[disabled] .btn-default:hover, .media-browser-modal-window fieldset[disabled] .btn-default:hover {
+.btn-default.disabled, .btn-default.disabled, .btn-default.disabled.active, .btn-default.disabled.active, .btn-default.disabled:active, .btn-default.disabled:active, .btn-default.disabled:focus, .btn-default.disabled:focus, .btn-default.disabled:hover, .btn-default.disabled:hover, .btn-default[disabled], .btn-default[disabled], .btn-default[disabled].active, .btn-default[disabled].active, .btn-default[disabled]:active, .btn-default[disabled]:active, .btn-default[disabled]:focus, .btn-default[disabled]:focus, .btn-default[disabled]:hover, .btn-default[disabled]:hover, fieldset[disabled] .btn-default, fieldset[disabled] .btn-default, fieldset[disabled] .btn-default.active, fieldset[disabled] .btn-default.active, fieldset[disabled] .btn-default:active, fieldset[disabled] .btn-default:active, fieldset[disabled] .btn-default:focus, fieldset[disabled] .btn-default:focus, fieldset[disabled] .btn-default:hover, fieldset[disabled] .btn-default:hover {
     background-color: #fff;
     border-color: #ccc;
 }
 
-.uploader-modal .btn-default .badge, .media-browser-modal-window .btn-default .badge {
+.btn-default .badge, .btn-default .badge {
     color: #fff;
     background-color: #333;
 }
 
-.uploader-modal .btn-primary, .media-browser-modal-window .btn-primary {
+.btn-primary, .btn-primary {
     color: #fff;
     background-color: #0a85c8;
     border-color: #357ebd;
 }
 
-.uploader-modal .btn-primary.active, .media-browser-modal-window .btn-primary.active, .uploader-modal .btn-primary:active, .media-browser-modal-window .btn-primary:active, .uploader-modal .btn-primary:focus, .media-browser-modal-window .btn-primary:focus, .uploader-modal .btn-primary:hover, .media-browser-modal-window .btn-primary:hover, .uploader-modal .open .dropdown-toggle.btn-primary, .media-browser-modal-window .open .dropdown-toggle.btn-primary {
+.btn-primary.active, .btn-primary.active, .btn-primary:active, .btn-primary:active, .btn-primary:focus, .btn-primary:focus, .btn-primary:hover, .btn-primary:hover, .open .dropdown-toggle.btn-primary, .open .dropdown-toggle.btn-primary {
     color: #fff;
     background-color: #3276b1;
     border-color: #285e8e;
 }
 
-.uploader-modal .btn-primary.active, .media-browser-modal-window .btn-primary.active, .uploader-modal .btn-primary:active, .media-browser-modal-window .btn-primary:active, .uploader-modal .open .dropdown-toggle.btn-primary, .media-browser-modal-window .open .dropdown-toggle.btn-primary {
+.btn-primary.active, .btn-primary.active, .btn-primary:active, .btn-primary:active, .open .dropdown-toggle.btn-primary, .open .dropdown-toggle.btn-primary {
     background-image: none;
 }
 
-.uploader-modal .btn-primary.disabled, .media-browser-modal-window .btn-primary.disabled, .uploader-modal .btn-primary.disabled.active, .media-browser-modal-window .btn-primary.disabled.active, .uploader-modal .btn-primary.disabled:active, .media-browser-modal-window .btn-primary.disabled:active, .uploader-modal .btn-primary.disabled:focus, .media-browser-modal-window .btn-primary.disabled:focus, .uploader-modal .btn-primary.disabled:hover, .media-browser-modal-window .btn-primary.disabled:hover, .uploader-modal .btn-primary[disabled], .media-browser-modal-window .btn-primary[disabled], .uploader-modal .btn-primary[disabled].active, .media-browser-modal-window .btn-primary[disabled].active, .uploader-modal .btn-primary[disabled]:active, .media-browser-modal-window .btn-primary[disabled]:active, .uploader-modal .btn-primary[disabled]:focus, .media-browser-modal-window .btn-primary[disabled]:focus, .uploader-modal .btn-primary[disabled]:hover, .media-browser-modal-window .btn-primary[disabled]:hover, .uploader-modal fieldset[disabled] .btn-primary, .media-browser-modal-window fieldset[disabled] .btn-primary, .uploader-modal fieldset[disabled] .btn-primary.active, .media-browser-modal-window fieldset[disabled] .btn-primary.active, .uploader-modal fieldset[disabled] .btn-primary:active, .media-browser-modal-window fieldset[disabled] .btn-primary:active, .uploader-modal fieldset[disabled] .btn-primary:focus, .media-browser-modal-window fieldset[disabled] .btn-primary:focus, .uploader-modal fieldset[disabled] .btn-primary:hover, .media-browser-modal-window fieldset[disabled] .btn-primary:hover {
+.btn-primary.disabled, .btn-primary.disabled, .btn-primary.disabled.active, .btn-primary.disabled.active, .btn-primary.disabled:active, .btn-primary.disabled:active, .btn-primary.disabled:focus, .btn-primary.disabled:focus, .btn-primary.disabled:hover, .btn-primary.disabled:hover, .btn-primary[disabled], .btn-primary[disabled], .btn-primary[disabled].active, .btn-primary[disabled].active, .btn-primary[disabled]:active, .btn-primary[disabled]:active, .btn-primary[disabled]:focus, .btn-primary[disabled]:focus, .btn-primary[disabled]:hover, .btn-primary[disabled]:hover, fieldset[disabled] .btn-primary, fieldset[disabled] .btn-primary, fieldset[disabled] .btn-primary.active, fieldset[disabled] .btn-primary.active, fieldset[disabled] .btn-primary:active, fieldset[disabled] .btn-primary:active, fieldset[disabled] .btn-primary:focus, fieldset[disabled] .btn-primary:focus, fieldset[disabled] .btn-primary:hover, fieldset[disabled] .btn-primary:hover {
     background-color: #428bca;
     border-color: #357ebd;
 }
 
-.uploader-modal .btn-primary .badge, .media-browser-modal-window .btn-primary .badge {
+.btn-primary .badge, .btn-primary .badge {
     color: #428bca;
     background-color: #fff;
 }
 
-.uploader-modal .modal .btn-success, .media-browser-modal-window .modal .btn-success, .uploader-modal .btn-success, .media-browser-modal-window .btn-success {
+.modal .btn-success, .modal .btn-success, .btn-success, .btn-success {
     color: #fff;
     background-color: #5cb85c;
     border-color: #4cae4c;
 }
 
-.uploader-modal .btn-success.active, .media-browser-modal-window .btn-success.active, .uploader-modal .btn-success:active, .media-browser-modal-window .btn-success:active, .uploader-modal .btn-success:focus, .media-browser-modal-window .btn-success:focus, .uploader-modal .btn-success:hover, .media-browser-modal-window .btn-success:hover, .uploader-modal .open .dropdown-toggle.btn-success, .media-browser-modal-window .open .dropdown-toggle.btn-success {
+.btn-success.active, .btn-success.active, .btn-success:active, .btn-success:active, .btn-success:focus, .btn-success:focus, .btn-success:hover, .btn-success:hover, .open .dropdown-toggle.btn-success, .open .dropdown-toggle.btn-success {
     color: #fff;
     border-color: #398439;
     background: #47a447 none;
 }
 
-.uploader-modal .btn-success.active, .media-browser-modal-window .btn-success.active, .uploader-modal .btn-success:active, .media-browser-modal-window .btn-success:active, .uploader-modal .open .dropdown-toggle.btn-success, .media-browser-modal-window .open .dropdown-toggle.btn-success {
+.btn-success.active, .btn-success.active, .btn-success:active, .btn-success:active, .open .dropdown-toggle.btn-success, .open .dropdown-toggle.btn-success {
     background-image: none;
 }
 
-.uploader-modal .btn-success.disabled, .media-browser-modal-window .btn-success.disabled, .uploader-modal .btn-success.disabled.active, .media-browser-modal-window .btn-success.disabled.active, .uploader-modal .btn-success.disabled:active, .media-browser-modal-window .btn-success.disabled:active, .uploader-modal .btn-success.disabled:focus, .media-browser-modal-window .btn-success.disabled:focus, .uploader-modal .btn-success.disabled:hover, .media-browser-modal-window .btn-success.disabled:hover, .uploader-modal .btn-success[disabled], .media-browser-modal-window .btn-success[disabled], .uploader-modal .btn-success[disabled].active, .media-browser-modal-window .btn-success[disabled].active, .uploader-modal .btn-success[disabled]:active, .media-browser-modal-window .btn-success[disabled]:active, .uploader-modal .btn-success[disabled]:focus, .media-browser-modal-window .btn-success[disabled]:focus, .uploader-modal .btn-success[disabled]:hover, .media-browser-modal-window .btn-success[disabled]:hover, .uploader-modal fieldset[disabled] .btn-success, .media-browser-modal-window fieldset[disabled] .btn-success, .uploader-modal fieldset[disabled] .btn-success.active, .media-browser-modal-window fieldset[disabled] .btn-success.active, .uploader-modal fieldset[disabled] .btn-success:active, .media-browser-modal-window fieldset[disabled] .btn-success:active, .uploader-modal fieldset[disabled] .btn-success:focus, .media-browser-modal-window fieldset[disabled] .btn-success:focus, .uploader-modal fieldset[disabled] .btn-success:hover, .media-browser-modal-window fieldset[disabled] .btn-success:hover {
+.btn-success.disabled, .btn-success.disabled, .btn-success.disabled.active, .btn-success.disabled.active, .btn-success.disabled:active, .btn-success.disabled:active, .btn-success.disabled:focus, .btn-success.disabled:focus, .btn-success.disabled:hover, .btn-success.disabled:hover, .btn-success[disabled], .btn-success[disabled], .btn-success[disabled].active, .btn-success[disabled].active, .btn-success[disabled]:active, .btn-success[disabled]:active, .btn-success[disabled]:focus, .btn-success[disabled]:focus, .btn-success[disabled]:hover, .btn-success[disabled]:hover, fieldset[disabled] .btn-success, fieldset[disabled] .btn-success, fieldset[disabled] .btn-success.active, fieldset[disabled] .btn-success.active, fieldset[disabled] .btn-success:active, fieldset[disabled] .btn-success:active, fieldset[disabled] .btn-success:focus, fieldset[disabled] .btn-success:focus, fieldset[disabled] .btn-success:hover, fieldset[disabled] .btn-success:hover {
     background-color: #5cb85c;
     border-color: #4cae4c;
 }
 
-.uploader-modal .btn-success .badge, .media-browser-modal-window .btn-success .badge {
+.btn-success .badge, .btn-success .badge {
     color: #5cb85c;
     background-color: #fff;
 }
 
-.uploader-modal .btn-info, .media-browser-modal-window .btn-info {
+.btn-info, .btn-info {
     color: #fff;
     background-color: #5bc0de;
     border-color: #46b8da;
 }
 
-.uploader-modal .btn-info.active, .media-browser-modal-window .btn-info.active, .uploader-modal .btn-info:active, .media-browser-modal-window .btn-info:active, .uploader-modal .btn-info:focus, .media-browser-modal-window .btn-info:focus, .uploader-modal .btn-info:hover, .media-browser-modal-window .btn-info:hover, .uploader-modal .open .dropdown-toggle.btn-info, .media-browser-modal-window .open .dropdown-toggle.btn-info {
+.btn-info.active, .btn-info.active, .btn-info:active, .btn-info:active, .btn-info:focus, .btn-info:focus, .btn-info:hover, .btn-info:hover, .open .dropdown-toggle.btn-info, .open .dropdown-toggle.btn-info {
     color: #fff;
     background-color: #39b3d7;
     border-color: #269abc;
 }
 
-.uploader-modal .btn-info.active, .media-browser-modal-window .btn-info.active, .uploader-modal .btn-info:active, .media-browser-modal-window .btn-info:active, .uploader-modal .open .dropdown-toggle.btn-info, .media-browser-modal-window .open .dropdown-toggle.btn-info {
+.btn-info.active, .btn-info.active, .btn-info:active, .btn-info:active, .open .dropdown-toggle.btn-info, .open .dropdown-toggle.btn-info {
     background-image: none;
 }
 
-.uploader-modal .btn-info.disabled, .media-browser-modal-window .btn-info.disabled, .uploader-modal .btn-info.disabled.active, .media-browser-modal-window .btn-info.disabled.active, .uploader-modal .btn-info.disabled:active, .media-browser-modal-window .btn-info.disabled:active, .uploader-modal .btn-info.disabled:focus, .media-browser-modal-window .btn-info.disabled:focus, .uploader-modal .btn-info.disabled:hover, .media-browser-modal-window .btn-info.disabled:hover, .uploader-modal .btn-info[disabled], .media-browser-modal-window .btn-info[disabled], .uploader-modal .btn-info[disabled].active, .media-browser-modal-window .btn-info[disabled].active, .uploader-modal .btn-info[disabled]:active, .media-browser-modal-window .btn-info[disabled]:active, .uploader-modal .btn-info[disabled]:focus, .media-browser-modal-window .btn-info[disabled]:focus, .uploader-modal .btn-info[disabled]:hover, .media-browser-modal-window .btn-info[disabled]:hover, .uploader-modal fieldset[disabled] .btn-info, .media-browser-modal-window fieldset[disabled] .btn-info, .uploader-modal fieldset[disabled] .btn-info.active, .media-browser-modal-window fieldset[disabled] .btn-info.active, .uploader-modal fieldset[disabled] .btn-info:active, .media-browser-modal-window fieldset[disabled] .btn-info:active, .uploader-modal fieldset[disabled] .btn-info:focus, .media-browser-modal-window fieldset[disabled] .btn-info:focus, .uploader-modal fieldset[disabled] .btn-info:hover, .media-browser-modal-window fieldset[disabled] .btn-info:hover {
+.btn-info.disabled, .btn-info.disabled, .btn-info.disabled.active, .btn-info.disabled.active, .btn-info.disabled:active, .btn-info.disabled:active, .btn-info.disabled:focus, .btn-info.disabled:focus, .btn-info.disabled:hover, .btn-info.disabled:hover, .btn-info[disabled], .btn-info[disabled], .btn-info[disabled].active, .btn-info[disabled].active, .btn-info[disabled]:active, .btn-info[disabled]:active, .btn-info[disabled]:focus, .btn-info[disabled]:focus, .btn-info[disabled]:hover, .btn-info[disabled]:hover, fieldset[disabled] .btn-info, fieldset[disabled] .btn-info, fieldset[disabled] .btn-info.active, fieldset[disabled] .btn-info.active, fieldset[disabled] .btn-info:active, fieldset[disabled] .btn-info:active, fieldset[disabled] .btn-info:focus, fieldset[disabled] .btn-info:focus, fieldset[disabled] .btn-info:hover, fieldset[disabled] .btn-info:hover {
     background-color: #5bc0de;
     border-color: #46b8da;
 }
 
-.uploader-modal .btn-info .badge, .media-browser-modal-window .btn-info .badge {
+.btn-info .badge, .btn-info .badge {
     color: #5bc0de;
     background-color: #fff;
 }
 
-.uploader-modal .btn-warning, .media-browser-modal-window .btn-warning {
+.btn-warning, .btn-warning {
     color: #fff;
     background-color: #f0ad4e;
     border-color: #eea236;
 }
 
-.uploader-modal .btn-warning.active, .media-browser-modal-window .btn-warning.active, .uploader-modal .btn-warning:active, .media-browser-modal-window .btn-warning:active, .uploader-modal .btn-warning:focus, .media-browser-modal-window .btn-warning:focus, .uploader-modal .btn-warning:hover, .media-browser-modal-window .btn-warning:hover, .uploader-modal .open .dropdown-toggle.btn-warning, .media-browser-modal-window .open .dropdown-toggle.btn-warning {
+.btn-warning.active, .btn-warning.active, .btn-warning:active, .btn-warning:active, .btn-warning:focus, .btn-warning:focus, .btn-warning:hover, .btn-warning:hover, .open .dropdown-toggle.btn-warning, .open .dropdown-toggle.btn-warning {
     color: #fff;
     background-color: #ed9c28;
     border-color: #d58512;
 }
 
-.uploader-modal .btn-warning.active, .media-browser-modal-window .btn-warning.active, .uploader-modal .btn-warning:active, .media-browser-modal-window .btn-warning:active, .uploader-modal .open .dropdown-toggle.btn-warning, .media-browser-modal-window .open .dropdown-toggle.btn-warning {
+.btn-warning.active, .btn-warning.active, .btn-warning:active, .btn-warning:active, .open .dropdown-toggle.btn-warning, .open .dropdown-toggle.btn-warning {
     background-image: none;
 }
 
-.uploader-modal .btn-warning.disabled, .media-browser-modal-window .btn-warning.disabled, .uploader-modal .btn-warning.disabled.active, .media-browser-modal-window .btn-warning.disabled.active, .uploader-modal .btn-warning.disabled:active, .media-browser-modal-window .btn-warning.disabled:active, .uploader-modal .btn-warning.disabled:focus, .media-browser-modal-window .btn-warning.disabled:focus, .uploader-modal .btn-warning.disabled:hover, .media-browser-modal-window .btn-warning.disabled:hover, .uploader-modal .btn-warning[disabled], .media-browser-modal-window .btn-warning[disabled], .uploader-modal .btn-warning[disabled].active, .media-browser-modal-window .btn-warning[disabled].active, .uploader-modal .btn-warning[disabled]:active, .media-browser-modal-window .btn-warning[disabled]:active, .uploader-modal .btn-warning[disabled]:focus, .media-browser-modal-window .btn-warning[disabled]:focus, .uploader-modal .btn-warning[disabled]:hover, .media-browser-modal-window .btn-warning[disabled]:hover, .uploader-modal fieldset[disabled] .btn-warning, .media-browser-modal-window fieldset[disabled] .btn-warning, .uploader-modal fieldset[disabled] .btn-warning.active, .media-browser-modal-window fieldset[disabled] .btn-warning.active, .uploader-modal fieldset[disabled] .btn-warning:active, .media-browser-modal-window fieldset[disabled] .btn-warning:active, .uploader-modal fieldset[disabled] .btn-warning:focus, .media-browser-modal-window fieldset[disabled] .btn-warning:focus, .uploader-modal fieldset[disabled] .btn-warning:hover, .media-browser-modal-window fieldset[disabled] .btn-warning:hover {
+.btn-warning.disabled, .btn-warning.disabled, .btn-warning.disabled.active, .btn-warning.disabled.active, .btn-warning.disabled:active, .btn-warning.disabled:active, .btn-warning.disabled:focus, .btn-warning.disabled:focus, .btn-warning.disabled:hover, .btn-warning.disabled:hover, .btn-warning[disabled], .btn-warning[disabled], .btn-warning[disabled].active, .btn-warning[disabled].active, .btn-warning[disabled]:active, .btn-warning[disabled]:active, .btn-warning[disabled]:focus, .btn-warning[disabled]:focus, .btn-warning[disabled]:hover, .btn-warning[disabled]:hover, fieldset[disabled] .btn-warning, fieldset[disabled] .btn-warning, fieldset[disabled] .btn-warning.active, fieldset[disabled] .btn-warning.active, fieldset[disabled] .btn-warning:active, fieldset[disabled] .btn-warning:active, fieldset[disabled] .btn-warning:focus, fieldset[disabled] .btn-warning:focus, fieldset[disabled] .btn-warning:hover, fieldset[disabled] .btn-warning:hover {
     background-color: #f0ad4e;
     border-color: #eea236;
 }
 
-.uploader-modal .btn-warning .badge, .media-browser-modal-window .btn-warning .badge {
+.btn-warning .badge, .btn-warning .badge {
     color: #f0ad4e;
     background-color: #fff;
 }
 
-.uploader-modal .btn-danger, .media-browser-modal-window .btn-danger {
+.btn-danger, .btn-danger {
     color: #fff;
     background-color: #d9534f;
     border-color: #d43f3a;
 }
 
-.uploader-modal .btn-danger.active, .media-browser-modal-window .btn-danger.active, .uploader-modal .btn-danger:active, .media-browser-modal-window .btn-danger:active, .uploader-modal .btn-danger:focus, .media-browser-modal-window .btn-danger:focus, .uploader-modal .btn-danger:hover, .media-browser-modal-window .btn-danger:hover, .uploader-modal .open .dropdown-toggle.btn-danger, .media-browser-modal-window .open .dropdown-toggle.btn-danger {
+.btn-danger.active, .btn-danger.active, .btn-danger:active, .btn-danger:active, .btn-danger:focus, .btn-danger:focus, .btn-danger:hover, .btn-danger:hover, .open .dropdown-toggle.btn-danger, .open .dropdown-toggle.btn-danger {
     color: #fff;
     background-color: #d2322d;
     border-color: #ac2925;
 }
 
-.uploader-modal .btn-danger.active, .media-browser-modal-window .btn-danger.active, .uploader-modal .btn-danger:active, .media-browser-modal-window .btn-danger:active, .uploader-modal .open .dropdown-toggle.btn-danger, .media-browser-modal-window .open .dropdown-toggle.btn-danger {
+.btn-danger.active, .btn-danger.active, .btn-danger:active, .btn-danger:active, .open .dropdown-toggle.btn-danger, .open .dropdown-toggle.btn-danger {
     background-image: none;
 }
 
-.uploader-modal .btn-danger.disabled, .media-browser-modal-window .btn-danger.disabled, .uploader-modal .btn-danger.disabled.active, .media-browser-modal-window .btn-danger.disabled.active, .uploader-modal .btn-danger.disabled:active, .media-browser-modal-window .btn-danger.disabled:active, .uploader-modal .btn-danger.disabled:focus, .media-browser-modal-window .btn-danger.disabled:focus, .uploader-modal .btn-danger.disabled:hover, .media-browser-modal-window .btn-danger.disabled:hover, .uploader-modal .btn-danger[disabled], .media-browser-modal-window .btn-danger[disabled], .uploader-modal .btn-danger[disabled].active, .media-browser-modal-window .btn-danger[disabled].active, .uploader-modal .btn-danger[disabled]:active, .media-browser-modal-window .btn-danger[disabled]:active, .uploader-modal .btn-danger[disabled]:focus, .media-browser-modal-window .btn-danger[disabled]:focus, .uploader-modal .btn-danger[disabled]:hover, .media-browser-modal-window .btn-danger[disabled]:hover, .uploader-modal fieldset[disabled] .btn-danger, .media-browser-modal-window fieldset[disabled] .btn-danger, .uploader-modal fieldset[disabled] .btn-danger.active, .media-browser-modal-window fieldset[disabled] .btn-danger.active, .uploader-modal fieldset[disabled] .btn-danger:active, .media-browser-modal-window fieldset[disabled] .btn-danger:active, .uploader-modal fieldset[disabled] .btn-danger:focus, .media-browser-modal-window fieldset[disabled] .btn-danger:focus, .uploader-modal fieldset[disabled] .btn-danger:hover, .media-browser-modal-window fieldset[disabled] .btn-danger:hover {
+.btn-danger.disabled, .btn-danger.disabled, .btn-danger.disabled.active, .btn-danger.disabled.active, .btn-danger.disabled:active, .btn-danger.disabled:active, .btn-danger.disabled:focus, .btn-danger.disabled:focus, .btn-danger.disabled:hover, .btn-danger.disabled:hover, .btn-danger[disabled], .btn-danger[disabled], .btn-danger[disabled].active, .btn-danger[disabled].active, .btn-danger[disabled]:active, .btn-danger[disabled]:active, .btn-danger[disabled]:focus, .btn-danger[disabled]:focus, .btn-danger[disabled]:hover, .btn-danger[disabled]:hover, fieldset[disabled] .btn-danger, fieldset[disabled] .btn-danger, fieldset[disabled] .btn-danger.active, fieldset[disabled] .btn-danger.active, fieldset[disabled] .btn-danger:active, fieldset[disabled] .btn-danger:active, fieldset[disabled] .btn-danger:focus, fieldset[disabled] .btn-danger:focus, fieldset[disabled] .btn-danger:hover, fieldset[disabled] .btn-danger:hover {
     background-color: #d9534f;
     border-color: #d43f3a;
 }
 
-.uploader-modal .btn-danger .badge, .media-browser-modal-window .btn-danger .badge {
+.btn-danger .badge, .btn-danger .badge {
     color: #d9534f;
     background-color: #fff;
 }
 
-.uploader-modal .btn-link, .media-browser-modal-window .btn-link {
+.btn-link, .btn-link {
     font-weight: 400;
     color: #428bca;
     cursor: pointer;
     border-radius: 0;
 }
 
-.uploader-modal .btn-link, .media-browser-modal-window .btn-link, .uploader-modal .btn-link:active, .media-browser-modal-window .btn-link:active, .uploader-modal .btn-link[disabled], .media-browser-modal-window .btn-link[disabled], .uploader-modal fieldset[disabled] .btn-link, .media-browser-modal-window fieldset[disabled] .btn-link {
+.btn-link, .btn-link, .btn-link:active, .btn-link:active, .btn-link[disabled], .btn-link[disabled], fieldset[disabled] .btn-link, fieldset[disabled] .btn-link {
     background-color: transparent;
     -webkit-box-shadow: none;
     box-shadow: none;
 }
 
-.uploader-modal .btn-link, .media-browser-modal-window .btn-link, .uploader-modal .btn-link:active, .media-browser-modal-window .btn-link:active, .uploader-modal .btn-link:focus, .media-browser-modal-window .btn-link:focus, .uploader-modal .btn-link:hover, .media-browser-modal-window .btn-link:hover {
+.btn-link, .btn-link, .btn-link:active, .btn-link:active, .btn-link:focus, .btn-link:focus, .btn-link:hover, .btn-link:hover {
     border-color: transparent;
 }
 
-.uploader-modal .btn-link:focus, .media-browser-modal-window .btn-link:focus, .uploader-modal .btn-link:hover, .media-browser-modal-window .btn-link:hover {
+.btn-link:focus, .btn-link:focus, .btn-link:hover, .btn-link:hover {
     color: #2a6496;
     text-decoration: underline;
     background-color: transparent;
 }
 
-.uploader-modal .btn-link[disabled]:focus, .media-browser-modal-window .btn-link[disabled]:focus, .uploader-modal .btn-link[disabled]:hover, .media-browser-modal-window .btn-link[disabled]:hover, .uploader-modal fieldset[disabled] .btn-link:focus, .media-browser-modal-window fieldset[disabled] .btn-link:focus, .uploader-modal fieldset[disabled] .btn-link:hover, .media-browser-modal-window fieldset[disabled] .btn-link:hover {
+.btn-link[disabled]:focus, .btn-link[disabled]:focus, .btn-link[disabled]:hover, .btn-link[disabled]:hover, fieldset[disabled] .btn-link:focus, fieldset[disabled] .btn-link:focus, fieldset[disabled] .btn-link:hover, fieldset[disabled] .btn-link:hover {
     color: #999;
     text-decoration: none;
 }
 
-.uploader-modal .btn-group-lg > .btn, .media-browser-modal-window .btn-group-lg > .btn, .uploader-modal .btn-lg, .media-browser-modal-window .btn-lg {
+.btn-group-lg > .btn, .btn-group-lg > .btn, .btn-lg, .btn-lg {
     padding: 10px 16px;
     font-size: 18px;
     line-height: 1.33;
     border-radius: 6px;
 }
 
-.uploader-modal .btn-group-sm > .btn, .media-browser-modal-window .btn-group-sm > .btn, .uploader-modal .btn-sm, .media-browser-modal-window .btn-sm {
+.btn-group-sm > .btn, .btn-group-sm > .btn, .btn-sm, .btn-sm {
     padding: 5px 10px;
     font-size: 12px;
     line-height: 1.5;
     border-radius: 3px;
 }
 
-.uploader-modal .btn-group-xs > .btn, .media-browser-modal-window .btn-group-xs > .btn, .uploader-modal .btn-xs, .media-browser-modal-window .btn-xs {
+.btn-group-xs > .btn, .btn-group-xs > .btn, .btn-xs, .btn-xs {
     padding: 1px 5px;
     font-size: 12px;
     line-height: 1.5;
     border-radius: 3px;
 }
 
-.uploader-modal .btn-block, .media-browser-modal-window .btn-block {
+.btn-block {
     display: block;
     width: 100%;
     padding-right: 0;
     padding-left: 0;
 }
 
-.uploader-modal .btn-block + .btn-block, .media-browser-modal-window .btn-block + .btn-block {
+.btn-block + .btn-block {
     margin-top: 5px;
 }
 
-.uploader-modal input[type=button].btn-block, .media-browser-modal-window input[type=button].btn-block, .uploader-modal input[type=reset].btn-block, .media-browser-modal-window input[type=reset].btn-block, .uploader-modal input[type=submit].btn-block, .media-browser-modal-window input[type=submit].btn-block {
+input[type=button].btn-block, input[type=button].btn-block, input[type=reset].btn-block, input[type=reset].btn-block, input[type=submit].btn-block, input[type=submit].btn-block {
     width: 100%;
 }
 
-.uploader-modal .modal .btn-primary, .media-browser-modal-window .modal .btn-primary, .uploader-modal .btn-primary, .media-browser-modal-window .btn-primary {
+.modal .btn-primary .btn-primary {
     background-color: #0a85c8;
     border-color: #0a85c8;
 }
 
-.uploader-modal .btn, .media-browser-modal-window .btn {
+.btn {
     border-radius: 0;
     padding: 5px 13px;
 }
 
-.uploader-modal .btn-primary.active, .media-browser-modal-window .btn-primary.active, .uploader-modal .btn-primary:active, .media-browser-modal-window .btn-primary:active, .uploader-modal .btn-primary:focus, .media-browser-modal-window .btn-primary:focus, .uploader-modal .btn-primary:hover, .media-browser-modal-window .btn-primary:hover, .uploader-modal .open .dropdown-toggle.btn-primary, .media-browser-modal-window .open .dropdown-toggle.btn-primary {
+.btn-primary.active .btn-primary:active, .btn-primary:active, .btn-primary:focus, .btn-primary:focus, .btn-primary:hover, .btn-primary:hover, .open .dropdown-toggle.btn-primary {
     border-color: #3276b1;
 }
 
-.uploader-modal .progress, .media-browser-modal-window .progress {
+.progress {
     border-radius: 0;
 }
 
-.uploader-modal .progress-bar, .media-browser-modal-window .progress-bar {
+.progress-bar, .progress-bar {
     background-color: #3276b1;
 }
 
-.uploader-modal .progress-bar-danger, .media-browser-modal-window .progress-bar-danger {
+.progress-bar-danger, .progress-bar-danger {
     background-color: #d9534f;
 }
 
@@ -1497,19 +1497,19 @@
     text-align: right;
 }
 
-.uploader-modal #mediabrowser-renamefile .file-dot, .media-browser-modal-window #mediabrowser-renamefile .file-dot {
+#mediabrowser-renamefile .file-dot {
     display: inline-block;
     margin-right: 2%;
     font-size: 18px;
 }
 
-.uploader-modal #mediabrowser-renamefile .file-name, .media-browser-modal-window #mediabrowser-renamefile .file-name {
+#mediabrowser-renamefile .file-name {
     width: 70%;
     display: inline-block;
     margin-right: 2%;
 }
 
-.uploader-modal #mediabrowser-renamefile .file-extension, .media-browser-modal-window #mediabrowser-renamefile .file-extension {
+#mediabrowser-renamefile .file-extension {
     width: 20%;
     display: inline-block;
 }
@@ -1710,7 +1710,7 @@
     margin-top: 0;
 }
 
-.uploader-modal .uploader-button-hidden, .media-browser-modal-window .uploader-button-hidden {
+.uploader-button-hidden {
     display: none;
 }
 
@@ -2071,7 +2071,7 @@
     z-index: 10030 !important;
 }
 
-.media-browser-modal-window, .uploader-modal .bootbox, .media-browser-modal-window .bootbox {
+.media-browser-modal-window, .bootbox {
     z-index: 10050 !important;
 }
 

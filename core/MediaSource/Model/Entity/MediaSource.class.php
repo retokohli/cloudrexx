@@ -57,7 +57,13 @@ class MediaSource extends EntityBase {
      */
     protected $accessIds = array();
 
-    function __construct($name = '',$humanName = '', $directory  = array(), $accessIds = array(), $position = '') {
+    /**
+     * @var FileSystem
+     */
+    protected $fileSystem;
+
+    function __construct($name,$humanName, $directory, $accessIds = array(), $position = '',FileSystem $fileSystem = null) {
+        $this->fileSystem = $fileSystem ? $fileSystem : LocalFileSystem::createFromPath($directory[0]);
         $this->name      = $name;
         $this->position  = $position;
         $this->humanName = $humanName;
@@ -89,13 +95,6 @@ class MediaSource extends EntityBase {
         return $this->directory;
     }
 
-    /**
-     * @param array $directory
-     */
-    public function setDirectory($directory)
-    {
-        $this->directory = $directory;
-    }
 
     /**
      * @return array
@@ -155,6 +154,13 @@ class MediaSource extends EntityBase {
     public function setPosition($position)
     {
         $this->position = $position;
+    }
+
+    /**
+     * @return FileSystem
+     */
+    public function getFileSystem() {
+        return $this->fileSystem;
     }
 
 

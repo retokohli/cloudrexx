@@ -33,14 +33,10 @@ class WysiwygEventListener extends DefaultEventListener {
     public function mediasourceLoad(MediaSourceManager $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
-        $mediaType = new MediaSource();
-        $mediaType->setName('wysiwyg');
-        $mediaType->setHumanName($_ARRAYLANG['TXT_FILEBROWSER_WYSIWYG']);
-        $mediaType->setDirectory(array(
+        $mediaType = new MediaSource('wysiwyg',$_ARRAYLANG['TXT_FILEBROWSER_WYSIWYG'],array(
             $this->cx->getWebsiteImagesPath() . '/Wysiwyg',
             $this->cx->getWebsiteImagesWebPath() . '/Wysiwyg',
-        ));
-        $mediaType->setAccessIds(array(16));
+        ),array(16));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 

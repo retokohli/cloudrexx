@@ -2898,6 +2898,8 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Get the instance of the MediaSourceManager
+         *
          * @return \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
          */
         public function getMediaSourceManager(){

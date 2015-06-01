@@ -69,6 +69,7 @@ class BackendController extends SystemComponentBackendController
             '\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback'
         );
         $uploader2->setCallback('gallery.uploader2');
+        $uploader2->setType(Uploader::UPLOADER_TYPE_INLINE);
         $template->setVariable(
             'UPLOADER_CODE2', $uploader2->getXHtml('Open Uploader 2')
         );

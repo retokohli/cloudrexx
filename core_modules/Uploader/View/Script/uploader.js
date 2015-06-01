@@ -18,22 +18,12 @@
 
     jQuery(function () {
         jQuery('button.uploader-button').each(function () {
-            var uploaderApp = angular.bootstrap(jQuery(this).next()[0], ['Uploader']);
+            angular.bootstrap(jQuery(this).next()[0], ['Uploader']);
             var scope = angular.element(jQuery(this).next()[0]).scope();
             var iAttrs = jQuery(this).data();
-            scope.randomString = function (len, charSet) {
-                charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                var randomString = '';
-                var randomPoz;
-                for (var i = 0; i < len; i++) {
-                    randomPoz = Math.floor(Math.random() * charSet.length);
-                    randomString += charSet.substring(randomPoz, randomPoz + 1);
-                }
-                return randomString;
-            };
 
             if (!iAttrs.id) {
-                jQuery(this).data('id', scope.randomString(10, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'));
+                jQuery(this).data('id', iAttrs.uploaderId);
             }
             if (!iAttrs.plAutoUpload) {
                 jQuery(this).data('plAutoUpload', 'true');
@@ -52,6 +42,9 @@
             }
             if (!iAttrs.uploadLimit) {
                 jQuery(this).data('uploadLimit', "0");
+            }
+            if (iAttrs.uploaderType == 'Inline'){
+                jQuery('.close-upload-modal').hide();
             }
             if (!iAttrs.allowedExtensions) {
                 iAttrs.allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip', 'tar', 'gz', 'docx', 'doc'];
@@ -167,12 +160,14 @@
                 });
                 $J('#uploader-modal-' + iAttrs.uploaderId).modal('show');
             });
+            $J(this).removeAttr('disabled');
 
             $J('#uploader-modal-' + iAttrs.uploaderId).find(' .close-upload-modal').bind('click', function () {
                 $J('#uploader-modal-' + iAttrs.uploaderId).modal('hide');
             });
 
-            $J('#uploader-modal-' + iAttrs.uploaderId).on('hidden.bs.modal', function () {
+
+            var uploadFinished = function () {
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').removeClass('disabled');
                 var callback = iAttrs.onFileUploaded;
                 if (callback){
@@ -212,7 +207,9 @@
                     uploader.settings.url = iAttrs.plUrl + '&csrf=' + cx.variables.get('csrf');
                 }
 
-            });
+            };
+
+            $J('#uploader-modal-' + iAttrs.uploaderId).on('hidden.bs.modal',uploadFinished);
 
             uploader.bind('Error', function (up, err) {
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .drag-zone').addClass('fileError');
@@ -279,7 +276,6 @@
                     preloader.onload = function () {
                         preloader.downsize(120, 120);
                         image.attr("src", preloader.getAsDataURL());
-
                     };
                     preloader.load(file.getSource());
                 });
@@ -335,8 +331,12 @@
 
             uploader.bind('UploadComplete', function () {
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').removeClass('disabled');
+                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .close-upload-modal').show();
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .close-upload-modal').removeClass('not-finished');
                 uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_upload', '', 'remove', true);
+                if (iAttrs.uploaderType == 'Inline'){
+                    uploadFinished();
+                }
             });
 
             uploader.init();
