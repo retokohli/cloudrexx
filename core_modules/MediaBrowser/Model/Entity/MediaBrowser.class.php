@@ -114,4 +114,26 @@ class MediaBrowser extends EntityBase
         ));
         return $button->get();
     }
+
+    /**
+     * Add a class to the button
+     *
+     * @param $class
+     *
+     * @return self
+     */
+    public function addClass($class) {
+        $this->addOption('option', $class);
+        return $this;
+    }
+
+
+    protected function addOption($optionName, $value) {
+        $option  = $this->getOption($optionName);
+        $optionValues = explode(' ', $option);
+        if (!in_array($value, $optionValues)) {
+            $optionValues[] = $value;
+        }
+        $this->setOptions(array($optionName => implode(' ', $optionValues)));
+    }
 }

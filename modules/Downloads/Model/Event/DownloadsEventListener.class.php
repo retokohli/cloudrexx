@@ -28,16 +28,10 @@ class DownloadsEventListener extends DefaultEventListener
         MediaSourceManager $mediaBrowserConfiguration
     ) {
         global $_ARRAYLANG;
-        $mediaType = new MediaSource();
-        $mediaType->setName('downloads');
-        $mediaType->setHumanName($_ARRAYLANG['TXT_FILEBROWSER_DOWNLOADS']);
-        $mediaType->setDirectory(
-            array(
-                $this->cx->getWebsiteImagesDownloadsPath(),
-                $this->cx->getWebsiteImagesDownloadsWebPath(),
-            )
-        );
-        $mediaType->setAccessIds(array(141));
+        $mediaType = new MediaSource('downloads',$_ARRAYLANG['TXT_FILEBROWSER_DOWNLOADS'],array(
+            $this->cx->getWebsiteImagesDownloadsPath(),
+            $this->cx->getWebsiteImagesDownloadsWebPath(),
+        ),array(141));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 

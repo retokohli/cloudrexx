@@ -13,13 +13,12 @@ namespace Cx\Core_Modules\MediaBrowser\Controller;
 
 use Cx\Core\ContentManager\Model\Entity\Page;
 use Cx\Core\Core\Controller\Cx;
+use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
-use \Cx\Core\Json\JsonAdapter;
+use Cx\Core\Json\JsonAdapter;
 use Cx\Core\Json\JsonData;
 use Cx\Core\Routing\NodePlaceholder;
 use Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator;
-use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
-use Cx\Lib\FileSystem\FileSystem;
 
 /**
  * JSON Adapter for Uploader
@@ -32,16 +31,21 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
 
     /**
      * Cx instance
+     *
      * @var Cx
      */
     protected $cx;
 
+    protected $message;
+
     /**
      * Instantiates the object
+     *
+     * @param SystemComponent $systemComponent
+     * @param Cx              $cx
      */
-    function __construct()
-    {
-        $this->cx = Cx::instanciate();
+    function __construct(SystemComponent $systemComponent, Cx $cx) {
+        $this->cx = $cx;
     }
 
     /**
@@ -49,8 +53,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return String Name of this adapter
      */
-    public function getName()
-    {
+    public function getName() {
         return 'MediaBrowser';
     }
 
@@ -59,9 +62,11 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return array List of method names
      */
-    public function getAccessableMethods()
-    {
-        return array('getFiles', 'getSites', 'getSources', 'createThumbnails', 'folderWidget', 'removeFile');
+    public function getAccessableMethods() {
+        return array(
+            'getFiles', 'getSites', 'getSources', 'createThumbnails',
+            'createDir', 'renameFile', 'removeFile', 'folderWidget'
+        );
     }
 
     /**
@@ -69,9 +74,8 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return String HTML encoded error messages
      */
-    public function getMessagesAsString()
-    {
-        return '';
+    public function getMessagesAsString() {
+        return $this->message;
     }
 
     /**
@@ -79,36 +83,29 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return array
      */
-    public function getSources()
-    {
-        global $_ARRAYLANG, $_CORELANG;
+    public function getSources() {
         $mediaSourceManager = $this->cx->getMediaSourceManager();
-
-        \Env::get('init')->loadLanguageData('MediaBrowser');
-        // standard
-
-
-        \Env::get('init')->loadLanguageData('FileBrowser');
+        $sources            = array();
         foreach (
             $mediaSourceManager->getMediaTypes() as $type =>
-            $name
+            $mediaSource
         ) {
-            if (!$this->_checkForModule($type)) {
-                continue;
-            }
-            $return[] = array(
-                'name' => $name->getHumanName(),
+            $sources[] = array(
+                'name' => $mediaSource->getHumanName(),
                 'value' => $type,
                 'path' => array_values(
                     array_filter(
                         explode(
-                            '/', $mediaSourceManager->getMediaTypePathsbyNameAndOffset($type,1)
+                            '/',
+                            $mediaSourceManager->getMediaTypePathsbyNameAndOffset(
+                                $type, 1
+                            )
                         )
                     )
                 )
             );
         }
-        return $return;
+        return $sources;
     }
 
     /**
@@ -118,138 +115,14 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return array
      */
-    public function getFiles($params)
-    {
-        $filePath = (strlen($params['get']['path']) > 0)
+    public function getFiles($params) {
+        $filePath  = (strlen($params['get']['path']) > 0)
             ? $params['get']['path'] : '/';
         $mediaType = (strlen($params['get']['mediatype']) > 0)
             ? $params['get']['mediatype'] : 'files';
 
-        /* paramas
-          current $path
-          current $strPath
-
-         */
-
-        if (array_key_exists(
-            $mediaType,
-            $this->cx->getMediaSourceManager()->getMediaTypePaths()
-        )) {
-            $strPath = $this->cx->getMediaSourceManager()->getMediaTypePaths();
-             $strPath=    $strPath[$mediaType][0] . $filePath;
-        } else {
-            $strPath = $this->cx->getWebsiteImagesPath() . $filePath;
-        }
-
-        $recursiveIteratorIterator = new \RegexIterator(
-            new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($strPath),
-                \RecursiveIteratorIterator::SELF_FIRST
-            ), '/^((?!thumb_[a-z]+).)*$/'
-        );
-
-        $jsonFileArray = array();
-
-        $thumbnailList = UploaderConfiguration::getInstance()->getThumbnails();
-
-        foreach ($recursiveIteratorIterator as $file) {
-            /**
-             * @var $file \SplFileInfo
-             */
-            $extension = 'Dir';
-            if (!$file->isDir()) {
-                $extension = ucfirst(
-                    pathinfo($file->getFilename(), PATHINFO_EXTENSION)
-                );
-            }
-            $filePathinfo = pathinfo($file->getRealPath());
-
-            $fileNamePlain = $filePathinfo['filename'];
-            // set preview if image
-            $preview = 'none';
-
-
-            $thumbnails = array();
-            if (preg_match("/(jpg|jpeg|gif|png)/i", ucfirst($extension))) {
-
-                foreach (
-                    UploaderConfiguration::getInstance()->getThumbnails() as
-                    $thumbnail
-                ) {
-                    $thumbnails[$thumbnail['size']] = preg_replace(
-                        '/\.' . lcfirst($extension) . '$/',
-                        $thumbnail['value'] . '.' . lcfirst($extension),
-                        $this->cx->getWebsiteOffsetPath() . str_replace(
-                            $this->cx->getWebsitePath(), '',
-                            $file->getRealPath()
-                        )
-                    );
-                }
-                $preview = current($thumbnails);
-            }
-
-            $fileInfos = array(
-                'filepath' => mb_strcut(
-                    $file->getPath() . '/' . $file->getFilename(),
-                    mb_strlen($this->cx->getWebsitePath())
-                ),
-                // preselect in mediabrowser or mark a folder
-                'name' => $file->getFilename(),
-                'size' => $this->formatBytes($file->getSize()),
-                'cleansize' => $file->getSize(),
-                'extension' => ucfirst(mb_strtolower($extension)),
-                'preview' => $preview,
-                'active' => false, // preselect in mediabrowser or mark a folder
-                'type' => $file->getType(),
-                'thumbnail' => $thumbnails
-            );
-
-            // filters
-            if (
-                $fileInfos['name'] == '.'
-                || preg_match(
-                    '/\.thumb/', $fileInfos['name']
-                )
-                || $fileInfos['name'] == 'index.php'
-                || (0 === strpos($fileInfos['name'], '.'))
-            ) {
-                continue;
-            }
-
-            // filter thumbnail images
-            $thumbFilter = false;
-            foreach (
-                UploaderConfiguration::getInstance()->getThumbnails() as
-                $thumbnail
-            ) {
-                if (false !== strpos(
-                        $fileInfos['name'], $thumbnail['value'] . '.'
-                    )
-                ) {
-                    $thumbFilter = true;
-                }
-            }
-            if ($thumbFilter) {
-                continue;
-            }
-
-            $path = array(
-                $file->getFilename() => array('datainfo' => $fileInfos)
-            );
-
-
-            for (
-                $depth = $recursiveIteratorIterator->getDepth() - 1;
-                $depth >= 0; $depth--
-            ) {
-                $path = array(
-                    $recursiveIteratorIterator->getSubIterator($depth)->current(
-                    )->getFilename() => $path
-                );
-            }
-            $jsonFileArray = array_merge_recursive($jsonFileArray, $path);
-        }
-        return ($jsonFileArray);
+        $mediaTypes = $this->cx->getMediaSourceManager()->getMediaTypes();
+        return $mediaTypes[$mediaType]->getFileSystem()->getFileList($filePath);
     }
 
     /**
@@ -257,13 +130,12 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return array
      */
-    public function getSites()
-    {
-        $jd = new JsonData();
-        $data = $jd->data(
+    public function getSites() {
+        $jd                   = new JsonData();
+        $data                 = $jd->data(
             'node', 'getTree', array('get' => array('recursive' => 'true'))
         );
-        $pageStack = array();
+        $pageStack            = array();
         $data['data']['tree'] = array_reverse($data['data']['tree']);
         foreach ($data['data']['tree'] as &$entry) {
             $entry['attr']['level'] = 0;
@@ -271,30 +143,32 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         }
         $return = array();
         while (count($pageStack)) {
-            $entry = array_pop($pageStack);
-            $page = $entry['data'][0];
-            $arrPage['level'] = $entry['attr']['level'];
+            $entry              = array_pop($pageStack);
+            $page               = $entry['data'][0];
+            $arrPage['level']   = $entry['attr']['level'];
             $arrPage['node_id'] = $entry['attr']['rel_id'];
-            $children = $entry['children'];
-            $children = array_reverse($children);
+            $children           = $entry['children'];
+            $children           = array_reverse($children);
             foreach ($children as &$entry) {
                 $entry['attr']['level'] = $arrPage['level'] + 1;
                 array_push($pageStack, $entry);
             }
-            $arrPage['catname'] = $page['title'];
-            $arrPage['catid'] = $page['attr']['id'];
-            $arrPage['lang'] = BACKEND_LANG_ID;
+            $arrPage['catname']   = $page['title'];
+            $arrPage['catid']     = $page['attr']['id'];
+            $arrPage['lang']      = BACKEND_LANG_ID;
             $arrPage['protected'] = $page['attr']['protected'];
-            $arrPage['type'] = Page::TYPE_CONTENT;
-            $arrPage['alias'] = $page['title'];
+            $arrPage['type']      = Page::TYPE_CONTENT;
+            $arrPage['alias']     = $page['title'];
             $arrPage['frontend_access_id']
-                = $page['attr']['frontend_access_id'];
+                                          = $page['attr']['frontend_access_id'];
             $arrPage['backend_access_id'] = $page['attr']['backend_access_id'];
-            $jsondata = json_decode($page['attr']['data-href']);
-            $path = $jsondata->path;
+            $jsondata                     = json_decode(
+                $page['attr']['data-href']
+            );
+            $path                         = $jsondata->path;
             if (trim($jsondata->module) != '') {
-                $arrPage['type'] = Page::TYPE_APPLICATION;
-                $module = explode(' ', $jsondata->module, 2);
+                $arrPage['type']       = Page::TYPE_APPLICATION;
+                $module                = explode(' ', $jsondata->module, 2);
                 $arrPage['modulename'] = $module[0];
                 if (count($module) > 1) {
                     $arrPage['cmd'] = $module[1];
@@ -338,44 +212,6 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         return $return;
     }
 
-    /**
-     * Format bytes
-     *
-     * @param        $bytes
-     * @param string $unit
-     * @param int    $decimals
-     *
-     * @return string
-     */
-    protected function formatBytes($bytes, $unit = "", $decimals = 2)
-    {
-        $units = array(
-            'B' => 0, 'KB' => 1, 'MB' => 2, 'GB' => 3, 'TB' => 4,
-            'PB' => 5, 'EB' => 6, 'ZB' => 7, 'YB' => 8
-        );
-
-        $value = 0;
-        if ($bytes > 0) {
-            // Generate automatic prefix by bytes 
-            // If wrong prefix given
-            if (!array_key_exists($unit, $units)) {
-                $pow = floor(log($bytes) / log(1024));
-                $unit = array_search($pow, $units);
-            }
-
-            // Calculate byte value by prefix
-            $value = ($bytes / pow(1024, floor($units[$unit])));
-        }
-
-        // If decimals is not numeric or decimals is less than 0 
-        // then set default value
-        if (!is_numeric($decimals) || $decimals < 0) {
-            $decimals = 2;
-        }
-
-        // Format output
-        return sprintf('%.' . $decimals . 'f ' . $unit, $value);
-    }
 
     /**
      * Create Thumbnails for file
@@ -384,8 +220,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      *
      * @return bool
      */
-    public function createThumbnails($params)
-    {
+    public function createThumbnails($params) {
         if (isset($params['get']['file'])) {
             ThumbnailGenerator::createThumbnailFromPath($params['get']['file']);
             return true;
@@ -394,120 +229,130 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     }
 
     /**
-     * checks whether a module is available and active
-     *
-     * @param $strModuleName
-     *
-     * @return bool
+     * @param $params
      */
-    function _checkForModule($strModuleName)
-    {
-        global $objDatabase;
-        /**
-         * @var $objRS \ADORecordSet
-         */
-        if (($objRS = $objDatabase->SelectLimit(
-                "SELECT `status` FROM " . DBPREFIX . "modules WHERE NAME = '"
-                . $strModuleName
-                . "' AND `is_active` = '1' AND `is_licensed` = '1'", 1
-            )) != false
-        ) {
-            if ($objRS->RecordCount() > 0) {
-                if ($objRS->fields['status'] == 'n') {
-                    return false;
-                }
-                return true;
-            }
-            return true;
-        }
-        return true;
+    public function createDir($params) {
+        $mediaBrowserConfiguration = $this->cx->getMediaSourceManager();
+        $pathArray                 = explode('/', $params['get']['path']);
+        // Shift off the first element of the array to get the media type.
+        $mediaType = array_shift($pathArray);
+        $strPath   = $mediaBrowserConfiguration->getMediaTypePathsbyNameAndOffset(
+            $mediaType, 0
+        );
+        $strPath .= '/' . join('/', $pathArray);
+        $dir        = $params['post']['dir'] . '/';
+        $this->setMessage(
+            $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->createDirectory(
+                $strPath, $dir
+            )
+        );
     }
+
+    /**
+     * @param $params
+     */
+    public function renameFile($params) {
+        \Env::get('init')->loadLanguageData('MediaBrowser');
+        $pathArray = explode('/', $params['get']['path']);
+        // Shift off the first element of the array to get the media type.
+        $mediaType  = array_shift($pathArray);
+        $strPath    = '/' . join('/', $pathArray);
+        $oldName    = $params['post']['oldName'];
+        $newName    = $params['post']['newName'];
+        $this->setMessage(
+            $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->moveFile(
+                new \Cx\Core\MediaSource\Model\Entity\LocalFile(
+                    $strPath . $oldName
+                ), $newName
+            )
+        );
+    }
+
+    /**
+     * @param $params
+     */
+    public function removeFile($params) {
+        global $_ARRAYLANG;
+        \Env::get('init')->loadLanguageData('MediaBrowser');
+        $path      = $params['get']['path'];
+        $filename  = $params['post']['file']['datainfo']['name'];
+        if (isset($filename) && isset($path)){
+            $pathArray = explode('/', $params['get']['path']);
+            // Shift off the first element of the array to get the media type.
+            $mediaType  = array_shift($pathArray);
+            $strPath    = '/' . join('/', $pathArray);
+            $this->setMessage(
+                $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->removeFile(
+                    new \Cx\Core\MediaSource\Model\Entity\LocalFile(
+                        $strPath . $filename
+                    )
+                )
+            );
+        }
+    }
+
 
     /**
      * Returns default permission as object
      *
      * @return Object
      */
-    public function getDefaultPermissions()
-    {
+    public function getDefaultPermissions() {
         // TODO: Implement getDefaultPermissions() method.
     }
 
+
     /**
      * Folder widget
-     * 
+     *
      * @param array $params
-     * 
+     *
      * @return boolean|array
      */
-    public function folderWidget($params)
-    {
+    public function folderWidget($params) {
         \cmsSession::getInstance();
-        
-        $folderWidgetId = isset($params['get']['id']) ? $params['get']['id'] : 0;
-        if (   empty($folderWidgetId)
+
+        $folderWidgetId = isset($params['get']['id']) ? $params['get']['id']
+            : 0;
+        if (empty($folderWidgetId)
             || !isset($_SESSION['MediaBrowser'])
             || !isset($_SESSION['MediaBrowser']['FolderWidget'])
             || !isset($_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId])
         ) {
             return false;
         }
-        
+
         $folder = $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
-        
+
         $arrFileNames = array();
-        if(!file_exists($folder)) {
+        if (!file_exists($folder)) {
             return false;
         }
         $h = opendir($folder);
-        while(false !== ($f = readdir($h))) {
+        while (false !== ($f = readdir($h))) {
             // skip folders and thumbnails
-            if($f == '.' || $f == '..' || preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $f))
+            if ($f == '.' || $f == '..'
+                || preg_match(
+                    "/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i",
+                    $f
+                )
+            ) {
                 continue;
-            if (!is_dir($folder .'/' . $f)) {                
+            }
+            if (!is_dir($folder . '/' . $f)) {
                 array_push($arrFileNames, $f);
             }
         }
         closedir($h);
-        
+
         return $arrFileNames;
     }
 
     /**
-     * Remove the file from Folder widget
-     * 
-     * @param array $params
+     * @param mixed $message
      */
-    public function removeFile($params)
-    {
-        \cmsSession::getInstance();
-        
-        $folderWidgetId = isset($params['get']['widget']) ? $params['get']['widget'] : 0;
-        $fileName       = isset($params['get']['file']) ? $params['get']['file'] : '';
-        if (   empty($folderWidgetId)
-            || empty($fileName)
-            || !isset($_SESSION['MediaBrowser'])
-            || !isset($_SESSION['MediaBrowser']['FolderWidget'])
-            || !isset($_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId])
-            || $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['mode'] == \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget::MODE_VIEW_ONLY
-        ) {
-            return false;
-        }
-        
-        $folder = $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
-        
-        if(!file_exists($folder .'/'. $fileName)) {
-            return false;
-        }
-        
-        try {
-            $objFile = new \Cx\Lib\FileSystem\File($folder .'/'. $fileName);
-            $objFile->delete();
-            return array();
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            \DBG::msg($e->getMessage());
-        }
-        
-        return false;
+    public function setMessage($message) {
+        $this->message = $message;
     }
+
 }

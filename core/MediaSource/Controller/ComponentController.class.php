@@ -10,11 +10,9 @@
 namespace Cx\Core\MediaSource\Controller;
 
 
-use Cx\Core\ContentManager\Model\Entity\Page;
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
-use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
 
 /**
  * Class ComponentController
@@ -38,6 +36,5 @@ class ComponentController
         // does not exist a backend, nor a frontend controller of this component.
         return array();
     }
-
 
 }

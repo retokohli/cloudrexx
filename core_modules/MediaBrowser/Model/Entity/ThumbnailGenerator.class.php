@@ -12,7 +12,7 @@
 namespace Cx\Core_Modules\MediaBrowser\Model\Entity;
 
 use Cx\Core\Core\Controller\Cx;
-use Cx\Core_Modules\MediaBrowser\Model\FileSystem;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
 use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 use Cx\Model\Base\EntityBase;
 
@@ -52,24 +52,23 @@ class ThumbnailGenerator extends EntityBase
      * @return array With all thumbnail types and if they were generated successfully.
      */
     public static function createThumbnail(
-        $path, $fileNamePlain, $fileExtension, \ImageManager $imageManager, $generateThumbnailByRatio = false
-    )
-    {
-        $success = Array();
+        $path, $fileNamePlain, $fileExtension, \ImageManager $imageManager,
+        $generateThumbnailByRatio = false
+    ) {
+        $success = array();
         foreach (
             UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail
         ) {
-            if (FileSystem::fileExists(
-                $path,
+            if (\Cx\Lib\FileSystem\FileSystem::exists(
+                MediaSourceManager::getAbsolutePath($path) . '/' ,
                 $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension
-            )
-            ) {
+            )) {
                 $success[$thumbnail['value']]
                     = self::THUMBNAIL_GENERATOR_NEUTRAL;
                 continue;
             }
             if ($imageManager->_createThumb(
-                FileSystem::getAbsolutePath($path),
+                MediaSourceManager::getAbsolutePath($path),
                 '',
                 $fileNamePlain . '.' . $fileExtension,
                 $thumbnail['size'],
@@ -87,10 +86,9 @@ class ThumbnailGenerator extends EntityBase
         return $success;
     }
 
-    public static function createThumbnailFromPath($filePath)
-    {
-        $cx = Cx::instanciate();
-        $fileInfo = pathinfo($cx->getCodeBaseDocumentRootPath() . $filePath);
+    public static function createThumbnailFromPath($filePath) {
+        $cx       = Cx::instanciate();
+        $fileInfo = pathinfo($cx->getWebsitePath() . $filePath);
         return self::createThumbnail(
             $fileInfo['dirname'] . '/',
             preg_replace('/\.thumb_[a-z]+/i', '', $fileInfo['filename']),

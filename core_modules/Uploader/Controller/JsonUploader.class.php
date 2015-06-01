@@ -53,7 +53,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
      */
     public function getAccessableMethods()
     {
-        return array('upload', 'createDir', 'renameFile', 'removeFile');
+        return array('upload');
     }
 
     /**
@@ -78,12 +78,10 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
     {
         global $_ARRAYLANG;
 
-        if (isset($params['get']['id'])
-            && is_int(
-                intval($params['get']['id'])
-            )
+        $id = null;
+        if (isset($params['get']['id']) && preg_match('/^[a-z0-9]+$/i', $params['get']['id'])
         ) {
-            $id = intval($params['get']['id']);
+            $id = ($params['get']['id']);
             $uploadedFileCount = isset($params['get']['uploadedFileCount']) ? intval($params['get']['uploadedFileCount']) : 0;
             $path = $_SESSION->getTempPath() . '/'.$id.'/';
             $tmpPath = $path;
@@ -95,7 +93,6 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 . '/' . $path_part[1];
 
             $tmpPath = $_SESSION->getTempPath();
-
         } else {
             return array(
                 'OK' => 0,
@@ -206,166 +203,6 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 'file' => $fileLocation
             );
         }
-    }
-
-    public function createDir($params)
-    {
-        global $_ARRAYLANG;
-
-        \Env::get('init')->loadLanguageData('MediaBrowser');
-        $mediaSourceManager
-            = $this->cx->getMediaSourceManager();
-        $mediaSourceManager->getMediaTypes();
-        $pathArray = explode('/', $params['get']['path']);
-        $strPath = $mediaSourceManager->getMediaTypePathsbyNameAndOffset(array_shift($pathArray),0);
-
-
-        $strPath .= '/' . join('/', $pathArray);
-        $dir = $params['post']['dir'] . '/';
-
-        if (preg_match('#^[0-9a-zA-Z_\-\/]+$#', $dir)) {
-            if (!FileSystem::make_folder($strPath . '/' . $dir)) {
-                $this->setMessage(
-                    sprintf(
-                        $_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'],
-                        $dir
-                    )
-                );
-                return;
-            } else {
-                $this->setMessage(
-                    sprintf(
-                        $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULLY_CREATED'],
-                        $dir
-                    )
-                );
-                return;
-            }
-        } else {
-            if (!empty($dir)) {
-                // error: TXT_FILEBROWSER_INVALID_CHARACTERS
-                $this->setMessage(
-                    $_ARRAYLANG['TXT_FILEBROWSER_INVALID_CHARACTERS']
-                );
-                return;
-            }
-        }
-
-        $this->setMessage(
-            sprintf(
-                $_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'], $dir
-            )
-        );
-        return;
-    }
-
-    /**
-     * @param $params
-     */
-    public function renameFile($params)
-    {
-        global $_ARRAYLANG;
-        $fileArray = explode('.', $params['post']['oldName']);
-        $fileExtension = '';
-        if (count($fileArray) != 1) {
-            $fileExtension = end($fileArray);
-        }
-        \Env::get('init')->loadLanguageData('MediaBrowser');
-        $strPath = $this->cx->getMediaSourceManager()->getMediaTypePathsbyNameAndOffset(rtrim($params['get']['path'], "/"),0);
-
-        $fileDot = '.';
-        if (is_dir($strPath . '/' . $params['post']['oldName'])) {
-            $fileDot = '';
-        }
-
-        try {
-            \Cx\Core_Modules\MediaBrowser\Model\FileSystem::moveFile(
-                $strPath . '/',
-                $strPath . '/',
-                $params['post']['oldName'],
-                $params['post']['newName'],
-                false
-            );
-        } catch (MoveFileException $e) {
-            $this->setMessage(
-                sprintf(
-                    $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULLY_RENAMED'],
-                    $params['post']['oldName']
-                )
-            );
-            return;
-        }
-        $this->setMessage(
-            sprintf(
-                $_ARRAYLANG['TXT_FILEBROWSER_FILE_SUCCESSFULLY_RENAMED'],
-                $params['post']['oldName']
-            )
-        );
-    }
-
-    /**
-     * @param $params
-     */
-    public function removeFile($params)
-    {
-        global $_ARRAYLANG;
-
-        \Env::get('init')->loadLanguageData('MediaBrowser');
-        $strPath = \Cx\Core_Modules\MediaBrowser\Model\FileSystem::getAbsolutePath($params['get']['path']);
-
-        if (!empty($params['post']['file']['datainfo']['name'])
-            && !empty($strPath)
-        ) {
-            if (is_dir(
-                $strPath . '/' . $params['post']['file']['datainfo']['name']
-            )) {
-                try {
-                    \Cx\Core_Modules\MediaBrowser\Model\FileSystem::removeDirectory(
-                        $strPath, $params['post']['file']['datainfo']['name']
-                    );
-                    $this->setMessage(
-                        sprintf(
-                            $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULLY_REMOVED'],
-                            $params['post']['file']['datainfo']['name']
-                        )
-                    );
-                } catch (RemoveDirectoryException $e) {
-                    $this->setMessage(
-                        sprintf(
-                            $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_UNSUCCESSFULLY_REMOVED'],
-                            $params['post']['file']['datainfo']['name']
-                        )
-                    );
-                }
-                return;
-            } else {
-                try {
-                    \Cx\Core_Modules\MediaBrowser\Model\FileSystem::removeFile(
-                        $strPath, $params['post']['file']['datainfo']['name']
-                    );
-                    $this->setMessage(
-                        sprintf(
-                            $_ARRAYLANG['TXT_FILEBROWSER_FILE_SUCCESSFULLY_REMOVED'],
-                            $params['post']['file']['datainfo']['name']
-                        )
-                    );
-                } catch (RemoveFileException $e) {
-                    $this->setMessage(
-                        sprintf(
-                            $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULLY_REMOVED'],
-                            $params['post']['file']['datainfo']['name']
-                        )
-                    );
-                }
-                return;
-            }
-        }
-        $this->setMessage(
-            sprintf(
-                $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULLY_REMOVED'],
-                $params['post']['file']['datainfo']['name']
-            )
-        );
     }
 
 

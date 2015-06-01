@@ -38,3 +38,5 @@ $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_ERROR_104'] = "Unzulässiger oder unbekann
 $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_ERROR_105'] = "Unzulässiger oder unbekannter Dateityp.";
 $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_ERROR_101'] = "Datei zu gross.";
 $_ARRAYLANG['TXT_CORE_MODULE_UPLOADER_ERROR_103'] = "Datei zu gross.";
+
+require_once 'frontend.php';

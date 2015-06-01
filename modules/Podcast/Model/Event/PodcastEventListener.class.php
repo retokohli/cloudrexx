@@ -1,7 +1,6 @@
 <?php
 
 /**
- * Class PodcastEventListener
  * EventListener for Podcast
  * 
  * @copyright   Comvation AG
@@ -56,14 +55,10 @@ class PodcastEventListener extends DefaultEventListener {
     public function mediasourceLoad(MediaSourceManager $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
-        $mediaType = new MediaSource();
-        $mediaType->setName('podcast');
-        $mediaType->setHumanName($_ARRAYLANG['TXT_FILEBROWSER_PODCAST']);
-        $mediaType->setDirectory(array(
+        $mediaType = new MediaSource('podcast',$_ARRAYLANG['TXT_FILEBROWSER_PODCAST'],array(
             $this->cx->getWebsiteImagesPodcastPath(),
             $this->cx->getWebsiteImagesPodcastWebPath(),
-        ));
-        $mediaType->setAccessIds(array(87));
+        ),array(87));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 }

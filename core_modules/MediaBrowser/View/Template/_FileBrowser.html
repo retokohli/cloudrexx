@@ -68,18 +68,16 @@
                                 >{{file.datainfo.name}}</a>
                     </td>
 
-                    <td class="fileSize" width="18%" class="col_4">
+                    <td class="fileSize col_4" width="18%">
                         <span data-ng-hide="file.datainfo.extension == 'Dir'">
                         {{file.datainfo.size}}
                         </span>
                     </td>
-                    <td class="actions" width="30%" class="col_3">
-
+                    <td class="actions col_3" width="5%">
                         <a data-ng-click="renameFile(file, $index)" class="renameFile">
-                            {{ 'TXT_FILEBROWSER_FILE_RENAME' | translate }}
+
                         </a>
                         <a data-ng-click="removeFile(file, $index)" class="removeFile">
-                            {{ 'TXT_FILEBROWSER_FILE_REMOVE' | translate }}
                         </a>
                     </td>
                 </tr>

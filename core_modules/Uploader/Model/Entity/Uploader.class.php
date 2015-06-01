@@ -35,6 +35,9 @@ class Uploader extends EntityBase
      */
     protected $id;
 
+    const UPLOADER_TYPE_MODAL = 'Modal';
+    const UPLOADER_TYPE_INLINE = 'Inline';
+
     /**
      * @var Array
      */
@@ -46,7 +49,7 @@ class Uploader extends EntityBase
     protected $cx;
 
     public static $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip', 'tar', 'gz', 'docx', 'doc');
-    
+
     function __construct()
     {
         $this->cx = Cx::instanciate();
@@ -58,9 +61,10 @@ class Uploader extends EntityBase
             $_SESSION['uploader']['handlers'] = array();
         }
 
-
-        $lastKey = count($_SESSION['uploader']['handlers']);
-        $i       = $lastKey++;
+        $i       = self::generateId();
+//
+//        $lastKey = count($_SESSION['uploader']['handlers']);
+//        $i       = $lastKey++;
 
         $_SESSION['uploader']['handlers'][$i] = array('active' => true);
 
@@ -68,8 +72,9 @@ class Uploader extends EntityBase
 
         $this->options = array(
             'data-pl-upload',
-            'data-uploader-id'   => $this->id,
-            'class'              => "uploader-button button",
+            'data-uploader-id' => $this->id,
+            'class' => "uploader-button button",
+            'uploader-type' => self::UPLOADER_TYPE_MODAL,
             'allowed-extensions' => self::$allowedExtensions
         );
     }
@@ -99,7 +104,7 @@ class Uploader extends EntityBase
     function setOptions($options)
     {
         $this->options = array_merge($this->options, $options);
-        
+
         if (!isset($_SESSION['uploader']['handlers'])) {
             $_SESSION['uploader']['handlers'] = array();
         }
@@ -109,7 +114,7 @@ class Uploader extends EntityBase
         if (!isset($_SESSION['uploader']['handlers'][$this->id]['config'])) {
             $_SESSION['uploader']['handlers'][$this->id]['config'] = array();
         }
-            
+
         //set upload file limit
         if (isset($this->options['upload-limit'])) {
             $_SESSION['uploader']['handlers'][$this->id]['config']['upload-limit'] = $this->options['upload-limit'];
@@ -165,11 +170,21 @@ class Uploader extends EntityBase
      */
     function getXHtml($buttonName = "Upload")
     {
-        $path = $this->cx->getCodeBaseCoreModulePath() . '/Uploader/View/Template/Backend/Uploader.html';
-        $objFile = new File($path);
-        return '<button ' . $this->getOptionsString() . ' >' . $buttonName . '</button>' . str_replace(
-            '{UPLOADER_ID}', $this->id, $objFile->getData()
+        $path = $this->cx->getCodeBaseCoreModulePath() . '/Uploader/View/Template/Backend/Uploader'.$this->options['uploader-type'].'.html';
+        $template = new Sigma();
+        $template->loadTemplateFile($path);
+        $template->setVariable(
+            array(
+                'UPLOADER_ID' => $this->id,
+                'UPLOADER_CODE' =>
+                    file_get_contents($this->cx->getCodeBaseCoreModulePath()
+                        . '/Uploader/View/Template/Backend/Uploader.html')
+            )
         );
+        if ($this->options['uploader-type'] == self::UPLOADER_TYPE_INLINE){
+            $this->addClass('uploader-button-hidden');
+        }
+        return '<button ' . $this->getOptionsString() . ' disabled>' . $buttonName . '</button>' . $template->get();
     }
 
     /**
@@ -215,10 +230,7 @@ class Uploader extends EntityBase
 
     /**
      * Add additional data for the uploader
-     *
      * @param $data
-     *
-     * @return $this
      */
     public function setData($data)
     {
@@ -230,6 +242,33 @@ class Uploader extends EntityBase
         }
         $_SESSION['uploader']['handlers'][$this->id]['data'] = $data;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType() {
+        return $this->options['uploader-type'];
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType($type) {
+        $this->options['uploader-type'] = $type;
+    }
+
+    public static function generateId(){
+        $uploaders = $_SESSION['uploader']['handlers'];
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $randstring = '';
+        for ($i = 0; $i < 10; $i++) {
+            $randstring .= $characters[rand(0, strlen($characters))];
+        }
+        if (array_key_exists($randstring, $uploaders)){
+            return self::generateId();
+        }
+        return $randstring;
     }
 
 } 
