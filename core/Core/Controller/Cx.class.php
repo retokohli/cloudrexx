@@ -1324,8 +1324,13 @@ namespace Cx\Core\Core\Controller {
                         throw new \Exception('Command \'' . $command . '\' does not exist');
                     }
 
+                    $objCommand = $this->commands[$command];
+                    //Check the access permission for the command.                    
+                    if(!$objCommand->hasAccessToExecuteCommand($command, $params)) {
+                        throw new \Exception('The command ' . $command . ' has been rejected by not complying to the permission requirements of the requested method.');
+                    }
                     // execute command
-                    $this->commands[$command]->executeCommand($command, $params);
+                    $objCommand->executeCommand($command, $params);
                     return;
                 } catch (\Exception $e) {
                     throw new \Exception($e);

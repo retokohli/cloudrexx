@@ -55,8 +55,8 @@ cx(.bat) uninstall [core|core_module|module|lib|theme] {component name}';
         return '';
     }
 
-    public function executeCommand($command, $arguments) {
-        parent::executeCommand($command, $arguments);
+    public function executeCommand($command, $arguments)
+    {
         
         switch ($command) {
             case 'help':

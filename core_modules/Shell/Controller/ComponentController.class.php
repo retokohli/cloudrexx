@@ -33,9 +33,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
-    public function executeCommand($command, $arguments) {
-        parent::executeCommand($command, $arguments);
-        
+    public function executeCommand($command, $arguments)
+    {
         //\DBG::activate(DBG_PHP);
         if ($command == 'exit') {
             $this->userWantsExit = true;

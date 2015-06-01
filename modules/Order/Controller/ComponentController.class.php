@@ -70,8 +70,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function executeCommand($command, $arguments) 
     {
-        parent::executeCommand($command, $arguments);
-        
         $subcommand = null;
         if (!empty($arguments[0])) {
             $subcommand = $arguments[0];
