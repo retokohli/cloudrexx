@@ -653,9 +653,19 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 }
             }
         }
-
-        $objCategorySelector = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_order_rel_forms_selectors SET `selector_order`='".intval($arrData['selectorOrder'][1])."', `exp_search`='".intval($arrData['selectorExpSearch'][1])."' WHERE `selector_id`='9' AND `form_id`='".$this->intFormId."'");
-        $objLevelSelector = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_order_rel_forms_selectors SET `selector_order`='".intval($arrData['selectorOrder'][2])."', `exp_search`='".intval($arrData['selectorExpSearch'][2])."' WHERE `selector_id`='10' AND `form_id`='".$this->intFormId."'");
+        
+        $selectorOrder = $selectorOrder2 = $selectorExpSearch = $selectorExpSearch2 = 0;
+        if (isset($arrData['selectorOrder'])) {
+            $selectorOrder = isset($arrData['selectorOrder'][1]) ? $arrData['selectorOrder'][1] : 0; 
+            $selectorOrder2 = isset($arrData['selectorOrder'][2]) ? $arrData['selectorOrder'][2] : 0;
+        }
+        if (isset($arrData['selectorExpSearch'])) {
+            $selectorExpSearch = isset($arrData['selectorExpSearch'][1]) ? $arrData['selectorExpSearch'][1] : 0;
+            $selectorExpSearch2 = isset($arrData['selectorExpSearch'][2]) ? $arrData['selectorExpSearch'][2] : 0;
+        }        
+        
+        $objCategorySelector = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_order_rel_forms_selectors SET `selector_order`='".  contrexx_input2int($selectorOrder)."', `exp_search`='".intval($selectorExpSearch)."' WHERE `selector_id`='9' AND `form_id`='".$this->intFormId."'");
+        $objLevelSelector = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_order_rel_forms_selectors SET `selector_order`='".  contrexx_input2int($selectorOrder2)."', `exp_search`='".intval($selectorExpSearch2)."' WHERE `selector_id`='10' AND `form_id`='".$this->intFormId."'");
 
         if ($objCategorySelector === false || $objLevelSelector === false) {
             return false;
@@ -875,7 +885,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_INPUTFIELD_NAME_LANG_ID' => $arrLang['id'],
                         $this->moduleLangVar.'_INPUTFIELD_NAME_LANG_SHORTCUT' => $arrLang['lang'],
                         $this->moduleLangVar.'_INPUTFIELD_NAME_LANG_NAME' => $arrLang['name'],
-                        $this->moduleLangVar.'_SETTINGS_INPUTFIELD_NAME' => $arrInputfield['name'][$arrLang['id']],
+                        $this->moduleLangVar.'_SETTINGS_INPUTFIELD_NAME' => isset($arrInputfield['name'][$arrLang['id']]) ? $arrInputfield['name'][$arrLang['id']] : '',
                     ));
                     $objTpl->parse($this->moduleNameLC.'InputfieldNameList');
                 }
@@ -886,7 +896,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_ID' => $arrLang['id'],
                         $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_SHORTCUT' => $arrLang['lang'],
                         $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_NAME' => $arrLang['name'],
-                        $this->moduleLangVar.'_SETTINGS_INPUTFIELD_DEFAULTVALUE' => $arrInputfield['default_value'][$arrLang['id']],
+                        $this->moduleLangVar.'_SETTINGS_INPUTFIELD_DEFAULTVALUE' => isset($arrInputfield['default_value'][$arrLang['id']]) ? $arrInputfield['default_value'][$arrLang['id']] : '',
                     ));
                     $objTpl->parse($this->moduleNameLC.'InputfieldDefaultvalueList');
                 }
@@ -899,7 +909,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 	                    $this->moduleLangVar.'_INPUTFIELD_INFO_LANG_ID' => $arrLang['id'],
 	                    $this->moduleLangVar.'_INPUTFIELD_INFO_LANG_SHORTCUT' => $arrLang['lang'],
 	                    $this->moduleLangVar.'_INPUTFIELD_INFO_LANG_NAME' => $arrLang['name'],
-	                    $this->moduleLangVar.'_SETTINGS_INPUTFIELD_INFO' => $arrInputfield['info'][$arrLang['id']],
+	                    $this->moduleLangVar.'_SETTINGS_INPUTFIELD_INFO' => isset($arrInputfield['info'][$arrLang['id']]) ? $arrInputfield['info'][$arrLang['id']] : '',
 	                ));
                     $objTpl->parse($this->moduleNameLC.'InputfieldInfoList');
                 }

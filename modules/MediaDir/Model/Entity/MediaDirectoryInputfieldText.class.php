@@ -63,22 +63,22 @@ class MediaDirectoryInputfieldText extends \Cx\Modules\MediaDir\Controller\Media
                             $arrValue[intval($objInputfieldValue->fields['lang_id'])] = contrexx_raw2xhtml($objInputfieldValue->fields['value']);
                             $objInputfieldValue->MoveNext();
                         }
-                        $arrValue[0] = $arrValue[$_LANGID];
+                        $arrValue[0] = isset($arrValue[$_LANGID]) ? $arrValue[$_LANGID] : null;
                     }
                 } else {
                     $arrValue = null;
                 }
 
                 if(empty($arrValue)) {
-                	foreach($arrInputfield['default_value'] as $intLangKey => $strDefaultValue) {
-                		$strDefaultValue = empty($strDefaultValue) ? $arrInputfield['default_value'][0] : $strDefaultValue;
-                	    if(substr($strDefaultValue,0,2) == '[[') {
+                    foreach($arrInputfield['default_value'] as $intLangKey => $strDefaultValue) {
+                        $strDefaultValue = empty($strDefaultValue) ? $arrInputfield['default_value'][0] : $strDefaultValue;
+                        if(substr($strDefaultValue,0,2) == '[[') {
                             $objPlaceholder = new \Cx\Modules\MediaDir\Controller\MediaDirectoryPlaceholder($this->moduleName);
                             $arrValue[$intLangKey] = $objPlaceholder->getPlaceholder($strDefaultValue);
                         } else {
                             $arrValue[$intLangKey] = $strDefaultValue;
                         }
-                	}
+                    }
                 }
 
                 $arrInfoValue = array();
@@ -106,7 +106,7 @@ class MediaDirectoryInputfieldText extends \Cx\Modules\MediaDir\Controller\Media
                             $minimize = "";
                         }
 
-                        $strInputfield .= '<input type="text" data-id="'.$intId.'" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'" value="'.$arrValue[$intLangId].'" style="width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\''. \Env::get('cx')->getCodeBaseOffsetPath() . \Env::get('cx')->getCoreFolderName().'/Country/View/Media/Flag/flag_'.$arrLang['lang'].'.gif\') no-repeat 3px 3px;" onfocus="this.select();" />&nbsp;'.$arrLang['name'].'&nbsp;'.$minimize.'<br />';
+                        $strInputfield .= '<input type="text" data-id="'.$intId.'" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'" value="'. isset($arrValue[$intLangId]) ? $arrValue[$intLangId] : '' .'" style="width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\''. \Env::get('cx')->getCodeBaseOffsetPath() . \Env::get('cx')->getCoreFolderName().'/Country/View/Media/Flag/flag_'.$arrLang['lang'].'.gif\') no-repeat 3px 3px;" onfocus="this.select();" />&nbsp;'.$arrLang['name'].'&nbsp;'.$minimize.'<br />';
                     }                    
                     $strInputfield .= '</div>';
                 } else {
