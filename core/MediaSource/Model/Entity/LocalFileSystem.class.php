@@ -280,44 +280,51 @@ class LocalFileSystem implements FileSystem
         File $file, $destination
     ) {
         global $_ARRAYLANG;
-
-        if ($file->getExtension() == ''
-            && is_dir(
-                $this->rootPath . ltrim($file->getPath(), '.') . '/'
-                . $file->getName()
+        if (!empty($destination)) {
+            if ($file->getExtension() == ''
+                && is_dir(
+                    $this->rootPath . ltrim($file->getPath(), '.') . '/'
+                    . $file->getName()
+                )
+            ) {
+                $fileName            =
+                    $this->rootPath . ltrim($file->getPath(), '.') . '/'
+                    . $file->getName();
+                $destinationFileName =
+                    $this->rootPath . ltrim($file->getPath(), '.') . '/'
+                    . $destination;
+            } else {
+                $fileName            =
+                    $this->rootPath . ltrim($file->getPath(), '.') . '/'
+                    . $file->getName()
+                    . '.' . $file->getExtension();
+                $destinationFileName =
+                    $this->rootPath . ltrim($file->getPath(), '.') . '/'
+                    . $destination
+                    . '.'
+                    . $file->getExtension();
+            }
+            if (!\Cx\Lib\FileSystem\FileSystem::move(
+                $fileName, $destinationFileName
+                , false
             )
-        ) {
-            $fileName            =
-                $this->rootPath . ltrim($file->getPath(), '.') . '/'
-                . $file->getName();
-            $destinationFileName =
-                $this->rootPath . ltrim($file->getPath(), '.') . '/'
-                . $destination;
-        } else {
-            $fileName            =
-                $this->rootPath . ltrim($file->getPath(), '.') . '/'
-                . $file->getName()
-                . '.' . $file->getExtension();
-            $destinationFileName =
-                $this->rootPath . ltrim($file->getPath(), '.') . '/'
-                . $destination
-                . '.'
-                . $file->getExtension();
+            ) {
+                return sprintf(
+                    $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULLY_RENAMED'],
+                    $file->getName()
+                );
+            }
+            return sprintf(
+                $_ARRAYLANG['TXT_FILEBROWSER_FILE_SUCCESSFULLY_RENAMED'],
+                $file->getName()
+            );
         }
-        if (!\Cx\Lib\FileSystem\FileSystem::move(
-            $fileName, $destinationFileName
-            , false
-        )
-        ) {
+        else {
             return sprintf(
                 $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULLY_RENAMED'],
                 $file->getName()
             );
         }
-        return sprintf(
-            $_ARRAYLANG['TXT_FILEBROWSER_FILE_SUCCESSFULLY_RENAMED'],
-            $file->getName()
-        );
     }
 
     public function writeFile(
