@@ -318,12 +318,12 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
         $objFWUser = \FWUser::getFWUserObject();
         $intToday = mktime();
-
+        
+        $i = 0;
         switch ($intView) {
             case 1:
                 //Backend View
                 if(!empty($this->arrEntries)){
-					$i = 0;
                     foreach ($this->arrEntries as $key => $arrEntry) {
                         if(intval($arrEntry['entryAddedBy']) != 0) {
                             if ($objUser = $objFWUser->objUser->getUser(intval($arrEntry['entryAddedBy']))) {
