@@ -34,6 +34,9 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
     public $arrLevels = array();
 
+    private $strNotSelectedOptions = '';
+    private $strSelectedOptions = '';
+    
     /**
      * Constructor
      */
@@ -396,7 +399,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 	
                     $spacer = null;
                     $intSpacerSize = null;
-                    $strOptionId = $arrCategory['catId'];
 
                      //generate space
                     $intSpacerSize = (count($arrParentIds));
@@ -409,9 +411,9 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     }
 
                     if(in_array($arrLevel['levelId'], $this->arrSelectedLevels)) {
-                      $this->strSelectedOptions .= '<option name="'.$strOptionId.'" value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
+                        $this->strSelectedOptions .= '<option value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
                     } else {
-                      $this->strNotSelectedOptions .= '<option name="'.$strOptionId.'" value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
+                        $this->strNotSelectedOptions .= '<option value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
                     }
 
                     if(!empty($arrLevel['levelChildren'])) {
