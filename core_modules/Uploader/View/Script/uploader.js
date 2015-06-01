@@ -115,7 +115,8 @@
                 prevent_duplicates: true,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
-                }
+                },
+                chunk_size: '500kb'
             };
 
 

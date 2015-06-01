@@ -77,7 +77,6 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
     public function upload($params)
     {
         global $_ARRAYLANG;
-
         $id = null;
         if (isset($params['get']['id']) && preg_match('/^[a-z0-9]+$/i', $params['get']['id'])
         ) {

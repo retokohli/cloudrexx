@@ -336,6 +336,7 @@
                     url: '?csrf=' + cx.variables.get('csrf') + '&cmd=jsondata&object=Uploader&act=upload',
                     flash_swf_url: '/lib/plupload/js/Moxie.swf',
                     silverlight_xap_url: '/lib/plupload/js/Moxie.xap',
+                    chunk_size: '500kb',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     },
@@ -402,7 +403,6 @@
                     }
                 });
             };
-
 
         }]);
 
@@ -482,6 +482,9 @@
                 }
             };
 
+            $scope.escapeString = function(string){
+                return string.replace(/&/g, '&amp;').replace(/'/g, '&apos;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            };
 
             $scope.renameFile = function (file, index) {
                 var splittedFileName = [];
@@ -500,7 +503,7 @@
 
 
                 var renameForm = '<div id="mediabrowser-renamefile">' +
-                    '<div class="file-name"><input type="text" class="form-control" value="' + fileName + '"/></div>' +
+                    '<div class="file-name"><input type="text" class="form-control" value="' + $scope.escapeString(fileName) + '"/></div>' +
                     '<div class="file-dot">.</div>' +
                     '<div class="file-extension"><input type="text" class="form-control" value="' + fileExtension + '" disabled/></div>  </div>';
                 var renameDialog = bootbox.dialog({
