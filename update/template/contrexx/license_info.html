@@ -49,7 +49,7 @@
     <h1 class="first">{TXT_UPDATE_LICENSE_MODEL}</h1>
     Zurzeit verwenden Sie Contrexx <strong>{UPDATE_EDITION}</strong> Version <strong>{UPDATE_VERSION}</strong>.<br />
     <br />
-    Mit der Ausführung dieses Updatevorgangs wird Ihre aktuelle Contrexx Installation auf die Edition <strong>Contrexx 4 Business</strong> (entspricht vollem Leistungsumfang) migriert.<br /><br />
+    Mit der Ausführung dieses Updatevorgangs wird Ihre aktuelle Contrexx Installation auf die Edition <strong>Contrexx 4</strong> (entspricht vollem Leistungsumfang) migriert.<br /><br />
     
     <!-- BEGIN update_license_new -->
     <p>
@@ -59,11 +59,11 @@
 <label for="contactFormFieldId_252">Edition<strong class="is_required">*</strong></label>
 <select class="contactFormClass_select" name="edition" id="contactFormFieldId_252">
 
-<option value="Business Standard">Non-Profit (CHF 19.-/Mnt.)</option>
-
 <option value="Business Standard">Business Standard (CHF 49.-/Mnt.)</option>
 
 <option value="Business Enterprise">Business Enterprise (CHF 349.-/Mnt.)</option>
+
+<option value="Non-Profit">Non-Profit (CHF 19.-/Mnt.)</option>
 
 </select>
 </div>
@@ -82,12 +82,12 @@
     <legend>Zahlungsoptionen</legend>
 <div class="periods-wrapper">
 <div class="prices-periods">
-    <span>
+    <!--<span>
         <input checked="checked" id="monthly" name="period" type="radio" value="monthly" />
         <label for="monthly">Monatlich</label>
-    </span>
+    </span>-->
     <span>
-        <input id="annually" name="period" type="radio" value="annually" />
+        <input checked="checked" id="annually" name="period" type="radio" value="annually" />
         <label for="annually">Jährlich</label>
     </span>
     <span>
@@ -171,7 +171,7 @@ der Comvation AG<br /> gelesen und akzeptiere diese<strong class="is_required">*
     
     <!-- BEGIN update_license_existing -->
     <p>
-        Ihre existierende NonProfit- oder Business-Lizenz wird auf diese Installation
+        Ihre existierende Non-Profit- oder Business-Lizenz wird auf diese Installation
         übernommen.
     </p>
     <p>
