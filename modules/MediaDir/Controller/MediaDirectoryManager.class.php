@@ -326,10 +326,17 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_modify_entry.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRIES'];
-
+        
          //get seting values
         parent::getSettings();
-
+        
+        $intEntryDourationAlways = '';
+        $intEntryDourationPeriod = '';
+        $intEntryDourationShowPeriod = 'none';
+        $intEntryDourationEnd = 0;
+        $intEntryDourationStart = 0;
+        $strOnSubmit = '';
+        
         if(!empty($_GET['id'])) {
             \Permission::checkAccess(MediaDirectoryAccessIDs::ModifyEntry, 'static');
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']. " ".$_ARRAYLANG['TXT_MEDIADIR_EDIT'];
@@ -461,7 +468,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 ));
                 
                 \FWUser::getUserLiveSearch();
-
+                
                 if ($intEntryId != 0) {
                     $intEntryDourationStart = 1;
                     $intEntryDourationEnd = 2;
@@ -531,34 +538,28 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                         $intDiffYear = $this->arrSettings['settingsEntryDisplaydurationValue'];
                         break;
                 }
-
+                
                 if($intEntryId != 0) {
-                	if(intval($objEntry->arrEntries[$intEntryId]['entryDurationType']) == 1) {
-                		$intEntryDourationAlways = 'selected="selected"';
-                		$intEntryDourationPeriod = '';
-                        $intEntryDourationShowPeriod = 'none';
-	                    $intEntryDourationStart = date("d.m.Y", mktime());
+                    if(intval($objEntry->arrEntries[$intEntryId]['entryDurationType']) == 1) {
+                        $intEntryDourationAlways = 'selected="selected"';
+                        $intEntryDourationStart = date("d.m.Y", mktime());
                         $intEntryDourationEnd = date("d.m.Y", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
-                	} else {
-                        $intEntryDourationAlways = '';
+                    } else {
                         $intEntryDourationPeriod = 'selected="selected"';
                         $intEntryDourationShowPeriod = 'inline';
-	                    $intEntryDourationStart = date("d.m.Y", $objEntry->arrEntries[$intEntryId]['entryDurationStart']);
-	                    $intEntryDourationEnd = date("d.m.Y", $objEntry->arrEntries[$intEntryId]['entryDurationEnd']);
-                	}
+                        $intEntryDourationStart = date("d.m.Y", $objEntry->arrEntries[$intEntryId]['entryDurationStart']);
+                        $intEntryDourationEnd = date("d.m.Y", $objEntry->arrEntries[$intEntryId]['entryDurationEnd']);
+                    }
 
-                	if(intval($objEntry->arrEntries[$intEntryId]['entryDurationNotification']) == 1) {
-                		$this->_objTpl->setVariable(array(
-	                        $this->moduleLangVar.'_DISPLAYDURATION_RESET_NOTIFICATION_STATUS' => '<br /><input type="checkbox" name="durationResetNotification" value="1" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS'],
-	                    ));
-                	}
+                    if(intval($objEntry->arrEntries[$intEntryId]['entryDurationNotification']) == 1) {
+                        $this->_objTpl->setVariable(array(
+                            $this->moduleLangVar.'_DISPLAYDURATION_RESET_NOTIFICATION_STATUS' => '<br /><input type="checkbox" name="durationResetNotification" value="1" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS'],
+                        ));
+                    }
                 } else {
                     if(intval($this->arrSettings['settingsEntryDisplaydurationType']) == 1) {
                         $intEntryDourationAlways = 'selected="selected"';
-                        $intEntryDourationPeriod = '';
-                        $intEntryDourationShowPeriod = 'none';
                     } else {
-                        $intEntryDourationAlways = '';
                         $intEntryDourationPeriod = 'selected="selected"';
                         $intEntryDourationShowPeriod = 'inline';
                     }

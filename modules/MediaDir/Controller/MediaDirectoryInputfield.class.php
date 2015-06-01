@@ -227,6 +227,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                     3 => $_ARRAYLANG['TXT_MEDIADIR_SHOW_BACKEND'],
                 );
 
+                $i=0;
+                $intLastId = 0;
                 foreach ($this->arrInputfields as $key => $arrInputfield) {
                     $strMustfield = $arrInputfield['required']==1 ? 'checked="checked"' : '';
                     $strExpSearch = $arrInputfield['search']==1 ? 'checked="checked"' : '';
@@ -836,6 +838,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
             3 => $_ARRAYLANG['TXT_MEDIADIR_SHOW_BACKEND'],
         );
 
+        $i = 0;
+        $intLastId = 0;
         foreach ($this->arrInputfields as $key => $arrInputfield) {
             $strMustfield = $arrInputfield['required']==1 ? 'checked="checked"' : '';
             $strExpSearch = $arrInputfield['search']==1 ? 'checked="checked"' : '';
