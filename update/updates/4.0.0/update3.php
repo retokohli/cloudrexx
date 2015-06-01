@@ -893,6 +893,124 @@ $updatesSp4To310 = array(
             'description'    => array('fields' => array('description'), 'type' => 'FULLTEXT')
         )
     ),
+    array(
+        'table' => DBPREFIX . 'module_calendar',
+        'structure' => array(
+            'id'                           => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'active'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'id'),
+            'catid'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
+            'startdate'                    => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'catid'),
+            'enddate'                      => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'startdate'),
+            'priority'                     => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'enddate'),
+            'access'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
+            'name'                         => array('type' => 'VARCHAR(100)', 'default' => '', 'after' => 'access'),
+            'comment'                      => array('type' => 'TEXT', 'notnull' => true, 'after' => 'name'),
+            'placeName'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'comment'),
+            'link'                         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => 'http://', 'after' => 'placeName'),
+            'pic'                          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
+            'attachment'                   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'pic'),
+            'placeStreet'                  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'attachment'),
+            'placeZip'                     => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeStreet'),
+            'placeCity'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeZip'),
+            'placeLink'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeCity'),
+            'placeMap'                     => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeLink'),
+            'organizerName'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeMap'),
+            'organizerStreet'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerName'),
+            'organizerZip'                 => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerStreet'),
+            'organizerPlace'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerZip'),
+            'organizerMail'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerPlace'),
+            'organizerLink'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerMail'),
+            'key'                          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerLink'),
+            'num'                          => array('type' => 'INT(5)', 'notnull' => true, 'default' => '0', 'after' => 'key'),
+            'mailTitle'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'num'),
+            'mailContent'                  => array('type' => 'TEXT', 'notnull' => true, 'after' => 'mailTitle'),
+            'registration'                 => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'mailContent'),
+            'groups'                       => array('type' => 'TEXT', 'notnull' => true, 'after' => 'registration'),
+            'all_groups'                   => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'groups'),
+            'public'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'all_groups'),
+            'notification'                 => array('type' => 'INT(1)', 'notnull' => true, 'after' => 'public'),
+            'notification_address'         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'notification'),
+            'series_status'                => array('type' => 'TINYINT(4)', 'notnull' => true, 'after' => 'notification_address'),
+            'series_type'                  => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_status'),
+            'series_pattern_count'         => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_type'),
+            'series_pattern_weekday'       => array('type' => 'VARCHAR(7)', 'notnull' => true, 'after' => 'series_pattern_count'),
+            'series_pattern_day'           => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_weekday'),
+            'series_pattern_week'          => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_day'),
+            'series_pattern_month'         => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_week'),
+            'series_pattern_type'          => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_month'),
+            'series_pattern_dourance_type' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_type'),
+            'series_pattern_end'           => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_dourance_type'),
+            'series_pattern_begin'         => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end'),
+            'series_pattern_exceptions'    => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_begin'),
+            'startdate_timestamp'          => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'series_pattern_exceptions'),
+            'enddate_timestamp'            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate_timestamp'),
+        ),
+        'keys' => array(
+            'name' => array('fields' => array('name', 'comment', 'placeName'), 'type' => 'FULLTEXT'),
+        ),
+    ),
+    // backup start and end time as timestamp
+    'UPDATE `'.DBPREFIX.'module_calendar` SET `startdate_timestamp` = FROM_UNIXTIME(`startdate`), `enddate_timestamp` = FROM_UNIXTIME(`enddate`)',
+    array(
+        'table' => DBPREFIX . 'module_calendar',
+        'structure' => array(
+            'id'                           => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'active'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'id'),
+            'catid'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
+            'startdate'                    => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'catid'),
+            'enddate'                      => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate'),
+            'priority'                     => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'enddate'),
+            'access'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
+            'name'                         => array('type' => 'VARCHAR(100)', 'default' => '', 'after' => 'access'),
+            'comment'                      => array('type' => 'TEXT', 'notnull' => true, 'after' => 'name'),
+            'placeName'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'comment'),
+            'link'                         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => 'http://', 'after' => 'placeName'),
+            'pic'                          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
+            'attachment'                   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'pic'),
+            'placeStreet'                  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'attachment'),
+            'placeZip'                     => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeStreet'),
+            'placeCity'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeZip'),
+            'placeLink'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeCity'),
+            'placeMap'                     => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeLink'),
+            'organizerName'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeMap'),
+            'organizerStreet'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerName'),
+            'organizerZip'                 => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerStreet'),
+            'organizerPlace'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerZip'),
+            'organizerMail'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerPlace'),
+            'organizerLink'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerMail'),
+            'key'                          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerLink'),
+            'num'                          => array('type' => 'INT(5)', 'notnull' => true, 'default' => '0', 'after' => 'key'),
+            'mailTitle'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'num'),
+            'mailContent'                  => array('type' => 'TEXT', 'notnull' => true, 'after' => 'mailTitle'),
+            'registration'                 => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'mailContent'),
+            'groups'                       => array('type' => 'TEXT', 'notnull' => true, 'after' => 'registration'),
+            'all_groups'                   => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'groups'),
+            'public'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'all_groups'),
+            'notification'                 => array('type' => 'INT(1)', 'notnull' => true, 'after' => 'public'),
+            'notification_address'         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'notification'),
+            'series_status'                => array('type' => 'TINYINT(4)', 'notnull' => true, 'after' => 'notification_address'),
+            'series_type'                  => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_status'),
+            'series_pattern_count'         => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_type'),
+            'series_pattern_weekday'       => array('type' => 'VARCHAR(7)', 'notnull' => true, 'after' => 'series_pattern_count'),
+            'series_pattern_day'           => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_weekday'),
+            'series_pattern_week'          => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_day'),
+            'series_pattern_month'         => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_week'),
+            'series_pattern_type'          => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_month'),
+            'series_pattern_dourance_type' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_type'),
+            'series_pattern_end'           => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_dourance_type'),
+            'series_pattern_begin'         => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end'),
+            'series_pattern_exceptions'    => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_begin'),
+            'startdate_timestamp'          => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'series_pattern_exceptions'),
+            'enddate_timestamp'            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate_timestamp'),
+        ),
+        'keys' => array(
+            'name' => array('fields' => array('name', 'comment', 'placeName'), 'type' => 'FULLTEXT'),
+        ),
+    ),
+    
+    'UPDATE `'.DBPREFIX.'module_calendar` SET `startdate` = `startdate_timestamp`, `enddate` = `enddate_timestamp`',
+     // remove the temporary columns
+    'ALTER TABLE `'.DBPREFIX.'module_calendar` DROP COLUMN `startdate_timestamp` , DROP COLUMN `enddate_timestamp`',
 );
 
 $updates310To310Sp1 = array(
@@ -2146,6 +2264,18 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
         return $calendarMigration;
     }
     
+    // migrate series pattern end date in calendar event table
+    try {
+        $table_name = DBPREFIX.'module_calendar_event';
+        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
+            && \Cx\Lib\UpdateUtil::column_exist($table_name, 'series_pattern_end_date')
+        ) {
+           \Cx\Lib\UpdateUtil::sql("UPDATE  `$table_name` SET `series_pattern_end_date` = FROM_UNIXTIME(`series_pattern_end`)");
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
     // rewrite backendAreas
     require_once(dirname(__FILE__).'/components/core/backendAreas.php');
     $backendAreasUpdate = _updateBackendAreas();
