@@ -1526,6 +1526,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if (!$resultObj) {
             return;
         }
+        if ($resultObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website && !$resultObj->getFqdn()) {
+            return;
+        }
         $title  = ($serviceServer) ? sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_IN_SERVICE_TITLE'], $resultObj->getHostname()) : sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_TITLE'], $resultObj->getFqdn()->getName());
         $dataId = ($serviceServer) ? 'service:' . $id : 'website:' . $id;
         $cxjs   = \ContrexxJavascript::getInstance();

@@ -1953,12 +1953,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $status = ($website->getStatus() == \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
 
         if($demandedStatus == '' || $demandedStatus == $website->getStatus()){
+            $websiteBaseDn = $website->getBaseDn();
             $objTemplate->setVariable(array(
                 'MULTISITE_WEBSITE_NAME'          => contrexx_raw2xhtml($website->getName()).self::getWebsiteNonOnlineStateAsLiteral($website),
                 'MULTISITE_WEBSITE_ID'            => contrexx_raw2xhtml($website->getId()),
-                'MULTISITE_WEBSITE_LINK'          => contrexx_raw2xhtml(self::getApiProtocol() . $website->getBaseDn()->getName()),
-                'MULTISITE_WEBSITE_BACKEND_LINK'  => contrexx_raw2xhtml(self::getApiProtocol() . $website->getBaseDn()->getName()) . '/cadmin',
-                'MULTISITE_WEBSITE_FRONTEND_LINK' => self::getApiProtocol() . $website->getBaseDn()->getName(),
+                'MULTISITE_WEBSITE_LINK'          => $websiteBaseDn ? contrexx_raw2xhtml(self::getApiProtocol() . $websiteBaseDn->getName()) : '',
+                'MULTISITE_WEBSITE_BACKEND_LINK'  => $websiteBaseDn ? contrexx_raw2xhtml(self::getApiProtocol() . $websiteBaseDn->getName()) . '/cadmin' : '',
+                'MULTISITE_WEBSITE_FRONTEND_LINK' => $websiteBaseDn ? self::getApiProtocol() . $websiteBaseDn->getName() : '',
                 'MULTISITE_WEBSITE_STATE_CLASS'   => $status ? 'active' : (in_array($website->getStatus(), $websiteInitialStatus) ? 'init' : 'inactive'),
             ));
 
