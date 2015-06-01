@@ -163,7 +163,9 @@ if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable')) {
     $sessionObj = \cmsSession::getInstance();
 }
 $sessionObj->cmsSessionStatusUpdate('backend');
-
+if (!isset($_SESSION['contrexx_update'])) {
+    $_SESSION['contrexx_update'] = array();
+}
 // Initialize base system
 $objInit = new InitCMS('update', Env::em());
 Env::set('init', $objInit);
