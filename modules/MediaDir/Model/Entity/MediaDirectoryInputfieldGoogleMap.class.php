@@ -90,7 +90,7 @@ class MediaDirectoryInputfieldGoogleMap extends \Cx\Modules\MediaDir\Controller\
                 $strKey         = $_CONFIG['googleMapsAPIKey'];
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield .= '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleNameLC.'TableGoogleMap">';
+                    $strInputfield  = '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleNameLC.'TableGoogleMap">';
                     $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_STREET'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][street]" id="'.$strStreetId.'" value="'.$strValueStreet.'" onfocus="this.select();" /></td></tr>';
                     $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_CITY'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][place]" id="'.$strZipId.'"  value="'.$strValueZip.'" onfocus="this.select();" /></td></tr>';
                     $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZIP'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][zip]" id="'.$strCityId.'" value="'.$strValueCity.'" onfocus="this.select();" /></td></tr>';

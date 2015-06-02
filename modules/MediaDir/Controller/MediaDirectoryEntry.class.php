@@ -460,15 +460,14 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             $objForm = new MediaDirectoryForm($arrEntry['entryFormId'], $this->moduleName);
 
 	                        $objTpl->setVariable(array(
-	                            $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
+                                    $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
 	                            $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
-	                            $this->moduleLangVar.'_ENTRY_STATUS' => $strStatus,
 	                            $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
 	                            $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
 	                            $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
 	                            $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
-                                $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
-                                $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
+                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
+                                    $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
 	                            $this->moduleLangVar.'_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
 	                            $this->moduleLangVar.'_ENTRY_DETAIL_URL' => $strDetailUrl,
 	                            $this->moduleLangVar.'_ENTRY_EDIT_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd=edit&amp;eid='.$arrEntry['entryId'],

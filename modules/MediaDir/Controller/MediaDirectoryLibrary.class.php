@@ -464,6 +464,7 @@ class MediaDirectoryLibrary
 
     function buildDropdownmenu($arrOptions, $intSelected=null)
     {
+        $strOptions = '';
         foreach ($arrOptions as $intValue => $strName) {
             $checked = $intValue==$intSelected ? 'selected="selected"' : '';
             $strOptions .= "<option value='".$intValue."' ".$checked.">".contrexx_raw2xhtml($strName)."</option>";
