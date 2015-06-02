@@ -664,6 +664,11 @@ namespace Cx\Core\Core\Controller {
                  */
                 $this->postInit();
 
+                /*
+                 * Loads all active components
+                 */
+                $this->loadComponents();
+                
                 /**
                  * Since we have a valid state now, we can start executing
                  * all of the component's hook methods.
@@ -1036,20 +1041,7 @@ namespace Cx\Core\Core\Controller {
                 $filename = $this->getWebsiteConfigPath() . '/preInitHooks.yml';
                 $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
                 foreach ($objDataSet as $componentDefinition) {
-                    $component = new \Cx\Core\Core\Model\Entity\SystemComponent();
-                    $component->setName($componentDefinition['name']);
-                    $component->setType($componentDefinition['type']);
-                    // Initialize ComponentController of component if available,
-                    // otherwise initialize the SystemComponentController
-                    // Implementation taken from method Cx\Core\Core\Model\Repository\SystemComponentRepository::getComponentControllerClassFor()
-                    // as that method shall not be used at this point to prevent the
-                    // system (i.e. the Class Loader) from loading the doctine PHP classes.
-                    if ($this->cl->getFilePath($component->getDirectory(false) . '/Controller/ComponentController.class.php')) {
-                        $componentControllerClass = $component->getNamespace() . '\\Controller\\ComponentController';
-                    } else {
-                        $componentControllerClass = '\\Cx\\Core\\Core\\Model\\Entity\\SystemComponentController';
-                    }
-                    $componentController = new $componentControllerClass($component, $this);
+                    $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
                     $componentController->preInit($this);
                 }
             } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
@@ -1057,6 +1049,50 @@ namespace Cx\Core\Core\Controller {
             }
         }
 
+        /**
+         * Calls post-init hooks
+         * Post-Init hooks are defined in /config/postInitHooks.yml.
+         */
+        protected function callPostInitHooks() {
+            try {
+                $filename = $this->getWebsiteConfigPath() . '/postInitHooks.yml';
+                $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
+                foreach ($objDataSet as $componentDefinition) {
+                    $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
+                    $componentController->postInit($this);
+                }
+            } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
+                throw new \Exception('Error in processing postInit-hooks: '.$e->getMessage());
+            }
+        }
+
+        
+        /**
+         * Get component controller object by given component name and type
+         * 
+         * @param string $componentName component name
+         * @param string $componentType component type
+         * 
+         * @return \Cx\Core\Core\Controller\SystemComponentController
+         */
+        private function getComponentControllerByNameAndType($componentName, $componentType)
+        {
+            $component = new \Cx\Core\Core\Model\Entity\SystemComponent();
+            $component->setName($componentName);
+            $component->setType($componentType);
+            // Initialize ComponentController of component if available,
+            // otherwise initialize the SystemComponentController
+            // Implementation taken from method Cx\Core\Core\Model\Repository\SystemComponentRepository::getComponentControllerClassFor()
+            // as that method shall not be used at this point to prevent the
+            // system (i.e. the Class Loader) from loading the doctine PHP classes.
+            if ($this->cl->getFilePath($component->getDirectory(false) . '/Controller/ComponentController.class.php')) {
+                $componentControllerClass = $component->getNamespace() . '\\Controller\\ComponentController';
+            } else {
+                $componentControllerClass = '\\Cx\\Core\\Core\\Model\\Entity\\SystemComponentController';
+            }
+            return new $componentControllerClass($component, $this);
+        }
+        
         /**
          * This tries to set the memory limit if its lower than 32 megabytes
          */
@@ -1277,8 +1313,8 @@ namespace Cx\Core\Core\Controller {
                 }
             }
             $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
-
-            $this->loadComponents();
+            //call post-init hooks
+            $this->callPostInitHooks();
         }
 
         /**
