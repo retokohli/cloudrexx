@@ -1,0 +1,16 @@
+Cx\Core_Modules\Update\Model\Entity\Delta:
+  type: YamlEntity
+  repositoryClass: Cx\Core_Modules\Update\Model\Repository\DeltaRepository
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    codeBaseId:
+      type: integer
+    rollback:
+      type: boolean
+    offset:
+      type: integer
+      
