@@ -179,6 +179,7 @@ EOF;
         }
 
         $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : $intCategoryId;
+        $strExpandedInputfields = '';
 
         if ($bolShowCategorySelector) {
         	$objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);

@@ -249,6 +249,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
             case 2:
                 //Frontend View
                 $intNumBlocks = count($arrExistingBlocks);
+                $strIndexHeader = '';
 
 
                 if($this->arrSettings['settingsCategoryOrder'] == 2) {

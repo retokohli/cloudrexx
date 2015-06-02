@@ -520,6 +520,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 break;
             case 4:
                 //Exp Search View
+                $strInputfields = '';
                 foreach ($this->arrInputfields as $key => $arrInputfield) {
                     if($this->checkFieldTypeIsExpSeach($arrInputfield['type'])) {
                         if(!empty($arrInputfield['type'])) {
@@ -602,8 +603,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                     if($this->arrInputfields[$intFieldId]['name'][0] == $arrFieldNames[0] && $this->arrInputfields[$intFieldId]['name'][$arrLang['id']] != $arrFieldNames[$arrLang['id']]) {
                         $strFieldName = $arrFieldNames[$_LANGID];
                     }
-
-                    if($this->arrInputfields[$intFieldId]['default_value'][0] == $strFieldDefaultValue[0] && $this->arrInputfields[$intFieldId]['default_value'][$arrLang['id']] != $arrFieldDefaultValues[$arrLang['id']]) {
+                    if($this->arrInputfields[$intFieldId]['default_value'][0] == $strFieldDefaultValue && $this->arrInputfields[$intFieldId]['default_value'][$arrLang['id']] != $arrFieldDefaultValues[$arrLang['id']]) {
                         $strFieldDefaultValue = $arrFieldDefaultValues[$_LANGID];
                     }
 

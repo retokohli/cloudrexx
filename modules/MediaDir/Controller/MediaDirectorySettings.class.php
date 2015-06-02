@@ -571,7 +571,7 @@ EOF;
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleNameLC.'_settings_entries.html');
-
+        
         $objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_SETTINGS_CONFIRM_NEW_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_CONFIRM_NEW_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES_INFO'],
@@ -723,6 +723,9 @@ EOF;
             $strIndividualOrderOff = 'checked="checked"';
         }
 
+        $strDisplaydurationValueTypeDay = '';
+        $strDisplaydurationValueTypeMonth = '';
+        $strDisplaydurationValueTypeYear = '';
 
         if(intval($this->arrSettings['settingsEntryDisplaydurationType']) == 1) {
             $strDisplaydurationAlways = 'selected="selected"';
@@ -734,21 +737,15 @@ EOF;
             $strDisplaydurationPeriod = 'selected="selected"';
             $strDisplaydurationShowPeriod = 'inline';
             $intDisplaydurationValue = intval($this->arrSettings['settingsEntryDisplaydurationValue']);
-
+            
             switch (intval($this->arrSettings['settingsEntryDisplaydurationValueType'])) {
             	case 1:
-	                $strDisplaydurationValueTypeDay = 'selected="selected"';
-	                $strDisplaydurationValueTypeMonth = '';
-	                $strDisplaydurationValueTypeYear = '';
-            		break;
+                    $strDisplaydurationValueTypeDay = 'selected="selected"';
+                    break;
                 case 2:
-                    $strDisplaydurationValueTypeDay = '';
                     $strDisplaydurationValueTypeMonth = 'selected="selected"';
-                    $strDisplaydurationValueTypeYear = '';
                     break;
                 case 3:
-                    $strDisplaydurationValueTypeDay = '';
-                    $strDisplaydurationValueTypeMonth = '';
                     $strDisplaydurationValueTypeYear = 'selected="selected"';
                     break;
             }
@@ -795,12 +792,9 @@ EOF;
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_SELECT_PERIOD' => $strDisplaydurationPeriod,
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_SHOW_PERIOD' => $strDisplaydurationShowPeriod,
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE' => $intDisplaydurationValue,
-            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY' => !empty($strDisplaydurationValueTypeDay) 
-                                                                                    ? $strDisplaydurationValueTypeDay : '',
-            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH' => !empty($strDisplaydurationValueTypeMonth) 
-                                                                                    ? $strDisplaydurationValueTypeMonth : '',
-            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR' => !empty($strDisplaydurationValueTypeYear) 
-                                                                                    ? $strDisplaydurationValueTypeYear : '',
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY' => $strDisplaydurationValueTypeDay, 
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH' => $strDisplaydurationValueTypeMonth, 
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR' => $strDisplaydurationValueTypeYear, 
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFICATION_OFF' => $strDisplaydurationNotificationOff,
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFICATION_ON' => $strDisplaydurationNotificationOn,
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFIVATION_SHOW_DAYBEFORE' => $strDisplaydurationNotificationShowDaybefore,
