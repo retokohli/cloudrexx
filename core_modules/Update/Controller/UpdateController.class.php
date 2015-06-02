@@ -171,11 +171,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
      */
     public function updateCodeBase($codeBase, $installationRootPath) {
         
-        //set website to offline mode
-        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
-        \Cx\Core\Setting\Controller\Setting::set('websiteState', \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE);
-        \Cx\Core\Setting\Controller\Setting::update('websiteState');
-
+        
         //change code base
         \Cx\Core\Setting\Controller\Setting::init('Config', '', 'Yaml');
         \Cx\Core\Setting\Controller\Setting::set('coreCmsVersion', $codeBase);
