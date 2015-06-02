@@ -95,12 +95,14 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                 
                 //hostName
                 $websiteServiceServer = $website->getWebsiteServiceServer();
-
+                //Update the Website Status and codeBase
                 $params = array(
                     'websiteId'   => $website->getId(),
                     'status'      => $website->getStatus(),
+                    'codeBase'    => $website->getCodeBase(),
                 );
                 \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('setWebsiteState', $params, $websiteServiceServer);
+                \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('setWebsiteCodeBase', $params, $websiteServiceServer);
                 break;
         }
     }
@@ -152,3 +154,4 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
         $this->$eventName(current($eventArgs));
     }
 }
+

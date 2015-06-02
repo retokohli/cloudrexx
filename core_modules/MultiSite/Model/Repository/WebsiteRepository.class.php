@@ -97,14 +97,17 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
                 ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'website')
                 ->leftJoin('website.owner', 'user');
         
-        $filterPos = 1;
-        foreach ($criteria as $fieldName => $fieldValue) {
-            if (empty($fieldValue)) {
-                continue;
+        $i = 1;
+        foreach ($criteria as $fieldType => $value) {
+            if (method_exists($qb->expr(), $fieldType) && is_array($value)) {
+                foreach ($value as $condition) {
+                    $condition[1] = isset($condition[1]) && !is_array($condition[1]) ? $qb->expr()->literal($condition[1]) : $condition[1];
+                    $qb->andWhere(call_user_func(array($qb->expr(), $fieldType), $condition[0], $condition[1]));
+                }
+            } else {
+                $qb->andWhere($fieldType . ' = ?' . $i)->setParameter($i, $value);
             }
-            $method = ($filterPos == 1) ? 'where' : 'andWhere';
-            $qb->$method($fieldName . ' = ?' . $filterPos)->setParameter($filterPos, $fieldValue);
-            $filterPos++;
+            $i++;
         }
         
         return $qb->getQuery()->getResult();
@@ -185,5 +188,3 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
         return !empty($websites) ? $websites : array();
     }
 }
-
-

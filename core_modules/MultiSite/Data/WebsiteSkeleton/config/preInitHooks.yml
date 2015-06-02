@@ -4,3 +4,6 @@
 -
   name: MultiSite
   type: core_module
+-
+  name: Update
+  type: core_module
