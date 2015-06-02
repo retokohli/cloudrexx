@@ -6398,6 +6398,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
                     $installationRootPath = contrexx_input2raw($params['post']['codeBasePath']) . '/' . $latestCodeBase;
                     
+                    //set website to offline mode
+                    \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
+                    \Cx\Core\Setting\Controller\Setting::set('websiteState', \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE);
+                    \Cx\Core\Setting\Controller\Setting::update('websiteState');
+
                     //upadate codeBase
                     $updateController->updateCodeBase($latestCodeBase, $installationRootPath);
                     
