@@ -170,6 +170,18 @@ class Downloads extends DownloadsLibrary
     private function overview()
     {
         global $_LANGID;
+        
+        // load source code if cmd value is integer
+        if ($this->objTemplate->placeholderExists('APPLICATION_DATA')) {
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('Downloads');
+            // load source code
+            $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+            \LinkGenerator::parseTemplate($applicationTemplate);
+            $this->objTemplate->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
+        }
 
         $objDownload = new Download();
         $objCategory = Category::getCategory($this->categoryId);
