@@ -89,8 +89,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'unMapDomain'           => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'updateDomain'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'updateDefaultCodeBase' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, null, array(183), null),
-            'setWebsiteState'       => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
-            'setWebsiteCodeBase'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
+            'setWebsiteDetails'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'updateWebsiteState'    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, null, array(183), null),
             'ping'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'pong'                  => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
@@ -1771,39 +1770,26 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     /**
-     * set Website State
+     * Set the website details
      * 
      * @param array $params
      * 
+     * @return boolean
+     * @throws MultiSiteJsonException
      */
-    public function setWebsiteState($params) {
+    public function setWebsiteDetails($params) {
          if (!empty($params['post'])) {
             $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
             $website = $webRepo->findOneById($params['post']['websiteId']);
             if (!$website) {
-                throw new MultiSiteJsonException('JsonMultiSite::setWebsiteState() failed: Website by ID '.$params['post']['websiteId'].' not found.');
+                throw new MultiSiteJsonException('JsonMultiSite::setWebsiteDetails() failed: Website by ID '.$params['post']['websiteId'].' not found.');
             }
-            $website->setStatus($params['post']['status']);
-            \Env::get('em')->persist($website);
-            \Env::get('em')->flush();
-            return true;
-        }
-    }
-    
-    /**
-     * setWebsiteCodeBase
-     * 
-     * @param array $params
-     * 
-     */
-    public function setWebsiteCodeBase($params) {
-         if (!empty($params['post'])) {
-            $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            $website = $webRepo->findOneById($params['post']['websiteId']);
-            if (!$website) {
-                throw new MultiSiteJsonException('JsonMultiSite::setWebsiteCodeBase() failed: Website by ID '.$params['post']['websiteId'].' not found.');
+            if (isset($params['post']['status'])) {
+                $website->setStatus($params['post']['status']);
             }
-            $website->setCodeBase($params['post']['codeBase']);
+            if (isset($params['post']['codeBase'])) {
+                $website->setCodeBase($params['post']['codeBase']);
+            }
             \Env::get('em')->flush();
             return true;
         }
@@ -1823,7 +1809,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
-                    if ($this->setWebsiteState($params)){
+                    if ($this->setWebsiteDetails($params)){
                         return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_STATUS_CHANGED_SUCCESSFUL'];
                     }
                     break;
