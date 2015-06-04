@@ -1037,8 +1037,9 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
             cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('disabled', 'disabled');
             cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
         }
+    }).always(function(response) {
+        cx.trigger("loadingEnd", "contentmanager", response);
     });
-    cx.trigger("loadingEnd", "contentmanager", {});
 }
 
 cx.cm.homeCheck = function(addClasses, pageId) {
