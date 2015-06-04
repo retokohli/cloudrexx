@@ -785,6 +785,7 @@ class MediaLibrary
         $arrPresentationExt = array('ODP', 'PPT', 'PPTX');
         $arrSpreadsheetExt  = array('CSV', 'ODS', 'XLS', 'XLSX');
         $arrDocumentsExt    = array('DOC', 'DOCX', 'ODT', 'RTF');
+        $arrWebDocumentExt  = array('HTML', 'HTM');
         
         switch (true) {
             case ($icon == 'TXT'):
@@ -810,6 +811,10 @@ class MediaLibrary
                 break;
             case in_array($icon, $arrDocumentsExt):
                 $icon = 'TextDocument';
+                break;
+            case in_array($icon, $arrWebDocumentExt):
+            case preg_match('/^[a-z]+:\/\//i', $file):
+                $icon = 'WebDocument';
                 break;
             default :
                 $icon = 'Unknown';

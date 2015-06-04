@@ -51,7 +51,6 @@ class Download {
      */
     private $source_names;
 
-    private $icon;
     private $size;
     private $image;
     private $owner_id;
@@ -115,7 +114,6 @@ class Download {
             'id'                                => 'int',
             'type'                              => 'string',
             'mime_type'                         => 'string',
-            'icon'                              => 'string',
             'size'                              => 'int',
             'image'                             => 'string',
             'owner_id'                          => 'int',
@@ -143,36 +141,6 @@ class Download {
     );
     private $arrTypes = array('file', 'url');
     private $defaultType = 'file';
-    private $arrIcons = array(
-        'avi',
-        'bmp',
-        'css',
-        'doc',
-        'dot',
-        'exe',
-        'fla',
-        'gif',
-        'htm',
-        'html',
-        'inc',
-        'jpg',
-        'js',
-        'mp3',
-        'nfo',
-        'pdf',
-        'php',
-        'png',
-        'pps',
-        'ppt',
-        'rar',
-        'swf',
-        'txt',
-        'wma',
-        'xls',
-        'zip'
-    );
-    private $defaultIcon = '_blank';
-    private $urlIcon = 'htm';
     private $isFrontendMode;
 
     public static $arrMimeTypes = array(
@@ -293,7 +261,6 @@ class Download {
         $this->sources = array();
         $this->source_name = '';
         $this->source_names = array();
-        $this->icon = $this->defaultIcon;
         $this->size = 0;
         $this->image = '';
         $this->owner_id = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
@@ -545,7 +512,6 @@ class Download {
                 $this->sources = isset($this->arrLoadedDownloads[$id]['sources']) ? $this->arrLoadedDownloads[$id]['sources'] : '';
                 $this->source_name = isset($this->arrLoadedDownloads[$id]['source_name']) ? $this->arrLoadedDownloads[$id]['source_name'] : '';
                 $this->source_names = isset($this->arrLoadedDownloads[$id]['source_names']) ? $this->arrLoadedDownloads[$id]['source_names'] : '';
-                $this->icon = isset($this->arrLoadedDownloads[$id]['icon']) ? $this->arrLoadedDownloads[$id]['icon'] : $this->defaultIcon;
                 $this->size = isset($this->arrLoadedDownloads[$id]['size']) ? $this->arrLoadedDownloads[$id]['size'] : 0;
                 $this->image = isset($this->arrLoadedDownloads[$id]['image']) ? $this->arrLoadedDownloads[$id]['image'] : '';
                 $this->owner_id = isset($this->arrLoadedDownloads[$id]['owner_id']) ? $this->arrLoadedDownloads[$id]['owner_id'] : 0;
@@ -1127,7 +1093,6 @@ class Download {
                 SET
                     `type` = '".$this->type."',
                     `mime_type` = '".$this->mime_type."',
-                    `icon` = '".addslashes($this->icon)."',
                     `size` = ".intval($this->size).",
                     `image` = '".addslashes($this->image)."',
                     `owner_id` = ".intval($this->owner_id).",
@@ -1151,7 +1116,6 @@ class Download {
                 INSERT INTO `".DBPREFIX."module_downloads_download` (
                     `type`,
                     `mime_type`,
-                    `icon`,
                     `size`,
                     `image`,
                     `owner_id`,
@@ -1169,7 +1133,6 @@ class Download {
                 ) VALUES (
                     '".$this->type."',
                     '".$this->mime_type."',
-                    '".addslashes($this->icon)."',
                     ".intval($this->size).",
                     '".addslashes($this->image)."',
                     ".intval($this->owner_id).",
@@ -1501,9 +1464,19 @@ class Download {
         return ASCMS_MODULE_WEB_PATH.'/Downloads/View/Media/'.Download::$arrMimeTypes[$this->getMimeType()][($small ? 'icon_small' : 'icon')];
     }
 
+    /**
+     * Get the File Type Icon
+     * 
+     * @return string 
+     */
     public function getFileIcon()
     {
-        return ASCMS_MODULE_WEB_PATH.'/Downloads/View/Media/'.$this->icon.'.gif';
+        $source = ($this->type == 'url') 
+                    ? $this->getSource() 
+                    : \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath() . '/' . $this->getSource(); 
+        
+        return \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() .
+                \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($source) . '.png';
     }
 
     public function getSize()
@@ -1675,15 +1648,12 @@ class Download {
         foreach ($sources as $langId => $source) {
             if ($this->type == 'url') {
                 $source = \FWValidator::getUrl($source);
-                $this->icon = $this->urlIcon;
                 if (preg_match('#^[a-z]+://([^/]+)#i', $source, $arrMatch)) {
                     $this->source_names[$langId] = $arrMatch[1];
                 } else {
                     $this->source_names[$langId] = $source;
                 }
             } else {
-                $extension = strtolower(pathinfo($source, PATHINFO_EXTENSION));
-                $this->icon = in_array($extension, $this->arrIcons) ? $extension : $this->defaultIcon;
                 $this->source_names[$langId] = isset($sourceNames[$langId]) ? $sourceNames[$langId] : basename($source);
             }
 
