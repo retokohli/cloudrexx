@@ -3107,26 +3107,25 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function trackAffiliateId($params)
     {
-        $post = isset($params['post']) ? $params['post'] : array();
-        $url  = isset($post['url']) ? $post['url'] : '';
-        if (empty($url)) {
+        $url = !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
+        if (!$url) {
             return;
         }
         
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
-                case ComponentController::MODE_MANAGER:
-                case ComponentController::MODE_HYBRID:
-                    $affiliateIdQueryStringKey = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite');
-                    $urlParams = \Cx\Core\Routing\Url::params2array($url);
-                    if (!array_key_exists($affiliateIdQueryStringKey, $urlParams)) {
-                        return;
-                    }
-                    $affiliateId = $urlParams[$affiliateIdQueryStringKey];
-                    if (ComponentController::isValidAffiliateId($affiliateId)) {
-                        setcookie('MultiSiteAffiliateId', $affiliateId, time() + (86400 * 30), "/");
-                    }
-                default:
-                    break;
+            case ComponentController::MODE_MANAGER:
+            case ComponentController::MODE_HYBRID:
+                $affiliateIdQueryStringKey = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite');
+                $urlParams = \Cx\Core\Routing\Url::params2array($url);
+                if (!array_key_exists($affiliateIdQueryStringKey, $urlParams)) {
+                    return;
+                }
+                $affiliateId = $urlParams[$affiliateIdQueryStringKey];
+                if (ComponentController::isValidAffiliateId($affiliateId)) {
+                    setcookie('MultiSiteAffiliateId', $affiliateId, time() + (86400 * 30), "/");
+                }
+            default:
+                break;
         }
     }
 
@@ -6141,11 +6140,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             //Get the balance amount
             $affiliateCreditRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit');        
             $affiliateTotalCreditAmount = $affiliateCreditRepo->getTotalCreditsAmount();
-            //get the currency code
-            $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getCurrencyIdByCrmId($objUser->getCrmUserId());
-            if (empty($currencyId)) {
-                $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getDefaultCurrencyId();
-            }
+            // pay out all affiliate commissions in CHF (=> currently default currency)
+            $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getDefaultCurrencyId();
             $currencyObj  = \Env::get('em')->getRepository('\Cx\Modules\Crm\Model\Entity\Currency')->findOneById($currencyId);
             $currencyCode = $currencyObj ? $currencyObj->getName() : '';
             
