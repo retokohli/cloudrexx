@@ -15,7 +15,7 @@ input.text-select {background-color: #f5f5f5;}
             <div class="show-affiliate-paypal-profile-attribute-id">
                 <div class="table">
                     <div class="table-head">
-                        <div class="table-cell"><h4>{TXT_CORE_MODULES_MULTISITE_AFFILIATE_ACCOUNT_LABEL}</h4></div>
+                        <div class="table-cell"><h2>{TXT_CORE_MODULES_MULTISITE_AFFILIATE_ACCOUNT_LABEL}</h2></div>
                         <div class="table-cell">&nbsp;</div>
                     </div>
                     <!-- BEGIN showAffiliateIdForm -->
@@ -77,6 +77,7 @@ input.text-select {background-color: #f5f5f5;}
                 </div>
 
                 <div class="table">
+                    <div class="row">&nbsp;</div>
                     <div class="table-row">
                         <!-- BEGIN showAffiliateForm -->
                         <div class="table-cell" style="width: 10%;">
@@ -98,7 +99,7 @@ input.text-select {background-color: #f5f5f5;}
                         <div class="table-cell">&nbsp;</div>
                     </div>
                     <div class="table-row">
-                        <div class="table-cell"><h4>{TXT_CORE_MODULES_MULTISITE_REFERRAL_LABEL}</h4></div>
+                        <div class="table-cell"><h2>{TXT_CORE_MODULES_MULTISITE_REFERRAL_LABEL}</h2></div>
                         <div class="table-cell">&nbsp;</div>
                     </div>
                     <div class="table-row">
@@ -127,18 +128,18 @@ input.text-select {background-color: #f5f5f5;}
                         <thead>
                             <tr>
                                 <th>{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}</th>
-                                <th>{TXT_CORE_MODULES_MULTISITE_PENDING_LABEL}</th>
-                                <th>{TXT_CORE_MODULES_MULTISITE_CREDITED_LABEL}</th>
-                                <th>{TXT_CORE_MODULES_MULTISITE_PAIDOUT_LABEL}</th>
+                                <th style="text-align:right">{TXT_CORE_MODULES_MULTISITE_PENDING_LABEL}</th>
+                                <th style="text-align:right">{TXT_CORE_MODULES_MULTISITE_CREDITED_LABEL}</th>
+                                <th style="text-align:right">{TXT_CORE_MODULES_MULTISITE_PAIDOUT_LABEL}</th>
                             </tr>
                         </thead>
                         <tbody>
                         <!-- BEGIN showSubscriptionsCountByProduct -->
                             <tr>
                                 <td>{MULTISITE_SUBSCRIPTIONS_PRODUCT_NAME}</td>
-                                <td>{MULTISITE_SUBSCRIPTIONS_PRODUCT_PENDING_COUNT}</td>
-                                <td>{MULTISITE_SUBSCRIPTIONS_PRODUCT_CREDITED_COUNT}</td>
-                                <td>{MULTISITE_SUBSCRIPTIONS_PRODUCT_PAYOUT_COUNT}</td>
+                                <td style="text-align:right">{MULTISITE_SUBSCRIPTIONS_PRODUCT_PENDING_COUNT}</td>
+                                <td style="text-align:right">{MULTISITE_SUBSCRIPTIONS_PRODUCT_CREDITED_COUNT}</td>
+                                <td style="text-align:right">{MULTISITE_SUBSCRIPTIONS_PRODUCT_PAYOUT_COUNT}</td>
                             </tr>
                         <!-- END showSubscriptionsCountByProduct -->
                         </tbody>
@@ -157,23 +158,24 @@ input.text-select {background-color: #f5f5f5;}
                 <!-- END showNoReferralsErrorMsg -->
                 <!-- END showAffiliateIdPartTwo -->
                 <!-- BEGIN showAffiliateCreditTotalAmt -->
+                <div class="row">&nbsp;</div>
+                <div class="row">&nbsp;</div>
                 <div class="table">
                     <div class="table-head">
-                        <div class="table-cell"><h4>{TXT_CORE_MODULES_MULTISITE_PAYOUTS_LABEL}</h4></div>
+                        <div class="table-cell"><h2>{TXT_CORE_MODULES_MULTISITE_PAYOUTS_LABEL}</h2></div>
                         <div class="table-cell">&nbsp;</div>
                     </div>
                     <div class="table-row">
                         <div class="table-cell" style="width:33%">
-                            <label>{TXT_CORE_MODULES_MULTISITE_NEXT_PAYMENT_LABEL}</label>
+                            {TXT_CORE_MODULES_MULTISITE_NEXT_PAYMENT_LABEL}
                         </div>
                         <div class="table-cell">
                             {MULTISITE_AFFILIATE_CREDIT_AMT_TOTAL}
-                        </div>
-                        <div class="table-cell">
                             <!-- BEGIN showPayoutButton -->
-                            <button class="btn loadingProcess save" onclick="sendNotificationForPayoutRequest(jQuery(this));" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULES_MULTISITE_PAYOUT_BUTTON_LABEL}</button>
+                            <button class="btn-xs loadingProcess save" onclick="sendNotificationForPayoutRequest(jQuery(this));" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULES_MULTISITE_PAYOUT_BUTTON_LABEL}</button>
                             <!-- END showPayoutButton -->
                         </div>
+                        <div class="table-cell">&nbsp;</div>
                     </div>
                     <div class="table-row">
                         <div class="table-cell" style="width:33%">
@@ -188,16 +190,76 @@ input.text-select {background-color: #f5f5f5;}
                 <!-- END showAffiliateCreditTotalAmt -->
                 <!-- BEGIN showCloudrexxBannerLinks -->
                 <div class="row">&nbsp;</div>
-                <div class="table">
-                    <div class="table-row">
-                       <div class="table-cell">
-                            <h2>Add a Cloudrexx banner or links to your website</h2>
-                            <span>Copy and paste these HTML links to your website, or download a Cloudrexx banner image.</span>
-                            <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Cloudrexx - Start your FREE trial now!&lt;/a&gt;</textarea>
-                            <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Cloudrexx Website - Start your FREE trial now!&lt;/a&gt;</textarea>
-                            <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Build business websites online&lt;/a&gt;</textarea>
-                        </div>
-                    </div>
+                <div class="row">&nbsp;</div>
+                <h2>Cloudrexx Werbebanner oder Link auf Ihrer Website</h2>
+                <span>Kopieren Sie den Quellcode von einem der folgenden Beispiele und fügen Sie den Code auf Ihrer Website ein, um Ihre Besucher auf Cloudrexx aufmerksam zu machen und die Affiliate-Provision zu kassieren, falls eine Bestellung zu Stande kommt.</span>
+                <div class="grid-elm grid-align-1-1">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Beispiel</th>
+                                <th>Quellcode</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"><img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_468x60.jpg" /></a>
+                                </td>
+                                <td>
+                                    <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;&lt;img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_468x60.jpg" /&gt;&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"><img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_728x90.jpg" /></a>
+                                </td>
+                                <td>
+                                    <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;&lt;img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_728x90.jpg" /&gt;&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"><img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_300x250.jpg" /></a>
+                                </td>
+                                <td>
+                                    <textarea class="text-select" style="height:250px">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;&lt;img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_300x250.jpg" /&gt;&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"><img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_160x600.jpg" /></a>
+                                </td>
+                                <td>
+                                    <textarea class="text-select" style="height:600px">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;&lt;img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_160x600.jpg" /&gt;&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}">Cloudrexx - Starten Sie jetzt mit der kostenlosen Trial</a></textarea>
+                                </td>
+                                <td>
+                                    <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Cloudrexx - Starten Sie jetzt mit der kostenlosen Trial!&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}">Cloudrexx Website - Starten Sie jetzt mit der kostenlosen Trial</a></textarea>
+                                </td>
+                                <td>
+                                    <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Cloudrexx Website - Starten Sie jetzt mit der kostenlosen Trial!&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}">Business Websites online erstellen</a></textarea>
+                                </td>
+                                <td>
+                                    <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?ref={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Business Websites online erstellen&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <!-- END showCloudrexxBannerLinks -->
            </div>
@@ -205,16 +267,16 @@ input.text-select {background-color: #f5f5f5;}
     </div><aside class="grid-elm grid-align-1-3 grid-offset-left show-on-screen">
 
         <p><strong>Tracking, Reporting und Auszahlung:</strong></br>
-        <span class="note">Die Provisionsauszahlung erfolgt nur, wenn sich Kunden über die von Cloudrexx für das Partnerprogramm zur Verfügung gestellten Werbemittel anmelden und eines der kostenpflichtigen Cloudrexx Solo, Non-profit- oder Cloudrexx Business-Pakete erwerben. Alle vom Partner geworbenen Kunden werden automatisch Kunden von Cloudrexx.</span></p>
+        <span class="note">Die Provisionsauszahlung erfolgt nur, wenn sich Kunden über die von Cloudrexx für das Affiliate-Programm zur Verfügung gestellten Werbemittel anmelden und eines der kostenpflichtigen Cloudrexx Solo, Non-profit- oder Cloudrexx Business-Abos erwerben. Alle von Ihnen geworbenen Kunden werden automatisch Kunden von Cloudrexx.</span></p>
 
         <p><strong>Gültigkeit der Cookies:</strong></br>
-        <span class="note">Das Tracking der gewonnen Kunden erfolgt über Cookies. Die Cookies haben eine Gültigkeit von 30 Tagen nach Aktivierung. Cloudrexx zahlt die Provision jedoch auch für alle späteren Upgrades auf Cloudrexx Pro oder Cloudrexx Business im Sinne der Customer Lifetime aus (Beispiel: ein potenzieller Kunde klickt auf ein Werbemittel des Partners, meldet sich innerhalb der 30 Tage der Cookie gültigkeit für eine Cloudrexx Free-Seite an und erwirbt erst nach weiteren 60 Tagen das Cloudrexx Business-Paket, so bekommt der Partner diesen Verkauf trotzdem vergütet).</span></p>
+        <span class="note">Das Tracking der gewonnen Kunden erfolgt über Cookies. Die Cookies haben eine Gültigkeit von 30 Tagen nach Aktivierung. Cloudrexx zahlt die Provision jedoch auch für alle späteren Upgrades auf ein kostenpflichtiges Cloudrexx Abo im Sinne der Customer Lifetime aus (Beispiel: ein potenzieller Kunde klickt auf ein Werbemittel von Ihnen, registriert sich innerhalb der 30 Tage der Cookie gültigkeit bei Cloudrexx und erwirbt erst nach weiteren 60 Tagen ein Cloudrexx Abo, so erhalten Sie diesen Verkauf trotzdem vergütet).</span></p>
 
         <p><strong>Anrechnung des Provisionsguthabens:</strong></br>
-        <span class="note">90 Tage, nachdem eine Cloudrexx Solo, Non-Profit oder Business-Seite bestellt und bezahlt worden ist, wird dieser „Sale“ dem Partner gutgeschrieben und in dessen Account auf „bestätigt“ gesetzt.</span></p>
+        <span class="note">90 Tage, nachdem ein Cloudrexx Solo, Non-Profit oder Business-Abo bestellt und <strong>bezahlt</strong> worden ist, wird Ihnen dieser „Sale“ gutgeschrieben und in Ihrem Konto (unter <i>Empfehlungen</i>) auf <i>bestätigt</i> gesetzt.</span></p>
 
         <p><strong>Auszahlung der Provision:</strong></br>
-        <span class="note">Sobald ein Partner die Auszahlungsgrenze von 50,- EUR / 50 CHF an bestätigten Provisionen erreicht hat, kann er die Auszahlung selbst über seinen Bereich „Partner“ auf seiner MyCloudrexx-Seite anfordern.</span></p>
+        <span class="note">Sobald Sie die Auszahlungsgrenze von 50,- EUR / 50 CHF an bestätigten Provisionen erreicht haben, können Sie die Auszahlung über die entsprechende Funktion anfordern.</span></p>
 
     </aside>
 </div>
