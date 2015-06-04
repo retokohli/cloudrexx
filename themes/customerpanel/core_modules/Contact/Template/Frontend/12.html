@@ -12,15 +12,8 @@
 </select>
 </div>
 <div class="contact row form-group">
-<label for="contactFormFieldId_93">{93_LABEL}<strong class="is_required">*</strong></label>
-<select class="contactFormClass_select" name="contactFormField_93" id="contactFormFieldId_93">
-<!-- BEGIN field_93 -->
-<option value='{93_VALUE}' {SELECTED_93}>{93_VALUE}</option>
-<!-- END field_93 -->
-</select>
-</div>
-<div class="contact row form-group">
 <label for="contactFormFieldId_94">{94_LABEL}<strong class="is_required">*</strong></label>
+<!-- BEGIN field_94 --><!-- END field_94 -->
 <input class="contactFormClass_text" id="contactFormFieldId_94" type="text" name="contactFormField_94" value="{94_VALUE}" />
 </div>
 <div class="contact row form-group">                   
@@ -56,3 +49,27 @@
 {CONTACT_JAVASCRIPT}
 </div><aside class="grid-elm grid-align-1-3 grid-offset-left show-on-screen"><!-- BEGIN formText -->{12_FORM_TEXT}<!-- END formText --></aside>
 </div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    function  loadContent(jQuerySelector, url, replace) {
+        jQuery.ajax({
+            dataType: 'html',
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                if (data) {
+                    if (replace) {
+                        jQuery(jQuerySelector).replaceWith(data);
+                    } else {
+                        jQuery(jQuerySelector).html(data);
+                    }
+                }
+            },
+            fail: function(data) {}
+        });
+    }
+    loadContent('#contactFormFieldId_94', '/api/MultiSite/Subscription/SelectList?website_status=online', true);
+});
+/* ]]> */
+</script>
