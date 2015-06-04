@@ -131,11 +131,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 
                 //get the sum of affiliate credit amount
                 $affiliateTotalCreditAmount = $affiliateCreditRepo->getTotalCreditsAmount();
-                //get the currency id 
-                $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getCurrencyIdByCrmId($objUser->getCrmUserId());
-                if (empty($currencyId)) {
-                    $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getDefaultCurrencyId();
-                }
+                // as of for now, all affiliate commission is being paid out in CHF (=> currently default currency)
+                $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getDefaultCurrencyId();
                 
                 //calculate the Total
                 $affiliatePayoutSum = $affiliatePayoutRepo->getTotalAmountByUser();
