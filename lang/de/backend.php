@@ -1412,3 +1412,4 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_COMMUNICATION_MANAGEMENT'] = "Kommunikati
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SYSTEM_MANAGEMENT']        = "Systemverwaltung";
 
 $_ARRAYLANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT'] = 'Dieser Benutzer ist verknüpft mit einem CRM Kontakt, klicken um direkt zum CRM Kontakt zu gelangen.';
+$_ARRAYLANG['TXT_CORE_NONE'] = 'Keine';

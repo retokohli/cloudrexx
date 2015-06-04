@@ -853,3 +853,4 @@ $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Las propiedades han sido actualizadas.';
 $_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
 $_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH'] = 'Publish';
 $_ARRAYLANG['TXT_THEME_PREVIEW'] = 'Vista previa';
+$_ARRAYLANG['TXT_CORE_NONE'] = 'None';

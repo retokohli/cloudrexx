@@ -67,7 +67,6 @@ $_ARRAYLANG['TXT_REMARK'] = 'Anmerkung';
 $_ARRAYLANG['TXT_ADD_DELETE_LANGUAGE_REMARK'] = 'Beim Hinzufügen einer neuen Sprache werden alle Sprachvariablen in der Standardsprache';
 $_ARRAYLANG['TXT_VIEW'] = 'Ansehen';
 $_ARRAYLANG['TXT_CORE_FALLBACK'] = 'Fallback';
-$_ARRAYLANG['TXT_CORE_NONE'] = 'Keine';
 $_ARRAYLANG['TXT_LANGUAGE_ACTION_COPY'] = 'Inhalte der Fallbacksprache in diese Sprache kopieren';
 $_ARRAYLANG['TXT_LANGUAGE_ACTION_LINK'] = 'Inhalte der Fallbacksprache in diese Sprache verknüpfen';
 $_ARRAYLANG['TXT_COULD_NOT_WRITE_TO_FILE'] = 'Konnte nicht in Datei schreiben';

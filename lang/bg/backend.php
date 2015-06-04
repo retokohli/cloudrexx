@@ -853,3 +853,4 @@ $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Die Einstellungen wurden gespeichert.';
 $_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
 $_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH'] = 'Publish';
 $_ARRAYLANG['TXT_THEME_PREVIEW'] = 'Vorschau';
+$_ARRAYLANG['TXT_CORE_NONE'] = 'None';

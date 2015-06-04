@@ -1251,3 +1251,4 @@ $_ARRAYLANG['TXT_CRM_TASKS']                = "Tâche";
 $_ARRAYLANG['TXT_CRM_OPPORTUNITY']          = "Opportunité";
 $_ARRAYLANG['TXT_CRM_INTERFACE']            = "Interface";
 $_ARRAYLANG['TXT_CRM_SETTINGS']            = "Master data";
+$_ARRAYLANG['TXT_CORE_NONE'] = 'None';
