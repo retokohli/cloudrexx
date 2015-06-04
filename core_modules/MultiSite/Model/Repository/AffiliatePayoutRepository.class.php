@@ -23,12 +23,18 @@ namespace Cx\Core_Modules\MultiSite\Model\Repository;
 class AffiliatePayoutRepository extends \Doctrine\ORM\EntityRepository {
     
     /**
-     * Get the total amount by user
+     * Get the total payout amount by user
+     * 
+     * @param object $user User object
      * 
      * @return decimal
      */
-    public function getTotalAmountByUser() {
-        $userId = \FWUser::getFWUserObject()->objUser->getId();
+    public function getTotalAmountByUser($user) {
+        
+        if (!$user || (!($user instanceof \User) && !($user instanceof \Cx\Core\User\Model\Entity\User))) {
+            return 0;
+        }
+        $userId = $user->getId();
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('sum(ap.amount)')
            ->from('\Cx\Core_Modules\MultiSite\Model\Entity\AffiliatePayout', 'ap')

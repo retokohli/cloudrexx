@@ -2442,6 +2442,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getProductList()}', 'manager') ) {
                    throw new MultiSiteException("Failed to add Setting entry for Product List");
             }
+            if (   \Cx\Core\Setting\Controller\Setting::getValue('affiliateSystem', 'MultiSite') === NULL 
+                && !\Cx\Core\Setting\Controller\Setting::add('affiliateSystem', '0', 7,
+                   \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'manager')) {
+                   throw new MultiSiteException("Failed to add Setting entry for Affiliate System");
+            }
             
             if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(self::MODE_MANAGER, self::MODE_HYBRID))) {
                 if (!\FWValidator::isEmpty(\Env::get('db'))) {
@@ -2450,26 +2455,39 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         'MultiSite External Payment Customer ID',
                         5);
                     self::addOrUpdateConfigurationOptionUserProfileAttributeId(
+                        'notificationCancelledProfileAttributeId', 
+                        'Cancelled notification emails user profile attribute ID',
+                        6);
+                }
+                //affiliate group
+                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'affiliate','FileSystem');
+                if (   \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite') === NULL
+                    && !\Cx\Core\Setting\Controller\Setting::add('affiliateIdQueryStringKey', 'ref', 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'affiliate')
+                ) {
+                       throw new MultiSiteException("Failed to add Setting entry for Affiliate ID query string key");
+                }
+                if (   \Cx\Core\Setting\Controller\Setting::getValue('affiliatePayoutLimit','MultiSite') === NULL
+                    && !\Cx\Core\Setting\Controller\Setting::add('affiliatePayoutLimit', '50', 2, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'affiliate')
+                ) {
+                       throw new MultiSiteException("Failed to add Setting entry for Affiliate Payout Limit");
+                }
+                if (!\FWValidator::isEmpty(\Env::get('db'))) {
+                    self::addOrUpdateConfigurationOptionUserProfileAttributeId(
                         'affiliateIdProfileAttributeId', 
                         'Affiliate ID user profile attribute ID',
-                        6);
+                        3,
+                        'affiliate');
                     self::addOrUpdateConfigurationOptionUserProfileAttributeId(
                         'affiliateIdReferenceProfileAttributeId', 
                         'Affiliate ID (reference) user profile attribute ID',
-                        8);
+                        4,
+                        'affiliate');
                     self::addOrUpdateConfigurationOptionUserProfileAttributeId(
                         'payPalProfileAttributeId', 
                         'PayPal profile attribute ID',
-                        9);
-                    self::addOrUpdateConfigurationOptionUserProfileAttributeId(
-                        'notificationCancelledProfileAttributeId', 
-                        'Cancelled notification emails user profile attribute ID',
-                        10);
-                }
-                if (   \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite') === NULL
-                    && !\Cx\Core\Setting\Controller\Setting::add('affiliateIdQueryStringKey', 'ref', 7, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT)
-                ) {
-                       throw new MultiSiteException("Failed to add Setting entry for Affiliate ID query string key");
+                        5,
+                        'affiliate');
+
                 }
             }
         } catch (\Exception $e) {
@@ -2489,7 +2507,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return boolean
      * @throws MultiSiteException
      */
-    public static function addOrUpdateConfigurationOptionUserProfileAttributeId($configOptionName, $attributeName, $order) {
+    public static function addOrUpdateConfigurationOptionUserProfileAttributeId($configOptionName, $attributeName, $order,  $group = 'manager') {
         if (empty($configOptionName)) {
             return;
         }
@@ -2497,9 +2515,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $settingProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue($configOptionName,'MultiSite');
 
         if ($settingProfileAttributeId != $dbProfileAttributeId) {
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'manager', 'FileSystem');
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', $group, 'FileSystem');
             if ($settingProfileAttributeId === null) {
-                if (!\Cx\Core\Setting\Controller\Setting::add($configOptionName, $dbProfileAttributeId, $order, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'manager')) {
+                if (!\Cx\Core\Setting\Controller\Setting::add($configOptionName, $dbProfileAttributeId, $order, \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getCustomAccessUserProfileAttributes()}', $group)) {
                     throw new MultiSiteException('Failed to add Setting entry for ' . $attributeName);
                 }
             } else {
@@ -3583,5 +3601,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         $subscription = is_array($subscriptions) ? current($subscriptions) : $subscriptions;
         return $subscription;
+    }
+    
+    /**
+     * Get custom access user profile attributes for settings dropdown
+     * 
+     * @return string
+     */
+    public static function getCustomAccessUserProfileAttributes()
+    {
+        $customAccessUserProfileAttributes = array();
+        
+        $userProfileAttributes = \User_Profile_Attribute::getCustomAttributeNameArray();
+        foreach ($userProfileAttributes as $id => $name) {
+            $customAccessUserProfileAttributes[] = $id . ':' . $name;
+        }
+        return implode(', ', $customAccessUserProfileAttributes);
     }
 }

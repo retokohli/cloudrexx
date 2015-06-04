@@ -105,9 +105,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                             if (!empty($subscriptionIds)) {
                                 $template->setVariable(array(
                                     'MULTISITE_SUBSCRIPTIONS_PRODUCT_NAME'           => $productName,
-                                    'MULTISITE_SUBSCRIPTIONS_PRODUCT_PENDING_COUNT'  => $affiliateCreditRepo->getSubscriptionCountByCriteria(array('in' => array(array('s.id', $subscriptionIds)), 'ac.credited' => 0, 'payout' => 'IS NULL')),
-                                    'MULTISITE_SUBSCRIPTIONS_PRODUCT_CREDITED_COUNT' => $affiliateCreditRepo->getSubscriptionCountByCriteria(array('in' => array(array('s.id', $subscriptionIds)), 'ac.credited' => 1, 'payout' => 'IS NULL')),
-                                    'MULTISITE_SUBSCRIPTIONS_PRODUCT_PAYOUT_COUNT'   => $affiliateCreditRepo->getSubscriptionCountByCriteria(array('in' => array(array('s.id', $subscriptionIds)), 'payout' => 'IS NOT NULL')),
+                                    'MULTISITE_SUBSCRIPTIONS_PRODUCT_PENDING_COUNT'  => $affiliateCreditRepo->getSubscriptionCountByCriteria(array('in' => array(array('s.id', $subscriptionIds)), 'ac.credited' => 0, 'payout' => 'IS NULL', 'user' => $objUser)),
+                                    'MULTISITE_SUBSCRIPTIONS_PRODUCT_CREDITED_COUNT' => $affiliateCreditRepo->getSubscriptionCountByCriteria(array('in' => array(array('s.id', $subscriptionIds)), 'ac.credited' => 1, 'payout' => 'IS NULL', 'user' => $objUser)),
+                                    'MULTISITE_SUBSCRIPTIONS_PRODUCT_PAYOUT_COUNT'   => $affiliateCreditRepo->getSubscriptionCountByCriteria(array('in' => array(array('s.id', $subscriptionIds)), 'payout' => 'IS NOT NULL', 'user' => $objUser)),
                                 ));
                                 $template->parse('showSubscriptionsCountByProduct');
                             }
@@ -130,17 +130,22 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 !empty($affiliateId) && !empty($paypalEmailAddress) ? $template->touchBlock('showAffiliateCreditTotalAmt') : $template->hideBlock('showAffiliateCreditTotalAmt');
                 
                 //get the sum of affiliate credit amount
-                $affiliateTotalCreditAmount = $affiliateCreditRepo->getTotalCreditsAmount();
+                $affiliateTotalCreditAmount = $affiliateCreditRepo->getTotalCreditsAmountByUser($objUser);                
                 // as of for now, all affiliate commission is being paid out in CHF (=> currently default currency)
                 $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getDefaultCurrencyId();
                 
                 //calculate the Total
-                $affiliatePayoutSum = $affiliatePayoutRepo->getTotalAmountByUser();
+                $affiliatePayoutSum = $affiliatePayoutRepo->getTotalAmountByUser($objUser);
                 $total = $affiliatePayoutSum + $affiliateTotalCreditAmount;
                 
                 $currencyObj  = \Env::get('em')->getRepository('\Cx\Modules\Crm\Model\Entity\Currency')->findOneById($currencyId);
                 $currencyCode = $currencyObj ? $currencyObj->getName() : '';
-                \FWValidator::isEmpty(floatval($affiliateTotalCreditAmount)) ? $template->hideBlock('showPayoutButton') : $template->touchBlock('showPayoutButton');
+
+                if (floatval($affiliateTotalCreditAmount) >= \Cx\Core\Setting\Controller\Setting::getValue('affiliatePayoutLimit','MultiSite')) {
+                    $template->touchBlock('showPayoutButton');
+                } else {
+                    $template->hideBlock('showPayoutButton');
+                }
                 $template->setVariable(array(
                     'MULTISITE_MARKETING_WEBSITE'         => $marketingWebsiteDomain,
                     'MULTISITE_AFFILIATE_QUERY_STRING'    => $affiliateIdQueryStringKey,

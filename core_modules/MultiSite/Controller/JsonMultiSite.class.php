@@ -6139,7 +6139,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             
             //Get the balance amount
             $affiliateCreditRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit');        
-            $affiliateTotalCreditAmount = $affiliateCreditRepo->getTotalCreditsAmount();
+            $affiliateTotalCreditAmount = $affiliateCreditRepo->getTotalCreditsAmountByUser($objUser);
             // pay out all affiliate commissions in CHF (=> currently default currency)
             $currencyId = \Cx\Modules\Crm\Controller\CrmLibrary::getDefaultCurrencyId();
             $currencyObj  = \Env::get('em')->getRepository('\Cx\Modules\Crm\Model\Entity\Currency')->findOneById($currencyId);

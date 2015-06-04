@@ -21,15 +21,21 @@ namespace Cx\Core_Modules\MultiSite\Model\Repository;
  */
 
 class AffiliateCreditRepository extends \Doctrine\ORM\EntityRepository {
+    
     /**
-     * get the sum of the Affiliate credits amount based on
-     * the logged-in user, credit and payout
+     * Get the sum of the Affiliate credits amount based on the credit and payout
+     * 
+     * @param object $user User object
      * 
      * @return decimal
      */
-    public function getTotalCreditsAmount() {
-        $userId = \FWUser::getFWUserObject()->objUser->getId();
+    public function getTotalCreditsAmountByUser($user) {
         
+        if (!$user || (!($user instanceof \User) && !($user instanceof \Cx\Core\User\Model\Entity\User))) {
+            return 0;
+        }
+
+        $userId = $user->getId();        
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('sum(ac.amount)')
            ->from('\Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit', 'ac')
@@ -53,13 +59,21 @@ class AffiliateCreditRepository extends \Doctrine\ORM\EntityRepository {
             return;
         }
         
-        $userId = \FWUser::getFWUserObject()->objUser->getId();
+        if (empty($criteria['user'])) {
+            return;
+        }
+        $user = $criteria['user'];
+        unset($criteria['user']);
+        if (!$user || (!($user instanceof \User) && !($user instanceof \Cx\Core\User\Model\Entity\User))) {
+            return;
+        }
+        
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('count(ac.id)')
            ->from('\Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit', 'ac')
            ->leftJoin('ac.referee', 'r')
            ->leftJoin('ac.subscription', 's')
-           ->groupBy('r.id')->having('r.id = :userId')->setParameter('userId' , $userId);
+           ->groupBy('r.id')->having('r.id = :userId')->setParameter('userId' , $user->getId());
         
         $i = 1;
         foreach ($criteria as $fieldType => $value) {
