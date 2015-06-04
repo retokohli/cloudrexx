@@ -52,7 +52,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
-        $updateFile = \Env::get('cx')->getCodeBaseCoreModulePath() . '/Update/Data/PendingDbUpdates.yml';
+        $updateFile = \Env::get('cx')->getWebsiteTempPath() . '/Update/PendingDbUpdates.yml';
         if (!file_exists($updateFile)) {
             return;
         }

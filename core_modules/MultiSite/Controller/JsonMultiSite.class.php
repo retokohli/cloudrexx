@@ -163,7 +163,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'triggerWebsiteUpdate' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'checkAuthenticationByMode')),
             'websiteUpdate' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'sendUpdateNotification' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
-            'updateWebsiteCodeBase' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
+            'updateWebsiteCodeBase' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
         );  
     }
 
@@ -4685,9 +4685,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 throw new MultiSiteJsonException('Failed to fetch the user object from the email '.$email);
             }
             
-            $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-            $multisite = $componentRepo->findOneBy(array('name'=>'Multisite'));
-            $multisiteComponentController = $multisite->getSystemComponentController();
+            $multisiteComponentController = $this->getControllerObjectByComponentName('Multisite');
+            if(!$multisiteComponentController){
+                throw new MultiSiteJsonException('Failed to create the website in subscription.');
+            }
             $response = $multisiteComponentController->createNewWebsiteInSubscription($subscriptionId, $websiteName, $objUser, $serviceServerId);
             if (!$response || $response->status == 'error' || $response->data->status == 'error') {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
@@ -4859,9 +4860,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     if (!empty($deleteBackupedWebsiteName)) {
                         $resp = $this->deleteWebsiteBackupFile($deleteBackupedWebsiteName, $serviceServerId);
                     } else {
-                        $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-                        $multisite = $componentRepo->findOneBy(array('name'=>'Multisite'));
-                        $multisiteComponentController = $multisite->getSystemComponentController();
+                        $multisiteComponentController = $this->getControllerObjectByComponentName('Multisite');
+                        if (!$multisiteComponentController) {
+                            throw new MultiSiteJsonException($e->getMessage());
+                        }
                         $resp = $multisiteComponentController->executeCommandBackup($params['post']);
                     }
                     return ($resp && isset($resp->data)) ? $resp->data : $resp;
@@ -4932,9 +4934,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
-                    $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-                    $multisite = $componentRepo->findOneBy(array('name' => 'Multisite'));
-                    $multisiteComponentController = $multisite->getSystemComponentController();
+                    $multisiteComponentController = $this->getControllerObjectByComponentName('Multisite');
+                    if (!$multisiteComponentController) {
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
+                    }
                     $resp = $multisiteComponentController->executeCommandRestore($params['post']);
                     return ($resp && isset($resp->data)) ? $resp->data : $resp;
                     break;
@@ -6285,21 +6288,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $filePath = $folderPath .'/PendingCodeBaseChanges.yml';
                     
                     try {
-                        if (!file_exists($folderPath)) {
-                            \Cx\Lib\FileSystem\FileSystem::make_folder($folderPath);
+                        $updateController = $this->getControllerObjectByComponentName('Update', 'Update');
+                        if(!$updateController){
+                           throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_PROCESS_ERROR_MSG']); 
                         }
-                        $file = new \Cx\Lib\FileSystem\File($filePath);
-                        $file->touch();
-
-                        $yaml = new \Symfony\Component\Yaml\Yaml();
-                        $file->write(
-                                $yaml->dump(
-                                        array('PendingCodeBaseChanges' => $ymlContent )
-                                )
-                        );
-                       
+                        $updateController->storeUpdateWebsiteDetailsToYml($folderPath, $filePath, $ymlContent );
+                        
                         // make the asynchronous call
-                        $pendingCodeBaseChanges = $yaml->load($file->getData());
+                        $pendingCodeBaseChanges = $updateController->getUpdateWebsiteDetailsFromYml($filePath);
                         $websites = $pendingCodeBaseChanges['PendingCodeBaseChanges']['websites'];
                         $codeBase = $pendingCodeBaseChanges['PendingCodeBaseChanges']['codeBase'];
                         $params = array('codeBase'     => $codeBase,
@@ -6373,11 +6369,19 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         return;
                     }
                     
-                    $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-                    $updateComponent = $componentRepo->findOneBy(array('name'=>'Update'));
-                    $updateComponentController = $updateComponent->getSystemComponentController();
-                    $updateController = $updateComponentController->getController('Update');
-
+                    $updateController = $this->getControllerObjectByComponentName('Update', 'Update');
+                    if (!$updateController) {
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_ERROR_MSG']);
+                    }
+                    
+                    $folderPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . '/Update';
+                    $filePath = $folderPath .'/PendingCodeBaseChanges.yml';
+                    $ymlContent = array(
+                                        'oldCodeBaseId'    => $oldVersion,
+                                        'latestCodeBaseId' => $latestCodeBase
+                                      );     
+                    $updateController->storeUpdateWebsiteDetailsToYml($folderPath, $filePath, $ymlContent );
+                    
                     $installationRootPath = contrexx_input2raw($params['post']['codeBasePath']) . '/' . $latestCodeBase;
                     
                     //set website to offline mode
@@ -6523,4 +6527,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_STATUS_ERROR_MSG']);
         }
     }
+    
+    /**
+     * Get controller object
+     * 
+     * @param string $nameSpace       namespace
+     * @param string $componentName   component name  
+     * @param string $controllerName  controller name
+     * 
+     * @return object
+     */
+    protected function getControllerObjectByComponentName($componentName, $controllerName = '') {
+        if (empty($componentName)) {
+            return;
+        }
+
+        $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $component = $componentRepo->findOneBy(array('name' => $componentName));
+        if (!$component) {
+            return;
+        }
+        $componentController = $component->getSystemComponentController();
+        if (empty($controllerName)) {
+            return $componentController;
+        }
+        return $componentController->getController($controllerName);
+    }
+
 }

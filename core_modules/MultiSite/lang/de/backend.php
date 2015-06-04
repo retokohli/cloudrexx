@@ -342,3 +342,15 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NOTIFICATION_LOGS'] = 'Benachrichtigungsp
 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NOTIFICATIONCANCELLEDPROFILEATTRIBUTEID'] = 'ID der Benutzerprofil-Eigenschaft für abgemeldete E-Mail Benachrichtigungen';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NOTIFICATIONCANCELLEDPROFILEATTRIBUTEID_TOOLTIP']='ID der Benutzerprofil-Eigenschaft zum speichern des Status, ob der Benutzer die E-Mail Benachrichtigungen deaktiviert hat.';
+
+//update
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_TRIGGERING_WEBSITE_UPDATE'] = 'Website-Update wird gestartet';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_TRIGGERING_WEBSITE_UPDATE_SUCCESS_MSG'] = 'Website-Update wird ausgeführt';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CODEBASE_VERSION'] = 'Version der Code-Basis :';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITES_LIST'] = 'Liste der Webseiten';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_NOT_AVAILABLE'] = 'Update nicht verfügbar';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CODEBASE_NOT_EXIST'] = 'Code-Basis existiert nicht';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_PROCESS_ERROR_MSG'] = 'Der Updateprozess der Webseite konnte nicht ausgeführt werden';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_ERROR_MSG'] = 'Das Update der Webseite ist fehlgeschlagen';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_STATUS_ERROR_MSG'] = 'Beim Senden des Update-Informationsmails ist ein Fehler aufgetreten';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_CODEBASE_ERROR_MSG'] = 'Das Update der Code-Basis der Webseite ist fehlgeschlagen';
