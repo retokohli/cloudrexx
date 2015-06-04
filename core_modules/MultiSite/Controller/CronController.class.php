@@ -46,7 +46,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
         $notificationCancelledProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('notificationCancelledProfileAttributeId','MultiSite');                
         foreach ($cronMails as $cronMail) {
             $cronMailCriterias = $cronMail->getCronMailCriterias();
-            if (\FWValidator::isEmpty(count($cronMailCriterias))) {
+            if (!count($cronMailCriterias)) {
                 continue;
             }
             $criterias = array();
