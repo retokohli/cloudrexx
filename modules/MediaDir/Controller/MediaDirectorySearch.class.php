@@ -110,6 +110,7 @@ EOF;
 
         $formId = null;
         $strPleaseChoose = $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHOOSE'];
+        $strExpandedInputfields = '';
 
         //get ids
         if (!empty($_GET['cmd'])) {
@@ -179,7 +180,6 @@ EOF;
         }
 
         $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : $intCategoryId;
-        $strExpandedInputfields = '';
 
         if ($bolShowCategorySelector) {
         	$objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
