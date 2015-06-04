@@ -107,7 +107,8 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
         \Cx\Core\Setting\Controller\Setting::set('websiteState', \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_OFFLINE);
         \Cx\Core\Setting\Controller\Setting::update('websiteState');
 
-        $status = true;
+        $status     = true;
+        $yamlFile   = null;
         foreach ($deltas as $delta) {
             $status = $delta->applyNext();
             $delta->setRollback(1);
@@ -115,7 +116,22 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
             if (!$status) {
                 //Rollback to old state
                 $this->rollBackDelta();
-                //$this->updateCodeBase(); --TODO--
+                //Rollback the codebase changes(settings.php, configuration.php and website codebase in manager and service)
+                $yamlFile = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . '/Update/PendingCodeBaseChanges.yml';
+                if (file_exists($yamlFile)) {
+                    $pendingCodeBaseChanges = $this->getUpdateWebsiteDetailsFromYml($yamlFile);
+                    $oldCodeBase            = $pendingCodeBaseChanges['PendingCodeBaseChanges']['oldCodeBaseId'];
+                    $latestCodeBase         = $pendingCodeBaseChanges['PendingCodeBaseChanges']['latestCodeBaseId'];
+                    //Register YamlSettingEventListener
+                    \Cx\Core\Config\Controller\ComponentController::registerYamlSettingEventListener();
+                    //Update codeBase in website
+                    $this->updateCodeBase($latestCodeBase, null, $oldCodeBase);
+                    //Update website codebase in manager and service
+                    \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
+                    $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName', 'MultiSite');
+                    $params = array('websiteName' => $websiteName, 'codeBase' => $oldCodeBase);
+                    \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('updateWebsiteCodeBase', $params);
+                }
                 break;
             }
         }
@@ -125,7 +141,12 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
             $deltaRepository->remove($delta);
         }
         $deltaRepository->flush();
-
+        
+        //Remove the file /Update/PendingCodeBaseChanges.yml
+        if (!empty($yamlFile) && file_exists($yamlFile)) {
+            \Cx\Lib\FileSystem\FileSystem::delete_file($yamlFile);
+        }
+        
         //set the website back to Online mode
         \Cx\Core\Setting\Controller\Setting::set('websiteState', \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE);
         \Cx\Core\Setting\Controller\Setting::update('websiteState');
@@ -166,24 +187,30 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
     /**
      * Update CodeBase
      * 
-     * @param string $codeBase
-     * @param string $installationRootPath
+     * @param string $newCodeBaseVersion   latest codeBase version
+     * @param string $installationRootPath installationRoot path
+     * @param string $oldCodeBaseVersion   old codeBase version
      */
-    public function updateCodeBase($codeBase, $installationRootPath) {
+    public function updateCodeBase($newCodeBaseVersion, $installationRootPath, $oldCodeBaseVersion = '') 
+    {
+        //change installation root
+        $objConfigData = new \Cx\Lib\FileSystem\File(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteConfigPath() . '/configuration.php');
+        $configData    = $objConfigData->getData();
+        if(!\FWValidator::isEmpty($oldCodeBaseVersion)){
+            $matches = array();
+            preg_match('/\\$_PATHCONFIG\\[\'ascms_installation_root\'\\] = \'(.*?)\';/', $configData , $matches);
+            $installationRootPath = str_replace($newCodeBaseVersion, $oldCodeBaseVersion, $matches[1] );
+            $newCodeBaseVersion   = $oldCodeBaseVersion;
+        }
         
+        $newConfigData = preg_replace('/\\$_PATHCONFIG\\[\'ascms_installation_root\'\\] = \'.*?\';/', '$_PATHCONFIG[\'ascms_installation_root\'] = \'' . $installationRootPath . '\';', $configData);
+
+        $objConfigData->write($newConfigData);
         
         //change code base
         \Cx\Core\Setting\Controller\Setting::init('Config', '', 'Yaml');
-        \Cx\Core\Setting\Controller\Setting::set('coreCmsVersion', $codeBase);
+        \Cx\Core\Setting\Controller\Setting::set('coreCmsVersion', $newCodeBaseVersion);
         \Cx\Core\Setting\Controller\Setting::update('coreCmsVersion');
-
-        //change installation root
-        $newConf = new \Cx\Lib\FileSystem\File(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteConfigPath() . '/configuration.php');
-        $newConfData = $newConf->getData();
-            
-        $newConfData = preg_replace('/\\$_PATHCONFIG\\[\'ascms_installation_root\'\\] = \'.*?\';/', '$_PATHCONFIG[\'ascms_installation_root\'] = \'' . $installationRootPath . '\';', $newConfData);
-
-        $newConf->write($newConfData);
     }
 
     /**
@@ -249,4 +276,52 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
         $commandObj->setMigrationConfiguration($configuration);
         return $commandObj;
     }
+    
+    /**
+     * Store the website details into the YML file
+     * 
+     * @param string $folderPath
+     * @param string $filePath
+     * @param array  $ymlContent
+     */
+    public function storeUpdateWebsiteDetailsToYml($folderPath, $filePath, $ymlContent)
+    {
+        if (empty($folderPath) || empty($filePath)) {
+            return;
+        }
+
+        try {
+            if (!file_exists($folderPath)) {
+                \Cx\Lib\FileSystem\FileSystem::make_folder($folderPath);
+            }
+
+            $file = new \Cx\Lib\FileSystem\File($filePath);
+            $file->touch();
+
+            $yaml = new \Symfony\Component\Yaml\Yaml();
+            $file->write(
+                $yaml->dump(
+                        array('PendingCodeBaseChanges' => $ymlContent )
+                )
+            );
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+        }
+    }
+    
+    /**
+     * Get update websiteDetailsFromYml
+     * 
+     * @param string $file yml file name
+     * @return array
+     */
+    public function getUpdateWebsiteDetailsFromYml($file) {
+        if (!file_exists($file)) {
+            return;
+        }
+        $objFile = new \Cx\Lib\FileSystem\File($file);
+        $yaml = new \Symfony\Component\Yaml\Yaml();
+        return $yaml->load($objFile->getData());
+    }
+
 }
