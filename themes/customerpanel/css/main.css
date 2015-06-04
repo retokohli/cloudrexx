@@ -563,7 +563,7 @@ header #functions li a {
 }
 
 header #functions .user {
-    padding-left: 20px;
+    display: none;
 }
 
 .register-sections
@@ -764,7 +764,7 @@ select {
 textarea {
     height: 100px;
     background-color: #f5f5f5;
-}  
+}
      
 input[type="checkbox"],    
 input[type="radio"] {    
@@ -1100,6 +1100,26 @@ button.actions:after {
          color: #c7c6c7;
      }
 
+    nav .nav-footer {
+        position: absolute;
+        bottom: 15px;
+        left: 25px;
+        font-size: 0.9em;
+    }
+    
+    nav .nav-footer a {
+        color: #000000;
+    }
+    
+    nav .nav-footer a:hover {
+        color: #216FBD;
+    }
+    
+    nav .nav-footer a:before {
+        content: "§ ";
+        
+    }
+
     /**
      * elements / fonts 
      *
@@ -1206,6 +1226,11 @@ button.actions:after {
      *
      *
      */
+
+    header #functions .user {
+        padding-left: 20px;
+        display: inline-block;
+    }
    
 
     /**
@@ -1244,12 +1269,6 @@ button.actions:after {
      nav ul li.level-1 a.closed:hover {
          background-color: #EDEDED;
      }
-
-    nav .nav-footer {
-        position: absolute;
-        bottom: 15px;
-        left: 25px;
-    }
      
 
     /**
