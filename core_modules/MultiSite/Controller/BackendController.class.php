@@ -1672,7 +1672,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $referrals = array();
             $affiliateIdReferenceProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdReferenceProfileAttributeId','MultiSite');
             $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array(
-                 $affiliateIdReferenceProfileAttributeId =>'_'
+                 $affiliateIdReferenceProfileAttributeId =>'_',
+                'active' => true,
+                'verified' => true
             ));
             if ($objUser) {
                 while (!$objUser->EOF) {
