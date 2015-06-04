@@ -67,7 +67,6 @@ $_ARRAYLANG['TXT_REMARK'] = 'Kommentar';
 $_ARRAYLANG['TXT_ADD_DELETE_LANGUAGE_REMARK'] = 'Ved tilføjelse af et ny sprog vil alle variabler i standardsproget';
 $_ARRAYLANG['TXT_VIEW'] = 'Se';
 $_ARRAYLANG['TXT_CORE_FALLBACK'] = 'Fallback';
-$_ARRAYLANG['TXT_CORE_NONE'] = 'Keine';
 $_ARRAYLANG['TXT_LANGUAGE_ACTION_COPY'] = 'Inhalte der Fallbacksprache in diese Sprache kopieren';
 $_ARRAYLANG['TXT_LANGUAGE_ACTION_LINK'] = 'Inhalte der Fallbacksprache in diese Sprache verknüpfen';
 $_ARRAYLANG['TXT_COULD_NOT_WRITE_TO_FILE'] = 'Kunne ikke skrives i filen';
