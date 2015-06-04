@@ -1254,6 +1254,12 @@ class JsonPage implements JsonAdapter {
             }
             $result['area'] = ucfirst($cmd);
             $result['path'] = '/themes/'.$themeFolderName.'/'.$moduleFolderName.'/'.$section.'/Template/Frontend';
+            
+            $additionalArguments = new \Cx\Core\Model\RecursiveArrayAccess(array());
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $evm = $cx->getEvents();
+            $evm->triggerEvent('wysiwygCssReload', array(array('skin'=>$template), $additionalArguments));
+            $result['wysiwygCssReload'] = $additionalArguments->toArray();
         }
         return $result;
     }

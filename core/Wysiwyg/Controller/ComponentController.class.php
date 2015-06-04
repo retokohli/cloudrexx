@@ -122,7 +122,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         //0 is default theme so you dont must change the themefolder
-        if(!empty($skinId) && $skinId>0){
+        if(!empty($skinId)){
             $skin = $themeRepo->findById($skinId)->getFoldername();
             $componentData = $themeRepo->findById($skinId)->getComponentData();
         } else {
@@ -143,10 +143,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         if (!empty($ymlOption['css'])) {
-            $filePath = $this->cx->getClassLoader()->getFilePath($this->cx->getCodeBaseThemesPath() . '/' . $skin . '/' . $ymlOption['css']);
-            $filePath = \Cx\Core_Modules\MediaBrowser\Model\FileSystem::getWebPath($filePath);
-            if ($filePath) {
-                $cssArr[] = $filePath;
+            if ($this->cx->getClassLoader()->getFilePath($this->cx->getCodeBaseThemesPath() . '/' . $skin . '/' . $ymlOption['css'])) {
+                $cssArr[] = $this->cx->getWebsiteOffsetPath() . '/' . $skin . '/' . $ymlOption['css'];
             }
         }
              
