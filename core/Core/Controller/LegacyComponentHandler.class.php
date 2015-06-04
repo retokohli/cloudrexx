@@ -1027,7 +1027,7 @@ class LegacyComponentHandler {
                                     ||  $objTemplate->blockExists('access_currently_online_male_members')
                                     ||  $objTemplate->blockExists('access_currently_online_members'))) {
                                 if ($cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
-                                    $objAccessBlocks = new Access_Blocks();
+                                    $objAccessBlocks = new \Access_Blocks();
                                 if ($objTemplate->blockExists('access_currently_online_female_members'))
                                     $objAccessBlocks->setCurrentlyOnlineUsers('female');
                                 if ($objTemplate->blockExists('access_currently_online_male_members'))
@@ -1047,7 +1047,7 @@ class LegacyComponentHandler {
                                     ||  $objTemplate->blockExists('access_last_active_members'))) {
                                 if (   !$objAccessBlocks
                                     && $cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
-                                    $objAccessBlocks = new Access_Blocks();
+                                    $objAccessBlocks = new \Access_Blocks();
                                 if ($objTemplate->blockExists('access_last_active_female_members'))
                                     $objAccessBlocks->setLastActiveUsers('female');
                                 if ($objTemplate->blockExists('access_last_active_male_members'))
@@ -1087,7 +1087,7 @@ class LegacyComponentHandler {
                                     ||  $objTemplate->blockExists('access_birthday_members'))) {
                                 if (   !$objAccessBlocks
                                     && $cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
-                                    $objAccessBlocks = new Access_Blocks();
+                                    $objAccessBlocks = new \Access_Blocks();
                                 if ($objAccessBlocks->isSomeonesBirthdayToday()) {
                                     if ($objTemplate->blockExists('access_birthday_female_members'))
                                         $objAccessBlocks->setBirthdayUsers('female');
