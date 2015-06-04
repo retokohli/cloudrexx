@@ -84,7 +84,7 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
     function testEnableService(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
         if ($website && 
-            \Cx\Core\Setting\Controller\Setting::getValue'mode','MultiSite' == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
+            \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
         {
             $mailServiceServer = $website->getMailServiceServer();  // get the mail service server
             $mailServiceServer->enableService($website);
@@ -102,7 +102,7 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
     function testDisableService(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {   
         if ($website && 
-            \Cx\Core\Setting\Controller\Setting::getValue'mode','MultiSite' == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
+            \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
         {
             $mailServiceServer = $website->getMailServiceServer();  // get the mail service server
             $mailServiceServer->disableService($website);
@@ -119,7 +119,7 @@ class MailServiceServerTest extends \Cx\Core\Test\Model\Entity\MultiSiteTestCase
     function testDeleteAccount(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
         if ($website && 
-            \Cx\Core\Setting\Controller\Setting::getValue'mode','MultiSite' == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
+            \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER)
         {
             $website->getMailServiceServer()->deleteAccount($website->getMailAccountId());
             $website->getMailServiceServer()->removeWebsite($website);
