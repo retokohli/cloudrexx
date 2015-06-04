@@ -3122,7 +3122,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 }
                 $affiliateId = $urlParams[$affiliateIdQueryStringKey];
                 if (ComponentController::isValidAffiliateId($affiliateId)) {
-                    setcookie('MultiSiteAffiliateId', $affiliateId, time() + (86400 * 30), "/");
+                    $cookieLifeTime = \Cx\Core\Setting\Controller\Setting::getValue('affiliateCookieLifetime','MultiSite');
+                    setcookie('MultiSiteAffiliateId', $affiliateId, time() + (86400 * $cookieLifeTime), "/");
                 }
             default:
                 break;

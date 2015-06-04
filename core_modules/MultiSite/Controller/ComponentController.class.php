@@ -2471,6 +2471,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 ) {
                        throw new MultiSiteException("Failed to add Setting entry for Affiliate Payout Limit");
                 }
+                if (    \Cx\Core\Setting\Controller\Setting::getValue('affiliateCookieLifetime', 'MultiSite') === NULL 
+                    &&  !\Cx\Core\Setting\Controller\Setting::add('affiliateCookieLifetime', 30, 6, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'affiliate')
+                ) {
+                        throw new MultiSiteException("Failed to add Setting entry for Affiliate cookie life time");
+                }
+                        
                 if (!\FWValidator::isEmpty(\Env::get('db'))) {
                     self::addOrUpdateConfigurationOptionUserProfileAttributeId(
                         'affiliateIdProfileAttributeId', 

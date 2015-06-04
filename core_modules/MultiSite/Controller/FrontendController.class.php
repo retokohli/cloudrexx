@@ -153,7 +153,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                     'MULTISITE_PAYPAL_EMAIL_ADDRESS'      => !empty($paypalEmailAddress) ? $paypalEmailAddress : $objUser->getEmail(),
                     'MULTISITE_AFFILIATE_CREDIT_AMT_TOTAL'=> number_format($affiliateTotalCreditAmount, 2) . ' ' . $currencyCode,
                     'MULTISITE_AFFILIATE_TOTAL_AMT'       => number_format($total, 2) . ' ' . $currencyCode,
-                    'MULTISITE_MARKETING_WEBSITE'         => \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite')
+                    'MULTISITE_MARKETING_WEBSITE'         => \Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite'),
+                    'MULTISITE_AFFILIATE_COOKIE_LIFETIME' => \Cx\Core\Setting\Controller\Setting::getValue('affiliateCookieLifetime','MultiSite')
                 ));
                 //initialize
                 $objJs = \ContrexxJavascript::getInstance();
