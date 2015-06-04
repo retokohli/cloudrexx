@@ -424,6 +424,9 @@ function executeContrexxUpdate() {
                 return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             }
 
+            \Cx\Lib\UpdateUtil::sql('
+                ALTER TABLE `' . DBPREFIX . 'content_node` ENGINE = INNODB
+            ');
 
             // before an update of module page can be done, the db changes have to be done
             \Cx\Lib\UpdateUtil::table(
