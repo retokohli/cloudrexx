@@ -79,9 +79,9 @@ class DataSetTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
         $this->assertEquals($this->sortedArray, $sortedSet->toArray());
     }
     
-    public function testSortColumn() {
+    public function testSortColumns() {
         $testSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($this->testArray);
-        $testSet->sortColumn(array('field2', 'field1'));
+        $testSet->sortColumns(array('field2', 'field1'));
         $this->assertEquals($this->sortedColumnsArray, $testSet->toArray());
     }
 }

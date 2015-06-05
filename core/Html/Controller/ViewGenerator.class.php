@@ -396,7 +396,7 @@ class ViewGenerator {
         }
         if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             if(!empty($this->options['order']['overview'])) {
-                $renderObject->sortColumn($this->options['order']['overview']);
+                $renderObject->sortColumns($this->options['order']['overview']);
             }
             $addBtn = '';
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
