@@ -78,7 +78,7 @@ class XmlSitemapPageTree extends PageTree {
         $location = ASCMS_PROTOCOL . '://'
                 . $_CONFIG['domainUrl']
                 . ($_SERVER['SERVER_PORT'] == 80 ? null : ':' . intval($_SERVER['SERVER_PORT']))
-                . ASCMS_INSTANCE_OFFSET
+                . \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()
                 . '/' . \FWLanguage::getLanguageCodeById($this->lang)
                 . $page->getPath();
         return "\t" . '<url>' . 
