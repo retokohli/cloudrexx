@@ -214,6 +214,18 @@ class BackendTable extends HTML_Table {
     function setCellContents($row, $col, $contents, $type = 'TD', $body = 0, $encode = false)
     {
         if ($encode) {
+            //1->n relations
+            if (is_object($contents) && $contents instanceof \Doctrine\ORM\PersistentCollection) {
+                $contents = $contents->toArray();
+            }
+            if (is_array($contents)) {
+                $displayedRelationsLimit = 3;
+                if (count($contents) > $displayedRelationsLimit) {
+                    $contents = array_slice($contents, 0, $displayedRelationsLimit);
+                    $contents[] = '...';
+                }
+                $contents = implode(', ', $contents);
+            }
             //replaces curly brackets, so they get not parsed with the sigma engine
             $contents = preg_replace(array("/{/","/}/"), array("&#123;","&#125;"), contrexx_raw2xhtml($contents), -1);
         }
