@@ -111,9 +111,14 @@ class Url {
     public function __construct($url, $replacePorts = false) {
         
         $data = parse_url($url);
-
-        $this->domain   = $data['host'];
+        if (isset($data['host'])) {
+            $this->domain   = $data['host'];
+        }
         $this->protocol = $data['scheme'];
+        if ($this->protocol == 'file') {
+            // we don't want virtual language dir in file URLs
+            $this->setMode('backend');
+        }
         if (isset($data['port'])) {
             $this->port = $data['port'];
         }
@@ -123,7 +128,11 @@ class Url {
         if (!$this->port) {
             $this->port = getservbyname($this->protocol, 'tcp');
         }
-        $path = ltrim($data['path'], '/');
+        $path = '';
+        if (isset($data['path'])) {
+            $path = $data['path'];
+        }
+        $path = ltrim($path, '/');
         if(!empty($data['query'])) {
             $path .= '?' . $data['query'];
         }
@@ -486,6 +495,9 @@ class Url {
     
     
     public static function fromRequest() {
+        if (php_sapi_name() === 'cli') {
+            return new Url('file://' . getcwd());
+        }
         $s = empty($_SERVER['HTTPS']) ? '' : ($_SERVER['HTTPS'] == 'on') ? 's' : '';
         $sp = strtolower($_SERVER['SERVER_PROTOCOL']);
         $protocol = substr($sp, 0, strpos($sp, '/')) . $s;
@@ -588,13 +600,13 @@ class Url {
         }
         
         $matches = array();
-        preg_match('#http(s)?://#', $url, $matches);
+        preg_match('#(http(s)?|file)://#', $url, $matches);
         
         // relative URL
         if (!count($matches)) {
             
             $absoluteUrl = self::fromRequest();
-            preg_match('#(http(?:s)?://)((?:[^/]*))([/$](?:.*)/)?#', $absoluteUrl->toString(true), $matches);
+            preg_match('#((?:http(?:s)?|file)://)((?:[^/]*))([/$](?:.*)/)?#', $absoluteUrl->toString(true), $matches);
             
             // starting with a /?
             if (substr($url, 0, 1) == '/') {
@@ -610,7 +622,7 @@ class Url {
         }
         
         // disable virtual language dir if not in Backend
-        if(preg_match('/.*(cadmin).*/', $url->getPath()) < 1){
+        if(preg_match('/.*(cadmin).*/', $url->getPath()) < 1 && $url->getProtocol() != 'file'){
             $url->setMode('frontend');
         }else{
             $url->setMode('backend');
@@ -742,7 +754,7 @@ class Url {
         }
         $defaultPort = getservbyname($this->protocol, 'tcp');
         $portPart = '';
-        if (!$defaultPort || $this->port != $defaultPort || $forcePort) {
+        if ($this->port && (!$defaultPort || $this->port != $defaultPort || $forcePort)) {
             $portPart = ':' . $this->port;
         }
         return $this->protocol . '://' .

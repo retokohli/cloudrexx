@@ -50,22 +50,15 @@ class URLTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase {
         $this->assertEquals('Test', $url->getSuggestedTargetPath());
         $this->assertEquals('?foo=bar', $url->getSuggestedParams());
     }
-
-    /**
-     * @expectedException \Cx\Core\Routing\UrlException
-     */
-    public function testMalformedConstruction() {
-        $url = new Url('htp://example.com/');
-    }
     
     public function testPorts() {
-        $url = new Url('http://example.com',true);
+        $url = new Url('http://example.com', true);
         $this->assertEquals('80', $url->getPort());
         
         $url = new Url('http://example.com');
-        $this->assertEquals('', $url->getPort());        
+        $this->assertEquals('80', $url->getPort());        
         
-        $url = new Url('http://example.com:81',true);
+        $url = new Url('http://example.com:81', true);
         $this->assertEquals('80', $url->getPort());
         
         $url = new Url('http://example.com:81');
@@ -77,7 +70,7 @@ class URLTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase {
         $url = new Url('https://example.com:445');
         $this->assertEquals('445', $url->getPort());
         
-        $url = new Url('http://example.com:81/cadmin/',true);
+        $url = new Url('http://example.com:81/cadmin/', true);
         $this->assertEquals('80', $url->getPort());
         
         $url = new Url('http://example.com:81/cadmin/');
@@ -90,4 +83,15 @@ class URLTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase {
         $this->assertEquals('445', $url->getPort());
     }
     
+    public function testFileUrls() {
+        $testResult = 'file://' . getcwd();
+        
+        $url = Url::fromRequest();
+        $this->assertEquals($testResult, $url->toString());
+        $this->assertEquals(getcwd(), (string) $url);
+        
+        $url = Url::fromMagic($testResult);
+        $this->assertEquals($testResult, $url->toString());
+        $this->assertEquals(getcwd(), (string) $url);
+    }
 }
