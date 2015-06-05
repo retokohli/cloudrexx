@@ -624,12 +624,6 @@
                             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                         }).success(function (jsonadapter) {
                             $scope.updateSource();
-                            var paths = ($scope.getPathAsString()+dirName).split('/');
-                            console.log(paths);
-                            for (var path in paths) {
-                                $scope.extendPath(paths[path]);
-                            }
-
                             bootbox.alert(jsonadapter.message);
                         });
                     }
