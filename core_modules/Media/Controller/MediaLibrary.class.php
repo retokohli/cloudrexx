@@ -813,7 +813,7 @@ class MediaLibrary
                 $icon = 'TextDocument';
                 break;
             case in_array($icon, $arrWebDocumentExt):
-            case preg_match('/^[a-z]+:\/\//i', $file):
+            case \FWValidator::isUri($file):
                 $icon = 'WebDocument';
                 break;
             default :
