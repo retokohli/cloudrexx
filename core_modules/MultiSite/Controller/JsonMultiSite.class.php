@@ -1370,7 +1370,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         } catch (\Exception $e) {
             throw new MultiSiteJsonException($e->getMessage());
         }
-    }        
+    }
     
     /**
      * Map Net Domain
@@ -5149,18 +5149,31 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         $pwd = $response->data->pwd;
                         $mailServiceServer = $website->getMailServiceServer();
                     }
-                    if (
-                           $mailServiceServer && $website->getMailAccountId()
-                        && $mailServiceServer->enableService($website)
-                    ) {
-                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY'], 'pwd' => isset($pwd)?$pwd:'');
+                    $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
+                    $status = $hostingController->getMailServiceStatus($website->getMailAccountId());
+                    if($status == 'true') {
+                        \DBG::log('JsonMultiSite::enableMailService() failed: Mail service account was enabled.');
+                         return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY'], 'pwd' => '');
+                    } else {
+                        if (
+                               $mailServiceServer && $website->getMailAccountId()
+                            && $mailServiceServer->enableService($website)
+                        ) {
+                            return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY'], 'pwd' => isset($pwd)?$pwd:'');
+                        }
                     }
                     break;
 
                 case ComponentController::MODE_WEBSITE:
                 case ComponentController::MODE_SERVICE:
-                    // forward call to manager server. 
-                    $response = self::executeCommandOnManager('enableMailService', array('websiteId' => $params['post']['websiteId']));
+                    $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
+                    $status = $hostingController->getMailServiceStatus($website->getMailAccountId());
+                    if($status == 'true') {
+                        \DBG::log('JsonMultiSite::enableMailService() failed: Mail service account was enabled.');
+                    } else {
+                        // forward call to manager server. 
+                        $response = self::executeCommandOnManager('enableMailService', array('websiteId' => $params['post']['websiteId']));
+                    }
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY']);
                     }
