@@ -10,6 +10,7 @@
  */
 
 namespace Cx\Core\ContentManager\Controller;
+use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 /**
@@ -82,7 +83,7 @@ class ContentManager extends \Module
         \JS::activate('cx-form');
         \JS::activate('jstree');
         \JS::registerJS('lib/javascript/lock.js');
-        \JS::registerJS('lib/javascript/jquery/jquery.history.js');
+        \JS::registerJS('lib/javascript/jquery/jquery.history.max.js');
 
 // this can be used to debug the tree, just add &tree=verify or &tree=fix
         $tree = null;
@@ -130,6 +131,28 @@ class ContentManager extends \Module
             $alias_permission = "none !important";
             $alias_denial     = "block";
         }
+
+        $mediaBrowser = new MediaBrowser();
+        $mediaBrowser->setCallback('target_page_callback');
+        $mediaBrowser->setOptions(array(
+            'type' => 'button',
+            'data-cx-mb-views' => 'sitestructure',
+            'id' => 'page_target_browse'
+        ));
+
+        $mediaBrowserCkeditor = new MediaBrowser();
+        $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
+        $mediaBrowserCkeditor->setOptions(array(
+            'id' => 'ckeditor_image_button',
+            'type' => 'button',
+            'style' => 'display:none'
+        ));
+
+        $this->template->setVariable(array(
+            'MEDIABROWSER_BUTTON' => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE']),
+            'MEDIABROWSER_BUTTON_CKEDITOR' => $mediaBrowserCkeditor->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
+        ));
+
         $this->template->setVariable(array(
             'ALIAS_PERMISSION'  => $alias_permission,
             'ALIAS_DENIAL'      => $alias_denial,

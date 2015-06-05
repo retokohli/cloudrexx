@@ -1984,7 +1984,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     border-bottom-color: #000;
 }
 
-.uploader-modal #thumbnailSelector .image, .media-browser-modal-window #thumbnailSelector .image {
+ #thumbnailSelector .image,  {
     width: 100%;
     max-width: 100%;
     height: auto;
@@ -1997,7 +1997,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     transition: .5s all;
 }
 
-.uploader-modal #thumbnailSelector .thumbnail-size, .media-browser-modal-window #thumbnailSelector .thumbnail-size {
+#thumbnailSelector .thumbnail-size {
     margin: 10px 0 0 0;
 }
 
@@ -2097,4 +2097,9 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     width: 100%;
     font-size: 16px;
     display: none;
+}
+
+#thumbnailSelector img {
+    max-width: 100%;
+    height: auto;
 }
