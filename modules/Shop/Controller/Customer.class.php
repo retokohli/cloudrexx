@@ -382,7 +382,7 @@ class Customer extends \User
     {
         global $_ARRAYLANG;
 
-        if (!\Orders::deleteByCustomerId($this->id)) {
+        if (!Orders::deleteByCustomerId($this->id)) {
             return \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_DELETING_ORDERS']);
         }
         return parent::delete($deleteOwnAccount);
