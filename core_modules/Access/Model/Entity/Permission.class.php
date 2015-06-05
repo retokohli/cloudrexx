@@ -19,7 +19,7 @@ namespace Cx\Core_Modules\Access\Model\Entity;
  * @subpackage  core_access
  */
 
-class Permission {
+class Permission extends \Cx\Model\Base\EntityBase {
     /**
      * Allowed protocols
      * 
@@ -102,10 +102,11 @@ class Permission {
     public function hasAccess(array $params = array()) {
         $mode  = \Cx\Core\Core\Controller\Cx::instanciate()->getMode();
         
-        $protocol = \Env::get('cx')->getRequest() ? \Env::get('cx')->getRequest()->getUrl()->getProtocol() : '';
-        $method   = \Env::get('cx')->getRequest() ? \Env::get('cx')->getRequest()->getHttpRequestMethod() 
-                        : ((php_sapi_name() === 'cli' || $mode == \Cx\Core\Core\Controller\Cx::MODE_COMMAND) ? 'cli' : '');
-        
+        $protocol = $this->cx->getRequest() ? \Env::get('cx')->getRequest()->getUrl()->getProtocol() : '';
+        $method = $this->cx->getRequest()->getHttpRequestMethod();
+        if (php_sapi_name() === 'cli') {
+            $method = 'cli';
+        }
         
         //protocol check
         if ($mode != \Cx\Core\Core\Controller\Cx::MODE_COMMAND && !empty($this->allowedProtocols) && !in_array($protocol, $this->allowedProtocols)) {
