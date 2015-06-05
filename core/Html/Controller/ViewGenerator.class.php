@@ -341,6 +341,11 @@ class ViewGenerator {
         }
     }
     
+    /**
+     * $_GET['editid'] has the following format:
+     * {<vg_incr_no>,<id_to_edit>}[,{<vg_incr_no>,<id_to_edit>}[,...]
+     * <id_to_edit> can be a number, string or set of both, separated by comma
+     */
     protected function isInEditMode() {
         if (!isset($_GET['editid']) && !isset($_POST['editid'])) {
             return false;
