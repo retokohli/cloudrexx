@@ -116,6 +116,7 @@ class Csrf {
     public static function header($header, $replace = true, $httpResponseCode = null)
     {
         \DBG::msg('\Cx\Core\Csrf\Controller\Csrf::header(): Set header "' . $header . '"');
+        \DBG::stack();
         header(self::__enhance_header($header), $replace, $httpResponseCode);
     }
     
