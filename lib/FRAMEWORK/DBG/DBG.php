@@ -614,7 +614,7 @@ class DBG
             $out = var_export($val, true);
         }
         $out = str_replace("\n", "\n        ", $out);
-        if (!self::$log_file && !self::$log_memory) {
+        if (!self::$log_file && !self::$log_memory && php_sapi_name() != 'cli') {
             // we're logging directly to the browser
             // can't use contrexx_raw2xhtml() here, because it might not
             // have been loaded till now
