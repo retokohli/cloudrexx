@@ -452,6 +452,50 @@ class FormGenerator {
 
                 return $div;
                 break;
+            //Old Uploader
+            case 'uploader_old':
+                try {
+                    $strJs = <<<JAVASCRIPT
+                    <script type="text/javascript">
+                                        
+                        function getFileBrowser(name, type)
+                        {
+                            insertBox = name;
+                            fileType = type;
+                            switch (type) {
+                                case 'wysiwyg':
+                                    openWindow('index.php?cmd=FileBrowser&standalone=true&type=Wysiwyg&csrf=' + cx.variables.get('csrf', 'contrexx'), '', 'width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+                                    break;
+                            }
+
+                        }
+                        function openWindow(theURL, winName, features) {
+                            browserPopup = window.open(theURL, "Browser", features);
+                            browserPopup.focus();
+                        }
+                        function SetUrl(url, width, height, alt) {
+                            switch (fileType) {
+                                case 'wysiwyg':
+                                    document.getElementById(insertBox).value = url;
+                                    break;
+                            }
+                        }
+                                        
+                    </script>
+JAVASCRIPT;
+                    $div = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                    
+                    $div->addChild(new \Cx\Core\Html\Model\Entity\TextElement(
+                        $mb = '<input type="text" maxlength="255" name="'.$name.'" id="'.$name.'" style="width: 250px;" value="'.$value.'">
+                               <input type="button" value="Durchsuchen" onclick="getFileBrowser(\''.$name.'\', \'wysiwyg\')">' .$strJs
+                    ));
+
+                    return $div;
+                } catch (Exception $e) {
+                    \DBG::msg('<!-- failed initializing uploader -->');
+                    throw new \Exception("failed initializing uploader");
+                }
+                break;
             case 'image':
                 \JS::registerCode('
                     function javascript_callback_function(data) {

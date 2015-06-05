@@ -293,7 +293,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 ),
                 'imagePath' => array(
                     'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_IMAGE_PATH'],
-                    'type' => 'image',
+                    //'type' => 'image',
+                    'type' => 'uploader_old',
                     'showOverview' => false,
                 ),
                 'htmlContent' => array(
