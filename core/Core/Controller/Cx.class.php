@@ -1305,6 +1305,7 @@ namespace Cx\Core\Core\Controller {
                         $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'],
                                                                                    \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET));
                         break;
+                    case self::MODE_COMMAND:
                     case self::MODE_MINIMAL:
                         try {
                             $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'], \Cx\Core\Routing\Url::fromRequest());
