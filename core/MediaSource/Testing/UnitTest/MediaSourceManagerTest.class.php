@@ -32,7 +32,8 @@ class MediaSourceManagerTest extends ContrexxTestCase
     {
         $testCx = new TestCx();
         $name = "Test";
-        $testCx->getEvents()->addMediaSource(new MediaSource($name, "test"));
+        $testCx->getEvents()->addMediaSource(new MediaSource($name, "test", array(  self::$cx->getWebsiteImagesContentPath(),
+            self::$cx->getWebsiteImagesContentWebPath(),)));
         $mediaSourceManger = new MediaSourceManager($testCx);
         $mediaTypes = $mediaSourceManger->getMediaTypes();
         $this->assertEquals($name,$mediaTypes['Test']->getName());
