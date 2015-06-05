@@ -5166,14 +5166,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
                 case ComponentController::MODE_WEBSITE:
                 case ComponentController::MODE_SERVICE:
-                    $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
-                    $status = $hostingController->getMailServiceStatus($website->getMailAccountId());
-                    if($status == 'true') {
-                        \DBG::log('JsonMultiSite::enableMailService() failed: Mail service account was enabled.');
-                    } else {
-                        // forward call to manager server. 
-                        $response = self::executeCommandOnManager('enableMailService', array('websiteId' => $params['post']['websiteId']));
-                    }
+                    // forward call to manager server. 
+                    $response = self::executeCommandOnManager('enableMailService', array('websiteId' => $params['post']['websiteId']));
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY']);
                     }
