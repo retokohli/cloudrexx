@@ -139,7 +139,7 @@ class NestedNavigationPageTree extends SigmaPageTree {
         $style = $current ? self::StyleNameActive : self::StyleNameNormal;
         $output = str_replace('{NAME}', contrexx_raw2xhtml($title), $output);
         $output = str_replace('<li>', '<li class="'.$style.'">', $output);
-        $output = str_replace('{URL}', ASCMS_INSTANCE_OFFSET.$this->virtualLanguageDirectory.contrexx_raw2encodedUrl($path), $output);
+        $output = str_replace('{URL}', \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath().$this->virtualLanguageDirectory.contrexx_raw2encodedUrl($path), $output);
         $linkTarget = $page->getLinkTarget();
         $output = str_replace('{TARGET}', empty($linkTarget) ? '_self' : $linkTarget, $output);
         $output = str_replace('{CSS_NAME}',  $page->getCssNavName(), $output);
