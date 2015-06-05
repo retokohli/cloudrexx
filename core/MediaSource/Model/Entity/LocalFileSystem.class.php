@@ -304,6 +304,12 @@ class LocalFileSystem implements FileSystem
                     . '.'
                     . $file->getExtension();
             }
+            if ($fileName == $destinationFileName){
+                return sprintf(
+                    $_ARRAYLANG['TXT_FILEBROWSER_FILE_SUCCESSFULLY_RENAMED'],
+                    $file->getName()
+                );
+            }
             if (!\Cx\Lib\FileSystem\FileSystem::move(
                 $fileName, $destinationFileName
                 , false
