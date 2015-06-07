@@ -54,7 +54,98 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
         // this will update the license information on the associated websites
         if (!empty($changeSet['product'])) {            
             \Env::get('cx')->getEvents()->triggerEvent('model/payComplete', array(new \Doctrine\ORM\Event\LifecycleEventArgs($subscription, \Env::get('em'))));
+            $this->registerAffiliateCredit($eventArgs->getEntity(), $eventArgs->getEntityManager());
         }
+    }
+
+    public function postPersist($eventArgs) {
+        $this->registerAffiliateCredit($eventArgs->getEntity(), $eventArgs->getEntityManager());
+    }
+
+    /**
+     * Register the affiliate commission to a subscription
+     */
+    public function registerAffiliateCredit($subscription, $em) {
+        // abort in case the affiliate system is not active
+        $affiliateSystemActive = \Cx\Core\Setting\Controller\Setting::getValue('affiliateSystem','MultiSite');
+        if (!$affiliateSystemActive) {
+            return;
+        }
+
+        // check if subscription is active 
+        if ($subscription->getState() != \Cx\Modules\Order\Model\Entity\Subscription::STATE_ACTIVE) {
+            return;
+        }
+
+        // check if subscription is free of charge
+        if (!$subscription->getPaymentAmount()) {
+            return;
+        }
+
+        // check if subscription has been paid
+        if (!in_array($subscription->getPaymentState(), array(\Cx\Modules\Order\Model\Entity\Subscription::PAYMENT_PAID, \Cx\Modules\Order\Model\Entity\Subscription::PAYMENT_RENEWAL))) {
+            return;
+        }
+        
+        // check if a credit for the subscription has already been issued
+        $qb = \Env::get('em')->createQueryBuilder();
+        $qb->select('ac')
+            ->from('Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit', 'ac')
+            ->where('ac.subscription = ?1')
+            ->setParameter(1, $subscription->getId());
+        if ($qb->getQuery()->getResult()) {
+            return;
+        }
+
+        // initialize new credit for affiliate commission
+        $affiliateCredit = new \Cx\Core_Modules\MultiSite\Model\Entity\AffiliateCredit(); 
+        $affiliateCredit->setSubscription($subscription);
+        $affiliateCredit->setCredited(false);
+        
+        // set currency
+        $currencyId= \Cx\Modules\Crm\Controller\CrmLibrary::getDefaultCurrencyId();
+        $currency  = $em->getRepository('\Cx\Modules\Crm\Model\Entity\Currency')->findOneById($currencyId);
+        $affiliateCredit->setCurrency($currency);
+
+        // set referee that shall receive the affiliate commission
+        $crmContactId = $subscription->getOrder()->getContactId();
+        $userId = \Cx\Modules\Crm\Controller\CrmLibrary::getUserIdByCrmUserId($crmContactId);
+        $user = \FWUser::getFWUserObject()->objUser->getUser($userId);
+        if (!$user) {
+            return;
+        }
+        $affiliateIdReferenceProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdReferenceProfileAttributeId','MultiSite');
+        $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId','MultiSite');
+        $refereeId = $user->getProfileAttribute($affiliateIdReferenceProfileAttributeId);
+        $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array(
+            $affiliateIdProfileAttributeId => $refereeId,
+            'active' => true,
+            'verified' => true,
+        ));
+        if (!$objUser) {
+            return;
+        }
+        $objRefereeUser = null;
+        while(!$objUser->EOF) {
+            if ($objUser->getProfileAttribute($affiliateIdProfileAttributeId) === $refereeId) {
+                $objRefereeUser = $objUser;
+                break;
+            }
+            $objUser->next();
+        }
+        if (!$objRefereeUser) {
+            return;
+        }
+        $referee = $em->getRepository('Cx\Core\User\Model\Entity\User')->findOneById($objRefereeUser->getId());
+        $affiliateCredit->setReferee($referee);
+
+        // set commission
+// TODO: implement commission rate as configuration option
+        $commissionRate = 10 / 100;
+        $affiliateCredit->setAmount($subscription->getPaymentAmount() * $commissionRate);
+
+        // put credit into buffer to be persisted to the database in the postFlush event
+        $this->entitiesToPersistOnPostFlush[] = $affiliateCredit;
     }
     
     /**
