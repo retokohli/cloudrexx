@@ -2455,9 +2455,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         'MultiSite External Payment Customer ID',
                         5);
                     self::addOrUpdateConfigurationOptionUserProfileAttributeId(
-                        'notificationCancelledProfileAttributeId', 
+                        'notificationCancelledProfileAttributeId',
                         'Cancelled notification emails user profile attribute ID',
-                        6);
+                        6,
+                        'manager',
+                        false);
                 }
                 //affiliate group
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'affiliate','FileSystem');
@@ -2506,18 +2508,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Add or Update the Configuration Option User Profile Attribute id
      * 
-     * @param string  $configOptionName config option name
-     * @param string  $attributeName    attribute name
-     * @param integer $order            position
+     * @param string  $configOptionName    config option name
+     * @param string  $attributeName       attribute name
+     * @param integer $order               position
+     * @param boolean $attributeProtection profile attribute protection
      * 
      * @return boolean
      * @throws MultiSiteException
      */
-    public static function addOrUpdateConfigurationOptionUserProfileAttributeId($configOptionName, $attributeName, $order,  $group = 'manager') {
+    public static function addOrUpdateConfigurationOptionUserProfileAttributeId($configOptionName, $attributeName, $order,  $group = 'manager', $attributeProtection = true) {
         if (empty($configOptionName)) {
             return;
         }
-        $dbProfileAttributeId      = self::getProfileAttributeIdByConfigOptionName($configOptionName, $attributeName);
+        $dbProfileAttributeId      = self::getProfileAttributeIdByConfigOptionName($configOptionName, $attributeName, $attributeProtection);
         $settingProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue($configOptionName,'MultiSite');
 
         if ($settingProfileAttributeId != $dbProfileAttributeId) {
@@ -3069,13 +3072,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Get the External Payment Customer Id Profile Attribute Id
      * 
-     * @param string $configOptionName config option name 
-     * @param string $attributeName    attribute name
+     * @param string  $configOptionName config option name 
+     * @param string  $attributeName    attribute name
+     * @param boolean $protection       write protection for the profile attribute
      * 
      * @return integer attribute id
      * @throws MultiSiteException
      */
-    public static function getProfileAttributeIdByConfigOptionName($configOptionName, $attributeName) {
+    public static function getProfileAttributeIdByConfigOptionName($configOptionName, $attributeName, $protection = true) {
         $objUser = \FWUser::getFWUserObject()->objUser;
         
         $externalPaymentCustomerIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue($configOptionName,'MultiSite');
@@ -3101,7 +3105,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             ));
             $objProfileAttribute->setType('text');
             $objProfileAttribute->setParent(0);
-            $objProfileAttribute->setProtection(array());
+            if ($protection) {
+                $objProfileAttribute->setProtection(array());
+            }
             if (!$objProfileAttribute->store()) {
                 throw new MultiSiteException('Failed to create ' . $attributeName);
             }
