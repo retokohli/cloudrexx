@@ -556,7 +556,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         foreach ($products as $product) {
 // customizing: do not list Trial and Enterprise product 
 // TODO: implement some sort of selective product selection in the multisite configuration
-            if (in_array($product->getName(), array('Enterprise'))) {
+            if (in_array($product->getName(), array('Free', 'Enterprise'))) {
                 continue;
             }
             $productName = contrexx_raw2xhtml($product->getName());
@@ -3227,7 +3227,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         self::loadAccountActivationBar();
         self::loadPoweredByFooter();
-        self::loadContactInformationForm();
+        self::loadContactInformationForm($page);
     }
     
     /**
@@ -3327,7 +3327,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return null
      */
     
-    public function loadContactInformationForm()
+    public function loadContactInformationForm($page)
     {
        global $_ARRAYLANG;
 
@@ -3342,6 +3342,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // only show modal contact information modal if user is signed-in
                 $objUser = \FWUser::getFWUserObject()->objUser;
                 if (!$objUser->login()) {
+                    return;
+                }
+
+                // do not show modal when trying to unsubscribe from notification mails
+                if ($page->getModule() == 'MultiSite' && $page->getCmd() == 'NotificationUnsubscribe') {
                     return;
                 }
 
