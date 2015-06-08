@@ -428,8 +428,8 @@ CREATE TABLE `contrexx_core_module_multisite_cron_mail_criteria` (
   `attribute` varchar(50) NOT NULL,
   `criteria` varchar(100) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `IDX_F33B4339EF07C77B` (`cron_mail_id`),
-  CONSTRAINT `contrexx_core_module_multisite_cron_mail_criteria_ibfk_1` FOREIGN KEY (`cron_mail_id`) REFERENCES `contrexx_core_module_multisite_cron_mail` (`id`)
+  KEY `cron_mail_id` (`cron_mail_id`),
+  CONSTRAINT `contrexx_core_module_multisite_cron_mail_criteria_ibfk_mailid` FOREIGN KEY (`cron_mail_id`) REFERENCES `contrexx_core_module_multisite_cron_mail` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -443,8 +443,8 @@ CREATE TABLE `contrexx_core_module_multisite_cron_mail_log` (
   `sent_date` datetime default NULL,
   `token` varchar(32) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `IDX_A532A954EF07C77B` (`cron_mail_id`),
-  CONSTRAINT `contrexx_core_module_multisite_cron_mail_log_ibfk_1` FOREIGN KEY (`cron_mail_id`) REFERENCES `contrexx_core_module_multisite_cron_mail` (`id`)
+  KEY `cron_mail_id` (`cron_mail_id`),
+  CONSTRAINT `contrexx_core_module_multisite_cron_mail_log_mailid` FOREIGN KEY (`cron_mail_id`) REFERENCES `contrexx_core_module_multisite_cron_mail` (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
