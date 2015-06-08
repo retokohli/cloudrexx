@@ -174,9 +174,12 @@ class ClassLoader {
         // makes sure that no matter where the ClassLoader gets initialized,
         // all customized files are always located in the folder /customizing.
         // This means that also the customized files of the installer will be
-        // located in the folder /customizing. 
-        $file = preg_replace('#'.preg_quote($this->cx->getWebsiteDocumentRootPath(), '#').'#', '', $file);
-        $file = preg_replace('#'.preg_quote($this->cx->getCodeBaseDocumentRootPath(), '#').'#', '', $file);
+        // located in the folder /customizing.
+        if(strpos($file,$this->cx->getWebsiteDocumentRootPath())!==false) {
+            $file = preg_replace('#'.preg_quote($this->cx->getWebsiteDocumentRootPath(), '#').'#', '', $file);
+        } else {
+            $file = preg_replace('#'.preg_quote($this->cx->getCodeBaseDocumentRootPath(), '#').'#', '', $file);
+        }
         
         // load class from customizing folder
         $isCustomized = false;
