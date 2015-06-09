@@ -133,6 +133,7 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
             }
             $objUser->next();
         }
+        // no referee found -> self signup without recommendation (affiliate system)
         if (!$objRefereeUser) {
             return;
         }
