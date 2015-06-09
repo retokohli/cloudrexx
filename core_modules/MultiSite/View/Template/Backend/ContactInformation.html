@@ -104,40 +104,45 @@
 </div>
 <script type="text/javascript">
   /* <![CDATA[ */
+  cx.ready(function(){
+      jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function(){
+        jQuery('#multisite_contact_information_form').submit(function () {
+            jQuery('input, select').removeClass('input_error');
+            // MULTISITE_CUSTOMER_TYPE_ATTRIBUT_ID = Id of field where we store the customer type from crm
+            var validationFields = ['firstname','lastname','address','zip','city','country', '{MULTISITE_CUSTOMER_TYPE_ATTRIBUT_ID}'];
+            var error = false;
+            jQuery.each(validationFields, function (key, value) {
+              var inputFieldName = value;
+              if(value != 'customer_type'){
+                  var inputFieldName = 'multisite_user_profile_attribute[' + value + '][0]';
+              }
+              var inputField = jQuery('#multisite_contact_information_form [name="' + inputFieldName + '"]');
+              if (inputField.val() == '' || inputField.val() == '0') {
+                inputField.addClass('input_error').scroll();
+                error = true;
+              }
+            });
+            if (error) {
+              jQuery('.validationError').html('{TXT_CORE_MODULE_MULTISITE_MANDATORY_FIELDS_REQUIRED_MSG}');
+              jQuery('.alert').show();
+              return false;
+            }
+            sendApiFormRequest('#multisite_contact_information_form',
+                               '#multisite_contact_informaiton',
+                               '#multisite_user',
+                               '/api/MultiSite/User/Summary'
+                              );
+
+            return false;
+        }); 
+      });          
+  });
+
   jQuery(document).ready(function () {
     jQuery('#multisite_contact_informaiton').modal({
             backdrop: 'static',
             keyboard: false
           });
-    jQuery('#multisite_contact_information_form').submit(function () {
-      jQuery('input, select').removeClass('input_error');
-      // MULTISITE_CUSTOMER_TYPE_ATTRIBUT_ID = Id of field where we store the customer type from crm
-      var validationFields = ['firstname','lastname','address','zip','city','country', '{MULTISITE_CUSTOMER_TYPE_ATTRIBUT_ID}'];
-      var error = false;
-      jQuery.each(validationFields, function (key, value) {
-      	var inputFieldName = value;
-      	if(value != 'customer_type'){
-        	var inputFieldName = 'multisite_user_profile_attribute[' + value + '][0]';
-        }
-        var inputField = jQuery('#multisite_contact_information_form [name="' + inputFieldName + '"]');
-        if (inputField.val() == '' || inputField.val() == '0') {
-          inputField.addClass('input_error').scroll();
-          error = true;
-        }
-      });
-      if (error) {
-        jQuery('.validationError').html('{TXT_CORE_MODULE_MULTISITE_MANDATORY_FIELDS_REQUIRED_MSG}');
-        jQuery('.alert').show();
-        return false;
-      }
-      sendApiFormRequest('#multisite_contact_information_form',
-                         '#multisite_contact_informaiton',
-                         '#multisite_user',
-                         '/api/MultiSite/User/Summary'
-                        );
-
-      return false;
-    });
     // remove strong element (mandatory field star) and create a new star next to label for a better layout look
     jQuery('.row,.half-row').each(function(){
         if(jQuery(this).children('strong').remove().length != 0){

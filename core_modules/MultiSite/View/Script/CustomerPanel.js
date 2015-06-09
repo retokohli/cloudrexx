@@ -241,7 +241,7 @@ function checkAvailablityOfAffiliateId(affiliateId) {
         },
         type: "POST",
         beforeSend: function (xhr, settings) {
-            jQuery(".save").prop('disabled', true);
+            jQuery('#affiliate-form .save').prop('disabled', true);
         },
         success: function(response, status, xhr) {
             if (xhr === lastXhr) {
@@ -262,7 +262,7 @@ function checkAvailablityOfAffiliateId(affiliateId) {
             }
         },
         complete: function (xhr, settings) {
-            enableOrDisableButton();
+            enableOrDisableButton(jQuery('#affiliate-form'));
             jQuery(".save").button('reset');
         },
         error: function() { }
@@ -355,11 +355,11 @@ function hideErrorBlock(errorBlock) {
         .html('&nbsp;');
 }
 
-function enableOrDisableButton() {
-    if (jQuery(".errorBlock .help-block").length === 0) {
-        jQuery(".save").prop('disabled', false);
+function enableOrDisableButton($formObj) {
+    if ($formObj.find('.errorBlock').length === 0 || $formObj.find('.help-block').length === 0) {
+        $formObj.find(".save").prop('disabled', false);
     } else {
-        jQuery(".save").prop('disabled', true);
+        $formObj.find(".save").prop('disabled', true);
     }
 }
 
