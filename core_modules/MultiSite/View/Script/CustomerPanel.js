@@ -312,6 +312,7 @@ function saveAffiliateIdAndPayPalMailAddress($this) {
         beforeSend: function (xhr, settings) {
             hideErrorBlock(jQuery('.errorBlock'));
             $this.button('loading');
+            $this.removeClass('save');
             $this.prop('disabled', true);
         },
         success: function(response) {
@@ -336,6 +337,7 @@ function saveAffiliateIdAndPayPalMailAddress($this) {
         },
         complete: function (xhr, settings) {
             $this.button('reset');
+            $this.addClass('save');
         },
         error: function() { }
     });
