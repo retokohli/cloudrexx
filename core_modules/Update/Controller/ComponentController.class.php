@@ -57,6 +57,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
         
+        //To initialize the variable \Cx\Core_Modules\MultiSite\Controller\ComponentController::cxMainDomain
+        $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $component = $componentRepo->findOneBy(array('name' => 'MultiSite'));
+        if (!$component) {
+            return;
+        }
+        $componentController = $component->getSystemComponentController();
+        $componentController->setCustomerPanelDomainAsMainDomain();
+                    
         $updateController = $this->getController('Update');
         $updateController->applyDelta();
     }

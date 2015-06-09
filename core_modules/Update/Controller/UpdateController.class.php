@@ -42,7 +42,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
      */
     public function calculateDbDelta($oldVersion, $codeBasePath) {
         \Cx\Core\Setting\Controller\Setting::init('Config', '', 'Yaml');
-
+        
         $latestVersion = str_replace('.', '', \Cx\Core\Setting\Controller\Setting::getValue('coreCmsVersion', 'Config'));
         $olderVersion = str_replace('.', '', $oldVersion);
 
@@ -57,8 +57,22 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
 
         $i = 1;
         $isHigherVersion = $olderVersion < $latestVersion;
+        if (!$isHigherVersion) {
+            rsort($versions);
+        }
         foreach ($versions as $version) {
-            if ($version > $olderVersion && $version <= $latestVersion) {
+            if (    (   $isHigherVersion 
+                    &&  (   $version > $olderVersion 
+                        &&  $version <= $latestVersion
+                        )
+                    )
+                ||
+                    (   !$isHigherVersion 
+                    &&  (   $version <= $olderVersion 
+                        &&  $version > $latestVersion
+                        )
+                    )
+            ) {
                 $delta = new \Cx\Core_Modules\Update\Model\Entity\Delta();
                 $rollBack = !$isHigherVersion ? 1 : 0;
                 $delta->addCodeBase($version, $rollBack, $i);
@@ -111,7 +125,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
         $yamlFile   = null;
         foreach ($deltas as $delta) {
             $status = $delta->applyNext();
-            $delta->setRollback(1);
+            $delta->setRollback($delta->getRollback() ? 0 : 1);
             $deltaRepository->flush();
             if (!$status) {
                 //Rollback to old state
@@ -158,7 +172,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
     protected function rollBackDelta() {
         $deltaRepository = new \Cx\Core_Modules\Update\Model\Repository\DeltaRepository();
         $rollBackDeltas = $deltaRepository->findBy(array('rollback' => 1));
-        usort($rollBackDeltas, 'compareOffset');
+        rsort($rollBackDeltas);
         foreach ($rollBackDeltas as $rollBackDelta) {
             if (!$rollBackDelta->applyNext()) {
                 $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName', 'MultiSite');
@@ -167,21 +181,6 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
                 break;
             }
         }
-    }
-
-    /**
-     * Compare array values based on offset
-     * 
-     * @param object $obj1
-     * @param object $obj2
-     * 
-     * @return integer
-     */
-    public function compareOffset($obj1, $obj2) {
-        if ($obj1->offset == $obj2->offset) {
-            return 0;
-        }
-        return ($obj1->offset < $obj2->offset) ? -1 : 1;
     }
 
     /**
@@ -196,7 +195,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
         //change installation root
         $objConfigData = new \Cx\Lib\FileSystem\File(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteConfigPath() . '/configuration.php');
         $configData    = $objConfigData->getData();
-        if(!\FWValidator::isEmpty($oldCodeBaseVersion)){
+        if (!\FWValidator::isEmpty($oldCodeBaseVersion)) {
             $matches = array();
             preg_match('/\\$_PATHCONFIG\\[\'ascms_installation_root\'\\] = \'(.*?)\';/', $configData , $matches);
             $installationRootPath = str_replace($newCodeBaseVersion, $oldCodeBaseVersion, $matches[1] );
@@ -322,6 +321,29 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
         $objFile = new \Cx\Lib\FileSystem\File($file);
         $yaml = new \Symfony\Component\Yaml\Yaml();
         return $yaml->load($objFile->getData());
+    }
+    
+    /**
+     * getAllCodeBaseVersions
+     * 
+     * @param string $codeBasePath codeBase path
+     * @return array
+     */
+    public function getAllCodeBaseVersions($codeBasePath) {
+        //codebase
+        $codeBaseVersions   = array();
+        $codebaseScannedDir = array_values(array_diff(scandir($codeBasePath), array('..', '.')));
+        foreach ($codebaseScannedDir as $value) {
+            $configFile = $codeBasePath . '/' . $value . '/installer/config/config.php';
+            if (file_exists($configFile)) {
+                $configContents = file_get_contents($configFile);
+                if (preg_match_all('/\\$_CONFIG\\[\'(.*?)\'\\]\s+\=\s+\'(.*?)\';/s', $configContents, $matches)) {
+                    $configValues       = array_combine($matches[1], $matches[2]);
+                    $codeBaseVersions[] = $configValues['coreCmsVersion'];
+                }
+            }
+        }
+        return $codeBaseVersions;
     }
 
 }
