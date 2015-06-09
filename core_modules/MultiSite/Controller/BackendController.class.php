@@ -307,10 +307,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'loadingServiceServerInfo'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOADING_SERVICE_SERVER_INFO'],
                 'triggeringWebsiteUpdate'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_TRIGGERING_WEBSITE_UPDATE'],
                 'latestCodeBaseVersion'     => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CODEBASE_VERSION'],
-                'listOfWebsites'            => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITES_LIST'],
                 'codeBaseNotExist'          => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CODEBASE_NOT_EXIST'],
                 'updateNotAvailable'        => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_NOT_AVAILABLE'],
-                    
+                'websiteName'               => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITENAME'],
+                'codeBase'                  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_CODEBASES'],
+                'websitesNotExist'          => $_ARRAYLANG['TXT_MULTISITE_NO_WEBSITE_FOUND'],
+                'loading'                   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOADING_TEXT']
                 ), 'multisite/lang');
             
             $template->setVariable('TABLE', $view->render());

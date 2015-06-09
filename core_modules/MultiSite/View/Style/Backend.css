@@ -76,6 +76,10 @@ a.websiteUpdate{
 
 #websiteUpdateForm{
       padding: 45px 80px;
+      text-align: center;
+}
+#websitesSection table.adminlist{
+    margin-bottom: 25px;
 }
 #websiteUpdateForm a{
       color: #1a74bd;
@@ -147,4 +151,11 @@ a.deleteMultisiteConfig {
 }
 .ui-dialog #loading.websiteBackup {
  height: 28px !important;
+}
+#websitesSection{
+    padding-top: 15px;
+}
+
+#websiteUpdateForm select{
+    margin-left: 5px;
 }
