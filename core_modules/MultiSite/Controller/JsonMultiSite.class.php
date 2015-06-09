@@ -6199,7 +6199,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                         || !isset($params['post']['serviceServerId'])
                     ) {
                         \DBG::msg('JsonMultiSite::getCodeBaseVersions() failed: Insufficient arguments supplied: ' . var_export($params, true));
-                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_UPDATE_DETAIL_ERROR_MSG']);
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_CODEBASES_ERROR_MSG']);
                     }
                     $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
                     $websiteServiceServer = $websiteServiceServerRepo->findOneById($params['post']['serviceServerId']);
@@ -6225,10 +6225,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     return array('codeBaseVersions' => $codeBaseVersions);
                     break;
             }
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_UPDATE_DETAIL_ERROR_MSG']);
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_CODEBASES_ERROR_MSG']);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
-            throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_UPDATE_DETAIL_ERROR_MSG']);
+            throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_CODEBASES_ERROR_MSG']);
         }
     }
     
@@ -6578,14 +6578,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             if (empty($params['post']) || !isset($params['post']['codeBase'])
             ) {
                 \DBG::msg('JsonMultiSite::getWebsitesByCodeBase() failed: Insufficient arguments supplied: ' . var_export($params, true));
-                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_UPDATE_DETAIL_ERROR_MSG']);
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_ERROR_MSG']);
             }
             $codeBase = isset($params['post']['codeBase']) ? contrexx_input2raw($params['post']['codeBase']) : '';
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                     if (!isset($params['post']['serviceServerId'])) {
                         \DBG::msg('JsonMultiSite::getWebsitesByCodeBase() failed: Insufficient arguments supplied: ' . var_export($params, true));
-                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_UPDATE_DETAIL_ERROR_MSG']);
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_ERROR_MSG']);
                     }
                     $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
                     $websiteServiceServer = $websiteServiceServerRepo->findOneById($params['post']['serviceServerId']);
@@ -6595,7 +6595,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
                     $response = self::executeCommandOnServiceServer('getWebsitesByCodeBase', array('codeBase' => $codeBase), $websiteServiceServer);
                     if ($response && $response->status = 'success') {
-                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SERVICE_SERVER_CODEBASE_REQUEST_SUCCESS'], 'websites' => $response->data->websites);
+                        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_SUCCESS_MSG'], 'websites' => $response->data->websites);
                     }
                     break;
                 case ComponentController::MODE_SERVICE:
@@ -6619,10 +6619,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     return array('websites' => $websites);
                     break;
             }
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_UPDATE_DETAIL_ERROR_MSG']);
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_ERROR_MSG']);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
-            throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_UPDATE_DETAIL_ERROR_MSG']);
+            throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_ERROR_MSG']);
         }
     }
 
