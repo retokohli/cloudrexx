@@ -25,6 +25,10 @@ $defaultBrowser   = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTOR
 $linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
                    .'?cmd=FileBrowser&standalone=true&langId='.$langId.'&type=webpages'.$CSRF;
 
+//get the main domain
+$domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+$mainDomain = $domainRepository->getMainDomain()->getName();
+
 //find the right css files and put it into the wysiwyg
 $em = $cx->getDb()->getEntityManager();
 $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
@@ -71,7 +75,7 @@ CKEDITOR.editorConfig = function( config )
     config.protectedSource.push(/<a[^>]*><\/a>/g);
 
     config.tabSpaces = 4;
-    config.baseHref = '<?php echo $cx->getRequest()->getUrl()->getProtocol() . '://' . $_CONFIG['domainUrl'] . $cx->getWebsiteOffsetPath(); ?>/';
+    config.baseHref = '<?php echo $cx->getRequest()->getUrl()->getProtocol() . '://' . $mainDomain . $cx->getWebsiteOffsetPath(); ?>/';
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
     
