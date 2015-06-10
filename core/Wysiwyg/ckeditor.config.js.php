@@ -37,7 +37,7 @@ $pageRepo   = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
 
 $skinId = 0;
-if(!empty($pageId)){
+if (!empty($pageId) && $pageId != 'new') {
     $skinId = $pageRepo->find($pageId)->getSkin();
 }
 
