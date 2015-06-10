@@ -6351,16 +6351,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
                 case ComponentController::MODE_WEBSITE:
                     //check the website is already updated one or not
-                    $latestCodeBase = contrexx_input2raw($params['post']['codeBase']);                    
-                    $latestMigrationExists = $objDatabase->Execute('SELECT 1 FROM `' . DBPREFIX . 'migration_versions` WHERE `version` = "' . $latestCodeBase . '"');
+                    $latestCodeBase = contrexx_input2raw($params['post']['codeBase']);
                     \Cx\Core\Setting\Controller\Setting::init('Config', '', 'Yaml');
                     $coreCmsVersion = \Cx\Core\Setting\Controller\Setting::getValue('coreCmsVersion', 'Config');
                     $oldVersion     = empty($coreCmsVersion) ? contrexx_input2raw($params['post']['serviceServerCodeBase']) : $coreCmsVersion;
                     
-                    if (
-                           $oldVersion === $latestCodeBase 
-                        || ($latestMigrationExists && !\FWValidator::isEmpty($latestMigrationExists->RecordCount()))
-                    ) {
+                    if ($oldVersion === $latestCodeBase) {
                         return;
                     }
                     

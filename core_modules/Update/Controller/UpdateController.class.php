@@ -150,15 +150,10 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
             }
         }
 
-        //Destroy all the records in the file PendingDbUpdates.yml, If complete rollback or Non-rollback process
-        foreach ($deltaRepository->findAll() as $delta) {
-            $deltaRepository->remove($delta);
-        }
-        $deltaRepository->flush();
-        
-        //Remove the file /Update/PendingCodeBaseChanges.yml
-        if (!empty($yamlFile) && file_exists($yamlFile)) {
-            \Cx\Lib\FileSystem\FileSystem::delete_file($yamlFile);
+        //Remove the folder '/tmp/Update', After the completion of rollback or Non-rollback process
+        $tmpUpdateFolderPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . '/Update';
+        if (file_exists($tmpUpdateFolderPath)) {
+            \Cx\Lib\FileSystem\FileSystem::delete_folder($tmpUpdateFolderPath, true);
         }
         
         //set the website back to Online mode

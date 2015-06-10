@@ -824,6 +824,7 @@ function triggerWebsiteUpdate(domainUrl, formData) {
     success: function (response) {
       cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
       cx.trigger("loadingEnd", "triggerWebsiteUpdate", {});
+      $J('select[name="codeBase"]').trigger('change');
     }
   });
 }
