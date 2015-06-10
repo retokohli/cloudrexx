@@ -67,7 +67,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 
                 $i = 0;
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('specificStylesheet')
-                    && !\Cx\Core\Setting\Controller\Setting::add('specificStylesheet', '1', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'config')
+                    && !\Cx\Core\Setting\Controller\Setting::add('specificStylesheet', '0', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'config')
                 ){
                     throw new \Exception("Failed to add new configuration option");
                 }
@@ -265,9 +265,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'title' => array(
                     'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_TITLE'],
                     'table' => array(
-                        'parse' => function($data, $rows) {
+                        'parse' => function($data, $rows, $options) {
                             $editUrl = clone \Env::get('cx')->getRequest()->getUrl();
-                            $editUrl->setParam('editid', $rows['id']);
+                            $editUrl->setParam('editid', '{' . $options['functions']['vg_increment_number'] . ',' . $rows['id'] . '}');
                             $data = '<a href="' . $editUrl . '" title="'.$data.'">'.$data.'</a>';
                             return $data;
                         },

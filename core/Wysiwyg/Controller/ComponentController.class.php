@@ -111,7 +111,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $componentData = array();
         \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
         if (!\Cx\Core\Setting\Controller\Setting::isDefined('specificStylesheet')
-            && !\Cx\Core\Setting\Controller\Setting::add('specificStylesheet', '1', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'config')
+            && !\Cx\Core\Setting\Controller\Setting::add('specificStylesheet', '0', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'config')
         ){
             throw new \Exception("Failed to add new configuration option");
         }
