@@ -2494,7 +2494,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         'payPalProfileAttributeId', 
                         'PayPal profile attribute ID',
                         5,
-                        'affiliate');
+                        'affiliate',
+                        false);
 
                 }
             }
