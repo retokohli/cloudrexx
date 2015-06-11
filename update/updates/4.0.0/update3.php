@@ -834,6 +834,26 @@ $updatesSp4To310 = array(
             'title'  => array('type' => 'VARCHAR(255)', 'after' => 'name')
         )
     ),
+    'INSERT IGNORE INTO `' . DBPREFIX . 'module_calendar_settings_section` (`id`, `parent`, `order`, `name`, `title`)
+    VALUES
+    (5, 1, 0, "global", "TXT_CALENDAR_GLOBAL"),
+    (6, 1, 1, "headlines", "TXT_CALENDAR_HEADLINES"),
+    (1, 0, 0, "global", ""),
+    (2, 0, 1, "form", ""),
+    (3, 0, 2, "mails", ""),
+    (4, 0, 3, "hosts", ""),
+    (7, 4, 0, "publication", "TXT_CALENDAR_PUBLICATION"),
+    (8, 1, 2, "categories", "TXT_CALENDAR_CATEGORIES"),
+    (9, 0, 4, "payment", ""),
+    (10, 9, 0, "payment", "TXT_CALENDAR_PAYMENT"),
+    (11, 9, 1, "paymentBill", "TXT_CALENDAR_PAYMENT_BILL"),
+    (12, 9, 2, "paymentYellowpay", "TXT_CALENDAR_PAYMENT_YELLOWPAY"),
+    (13, 9, 1, "paymentBank", "TXT_CALENDAR_PAYMENT_BANK"),
+    (14, 0, 5, "dateDisplay", "TXT_CALENDAR_DATE_DISPLAY"),
+    (15, 14, 0, "dateGlobal", "TXT_CALENDAR_GLOBAL"),
+    (16, 14, 1, "dateDisplayList", "TXT_CALENDAR_DATE_DISPLAY_LIST"),
+    (17, 14, 2, "dateDisplayDetail", "TXT_CALENDAR_DATE_DISPLAY_DETAIL"),
+    (18, 1, 3, "frontend_submission", "TXT_CALENDAR_FRONTEND_SUBMISSION")',
     array (
         'table' => DBPREFIX.'core_text',
         'structure' => array(
