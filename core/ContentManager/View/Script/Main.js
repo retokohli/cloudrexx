@@ -1038,8 +1038,19 @@ cx.cm.loadApplicationTemplate = function(application, area, template) {
             cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
         }
     }).always(function(response) {
+        //cx.trigger("loadingEnd", "contentmanager", response);
+        if(response.hasOwnProperty('area')){
+            delete response.data.area;
+        }
+        if(response.hasOwnProperty('files')){
+            delete response.data.files;
+        }
+        if(response.hasOwnProperty('path')){
+            delete response.data.path;
+        }
         cx.trigger("loadingEnd", "contentmanager", response);
     });
+    //cx.trigger("loadingEnd", "contentmanager", {});
 }
 
 cx.cm.homeCheck = function(addClasses, pageId) {
