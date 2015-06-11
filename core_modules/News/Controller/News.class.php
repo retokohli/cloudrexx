@@ -143,6 +143,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         news.author_id          AS authorid,
                                                         news.changelog          AS changelog,
                                                         news.teaser_image_path  AS newsimage,
+                                                        news.enable_related_news AS enableRelatedNews,
                                                         news.teaser_image_thumbnail_path AS newsThumbImg,
                                                         news.typeid             AS typeid,
                                                         news.allow_comments     AS commentactive,
@@ -274,6 +275,18 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
          */
         $this->_teaser = contrexx_raw2xhtml($newsTeaser);
         
+        if (    !empty($this->arrSettings['use_related_news'])
+            &&  !empty($objResult->fields['enableRelatedNews'])
+        ) {
+            $this->parseRelatedNews(
+                $this->_objTpl,
+                $newsid,
+                FRONTEND_LANG_ID,
+                'related_news',
+                3
+            );
+        }
+
         if (!empty($objResult->fields['newsimage'])) {
             $this->_objTpl->setVariable(array(
                 'NEWS_IMAGE'               => '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />',
@@ -1509,6 +1522,10 @@ JSCODE;
         $data['newsCat']  = !empty($_POST['newsCat']) ? contrexx_input2raw($_POST['newsCat']) : array();
         $data['newsType'] = !empty($_POST['newsType']) ? intval($_POST['newsType']) : 0;
         $data['newsTypeRedirect'] = !empty($_POST['newsTypeRedirect']) ? true : false;
+        $data['enableRelatedNews'] = 1;
+        $data['relatedNews'] = !empty($_POST['relatedNews'])
+            ? contrexx_input2raw($_POST['relatedNews'])
+            : array();
 
         return array(true, $data);
     }
@@ -1531,6 +1548,25 @@ JSCODE;
 });
 EOF;
         \JS::registerCode($jsCodeCategoryChosen);
+        if (!empty($this->arrSettings['use_related_news'])) {
+            $objCx = \ContrexxJavascript::getInstance();
+            $objCx->setVariable(
+                array(
+                    'noResultsMsg' => $_ARRAYLANG['TXT_NEWS_NOT_FOUND'],
+                    'langId' => FRONTEND_LANG_ID,
+                ),
+                'news/news-live-search'
+            );
+            \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
+            $this->parseRelatedNewsTags(
+                $this->_objTpl,
+                $data['relatedNews'],
+                FRONTEND_LANG_ID
+            );
+            $this->_objTpl->touchBlock('relatedNewsBlock');
+        } else {
+            $this->_objTpl->hideBlock('relatedNewsBlock');
+        }
         $this->_objTpl->setVariable(array(
             'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
             'TXT_TITLE'                 => $_ARRAYLANG['TXT_TITLE'],
@@ -1546,6 +1582,10 @@ EOF;
             'TXT_NEWS_REDIRECT'         => $_ARRAYLANG['TXT_NEWS_REDIRECT'],
             'TXT_NEWS_NEWS_URL'         => $_ARRAYLANG['TXT_NEWS_NEWS_URL'],
             'TXT_TYPE'                  => $_ARRAYLANG['TXT_TYPE'],
+            'TXT_NEWS_INCLUDE_NEWS'              => $_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'],
+            'TXT_NEWS_INCLUDE_RELATED_NEWS_DESC' => $_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'],
+            'TXT_NEWS_SEARCH_INFO'          => $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'],
+            'TXT_NEWS_SEARCH_PLACEHOLDER'   => $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'],
             'NEWS_TEXT'                 => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', $data['newsText'], 'bbcode'),
             'NEWS_CAT_MENU'             => $this->getCategoryMenu($this->nestedSetRootId, array($data['newsCat'])),
             'NEWS_TYPE_MENU'            => ($this->arrSettings['news_use_types'] == 1 ? $this->getTypeMenu($data['newsType']) : ''),
@@ -1693,7 +1733,7 @@ EOF;
                 `validated` = '$enable',
                 `userid` = '$userid',
                 `changelog` = '$date',
-
+                `enable_related_news`=" . contrexx_raw2db($data['enableRelatedNews']) . ",
                 # the following are empty defaults for the text fields.
                 # text fields can't have a default and we need one in SQL_STRICT_TRANS_MODE
 
@@ -1711,6 +1751,7 @@ EOF;
 // TODO: add fail check
         if (    !$this->storeLocalesOfSubmittedNewsMessage($ins_id, $data['newsTitle'], $data['newsText'], $data['newsTeaserText'])
             ||  !$this->manipulateCategories($data['newsCat'], $ins_id)
+            ||  !$this->manipulateRelatedNews($data['relatedNews'], $ins_id)
         ) {
             $errorMessage = empty($this->errMsg)
                 ? $_ARRAYLANG['TXT_NEWS_SUBMIT_ERROR']

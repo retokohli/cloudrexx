@@ -20,6 +20,20 @@
     <!-- BEGIN news_text -->{NEWS_TEXT}<!-- END news_text -->
     <!-- BEGIN news_redirect -->{TXT_NEWS_REDIRECT_INSTRUCTION} <a href="{NEWS_REDIRECT_URL}" target="_blank">{NEWS_REDIRECT_URL}</a><!-- END news_redirect -->
 </div>
+<!-- BEGIN related_news_block -->
+<div id="related-news">
+    <h3>{TXT_NEWS_RELATED_NEWS}</h3>
+    <!-- BEGIN related_news -->
+    <div class="rel-news-blocks">
+        <h6>{NEWS_RELATED_NEWS_TITLE_LINK}</h6>
+        <div class="news-info">
+            <p>{NEWS_RELATED_NEWS_DATE}&nbsp;{NEWS_RELATED_NEWS_TIME} </p>
+        </div>
+        {NEWS_RELATED_NEWS_TEXT_SHORT}&nbsp;{NEWS_RELATED_NEWS_LINK}
+    </div>
+    <!-- END related_news -->
+</div>
+<!-- END related_news_block -->
 <div id="news-links">
     <ul class="horizontal-list">
         <li><a href="{PRINT_URL}">Version zum Drucken</a></li>
