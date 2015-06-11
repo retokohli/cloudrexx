@@ -320,6 +320,7 @@ $_ARRAYLANG['TXT_NEWS_TYPE_DESCRIPTION'] = "Typ der Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_TYPE_NAME_DESCRIPTION'] = "Name des zugehörigen Typen";
 $_ARRAYLANG['TXT_NEWS_TYPE_ADD_ERROR_EMPTY'] = "Typ konnte nicht hinzugefügt werden, es wurde kein Name angegeben.";
 $_ARRAYLANG['TXT_USE_TEASER_TEXT'] = 'Use teaser text';
+$_ARRAYLANG['TXT_USE_RELATED_NEWS'] = 'Use related news';
 $_ARRAYLANG['TXT_USE_TYPES'] = "Typen verwenden";
 $_ARRAYLANG['TXT_NO_TYPE'] = "Keine Angabe";
 $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'] = "In der Designvorlage <b>top_news.html</b>. Diese Seite kann mit dem Platzhalter [[TOP_NEWS_FILE]] im Design oder in einer Content Seite eingebunden werden.";
@@ -394,4 +395,13 @@ $_ARRAYLANG['TXT_NEWS_NO_CATEGORY'] = "You must specify a category.";
 $_ARRAYLANG['TXT_NEWS_NO_TITLE'] = "You must specify a title";
 $_ARRAYLANG['TXT_NEWS_NO_TITLE_AND_CATEGORY'] = "You must specify a title and category";
 $_ARRAYLANG['TXT_NEWS_ERR_SAVING_FORM'] = "Error saving the news message";
+
+$_ARRAYLANG['TXT_NEWS_RELATED_NEWS'] = "Related News";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'] = "Include News";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Select the news to go to always related to this news";
+$_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Enter at least 3 character(s) of News title.";
+$_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Search News...";
+$_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "News not found...";
+$_ARRAYLANG['TXT_ERROR_DELETE_RELATED_NEWS_RELATION'] = "Error occured while removing the related news!...";
+$_ARRAYLANG['TXT_ERROR_SAVING_RELATED_NEWS_RELATION'] = "Error occured while saving the related news!...";
 ?>

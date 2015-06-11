@@ -26,6 +26,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
      /**
+     * {@inheritdoc}
+     */
+    public function getControllersAccessableByJson() {
+        return array('JsonNews');
+    }
+    
+     /**
      * Load your component.
      * 
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page

@@ -2,6 +2,11 @@
 <script type="text/javascript">
     //adds the datetimepicker to the date fields
     cx.jQuery(document).ready(function () {
+        toggleBlock($J('#enableRelatedNews'), $J('#live-search-news-block'), true);
+
+        $J('#enableRelatedNews').click(function () {
+            toggleBlock($J('#enableRelatedNews'), $J('#live-search-news-block'));
+        });
        $J('#news_category').chosen(); 
     });
     cx.ready(function() {
@@ -26,6 +31,17 @@
         $J('input[name=endDate]').datetimepicker(dpOptions);
     }, true);
 
+    function toggleBlock(elementId, toggleId, hide) {
+        if (elementId.is(":checked")) {
+            toggleId.slideDown();
+        } else {
+            if (hide) {
+                toggleId.hide();
+            } else {
+                toggleId.slideUp();
+            }
+        }
+    }
     function SetUrl(data) {
         var type = data.type;
         var url  = '';
@@ -352,7 +368,7 @@
                 <th valign="top" colspan="2">
                     <div align="left">{TXT_NEWS_BASIC_DATA}
                         <input type="hidden" name="newsFormAction" value="{NEWS_STORED_FORM_ACTION}" />
-                        <input type="hidden" name="newsId" value="{NEWS_STORED_ID}" />
+                        <input type="hidden" name="newsId" id='newsId' value="{NEWS_STORED_ID}" />
                         <input type="hidden" name="newsTopTitle" value="{NEWS_TOP_TITLE}" />
                     </div>
                 </th>
@@ -512,6 +528,46 @@
             </tr>
         </table>
         <br />
+        <!-- BEGIN relatedNewsBlock -->
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist live-search-news">
+            <tr class="row3">
+                <td colspan="2">
+                    {TXT_NEWS_RELATED_NEWS}
+                    <input type="checkbox" name="enableRelatedNews" id="enableRelatedNews" value="1" {NEWS_RELATED_NEWS_ENABLED_CHECKED}>
+                </td>
+            </tr>
+        </table>
+        <div id='live-search-news-block'>
+            <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist live-search-news">
+                <tr class="row1">
+                    <td width="12%" height="20">
+                        <label>{TXT_NEWS_INCLUDE_NEWS}</label>
+                    </td>
+                    <td>
+                        <label class=live-search-user-info>{TXT_NEWS_SEARCH_INFO}</label><br>
+                        <input class="live-search-news-input" style="width: 300px;" placeholder="{TXT_NEWS_SEARCH_PLACEHOLDER}" />
+                        &nbsp;
+                        <span class="tooltip-trigger icon-info"></span>
+                        <span class="tooltip-message">{TXT_INCLUDE_RELATED_NEWS_DESC}</span></td>
+                    </td>
+                </tr>
+                <tr class="row2" id='related-news-list' style="display:none;">
+                    <td>&nbsp;</td>
+                    <td>
+                        <ul>
+                            <!-- BEGIN related_news -->
+                            <li>
+                                <label>{NEWS_RELATED_NEWS_TITLE_SHORT}</label>
+                                <span class="news_list_close">X</span>
+                                <input type=hidden class="relationNewsId" name="relatedNews[]" value='{NEWS_RELATED_NEWS_ID}'>
+                            </li>
+                            <!-- END related_news -->
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+    </div>
+        <!-- END relatedNewsBlock -->
     </div>
     <!-- end news2 div -->
     <!-- start news3 div -->

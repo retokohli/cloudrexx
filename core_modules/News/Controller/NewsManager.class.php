@@ -874,6 +874,17 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         \JS::activate('cx');
         \FWUser::getUserLiveSearch();
 
+        if (!empty($this->arrSettings['use_related_news'])) {
+            $objCx = \ContrexxJavascript::getInstance();
+            $objCx->setVariable(
+                'noResultsMsg',
+                $_ARRAYLANG['TXT_NEWS_NOT_FOUND'],
+                'news/news-live-search'
+            );
+            \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
+            \JS::registerCss('core_modules/News/View/Style/news-live-search.css');
+        }
+
         if (!$this->hasCategories()) {
             return $this->manageCategories();
         }
@@ -923,6 +934,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newsBackendGroups      = $newsBackendAccess && isset($_POST['news_modify_access_associated_groups']) && is_array($_POST['news_modify_access_associated_groups']) ? array_map('intval', $_POST['news_modify_access_associated_groups']) : array();
         $newsCommentActive      = !empty($_POST['allowComment']) ? intval($_POST['allowComment']) : 0;
         $newsScheduledActive    = !empty($_POST['newsScheduled']) ? intval($_POST['newsScheduled']) : 0;
+        $relatedNews            = !empty($_POST['relatedNews']) ? contrexx_input2raw($_POST['relatedNews']) : array();
+        $enableRelatedNews      = empty($_POST) || !empty($_POST['enableRelatedNews']) ? 1 : 0;
 
         if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
             foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
@@ -1001,7 +1014,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                 teaser_image_thumbnail_path="'.$newsTeaserImageThumbnailPath.'",
                                                 userid='.$userid.',
                                                 changelog="'.$date.'",
-                                                allow_comments='.$newsCommentActive
+                                                allow_comments='.$newsCommentActive.',
+                                                enable_related_news='.$enableRelatedNews
                                         );
 
                 if ($objResult !== false) {
@@ -1009,6 +1023,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     // store locales
                     if (    !$this->insertLocales($ins_id, $locales) 
                         ||  !$this->manipulateCategories($newsCategories, $ins_id)
+                        ||  !$this->manipulateRelatedNews($relatedNews, $ins_id)
                     ) {
                         $this->strErrMessage = empty($this->errMsg)
                             ? $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']
@@ -1180,8 +1195,19 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_READ_ALL_ACCESS_DESC' => $_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC'],
             'TXT_NEWS_READ_SELECTED_ACCESS_DESC'    => $_ARRAYLANG['TXT_NEWS_READ_SELECTED_ACCESS_DESC'],
             'TXT_NEWS_MODIFY_ALL_ACCESS_DESC'       => $_ARRAYLANG['TXT_NEWS_MODIFY_ALL_ACCESS_DESC'],
-            'TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'  => $_ARRAYLANG['TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC']
+            'TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'  => $_ARRAYLANG['TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'],
+            'TXT_NEWS_RELATED_NEWS'                 => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS'],
+            'TXT_NEWS_INCLUDE_NEWS'                 => $_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'],
+            'TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'    => $_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'],
+            'TXT_NEWS_SEARCH_INFO'              => $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'],
+            'TXT_NEWS_SEARCH_PLACEHOLDER'       => $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'],
          ));
+        if (!empty($this->arrSettings['use_related_news'])) {
+            $this->parseRelatedNewsTags($this->_objTpl, $relatedNews, LANG_ID);
+            $this->_objTpl->touchBlock('relatedNewsBlock');
+        } else {
+            $this->_objTpl->hideBlock('relatedNewsBlock');
+        }
          $this->_objTpl->setVariable(array(
             'NEWS_TEXT_PREVIEW'             => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', !empty($locales['text'][\FWLanguage::getDefaultLangId()]) ? $locales['text'][\FWLanguage::getDefaultLangId()] : '', 'full'),
             'NEWS_REDIRECT'                 => contrexx_raw2xhtml($newsredirect),
@@ -1213,7 +1239,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                                                 'type'  => 'button',
                                                                                 'id'    => 'newsMediaBrowser',
                                                                                 'style' => 'display:none;'
-                                                                              ),'SetUrl')
+                                                                              ),'SetUrl'),
+            'NEWS_RELATED_NEWS_ENABLED_CHECKED' => $enableRelatedNews ? 'checked="checked"' : '',
         ));         
 
         if ($_CONFIG['newsTeasersStatus'] == '1') {
@@ -1338,6 +1365,11 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                 FROM " . DBPREFIX . "module_news_rel_categories
                                 WHERE news_id = ". contrexx_input2db($value)
                             ) !== false
+                        &&  $objDatabase->Execute("
+                                DELETE
+                                FROM ". DBPREFIX . "module_news_rel_news
+                                WHERE news_id = " . contrexx_input2db($value)
+                            ) !== false
                     ) {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                         $this->createRSS();
@@ -1432,6 +1464,13 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_CHECK_ALL'            => $_ARRAYLANG['TXT_NEWS_CHECK_ALL'],
             'TXT_NEWS_UNCHECK_ALL'          => $_ARRAYLANG['TXT_NEWS_UNCHECK_ALL'],
             'TXT_NEWS_READ_ALL_ACCESS_DESC' => $_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC'],
+
+            'TXT_NEWS_RELATED_NEWS'              => $_ARRAYLANG['TXT_NEWS_RELATED_NEWS'],
+            'TXT_NEWS_INCLUDE_NEWS'              => $_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'],
+            'TXT_NEWS_INCLUDE_RELATED_NEWS_DESC' => $_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'],
+            'TXT_NEWS_SEARCH_INFO'          => $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'],
+            'TXT_NEWS_SEARCH_PLACEHOLDER'   => $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'],
+
             'TXT_NEWS_READ_SELECTED_ACCESS_DESC'    => $_ARRAYLANG['TXT_NEWS_READ_SELECTED_ACCESS_DESC'],
             'TXT_NEWS_AVAILABLE_USER_GROUPS'        => $_ARRAYLANG['TXT_NEWS_AVAILABLE_USER_GROUPS'],
             'TXT_NEWS_ASSIGNED_USER_GROUPS'         => $_ARRAYLANG['TXT_NEWS_ASSIGNED_USER_GROUPS'],
@@ -1461,7 +1500,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         teaser_show_link,
                                                         teaser_image_path,
                                                         teaser_image_thumbnail_path,
-                                                        allow_comments
+                                                        allow_comments,
+                                                        enable_related_news
                                                 FROM    ".DBPREFIX."module_news
                                                 WHERE   id = '".$newsid."'", 1);
         if ($objResult !== false && !$objResult->EOF && ($this->arrSettings['news_message_protection'] != '1' || \Permission::hasAllAccess() || !$objResult->fields['backend_access_id'] || \Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic', true) || $objResult->fields['userid'] == $objFWUser->objUser->getId())) {
@@ -1684,7 +1724,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                                                     'type'  => 'button',
                                                                                     'id'    => 'newsMediaBrowser',
                                                                                     'style' => 'display:none;'
-                                                                                  ),'SetUrl')
+                                                                                  ),'SetUrl'),
+                'NEWS_RELATED_NEWS_ENABLED_CHECKED' => !empty($objResult->fields['enable_related_news']) ? 'checked="checked"' : '',
             ));
 
             if ($this->arrSettings['news_message_protection'] == '1') {
@@ -1738,8 +1779,33 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             } else {
                 $this->_objTpl->hideBlock('news_permission_tab');
             }
+            //Customized News Module Improvements
+            if (!empty($this->arrSettings['use_related_news'])) {
+                $objCx = \ContrexxJavascript::getInstance();
+                $objCx->setVariable(
+                    'noResultsMsg',
+                    $_ARRAYLANG['TXT_NEWS_NOT_FOUND'],
+                    'news/news-live-search'
+                );
+                \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
+                \JS::registerCss('core_modules/News/View/Style/news-live-search.css');
+
+                //Parsing the related news tags
+                $relatedNewsIds = isset($_POST['relatedNews'])
+                    ? contrexx_input2raw($_POST['relatedNews'])
+                    : $this->getRelatedNews($id);    //Getting the related news ids
+
+                $this->parseRelatedNewsTags(
+                    $this->_objTpl,
+                    $relatedNewsIds,
+                    LANG_ID
+                );
+
+                $this->_objTpl->touchBlock('relatedNewsBlock');
+            } else {
+                $this->_objTpl->hideBlock('relatedNewsBlock');
         }
-        else {
+        } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_ENTRY_NOT_FOUND'];
             $this->overview();
             return;
@@ -2320,6 +2386,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
             $categoryManipulation = $this->manipulateCategories($newsCategories, $id);
             
+            $relatedNews =   !empty($_POST['relatedNews'])
+                           ? contrexx_input2raw($_POST['relatedNews'])
+                           : array();
+            $enableRelatedNews =   !empty($_POST['enableRelatedNews'])
+                                 ? 1
+                                 : 0;
+            $realtedNewsManipulation = $this->manipulateRelatedNews($relatedNews, $id);
+
+
             // Set start and end dates as NULL if newsScheduled checkbox is not checked
             if ($newsScheduledActive == 0) {
                 $startDate = NULL;
@@ -2349,11 +2424,13 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         teaser_image_path = '".$newsTeaserImagePath."',
                                                         teaser_image_thumbnail_path = '".$newsTeaserImageThumbnailPath."',
                                                         changelog = '".$changelog."',
-                                                        allow_comments = '".$newsComments."'
+                                                        allow_comments = '".$newsComments."',
+                                                        enable_related_news='".$enableRelatedNews."'
                                                 WHERE   id = '".$id."'");
            if (     $objResult === false 
                ||   $localesSaving === false
                ||   $categoryManipulation === false
+               ||   $realtedNewsManipulation === false
            ){
                 $this->strErrMessage = empty($this->errMsg)
                     ? $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']
@@ -3123,6 +3200,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".(!empty($_POST['newsCommentsTimeout']) ? abs(intval($_POST['newsCommentsTimeout'])) : 30)."' WHERE name='news_comments_timeout'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTop'])."' WHERE name='news_use_top'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTeaserText'])."' WHERE name = 'news_use_teaser_text'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['useRelatedNews'])."' WHERE name = 'use_related_news'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTypes'])."' WHERE name = 'news_use_types'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTop'])."' WHERE name='news_use_top'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".(!empty($_POST['newsTopDays']) ? intval($_POST['newsTopDays']) : 10)."' WHERE name = 'news_top_days'");
@@ -3322,6 +3400,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'NEWS_USE_TEASERS_CONFIGURATION_DISPLAY'=> $_CONFIG['newsTeasersStatus'] == '1' ? '' : 'none',
             'NEWS_USE_TEASER_TEXT_CHECKED'          => $this->arrSettings['news_use_teaser_text'] == '1' ? 'checked="checked"' : '',
             'NEWS_USE_TYPES_CHECKED'                => $this->arrSettings['news_use_types'] == '1' ? 'checked="checked"' : '',
+            'NEWS_USE_RELATED_NEWS_CHECKED'         => $this->arrSettings['use_related_news'] == '1' ? 'checked="checked"' : '',
             'TXT_STORE'                             => $_ARRAYLANG['TXT_STORE'],
             'TXT_NAME'                              => $_ARRAYLANG['TXT_NAME'],
             'TXT_VALUE'                             => $_ARRAYLANG['TXT_VALUE'],
@@ -3340,6 +3419,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_USE_TEASERS'                       => $_ARRAYLANG['TXT_USE_TEASERS'],
             'TXT_USE_TEASER_TEXT'                   => $_ARRAYLANG['TXT_USE_TEASER_TEXT'],
             'TXT_USE_TYPES'                         => $_ARRAYLANG['TXT_USE_TYPES'],
+            'TXT_USE_RELATED_NEWS'                  => $_ARRAYLANG['TXT_USE_RELATED_NEWS'],
             'TXT_NOTIFY_GROUP'                      => $_ARRAYLANG['TXT_NOTIFY_GROUP'],
             'TXT_NOTIFY_USER'                       => $_ARRAYLANG['TXT_NOTIFY_USER'],
             'TXT_DEACTIVATE'                        => $_ARRAYLANG['TXT_DEACTIVATE'],

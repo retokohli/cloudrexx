@@ -1484,4 +1484,412 @@ class NewsLibrary
         
     }
 
+    /**
+     * Getting the realated News
+     *
+     * @global object $objDatabase
+     * @param type $newsId
+     * @return boolean
+     */
+    public function getRelatedNews($newsId)
+    {
+        global $objDatabase;
+
+        if (empty($newsId)) {
+            return array();
+}
+
+        $query = 'SELECT
+            `related_news_id`
+            FROM `' . DBPREFIX . 'module_news_rel_news`
+            WHERE `news_id` = "' . $newsId . '"';
+
+        $objNewsRelatedNews = $objDatabase->Execute($query);
+
+        if (!$objNewsRelatedNews) {
+//TODO@  Throw execption or log error message
+//DBG::msg("Error Message");
+            return array();
+        }
+        $relatedNewsIds = array();
+        while (!$objNewsRelatedNews->EOF) {
+            $relatedNewsIds[] = $objNewsRelatedNews->fields['related_news_id'];
+            $objNewsRelatedNews->MoveNext();
+        }
+        return $relatedNewsIds;
+    }
+
+    /**
+     * Manipulating the submitted related news from the news Entry form.
+     * i)  Update the relationship of the news in the corresponding table
+     * ii) Delete the removed related news ids from the news relation table
+     *
+     * @global object $objDatabase
+     *
+     * @param type $relatedNewsIds Array of submitted related_news Ids
+     * @param type $newsId      News id for manipulation
+     * @return boolean
+     */
+    public function manipulateRelatedNews(
+            $relatedNewsIds = array(), $newsId = null)
+    {
+        global $objDatabase, $_ARRAYLANG;
+//Delete the relationship of removed related news while editing the news
+        if (    !empty($newsId)
+            &&  !empty($relatedNewsIds)
+        ) {
+            $deleteNewsRealtionQuery = 'DELETE FROM `'
+                . DBPREFIX . 'module_news_rel_news` '
+                . 'WHERE `news_id` = "'. $newsId . '" '
+                . 'AND `related_news_id` NOT IN ('
+                . implode(',', $relatedNewsIds).')';
+            if (!$objDatabase->Execute($deleteNewsRealtionQuery)) {
+//TODO@  Throw execption or log error message
+                $this->errMsg[] = $_ARRAYLANG['TXT_ERROR_DELETE_RELATED_NEWS_RELATION'];
+                return false;
+            }
+        }
+        /**
+         * Insert the related news id with the news id to make the relationship
+         * between news and related news
+         */
+        foreach ($relatedNewsIds as $relatedNewsId) {
+            $insertRelatedNewsQuery = 'INSERT IGNORE INTO `'
+                . DBPREFIX . 'module_news_rel_news` '
+                . '(`news_id`, `related_news_id`) '
+                . 'VALUES ('
+                . $newsId . ','
+                . contrexx_raw2db($relatedNewsId)
+                . ')';
+            if (!$objDatabase->Execute($insertRelatedNewsQuery)) {
+//TODO@  Throw execption or log error message
+                $this->errMsg[] = $_ARRAYLANG['TXT_ERROR_SAVING_RELATED_NEWS_RELATION'];
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * Getting the related news details
+     *
+     * @global object $objDatabase
+     *
+     * @param array $relatedNewsIds Array of related news Ids
+     * @param type $langIds         Array of languages Ids
+     *
+     * @return array
+     *
+     */
+    public function getRelatedNewsDetails($relatedNewsIds = array(), $langIds = array())
+    {
+        global $objDatabase;
+
+        $relatedNewsDetails = array();
+
+        if (!empty($relatedNewsIds)) {
+            $query = '
+                SELECT      tblNews.`id`,
+                            tblNews.userid AS newsuid,
+                            tblNews.date   AS newsdate,
+                            tblNews.`teaser_image_path`,
+                            tblNews.`teaser_image_thumbnail_path`,
+                            tblNews.`redirect`,
+                            tblNews.`publisher`,
+                            tblNews.`publisher_id`,
+                            tblNews.`author`,
+                            tblNews.`author_id`,
+                            tblNews.allow_comments AS commentactive,
+                            tblLocale.`lang_id`,
+                            tblLocale.`title`,
+                            tblLocale.`text`,
+                            tblLocale.`teaser_text`,
+                            tblLocale.`text` NOT REGEXP "^(<br type\'=_moz\' />)?$"
+                                AS newscontent
+                FROM        `'.DBPREFIX.'module_news` AS tblNews
+                INNER JOIN  `'.DBPREFIX.'module_news_locale` AS tblLocale
+                            ON tblLocale.`news_id` = tblNews.`id`
+                WHERE       tblLocale.`is_active` = 1
+                AND         tblLocale.`lang_id`
+                            IN ("' . implode('", "', $langIds) . '")
+                AND         tblNews.`id`
+                            IN ("' . implode('", "', $relatedNewsIds) . '")';
+
+            $objResults = $objDatabase->Execute($query);
+            if (    $objResults
+                &&  $objResults->RecordCount() > 0
+            ) {
+                while (!$objResults->EOF) {
+                    $relatedNewsDetails
+                        [$objResults->fields['id']]
+                        [$objResults->fields['lang_id']] = $objResults->fields;
+                    $objResults->MoveNext();
+                }
+            }
+        }
+        return $relatedNewsDetails;
+    }
+    /**
+     * Parsing the relalated News tags
+     *
+     * @global \Cx\Core_Modules\News\Controller\type $_ARRAYLANG
+     *
+     * @param Object  $objTpl          Template Object
+     * @param Array   $relatedNewsIds  Array List of related news Ids
+     * @param Integer $langId
+     * @param String  $blockName
+     *
+     * @return null
+     */
+    public function parseRelatedNewsTags(
+        \Cx\Core\Html\Sigma $objTpl,
+        $relatedNewsIds = array(),
+        $langId = null,
+        $blockName = 'related_news'
+    )
+    {
+
+        if (   empty($relatedNewsIds)
+            || !$objTpl->blockExists($blockName)
+        ) {
+            return;
+        }
+
+        $defaultLangId = \FWLanguage::getDefaultLangId();
+
+        //Getting the related news details for the given languages
+        $relatedNewsDetails = $this->getRelatedNewsDetails(
+            $relatedNewsIds,
+            array($langId, $defaultLangId)
+        );
+        if (empty($relatedNewsDetails)) {
+            return;
+        }
+
+        foreach ($relatedNewsIds as $relatedNewsId) {
+
+            $currentRelatedDetails = isset($relatedNewsDetails[$relatedNewsId][$langId])
+                ? $relatedNewsDetails[$relatedNewsId][$langId]
+                : $relatedNewsDetails[$relatedNewsId][$defaultLangId];
+
+            $objTpl->setVariable(
+                array(
+                    'NEWS_RELATED_NEWS_ID'          => contrexx_raw2xhtml($relatedNewsId),
+                    'NEWS_RELATED_NEWS_TITLE'       => contrexx_raw2xhtml($currentRelatedDetails['title']),
+                    'NEWS_RELATED_NEWS_TITLE_SHORT' =>
+                        (strlen($currentRelatedDetails['title']) > 35)
+                            ? substr(strip_tags($currentRelatedDetails['title']), 0, 35) . '...'
+                            : strip_tags($currentRelatedDetails['title']),
+                )
+            );
+            $objTpl->parse($blockName);
+        }
+
+
+    }
+    /**
+     * Parsing the related News
+     *
+     * @global object $objDatabase
+     * @global type   $_ARRAYLANG
+     *
+     * @param Object    $objTpl     Template Object
+     * @param Interger  $newsId     News Id
+     * @param Interger  $langId     Language id
+     * @param type      $blockName  Block Name
+     * @param type      $limit      Limit
+     *
+     * @return null
+     */
+    public function parseRelatedNews(
+        \Cx\Core\Html\Sigma $objTpl,
+        $newsId = null,
+        $langId = null,
+        $blockName = 'related_news',
+        $limit=0
+    )
+    {
+        global $_ARRAYLANG, $objDatabase;
+
+        if (    empty($newsId)
+            || !$objTpl->blockExists($blockName)
+        ) {
+            return;
+        }
+
+        //Getting the related news ids
+        $relatedNewsIds = $this->getRelatedNews($newsId);
+
+        $defaultLangId = \FWLanguage::getDefaultLangId();
+
+        //Getting the related news details for the given languages
+        $relatedNewsDetails = $this->getRelatedNewsDetails(
+            $relatedNewsIds,
+            array($langId, $defaultLangId)
+        );
+
+        if (!empty($relatedNewsDetails)) {
+            $defaultImage = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath()
+                            .'/News/View/Media/default_news_image.png';
+
+            $currentCount = 1;
+            foreach ($relatedNewsIds as $relatedNewsId) {
+
+                //If the limit is reached then the loop is stopped
+                if (    !empty($limit)
+                    &&  $currentCount > $limit
+                ) {
+                    break;
+                }
+                /*
+                 * Checking the related news is available in the current
+                 * acitve front-end language if not available then the default
+                 * language details are getting used
+                 * Comment/Uncomment the following line if this condition
+                 * is required
+                 */
+
+                //$currentRelatedDetails = isset($relatedNewsDetails[$relatedNewsId][$langId])
+                //    ? $relatedNewsDetails[$relatedNewsId][$langId]
+                //    : $relatedNewsDetails[$relatedNewsId][$defaultLangId];
+
+                /*
+                 * Checking the related news is available in the current
+                 * acitve front-end language if not available then the related
+                 * News not listed Comment/Uncomment the following
+                 * line if this condition is required
+                 */
+                $currentRelatedDetails =
+                    isset($relatedNewsDetails[$relatedNewsId][$langId])
+                        ? $relatedNewsDetails[$relatedNewsId][$langId]
+                        : false;
+                if (!$currentRelatedDetails) {
+                    continue;
+                }
+                ++$currentCount;
+
+                $categories = $this->getCategoriesByNewsId($relatedNewsId);
+
+                $newsUrl = empty($currentRelatedDetails['redirect'])
+                    ? (empty($currentRelatedDetails['newscontent'])
+                        ? ''
+                        : \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            'news',
+                            $this->findCmdById('details', array_keys($categories)),
+                            FRONTEND_LANG_ID,
+                            array('newsid' => $relatedNewsId)
+                        )
+                    )
+                    : $currentRelatedDetails['redirect'];
+
+                $newstitle = $currentRelatedDetails['title'];
+                $htmlLink  = self::parseLink(
+                    $newsUrl,
+                    $newstitle,
+                    contrexx_raw2xhtml('[' . $_ARRAYLANG['TXT_NEWS_MORE'] . '...]')
+                );
+                $htmlLinkTitle = self::parseLink(
+                    $newsUrl,
+                    $newstitle,
+                    contrexx_raw2xhtml($newstitle)
+                );
+
+                // in case that the message is a stub,
+                // we shall just display the news title instead of a html-a-tag
+                // with no href target
+                if (empty($htmlLinkTitle)) {
+                    $htmlLinkTitle = contrexx_raw2xhtml($newstitle);
+                }
+
+                $imagePath =
+                    !empty($currentRelatedDetails['teaser_image_path'])
+                        ? $currentRelatedDetails['teaser_image_path']
+                        : $defaultImage;
+                $imageThumbPath =
+                    !empty($currentRelatedDetails['teaser_image_thumbnail_path'])
+                        ? $currentRelatedDetails['teaser_image_thumbnail_path']
+                        : $defaultImage;
+
+                $this->parseImageBlock(
+                    $objTpl,
+                    $imagePath,
+                    $newstitle,
+                    $newsUrl,
+                    'related_news_image'
+                );
+                $this->parseImageBlock(
+                    $objTpl,
+                    $imageThumbPath,
+                    $newstitle,
+                    $newsUrl,
+                    'related_news_image_thumb'
+                );
+
+                $author = \FWUser::getParsedUserTitle(
+                    $currentRelatedDetails['author_id'],
+                    $currentRelatedDetails['author']
+                );
+
+                $publisher = \FWUser::getParsedUserTitle(
+                    $currentRelatedDetails['publisher_id'],
+                    $currentRelatedDetails['publisher']
+                );
+                $objSubResult = $objDatabase->Execute('
+                    SELECT count(`id`) AS `countComments`
+                    FROM `'
+                    . DBPREFIX . 'module_news_comments`
+                    WHERE `newsid` = ' . $relatedNewsId
+                );
+                $objTpl->setVariable(
+                    array(
+                        'NEWS_RELATED_NEWS_ID'             => contrexx_raw2xhtml($relatedNewsId),
+                        'NEWS_RELATED_NEWS_URL'            => contrexx_raw2xhtml($newsUrl),
+                        'NEWS_RELATED_NEWS_LINK'           => $htmlLink,
+
+                        'NEWS_RELATED_NEWS_TITLE'          => contrexx_raw2xhtml($currentRelatedDetails['title']),
+                        'NEWS_RELATED_NEWS_TITLE_SHORT'    =>
+                            (strlen($currentRelatedDetails['title']) > 35)
+                                ? substr(strip_tags($currentRelatedDetails['title']), 0, 35) . '...'
+                                : strip_tags($currentRelatedDetails['title']),
+                        'NEWS_RELATED_NEWS_TITLE_LINK'     => $htmlLinkTitle,
+
+                        'NEWS_RELATED_NEWS_TEXT'           => $currentRelatedDetails['text'],
+                        'NEWS_RELATED_NEWS_TEXT_SHORT'     =>
+                            (strlen($currentRelatedDetails['text']) > 250)
+                                ? substr(strip_tags($currentRelatedDetails['text']), 0, 247) . '...'
+                                : strip_tags($currentRelatedDetails['text']),
+
+                        'NEWS_RELATED_NEWS_TEASER_TEXT'    => nl2br($currentRelatedDetails['teaser_text']),
+
+                        'NEWS_RELATED_NEWS_AUTHOR'         => contrexx_raw2xhtml($author),
+                        'NEWS_RELATED_NEWS_PUBLISHER'      => contrexx_raw2xhtml($publisher),
+                        'NEWS_RELATED_NEWS_CATEGORY_NAMES' => implode(', ', contrexx_raw2xhtml($categories)),
+
+                        'NEWS_RELATED_NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT, $currentRelatedDetails['newsdate']),
+                        'NEWS_RELATED_NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE, $currentRelatedDetails['newsdate']),
+                        'NEWS_RELATED_NEWS_TIME'           => date(ASCMS_DATE_FORMAT_TIME, $currentRelatedDetails['newsdate']),
+                        'NEWS_RELATED_NEWS_COUNT_COMMENTS' => ($currentRelatedDetails['commentactive'] && $this->arrSettings['news_comments_activated'])
+                            ? contrexx_raw2xhtml($objSubResult->fields['countComments']
+                                . ' ' . $_ARRAYLANG['TXT_NEWS_COMMENTS'])
+                            : '',
+                    )
+                );
+                if (    !$objSubResult->fields['countComments']
+                    ||  !$this->arrSettings['news_comments_activated']
+                ) {
+                    if ($objTpl->blockExists('related_news_comments_count')) {
+                        $objTpl->hideBlock('related_news_comments_count');
+                    }
+                }
+                if (    $this->arrSettings['news_use_teaser_text'] != '1'
+                    &&  $objTpl->blockExists('news_use_teaser_text')) {
+                    $objTpl->hideBlock('news_use_teaser_text');
+                }
+                $objTpl->parse($blockName);
+            }
+            if ($objTpl->blockExists('related_news_block')) {
+                $objTpl->setVariable('TXT_NEWS_RELATED_NEWS', $_ARRAYLANG['TXT_NEWS_RELATED_NEWS']);
+                $objTpl->touchBlock('related_news_block');
+            }
+        }
+    }
 }

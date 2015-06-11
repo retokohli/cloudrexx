@@ -88,3 +88,11 @@ $_ARRAYLANG['TXT_NEWS_REDIRECT_LABEL'] = "Redirect";
 $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Select category";
 $_ARRAYLANG['TXT_ERROR_DELETE_NEWS_CATGORY_RELATION'] = "Error occured while removing the news category relationship";
 $_ARRAYLANG['TXT_ERROR_SAVING_NEWS_CATGORY_RELATION'] = "Error occured while saving the news category relationship";
+
+$_ARRAYLANG['TXT_NEWS_RELATED_NEWS'] = "Related News";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'] = "Include News";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Select the news to go to always related to this news";
+$_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Enter at least 3 character(s) of News title or teaser.";
+$_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Search News...";
+$_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "News not found...";
+$_ARRAYLANG['TXT_ERROR_SAVING_RELATED_NEWS_RELATION'] = "Error occured while saving the related news!...";
