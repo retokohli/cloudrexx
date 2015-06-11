@@ -3341,6 +3341,7 @@ CREATE TABLE `contrexx_module_news` (
   `teaser_image_thumbnail_path` text NOT NULL,
   `changelog` int(14) NOT NULL default '0',
   `allow_comments` tinyint(1) NOT NULL default '0',
+  `enable_related_news` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
@@ -3414,6 +3415,14 @@ CREATE TABLE `contrexx_module_news_rel_categories` (
   `news_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
   UNIQUE KEY `NewsTagsRelation` (`news_id`,`category_id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_news_rel_news` (
+  `news_id` int(11) NOT NULL,
+  `related_news_id` int(11) NOT NULL,
+  UNIQUE KEY `related_news` (`news_id`,`related_news_id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
