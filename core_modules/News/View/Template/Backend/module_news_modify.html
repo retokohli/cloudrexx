@@ -3,9 +3,13 @@
     //adds the datetimepicker to the date fields
     cx.jQuery(document).ready(function () {
         toggleBlock($J('#enableRelatedNews'), $J('#live-search-news-block'), true);
-
+        toggleBlock($J('#enableTags'), $J('#{NEWS_TAG_ID}'));
+        
         $J('#enableRelatedNews').click(function () {
             toggleBlock($J('#enableRelatedNews'), $J('#live-search-news-block'));
+        });
+        $J('#enableTags').click(function () {
+            toggleBlock($J('#enableTags'), $J('#{NEWS_TAG_ID}'));
         });
        $J('#news_category').chosen(); 
     });
@@ -387,6 +391,20 @@
                     </select>
                 </td>
             </tr>
+            <!-- BEGIN newsTagsBlock -->
+            <tr class="row1">
+                <td nowrap="nowrap"><label for="news_tags">{TXT_NEWS_TAGS}</label></td>
+                <td>
+                    <input type="checkbox" name="enableTags" id="enableTags" value="1" {NEWS_TAGS_ENABLED_CHECKED}>
+                    <label for="enableTags">{TXT_NEWS_TAGS_ENABLE}</label>
+                    <ul id="{NEWS_TAG_ID}" style="display: none">
+                        <!-- BEGIN newsTags -->
+                        <li>{NEWS_TAGS}</li>
+                        <!-- END newsTags -->
+                    </ul>
+                </td>
+            </tr>
+            <!-- END newsTagsBlock -->
             {NEWS_TYPE_MENU}
             <tr class="row1">
                 <td nowrap="nowrap">{TXT_NEWS_MESSAGE_TYPE}</td>

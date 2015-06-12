@@ -12,6 +12,20 @@
                 <!-- END news_category_menu -->
             </select>
         </div>
+        <!-- BEGIN newsTagsBlock -->
+        <div class="news-frm-full-width">
+            <label class="news-frm-full-width" for="newsCat">{TXT_NEWS_TAGS}</label>
+            <div id="newsFormTags" class="news-frm-full-width">
+                <input type="hidden" name="enableTags" id="enableTags" value="1">
+                <ul id="{NEWS_TAG_ID}" class="news-frm-full-width">
+                    <!-- BEGIN newsTags -->
+                    <li>{NEWS_TAGS}</li>
+                    <!-- END newsTags -->
+                </ul>
+            </div>
+        </div>
+        <!-- END newsTagsBlock -->
+        
         <!-- BEGIN relatedNewsBlock -->
         <!--Live search-->
         <div id='live-search-news-block' class="live-search-news news-frm-full-width">

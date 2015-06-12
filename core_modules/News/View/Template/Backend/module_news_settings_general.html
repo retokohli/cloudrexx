@@ -213,6 +213,14 @@ function preSubmitCheck(){
         </td>
     </tr>
     <tr class="row1">
+        <td width="15%" nowrap="nowrap">{TXT_USE_TAGS}</td>
+        <td width="85%" nowrap="nowrap">
+            <input type="checkbox" name="newsUseTags" id="newsUseTags" {NEWS_USE_TAGS_CHECKED} value="1" />
+            <label for="newsUseTags">{TXT_NEWS_ACTIVE}</label>
+            <br />
+        </td>
+    </tr>
+    <tr class="row1">
         <td width="15%" nowrap="nowrap">{TXT_USE_RELATED_NEWS}</td>
         <td width="85%" nowrap="nowrap">
             <input type="checkbox" name="useRelatedNews" id="newsUseTags" {NEWS_USE_RELATED_NEWS_CHECKED} value="1" />

@@ -96,3 +96,8 @@ $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Enter at least 3 character(s) of News tit
 $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Search News...";
 $_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "News not found...";
 $_ARRAYLANG['TXT_ERROR_SAVING_RELATED_NEWS_RELATION'] = "Error occured while saving the related news!...";
+
+$_ARRAYLANG['TXT_NEWS_TAGS'] = "Tags";
+$_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Add Tags";
+$_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG'] = "Error Occured while saving the news tag!...";
+$_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG_RELATION'] = "Error occured while saving the news tag relationship!...";

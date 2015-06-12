@@ -144,6 +144,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         news.changelog          AS changelog,
                                                         news.teaser_image_path  AS newsimage,
                                                         news.enable_related_news AS enableRelatedNews,
+                                                        news.enable_tags         AS enableTags,
                                                         news.teaser_image_thumbnail_path AS newsThumbImg,
                                                         news.typeid             AS typeid,
                                                         news.allow_comments     AS commentactive,
@@ -274,6 +275,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
          * purpose of this: @link news::getTeaser()
          */
         $this->_teaser = contrexx_raw2xhtml($newsTeaser);
+
+        if (    !empty($this->arrSettings['news_use_tags'])
+            &&  !empty($objResult->fields['enableTags'])
+        ) {
+            $this->parseNewsTags($this->_objTpl, $newsid);
+        }
         
         if (    !empty($this->arrSettings['use_related_news'])
             &&  !empty($objResult->fields['enableRelatedNews'])
@@ -884,6 +891,27 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $this->_objTpl->setVariable('NEWS_AUTHOR_DROPDOWNMENU', $authorMenu);
         }
 
+        if (!empty($_REQUEST['tag'])) {
+            $searchTag     = contrexx_input2raw($_REQUEST['tag']);
+            $searchedTag   = $this->getNewsTags(null, $searchTag);
+            $searchedTagId = current(array_keys($searchedTag['tagList']));
+            if (!empty($searchedTag['newsIds'])) {
+                $this->incrementViewingCount($searchedTagId);
+                $newsfilter .= ' AND n.`id` IN ('
+                    . implode(',', $searchedTag['newsIds'])
+                    . ')';
+                $this->_objTpl->setVariable(array(
+                   'NEWS_FILTER_TAG_ID'   =>  $searchedTagId,
+                   'NEWS_FILTER_TAG_NAME' =>  ucfirst(current($searchedTag['tagList']))
+                ));
+                if ($this->_objTpl->blockExists('tagFilterCont')) {
+                    $this->_objTpl->parse('tagFilterCont');
+                }
+            } else {
+                $validToShowList = false;
+            }
+        }
+
         $this->_objTpl->setVariable(array(
             'TXT_PERFORM'                   => $_ARRAYLANG['TXT_PERFORM'],
             'TXT_CATEGORY'                  => $_ARRAYLANG['TXT_CATEGORY'],
@@ -904,6 +932,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                 n.author,
                                 n.author_id,
                                 n.allow_comments AS commentactive,
+                                n.enable_tags,
                                 nl.title            AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
                                 nl.teaser_text
@@ -1027,7 +1056,11 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 
                 self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'image_thumbnail');
                 self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'image_detail');
-                
+                if (    !empty($this->arrSettings['news_use_tags'])
+                    &&  !empty($objResult->fields['enable_tags'])
+                ) {
+                    $this->parseNewsTags($this->_objTpl, $newsid);
+                }
                 $this->_objTpl->parse('newsrow');
                 $i++;
                 $objResult->MoveNext();
@@ -1522,9 +1555,13 @@ JSCODE;
         $data['newsCat']  = !empty($_POST['newsCat']) ? contrexx_input2raw($_POST['newsCat']) : array();
         $data['newsType'] = !empty($_POST['newsType']) ? intval($_POST['newsType']) : 0;
         $data['newsTypeRedirect'] = !empty($_POST['newsTypeRedirect']) ? true : false;
-        $data['enableRelatedNews'] = 1;
+        $data['enableRelatedNews'] = !empty($this->arrSettings['use_related_news']) ? 1 : 0;
         $data['relatedNews'] = !empty($_POST['relatedNews'])
             ? contrexx_input2raw($_POST['relatedNews'])
+            : array();
+        $data['enableTags'] = !empty($this->arrSettings['news_use_tags']) ? 1 : 0;
+        $data['newsTags'] = !empty($_POST['newsTags'])
+            ? contrexx_input2raw($_POST['newsTags'])
             : array();
 
         return array(true, $data);
@@ -1541,6 +1578,26 @@ JSCODE;
             return;
         }
 
+        $newsTagId = 'newsTags';
+        if (!empty($this->arrSettings['news_use_tags'])) {
+            \JS::registerJS('lib/javascript/tag-it/js/tag-it.min.js');
+            \JS::registerCss('lib/javascript/tag-it/css/tag-it.css');
+            $this->registerTagJsCode();
+            if (    $this->_objTpl->blockExists('newsTags')
+                &&  !empty($data['newsTags'])
+            ) {
+                foreach ($data['newsTags'] as $newsTag) {
+                    $this->_objTpl->setVariable(array(
+                        'NEWS_TAGS' => contrexx_raw2xhtml($newsTag)
+                    ));
+                    $this->_objTpl->parse('newsTags');
+                }
+            }
+            $this->_objTpl->touchBlock('newsTagsBlock');
+        } else {
+            $this->_objTpl->hideBlock('newsTagsBlock');
+        }
+        
         \JS::activate('chosen');
         $jsCodeCategoryChosen = <<< EOF
 \$J(document).ready(function() {
@@ -1558,11 +1615,13 @@ EOF;
                 'news/news-live-search'
             );
             \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
-            $this->parseRelatedNewsTags(
-                $this->_objTpl,
-                $data['relatedNews'],
-                FRONTEND_LANG_ID
-            );
+            if (!empty($data['relatedNews'])) {
+                $this->parseRelatedNewsTags(
+                    $this->_objTpl,
+                    $data['relatedNews'],
+                    FRONTEND_LANG_ID
+                );
+            }
             $this->_objTpl->touchBlock('relatedNewsBlock');
         } else {
             $this->_objTpl->hideBlock('relatedNewsBlock');
@@ -1586,6 +1645,7 @@ EOF;
             'TXT_NEWS_INCLUDE_RELATED_NEWS_DESC' => $_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'],
             'TXT_NEWS_SEARCH_INFO'          => $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'],
             'TXT_NEWS_SEARCH_PLACEHOLDER'   => $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'],
+            'TXT_NEWS_TAGS'                 => $_ARRAYLANG['TXT_NEWS_TAGS'],
             'NEWS_TEXT'                 => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', $data['newsText'], 'bbcode'),
             'NEWS_CAT_MENU'             => $this->getCategoryMenu($this->nestedSetRootId, array($data['newsCat'])),
             'NEWS_TYPE_MENU'            => ($this->arrSettings['news_use_types'] == 1 ? $this->getTypeMenu($data['newsType']) : ''),
@@ -1595,6 +1655,7 @@ EOF;
             'NEWS_URL2'                 => contrexx_raw2xhtml($data['newsUrl2']),
             'NEWS_TEASER_TEXT'          => contrexx_raw2xhtml($data['newsTeaserText']),
             'NEWS_REDIRECT'             => contrexx_raw2xhtml($data['newsRedirect']),
+            'NEWS_TAG_ID'               => $newsTagId
         ));
         
         if ($this->arrSettings['news_use_teaser_text'] != '1' && $this->_objTpl->blockExists('news_use_teaser_text')) {
@@ -1733,7 +1794,8 @@ EOF;
                 `validated` = '$enable',
                 `userid` = '$userid',
                 `changelog` = '$date',
-                `enable_related_news`=" . contrexx_raw2db($data['enableRelatedNews']) . ",
+                `enable_tags`='" . $data['enableTags'] . "',
+                `enable_related_news`=" . $data['enableRelatedNews'] . ",
                 # the following are empty defaults for the text fields.
                 # text fields can't have a default and we need one in SQL_STRICT_TRANS_MODE
 
@@ -1752,6 +1814,7 @@ EOF;
         if (    !$this->storeLocalesOfSubmittedNewsMessage($ins_id, $data['newsTitle'], $data['newsText'], $data['newsTeaserText'])
             ||  !$this->manipulateCategories($data['newsCat'], $ins_id)
             ||  !$this->manipulateRelatedNews($data['relatedNews'], $ins_id)
+            ||  !$this->manipulateTags($data['newsTags'], $ins_id)
         ) {
             $errorMessage = empty($this->errMsg)
                 ? $_ARRAYLANG['TXT_NEWS_SUBMIT_ERROR']
