@@ -99,9 +99,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
      * 
      * @return boolean
      */
-    public function hasAccess(array $params = array()) {
-        $mode  = \Cx\Core\Core\Controller\Cx::instanciate()->getMode();
-        
+    public function hasAccess(array $params = array()) {        
         $protocol = $this->cx->getRequest() ? \Env::get('cx')->getRequest()->getUrl()->getProtocol() : '';
         $method = $this->cx->getRequest()->getHttpRequestMethod();
         if (php_sapi_name() === 'cli') {
@@ -109,7 +107,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
         }
         
         //protocol check
-        if ($mode != \Cx\Core\Core\Controller\Cx::MODE_COMMAND && !empty($this->allowedProtocols) && !in_array($protocol, $this->allowedProtocols)) {
+        if ($method != 'cli' && !empty($this->allowedProtocols) && !in_array($protocol, $this->allowedProtocols)) {
             return false;
         }
         
