@@ -71,7 +71,7 @@ class ShopSettings
             self::$changed = true;
             if (\Cx\Core\Setting\Controller\Setting::updateAll() === false) {
                 return false;
-        }
+            }
         }
         if (self::$changed) {
             return (self::$success
@@ -125,9 +125,17 @@ class ShopSettings
             empty($_POST['product_sorting'])
               ? 1 : intval($_POST['product_sorting']));
         // Order amount lower limit (new in 3.1.0)
-        \Cx\Core\Setting\Controller\Setting::set('orderitems_amount_min',
-            empty($_POST['orderitems_amount_min'])
-                ? 0 : floatval($_POST['orderitems_amount_min']));
+        $orderItemsAmountMin = empty($_POST['orderitems_amount_min'])
+            ? 0 : floatval($_POST['orderitems_amount_min']);
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('orderitems_amount_min')){
+            \Cx\Core\Setting\Controller\Setting::add('orderitems_amount_min', $orderItemsAmountMin, false,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        }
+        else {
+            \Cx\Core\Setting\Controller\Setting::set('orderitems_amount_min',$orderItemsAmountMin);
+        }
+
         // Order amount upper limit (applicable when using Saferpay)
         \Cx\Core\Setting\Controller\Setting::set('orderitems_amount_max',
             empty($_POST['orderitems_amount_max'])
