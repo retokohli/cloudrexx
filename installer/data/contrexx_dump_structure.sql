@@ -3342,6 +3342,7 @@ CREATE TABLE `contrexx_module_news` (
   `changelog` int(14) NOT NULL default '0',
   `allow_comments` tinyint(1) NOT NULL default '0',
   `enable_related_news` tinyint(1) NOT NULL default '0',
+  `enable_tags` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
@@ -3427,6 +3428,14 @@ CREATE TABLE `contrexx_module_news_rel_news` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_news_rel_tags` (
+  `news_id` int(11) NOT NULL,
+  `tag_id` int(11) NOT NULL,
+  UNIQUE KEY `NewsTagsRelation` (`news_id`,`tag_id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_news_settings` (
   `name` varchar(50) NOT NULL default '',
   `value` varchar(250) NOT NULL default '',
@@ -3452,6 +3461,16 @@ CREATE TABLE `contrexx_module_news_stats_view` (
   KEY `idx_user_sid` (`user_sid`),
   KEY `idx_news_id` (`news_id`)
 ) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_news_tags` (
+  `id` int(11) NOT NULL auto_increment,
+  `tag` varchar(255) binary NOT NULL,
+  `viewed_count` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `tag` (`tag`)
+) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
