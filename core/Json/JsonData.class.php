@@ -173,8 +173,22 @@ class JsonData {
         $adapter = $this->adapters[$adapter];
         $methods = $adapter->getAccessableMethods();
         $realMethod = '';
-        if (in_array($method, $methods) || array_key_exists($method, $methods)) {
-            $realMethod = $method;
+        
+        /*
+         * $adapter->getAccessableMethods() might return two type of arrays
+         * Format 1: array('method1', 'method2')
+         * Format 2: array('method1' => new \Cx\Core_Modules\Access\Model\Entity\Permission())
+         */
+        foreach ($methods as $methodName => $methodValue) {
+            if ($methodValue instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) {
+                $realMethod = ($methodName == $method) ? $method : '';
+            } elseif ($methodValue == $method) {
+                $realMethod = $method;
+            }
+            
+            if (!empty($realMethod)) {
+                break;
+            }
         }
         
         if ($realMethod == '') {
