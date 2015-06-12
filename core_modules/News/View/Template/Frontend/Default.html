@@ -1,5 +1,9 @@
 <script type="text/javascript">
     $J(document).ready(function() {
+        $J('#remove-tag-filter').click(function () {
+            $J('#tag-filter-value').val('');
+            $J('#filter-form').submit();
+        });
         $J('.news-image').each(function() {
             if ($J.trim($J(this).html()) == '') {
                 $J(this).siblings('.news-text').css('width', '100%');
@@ -13,8 +17,17 @@
 {TXT_NEWS_NO_NEWS_FOUND}
 <!-- END news_status_message -->
 <!-- BEGIN news_menu -->
-<form name="formNews" method="post" action="index.php?section=News&amp;cmd={NEWS_CMD}">
+<form name="formNews" id="filter-form" method="post" action="index.php?section=News&amp;cmd={NEWS_CMD}">
     {NEWS_CAT_DROPDOWNMENU}
+    <!-- BEGIN tagFilterCont -->
+    <div class="news-frm-full-width tag-filter-cont"> 
+        <div id="tag-filter">
+            <p>{NEWS_FILTER_TAG_NAME}</p>
+            <p id="remove-tag-filter">&nbsp;</p>
+        </div>
+        <input type="hidden" name="tag" id='tag-filter-value' value="{NEWS_FILTER_TAG_NAME}" />
+    </div>
+    <!-- END tagFilterCont -->
 </form>
 <!-- END news_menu -->
 <!-- BEGIN news_list -->
@@ -26,8 +39,24 @@
             <div class="news-image col-md-2">{NEWS_IMAGE}</div>
             <div class="news-text col-md-10">
                 <div class="news-teaser">{NEWS_TEASER}</div>
-                <div class="news-info">{NEWS_DATE} &bull; {NEWS_CATEGORY}
-                    <!-- BEGIN news_comments_count --> &bull; {NEWS_COUNT_COMMENTS}<!-- END news_comments_count -->
+                <div class="news-info">
+                    <p>
+                        {NEWS_DATE}
+                        &bull; {NEWS_CATEGORY}
+                        <!-- BEGIN news_comments_count --> 
+                        &bull; {NEWS_COUNT_COMMENTS}
+                        <!-- END news_comments_count -->
+                    </p>
+                    <!-- BEGIN tagsBlock --> 
+                    <p class="newsTags">
+                        &bull;
+                        <span class="tagCont">
+                            <!-- BEGIN newsTagList -->
+                            {NEWS_TAG_LINK}
+                            <!-- END newsTagList -->
+                        </span>
+                    </p>
+                    <!-- END tagsBlock -->
                 </div>
             </div>
         </div>

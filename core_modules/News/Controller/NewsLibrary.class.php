@@ -1497,7 +1497,7 @@ class NewsLibrary
 
         if (empty($newsId)) {
             return array();
-}
+        }
 
         $query = 'SELECT
             `related_news_id`
@@ -1891,5 +1891,374 @@ class NewsLibrary
                 $objTpl->touchBlock('related_news_block');
             }
         }
+    }
+    
+    /**
+     * Getting all the stored tags
+     *
+     * @global object $objDatabase
+     *
+     * @param Interger $id
+     * @param Interger $tag
+     *
+     * @return boolean|array Array list of tag and its id as key
+     * array('id'  => //Id of the tag
+     *       'tag' => //Tag value)
+     */
+    public function getTags($id=null, $tag=null)
+    {
+        global $objDatabase;
+        
+        $query = 'SELECT `id`, `tag`
+            FROM `' . DBPREFIX . 'module_news_tags`';
+
+        $where = '';
+        //Search with the id or list of ids
+        if (    is_array($id)
+            &&  !empty($id)
+        ) {
+            $where .= ' WHERE `id` IN (' .implode(',', $id). ')';
+        } elseif (!empty($id)) {
+            $where .= ' WHERE `id` = '.intval($id);
+        }
+        //Search the given tag
+        if (!empty($tag)) {
+            $where .= (empty($where)) ? ' WHERE ' : ' AND ';
+            $where .= '`tag` = "' . $tag . '"';
+        }
+
+        $objTags = $objDatabase->Execute($query.$where);
+
+        if (!$objTags) {
+//TODO@  Throw execption or log error message
+            return array();
+        }
+        $tagList = array();
+        while (!$objTags->EOF) {
+            $tagList[$objTags->fields['id']] = $objTags->fields['tag'];
+            $objTags->MoveNext();
+        }
+        return $tagList;
+    }
+    /**
+     * Getting the related news tags with given news id (and|or) tag
+     *
+     * @global object $objDatabase
+     *
+     * @param type $newsId News id to get the corresponding related tags
+     * @param type $tag    Tag string to search the corresponding tags
+     *
+     * @return boolean|array Array List of News Related tags
+     */
+    public function getNewsTags($newsId = null, $tag = null)
+    {
+        global $objDatabase;
+        if (empty($newsId) && empty($tag)) {
+            return array();
+        }
+        $query = 'SELECT
+            rt.`news_id` AS newsId,
+            rt.`tag_id` AS tagId,
+            t.`tag` AS tagName
+            FROM `' . DBPREFIX . 'module_news_rel_tags` rt
+            LEFT JOIN `' . DBPREFIX . 'module_news_tags` t
+            ON rt.`tag_id` = t.`id`';
+
+        $where = '';
+
+        if (!empty($newsId)) {
+            $where .=' WHERE rt.`news_id` = "' . $newsId . '"';
+        }
+
+        //Search the given tag
+        if (!empty($tag)) {
+            $where .= (empty($where)) ? ' WHERE ' : ' AND ';
+            $where .= 't.`tag` = "' . contrexx_raw2db($tag) . '"';
+        }
+
+
+        $objNewsTags = $objDatabase->Execute($query.$where);
+
+        if (!$objNewsTags) {
+//TODO@  Throw execption or log error message
+//DBG::msg("Error Message");
+            return false;
+        }
+        $newsTagList = array();
+        $newsIdList = array();
+        while (!$objNewsTags->EOF) {
+            $newsTagList[$objNewsTags->fields['tagId']]
+                = $objNewsTags->fields['tagName'];
+            $newsIdList[] = $objNewsTags->fields['newsId'];
+            $objNewsTags->MoveNext();
+        }
+        return array(
+            'tagList' => $newsTagList,
+            'newsIds' => $newsIdList
+        );
+    }
+    /**
+     * Add the new tag
+     *
+     * @global object $objDatabase
+     * @param string $tag New Tag to be inserted
+     * @return boolean|integer Retrun inserted Tag id and retrun false if
+     *                         failed to insert
+     */
+    public function addTag($tag)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        if (!empty($tag)) {
+            $insertQuery = 'INSERT INTO `'
+                . DBPREFIX . 'module_news_tags` '
+                . '(`tag`) '
+                . 'VALUES ("' . contrexx_raw2db($tag) . '")' ;
+            if ($objDatabase->Execute($insertQuery)) {
+                return $objDatabase->Insert_ID();
+            }
+        }
+//TODO@  Throw execption or log error message
+        $this->errMsg[] = $_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG'];
+        return false;
+    }
+    /**
+     * Manipulating the submitted tags from the news Entry form.
+     * i)   Adding the new tag if the tag is not availbale already.
+     * ii)  Update the relationship of the news in the corresponding table
+     * iii) Delete the removed tags ids from the news relation table
+     *
+     *
+     * @global object $objDatabase
+     * @param array $tags   Array of submitted tags
+     * @param type $newsId  News id for manipulation
+     * @return boolean
+     */
+    public function manipulateTags(array $tags = array(), $newsId = null)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $availableTags       = $this->getTags();
+        $newsTagDetails      = $this->getNewsTags($newsId);
+        $oldNewsTags         = $newsTagDetails['tagList'];
+        $availableTagsFliped = array_flip($availableTags);
+
+        foreach ($tags as $tag) {
+            if (empty($tag)) {
+                continue;
+            }
+            $tagId = null;
+            //Getting the tag Id
+            if (array_key_exists($tag, $availableTagsFliped)) {
+                //If the tag is already available get the id
+                $tagId = $availableTagsFliped[$tag];
+            } else {
+                //If the tag is not available the insert that tag and get
+                //the inserted tag's id
+                $tagId = $this->addTag($tag);
+            }
+
+            if (empty($tagId)) {
+//TODO@  Throw execption or log error message
+                return false;
+            }
+            /**
+             * Insert the tag id with the news id to make the relationship
+             * between news and tags
+             */
+            //Checking tag is already related
+            if (array_key_exists($tagId, $oldNewsTags)) {
+                unset($oldNewsTags[$tagId]); //Removing from the current list
+            } else {
+                $insertTagRelQuery = 'INSERT IGNORE INTO `'
+                    . DBPREFIX . 'module_news_rel_tags` '
+                    . '(`news_id`, `tag_id`) '
+                    . 'VALUES ('
+                    . $newsId . ','
+                    . $tagId
+                    . ')';
+                if (!$objDatabase->Execute($insertTagRelQuery)) {
+//TODO@  Throw execption or log error message
+                    $this->errMsg[] = $_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG_RELATION'];
+                    return false;
+                }
+            }
+        }
+
+        //Delete the relationship of removed tags while editing the news
+        if (    !empty($newsId)
+            &&  !empty($oldNewsTags)
+        ) {
+            $deleteNewsRealtionQuery = 'DELETE FROM `'
+                . DBPREFIX . 'module_news_rel_tags` '
+                . 'WHERE `news_id` = "'. $newsId . '" '
+                . 'AND `tag_id` IN ('
+                . implode(',', array_keys($oldNewsTags)).')';
+            if (!$objDatabase->Execute($deleteNewsRealtionQuery)) {
+//TODO@  Throw execption or log error message
+                    $this->errMsg[] = $_ARRAYLANG['TXT_ERROR_DELETE_NEWS_TAG_RELATION'];
+
+                    return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * Parsing the News tags.
+     *
+     * @global type $_ARRAYLANG
+     * @param type $objTpl
+     * @param type $newsId
+     */
+    public function parseNewsTags(
+        $objTpl = null,
+        $newsId = null,
+        $block='newsTagList'
+    )
+    {
+        global $_ARRAYLANG;
+
+        if (!empty($newsId)) {
+            $newsTagDetails = $this->getNewsTags($newsId);
+            $newsTags       = $newsTagDetails['tagList'];
+        }
+        $tags = $this->getTags(array_keys($newsTags));
+        if (empty($tags)) {
+            if ($objTpl->blockExists('noTags')) {
+                $objTpl->setVariable('TXT_NEWS_NO_TAGS_FOUND', $_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND']);
+                $objTpl->showBlock('noTags');
+            }
+            return;
+        }
+        $tagCount = count($tags);
+        $currentTagCount = 0;
+        if (    $objTpl->blockExists($block)
+            &&  !empty($tags)
+        ) {
+            foreach ($tags as $tag) {
+                ++$currentTagCount;
+                $newsLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'news',
+                    '',
+                    FRONTEND_LANG_ID,
+                    array('tag'=> urlencode($tag))
+                );
+                $objTpl->setVariable(
+                    array(
+                        'NEWS_TAG_NAME' => $tag,
+                        'NEWS_TAG_LINK' =>
+                            '<a class="tags" href="' . $newsLink . '">'
+                            . ucfirst($tag)
+                            . '</a>'//Including the tag separator
+                            . (($currentTagCount < $tagCount) ? ',' : '')
+                    )
+                );
+                $objTpl->parse($block);
+            }
+            if ($objTpl->blockExists('tagsBlock')) {
+                $objTpl->touchBlock('tagsBlock');
+            }
+        }
+    }
+    /**
+     * Increment the viewing count
+     *
+     * @global object $objDatabase
+     * @param type $tagId
+     * @return type
+     */
+    public function incrementViewingCount($tagId = null)
+    {
+        global $objDatabase;
+
+        if (empty($tagId)) {
+            return;
+        }
+        //Update the tag using count
+        $objDatabase->Execute(
+            'UPDATE `'
+            . DBPREFIX . 'module_news_tags`
+            SET `viewed_count` = `viewed_count`+1
+            WHERE `id`=' . $tagId
+        );
+    }
+    /**
+     * Retruns most Frequent(Searched|Viewed) tag details.
+     *
+     * @global object $objDatabase
+     * @return boolean|array array(
+     *     'id'             => //Tag id
+     *     'tag'            => //Tag Value
+     *     'maxViewedCount' => //Maximum count of the tag viewed | searched
+     * ) | FALSE on query fails
+     */
+    public function getMostFrequentTag()
+    {
+        global $objDatabase;
+        $query = 'SELECT `id`, `tag`, `viewed_count` AS maxViewedCount
+            FROM `' . DBPREFIX . 'module_news_tags`
+            ORDER BY `viewed_count` DESC LIMIT 1';
+        return $objDatabase->GetRow($query);
+    }
+    /**
+     * Retruns most used tag details
+     *
+     * @global object $objDatabase
+     * @return boolean|array array(
+     *     'id'           => //Tag id
+     *     'tag'          => //Tag Value
+     *     'maxUsedCount' => //Maximum count of the tag used
+     * ) | FALSE on query fails
+     */
+    public function getMostUsedTag()
+    {
+        global $objDatabase;
+
+        $query = 'SELECT COUNT(`tag_id`) AS maxUsedCount, `tag_id` FROM `'
+            . DBPREFIX . 'module_news_rel_tags`
+            GROUP BY `tag_id` ORDER BY maxUsedCount DESC LIMIT 1';
+        $maxUsedTag = $objDatabase->GetRow($query);
+        $tagDetails = $this->getTags($maxUsedTag['tag_id']);
+        return array(
+            'id'           => $maxUsedTag['tag_id'],
+            'tag'          => $tagDetails[$maxUsedTag['tag_id']],
+            'maxUsedCount' => $maxUsedTag['maxUsedCount']
+        );
+    }
+    /**
+     * Register the JS code for the given input field ID
+     * 
+     * @param type $newsTagId HMTL ID attribute Value of the input field
+     */
+    public function registerTagJsCode($newsTagId = 'newsTags')
+    {
+        global $_ARRAYLANG;
+
+        $allNewsTags = $this->getTags();
+        $concatedTag = '';
+        $tagCount = 0;
+        foreach ($allNewsTags as $newsTag) {
+            ++$tagCount;
+            $concatedTag .= '"' . contrexx_raw2xhtml(addslashes($newsTag)) . '"'
+                . (($tagCount != count($allNewsTags)) ? ',' : '') ;
+        }
+        $newsTagsFormated  = htmlspecialchars_decode($concatedTag);
+        $placeholderText = $_ARRAYLANG['TXT_NEWS_ADD_TAGS'];
+        $jsCode = <<< EOF
+\$J(document).ready(function() {
+var encoded = [$newsTagsFormated];
+var decoded = [];
+\$J.each(encoded, function(key, value){
+    decoded.push(\$J("<div/>").html(value).text());
+});
+\$J("#$newsTagId").tagit({
+    fieldName: "newsTags[]",
+        availableTags : decoded,
+        placeholderText : "$placeholderText",
+        allowSpaces : true
+    });
+});
+EOF;
+        \JS::registerCode($jsCode);
     }
 }

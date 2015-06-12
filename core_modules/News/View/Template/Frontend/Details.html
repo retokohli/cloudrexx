@@ -8,8 +8,20 @@
         });
     });
 </script>
-<div id="news-date">
+<div id="news-date" class="news-info">
+    <p>
     {NEWS_DATE}&nbsp;{NEWS_TIME} | {NEWS_AUTHOR}<!-- BEGIN news_comments_count --> | {NEWS_COUNT_COMMENTS}<!-- END news_comments_count -->
+    </p>
+    <!-- BEGIN tagsBlock --> 
+    <p class="newsTags">
+        | 
+        <span class="tagCont">
+            <!-- BEGIN newsTagList -->
+            {NEWS_TAG_LINK}
+            <!-- END newsTagList -->
+        </span>
+    </p>
+    <!-- END tagsBlock -->
 </div>
 <!-- BEGIN news_use_teaser_text -->
 <div id="news-teaser-text">

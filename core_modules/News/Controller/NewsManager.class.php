@@ -872,6 +872,13 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         global $_ARRAYLANG, $_CONFIG, $objDatabase, $objInit;
 
         \JS::activate('cx');
+        
+        if (!empty($this->arrSettings['news_use_tags'])) {
+            \JS::registerJS('lib/javascript/tag-it/js/tag-it.min.js');
+            \JS::registerCss('lib/javascript/tag-it/css/tag-it.css');
+        }
+        $newsTagId = 'newsTags';
+        
         \FWUser::getUserLiveSearch();
 
         if (!empty($this->arrSettings['use_related_news'])) {
@@ -936,6 +943,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newsScheduledActive    = !empty($_POST['newsScheduled']) ? intval($_POST['newsScheduled']) : 0;
         $relatedNews            = !empty($_POST['relatedNews']) ? contrexx_input2raw($_POST['relatedNews']) : array();
         $enableRelatedNews      = empty($_POST) || !empty($_POST['enableRelatedNews']) ? 1 : 0;
+        $newsTags               = !empty($_POST['newsTags']) ? contrexx_input2raw($_POST['newsTags']) : array();
+        $enableTags             = !empty($_POST['enableTags']) ? intval($_POST['enableTags']) : 0;
 
         if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
             foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
@@ -1015,7 +1024,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                 userid='.$userid.',
                                                 changelog="'.$date.'",
                                                 allow_comments='.$newsCommentActive.',
-                                                enable_related_news='.$enableRelatedNews
+                                                enable_related_news='.$enableRelatedNews.',
+                                                enable_tags='.$enableTags
                                         );
 
                 if ($objResult !== false) {
@@ -1024,6 +1034,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     if (    !$this->insertLocales($ins_id, $locales) 
                         ||  !$this->manipulateCategories($newsCategories, $ins_id)
                         ||  !$this->manipulateRelatedNews($relatedNews, $ins_id)
+                        ||  !$this->manipulateTags($newsTags, $ins_id)
                     ) {
                         $this->strErrMessage = empty($this->errMsg)
                             ? $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']
@@ -1201,12 +1212,32 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'    => $_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'],
             'TXT_NEWS_SEARCH_INFO'              => $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'],
             'TXT_NEWS_SEARCH_PLACEHOLDER'       => $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'],
+            
+            'TXT_NEWS_TAGS'             => $_ARRAYLANG['TXT_NEWS_TAGS'],
+            'TXT_NEWS_TAGS_ENABLE'      => $_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'],
+            'NEWS_TAGS_ENABLED_CHECKED' => 'checked="checked"',
+            'NEWS_TAG_ID'               => $newsTagId,
          ));
         if (!empty($this->arrSettings['use_related_news'])) {
             $this->parseRelatedNewsTags($this->_objTpl, $relatedNews, LANG_ID);
             $this->_objTpl->touchBlock('relatedNewsBlock');
         } else {
             $this->_objTpl->hideBlock('relatedNewsBlock');
+        }
+        //Parsing the saved tags
+        if (!empty($this->arrSettings['news_use_tags'])) {
+            $this->registerTagJsCode();
+            if (    $this->_objTpl->blockExists('newsTags')
+                &&  !empty($newsTags)
+            ) {
+                foreach ($newsTags as $newsTag) {
+                    $this->_objTpl->setVariable('NEWS_TAGS', contrexx_raw2xhtml($newsTag));
+                    $this->_objTpl->parse('newsTags');
+                }
+            }
+            $this->_objTpl->touchBlock('newsTagsBlock');
+        } else {
+            $this->_objTpl->hideBlock('newsTagsBlock');
         }
          $this->_objTpl->setVariable(array(
             'NEWS_TEXT_PREVIEW'             => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', !empty($locales['text'][\FWLanguage::getDefaultLangId()]) ? $locales['text'][\FWLanguage::getDefaultLangId()] : '', 'full'),
@@ -1325,6 +1356,16 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         FROM ". DBPREFIX . "module_news_rel_categories
                         WHERE news_id = " . contrexx_input2db($newsId)
                     ) !== false
+                &&  $objDatabase->Execute("
+                        DELETE
+                        FROM ". DBPREFIX . "module_news_rel_news
+                        WHERE news_id = " . contrexx_input2db($newsId)
+                    ) !== false
+                &&  $objDatabase->Execute("
+                        DELETE
+                        FROM " . DBPREFIX . "module_news_rel_tags
+                        WHERE news_id = ". contrexx_input2db($newsId)
+                    ) !== false
             ) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                 $this->createRSS();
@@ -1343,6 +1384,16 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         &&  $objDatabase->Execute("
                                 DELETE
                                 FROM " . DBPREFIX . "module_news_rel_categories
+                                WHERE news_id = ". contrexx_input2db($value)
+                            ) !== false
+                        &&  $objDatabase->Execute("
+                                DELETE
+                                FROM ". DBPREFIX . "module_news_rel_news
+                                WHERE news_id = " . contrexx_input2db($value)
+                            ) !== false
+                        &&  $objDatabase->Execute("
+                                DELETE
+                                FROM " . DBPREFIX . "module_news_rel_tags
                                 WHERE news_id = ". contrexx_input2db($value)
                             ) !== false
                     ) {
@@ -1369,6 +1420,11 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                 DELETE
                                 FROM ". DBPREFIX . "module_news_rel_news
                                 WHERE news_id = " . contrexx_input2db($value)
+                            ) !== false
+                        &&  $objDatabase->Execute("
+                                DELETE
+                                FROM " . DBPREFIX . "module_news_rel_tags
+                                WHERE news_id = ". contrexx_input2db($value)
                             ) !== false
                     ) {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
@@ -1398,6 +1454,12 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         global $objDatabase,$_ARRAYLANG, $_CONFIG;
 
         \JS::activate('cx');
+        if (!empty($this->arrSettings['news_use_tags'])) {
+            \JS::registerJS('lib/javascript/tag-it/js/tag-it.min.js');
+            \JS::registerCss('lib/javascript/tag-it/css/tag-it.css');
+        }
+        $newsTagId = 'newsTags';
+        
         \FWUser::getUserLiveSearch();
 
         if (!$this->hasCategories()) {
@@ -1476,6 +1538,10 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_ASSIGNED_USER_GROUPS'         => $_ARRAYLANG['TXT_NEWS_ASSIGNED_USER_GROUPS'],
             'TXT_NEWS_MODIFY_ALL_ACCESS_DESC'       => $_ARRAYLANG['TXT_NEWS_MODIFY_ALL_ACCESS_DESC'],
             'TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'  => $_ARRAYLANG['TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'],
+
+            'TXT_NEWS_TAGS'             => $_ARRAYLANG['TXT_NEWS_TAGS'],
+            'TXT_NEWS_TAGS_ENABLE'      => $_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'],
+            'NEWS_TAG_ID'               => $newsTagId,
         ));
 
         $newsid = intval($_REQUEST['newsId']);
@@ -1501,7 +1567,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         teaser_image_path,
                                                         teaser_image_thumbnail_path,
                                                         allow_comments,
-                                                        enable_related_news
+                                                        enable_related_news,
+                                                        enable_tags
                                                 FROM    ".DBPREFIX."module_news
                                                 WHERE   id = '".$newsid."'", 1);
         if ($objResult !== false && !$objResult->EOF && ($this->arrSettings['news_message_protection'] != '1' || \Permission::hasAllAccess() || !$objResult->fields['backend_access_id'] || \Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic', true) || $objResult->fields['userid'] == $objFWUser->objUser->getId())) {
@@ -1726,6 +1793,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                                                     'style' => 'display:none;'
                                                                                   ),'SetUrl'),
                 'NEWS_RELATED_NEWS_ENABLED_CHECKED' => !empty($objResult->fields['enable_related_news']) ? 'checked="checked"' : '',
+                'NEWS_TAGS_ENABLED_CHECKED' => !empty($objResult->fields['enable_tags']) ? 'checked="checked"' : ''
             ));
 
             if ($this->arrSettings['news_message_protection'] == '1') {
@@ -1780,6 +1848,20 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $this->_objTpl->hideBlock('news_permission_tab');
             }
             //Customized News Module Improvements
+            if (!empty($this->arrSettings['news_use_tags'])) {
+                $this->registerTagJsCode();
+                $newsTagDetails = $this->getNewsTags($id);
+                $newsTags       = $newsTagDetails['tagList'];
+                if ($this->_objTpl->blockExists('newsTags')) {
+                    foreach ($newsTags as $newsTag) {
+                        $this->_objTpl->setVariable('NEWS_TAGS', $newsTag);
+                        $this->_objTpl->parse('newsTags');
+                    }
+                }
+                $this->_objTpl->touchBlock('newsTagsBlock');
+            } else {
+                $this->_objTpl->hideBlock('newsTagsBlock');
+            }
             if (!empty($this->arrSettings['use_related_news'])) {
                 $objCx = \ContrexxJavascript::getInstance();
                 $objCx->setVariable(
@@ -2394,6 +2476,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                  : 0;
             $realtedNewsManipulation = $this->manipulateRelatedNews($relatedNews, $id);
 
+            $newsTags = !empty($_POST['newsTags'])
+                ? contrexx_input2raw($_POST['newsTags'])
+                : array();
+            $enableTags = !empty($_POST['enableTags'])
+                ? intval($_POST['enableTags'])
+                : 0;
+            //Update Tags
+            $tagManipulation = $this->manipulateTags($newsTags, $id);
+
 
             // Set start and end dates as NULL if newsScheduled checkbox is not checked
             if ($newsScheduledActive == 0) {
@@ -2425,12 +2516,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                                         teaser_image_thumbnail_path = '".$newsTeaserImageThumbnailPath."',
                                                         changelog = '".$changelog."',
                                                         allow_comments = '".$newsComments."',
-                                                        enable_related_news='".$enableRelatedNews."'
+                                                        enable_related_news='".$enableRelatedNews."',
+                                                        enable_tags='".$enableTags."'
                                                 WHERE   id = '".$id."'");
            if (     $objResult === false 
                ||   $localesSaving === false
                ||   $categoryManipulation === false
                ||   $realtedNewsManipulation === false
+               ||   $tagManipulation === false
            ){
                 $this->strErrMessage = empty($this->errMsg)
                     ? $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']
@@ -3200,6 +3293,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".(!empty($_POST['newsCommentsTimeout']) ? abs(intval($_POST['newsCommentsTimeout'])) : 30)."' WHERE name='news_comments_timeout'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTop'])."' WHERE name='news_use_top'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTeaserText'])."' WHERE name = 'news_use_teaser_text'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTags'])."' WHERE name = 'news_use_tags'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['useRelatedNews'])."' WHERE name = 'use_related_news'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTypes'])."' WHERE name = 'news_use_types'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTop'])."' WHERE name='news_use_top'");
@@ -3401,6 +3495,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'NEWS_USE_TEASER_TEXT_CHECKED'          => $this->arrSettings['news_use_teaser_text'] == '1' ? 'checked="checked"' : '',
             'NEWS_USE_TYPES_CHECKED'                => $this->arrSettings['news_use_types'] == '1' ? 'checked="checked"' : '',
             'NEWS_USE_RELATED_NEWS_CHECKED'         => $this->arrSettings['use_related_news'] == '1' ? 'checked="checked"' : '',
+            'NEWS_USE_TAGS_CHECKED'                 => $this->arrSettings['news_use_tags'] == '1' ? 'checked="checked"' : '',
             'TXT_STORE'                             => $_ARRAYLANG['TXT_STORE'],
             'TXT_NAME'                              => $_ARRAYLANG['TXT_NAME'],
             'TXT_VALUE'                             => $_ARRAYLANG['TXT_VALUE'],
@@ -3420,6 +3515,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_USE_TEASER_TEXT'                   => $_ARRAYLANG['TXT_USE_TEASER_TEXT'],
             'TXT_USE_TYPES'                         => $_ARRAYLANG['TXT_USE_TYPES'],
             'TXT_USE_RELATED_NEWS'                  => $_ARRAYLANG['TXT_USE_RELATED_NEWS'],
+            'TXT_USE_TAGS'                          => $_ARRAYLANG['TXT_USE_TAGS'],
             'TXT_NOTIFY_GROUP'                      => $_ARRAYLANG['TXT_NOTIFY_GROUP'],
             'TXT_NOTIFY_USER'                       => $_ARRAYLANG['TXT_NOTIFY_USER'],
             'TXT_DEACTIVATE'                        => $_ARRAYLANG['TXT_DEACTIVATE'],
