@@ -226,49 +226,6 @@ function enableOrDisableMailService($this) {
     });
 }
 
-/**
- * validate AffiliateId
- */
-function checkAvailablityOfAffiliateId(affiliateId) {
-    var url        = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=checkAvailabilityOfAffiliateId',
-        errorBlock = jQuery('#setAffiliateId .errorBlock');
-    
-    lastXhr = jQuery.ajax({
-        dataType: "json",
-        url: url,
-        data: {
-            affiliateProfileAttributeId :  affiliateId
-        },
-        type: "POST",
-        beforeSend: function (xhr, settings) {
-            jQuery('#affiliate-form .save').prop('disabled', true);
-        },
-        success: function(response, status, xhr) {
-            if (xhr === lastXhr) {
-                var errMsg = false;
-                if (response.status == 'success') {
-                    resp = response.data;
-                    if (resp.status == 'success') {
-                        hideErrorBlock(errorBlock);
-                    } else {
-                        errMsg = resp.message;                                              
-                    }
-                } else {
-                    errMsg = response.message;                                     
-                }
-                if (errMsg !== false) {
-                    showErrorBlock(errorBlock, errMsg);
-                }
-            }
-        },
-        complete: function (xhr, settings) {
-            enableOrDisableButton(jQuery('#affiliate-form'));
-            jQuery(".save").button('reset');
-        },
-        error: function() { }
-    });
-}
-
 function isValidEmail(mailId) {
     var pattern = new RegExp(/^[+a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
     
@@ -276,71 +233,6 @@ function isValidEmail(mailId) {
         return false;
     }
     return true;
-}
-
-/**
- * Save AffiliateId and PayPal mail address
- * 
- * @param object elm jQuery button object
- */
-function saveAffiliateIdAndPayPalMailAddress($this) {
-    if (   (   jQuery("#affiliateProfileAttributeId").length
-            && jQuery("#paypalEmail").val() === ''
-            && jQuery("#affiliateProfileAttributeId").val() === ''
-            )
-            || (   !jQuery("#affiliateProfileAttributeId").length 
-                && jQuery("#paypalEmail").val() === ''
-               )
-        ) {
-        $this.prop('disabled', true);
-        showMessage(cx.variables.get('TXT_CORE_MODULE_MULTISITE_NO_INPUT_ERROR', 'AffiliateSetup'), 'error');
-        return false;
-    }
-    
-    if (jQuery("#paypalEmail").length && jQuery("#paypalEmail").val() !== '' && !isValidEmail(jQuery("#paypalEmail").val())) {
-        showErrorBlock(jQuery('#paypalAccountAddress .errorBlock'), cx.variables.get('TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR', 'AffiliateSetup'));
-        $this.prop('disabled', true);
-        return false;
-    }
-
-    var data = jQuery( "form" ).serialize();
-    jQuery.ajax({
-        dataType: "json",
-        url: cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=setAffiliate',
-        data: data,
-        type: "POST",
-        beforeSend: function (xhr, settings) {
-            hideErrorBlock(jQuery('.errorBlock'));
-            $this.button('loading');
-            $this.removeClass('save');
-            $this.prop('disabled', true);
-        },
-        success: function(response) {
-            var errMsg = false;
-            var errorBlock = '';
-            if (response.status == 'success') {
-                resp = response.data;
-                if (resp.status == 'success') {
-                    showMessage(resp.message, 'success');
-                    window.location.reload();
-                } else {
-                    errorBlock = (resp.type == 'mail') ? jQuery('#paypalAccountAddress .errorBlock') : jQuery('#setAffiliateId .errorBlock');
-                    errMsg = resp.message;
-                }
-            } else {
-                errorBlock = (response.type == 'mail') ? jQuery('#paypalAccountAddress .errorBlock') : jQuery('#setAffiliateId .errorBlock');
-                errMsg = response.message; 
-            }
-            if (errMsg !== false) {
-                showErrorBlock(errorBlock, errMsg);
-            }
-        },
-        complete: function (xhr, settings) {
-            $this.button('reset');
-            $this.addClass('save');
-        },
-        error: function() { }
-    });
 }
 
 function showErrorBlock(errorBlock, errMsg) {
@@ -353,14 +245,6 @@ function hideErrorBlock(errorBlock) {
     errorBlock
         .removeClass('has-error')
         .html('&nbsp;');
-}
-
-function enableOrDisableButton($formObj) {
-    if ($formObj.find('.errorBlock').length === 0 || $formObj.find('.help-block').length === 0) {
-        $formObj.find(".save").prop('disabled', false);
-    } else {
-        $formObj.find(".save").prop('disabled', true);
-    }
 }
 
 function pleskAutoLogin($this) {
