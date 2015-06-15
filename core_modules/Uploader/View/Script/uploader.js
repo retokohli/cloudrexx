@@ -49,7 +49,7 @@
             if (!iAttrs.allowedExtensions) {
                 iAttrs.allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip', 'tar', 'gz', 'docx', 'doc'];
             }
-            
+
             if (typeof scope.plFiltersModel == "undefined") {
                 scope.filters = [
                     {title: "Allowed files", extensions: iAttrs.allowedExtensions.join(',')}
@@ -59,14 +59,15 @@
             }
 
             $J('#uploader-modal-' + iAttrs.uploaderId).find(' .drop-target').attr('id', 'drop-target-' + iAttrs.id);
+            $J('#uploader-modal-' + iAttrs.uploaderId).find('.upload-limit-tooltip .btn').attr('id', 'drop-target-btn-' + iAttrs.id);
 
             if (iAttrs.uploadLimit > 0) {
                 $J('#uploader-modal-' + iAttrs.uploaderId)
-                        .find('.notify-UploadLimit')
-                        .html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser') + iAttrs.uploadLimit)
-                        .show();
+                    .find('.notify-UploadLimit')
+                    .html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser') + iAttrs.uploadLimit)
+                    .show();
             }
-            
+
             var uploaderData = {
                 filesToUpload: [],
                 uploaded_file_count: 0,
@@ -93,7 +94,7 @@
                     }
                 },
                 overWriteFile :function(files) {
-                  var removedItems = uploaderData.filesToUpload.splice(0, files.length);
+                    var removedItems = uploaderData.filesToUpload.splice(0, files.length);
                     angular.forEach(removedItems, function (file) {
                         $J('#uploader-modal-' + iAttrs.uploaderId).find(' .file-' + file.id).remove();
                         uploader.removeFile(file);
@@ -105,7 +106,7 @@
                 runtimes: 'html5,flash,silverlight',
                 multi_selection: (iAttrs.uploadLimit !== 1) ? true : false,
                 drop_element: 'drop-target-' + iAttrs.id,
-                browse_button: 'drop-target-' + iAttrs.id,
+                browse_button: 'drop-target-btn-' + iAttrs.id,
                 max_file_count: iAttrs.uploadLimit,
                 max_file_size: iAttrs.plMaxFileSize,
                 url: iAttrs.plUrl,
@@ -230,7 +231,7 @@
                 if (up.settings.max_file_count > 0 && uploaderData.filesToUpload.length !== '' && uploaderData.filesToUpload.length >= up.settings.max_file_count) {
                     uploaderData.overWriteFile(files);
                 }
-                
+
                 for (var file in files) {
                     uploaderData.filesToUpload.push(files[file]);
                 }
@@ -299,35 +300,39 @@
                         if ((response.data.status == 'error')) {
                             parseStatusMessage(this, file, 'danger', response.data.message, true, 200);
                         } else {
-                          files.push(response.data.file[1]);
+                            files.push(response.data.file[1]);
                         }
                         if (typeof response.data.response != 'undefined') {
-                          var displayStatus = 'success';
-                          var html = '<ul>';
-                          var progress = false;
-                          var errorCode = false;
-                          $J(response.data.response).each(function (key, values) {
-                            html += '<li class=' + values.status + '>' + values.message + '</li>';
-                            if (values.status == 'error') {
-                              progress = true;
-                              displayStatus = 'danger';
-                              errorCode = 200;
-                            }
-                          });
-                          html += '</ul>';
-                          parseStatusMessage(this, file, displayStatus, html, progress, errorCode);
+                            var displayStatus = 'success';
+                            var html = '<ul>';
+                            var progress = false;
+                            var errorCode = false;
+                            $J(response.data.response).each(function (key, values) {
+                                html += '<li class=' + values.status + '>' + values.message + '</li>';
+                                if (values.status == 'error') {
+                                    progress = true;
+                                    displayStatus = 'danger';
+                                    errorCode = 200;
+                                }
+                            });
+                            html += '</ul>';
+                            parseStatusMessage(this, file, displayStatus, html, progress, errorCode);
                         }
                     } else {
                         parseStatusMessage(this, file, 'danger', cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_' + /[0-9]+/.exec(response.message), 'mediabrowser'), true, response.message);
                     }
                 } catch (ex) {
-                  parseStatusMessage(this, file, 'danger', cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_200', 'mediabrowser'), true, 200);
+                    parseStatusMessage(this, file, 'danger', cx.variables.get('TXT_CORE_MODULE_UPLOADER_ERROR_200', 'mediabrowser'), true, 200);
                 }
 
             });
 
             uploader.bind('UploadProgress', function (up, file) {
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .file-' + file.id).find('.upload-progress').css({width: file.percent + '%'});
+            });
+
+            uploader.bind('Init', function (upload) {
+                $J('.uploader-modal .file_choose .btn').prop("disabled", false);
             });
 
             uploader.bind('UploadComplete', function () {
@@ -343,19 +348,19 @@
             uploader.init();
 
             function parseStatusMessage(objElement, file, status, message, progress, code) {
-              $J('.file-' + file.id).addClass(status);
-              if (progress) {
-                $J('.file-' + file.id).find('.upload-progress').addClass('progress-bar-danger');
-              }
-              $J('.file-' + file.id).find('.errorMessage').html(message);
-              if (code) {
-                objElement.trigger('Error', {
-                  file: file,
-                  code: code
-                });
-              }
+                $J('.file-' + file.id).addClass(status);
+                if (progress) {
+                    $J('.file-' + file.id).find('.upload-progress').addClass('progress-bar-danger');
+                }
+                $J('.file-' + file.id).find('.errorMessage').html(message);
+                if (code) {
+                    objElement.trigger('Error', {
+                        file: file,
+                        code: code
+                    });
+                }
             }
-            
+
             if (iAttrs.plInstance) {
                 scope.plInstance = uploader;
             }
