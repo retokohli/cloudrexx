@@ -31,10 +31,11 @@
 
     <!-- Bootstrap -->
     <link href="themes/cx32/css/bootstrap.css" rel="stylesheet">
+    <link href="themes/cx32/css/flexslider.css" rel="stylesheet">
     <link href="themes/cx32/css/style.css?v=2" rel="stylesheet">
     <!--<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>-->
     <link href='//fonts.googleapis.com/css?family=Roboto:400,300' rel="stylesheet" type="text/css">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -105,8 +106,6 @@
     </div>
 </div>
 
-
-<div class="col-md-"></div>
 <div id="header-and-main">
     <header>
         <div class="container-fluid">
@@ -173,11 +172,10 @@
 <a href="#" class="scrollToTop"><i class="fa fa-arrow-circle-up"></i></a>   
     <div id="footer-content-wrapper"  class="container-fluid">
         <div id="footer-content">
-            <div id="copyright-information">&copy; {DATE_YEAR} Comvation AG - Erstellt mit <a href="http://www.contrexx.com">Contrexx</a> <img src="/themes/cx32/images/logo-contrexx.png" style="height: 12px; vertical-align: text-top; margin-top: 2px;" alt="Contrexx Website Management Software"></div>
+            <div id="copyright-information">&copy; {DATE_YEAR} Cloudrexx <!--img src="/themes/cx32/images/logo-contrexx.png" style="height: 12px; vertical-align: text-top; margin-top: 2px;" alt="Contrexx Website Management Software"--></div>
             <nav id="footer-navigation">
-
+                <a href="{NODE_569}">Über Uns</a>
                 <a href="{NODE_AGB}">AGB</a>
-
                 <a href="{NODE_307}">Datenschutz</a>
                 <a href="{NODE_IMPRINT}">Impressum</a>
             </nav>
@@ -189,10 +187,17 @@
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src= "https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src= "themes/cx32/js/bootstrap.min.js"></script>
+<!--script src= "themes/cx32/js/bootstrap.min.js"></script-->
+<script src= "themes/cx32/js/bootstrap.js"></script>
 <script src= "themes/cx32/js/jquery.stellar.min.js"></script>
 <script src= "themes/cx32/js/jquery.svgmacig.js"></script>
 <script src= "themes/cx32/js/script.js"></script>
+<script src= "themes/cx32/js/jquery.flexslider-min.js"></script>
 {COUNTER}
+<script type="text/javascript" src="https://s3.amazonaws.com/assets.freshdesk.com/widget/freshwidget.js"></script>
+<script type="text/javascript">
+ FreshWidget.init("", {"queryString": "&widgetType=popup", "utf8": "✓", "widgetType": "popup", "buttonType": "text", "buttonText": "Support", "buttonColor": "white", "buttonBg": "#0072bc", "alignment": "2", "offset": "235px", "formHeight": "500px", "url": "https://contrexx.freshdesk.com"} );
+</script>
+<script type="text/javascript" src ="https://my.cloudrexx.com/cadmin/index.php?cmd=JsonData&object=MultiSite&act=trackAffiliateId"></script>
 </body>
 </html>

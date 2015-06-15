@@ -2306,7 +2306,7 @@ legend {
   line-height: inherit;
   color: #333;
   border: 0;
-  border-bottom: 1px solid #e5e5e5;
+  /* border-bottom: 1px solid #e5e5e5; */
 }
 label {
   display: inline-block;
@@ -6137,7 +6137,14 @@ button.close {
   .hidden-xs {
     display: none !important;
   }
+body #smallModal .modal-dialog {
+  width: 95%;
 }
+/*body #smallModal .modal-content{height:860px;}*/
+
+}
+
+
 @media (min-width: 768px) and (max-width: 991px) {
   .hidden-sm {
     display: none !important;

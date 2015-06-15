@@ -1,7 +1,40 @@
 (function ($) {
     $(document).ready(function () {
+
+        $(".mb1").trigger("click");
+
+        $('#toggleShow').click(function(){
+            $('#communityday-form').slideToggle(800);
+        });
+
+        /*function showModal(){
+            $("body").addClass("modal-open");
+            $("body").css("padding-right","17px");
+            $("#myModal").attr("aria-hidden","false");
+            $("#myModal").addClass("in");
+            $("#myModal").css("display","block");
+            $("body").append("<div class='modal-backdrop fade in'></div>");
+
+        }
+
+        //showModal();
+        $("#myModal").click(function(){
+            $(this).hide();
+            $(".modal-backdrop").hide()
+        });*/
+        $('.flexslider').flexslider({
+            animation: "slide",
+            animationLoop: true,
+            itemWidth: 270,
+            itemMargin: 10
+          });
+
         $('iframe').load(function () {
             $('#partner-form').height(parseInt(this.contentWindow.document.body.offsetHeight) + 120);
+
+        });
+        $('iframe').load(function () {
+            $('#kursleiter-form').height(parseInt(this.contentWindow.document.body.offsetHeight) + 120);
 
         });
         $("li.no-click>a").click(function(e) {
@@ -327,7 +360,7 @@
         }
         
         // modal window for users which are redirected from contrexx.com
-        if(window.location.hash == '#contrexx'){
+        /*if(window.location.hash == '#contrexx'){
             if(getCookie('modal') != 'hide'){
                 jQuery('#contrexx-modal').css('display', 'block');
                 jQuery('body').prepend('<div class="modal-backdrop fade in"></div>');
@@ -342,7 +375,7 @@
             jQuery('.modal-backdrop').remove();
             // remove hash out of url because it looks better
             history.pushState("", document.title, window.location.pathname + window.location.search);
-        });
+        });*/
         function getCookie(name) {
           var value = "; " + document.cookie;
           var parts = value.split("; " + name + "=");
@@ -355,4 +388,32 @@
          jQuery('#download_entries > h2').remove();
          jQuery('#backToOverview').remove();
         }
+        function toggleChevron(e) {
+            jQuery(e.target)
+                .prev('.panel-heading')
+                .find("i.indicator")
+                .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+        }
+        jQuery('#accordion').on('hidden.bs.collapse', toggleChevron);
+        jQuery('#accordion').on('shown.bs.collapse', toggleChevron);
+
+        href = jQuery('.login-button a').attr('href');
+        str = "Profildaten";
+        if(href.search(str) > -1){
+            jQuery('.login-button a').attr('href', "/cadmin");
+        };
+        
+        /*
+        /   Set the divs with the same (.sameheight) class name to the same height
+        */
+        var baseHeight = 0;
+        $("#cloud-ueberuns-emloyee .sameheight").each(function(index, picture) {
+           var height = $(picture).height();
+           if (height > baseHeight)
+           {
+                baseHeight = height;
+           }            
+        });
+
+        $('#cloud-ueberuns-emloyee .sameheight').css('height', (baseHeight+10) + 'px');
     })(jQuery)
