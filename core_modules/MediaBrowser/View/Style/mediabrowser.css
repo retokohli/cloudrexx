@@ -2011,7 +2011,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     max-width: 99%;
 }
 
-.uploader-modal .modal .hidden, .media-browser-modal-window .modal .hidden {
+.uploader-modal .hidden, .media-browser-modal-window .hidden {
     display: none;
 }
 
@@ -2097,6 +2097,11 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     width: 100%;
     font-size: 16px;
     display: none;
+}
+
+.uploader-modal  .moxie-shim.moxie-shim-html5,
+.media-browser-modal-window .moxie-shim.moxie-shim-html5 {
+    z-index: 1;
 }
 
 #thumbnailSelector img {
