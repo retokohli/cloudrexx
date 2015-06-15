@@ -128,6 +128,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'updateWebsiteSubscriptionInfo'     => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'websiteRestore'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'addNewWebsiteInSubscription' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'checkUserStatusOnRestore' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
+            'getAvailableSubscriptionsByUserId' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'websiteLogin'          => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'getAdminUsers'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'getUser'               => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
@@ -3940,13 +3942,24 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         $backupFilesInfo = array();
+        $websiteName = $creationDate  = null;
         foreach (glob($backupLocation.'/*.zip') as $filename) {
-            $backupFilesInfo[] = explode('_', basename($filename, '.zip'));
+            $websiteInfoArray = $this->getWebsiteInfoFromZip($filename, 'info/meta.yml');
+            $userEmail = isset($websiteInfoArray['website']) && isset($websiteInfoArray['website']['websiteEmail'])
+                         ? $websiteInfoArray['website']['websiteEmail']
+                         : '';
+            
+            list($websiteName, $creationDate) = explode('_', basename($filename, '.zip'));
+            $backupFilesInfo[] = array(
+                'websiteName'  => $websiteName, 
+                'creationDate' => $creationDate,
+                'userEmailId'  => $userEmail
+                );
         }
         
         if (!empty($searchTerm)) {
             $backupFilesInfo = array_filter($backupFilesInfo, function($el) use ($searchTerm) {
-                return ( strpos($el[0], $searchTerm) !== false );
+                return ( strpos($el['websiteName'], $searchTerm) !== false );
             });
         }
         return array('status' => 'success', 'backupFilesInfo' => $backupFilesInfo);
@@ -4148,6 +4161,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $serviceServerId       = isset($params['post']['serviceServerId']) 
                                      ? contrexx_input2int($params['post']['serviceServerId'])
                                      : 0;
+            $selectedUserId        = isset($params['post']['selectedUserId'])
+                                     ? contrexx_input2int(($params['post']['selectedUserId']))
+                                     : 0;
+            $subscriptionId        = isset($params['post']['subscriptionId'])
+                                     ? contrexx_input2int(($params['post']['subscriptionId']))
+                                     : 0;
             if (   empty($websiteName) 
                 || empty($websiteBackupFileName)
                 || empty($serviceServerId)
@@ -4164,13 +4183,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             
             \DBG::log('JsonMultisite: Create a new website on restore..');
-            $this->createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath, $serviceServerId);
+            $this->createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath, $serviceServerId, $selectedUserId, $subscriptionId);
             
             \DBG::log('JsonMultisite: Restore website Database and Repository..');
             $this->websiteDataRestore($websiteName, $websiteBackupFilePath);
             
             \DBG::log('JsonMultisite: Website Info Restore..');
-            $this->websiteInfoRestore($websiteName, $websiteBackupFilePath);
+            $this->websiteInfoRestore($websiteName, $websiteBackupFilePath, $subscriptionId);
             
             $websiteUrl = $this->getWebsiteLinkByName($websiteName);
             if (!$websiteUrl) {
@@ -4237,9 +4256,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param string  $websiteName           websiteName
      * @param string  $websiteBackupFilePath websiteBackup path
      * @param integer $serviceServerId       service server id
+     * @param integer $selectedUserId        userId
+     * @param integer $subscriptionId        subscriptionId
      * @throws MultiSiteJsonException
      */
-    private function createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath, $serviceServerId)
+    private function createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath, $serviceServerId, $selectedUserId, $subscriptionId)
     {
         global $_ARRAYLANG;
         
@@ -4249,7 +4270,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 throw new MultiSiteJsonException('Failed to get the website Information from file');
             }
             
-            $params = array('multisite_address' => $websiteName, 'serviceServerId' => $serviceServerId);
+            $params = array(
+                'multisite_address' => $websiteName, 
+                'serviceServerId'   => $serviceServerId,
+                'selectedUserId'    => $selectedUserId
+            );
+            
             if ($websiteInfoArray['website']) {
                 $params['multisite_email_address'] = $websiteInfoArray['website']['websiteEmail'];
             }
@@ -4257,10 +4283,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             if ($websiteInfoArray['subscription']) {
                 $params['product_id']    = $websiteInfoArray['subscription']['subscriptionProductId'];
                 $params['renewalOption'] = $websiteInfoArray['subscription']['subscriptionRenewalUnit'];
-                $subscriptionId          = $websiteInfoArray['subscription']['subscriptionId'];
             }
-
-            if (empty($subscriptionId) || empty($params['product_id'])) {
+            
+            if (empty($params['product_id'])) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
             }
 
@@ -4270,19 +4295,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             if (!$product) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS']);
             }
-
-            if ($product->getEntityClass() == 'Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection') {
-                $paramsData = array(
-                    'subscriptionId'  => $subscriptionId, 
-                    'websiteName'     => $websiteName, 
-                    'websiteEmail'    => $params['multisite_email_address'],
-                    'serviceServerId' => $serviceServerId
-                );
-                $response = JsonMultiSite::executeCommandOnManager('addNewWebsiteInSubscription', $paramsData);
-            } else {
-                $response = JsonMultiSite::executeCommandOnManager('signup', $params);
+            
+            if (!empty($subscriptionId)) {
+                $params['subscriptionId']  = $subscriptionId;
             }
-
+            
+            $response = JsonMultiSite::executeCommandOnManager('addNewWebsiteInSubscription', $params);
+            
             if ($response->status == 'error' || $response->data->status == 'error') {
                 throw new MultiSiteJsonException('Failed to create a website: '.$websiteName);
             }
@@ -4405,11 +4424,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     /**
      * Restore the website Info 
      * 
-     * @param string $websiteName           website name
-     * @param string $websiteBackupFilePath website backup path
+     * @param string  $websiteName           website name
+     * @param string  $websiteBackupFilePath website backup path
+     * @param integer $subscriptionId        subscriptionId
      * @throws MultiSiteJsonException
      */
-    private function websiteInfoRestore($websiteName, $websiteBackupFilePath)
+    private function websiteInfoRestore($websiteName, $websiteBackupFilePath, $subscriptionId)
     {
         global $_ARRAYLANG;
         
@@ -4449,9 +4469,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 throw new MultiSiteJsonException('Failed to update website configurations.');
             }
             
-            \DBG::log('JsonMultisite: Restore website subscription details..');
-            $this->updateWebsiteSubscriptionDetails($websiteBackupFilePath, $website->getId());
-
+            //Skip to restore subscription for user defined subscription
+            if (empty($subscriptionId)) {
+                \DBG::log('JsonMultisite: Restore website subscription details..');
+                $this->updateWebsiteSubscriptionDetails($websiteBackupFilePath, $website->getId());
+            }
         } catch (\Exception $e) {
             throw new MultiSiteJsonException(__METHOD__.' failed! : '.$e->getMessage());
         }
@@ -4585,7 +4607,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 'websiteId'    => $websiteId,
                 'subscription' => $websiteInfoArray['subscription']
             );
-        
+            
             //update subscription details
             $response = JsonMultiSite::executeCommandOnManager('updateWebsiteSubscriptionInfo', $params);
             if ($response->status == 'error' || $response->data->status == 'error') {
@@ -4621,7 +4643,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $subscriptionInfo  = isset($params['post']['subscription'])
                                  ? contrexx_input2raw($params['post']['subscription'])
                                  : '';
-                 
+            
             $subscription = ComponentController::getSubscriptionByWebsiteId($websiteId);
             if (!$subscription) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION_NOT_EXISTS']);
@@ -4663,43 +4685,216 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $subscriptionId   = isset($params['post']['subscriptionId'])
                             ? contrexx_input2int($params['post']['subscriptionId'])
                             : 0;
-        $websiteName      = isset($params['post']['websiteName'])
-                            ? contrexx_input2raw($params['post']['websiteName'])
+        $productId        = isset($params['post']['product_id'])
+                            ? contrexx_input2int($params['post']['product_id'])
+                            : 0;
+        $websiteName      = isset($params['post']['multisite_address'])
+                            ? contrexx_input2raw($params['post']['multisite_address'])
                             : '';
-        $email            = isset($params['post']['websiteEmail'])
-                            ? contrexx_input2raw($params['post']['websiteEmail'])
+        $email            = isset($params['post']['multisite_email_address'])
+                            ? contrexx_input2raw($params['post']['multisite_email_address'])
                             : '';
         $serviceServerId  = isset($params['post']['serviceServerId'])
                             ? contrexx_input2int($params['post']['serviceServerId'])
                             : 0;
+        $selectedUserId   = isset($params['post']['selectedUserId'])
+                            ? contrexx_input2int($params['post']['selectedUserId'])
+                            : 0;
+        $renewalOption    = isset($params['post']['renewalOption'])
+                            ? contrexx_input2int($params['post']['renewalOption'])
+                            : \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH;
         
         try {
-           if (   empty($subscriptionId)
+           if (   (empty($subscriptionId) && empty($productId))
                || empty($websiteName)
                || empty($email)
                || empty($serviceServerId)
             ) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
             }
-
-            $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array('email' => $email));
-            if (!$objUser) {
-                throw new MultiSiteJsonException('Failed to fetch the user object from the email '.$email);
-            }
             
+            $objUser = \FWUser::getFWUserObject()->objUser;
             $multisiteComponentController = $this->getControllerObjectByComponentName('Multisite');
-            if(!$multisiteComponentController){
+            if (!$multisiteComponentController) {
                 throw new MultiSiteJsonException('Failed to create the website in subscription.');
             }
-            $response = $multisiteComponentController->createNewWebsiteInSubscription($subscriptionId, $websiteName, $objUser, $serviceServerId);
+            
+            if (!empty($selectedUserId)) {
+                $user = $objUser->getUser($selectedUserId);
+                if (!$user) {
+                    throw new MultiSiteJsonException('Failed to fetch the user object from the selected user id '.$selectedUserId);
+                }
+                
+                $response = !empty($subscriptionId)
+                            ? $multisiteComponentController->createNewWebsiteInSubscription($subscriptionId, $websiteName, $user, $serviceServerId)
+                            : $multisiteComponentController->createNewWebsiteByProduct($productId, $websiteName, $user, $serviceServerId, $renewalOption);
+                
+            } else {
+                $user = $objUser->getUsers(array('email' => $email));
+                if (!empty($user)) {
+                    throw new MultiSiteJsonException('This email ( '.$email. ' )  already exists!.');
+                }
+                
+                $paramsData = array( 
+                    'post' => array(
+                        'multisite_address'       => $websiteName, 
+                        'serviceServerId'         => $serviceServerId,
+                        'multisite_email_address' => $email,
+                        'product_id'              => $productId,
+                        'renewalOption'           => $renewalOption
+                    )
+                );
+                $response = $this->signup($paramsData);
+            }
+            
             if (!$response || $response->status == 'error' || $response->data->status == 'error') {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ADD_WEBSITE_FAILED']);
             }
-            return array('status' => 'success'); 
+            return array('status' => 'success');
         } catch (\Exception $e) {
             \DBG::log(__METHOD__.' failed!. : '.$e->getMessage());
             throw new MultiSiteJsonException('Failed to create the website in subscription.');
-        }  
+        }
+    }
+    
+    /**
+     * Check user exists or not during restore website
+     * 
+     * @param array $params
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function checkUserStatusOnRestore($params) {
+        global $_ARRAYLANG;
+        
+        if (empty($params) || empty($params['post'])) {
+            \DBG::log(__METHOD__.'Failed! : '.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
+        }
+        
+        try {
+            $uploadedFilePath      = isset($params['post']['uploadedFilePath'])
+                                     ? contrexx_input2raw($params['post']['uploadedFilePath'])
+                                     : '';
+            if (empty($uploadedFilePath)) {
+                throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+            }
+            
+            \Cx\Lib\FileSystem\FileSystem::path_absolute_to_os_root($uploadedFilePath);
+            
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    if (!\Cx\Lib\FileSystem\FileSystem::exists($uploadedFilePath)) {
+                        throw new MultiSiteJsonException('The website backup zip file doesnot exists!.');
+                    }
+                    
+                    $websiteInfoArray = $this->getWebsiteInfoFromZip($uploadedFilePath, 'info/meta.yml');
+                    if (empty($websiteInfoArray)) {
+                        throw new MultiSiteJsonException('Failed to get the website Information from file');
+                    }
+
+                    $userEmailId = isset($websiteInfoArray['website']) && isset($websiteInfoArray['website']['websiteEmail'])
+                                   ? $websiteInfoArray['website']['websiteEmail']
+                                   : '';
+                    if (empty($userEmailId)) {
+                        throw new MultiSiteJsonException('User Email not found in the backup file.');
+                    }
+
+                    $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array('email' => $userEmailId));
+                    return array('status' => 'success' , 'userId' => $objUser ? $objUser->getId() : 0);
+                    break;
+                default:
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::log(__METHOD__. ' Failed: '.$e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
+        }
+    }
+    
+    /**
+     * Get available subscriptions by UserId
+     * 
+     * @param array $params
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function getAvailableSubscriptionsByUserId($params)
+    {
+        global $_ARRAYLANG;
+        
+        if (empty($params) || empty($params['post'])) {
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+        }
+        try {
+             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $userId = isset($params['post']['userId'])
+                              ? contrexx_input2int($params['post']['userId'])
+                              : 0;
+                    $objUser = \FWUser::getFWUserObject()->objUser->getUser($userId);
+
+                    if (!$objUser) {
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_NOT_VALID_USER']);
+                    }
+
+                    $crmContactId = $objUser->getCrmUserId();
+                    if (!$crmContactId) {
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_NOT_VALID_USER']);
+                    }
+
+                    $orderRepo = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order');
+
+                    $orders    = $orderRepo->getOrdersByCriteria($crmContactId, 'valid', array('1, 3'));
+                    $subscriptionList = array();
+                    if (!empty($orders)) {
+                        foreach ($orders as $order) {
+                            foreach ($order->getSubscriptions() as $subscription) {
+                                if ($subscription->getState() == \Cx\Modules\Order\Model\Entity\Subscription::STATE_TERMINATED) {
+                                    continue;
+                                }
+
+                                $product = $subscription->getProduct();
+                                if (!$product) {
+                                    continue;
+                                }
+
+                                $websiteCollection = $subscription->getProductEntity();
+                                if ($websiteCollection instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+                                    $description       = $subscription->getDescription();
+                                    $websites          = $websiteCollection->getWebsites();
+                                    if ($websiteCollection->getQuota() <= count($websites)) {
+                                        continue;
+                                    }
+
+                                    if (empty($description)) {
+                                        foreach ($websites as $website) {
+                                            $websiteNames[] = $website->getName();
+                                        }
+                                        $description = !empty($websiteNames) ? implode(', ', $websiteNames) : '';
+                                    }
+                                    $subscriptionDesc = !empty($description)
+                                                        ? $description 
+                                                        : $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION'] . ' - #'.$subscription->getId();
+                                    $subscriptionList[] = $subscription->getId(). ":".$subscriptionDesc;
+                                }
+                            }
+                        }
+                    }
+
+                    if (!empty($subscriptionList)) {
+                        return array('status' => 'success', 'subscriptionsList' => $subscriptionList);
+                    }
+                    break;
+                default:
+                    break;
+             }
+        } catch (\Exception $e) {
+            \DBG::log(__METHOD__.' Failed! : '.$e->getMessage());
+            return array('status' => 'error');
+        }
     }
     
     /**

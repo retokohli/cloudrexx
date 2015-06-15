@@ -138,16 +138,12 @@ a.deleteMultisiteConfig {
 .stopexecutionQuery.ui-button {
     display :none;
 }
-#restoreform_error {
-    padding: 3px 0 3px 5px;
-    color: #a94442;
-    display: none;
-}
+
 .mandatory {
     color: red;
 }
 .border-red {
-    border-color: #b94a48;
+    border-color: #b94a48 !important;
 }
 .ui-dialog #loading.websiteBackup {
  height: 28px !important;
@@ -158,4 +154,39 @@ a.deleteMultisiteConfig {
 
 #websiteUpdateForm select{
     margin-left: 5px;
+}
+#MultisiteWebsiteRestore #restore_websiteName {
+    float: left;
+    width: 100%;
+}
+
+#MultisiteWebsiteRestore input[type="text"] {
+    float: left;
+    padding: 5px 5px 6px 5px;
+    border-radius: 4px;
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+    border: 1px solid #ccc;
+}
+
+#MultisiteWebsiteRestore #restore_websiteName > div{
+    padding: 2px 7px 2px 7px;
+    float: left;
+    background: #dedede;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    font-weight: 600;
+}
+#MultisiteWebsiteRestore .restore_error, #restoreWebsiteForm #restoreform_error {
+    display: none;
+    padding: 4px 5px;
+    float: left;
+    width: 100%;
+    color: #a94442;
+}
+
+#MultisiteWebsiteRestore select {
+    padding: 4px 5px;
 }

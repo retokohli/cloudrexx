@@ -1099,6 +1099,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function parseSectionBackupAndRestore(\Cx\Core\Html\Sigma $template, array $cmd) {
         global $_ARRAYLANG;
         
+        \FWUser::getUserLiveSearch(array(
+            'minLength' => 3,
+            'canCancel' => true,
+            'canClear'  => true));
+        
         if (isset($_GET['show_all'])) {
             $term = (isset($_GET['term']) && !empty($_GET['term'])) 
                     ? contrexx_input2raw($_GET['term']) 
@@ -1133,6 +1138,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'serviceId'   => array(
                                 'readonly'     => true,
                                 'showOverview' => false
+                            ),
+                            'userId'      => array(
+                                'readonly'     => true,
+                                'showOverview' => false
                             )
                         )
                     )
@@ -1140,7 +1149,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $template->setVariable('TABLE', $backupAndRestore->render());
             }
             
-        } 
+        }
         
         // Upload File
         $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
@@ -1163,7 +1172,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             'serviceServers'               => explode(',', ComponentController::getWebsiteServiceServerList()),
             'websiteRestoreInProgress'     => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_INPROGRESS'],
             'websiteBackupDeleteInProgress'=> $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_INPROGRESS'],
-            'websiteFieldRequired'         => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_FIELD_REQUIRED'],
+            'websiteNameRequired'          => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_ERROR'],
+            'websiteUserRequired'          => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHOOSE_USER_ERROR'],
             'websiteRestoreConfirm'        => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_CONFIRM'],
             'websiteBackupDeleteConfirm'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE_CONFIRM'],
             'websiteRestoreTitle'          => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'],
@@ -1181,7 +1191,17 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             'TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'      => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'],
             'TXT_CORE_MODULE_MULTISITE_CHOOSE_SERVICE_SERVER'=> $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHOOSE_SERVICE_SERVER'],
             'TXT_CORE_MODULE_MULTISITE_ENTER_WEBSITE_NAME'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ENTER_WEBSITE_NAME'],
-            'UPLOADER_CODE'                                  => $uploader->getXHtml($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPLOAD_BUTTON'])
+            'TXT_CORE_MODULE_MULTISITE_CHOOSE_USER'          => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHOOSE_USER'],
+            'TXT_CORE_MODULE_MULTISITE_CREATE_BACKUP_USER'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CREATE_BACKUP_USER'],
+            'TXT_CORE_MODULE_MULTISITE_CHOOSE_ANOTHER_USER'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHOOSE_ANOTHER_USER'],
+            'TXT_CORE_MODULE_MULTISITE_CHOOSE_SUBSCRIPTION'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHOOSE_SUBSCRIPTION'],
+            'TXT_MULTISITE_WEBSITE_SUBSCRIPTION'             => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_SUBSCRIPTION'],
+            'TXT_CORE_MODULE_MULTISITE_WEBSITE_FIELD_REQUIRED'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_FIELD_REQUIRED'],
+            'TXT_CORE_MODULE_MULTISITE_CREATE_NEW_SUBSCRIPTION'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CREATE_NEW_SUBSCRIPTION'],
+            'TXT_CORE_MODULE_MULTISITE_USE_EXISTING_SUBSCRIPTION'=> $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USE_EXISTING_SUBSCRIPTION'],
+            'TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_ERROR'   => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_ERROR'],
+            'UPLOADER_CODE'                                  => $uploader->getXHtml($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPLOAD_BUTTON']),
+            'MULTISITE_DOMAIN'                               => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'),
         ));
         
     }
@@ -1233,11 +1253,16 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 }
                 if ($resp->data->backupFilesInfo) {
                     foreach ($resp->data->backupFilesInfo as $data) {
+                        $objUser = null;
+                        if (!empty($data->userEmailId)) {
+                            $objUser = \FWUser::getFWUserObject()->objUser->getUsers(array('email' => $data->userEmailId));
+                        }
                         $allBackupFilesInfo[] = array(
-                            'websiteName'   => isset($data[0]) ? $data[0] : '', 
-                            'dateAndTime'   => isset($data[1]) ? $data[1] : '', 
+                            'websiteName'   => $data->websiteName, 
+                            'dateAndTime'   => $data->creationDate, 
                             'serviceServer' => $websiteServiceServer->gethostname(),
-                            'serviceId'     => $websiteServiceServer->getId()
+                            'serviceId'     => $websiteServiceServer->getId(),
+                            'userId'        => ($objUser) ? $objUser->getId() : 0
                         );
                     }
                 }
@@ -1537,7 +1562,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         
         $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
         $websiteRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-        $resultObj     = ($serviceServer) ? $websiteServiceServerRepo->findOneById($id) : $websiteRepo->findOneById($id);
+        $resultObj     = ($serviceServer) 
+                         ? $websiteServiceServerRepo->findOneById($id)
+                         : $websiteRepo->findOneById($id);
         
         if (!$resultObj) {
             return;
@@ -1545,7 +1572,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if ($resultObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website && !$resultObj->getFqdn()) {
             return;
         }
-        $title  = ($serviceServer) ? sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_IN_SERVICE_TITLE'], $resultObj->getHostname()) : sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_TITLE'], $resultObj->getFqdn()->getName());
+        $title  = ($serviceServer) 
+                  ? sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_IN_SERVICE_TITLE'], $resultObj->getHostname())
+                  : sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_TITLE'], $resultObj->getFqdn()->getName());
         $dataId = ($serviceServer) ? 'service:' . $id : 'website:' . $id;
         $cxjs   = \ContrexxJavascript::getInstance();
         
@@ -1575,11 +1604,19 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             return false;
         }
         
-        $websiteBackupFileName = isset($rowData['dateAndTime']) ? $rowData['websiteName'].'_'.$rowData['dateAndTime'].'.zip' : $rowData['websiteName'];
-        $title = ($deleteBackupedWebsite) ? $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE'] : $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'];
-        $class = ($deleteBackupedWebsite) ? 'deleteWebsiteBackup delete' : 'websiteRestore';
-        
-        return '<a href="javascript:void(0);" class="'.$class.'" data-serviceid = "'.$rowData['serviceId'].'" data-backupFile = "'.$websiteBackupFileName.'" title = "'.$title.'"></a>';
+        $websiteBackupFileName = isset($rowData['dateAndTime']) 
+                                 ? $rowData['websiteName'].'_'.$rowData['dateAndTime'].'.zip'
+                                 : $rowData['websiteName'];
+        $title      = ($deleteBackupedWebsite) 
+                      ? $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE'] 
+                      : $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE'];
+        $class      = $deleteBackupedWebsite
+                      ? 'deleteWebsiteBackup delete' 
+                      : 'websiteRestore';
+        $userExists = !empty($rowData['userId']) && !$deleteBackupedWebsite 
+                      ? 'data-userId = "'.$rowData['userId'].'"' 
+                      : '';
+        return '<a href="javascript:void(0);" class="'.$class.'" data-serviceid = "'.$rowData['serviceId'].'" data-backupFile = "'.$websiteBackupFileName.'"  '.$userExists.'  title = "'.$title.'"></a>';
     }
    
     /**

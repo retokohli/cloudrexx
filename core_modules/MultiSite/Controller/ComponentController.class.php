@@ -1638,6 +1638,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $uploadedBackupFilePath   = isset($arguments['uploadedFilePath'])
                                         ? contrexx_input2raw(($arguments['uploadedFilePath']))
                                         : '';
+            
+            // Selected user Id for restore a website
+            $selectedUserId           = isset($arguments['selectedUserId'])
+                                        ? contrexx_input2int(($arguments['selectedUserId']))
+                                        : 0;
+            
+            // Selected Subscription Id for restore a website
+            $subscriptionId           = isset($arguments['subscriptionId'])
+                                        ? contrexx_input2int(($arguments['subscriptionId']))
+                                        : 0;
+            
             $responseType             = isset($arguments['responseType'])
                                         ? contrexx_input2raw($arguments['responseType'])
                                         : '';
@@ -1693,11 +1704,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 
                 $backupedWebsiteFileName = basename($uploadedBackupFilePath);
             }
-
+            
             $params = array(
                 'websiteName'           => $restoreWebsiteName,
                 'websiteBackupFileName' => $backupedWebsiteFileName,
-                'serviceServerId'       => $restoreServiceServerId
+                'serviceServerId'       => $restoreServiceServerId,
+                'selectedUserId'        => $selectedUserId,
+                'subscriptionId'        => $subscriptionId
             );
             $resp = JsonMultiSite::executeCommandOnServiceServer('websiteRestore', $params, $restoreInServiceServer);
             return $responseType == 'json' ? $resp : ($resp->status == 'success' ? $resp->data->messsage : $resp->message);
@@ -1808,7 +1821,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
 
             //get sign-in user crm id!
-            $objUser = !empty($userObj) ? $userObj : \FWUser::getFWUserObject()->objUser;
+            $objUser = ($userObj instanceof \User)
+                       ? $userObj
+                       : \FWUser::getFWUserObject()->objUser;
             
             if (!$objUser) {
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
@@ -1880,12 +1895,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Create new website based on the given product id and website name
      * 
-     * @param integer $productId   Product id
-     * @param string  $websiteName Website name
+     * @param integer $productId       Product id
+     * @param string  $websiteName     Website name
+     * @param \User   $userObj         userObj
+     * @param integer $serviceServerId serviceServerId
+     * @param string  $renewalOption   renewalOption
      * 
      * return array return's array that contains array('status' => success | error, 'message' => 'Status message')
      */
-    public function createNewWebsiteByProduct($productId, $websiteName)
+    public function createNewWebsiteByProduct($productId, $websiteName, $userObj = null, $serviceServerId = 0, $renewalOption)
     {
         global $_ARRAYLANG;
         
@@ -1897,24 +1915,34 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PRODUCT_NOT_EXISTS']);
             }
             
+            $objUser = ($userObj instanceof \User)
+                       ? $userObj
+                       : \FWUser::getFWUserObject()->objUser;
+            
+            if (!$objUser) {
+                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
+            }
+            
             //get sign-in user crm id!
-            $crmContactId = \FWUser::getFWUserObject()->objUser->getCrmUserId();
+            $crmContactId = $objUser->getCrmUserId();
 
             if (empty($crmContactId)) {
                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
             }
             
+            list($renewalUnit, $renewalQuantifier) = JsonMultiSite::getProductRenewalUnitAndQuantifier($renewalOption);
             // create new subscription of selected product
             $subscriptionOptions = array(
-                'renewalUnit'       => \Cx\Modules\Pim\Model\Entity\Product::UNIT_MONTH,
-                'renewalQuantifier' => 1,
+                'renewalUnit'       => $renewalUnit,
+                'renewalQuantifier' => $renewalQuantifier,
                 'websiteName'       => $websiteName,
-                'customer'          => \FWUser::getFWUserObject()->objUser,
+                'customer'          => $objUser,
+                'serviceServerId'   => $serviceServerId
             );
             
             $transactionReference = "|$productId|name|$websiteName|";
             $currency = self::getUserCurrency($crmContactId);
-            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $currency, \FWUser::getFWUserObject()->objUser, $transactionReference, $subscriptionOptions);
+            $order = \Env::get('em')->getRepository('Cx\Modules\Order\Model\Entity\Order')->createOrder($productId, $currency, $objUser, $transactionReference, $subscriptionOptions);
             if (!$order) {
                 return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ORDER_FAILED']);
             }
