@@ -180,19 +180,19 @@ class LegacyClassLoader {
     }
 
     private function testLoad($path, $name) {
-        if (file_exists($path)) {
-            $path = substr($path, strlen(ASCMS_DOCUMENT_ROOT));
-            $this->loadClass($path, $name);
-            $this->mapTable[$name] = $path;
-            try {
-                $objFile = new \Cx\Lib\FileSystem\File(ASCMS_TEMP_PATH.'/legacyClassCache.tmp');
-                $objFile->write(serialize($this->mapTable));
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                \DBG::msg($e->getMessage());
-            }
-            return true;
+        if (!file_exists($path) || !$this->checkClassExistsInFile($name, $path)) {
+            return false;
         }
-        return false;
+        $path = substr($path, strlen(ASCMS_DOCUMENT_ROOT));
+        $this->loadClass($path, $name);
+        $this->mapTable[$name] = $path;
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File(ASCMS_TEMP_PATH.'/legacyClassCache.tmp');
+            $objFile->write(serialize($this->mapTable));
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
+        }
+        return true;
     }
 
     /**
@@ -251,15 +251,9 @@ class LegacyClassLoader {
             if (defined('BACKEND_LANG_ID') && substr($file, strlen($file) - strlen($indexClass)) == $indexClass) {
                 continue;
             }
-            $fcontent = file_get_contents($file);
             // match namespace too
-            $matches = array();
-
-            //if (preg_match('/(?:namespace\s+([\\\\\w]+);[.\n\r]*?)?(?:class|interface)\s+' . $name . '\s+(?:extends|implements)?[\\\\\s\w,\n\t\r]*?\{/', $fcontent, $matches)) {
-            if (preg_match('/(?:namespace ([\\\\a-zA-Z0-9_]*);[\w\W]*)?(?:class|interface) ' . $name . '(?:[ \n\r\t])?(?:[a-zA-Z0-9\\\\_ \n\r\t])*\{/', $fcontent, $matches)) {
-                if (isset($matches[0]) && (!isset($matches[1]) || $matches[1] == $namespace)) {
-                    return $file;
-                }
+            if ($this->checkClassExistsInFile($name, $file, $namespace)) {
+                return $file;
             }
         }
         foreach (glob($path.'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir) {
@@ -270,6 +264,27 @@ class LegacyClassLoader {
             $result = $this->searchClass($name, $namespace, $dir);
             if ($result !== false) {
                 return $result;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This function checks if the class exists in the given file. The namespace will also be check if isset
+     *
+     * @access protected
+     * @param $name Classname
+     * @param $file name of file where class should be
+     * @param string $namespace namespace of the class
+     * @return bool
+     */
+    protected function checkClassExistsInFile($name, $file, $namespace=""){
+        $fcontent = file_get_contents($file);
+        $matches = array();
+        //if (preg_match('/(?:namespace\s+([\\\\\w]+);[.\n\r]*?)?(?:class|interface)\s+' . $name . '\s+(?:extends|implements)?[\\\\\s\w,\n\t\r]*?\{/', $fcontent, $matches)) {
+        if (preg_match('/(?:namespace ([\\\\a-zA-Z0-9_]*);[\w\W]*)?(?:class|interface) ' . $name . '(?:\{|(?:[ \n\r\t])+(?:[a-zA-Z0-9\\\\_ \n\r\t])*\{)/', $fcontent, $matches)) {
+            if (isset($matches[0]) && (!isset($matches[1]) || $matches[1] == $namespace)) {
+                return true;
             }
         }
         return false;
