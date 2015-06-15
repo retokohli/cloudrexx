@@ -329,7 +329,7 @@
             $scope.loadedTemplate = function () {
                 // PLUPLOADER INTEGRATION
                 $scope.uploader = new plupload.Uploader({
-                    runtimes: 'html5,flash,silverlight,html4',
+                    runtimes: 'flash,html5,silverlight,html4',
                     browse_button: 'selectFileFromComputer',
                     container: 'uploader',
                     drop_element: "uploader",
@@ -353,6 +353,9 @@
                         "path": ''
                     },
                     init: {
+                        Init: function(){
+                            $J('#selectFileFromComputer').prop("disabled", false);
+                        },
                         FilesAdded: function (up, files) {
                             if ($scope.finishedUpload) {
                                 $scope.uploaderData.filesToUpload = [];
