@@ -1,6 +1,6 @@
 (function ($) {
     $(document).ready(function () {
-
+        $('#plusgallery').plusGallery();
         $(".mb1").trigger("click");
 
         $('#toggleShow').click(function(){
