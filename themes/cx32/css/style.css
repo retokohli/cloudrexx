@@ -7649,3 +7649,8 @@ a#contact-btn{
     #contactFrame legend h2{
         font-size: 35px;
     }
+    
+    /*Community-Day-2015*/
+    #communityday-text li {
+        font-size: 1.25em;
+    }
