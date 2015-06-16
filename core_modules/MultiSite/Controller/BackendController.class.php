@@ -1616,7 +1616,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $userExists = !empty($rowData['userId']) && !$deleteBackupedWebsite 
                       ? 'data-userId = "'.$rowData['userId'].'"' 
                       : '';
-        return '<a href="javascript:void(0);" class="'.$class.'" data-serviceid = "'.$rowData['serviceId'].'" data-backupFile = "'.$websiteBackupFileName.'"  '.$userExists.'  title = "'.$title.'"></a>';
+        return '<a href="javascript:void(0);" class="'.$class.'" data-serviceId = "'.$rowData['serviceId'].'" data-backupFile = "'.$websiteBackupFileName.'"  '.$userExists.'  title = "'.$title.'"></a>';
     }
    
     /**

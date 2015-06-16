@@ -539,7 +539,7 @@
         //Website restore by clicking restore button
         $('.websiteRestore').click(function() {
             var userId  = $(this).attr('data-userId') != undefined ? $(this).attr('data-userId') : 0;
-            var params = {backupedServiceServer: $(this).data('serviceid'), websiteBackupFileName: $(this).attr('data-backupFile')};
+            var params = {backupedServiceServer: $(this).attr('data-serviceId'), websiteBackupFileName: $(this).attr('data-backupFile')};
             Multisite.websiteRestore(params, false, userId);
         });
         
@@ -553,7 +553,7 @@
             cx.bind("loadingEnd", cx.unlock, "deleteWebsiteBackup");
             $.ajax({
                 url: cx.variables.get('cadminPath', 'contrexx') + "?cmd=JsonData&object=MultiSite&act=triggerWebsiteBackup",
-                data: {serviceServerId: $(this).data('serviceid'), websiteBackupFileName: $(this).attr('data-backupFile')},
+                data: {serviceServerId: $(this).attr('data-serviceId'), websiteBackupFileName: $(this).attr('data-backupFile')},
                 type: "POST",
                 dataType: "json",
                 beforeSend: function() {
@@ -1266,19 +1266,21 @@ var Multisite = {
         var buttons = [
             {
                 text: cx.variables.get('websiteRestoreButton', 'multisite/lang'),
+                class: 'websiteRestoreButton',
                 click: function () {
                     Multisite.validateInputOnRestore('#restoreWebsite .selectUserType', '#userSelection', 'validateUserSelection');
-                    Multisite.validateInputOnRestore('#restore_websiteName .restoreWebsiteName', '#restore_websiteName', 'validateWebsiteName');                    
-                    
+                    Multisite.validateInputOnRestore('#restore_websiteName .restoreWebsiteName', '#restore_websiteName', 'validateWebsiteName');
+
                     if (   $J('#restoreWebsiteForm').attr('validUserSelection') == 'false'
                         || $J('#restoreWebsiteForm').attr('websiteNameValid') == 'false'
                     ) {
+                        $J('.websiteRestoreButton').attr('disabled', true);
                         $J('#restoreWebsite #restoreform_error').show();
                         return false;
                     }
                     
+                    $J('.websiteRestoreButton').attr('disabled', false);
                     $J('#restoreWebsite #restoreform_error').hide();
-                    
                     if (!confirm(cx.variables.get('websiteRestoreConfirm', 'multisite/lang'))) {
                         return false;
                     }
@@ -1359,17 +1361,22 @@ var Multisite = {
     checkWebsiteNameOnRestore: function() {
         var $restoreForm = $J('#restoreWebsiteForm');
         var errElement = $J('#restore_websiteName').find('.restore_error');
+        $J('.websiteRestoreButton').attr('disabled', true);
         jQuery.ajax({
-                dataType: "json",
-                url: cx.variables.get('cadminPath', 'contrexx') + "?cmd=JsonData&object=MultiSite&act=address",
-                data: {multisite_address : $J(this).val()},
-                type: "POST",
-                success: function (response) {
-                      var errorMessage = (response.message.message)
-                                         ? response.message.message
-                                         : '';
-                      Multisite.parseErrorMessageOnRestore($restoreForm, 'websiteNameValid', errElement, '.restoreWebsiteName', errorMessage, !errorMessage);
+            dataType: "json",
+            url: cx.variables.get('cadminPath', 'contrexx') + "?cmd=JsonData&object=MultiSite&act=address",
+            data: {multisite_address : $J(this).val()},
+            type: "POST",
+            success: function (response) {
+                var errorMessage = (response.message.message)
+                                   ? response.message.message
+                                   : '';
+                Multisite.parseErrorMessageOnRestore($restoreForm, 'websiteNameValid', errElement, '.restoreWebsiteName', errorMessage, !errorMessage);
+
+                if(!errorMessage) {
+                    $J('.websiteRestoreButton').attr('disabled', false).trigger('click');
                 }
+            }
         });
     },
     
@@ -1404,7 +1411,7 @@ var Multisite = {
     },
     
     showUserOrSubscriptionSelection: function(userId, selectedType) {
-        var userFromBacupObj = $J("#createUserFromBackup").parent('label');
+        var userFromBackupObj = $J("#createUserFromBackup");
         switch (selectedType) {
             case 'subscriptionOption':
                 $J("input:radio[name='subscription']:checked").val() == '2'
@@ -1414,13 +1421,12 @@ var Multisite = {
             default:
                 $J('.live-search-user-clear').trigger('click');
                 $J('.live-search-user-add').hide();
-                if (userFromBacupObj.is(':hidden')) {
-                    userFromBacupObj.show();
-                    $J("#createUserFromBackup").attr('checked', true);
+                if (userFromBackupObj.parent('label').is(':hidden')) {
+                    userFromBackupObj.attr('checked', true).parent('label').show();
                 }
 
                 if (userId != 0 && userId != null) {
-                    userFromBacupObj.attr('checked', false).hide();
+                    userFromBackupObj.attr('checked', false).parent('label').hide();
                     $J("#selectUserFromOther").attr('checked', true);
                 }
 
@@ -1436,6 +1442,7 @@ var Multisite = {
         $J('#createNewSubscription').attr('checked', true);
         $J('#subscriptionSelection').hide();
         $J('#userSelection').find('.restore_error').hide();
+        $J('.websiteRestoreButton').attr('disabled', false);
         $J.ajax({
             url: cx.variables.get('cadminPath', 'contrexx') + "?cmd=JsonData&object=MultiSite&act=getAvailableSubscriptionsByUserId",
             data: {userId: objUser.id},
