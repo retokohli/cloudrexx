@@ -74,7 +74,7 @@ $_ARRAYLANG['TXT_MEDIADIR_VOTING_CORRUPT'] = "Bewertung fehlgeschlagen. Entweder
 $_ARRAYLANG['TXT_MEDIADIR_AT'] = "um";
 $_ARRAYLANG['TXT_MEDIADIR_COMMENT_ADD_SUCCESSFULL'] = "Ihr Kommentar wurde erfolgreich hinzugefügt.";
 $_ARRAYLANG['TXT_MEDIADIR_COMMENT_ADD_CORRUPT'] = "Beim Übermitteln der Daten ist eine Fehler aufgetreten, daher konnte ihr Kommentar nicht gespeichert werden.";
-$_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'] = "Link zu Googe Maps";
+$_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'] = "Link zu Google Maps";
 
 $_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'] = "erfolgreich hinzugefügt.";
 $_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'] = "konnte nicht hinzugefügt werden.";
@@ -88,7 +88,6 @@ $_ARRAYLANG['TXT_MEDIADIR_COULD_NOT_SEND_ACTIVATION_MAIL'] = "Registrierungsfehl
 $_ARRAYLANG['TXT_MEDIADIR_COULD_NOT_SEND_EMAIL'] = "Konnte keine Bestätigung per Mail senden.<br />Für weitere Informationen wenden Sie sich bitte an den Administrator %EMAIL%. ";
 $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'] = "Eintrag suchen (ID oder Suchbegriff)";
 
-$_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'] = 'Link zu Googe Maps';
 $_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'] = 'Anzeigename';
 $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'] = 'Freigegebene Profilsprachen';
 $_ARRAYLANG['TXT_MEDIADIR_READY_TO_CONFIRM'] = 'Freigeben';
