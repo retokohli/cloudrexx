@@ -76,7 +76,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
 
         $this->em = \Env::em();
 
-        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Contact/View/Template/Backend');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCoreModulePath().'/Contact/View/Template/Backend');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -469,7 +469,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                                     foreach($arrFiles as $file) {
                                         $file = contrexx_raw2xhtml($file);
                                         $img  = $this->getFileIcon($file);
-                                        $value .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" style="white-space:nowrap;" target="_blank" onclick="return confirm(\''.str_replace("\n", '\n', $_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE']).'\')">'.$img.basename($file).'</a><br />';
+                                        $value .= '<a href="'.\Env::get('cx')->getWebsiteOffsetPath().$file.'" style="white-space:nowrap;" target="_blank" onclick="return confirm(\''.str_replace("\n", '\n', $_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE']).'\')">'.$img.basename($file).'</a><br />';
                                     }
                                 }
                             } elseif (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'recipient') {
@@ -1790,7 +1790,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                             foreach ($arrFiles as $file) {
                                 $file = contrexx_raw2xhtml($file);
                                 $img  = $this->getFileIcon($file);
-                                $value .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" target="_blank" onclick="return confirm(\''.str_replace("\n", '\n', $_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE']).'\')">'.$img.basename($file).'</a><br />';
+                                $value .= '<a href="'.\Env::get('cx')->getWebsiteOffsetPath().$file.'" target="_blank" onclick="return confirm(\''.str_replace("\n", '\n', $_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE']).'\')">'.$img.basename($file).'</a><br />';
                             }
                             break;
                         case 'recipient':
@@ -1952,7 +1952,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
 
                             case 'file':
                             case 'multi_file':
-                                print $this->_escapeCsvValue(isset($formEntriesValues['data'][$fieldId]['value']) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$formEntriesValues['data'][$fieldId]['value'] : '');
+                                print $this->_escapeCsvValue(isset($formEntriesValues['data'][$fieldId]['value']) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].\Env::get('cx')->getWebsiteOffsetPath().$formEntriesValues['data'][$fieldId]['value'] : '');
                                 break;
 
                             case 'text':
@@ -2224,7 +2224,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
      */
     private function getFileIcon($file)
     {
-        $icon = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon(ASCMS_DOCUMENT_ROOT.$file);
+        $icon = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon(\Env::get('cx')->getWebsiteDocumentRootPath().$file);
 
         $img = '<img src="'.\Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath().$icon.'.png" alt="Attach" border="0" style="position: relative; top: 3px;" />&nbsp;';
         return $img;
