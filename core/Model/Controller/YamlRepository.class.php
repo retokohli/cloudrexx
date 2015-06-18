@@ -266,12 +266,10 @@ class YamlRepository {
             if ($entity->isVirtual()) {
                 if(!isset($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)])) {
                     continue;
-                } else {
-                    $entity->setVirtual(true);
                 }
             }
             if (isset($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)])) {
-                if ($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)] != $entity && !$entity->isVirtual()) {
+                if ($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)] != $entity) {
                     $this->updatedEntities[] = $entity;
                 }
             }
