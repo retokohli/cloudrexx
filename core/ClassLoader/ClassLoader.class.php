@@ -240,6 +240,13 @@ class ClassLoader {
            && ($absoluteCustomThemeFile = $this->cx->getWebsiteThemesPath() . $customThemeFile)
               // finally, check if a custom themed version of the file does exist
            && file_exists($absoluteCustomThemeFile)
+              // last but not least, let's do a security check
+              //    When the LegacyClassLoader is not initialized you cant load the FWValidator class
+              //    where is needed for the security check
+           && $this->legacyClassLoader
+              //    Checks if the file is a harmless one, because you can upload anything
+              //    over the ftp which probably not should be executed
+           && \FWValidator::is_file_ending_harmless($file)
         ) {
            return ($webPath ? $this->cx->getWebsiteThemesWebPath() : $this->cx->getWebsiteThemesPath()) . $customThemeFile;
         }
