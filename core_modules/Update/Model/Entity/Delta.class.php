@@ -144,7 +144,7 @@ class Delta extends \Cx\Core\Model\Model\Entity\YamlEntity {
      * 
      * @return integer
      */
-    public function runMigrationCommand($version, $process) {
+    protected function runMigrationCommand($version, $process) {
 
          $argv = array(
             __FILE__,
