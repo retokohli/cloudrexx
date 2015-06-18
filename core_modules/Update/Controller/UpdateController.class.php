@@ -23,12 +23,6 @@ namespace Cx\Core_Modules\Update\Controller;
  */
 class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
 
-    /**
-     * Constructor
-     */
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
-        parent::__construct($systemComponentController, $cx);
-    }
 
     /**
      * Calculate database delta
@@ -74,7 +68,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
                     )
             ) {
                 $delta = new \Cx\Core_Modules\Update\Model\Entity\Delta();
-                $rollBack = !$isHigherVersion ? 1 : 0;
+                $rollBack = !$isHigherVersion ? true : false;
                 $delta->addCodeBase($version, $rollBack, $i);
                 $this->registerDbUpdateHooks($delta);
                 $i++;
@@ -127,7 +121,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
         $yamlFile   = null;
         foreach ($deltas as $delta) {
             $status = $delta->applyNext();
-            $delta->setRollback($delta->getRollback() ? 0 : 1);
+            $delta->setRollback($delta->getRollback() ? false : true);
             $deltaRepository->flush();
             if (!$status) {
                 //Rollback to old state
@@ -168,7 +162,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
      */
     protected function rollBackDelta() {
         $deltaRepository = new \Cx\Core_Modules\Update\Model\Repository\DeltaRepository();
-        $rollBackDeltas = $deltaRepository->findBy(array('rollback' => 1));
+        $rollBackDeltas = $deltaRepository->findBy(array('rollback' => true));
         rsort($rollBackDeltas);
         foreach ($rollBackDeltas as $rollBackDelta) {
             if (!$rollBackDelta->applyNext()) {
@@ -247,12 +241,12 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
 
         $cli->addCommands(array(
             // Migrations Commands
-            self::getCommandObj('\Cx\Core_Modules\Update\Model\Entity\MigrationsDiffDoctrineCommand', $configuration),
-            self::getCommandObj('\Doctrine\DBAL\Migrations\Tools\Console\Command\ExecuteCommand', $configuration),
-            self::getCommandObj('\Doctrine\DBAL\Migrations\Tools\Console\Command\GenerateCommand', $configuration),
-            self::getCommandObj('\Doctrine\DBAL\Migrations\Tools\Console\Command\MigrateCommand', $configuration),
-            self::getCommandObj('\Doctrine\DBAL\Migrations\Tools\Console\Command\StatusCommand', $configuration),
-            self::getCommandObj('\Doctrine\DBAL\Migrations\Tools\Console\Command\VersionCommand', $configuration),
+            self::getDoctrineMigrationCommand('\Cx\Core_Modules\Update\Model\Entity\MigrationsDiffDoctrineCommand', $configuration),
+            self::getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\ExecuteCommand', $configuration),
+            self::getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\GenerateCommand', $configuration),
+            self::getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\MigrateCommand', $configuration),
+            self::getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\StatusCommand', $configuration),
+            self::getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\VersionCommand', $configuration),
         ));
         $cli->setAutoExit(false);
         
@@ -263,15 +257,15 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
     /**
      * Get the doctrine migrations command as object
      * 
-     * @param string $nameSpace
+     * @param string $migrationCommandNameSpace
      * @param object $configuration
      * 
      * @return object doctrine migration command
      */
-    private static function getCommandObj($nameSpace, $configuration) {
-        $commandObj = new $nameSpace();
-        $commandObj->setMigrationConfiguration($configuration);
-        return $commandObj;
+    private static function getDoctrineMigrationCommand($migrationCommandNameSpace, $configuration) {
+        $migrationCommand = new $migrationCommandNameSpace();
+        $migrationCommand->setMigrationConfiguration($configuration);
+        return $migrationCommand;
     }
     
     /**

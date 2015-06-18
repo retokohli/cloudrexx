@@ -6,6 +6,9 @@
         
         cx.multisite.ajaxResponse = '';
         
+        cx.bind("loadingStart", cx.lock, "multiSite");
+        cx.bind("loadingEnd", cx.unlock, "multiSite");
+        
         $(".defaultCodeBase").change(function() {
             domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=updateDefaultCodeBase";
             cx.jQuery.ajax({
@@ -57,20 +60,6 @@
                 $(this).val($(this).data('lastValue'));
             }
         });
-        /**
-         * Locks the website status in order to prevent user input
-         */
-        cx.lock = function() {
-            cx.jQuery("#load-lock").show();
-            cx.jQuery("#MultisiteConfigload-lock").show();
-        };
-        /**
-         * Unlocks the website status in order to allow user input
-         */
-        cx.unlock = function() {
-            cx.jQuery("#load-lock").hide();
-            cx.jQuery("#MultisiteConfigload-lock").hide();
-        };
         // show license
         $('.showLicense').click(function() {
             cx.bind("loadingStart", cx.lock, "showLicense");
@@ -606,17 +595,15 @@
         });
         
     $('.websiteUpdate').click(function () {
-      cx.bind("loadingStart", cx.lock, "websiteUpdate");
-      cx.bind("loadingEnd", cx.unlock, "websiteUpdate");
       domainUrl = cx.variables.get('baseUrl', 'MultiSite') + cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=MultiSite&act=";
       var serviceServerId = $(this).data('id');
-      $.ajax({
+      cx.jQuery.ajax({
         url: domainUrl + 'getCodeBaseVersions',
         type: "POST",
         data: {serviceServerId: serviceServerId},
         dataType: "json",
         beforeSend: function () {
-          cx.trigger("loadingStart", "websiteUpdate", {});
+          cx.trigger("loadingStart", "multiSite", {});
           cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
           $('#loading > span').html(cx.variables.get('loadingServiceServerInfo', 'multisite/lang'));
         },
@@ -629,7 +616,7 @@
                 var codeBaseDropDown = $('<select />').attr('name', 'codeBase')
                                           .change(function () {
                                             //get websites by codeBase
-                                            getWebsiteByCodeBase(domainUrl, serviceServerId, $(this).val());
+                                            getWebsitesByCodeBase(domainUrl, serviceServerId, $(this).val());
                                           });
                 $(response.data.codeBaseVersions).each(function (index, codeBaseVersion) {
                   codeBaseDropDown.append($('<option />').text(codeBaseVersion));
@@ -658,7 +645,7 @@
                 });
                 var codeBase = $("select[name='codeBase']").val();
                 if (codeBase != null) {
-                  getWebsiteByCodeBase(domainUrl, serviceServerId, codeBase);
+                  getWebsitesByCodeBase(domainUrl, serviceServerId, codeBase);
                 }
                 break;
               case 'error':
@@ -671,14 +658,14 @@
           } else {
             cx.tools.StatusMessage.showMessage(response.message, null, 4000);
           }
-          cx.trigger("loadingEnd", "websiteUpdate", {});
+          cx.trigger("loadingEnd", "multiSite", {});
         }
       });
     });
     
-    function getWebsiteByCodeBase(domainUrl, serviceId, codeBase) {
+    function getWebsitesByCodeBase(domainUrl, serviceId, codeBase) {
       $('div').find('#websitesSection').html('<div id="loading">' + cx.variables.get('loading', 'multisite/lang') + '</div');
-      $.ajax({
+      cx.jQuery.ajax({
         url: domainUrl + 'getWebsitesByCodeBase',
         type: "POST",
         data: {codeBase: codeBase, serviceServerId: serviceId},
@@ -808,23 +795,23 @@
     });
 })(jQuery);
 
-
+/*
+ * trigger website update
+ */
 function triggerWebsiteUpdate(domainUrl, formData) {
-  cx.bind("loadingStart", cx.lock, "triggerWebsiteUpdate");
-  cx.bind("loadingEnd", cx.unlock, "triggerWebsiteUpdate");
-  $J.ajax({
+  cx.jQuery.ajax({
     url: domainUrl,
     type: "POST",
     data: formData,
     dataType: "json",
     beforeSend: function () {
-          cx.trigger("loadingStart", "triggerWebsiteUpdate", {});
-          cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
-          $J('#loading > span').html(cx.variables.get('triggeringWebsiteUpdate', 'multisite/lang'));
-        },
+      cx.trigger("loadingStart", "multiSite", {});
+      cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
+      $J('#loading > span').html(cx.variables.get('triggeringWebsiteUpdate', 'multisite/lang'));
+    },
     success: function (response) {
       cx.tools.StatusMessage.showMessage(response.data.message, null, 2000);
-      cx.trigger("loadingEnd", "triggerWebsiteUpdate", {});
+      cx.trigger("loadingEnd", "multiSite", {});
       $J('select[name="codeBase"]').trigger('change');
     }
   });
@@ -1572,6 +1559,22 @@ function getEditOption(type, name, fieldLabel, editValue, editOptions) {
     }
     return htmlResult;
 }
+
+/**
+ * Locks to prevent user input
+ */
+cx.lock = function () {
+  cx.jQuery("#load-lock").show();
+  cx.jQuery("#MultisiteConfigload-lock").show();
+};
+
+/**
+ * Unlocks to allow user input
+ */
+cx.unlock = function () {
+  cx.jQuery("#load-lock").hide();
+  cx.jQuery("#MultisiteConfigload-lock").hide();
+};
 
 cx.multisite = function() {
     return true;

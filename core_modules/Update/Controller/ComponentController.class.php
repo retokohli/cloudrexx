@@ -22,14 +22,7 @@ namespace Cx\Core_Modules\Update\Controller;
  * @subpackage  module_update
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
-    /*
-     * Constructor
-     */
-
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponent $systemComponent, \Cx\Core\Core\Controller\Cx $cx) {
-        parent::__construct($systemComponent, $cx);
-    }
-
+    
     /**
      * Get the controller classes
      * 

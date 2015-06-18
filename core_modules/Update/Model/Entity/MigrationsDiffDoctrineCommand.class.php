@@ -61,7 +61,8 @@ EOT
      * @return null
      * @throws \InvalidArgumentException
      */
-    public function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output) { {
+    public function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output) 
+    {
             $isDbalOld = (DbalVersion::compare('2.2.0') > 0);
             $configuration = $this->getMigrationConfiguration($input, $output);
 
@@ -119,7 +120,6 @@ EOT
             $path = $this->generateMigration($configuration, $input, $version, $up, $down);
 
             $output->writeln(sprintf('Generated new migration class to "<info>%s</info>" from schema differences.', $path));
-        }
     }
 
     /**
