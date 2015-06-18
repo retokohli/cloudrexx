@@ -173,6 +173,7 @@ INPUT;
                 class="$inputDefaultClass"
                 id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
                 style="$inputStyle" 
+                autocomplete="off"
                 onfocus="this.select();" />
             &nbsp;
             <input type="button" value="{$_ARRAYLANG['TXT_BROWSE']}"
@@ -244,8 +245,8 @@ INPUT;
         $deleteMedia = !empty($_POST["deleteMedia"]) && !empty($_POST["deleteMedia"][$intInputfieldId]);
         
         if($objInit->mode == 'backend') {
-            if (   !$deleteMedia
-                || $_POST["deleteMedia"][$intInputfieldId][$langId] == 1
+            if (   $deleteMedia
+                && $_POST["deleteMedia"][$intInputfieldId][$langId] == 1
             ) {
                 $strValue = null;
             }
@@ -267,7 +268,7 @@ INPUT;
                 $strValue = $strNewDefault;                
             }
         }
-
+        
         return $strValue.$strName;
     }
 
