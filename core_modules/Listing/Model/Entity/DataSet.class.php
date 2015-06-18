@@ -66,6 +66,18 @@ class DataSet implements \Iterator {
              throw new DataSetException('Supplied argument could not be converted to DataSet');
         }
     }
+    
+    /**
+     * Try to remove the declared key from the dataset
+     * @param string $key
+     * @throws DataSetException
+     */
+    public function remove($key) {
+        if (!isset($this->data[$key])) {
+            throw new DataSetException('Could not remove the declared key because the key does not exist in the DataSet');
+        }
+        unset($this->data[$key]);
+    }
 
     /**
      * Appends the data of passed $dataSet to the current object and rewinds it
