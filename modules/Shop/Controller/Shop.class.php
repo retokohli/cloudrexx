@@ -355,7 +355,7 @@ die("Failed to get Customer for ID $customer_id");
      */
     public static function getPageTitle() {
         if (isset(self::$pageTitle)) {
-            return contrexx_raw2xhtml(self::$pageTitle);
+            return self::$pageTitle;
         }
         return null;
     }
