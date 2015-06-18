@@ -21,6 +21,9 @@ namespace Cx\Core_Modules\Update\Model\Repository;
  */
 class DeltaRepository extends \Cx\Core\Model\Controller\YamlRepository {
 
+    /**
+     * Constructor
+     */
     public function __construct() {
         $folderPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . '/Update';
         if (!file_exists($folderPath)) {

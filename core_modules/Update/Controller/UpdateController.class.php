@@ -106,6 +106,8 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
      * 
      * This loads the serialized Delta and calls applyNext() on it 
      * until returns false.
+     * 
+     * @return null
      */
     public function applyDelta() {
 
@@ -263,7 +265,8 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
      * 
      * @param string $nameSpace
      * @param object $configuration
-     * @return object
+     * 
+     * @return object doctrine migration command
      */
     private static function getCommandObj($nameSpace, $configuration) {
         $commandObj = new $nameSpace();
@@ -277,6 +280,8 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
      * @param string $folderPath
      * @param string $filePath
      * @param array  $ymlContent
+     * 
+     * @return null
      */
     public function storeUpdateWebsiteDetailsToYml($folderPath, $filePath, $ymlContent)
     {
@@ -307,7 +312,8 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
      * Get update websiteDetailsFromYml
      * 
      * @param string $file yml file name
-     * @return array
+     * 
+     * @return array website details
      */
     public function getUpdateWebsiteDetailsFromYml($file) {
         if (!file_exists($file)) {
@@ -322,7 +328,8 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
      * getAllCodeBaseVersions
      * 
      * @param string $codeBasePath codeBase path
-     * @return array
+     * 
+     * @return array codeBase versions
      */
     public function getAllCodeBaseVersions($codeBasePath) {
         //codebase
