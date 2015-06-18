@@ -33,6 +33,7 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
         $this->imagePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesMediaDirPath() . '/';
         $this->imageWebPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesMediaDirWebPath() . '/';
         parent::__construct('.', $name);
+        parent::getFrontendLanguages();
         parent::getSettings();
     }
 
@@ -48,69 +49,64 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
                 //modify (add/edit) View
                 $intId = intval($arrInputfield['id']);
 
-                if(isset($intEntryId) && $intEntryId != 0) {
+                $arrValue = array();
+                if(!empty($intEntryId)) {
                     $objInputfieldValue = $objDatabase->Execute("
-                        SELECT
-                            `value`
-                        FROM
-                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
-                        WHERE
-                            field_id=".$intId."
-                        AND
-                            entry_id=".$intEntryId."
-                        LIMIT 1
-                    ");
-                    //$arrValue = htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
-                    
-                    $arrValue = explode(",",$objInputfieldValue->fields['value']);
-                    $strValue = $arrValue[0];
+                        SELECT 
+                            `value`,
+                            `lang_id`                            
+                          FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                         WHERE field_id=$intId
+                           AND entry_id=$intEntryId");
+                    if ($objInputfieldValue) {
+                        while (!$objInputfieldValue->EOF) {
+                            $arrValue[intval($objInputfieldValue->fields['lang_id'])] = contrexx_raw2xhtml($objInputfieldValue->fields['value']);
+                            $objInputfieldValue->MoveNext();
+                        }
+                        $arrValue[0] = isset($arrValue[$_LANGID]) ? $arrValue[$_LANGID] : null;
+                    }
                 } else {
                     $arrValue = null;
                 }
-
-                if(!empty($strValue) && file_exists(\Env::get('cx')->getWebsitePath().$strValue)) {
-                    $arrFileInfo    = pathinfo($strValue);
-                    $strFileName    = htmlspecialchars($arrFileInfo['basename'], ENT_QUOTES, CONTREXX_CHARSET);
+                
+                $countFrontendLang = count($this->arrFrontendLanguages);
+                
+                $minimize  = '';
+                if ($objInit->mode == 'backend' || $this->arrSettings['settingsFrontendUseMultilang']) {
+                    $minimize  = "<a href=\"javascript:ExpandMinimize('$intId');\">{$_ARRAYLANG['TXT_MEDIADIR_MORE']}&nbsp;&raquo;</a>";
+                }
+                
+                $strDefaultValue = isset($arrValue[0]) ? $arrValue[0] : '';                    
+                $strDefaultInput = $this->getInput($intId, $strDefaultValue, 0, $arrInputfield);
+                $strInputfield   = <<<INPUT
+                        <div id="{$this->moduleNameLC}Inputfield_{$intId}_Minimized" class="{$this->moduleNameLC}GroupMultilang" style="display: block; float:left;">
+                            $strDefaultInput
+                            $minimize
+                        </div>
+INPUT;
+                if ($objInit->mode == 'backend' || $this->arrSettings['settingsFrontendUseMultilang']) {
                     
-	                if(empty($arrValue[1])) {
-		                $strName = $strFileName;
-		            } else {
-		                $strName = strip_tags(htmlspecialchars($arrValue[1], ENT_QUOTES, CONTREXX_CHARSET));
-		            }
-		            
-		            
+                    $strInputfield .= '<div id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_Expanded" class="'. $this->moduleNameLC.'GroupMultilang" style="display: none; float:left;">';
 
-                    $strFilePreview = '<a href="'.urldecode($strValue).'" target="_blank">'.$strFileName.'</a>&nbsp;<input type="checkbox" value="1" name="deleteMedia['.$intId.']" />'.$_ARRAYLANG['TXT_MEDIADIR_DELETE'].'<br />';
-                } else {
-                    $strFilePreview = null;
+                    foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                        $intLangId = $arrLang['id'];
+                        $minimize  = '';
+                        if(($key+1) == $countFrontendLang) {
+                            $minimize = "&nbsp;<a href=\"javascript:ExpandMinimize('".$intId."');\">&laquo;&nbsp;".$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE']."</a>";
+                        }
+
+                        $value    = isset($arrValue[$intLangId]) ? $arrValue[$intLangId] : '';
+                        $strInput = $this->getInput($intId, $value, $intLangId);
+                        $strInputfield .= <<<INPUT
+                            <div>
+                                $strInput
+                                $minimize
+                            </div>
+INPUT;
+                    }
+                    $strInputfield .= '</div>';
                 }
-
-                if(empty($strValue) || $strValue == "new_file") {
-                    $strValueHidden = "new_file";
-                    $strValue = "";
-                } else {
-                    $strValueHidden = $strValue;
-                }
-                
-                if(!empty($arrInputfield['info'][0])){
-                    $strInfoValue = empty($arrInputfield['info'][$_LANGID]) ? 'title="'.$arrInputfield['info'][0].'"' : 'title="'.$arrInputfield['info'][$_LANGID].'"';
-                    $strInfoClass = 'mediadirInputfieldHint';
-                } else {
-                    $strInfoValue = null;
-                    $strInfoClass = '';
-                }
-
-                if($objInit->mode == 'backend') {
-                    $strInputfield = $strFilePreview.'<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][file]" value="'.$strValue.'" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" style="width: 300px;" onfocus="this.select();" />&nbsp;<input type="button" value="' . $_ARRAYLANG['TXT_BROWSE'] . '" onClick="getFileBrowser(\''.$this->moduleNameLC.'Inputfield_'.$intId.'\', \''.$this->moduleName.'\', \'/uploads\')" />';
-                    $strInputfield .= '<br /><input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][name]" value="'.$strName.'" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_name" style="width: 300px;" onfocus="this.select();" />&nbsp;<i>'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'].'</i>';
-                
-                } else {
-                    $strInputfield = $strFilePreview.'<input type="file" name="fileUpload_'.$intId.'" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" class="'.$this->moduleNameLC.'InputfieldFile '.$strInfoClass.'" '.$strInfoValue.' value="'.$strValue.'" onfocus="this.select();" /><input id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_hidden" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][file]" value="'.$strValueHidden.'" type="hidden">';
-                    $strInputfield .= '<br /><input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][name]" value="'.$strName.'" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_name" style="width: 300px;" onfocus="this.select();" />&nbsp;<i>'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'].'</i>';
-                }
-
-                return $strInputfield;
-
+                return $strInputfield;                
                 break;
             case 2:
                 //search View
@@ -119,33 +115,156 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
     }
 
 
+    /**
+     * Get input field based on language id and value
+     *      
+     * @param integer $id            Input field id
+     * @param string  $value         Input field value
+     * @param integer $langId        Language id
+     * @param array   $arrInputfield Language id
+     * 
+     * @return string Return input field based on language id and value
+     */
+    private function getInput($id = 0, $value = '', $langId = 0, $arrInputfield = array())
+    {
+        global $_ARRAYLANG;
+        
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        
+        $arrValue = explode(",", $value);
+        
+        $filePath    = $arrValue[0];
+        $displayName = null;
+        
+        $strFilePreview = null;
+        if(!empty($filePath) && file_exists(\Env::get('cx')->getWebsitePath().$filePath)) {
+            $arrFileInfo = pathinfo($filePath);
+            $strFileName = htmlspecialchars($arrFileInfo['basename'], ENT_QUOTES, CONTREXX_CHARSET);
 
-    function saveInputfield($intInputfieldId, $strValue)
+            if (empty($arrValue[1])) {
+                $displayName = $strFileName;
+            } else {
+                $displayName = strip_tags(htmlspecialchars($arrValue[1], ENT_QUOTES, CONTREXX_CHARSET));
+            }
+            $strFilePreview = '<a href="'.urldecode($filePath).'" target="_blank">'.$strFileName.'</a>&nbsp;
+                                <input 
+                                    data-id="'.$id.'"
+                                    type="checkbox" 
+                                    class="'. (!$langId ? 'mediadirInputfieldDefaultDeleteFile' : '') .'"
+                                    id="mediadirInputfield_delete_'.$id.'_'.$langId.'"    
+                                    value="1" 
+                                    name="deleteMedia['.$id.']['.$langId.']"
+                                />'.$_ARRAYLANG['TXT_MEDIADIR_DELETE'].'<br />';
+        }
+        
+        $flagPath   = $cx->getCodeBaseOffsetPath() . $cx->getCoreFolderName().'/Country/View/Media/Flag';
+        $inputStyle =   !empty($langId)
+                      ? 'background: #ffffff url(\''. $flagPath .'/flag_'. \FWLanguage::getLanguageCodeById($langId) .'.gif\') no-repeat 3px 3px;'
+                      : '';
+        $inputDefaultClass = empty($langId) ? $this->moduleNameLC . 'InputfieldDefault' : $this->moduleNameLC . 'LangInputfield';
+
+        $mode = $cx->getMode();
+        if ($mode == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            $strInputfield = <<<INPUT
+            $strFilePreview
+            <input type="text" name="{$this->moduleNameLC}Inputfield[$id][file][$langId]"
+                value="$filePath" 
+                data-id="$id"
+                class="$inputDefaultClass"
+                id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
+                style="$inputStyle" 
+                onfocus="this.select();" />
+            &nbsp;
+            <input type="button" value="{$_ARRAYLANG['TXT_BROWSE']}"
+            onClick="getFileBrowser('{$this->moduleNameLC}Inputfield_{$id}_$langId', '{$this->moduleName}', '/uploads')" />
+            &nbsp;
+            <br />
+            <input type="text" name="{$this->moduleNameLC}Inputfield[{$id}][name][$langId]" 
+                value="$displayName" 
+                data-id="$id"
+                data-related-field-prefix="{$this->moduleNameLC}InputfieldFileDisplayName"
+                class="{$this->moduleNameLC}InputfieldFileDisplayName $inputDefaultClass"
+                id="{$this->moduleNameLC}InputfieldFileDisplayName_{$id}_$langId" 
+                onfocus="this.select();" />
+            &nbsp;<i>{$_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME']}</i>            
+INPUT;
+        } else {
+            if (empty($filePath) || $filePath == "new_image") {
+                $strValueHidden = "new_image";
+                $filePath = "";
+            } else {
+                $strValueHidden = $filePath;
+            }
+
+            $strInfoValue = $strInfoClass = '';
+            $strInfo =  !empty($arrInputfield['info'][$langId]) 
+                      ? $arrInputfield['info'][$langId] 
+                      : (  !empty($arrInputfield['info'][0])
+                         ? $arrInputfield['info'][0]
+                         : '');
+            if ($strInfo) {
+                $strInfoValue = 'title="' . $strInfo . '"';
+                $strInfoClass = 'mediadirInputfieldHint';
+            }
+            $strInputfield = <<<INPUT
+            $strFilePreview
+            <input type="file" name="fileUpload_{$id}[$langId]"                
+                id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
+                class="{$this->moduleNameLC}InputfieldFile $strInfoClass"                        
+                value="{$filePath}"
+                $strInfoValue
+                onfocus="this.select();" />
+            <input id="{$this->moduleNameLC}Inputfield_{$id}_{$langId}_hidden"
+                name="{$this->moduleNameLC}Inputfield[$id][file][$langId]"
+                value="{$strValueHidden}" type="hidden" />
+            <br />
+            <input type="text" name="{$this->moduleNameLC}Inputfield[$id][name][$langId]" 
+                value="$displayName" 
+                data-id="$id"
+                data-related-field-prefix="{$this->moduleNameLC}InputfieldFileDisplayName"
+                class="{$this->moduleNameLC}InputfieldFileDisplayName $inputDefaultClass"
+                id="{$this->moduleNameLC}InputfieldFileDisplayName_{$id}_$langId"
+                onfocus="this.select();" />
+            &nbsp;<i>{$_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME']}</i>
+INPUT;
+        }
+        return $strInputfield;
+    }
+
+    function saveInputfield($intInputfieldId, $strValue, $langId = 0)
     {
         global $objInit;
+        static $strNewDefault = null;        
         
+        $strValue = contrexx_input2raw($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['file'][$langId]);
         
-        $strValue = contrexx_input2raw($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['file']);
-        
-        if(!empty($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['name'])) {
-        	$strName = ",".contrexx_input2raw($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['name']);
+        if(!empty($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['name'][$langId])) {
+            $strName = ",".contrexx_input2raw($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['name'][$langId]);
         }
-
+        $deleteMedia = !empty($_POST["deleteMedia"]) && !empty($_POST["deleteMedia"][$intInputfieldId]);
+        
         if($objInit->mode == 'backend') {
-            if ($_POST["deleteMedia"][$intInputfieldId] == 1) {
+            if (   !$deleteMedia
+                || $_POST["deleteMedia"][$intInputfieldId][$langId] == 1
+            ) {
                 $strValue = null;
             }
         } else {
-            if (!empty($_FILES['fileUpload_'.$intInputfieldId]['name']) || $_POST["deleteMedia"][$intInputfieldId] == 1) {
+            $inputFiles  = !empty($_FILES['fileUpload_'.$intInputfieldId]) ? $_FILES['fileUpload_'.$intInputfieldId] : array();
+            
+            if ($deleteMedia && $_POST["deleteMedia"][$intInputfieldId][$langId] == 1) {
                 //delete file
                 $this->deleteFile($strValue);
-
-                if ($_POST["deleteMedia"][$intInputfieldId] != 1) {
-                    //upload image
-                    $strValue = $this->uploadMedia($intInputfieldId);
-                } else {
-                    $strValue = null;
+                $strValue = null;
+            } elseif (!empty($inputFiles) && !empty($inputFiles['name'][$langId])) {                
+                //delete file
+                $this->deleteFile($strValue);
+                $strValue = $this->uploadMedia($intInputfieldId, $langId);                
+            } else {
+                if (!$strNewDefault && !empty($langId)) {
+                    $strNewDefault = $this->saveInputfield($intInputfieldId, '');
                 }
+                $strValue = $strNewDefault;                
             }
         }
 
@@ -169,15 +288,15 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
     }
 
 
-    function uploadMedia($intInputfieldId)
+    function uploadMedia($intInputfieldId, $langId)
     {
         global $objDatabase;
 
-        if (isset($_FILES)) {
-            $tmpFile   = $_FILES['fileUpload_'.$intInputfieldId]['tmp_name'];
-            $fileName  = $_FILES['fileUpload_'.$intInputfieldId]['name'];
-            $fileType  = $_FILES['fileUpload_'.$intInputfieldId]['type'];
-            $fileSize  = $_FILES['fileUpload_'.$intInputfieldId]['size'];
+        if (isset($_FILES)) {            
+            $tmpFile   = $_FILES['fileUpload_'.$intInputfieldId]['tmp_name'][$langId];
+            $fileName  = $_FILES['fileUpload_'.$intInputfieldId]['name'][$langId];
+            $fileType  = $_FILES['fileUpload_'.$intInputfieldId]['type'][$langId];
+            $fileSize  = $_FILES['fileUpload_'.$intInputfieldId]['size'][$langId];
 
             if ($fileName != "") {
                 //get extension
@@ -219,8 +338,8 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
         global $objDatabase;
 
         //get file path
-        $objFilePathRS = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
-        $strFilePath   = $objFilePathRS->fields['value'];
+        // $objFilePathRS = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        // $strFilePath   = $objFilePathRS->fields['value'];
 
         //delete relation
         $objDeleteInputfieldRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
@@ -238,23 +357,35 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $objDatabase;
+        global $objDatabase, $_LANGID;
 
         $intId = intval($arrInputfield['id']);
+        $intEntryDefaultLang = $objDatabase->getOne("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");        
 
-        $objInputfieldValue = $objDatabase->Execute("
-            SELECT
-                `value`
-            FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
-            WHERE
-                field_id=".$intId."
-            AND
-                entry_id=".$intEntryId."
-            LIMIT 1
-        ");
+        if($this->arrSettings['settingsTranslationStatus'] == 1) {
+            $intLangId = in_array($_LANGID, $arrTranslationStatus) ? $_LANGID : contrexx_input2int($intEntryDefaultLang);
+        } else {
+            $intLangId = $_LANGID;
+        }
+        $objResult = $objDatabase->Execute("
+            SELECT `value`
+              FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
+             WHERE field_id=$intId
+               AND entry_id=$intEntryId
+               AND lang_id=$intLangId
+             LIMIT 1 ");
+        
+        if(empty($objResult->fields['value'])) {
+            $objResult = $objDatabase->Execute("
+                SELECT `value`
+                  FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                 WHERE field_id=$intId
+                   AND entry_id=$intEntryId
+                   AND lang_id=$intEntryDefaultLang
+                 LIMIT 1 ");
+        }        
 
-        $arrValue = explode(",",$objInputfieldValue->fields['value']);
+        $arrValue = explode(",", $objResult->fields['value']);
         $strValue = strip_tags(htmlspecialchars($arrValue[0], ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue) && $strValue != 'new_file') {
@@ -282,16 +413,23 @@ class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\Media
     function getJavascriptCheck()
     {
         $fieldName = $this->moduleNameLC."Inputfield_";
+        
+        if(\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            $hiddenField = "value_hidden = false";
+        } else {
+            $hiddenField = "value_hidden = document.getElementById('".$fieldName."' + field + '_0_hidden').value;";
+        }
+        
         $strJavascriptCheck = <<<EOF
 
             case 'file':
-                value = document.getElementById('$fieldName' + field).value;
-                value_hidden = document.getElementById('$fieldName' + field + '_hidden').value;
+                value = document.getElementById('$fieldName' + field + '_0').value;
+                $hiddenField
                 if (value == "" && value_hidden == "" && isRequiredGlobal(inputFields[field][1], value)) {
                     isOk = false;
-                    document.getElementById('$fieldName' + field).style.border = "#ff0000 1px solid";
+                    document.getElementById('$fieldName' + field + '_0').style.border = "#ff0000 1px solid";
                 } else {
-                    document.getElementById('$fieldName' + field).style.borderColor = '';
+                    document.getElementById('$fieldName' + field + '_0').style.borderColor = '';
                 }
                 break;
 

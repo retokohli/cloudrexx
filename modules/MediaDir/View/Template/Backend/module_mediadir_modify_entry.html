@@ -1,7 +1,8 @@
 <!-- START module_mediadir_modify_category.html -->
 <script language="JavaScript" type="text/javascript">      
 function SetUrl(url, width, height, alt) {
-	document.getElementById(insertBox).value = url;
+    document.getElementById(insertBox).value = url;
+    $J('#'+insertBox).trigger('keyup');
 }
 
 function getFileBrowser(name, type, path)
@@ -68,6 +69,18 @@ cx.ready(function() {
     
     .ui-autocomplete-loading {
         background: #FFFFFF url('../lib/javascript/jquery/ui/images/ui-anim_basic_16x16.gif') 448px center no-repeat !important;
+    }
+    .mediadirInputfieldDefault {
+        width: 300px;
+    }
+    .mediadirLangInputfield {
+        width: 282px;
+        margin-bottom: 2px;
+        padding-left: 21px !important;
+    }
+    .mediadirInputfieldFileDisplayName {
+        width: 300px;        
+        padding-left: 3px !important;
     }
 </style>
 

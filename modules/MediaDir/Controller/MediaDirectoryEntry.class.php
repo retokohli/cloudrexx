@@ -1082,12 +1082,11 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $strDefault = $strMaster;
                             } else {
                                 $strDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId];
-                            }
-                            $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault);
-        
+                            }                            
+                            $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);        
                     } else {
                         // regular attribute get parsed
-                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId]);
+                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId], $intLangId);
                     }
 
                     $objResult = $objDatabase->Execute("

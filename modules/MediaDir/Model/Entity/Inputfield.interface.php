@@ -19,7 +19,7 @@ namespace Cx\Modules\MediaDir\Model\Entity;
  */
 interface Inputfield  {
     function getInputfield($intView, $arrInputfield, $intEntryId=null);
-    function saveInputfield($intInputfieldId, $strValue);
+    function saveInputfield($intInputfieldId, $strValue, $langId=0);
     function deleteContent($intEntryId, $intIputfieldId);
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus);
     function getJavascriptCheck();

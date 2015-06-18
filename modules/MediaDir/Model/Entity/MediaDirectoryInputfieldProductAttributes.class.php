@@ -143,7 +143,7 @@ class MediaDirectoryInputfieldProductAttributes extends \Cx\Modules\MediaDir\Con
 
 
 
-    function saveInputfield($intInputfieldId, $strValue)
+    function saveInputfield($intInputfieldId, $strValue, $langId = 0)
     {
         $arrValue = $strValue;
 
