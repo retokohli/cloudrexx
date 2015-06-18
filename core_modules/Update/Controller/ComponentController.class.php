@@ -43,7 +43,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * postInit
      * 
      * @param \Cx\Core\Core\Controller\Cx $cx
-     * @return type
+     * 
+     * @return null
      */
     public function postInit(\Cx\Core\Core\Controller\Cx $cx) {
 

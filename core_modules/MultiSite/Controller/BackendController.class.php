@@ -263,8 +263,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'header' => 'Hostname',
                             'table' => array(
                                  'parse' => function($value) {
-                                    $websiteServiceServerRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                                    $websiteServiceServer           = $websiteServiceServerRepository->findOneBy(array('hostname' => $value));
+                                    $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('hostname' => $value));
                                     $response   = JsonMultiSite::executeCommandOnServiceServer('ping', array(), $websiteServiceServer);
                                     if ($response && $response->status == 'success' && $response->data->status == 'success'){
                                         $statusIcon       = '<img src="'. '../core/Core/View/Media/icons/status_green.gif"'. ' alt='."status_green".'/>';
@@ -743,9 +742,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'table' => array(
                         'parse' => function($value) {
                             try {
-                                $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findBy(array('id' => $value));
+                                $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('id' => $value));
                                 if ($websiteServiceServer) {
-                                    return contrexx_raw2xhtml($websiteServiceServer[0]->getLabel().' ('.$websiteServiceServer[0]->getHostname()).')';
+                                    return contrexx_raw2xhtml($websiteServiceServer->getLabel().' ('.$websiteServiceServer->getHostname()).')';
                                 }
                             } catch (\Exception $e) {}
                             return 'Managed by this system';
@@ -1463,7 +1462,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             if (!$websites) {
                 return;
             }
-            $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findOneById($websiteServiceId);
+            $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('id' => $websiteServiceId));
             $title = $_ARRAYLANG['TXT_MULTISITE_EXECUTE_QUERY_ON_ALL_WEBSITES_OF_SERVICE_SERVER'].$websiteServiceServer->getHostname();
             $websiteId = $websiteServiceId;
         }
@@ -1560,10 +1559,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             return;
         }
         
-        $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
         $websiteRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
         $resultObj     = ($serviceServer) 
-                         ? $websiteServiceServerRepo->findOneById($id)
+                         ? ComponentController::getServiceServerByCriteria(array('id' => $id))
                          : $websiteRepo->findOneById($id);
         
         if (!$resultObj) {

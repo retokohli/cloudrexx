@@ -30,6 +30,9 @@ use Symfony\Component\Console\Input\InputInterface,
  */
 class MigrationsDiffDoctrineCommand extends \Doctrine\DBAL\Migrations\Tools\Console\Command\GenerateCommand {
 
+    /**
+     * Configuration
+     */
     protected function configure() {
         parent::configure();
 
@@ -52,8 +55,9 @@ EOT
     /**
      * Generate sql queries and create new migration class
      * 
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
+     * 
      * @return null
      * @throws \InvalidArgumentException
      */
@@ -122,7 +126,8 @@ EOT
      * create the sql queries
      * 
      * @param Configuration $configuration
-     * @param array $sql
+     * @param array         $sql
+     * 
      * @return string
      */
     private function buildCodeFromSql(Configuration $configuration, array $sql) {

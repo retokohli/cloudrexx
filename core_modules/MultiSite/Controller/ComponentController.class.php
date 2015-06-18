@@ -1576,8 +1576,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $websiteServiceServer = $website->getWebsiteServiceServer();
                 $params['websiteId']  = $websiteId;
             } else {
-                $websiteServiceServerRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                $websiteServiceServer     = $websiteServiceServerRepo->findOneById($serviceServerId);
+                $websiteServiceServer = self::getServiceServerByCriteria(array('id' => $serviceServerId));
             }
             
             $params['backupLocation'] = $backupLocation;
@@ -1654,9 +1653,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                         : '';
             
             $em     = \Env::get('em');
-            $websiteRepo              = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            $websiteServiceServerRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-            $website = $websiteRepo->findOneBy(array('name' => $restoreWebsiteName));
+            $websiteRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $website     = $websiteRepo->findOneBy(array('name' => $restoreWebsiteName));
             if ($website) {
                 $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
                     'severity'=> 'WARNING',
@@ -1666,8 +1664,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 
                 throw new MultiSiteException(\sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'], $restoreWebsiteName));
             }
-            
-            $restoreInServiceServer  = $websiteServiceServerRepo->findOneById($restoreServiceServerId);
+            $restoreInServiceServer = self::getServiceServerByCriteria(array('id' => $restoreServiceServerId));
             if (!$restoreInServiceServer) {
                 throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
             }
@@ -3668,5 +3665,27 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $customAccessUserProfileAttributes[] = $id . ':' . $name;
         }
         return implode(', ', $customAccessUserProfileAttributes);
+    }
+    
+    /**
+     * Get the service server object by id
+     * 
+     * @param array $criteria criterias
+     * 
+     * @return mixed boolean|Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer
+     */
+    public static function getServiceServerByCriteria($criteria = array())
+    {
+        if (empty($criteria)) {
+            return false;
+        }
+        
+        $serviceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
+        $serviceServer = $serviceServerRepo->findOneBy($criteria);
+        if (empty($serviceServer)) {
+            return false;
+        }
+        
+        return $serviceServer;
     }
 }

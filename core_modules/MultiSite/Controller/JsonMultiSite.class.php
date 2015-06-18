@@ -735,9 +735,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $websiteServiceServer = null;
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == ComponentController::MODE_MANAGER) {
             //get default service server
-            $defaultWebsiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
-            ->findBy(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer','MultiSite')));
-            $websiteServiceServer = $defaultWebsiteServiceServer[0];
+            $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('id' => \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteServiceServer','MultiSite')));
         }
 
         try {
@@ -1114,8 +1112,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_MANAGER:
                 try {
-                    $WebsiteServiceServerRepository = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                    $objWebsiteService = $WebsiteServiceServerRepository->findOneBy(array('hostname' => $authenticationValue['sender']));
+                    $objWebsiteService = ComponentController::getServiceServerByCriteria(array('hostname' => $authenticationValue['sender']));
                     if (!$objWebsiteService) {
                         return false;
                     }
@@ -1306,8 +1303,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     // map the domain to a Service Server. Therefore, we have
                     // to fetch the ID of the Service Server the domain shall
                     // be mapped to.
-                    $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
-                        ->findOneBy(array('hostname' => $authenticationValue['sender']));
+                    $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('hostname' => $authenticationValue['sender']));
                     if (!$websiteServiceServer) {
                         throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Unkown Service Server: '.$authenticationValue['sender']);
                     }
@@ -1532,8 +1528,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     // unmap the domain from a Service Server. Therefore, we have
                     // to fetch the ID of the Service Server the domain shall
                     // be unmapped from.
-                    $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
-                        ->findOneBy(array('hostname' => $authenticationValue['sender']));
+                    $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('hostname' => $authenticationValue['sender']));
                     if (!$websiteServiceServer) {
                         throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Unkown Service Server: '.$authenticationValue['sender']);
                     }
@@ -1683,8 +1678,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     // update the domain of a Service Server. Therefore, we have
                     // to fetch the ID of the Service Server the domain shall
                     // be updated of.
-                    $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
-                        ->findOneBy(array('hostname' => $authenticationValue['sender']));
+                    $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('hostname' => $authenticationValue['sender']));
                     if (!$websiteServiceServer) {
                         throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Unkown Service Server: '.$authenticationValue['sender']);
                     }
@@ -4924,13 +4918,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
-                    if (empty($serviceServerId)) {
-                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
-                    }
-
-                    $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                    $websiteServiceServer     = $websiteServiceServerRepo->findOneById($serviceServerId);
-                    if (empty($websiteServiceServer)) {
+                    $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('id' => $serviceServerId));
+                    if (!$websiteServiceServer) {
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
                     }
 
@@ -5095,9 +5084,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
         
         try {
-            $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-            $websiteServiceServer     = $websiteServiceServerRepo->findOneById($websiteServiceServerId);
-            if (empty($websiteServiceServer)) {
+            $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('id' => $websiteServiceServerId));
+            if (!$websiteServiceServer) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
             }
 
@@ -6378,10 +6366,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     /**
      * Get latest codebase and fetch the all websites
      * 
-     * @param array $params
+     * @global array $_ARRAYLANG language variable
+     * @param  array $params     supplied arguments from JsonData-request
      * 
-     * @return array
-     * 
+     * @return array JsonData-response
      * @throws MultiSiteJsonException
      */
     public function getCodeBaseVersions($params) {
@@ -6390,15 +6378,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             self::loadLanguageData();
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
                 case ComponentController::MODE_MANAGER:
-                    if (   empty($params['post']) 
-                        || !isset($params['post']['serviceServerId'])
-                    ) {
-                        \DBG::msg('JsonMultiSite::getCodeBaseVersions() failed: Insufficient arguments supplied: ' . var_export($params, true));
-                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_CODEBASES_ERROR_MSG']);
-                    }
-                    $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                    $websiteServiceServer = $websiteServiceServerRepo->findOneById($params['post']['serviceServerId']);
-                    if (empty($websiteServiceServer)) {
+                    $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('id' => $params['post']['serviceServerId']));
+                    if (!$websiteServiceServer) {
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
                     }
                     
@@ -6423,33 +6404,27 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_CODEBASES_ERROR_MSG']);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
-            throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_CODEBASES_ERROR_MSG']);
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_CODEBASES_ERROR_MSG']);
         }
     }
     
-   /**
-    * Triggering the website update process
-    * 
-    * @param array $params
-    * @return array
-    * @throws MultiSiteJsonException
-    */ 
+    /**
+     * Triggering the website update process
+     * 
+     * @global array $_ARRAYLANG language variable
+     * @param  array $params     supplied arguments from JsonData-request
+     * 
+     * @return array JsonData-response
+     * @throws MultiSiteJsonException
+     */
     public function triggerWebsiteUpdate($params)  {
         global $_ARRAYLANG;
         
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
                 case ComponentController::MODE_MANAGER:
-                    if (    empty($params['post']) 
-                        ||  !isset($params['post']['serviceServerId']) 
-                        ||  empty($params['post']['serviceServerId'])
-                    ) {
-                        \DBG::msg('JsonMultiSite::triggerWebsiteUpdate() failed: Insufficient arguments supplied: ' . var_export($params, true));
-                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_PROCESS_ERROR_MSG']);
-                    }
-                    $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                    $websiteServiceServer = $websiteServiceServerRepo->findOneById($params['post']['serviceServerId']);
-                    if (empty($websiteServiceServer)) {
+                    $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('id' => $params['post']['serviceServerId']));
+                    if (!$websiteServiceServer) {
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
                     }
                     $response = self::executeCommandOnServiceServer('triggerWebsiteUpdate', $params['post'], $websiteServiceServer);
@@ -6524,15 +6499,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     /**
      * Website Update process
      * 
-     * @global array $_ARRAYLANG
+     * @global array $_ARRAYLANG language variable
+     * @param  array $params     supplied arguments from JsonData-request
      * 
-     * @param array $params
-     * 
-     * @return array
+     * @return array JsonData-response
      * @throws MultiSiteJsonException
      */
     public function websiteUpdate($params)  {
-        global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG;
         
         if (
                empty($params['post']) 
@@ -6597,9 +6571,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     /**
      * update websiteCodeBase
      * 
-     * @param  array $params
-     * @global array $_ARRAYLANG
+     * @global array $_ARRAYLANG language variable
+     * @param  array $params     supplied arguments from JsonData-request
      * 
+     * @return array JsonData-response
      * @throws MultiSiteJsonException
      */
     public function updateWebsiteCodeBase($params) {
@@ -6655,10 +6630,10 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     /**
      * Send the website update status notification email to Admin
      * 
-     * @global array $_ARRAYLANG
+     * @global array $_ARRAYLANG language variable
+     * @param  array $params     supplied arguments from JsonData-request
      * 
-     * @param array $params
-     * 
+     * @return array JsonData-response
      * @throws MultiSiteJsonException
      */
     public function sendUpdateNotification($params) {
@@ -6718,7 +6693,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
                     break;
             }
-            return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_STATUS_ERROR_MSG']);
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_STATUS_ERROR_MSG']);
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_STATUS_ERROR_MSG']);
@@ -6728,9 +6703,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     /**
      * Get controller object
      * 
-     * @param string $nameSpace       namespace
-     * @param string $componentName   component name  
-     * @param string $controllerName  controller name
+     * @param string $componentName  component name  
+     * @param string $controllerName controller name
      * 
      * @return object
      */
@@ -6752,12 +6726,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     /**
-     * Get websites by codeBase
+     * Get the websites by codeBase
      * 
-     * @param  array $params parameters
+     * @global array $_ARRAYLANG language variable
+     * @param  array $params     supplied arguments from JsonData-request
      * 
-     * @return array
-     * @throws MultiSiteException
+     * @return array JsonData-response
      * @throws MultiSiteJsonException
      */
     public function getWebsitesByCodeBase($params)  
@@ -6766,21 +6740,16 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
         try {
             self::loadLanguageData();
-            if (empty($params['post']) || !isset($params['post']['codeBase'])
-            ) {
+            if (empty($params['post']) || !isset($params['post']['codeBase'])) {
                 \DBG::msg('JsonMultiSite::getWebsitesByCodeBase() failed: Insufficient arguments supplied: ' . var_export($params, true));
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_ERROR_MSG']);
             }
             $codeBase = isset($params['post']['codeBase']) ? contrexx_input2raw($params['post']['codeBase']) : '';
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
                 case ComponentController::MODE_MANAGER:
-                    if (!isset($params['post']['serviceServerId'])) {
-                        \DBG::msg('JsonMultiSite::getWebsitesByCodeBase() failed: Insufficient arguments supplied: ' . var_export($params, true));
-                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_ERROR_MSG']);
-                    }
-                    $websiteServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
-                    $websiteServiceServer = $websiteServiceServerRepo->findOneById($params['post']['serviceServerId']);
-                    if (empty($websiteServiceServer)) {
+                    //get the service server
+                    $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('id' => $params['post']['serviceServerId']));
+                    if (!$websiteServiceServer) {
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
                     }
 
@@ -6813,7 +6782,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_ERROR_MSG']);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
-            throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_ERROR_MSG']);
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_ERROR_MSG']);
         }
     }
 
