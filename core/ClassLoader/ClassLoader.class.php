@@ -167,9 +167,46 @@ class ClassLoader {
         require_once($path);
         return true;
     }
-    
-    public function getFilePath($file, &$isCustomized = false, &$isWebsite = false) {
+
+    /**
+     * Get the path to a customized version of a file
+     *
+     * The detection algorithm for a customized version uses the follow precedence:
+     *
+     * 1. If we are in FRONTEND mode and the file is part of the 'view' layer (it is located within the 'View'
+     *      folder of its component), then it will return the path to the customized version of the file in the 
+     *      currently active design theme (if it does exist at all).
+     *      Note that the folder 'View' is being left out in the design theme as only files of the 'View' folder
+     *      can be loaded from the design theme.
+     *      I.e.: /themes/default/core_modules/Media/Media/Pdf.png
+     *
+     * 2. If a customized version exists in the /customizing folder, then the path to that one will be returned.
+     *      I.e.: /customizing/core_modules/Media/View/Media/Pdf.png
+     *
+     * 3. If a customized version exists in the website data repository, then that one will be returned.
+     *      I.e.: /websites/demo/core_modules/Media/View/Media/Pdf.png
+     *
+     * 4. Ensure that the original version of the file exists at least (within the code base repository) and 
+     *      return that one.
+     *      I.e.: /core_modules/Media/View/Media/Pdf.png
+     *
+     * @param   string  $file           The file to return the path from.
+     * @param   boolean $isCustomized   If $isCustomized is provided, then it is set to TRUE if a customized version
+     *                                  of the file does exist. Otherwise it is set to FALSE.
+     * @param   boolean $isWebsite      If $isWebsite is provided, then it is set to TRUE if the file can be located
+     *                                  in the website data repository. Otherwise it is set to FALSE.
+     * @param   boolean $webPath        Whether or not to return the absolute file system path of the customized file.
+     * @return  mixed                   Returns the path (either absolute file system path or relativ web path, based
+     *                                  on $webPath) to a customized version of the file identified by $file.
+     *                                  If no customized version of the file does exist, then FALSE is being returned.
+     */
+    public function getFilePath($file, &$isCustomized = false, &$isWebsite = false, $webPath = false) {
+        // make lookup algorithm work on Windows by replacing backslashes by forward slashes
         $file = preg_replace('#\\\\#', '/', $file);
+
+        // remove any URL arguments from the file path like '?foo=bar' or '#foo'
+        $file = preg_replace('#(\?[^\?]*|\#[^\#]*)$#', '', $file);
+
         // using $this->cx->getCodeBaseDocumentRootPath() here instead of $this->basePath
         // makes sure that no matter where the ClassLoader gets initialized,
         // all customized files are always located in the folder /customizing.
@@ -184,11 +221,37 @@ class ClassLoader {
         // load class from customizing folder
         $isCustomized = false;
         $isWebsite = false;
+
+        // if we're running in frontend and the file is from the view layer (as in MVC),
+        // then we shall see if there is a customized version of the file in the
+        // loaded design theme and use that one instead of the original one.
+        if (   $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND
+              // check if file is from view layer (as in MVC)
+           && preg_match('#^(?:.*/)?(?:core|core_modules|modules)/[^/]+/View/#', $file)
+              // check for a few system dependencies...
+           && class_exists('Env', false)
+              // ...if InitCMS has been initialized already
+           && ($objInit = \Env::get('init'))
+              // ...if frontend theme has been loaded already
+           && ($currentThemesPath = $objInit->getCurrentThemesPath())
+              // set up path of custom themed file
+           && ($customThemeFile = '/'. $currentThemesPath . preg_replace('#^(.*/)?(core|core_modules|modules)(/[^/]+/)View/#', '\1\2\3', $file))
+              // set up absolute path of custom themed file
+           && ($absoluteCustomThemeFile = $this->cx->getWebsiteThemesPath() . $customThemeFile)
+              // finally, check if a custom themed version of the file does exist
+           && file_exists($absoluteCustomThemeFile)
+        ) {
+           return ($webPath ? $this->cx->getWebsiteThemesWebPath() : $this->cx->getWebsiteThemesPath()) . $customThemeFile;
+        }
+
+        // check if there is a customized version of the file available and return that one instead
         if ($this->customizingPath && file_exists($this->customizingPath.$file)) {
             $isCustomized = true;
-            return $this->customizingPath.$file;
-        // load class from websitepath
-        } else if (
+            return ($webPath ? $this->cx->getWebsiteOffsetPath() . substr($this->customizingPath, strlen($this->cx->getWebsiteDocumentRootPath())) : $this->customizingPath) . $file;
+        }
+
+        // load file from website path
+        if (
             // When the LegacyClassLoader is not initialized you cant load the FWValidator class
             // where is needed for the security check
             $this->legacyClassLoader &&
@@ -198,13 +261,23 @@ class ClassLoader {
             file_exists($this->cx->getWebsiteDocumentRootPath().$file)
         ) {
             $isWebsite = true;
-            return $this->cx->getWebsiteDocumentRootPath().$file;
-        // load class from basepath
-        } else if (file_exists($this->basePath.$file)) {
-            return $this->basePath.$file;
+            return ($webPath ? $this->cx->getWebsiteOffsetPath() : $this->cx->getWebsiteDocumentRootPath()) . $file;
         }
 
+        // load file from code base path
+        if (file_exists($this->basePath.$file)) {
+            return ($webPath ? $this->cx->getCodeBaseOffsetPath() : $this->basePath) . $file;
+        }
+
+        // lookup of file failed -> file does not exist
         return false;
+    }
+
+    /**
+     * Shortcut for {@see getFilePath()} with argument $webPath set to TRUE
+     */
+    public function getWebFilePath($file, &$isCustomized = false, &$isWebsite = false) {
+        return $this->getFilePath($file, $isCustomized, $isWebsite, true);
     }
     
     private function loadLegacy($name) {
