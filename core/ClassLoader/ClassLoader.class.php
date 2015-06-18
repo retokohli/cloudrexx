@@ -205,6 +205,15 @@ class ClassLoader {
      *                                  Otherwise it is set to FALSE.
      * @param   boolean $webPath        Whether or not to return the absolute
      *                                  file system path of the customized file.
+     *                                  IMPORTANT: This will cause the algorithm 
+     *                                  to cut of any URL arguments from the
+     *                                  file path like '?foo=bar' or '#foo', to
+     *                                  be able to successfully locate dynamic
+     *                                  media ressources.
+     *                                  Therefore, if the filename or path of
+     *                                  $file contains the character '?' or '#',
+     *                                  then the result of this method is
+     *                                  unknown.
      * @return  mixed                   Returns the path (either absolute file
      *                                  system path or relativ web path, based
      *                                  on $webPath) to a customized version of
@@ -217,7 +226,9 @@ class ClassLoader {
         $file = preg_replace('#\\\\#', '/', $file);
 
         // remove any URL arguments from the file path like '?foo=bar' or '#foo'
-        $file = preg_replace('/(\?[^\?]*|#[^#]*)$/', '', $file);
+        if ($webPath) {
+            $file = preg_replace('/(\?[^\?]*|#[^#]*)$/', '', $file);
+        }
 
         // using $this->cx->getCodeBaseDocumentRootPath() here instead of $this->basePath
         // makes sure that no matter where the ClassLoader gets initialized,
@@ -289,7 +300,7 @@ class ClassLoader {
             return false;
         }
 
-        // check f frontend theme has been loaded yet
+        // check if frontend theme has been loaded yet
         $currentThemesPath = $objInit->getCurrentThemesPath();
         if (!$currentThemesPath) {
             return false;
