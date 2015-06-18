@@ -179,7 +179,7 @@ class YamlRepository {
         if (isset($this->entities[$id])) {
             return $this->entities[$id];
         }
-
+        
         throw new YamlRepositoryException("No entity found by $this->entityIdentifier = $id!");
     }
 
@@ -232,6 +232,7 @@ class YamlRepository {
         }
         $this->validate($entity);
         $this->entities[$this->getIdentifierOfEntity($entity)] = $entity;
+        
         if (!$entity->isVirtual()) {
             $this->addedEntities[] = $entity;
             \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
@@ -263,16 +264,20 @@ class YamlRepository {
             // As even virtual entities must comply with the unique-key restrictions.
             $this->validate($entity);
             if ($entity->isVirtual()) {
-                continue;
+                if(!isset($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)])) {
+                    continue;
+                } else {
+                    $entity->setVirtual(true);
+                }
             }
             if (isset($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)])) {
-                if ($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)] != $entity) {
+                if ($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)] != $entity && !$entity->isVirtual()) {
                     $this->updatedEntities[] = $entity;
                 }
             }
             $entitiesToPersist[$this->getIdentifierOfEntity($entity)] = $entity;
         }
-
+        
         foreach ($this->updatedEntities as $entity) {
             \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
         }
