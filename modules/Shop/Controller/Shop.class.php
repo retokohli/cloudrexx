@@ -1036,6 +1036,7 @@ die("Failed to update the Cart!");
                 ));
             }
         }
+        $pagingCmd = (!empty($_REQUEST['cmd'])) ? '&amp;cmd='.  contrexx_input2raw($_REQUEST['cmd']) : '';
         $pagingCatId = '';
         $pagingManId = '';
         $pagingTerm = '';
@@ -1148,7 +1149,7 @@ die("Failed to update the Cart!");
         }
         $uri =
 // TODO: Use the alias, if any
-            '&amp;section=Shop'.MODULE_INDEX.
+            '&amp;section=Shop'. MODULE_INDEX . $pagingCmd .
             $pagingCatId.$pagingManId.$pagingTerm;
         self::$objTemplate->setVariable(array(
             'SHOP_PRODUCT_PAGING' => \Paging::get($uri, '',
