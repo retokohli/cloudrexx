@@ -167,6 +167,7 @@ INPUT;
                 class="$inputDefaultClass"
                 id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
                 style="$inputStyle" 
+                autocomplete="off"
                 onfocus="this.select();" />
             &nbsp;
             <input type="button" value="{$_ARRAYLANG['TXT_BROWSE']}"
