@@ -60,7 +60,7 @@ class MediaDirectoryInputfieldTitle extends \Cx\Modules\MediaDir\Controller\Medi
 
 
 
-    function saveInputfield($intInputfieldId, $strValue)
+    function saveInputfield($intInputfieldId, $strValue, $langId = 0)
     {
         //$strValue = contrexx_addslashes(contrexx_strip_tags($strValue));
         return null;

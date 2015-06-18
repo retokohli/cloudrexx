@@ -246,7 +246,7 @@ class MediaDirectoryInputfieldRelation extends \Cx\Modules\MediaDir\Controller\M
 
 
 
-    function saveInputfield($intInputfieldId, $intValue)
+    function saveInputfield($intInputfieldId, $intValue, $langId = 0)
     {
         $intValue = intval($intValue);
         return $intValue;

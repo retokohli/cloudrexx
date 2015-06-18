@@ -144,7 +144,7 @@ class MediaDirectoryInputfieldTextarea extends \Cx\Modules\MediaDir\Controller\M
 
 
 
-    function saveInputfield($intInputfieldId, $strValue)
+    function saveInputfield($intInputfieldId, $strValue, $langId = 0)
     {
         $strValue = contrexx_input2raw($strValue);
         return $strValue;

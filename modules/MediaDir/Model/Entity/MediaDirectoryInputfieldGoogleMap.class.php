@@ -211,7 +211,7 @@ EOF;
 
 
 
-    function saveInputfield($intInputfieldId, $arrValue)
+    function saveInputfield($intInputfieldId, $arrValue, $langId = 0)
     {
         global $objInit;
 

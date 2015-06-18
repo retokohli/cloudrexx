@@ -142,7 +142,7 @@ class MediaDirectoryInputfieldLink extends \Cx\Modules\MediaDir\Controller\Media
 
 
 
-    function saveInputfield($intInputfieldId, $strValue)
+    function saveInputfield($intInputfieldId, $strValue, $langId = 0)
     {
         $strValue = contrexx_strip_tags(contrexx_input2raw($strValue));
         return $strValue;

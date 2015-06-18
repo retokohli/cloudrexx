@@ -141,7 +141,7 @@ class MediaDirectoryInputfieldWysiwyg extends \Cx\Modules\MediaDir\Controller\Me
     }
 
 
-    function saveInputfield($intInputfieldId, $strValue)
+    function saveInputfield($intInputfieldId, $strValue, $langId = 0)
     {
         global $objInit;
 

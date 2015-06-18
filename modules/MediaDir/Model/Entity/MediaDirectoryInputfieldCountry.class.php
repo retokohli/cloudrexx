@@ -109,7 +109,7 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
 
 
 
-    function saveInputfield($intInputfieldId, $intValue)
+    function saveInputfield($intInputfieldId, $intValue, $langId = 0)
     {
         $intValue = intval($intValue);
         return $intValue;
