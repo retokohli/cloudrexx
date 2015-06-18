@@ -1089,13 +1089,10 @@ die("Failed to update the Cart!");
         $count = $limit;
         $arrProduct = array();
         if ($product_ids) {
-            foreach ($product_ids as $product_id) {
-                $product = Product::getById($product_id);
-                if ($product) {
-                    $arrProduct[] = $product;
-                }
-            }
+            $arrProduct = self::getValidProducts($product_ids);
             $product_id = null; // Suppress meta title from single Product
+        } elseif ($product_id) {
+            $arrProduct = self::getValidProducts(array($product_id));
         } else {
             $arrProduct = Products::getByShopParams(
                 $count, \Paging::getPosition(),
@@ -1522,6 +1519,28 @@ die("Failed to update the Cart!");
             ++$formId;
         }
         return true;
+    }
+    
+    /**
+     * Get the valid products
+     * 
+     * @param  array $productIds
+     * 
+     * @return array array of object
+     */
+    public static function getValidProducts($productIds = array()) {
+        $arrProduct = array();
+        if (empty($productIds)) {
+            return $arrProduct;
+        }
+        foreach ($productIds as $productId) {
+            $product = Product::getById($productId);
+            if ($product) {
+                $arrProduct[] = $product;
+            }
+        }
+        
+        return $arrProduct;
     }
 
     /**
