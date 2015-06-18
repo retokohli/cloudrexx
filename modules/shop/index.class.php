@@ -1011,6 +1011,7 @@ die("Failed to update the Cart!");
                 ));
             }
         }
+        $pagingCmd = (!empty($_REQUEST['cmd'])) ? '&amp;cmd='.  contrexx_input2raw($_REQUEST['cmd']) : '';
         $pagingCatId = '';
         $pagingManId = '';
         $pagingTerm = '';
@@ -1038,13 +1039,20 @@ die("Failed to update the Cart!");
 // TODO: Use Sorting class for the Product order
         $order = SettingDb::getValue('product_sorting');
         $count = $limit;
-        $arrProduct = Products::getByShopParams(
-            $count, Paging::getPosition(),
-            $product_id, $category_id, $manufacturer_id, $term,
-            $flagSpecialoffer, $flagLastFive,
-            $order,
-            self::$objCustomer && self::$objCustomer->is_reseller()
-        );
+        if ($product_id) {
+            $product = Product::getById($product_id);
+            if ($product) {
+                $arrProduct[] = $product;
+            }
+        } else {
+            $arrProduct = Products::getByShopParams(
+                $count, Paging::getPosition(),
+                $product_id, $category_id, $manufacturer_id, $term,
+                $flagSpecialoffer, $flagLastFive,
+                $order,
+                self::$objCustomer && self::$objCustomer->is_reseller()
+            );
+        }
         if ($count == 0
          && !ShopCategories::getChildCategoryIdArray($category_id)) {
             //if ($term != '' || $manufacturer_id != 0 || $flagSpecialoffer) {
@@ -1087,7 +1095,7 @@ die("Failed to update the Cart!");
         }
         $uri =
 // TODO: Use the alias, if any
-            '&amp;section=shop'.MODULE_INDEX.
+            '&amp;section=shop'. MODULE_INDEX . $pagingCmd .
             $pagingCatId.$pagingManId.$pagingTerm;
         self::$objTemplate->setVariable(array(
             'SHOP_PRODUCT_PAGING' => Paging::get($uri, '',
