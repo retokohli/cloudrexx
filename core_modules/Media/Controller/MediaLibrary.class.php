@@ -770,13 +770,24 @@ class MediaLibrary
     }
 
 
-    // gets the icon for the file
-    public static function _getIcon($file)
+    /**
+     * Gets the icon for the file
+     * 
+     * @param string $file      The File Path
+     * @param string $fileType  (optional) The File type
+     * 
+     * @return string           The Icon name
+     */
+    public static function _getIcon($file, $fileType = null)
     {
         $icon = '';
         if (is_file($file)) {
-            $info = pathinfo($file);
-            $icon = strtoupper($info['extension']);
+            if (isset($fileType)) {
+                $icon = $fileType;
+            } else {
+                $info = pathinfo($file);
+                $icon = strtoupper($info['extension']);
+            }
         }
         
         $arrImageExt        = array('JPEG', 'JPG', 'TIFF', 'GIF', 'BMP', 'PNG');
