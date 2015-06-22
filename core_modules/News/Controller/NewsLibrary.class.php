@@ -1483,6 +1483,197 @@ class NewsLibrary
         }
         
     }
+    
+    
+    /**
+     * Generate next and previous news links from the current news
+     * 
+     * @global object $objDatabase
+     * @global array  $_ARRAYLANG
+     * 
+     * @param object  $objTpl
+     * 
+     * @return null
+     */
+    public function parseNextAndPreviousLinks($objTpl = null)
+    {
+        global $objDatabase, $_ARRAYLANG;
+        $parentBlock    = 'previousNextLink';
+        $previousLink   = 'previousNewsLink';
+        $nextLink       = 'nextNewsLink';
+        
+        $params = $_GET;
+        
+        if (empty($objTpl) || empty($params['newsid']))
+        {
+            return;
+        }
+        $newsId = intval($params['newsid']);
+        
+        $filterCategory = '';
+        $arrCategory    = array();
+        $newsFilter     = array();
+        $arrAuthors     = array();
+        $arrPublishers  = array();
+        $arrTypes       = array();
+        
+        //Filter by category
+        if (isset($params['filterCategory']) && !empty($params['filterCategory'])) {
+            $arrCategory = explode(',', $params['filterCategory']);
+            if (!empty($arrCategory)) {
+                $filterCategory = ' AND (`nc`.`category_id` IN (' . implode(',', contrexx_input2int($arrCategory)) . '))';
+            }
+        }
+        //Filter by author
+        if (isset($params['filterAuthor']) && !empty($params['filterAuthor'])) {
+            $arrAuthors = explode(',', $params['filterAuthor']);
+            if (!empty($arrAuthors)) {
+                $newsFilter['author_id'] = $arrAuthors;
+            }
+        }
+        //Filter by publisher
+        if (isset($params['filterPublisher']) && !empty($params['filterPublisher'])) {
+            $arrPublishers = explode(',', $params['filterPublisher']);
+            if (!empty($arrPublishers)) {
+                $newsFilter['publisher_id'] = $arrPublishers;
+            }
+        }
+        //Filter by type
+        if (isset($params['filterType']) && !empty($params['filterType'])) {
+            $arrTypes = explode(',', $params['filterType']);
+            if (!empty($arrTypes)) {
+                $newsFilter['typeid'] = $arrTypes;
+            }
+        }
+        //Filter by tag
+        if (isset($params['filterTag']) && !empty($params['filterTag'])) {
+            $searchedTag = $this->getNewsTags(null, contrexx_input2raw($params['filterTag']));
+            $searchedTagId = current(array_keys($searchedTag['tagList']));
+            if (!empty($searchedTag['newsIds'])) {
+                $this->incrementViewingCount($searchedTagId);
+                $newsFilter['id'] = $searchedTag['newsIds'];
+            }
+        }
+
+        $query = "SELECT n.id as currentNewsId, 
+                        (SELECT t1.id
+                            FROM contrexx_module_news t1
+                            INNER JOIN  " . DBPREFIX . "module_news_locale AS nl ON nl.news_id = t1.id
+                            INNER JOIN " . DBPREFIX . "module_news_rel_categories AS nc ON nc.news_id = t1.id
+                            WHERE ((t1.date = n.date AND t1.id < n.id) OR t1.date < n.date) "
+                            . $this->getNewsFilterQuery('t1', $newsFilter, $filterCategory) .
+                            " ORDER BY t1.date DESC,t1.id DESC LIMIT 1) as previousNewsId,
+                        (SELECT t2.id
+                            FROM contrexx_module_news t2 
+                            INNER JOIN  " . DBPREFIX . "module_news_locale AS nl ON nl.news_id = t2.id
+                            INNER JOIN " . DBPREFIX . "module_news_rel_categories AS nc ON nc.news_id = t2.id
+                            WHERE ((t2.date = n.date AND t2.id > n.id) OR t2.date > n.date) "
+                            . $this->getNewsFilterQuery('t2', $newsFilter, $filterCategory) .
+                            " ORDER BY t2.date ASC LIMIT 1) as nextNewsId
+                    FROM " . DBPREFIX ."module_news n
+                    INNER JOIN  " . DBPREFIX . 'module_news_locale AS nl ON nl.news_id = n.id
+                    INNER JOIN  '.DBPREFIX.'module_news_rel_categories AS nc ON nc.news_id = n.id    
+                    WHERE n.id = ' . $newsId . $this->getNewsFilterQuery('n', $newsFilter, $filterCategory)
+                    .' GROUP BY n.id '
+                    .' ORDER BY n.date DESC';
+        $resultArray = $objDatabase->GetRow($query);
+        if(empty($resultArray))  {
+            return;
+        }
+        
+        $previousNewsId = $resultArray['previousNewsId'];
+        $nextNewsId     = $resultArray['nextNewsId'];
+        //previous news
+        if (!empty($previousNewsId)) {
+            $preNewsDetails = self::getNewsDetailsById($previousNewsId);
+            $arrNewsCategories = $this->getCategoriesByNewsId($previousNewsId);
+            if ($objTpl->blockExists($previousLink) && !empty($preNewsDetails)) {
+                $objTpl->setVariable(
+                        array(
+                            'TXT_NEWS_PREVIOUS_LINK' => $_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'],
+                            'NEWS_PREVIOUS_TITLE' => $preNewsDetails['newsTitle'],
+                            'NEWS_PREVIOUS_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                    'news', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories),$arrCategory)),
+                                    FRONTEND_LANG_ID, array('newsid' => contrexx_raw2xhtml($preNewsDetails['id']))
+                            )
+                        )
+                );
+                $objTpl->touchBlock($previousLink);
+            }
+        }
+
+        //next news
+        if (!empty($nextNewsId)) {
+            $nextNewsDetails = self::getNewsDetailsById($nextNewsId);
+            $arrNewsCategories = $this->getCategoriesByNewsId($nextNewsId);
+            if ($objTpl->blockExists($nextLink) && !empty($nextNewsDetails)) {
+                $objTpl->setVariable(
+                        array(
+                            'TXT_NEWS_NEXT_LINK' => $_ARRAYLANG['TXT_NEWS_NEXT_LINK'],
+                            'NEWS_NEXT_TITLE' => $nextNewsDetails['newsTitle'],
+                            'NEWS_NEXT_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                    'news', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories),$arrCategory)),
+                                    FRONTEND_LANG_ID, array('newsid' => contrexx_raw2xhtml($nextNewsDetails['id']))
+                            )
+                        )
+                );
+                $objTpl->touchBlock($nextLink);
+            }
+        }
+        if(!empty($previousNewsId) || !empty($nextNewsId)){ 
+            $objTpl->touchBlock($parentBlock);
+        }
+    }
+    
+   /**
+    * Get News Filter Condition Query
+    * 
+    * @param string $tableAlias
+    * @param array  $filters
+    * @param string $filterCategory category filter 
+    * 
+    * @return string  sql query
+    */
+    public function getNewsFilterQuery($tableAlias, $filters, $filterCategory) {
+        $filterCondition = " AND $tableAlias.status = 1
+                    AND nl.is_active=1
+                    AND nl.lang_id=" . FRONTEND_LANG_ID . "
+                    AND ($tableAlias.startdate<='" . date('Y-m-d H:i:s') . "' OR $tableAlias.startdate=\"0000-00-00 00:00:00\")
+                    AND ($tableAlias.enddate>='" . date('Y-m-d H:i:s') . "' OR $tableAlias.enddate=\"0000-00-00 00:00:00\")"
+                . ($this->arrSettings['news_message_protection'] == '1' 
+                            && !Permission::hasAllAccess() ? (($objFWUser = FWUser::getFWUserObject()) 
+                                    && $objFWUser->objUser->login() ? " AND (frontend_access_id IN (" . implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())) . ") OR userid = " . $objFWUser->objUser->getId() . ") " : " AND frontend_access_id=0 ") : ''
+                );
+        if (!empty($filters)) {
+            $additionalFilter = '';
+            foreach ($filters as $field => $values) {
+                $additionalFilter .= ' AND (`' . $tableAlias . '`.`' . $field . '` IN (' . implode(',', contrexx_input2int($values)) . '))';
+            }
+            $filterCondition .= $additionalFilter;
+        }
+        if (!empty($filterCategory)) {
+            $filterCondition .= $filterCategory;
+        }
+        return $filterCondition;
+    }
+
+    /**
+     * Get news Details by id
+     * 
+     * @global object  $objDatabase
+     * @param  integer $id
+     * 
+     * @return array
+     */
+    public function getNewsDetailsById($id){
+        global $objDatabase;
+        $query = "SELECT n.id as id,
+                         nl.title AS newsTitle
+                    FROM " . DBPREFIX . "module_news n
+                        INNER JOIN  " . DBPREFIX . 'module_news_locale AS nl ON nl.news_id = n.id
+                        WHERE n.id = ' . $id;
+        return $objDatabase->GetRow($query);
+    }
 
     /**
      * Getting the realated News
