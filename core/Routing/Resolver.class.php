@@ -465,7 +465,7 @@ class Resolver {
 
         if (!$this->page || $internal) {
             if ($this->pagePreview) {
-                if (!empty($this->sessionPage)) {
+                if (!empty($this->sessionPage) && !empty($this->sessionPage['pageId'])) {
                     $this->getPreviewPage();
                 }
             }
