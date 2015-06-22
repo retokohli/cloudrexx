@@ -1729,7 +1729,7 @@ class Download {
                 } else {
                     $this->source_names[$langId] = $source;
                 }
-                $this->fileTypes[$langId] = null;
+                $this->fileTypes[$langId] = (\FWValidator::isUri($source)) ? 'HTML' : null;
             } else {
                 $this->fileTypes[$langId] = strtoupper(pathinfo($source, PATHINFO_EXTENSION));
                 $this->source_names[$langId] = isset($sourceNames[$langId]) ? $sourceNames[$langId] : basename($source);

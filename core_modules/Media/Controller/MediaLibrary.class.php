@@ -781,13 +781,11 @@ class MediaLibrary
     public static function _getIcon($file, $fileType = null)
     {
         $icon = '';
-        if (is_file($file)) {
-            if (isset($fileType)) {
-                $icon = $fileType;
-            } else {
-                $info = pathinfo($file);
-                $icon = strtoupper($info['extension']);
-            }
+        if (isset($fileType)) {
+            $icon = $fileType;
+        } elseif (is_file($file)) {
+            $info = pathinfo($file);
+            $icon = strtoupper($info['extension']);
         }
         
         $arrImageExt        = array('JPEG', 'JPG', 'TIFF', 'GIF', 'BMP', 'PNG');
