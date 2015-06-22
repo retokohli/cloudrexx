@@ -454,7 +454,12 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
 
                     if ($saveCrmContact) {
                         $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
-                        $objCrmLibrary->addCrmContact($arrFormData);
+                        
+                        $arrContactData = $arrFormData;
+                        
+                        $entity = \Env::get('em')->getRepository('Cx\Core_Modules\Contact\Model\Entity\Form')->findOneBy(array('id' => $formId));
+                        $arrContactData['assigned_membreships'] = $entity ? $entity->getCrmCustomerGroups() : array();
+                        $objCrmLibrary->addCrmContact($arrContactData);
                     }
                     $this->sendMail($arrFormData);
                     if (isset($arrFormData['showForm']) && !$arrFormData['showForm']) {

@@ -2637,6 +2637,9 @@ class CrmLibrary
                     $query .= implode(",", $values);
                     $objDatabase->Execute($query);
                 }
+                if (!empty($arrFormData['assigned_membreships'])) {
+                    $this->updateCustomerMemberships($arrFormData['assigned_membreships'], $this->contact->id);
+                }
                 // notify the staff's
                 $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName, $this->contact->family_name, $this->contact->contact_gender);
                 

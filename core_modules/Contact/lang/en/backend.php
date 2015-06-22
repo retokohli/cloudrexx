@@ -200,4 +200,7 @@ $_ARRAYLANG['TXT_CONTACT_CSV_TOOLTIP'] = "CSV export in unicode<br /><i>(optimiz
 $_ARRAYLANG['TXT_CONTACT_XLS_TOOLTIP'] = "CSV export in ISO-8859-1<br /><i>(optimized for microsoft excel)</i>";
 $_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM'] = "The requests to this form are automatically transferd to the CRM as a new Contact.";
 $_ARRAYLANG['TXT_CONTACT_DATETIME'] = "Date & Time";
+$_ARRAYLANG['TXT_CONTACT_CHOOSE_MEMBERSHIPS']  = "Choose customer groups";
+$_ARRAYLANG['TXT_CONTACT_ASSIGN_TO_CRM_CUSTOMER_GROUP']  = "Assign to CRM customer group";
+$_ARRAYLANG['TXT_CONTACT_ASSIGN_CRM_CUSTOMER_GROUP_DESCRIPTION'] = "Please select a CRM Customer Group(s) for CRM Contact.";
 ?>

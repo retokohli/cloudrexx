@@ -200,4 +200,5 @@ $_ARRAYLANG['TXT_CONTACT_CSV_TOOLTIP'] = "CSV-Export in Unicode<br /><i>(optimie
 $_ARRAYLANG['TXT_CONTACT_XLS_TOOLTIP'] = "CSV-Export in ISO-8859-1<br /><i>(optimiert für Microsoft Excel)</i>";
 $_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM'] = "Die Anfragen dieses Formulars werden automatisch ins CRM als neue Kontaktpersonen übertragen.";
 $_ARRAYLANG['TXT_CONTACT_DATETIME'] = "Datum & Zeit";
+$_ARRAYLANG['TXT_CONTACT_CHOOSE_MEMBERSHIPS']  = "Kundengruppe wählen";
 ?>
