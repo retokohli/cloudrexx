@@ -851,7 +851,7 @@ cx.cm = function(target) {
                 //check whether the application type contains the placeholder [[APPLICATION_DATA]] in ckeditor
                 if (!pattern.test(content)) {
                     var range = CKEDITOR.instances['cm_ckeditor'].createRange();
-                    if (range) {
+                    if (range && CKEDITOR.instances['cm_ckeditor'].getSelection()!=null) {
                         range.moveToPosition(range.root, CKEDITOR.POSITION_BEFORE_END);
                         CKEDITOR.instances['cm_ckeditor'].getSelection().selectRanges([range]);
                     }
