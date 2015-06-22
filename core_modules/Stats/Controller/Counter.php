@@ -30,15 +30,15 @@ $arrRobots = array();
 /**
  * @ignore
  */
-\Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Stats/Data/spiders.inc.php');
+include_once $cx->getCodeBaseCoreModulePath().'/Stats/Data/spiders.inc.php';
 /**
  * @ignore
  */
-\Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Stats/Data/referers.inc.php');
+include_once $cx->getCodeBaseCoreModulePath().'/Stats/Data/referers.inc.php';
 /**
  * @ignore
  */
-\Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Stats/Data/banned.inc.php');
+include_once $cx->getCodeBaseCoreModulePath().'/Stats/Data/banned.inc.php';
 
 
 $counter = new \Cx\Core_Modules\Stats\Controller\Counter($arrRobots, $arrBannedWords);
@@ -556,10 +556,10 @@ class Counter
     function _getBrowser()
     {
         $userAgent = $this->arrClient['useragent'];
-		$arrBrowserRegExps = array();
-		$arrBrowserNames = array();
-		$arrBrowser = array();
-        \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Stats/Data/useragents.inc.php');        
+        $arrBrowserRegExps = array();
+        $arrBrowserNames = array();
+        $arrBrowser = array();
+        include_once \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath().'/Stats/Data/useragents.inc.php';
         if (!empty($arrBrowserRegExps)) {
             foreach ($arrBrowserRegExps as $browserRegExp) {
                 if (preg_match($browserRegExp, $userAgent, $arrBrowser)) {
@@ -605,7 +605,7 @@ class Counter
         $operationgSystem = '';
         $userAgent = $this->arrClient['useragent'];
         $arrOperatingSystems = array();
-        \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Stats/Data/operatingsystems.inc.php');
+        include_once \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath().'/Stats/Data/operatingsystems.inc.php';
         if (!empty($arrOperatingSystems)) {
             foreach ($arrOperatingSystems as $arrOperatingSystem) {
                 if (preg_match($arrOperatingSystem['regExp'], $userAgent)) {
