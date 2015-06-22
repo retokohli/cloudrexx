@@ -1168,6 +1168,7 @@ CREATE TABLE `contrexx_module_contact_form` (
   `use_email_of_sender` tinyint(1) NOT NULL default '0',
   `html_mail` tinyint(1) unsigned NOT NULL default '1',
   `send_attachment` tinyint(1) unsigned NOT NULL default '0',
+  `crm_customer_groups` text,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
