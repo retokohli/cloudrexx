@@ -312,7 +312,11 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         
         self::parseImageBlock($this->_objTpl, $objResult->fields['newsThumbImg'], $newstitle, $newsUrl, 'image_thumbnail');
         self::parseImageBlock($this->_objTpl, $objResult->fields['newsimage'], $newstitle, $newsUrl, 'image_detail');
-         
+        //previous next newslink 
+        if ($this->_objTpl->blockExists('previousNextLink')) {
+            $this->parseNextAndPreviousLinks($this->_objTpl);
+        }
+
         if (empty($redirect)) {
             $text = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $text);
             $newsTeaser = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $newsTeaser);
@@ -753,6 +757,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $validToShowList = true;
         $newsCategories  = array();
         $menuCategories  = array();
+        $parameters         = array();
         $selectedCat        = '';
         $selectedType       = '';
         $selectedPublisher  = '';
@@ -765,33 +770,27 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if (isset($_GET['pos'])) {
             $pos = intval($_GET['pos']);
         }
-
-        if (!empty($_REQUEST['cmd'])) {
-            $categories = explode(',', $_REQUEST['cmd']);
-            if ((count($categories) == 1) && $this->categoryExists($categories[0])) {
-                $selectedCat = $categories[0];
-            }
-            $menuCategories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories($categories));
+        
+        $catFromCmd = !empty($_REQUEST['cmd']) ? explode(',', $_REQUEST['cmd']) : array();
+        $catFromReq = !empty($_REQUEST['category']) ? explode(',', $_REQUEST['category']) : array();
+        
+        if (!empty($catFromCmd)) {            
+            $menuCategories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories($catFromCmd));
             if ($this->_objTpl->placeholderExists('NEWS_CMD')) {
                 $this->_objTpl->setVariable('NEWS_CMD', $_REQUEST['cmd']);
             }
         }
-
-        if (!empty($_REQUEST['category'])) {
-            $categories = explode(',', $_REQUEST['category']);
-            if ((count($categories) == 1) && $this->categoryExists($categories[0])) {
-                $selectedCat = intval($categories[0]);
-            }
-            $newsCategories = $categories;
-        } else if (!empty($menuCategories)) {
-            $newsCategories = $menuCategories;
-        } else {
+        
+        $newsCategories = $categories = !empty($catFromReq) ? $catFromReq : (!empty($catFromCmd) ? $catFromCmd : array());
+        if ((count($newsCategories) == 1) && $this->categoryExists($newsCategories[0])) {
+            $selectedCat = intval($newsCategories[0]);
+        }
+        if (empty($newsCategories)) {
             $newsCategories[] = $this->nestedSetRootId;
         }
         $newsCategories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories($newsCategories));
         if (!empty($newsCategories)) {
-            $newsfilter .= ' AND `nc`.`category_id` IN ('
-            . implode(',' , $newsCategories) . ')';
+            $newsfilter .= ' AND (`nc`.`category_id` IN (' . implode(',', $newsCategories) . '))';
         }
 
         if ($this->_objTpl->placeholderExists('NEWS_CAT_DROPDOWNMENU')) {
@@ -802,26 +801,14 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $this->_objTpl->setVariable('NEWS_CAT_DROPDOWNMENU', $catMenu);
         }
 
+        //Filter by types
         if($this->arrSettings['news_use_types'] == 1) {
             if (!empty($_REQUEST['type'])) {
-                $newsfilter .= ' AND (';
-                $boolFirst = true;
-
-                $arrTypes = explode(',',$_REQUEST['type']);
-
-                if (count($arrTypes) == 1) {
-                    $selectedType = intval($arrTypes[0]);
+                $arrTypes = explode(',', $_REQUEST['type']);
+                if (!empty($arrTypes)) {
+                    $newsfilter .= ' AND (`n`.`typeid` IN (' . implode(', ', contrexx_input2int($arrTypes)) . '))';
                 }
-
-                foreach ($arrTypes as $intTypeId) {
-                    if (!$boolFirst) {
-                        $newsfilter .= 'OR ';
-                    }
-
-                    $newsfilter .= 'n.typeid='.intval($intTypeId).' ';
-                    $boolFirst = false;
-                }
-                $newsfilter .= ')';
+                $selectedType = current($arrTypes);
             }
 
             if ($this->_objTpl->placeholderExists('NEWS_TYPE_DROPDOWNMENU')) {
@@ -833,25 +820,15 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
         }
         
+        //Filter by publisher
         if (!empty($_REQUEST['publisher'])) {
-            $newsfilter .= ' AND (';
-            $boolFirst = true;
-
-            $arrPublishers = explode(',',  contrexx_input2raw($_REQUEST['publisher']));
-
-            if (count($arrPublishers) == 1) {
-                $selectedPublisher = $arrPublishers[0];
+            $parameters['filterPublisher'] = $publisher = contrexx_input2raw($_REQUEST['publisher']);
+            $arrPublishers = explode(',', $publisher);
+            if (!empty($arrPublishers)) {
+                $newsfilter .= ' AND (`n`.`publisher_id` IN (' . implode(', ', contrexx_input2int($arrPublishers)) . '))';
             }
-
-            foreach ($arrPublishers as $intPublisherId) {
-                if (!$boolFirst) {
-                    $newsfilter .= 'OR ';
-                }
-
-                $newsfilter .= 'n.publisher_id='.intval($intPublisherId).' ';
-                $boolFirst = false;
-            }
-            $newsfilter .= ')';
+            $selectedPublisher = current($arrPublishers);                
+            
         }
 
         if ($this->_objTpl->placeholderExists('NEWS_PUBLISHER_DROPDOWNMENU')) {
@@ -862,25 +839,14 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $this->_objTpl->setVariable('NEWS_PUBLISHER_DROPDOWNMENU', $publisherMenu);
         }
         
+        //Filter by Author
         if (!empty($_REQUEST['author'])) {
-            $newsfilter .= ' AND (';
-            $boolFirst = true;
-
-            $arrAuthors = explode(',',  contrexx_input2raw($_REQUEST['author']));
-
-            if (count($arrAuthors) == 1) {
-                $selectedAuthor = $arrAuthors[0];
+            $parameters['filterAuthor'] = $author = contrexx_input2raw($_REQUEST['author']);
+            $arrAuthors = explode(',', $author);
+            if (!empty($arrAuthors)) {
+                $newsfilter .= ' AND (`n`.`author_id` IN (' . implode(', ', contrexx_input2int($arrAuthors)) . '))';
             }
-
-            foreach ($arrAuthors as $intAuthorId) {
-                if (!$boolFirst) {
-                    $newsfilter .= 'OR ';
-                }
-
-                $newsfilter .= 'n.author_id='.intval($intAuthorId).' ';
-                $boolFirst = false;
-            }
-            $newsfilter .= ')';
+            $selectedAuthor = current($arrAuthors);
         }
 
         if ($this->_objTpl->placeholderExists('NEWS_AUTHOR_DROPDOWNMENU')) {
@@ -890,9 +856,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $authorMenu   .= '</select>'."\n";
             $this->_objTpl->setVariable('NEWS_AUTHOR_DROPDOWNMENU', $authorMenu);
         }
-
+        
+        //Filter by tag
         if (!empty($_REQUEST['tag'])) {
-            $searchTag     = contrexx_input2raw($_REQUEST['tag']);
+            $parameters['filterTag'] = $searchTag = contrexx_input2raw($_REQUEST['tag']);
             $searchedTag   = $this->getNewsTags(null, $searchTag);
             $searchedTagId = current(array_keys($searchedTag['tagList']));
             if (!empty($searchedTag['newsIds'])) {
@@ -959,14 +926,17 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $category = '';
         if (!empty($_REQUEST['cmd'])) {
+            $parameters['filterCategory'] = contrexx_input2raw($_REQUEST['cmd']);
             $category .= '&cmd='.$_REQUEST['cmd'];
         }
         if (!empty($_REQUEST['category'])) {
+            $parameters['filterCategory'] = contrexx_input2raw($_REQUEST['category']);
             $category .= '&category='.$_REQUEST['category'];
         }
 
         $type = '';
         if (!empty($_REQUEST['type'])) {
+            $parameters['filterType'] = contrexx_input2raw($_REQUEST['type']);
             $type = '&type='.$selectedType;
         }
 
@@ -985,10 +955,17 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $newstitle      = $objResult->fields['newstitle'];
                 $newsCommentActive = $objResult->fields['commentactive'];
                 $arrNewsCategories = $this->getCategoriesByNewsId($newsid);
+                $parameters['newsid'] = $newsid;
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
                                         ? ''
-                                        : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories), $categories)), FRONTEND_LANG_ID, array('newsid' => $newsid)))
+                                        : \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                                    'News', 
+                                                    $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories), $categories)),
+                                                    FRONTEND_LANG_ID,
+                                                    $parameters
+                                                )
+                                    )
                                     : $objResult->fields['redirect'];
 
                 $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
