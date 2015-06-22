@@ -161,7 +161,7 @@ class Resolver {
         $this->fallbackLanguages = $fallbackLanguages;
         $this->pagePreview = !empty($_GET['pagePreview']) && ($_GET['pagePreview'] == 1) ? 1 : 0;
         $this->historyId = !empty($_GET['history']) ? $_GET['history'] : 0;
-        $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page'] : array();
+        $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page']->toArray() : array();
     }
     
     public function resolve() {
