@@ -84,6 +84,7 @@ class ContactLib
                          `f`.`use_email_of_sender`,
                          `f`.`html_mail`,
                          `f`.`send_attachment`,
+                         `f`.`crm_customer_groups`,
                          (SELECT COUNT(`id`) FROM `'.DBPREFIX.'module_contact_form_data` AS `d` WHERE `d`.`id_form` = `f`.`id`)  AS `numberOfEntries`,
                          (SELECT MAX(`time`) FROM `'.DBPREFIX.'module_contact_form_data` AS `d` WHERE `d`.`id_form` = `f`.`id`) AS `latestEntry`
                     FROM `'.DBPREFIX.'module_contact_form` AS `f`
@@ -105,8 +106,9 @@ class ContactLib
                     'sendAttachment'    => $objResult->fields['send_attachment'],
                     'recipients'        => $this->getRecipients($objResult->fields['id'], true),
                     'number'            => 0,
-                    'last'              => 0
-                );
+                    'last'              => 0,
+                    'crmCustomerGroups' => ($objResult->fields['crm_customer_groups']) ? unserialize(contrexx_stripslashes($objResult->fields['crm_customer_groups'])) :  array()
+                );                
                 $objResult->MoveNext();
             }
         }
@@ -606,7 +608,8 @@ class ContactLib
         $useEmailOfSender,
         $sendHtmlMail,
         $sendAttachment,
-        $saveDataInCrm
+        $saveDataInCrm,
+        $crmCustomerGroups
     )
     {
         global $objDatabase;
@@ -620,7 +623,8 @@ class ContactLib
                         $useEmailOfSender,
                         $sendHtmlMail,
                         $sendAttachment,
-                        $saveDataInCrm
+                        $saveDataInCrm,
+                        $crmCustomerGroups
         );
         \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($formEntity, \Env::get('em'))));
         $objDatabase->Execute("
@@ -635,7 +639,8 @@ class ContactLib
                 use_email_of_sender = ".$useEmailOfSender.",
                 html_mail           = ".$sendHtmlMail.",
                 send_attachment     = ".$sendAttachment.",
-                `save_data_in_crm`  = ".$saveDataInCrm."
+                `save_data_in_crm`  = ".$saveDataInCrm.",
+                `crm_customer_groups`  = \"" . contrexx_input2db(serialize($crmCustomerGroups)) . "\"
             WHERE
                 id = ".$formID
         );
@@ -663,7 +668,8 @@ class ContactLib
         $useEmailOfSender,
         $sendHtmlMail,
         $sendAttachment,
-        $saveDataInCrm
+        $saveDataInCrm,
+        $crmCustomerGroups
     )
     {
         global $objDatabase, $_FRONTEND_LANGID;
@@ -676,7 +682,8 @@ class ContactLib
                     $useEmailOfSender,
                     $sendHtmlMail,
                     $sendAttachment,
-                    $saveDataInCrm
+                    $saveDataInCrm,
+                    $crmCustomerGroups
         );
         \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
         $query = "
@@ -691,7 +698,8 @@ class ContactLib
                 `use_email_of_sender`,
                 `html_mail`,
                 `send_attachment`,
-                `save_data_in_crm`
+                `save_data_in_crm`,
+                `crm_customer_groups`
             )
             VALUES
             (
@@ -703,7 +711,8 @@ class ContactLib
                 ".$useEmailOfSender.",
                 ".$sendHtmlMail.",
                 ".$sendAttachment.",
-                ".$saveDataInCrm."
+                ".$saveDataInCrm.",
+                \"". contrexx_input2db(serialize($crmCustomerGroups)) . "\"
             )";
 
         if ($objDatabase->Execute($query) !== false) {
@@ -742,7 +751,8 @@ class ContactLib
         $useEmailOfSender,
         $sendHtmlMail,
         $sendAttachment,
-        $saveDataInCrm
+        $saveDataInCrm,
+        $crmCustomerGroups
     ) {
         if($id) {
             $entity = \Env::get('em')->getRepository('Cx\Core_Modules\Contact\Model\Entity\Form')->findOneBy(array('id' => $id));
@@ -758,6 +768,7 @@ class ContactLib
         $entity->setHtmlMail($sendHtmlMail);
         $entity->setSendAttachment($sendAttachment);
         $entity->setSaveDataInCrm($saveDataInCrm);
+        $entity->setCrmCustomerGroups($crmCustomerGroups);
         return $entity;
     }
 

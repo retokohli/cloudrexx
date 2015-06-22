@@ -757,6 +757,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         $sendHtmlMail   = 1;
         $sendAttachment = 0;
         $emails         = $_CONFIG['contactFormEmail'];
+        $crmCustomerGroups = array();
 
         $arrActiveSystemFrontendLanguages = \FWLanguage::getActiveFrontendLanguages();
 
@@ -776,6 +777,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $sendHtmlMail   = $this->arrForms[$formId]['htmlMail'];
             $sendAttachment = $this->arrForms[$formId]['sendAttachment'];
             $emails         = $this->arrForms[$formId]['emails'];
+            $crmCustomerGroups = !empty($this->arrForms[$formId]['crmCustomerGroups']) ? $this->arrForms[$formId]['crmCustomerGroups'] : array();
         }
 
         if (count($arrActiveSystemFrontendLanguages) > 0) {
@@ -817,6 +819,10 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $fields = $this->_getFormFieldsFromPost();
             $recipients = $this->getRecipientsFromPost();
         }
+        
+        $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
+        $memberships   = array_keys($objCrmLibrary->getMemberships());
+        $objCrmLibrary->getMembershipDropdown($this->_objTpl, $memberships, "contactMembership", $crmCustomerGroups);
 
         // make an empty one so at least one is parsed
         if (empty($fields)) {
@@ -1096,8 +1102,12 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             'CONTACT_FORM_FIELDS_TITLE'                     => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'],
             'CONTACT_FORM_RECIPIENTS_TITLE'                 => $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'],
             'CONTACT_FORM_SETTINGS'                         => $_ARRAYLANG['CONTACT_FORM_SETTINGS'],
-        ));
+            'TXT_CONTACT_CHOOSE_MEMBERSHIPS'                => $_ARRAYLANG['TXT_CONTACT_CHOOSE_MEMBERSHIPS'],
+            'TXT_CONTACT_ASSIGN_TO_CRM_CUSTOMER_GROUP'      => $_ARRAYLANG['TXT_CONTACT_ASSIGN_TO_CRM_CUSTOMER_GROUP'],
+            'TXT_CONTACT_ASSIGN_CRM_CUSTOMER_GROUP_DESCRIPTION'  => $_ARRAYLANG['TXT_CONTACT_ASSIGN_CRM_CUSTOMER_GROUP_DESCRIPTION']
 
+        ));
+        
         if (empty($recipients)) {
             // make an empty one so there's at least one
             $recipients[0] = array(
@@ -1199,6 +1209,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         $content = isset($_POST['contentSiteAction']) ? $_POST['contentSiteAction'] : '';
 
         if (isset($_POST['saveForm'])) {
+            $crmCustomerGroups = array();
             $emails         = $this->getPostRecipients();
             $showForm       = !empty($_POST['contactFormShowForm']) ? 1 : 0;
             $useCaptcha     = !empty($_POST['contactFormUseCaptcha']) ? 1 : 0;
@@ -1229,7 +1240,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                         return;
                     }
                 }
-
+                
+                $crmCustomerGroups = !empty($_POST['assigned_memberships']) ? $_POST['assigned_memberships'] : array();
             }
 
             if (!$adding) {
@@ -1244,7 +1256,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                         $useEmailOfSender,
                         $sendHtmlMail,
                         $sendAttachment,
-                        $saveDataInCrm
+                        $saveDataInCrm,
+                        $crmCustomerGroups
                 );
             } else {
                 $formId = $this->addForm(
@@ -1256,7 +1269,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                         $useEmailOfSender,
                         $sendHtmlMail,
                         $sendAttachment,
-                        $saveDataInCrm
+                        $saveDataInCrm,
+                        $crmCustomerGroups
                 );
             }
 

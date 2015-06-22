@@ -33,3 +33,6 @@ Cx\Core_Modules\Contact\Model\Entity\Form:
     sendAttachment:
       type: boolean
       column: send_attachment
+    crmCustomerGroups:
+      type: array
+      column: crm_customer_groups
