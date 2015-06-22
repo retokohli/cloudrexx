@@ -177,6 +177,34 @@
             <td>&lt;!-- newsrow --&gt;</td>
             <td>{TXT_NEWSROW_DESCRIPTION}</td>
         </tr>
+        <tr class="row3">
+            <td colspan="2"><b>{TXT_NEWS_PREVIOUS_NEXT_LINKS}</b></td>
+        </tr>
+        
+        <tr class="row1">
+            <td><b>[[NEWS_PREVIOUS_LINK]]</b></td>
+            <td>{TXT_NEWS_PREVIOUS_LINK_DESCRITION}</td>
+        </tr>
+        
+        <tr class="row2">
+            <td><b>[[NEWS_PREVIOUS_TITLE]]</b></td>
+            <td>{TXT_NEWS_PREVIOUS_TITLE_DESCRITION}</td>
+        </tr>
+        
+        <tr class="row1">
+            <td><b>[[NEWS_NEXT_LINK]]</b></td>
+            <td>{TXT_NEWS_NEXT_LINK_DESCRITION}</td>
+        </tr>
+        
+        <tr class="row2">
+            <td><b>[[NEWS_NEXT_TITLE]]</b></td>
+            <td>{TXT_NEWS_NEXT_TITLE_DESCRITION}</td>
+        </tr>
+        
+        <tr class="row1">
+            <td>&lt;!-- previousNextLink --&gt;</td>
+            <td>{TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION}</td>
+        </tr>
     </table>
     <br />
     <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
@@ -211,6 +239,16 @@
                 &lt;br&nbsp;/&gt;<br />
                 <b>[[NEWS_PAGING]]</b>&lt;br&nbsp;/&gt;<br />
                 &lt;br&nbsp;/&gt;
+                <br />
+                <b>&lt;!-- BEGIN previousNextLink --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN previousNewsLink --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[[NEWS_PREVIOUS_LINK]]" title="[[NEWS_PREVIOUS_TITLE]]">[[NEWS_PREVIOUS_TITLE]]&lt;/a&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END previousNewsLink --&gt;</b><br />
+
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN nextNewsLink --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[[NEWS_NEXT_LINK]]" title="[[NEWS_NEXT_TITLE]]">[[NEWS_NEXT_TITLE]]&lt;/a&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END nextNewsLink --&gt;</b><br />
+                <b>&lt;!-- END previousNextLink --&gt;</b><br />
             </td>
         </tr>
     </table>
