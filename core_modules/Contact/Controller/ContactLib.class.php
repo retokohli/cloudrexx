@@ -1191,43 +1191,53 @@ class ContactLib
                                             `".DBPREFIX."module_contact_form_submit_data` AS `sd`
                                         ON
                                             `d`.`id` = `sd`.`id_entry`
+                                        INNER JOIN
+                                             `".DBPREFIX."module_contact_form_field` AS `f`
+                                        ON
+                                            `f`.`id` = `sd`.`id_field`
+                                        AND 
+                                            `f`.`type` IN ('multi_file', 'file')
                                         WHERE `d`.`id`=".$id);
-        if(!$rs->EOF) {
-            $data = $rs->fields['formvalue'];
-            $formId = $rs->fields['id_form'];
+        if ($rs) {
+            while (!$rs->EOF) {
+                $data = $rs->fields['formvalue'];
+                $formId = $rs->fields['id_form'];
 
-            //get all form data into arrData
-            $arrData = array();
-            foreach (explode(';', $data) as $keyValue) {
-                $arrTmp = explode(',', $keyValue);
-                $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
-            }
-          
-            //load contact form fields - we need to know which ones have the type 'file'
-            $this->initContactForms();
-            $arrFormFields = $this->getFormFields($formId);
-            
-            foreach($arrFormFields as $arrField) {
-                //see if it's a file field...
-                if($arrField['type'] == 'file') {
-                    //...and delete the files if yes:
-                    $val = $arrData[$arrField['name']];
-                    if(substr($val,0,1) == '*') {
-                        //new style entry, multiple files
-                        $arrFiles = explode('*',substr($val,1));
-                    }
-                    else {
-                        //old style entry, single file
-                        $arrFiles = array($val);
-                    }
-                  
-                    //nice, we have all the files. delete them.
-                    foreach($arrFiles as $file) {
-                        \Cx\Lib\FileSystem\FileSystem::delete_file(\Env::get('cx')->getWebsiteDocumentRootPath().$file);
+                //get all form data into arrData
+                $arrData = array();
+                foreach (explode(';', $data) as $keyValue) {
+                    $arrTmp = explode(',', $keyValue);
+                        $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
+                }
+
+                //load contact form fields - we need to know which ones have the type 'file'
+                $this->initContactForms();
+                $arrFormFields = $this->getFormFields($formId);
+
+                foreach($arrFormFields as $arrField) {
+                    //see if it's a file field...
+                    if($arrField['type'] == 'file') {
+                        //...and delete the files if yes:
+                        $val = isset($arrData[$arrField['name']]) ? $arrData[$arrField['name']] : $data;
+                        if(strpos($val,'*')) {
+                            //new style entry, multiple files
+                            $arrFiles = explode('*', $val);
+                        }
+                        else {
+                            //old style entry, single file
+                            $arrFiles = array($val);
+                        }
+
+                        //nice, we have all the files. delete them.
+                        foreach($arrFiles as $file) {
+                            \Cx\Lib\FileSystem\FileSystem::delete_file(\Env::get('cx')->getWebsiteDocumentRootPath().$file);
+                        }
                     }
                 }
+                $rs->MoveNext();
             }
         }
+        
         $objDatabase->Execute("DELETE `d`, `sd` FROM
                                 `".DBPREFIX."module_contact_form_data` AS `d`
                                LEFT JOIN
