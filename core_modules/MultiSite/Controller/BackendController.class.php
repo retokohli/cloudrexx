@@ -232,6 +232,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'TABLE' => \Cx\Core\MailTemplate\Controller\MailTemplate::adminView('MultiSite', 'nonempty', $config['corePagingLimit'], 'settings/email')->get(),
             ));
         } elseif(!empty($cmd[1]) && $cmd[1]=='website_service_servers'){
+            //Register backup and restore js
+            \JS::registerJS('core_modules/MultiSite/View/Script/BackupAndRestore.js');
+
             $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
             if(empty($websiteServiceServers)){
                 $websiteServiceServers = new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer();
@@ -660,6 +663,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     
     public function parseSectionWebsites(\Cx\Core\Html\Sigma $template, array $cmd) {
         global $_ARRAYLANG;
+        
+        //Register backup and restore js
+        \JS::registerJS('core_modules/MultiSite/View/Script/BackupAndRestore.js');
+        
         if (isset($_GET['term']) && !empty($_GET['term'])) {
             $term = contrexx_input2db($_GET['term']);
             $websites = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')->findWebsitesBySearchTerms($term);
@@ -1098,6 +1105,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function parseSectionBackupAndRestore(\Cx\Core\Html\Sigma $template, array $cmd) {
         global $_ARRAYLANG;
         
+        //Register backup and restore js
+        \JS::registerJS('core_modules/MultiSite/View/Script/BackupAndRestore.js');
+        
         \FWUser::getUserLiveSearch(array(
             'minLength' => 3,
             'canCancel' => true,
@@ -1108,48 +1118,45 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     ? contrexx_input2raw($_GET['term']) 
                     : '';
             $allBackupsArray = self::getAllBackupFilesInfoAsArray($term);
-            if ($allBackupsArray) {
-                $websiteBackupRepositoryDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($allBackupsArray);
-                $backupAndRestore = new \Cx\Core\Html\Controller\ViewGenerator($websiteBackupRepositoryDataSet,
-                    array(
-                        'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_BACKUPS_AND_RESTORE'],
-                        'functions' => array(
-                            'delete'   => false,
-                            'sorting'  => true,
-                            'paging'   => true,      
-                            'filtering'=> false,
-                            'actions'  => function($rowData) {
-                                                $actions = \Cx\Core_Modules\MultiSite\Controller\BackendController::restoreOrDeleteBackupedWebsite($rowData);
-                                                $actions.= \Cx\Core_Modules\MultiSite\Controller\BackendController::restoreOrDeleteBackupedWebsite($rowData, true);
-                                            return $actions;
-                                        }
+            $websiteBackupRepositoryDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($allBackupsArray);
+            $backupAndRestore = new \Cx\Core\Html\Controller\ViewGenerator($websiteBackupRepositoryDataSet,
+                array(
+                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_BACKUPS_AND_RESTORE'],
+                    'functions' => array(
+                        'delete'   => false,
+                        'sorting'  => true,
+                        'paging'   => true,      
+                        'filtering'=> false,
+                        'actions'  => function($rowData) {
+                                            $actions = \Cx\Core_Modules\MultiSite\Controller\BackendController::restoreOrDeleteBackupedWebsite($rowData);
+                                            $actions.= \Cx\Core_Modules\MultiSite\Controller\BackendController::restoreOrDeleteBackupedWebsite($rowData, true);
+                                        return $actions;
+                                    }
+                    ),
+                    'fields' => array(
+                        'websiteName' => array(
+                            'header'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITENAME']
+                         ),
+                        'dateAndTime' => array(
+                            'header'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DATE_AND_TIME'],
                         ),
-                        'fields' => array(
-                            'websiteName' => array(
-                                'header'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITENAME']
-                             ),
-                            'dateAndTime' => array(
-                                'header'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DATE_AND_TIME'],
-                            ),
-                            'serviceServer' => array(
-                                'header'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_SERVICE_SERVER']
-                            ),
-                            'serviceId'   => array(
-                                'readonly'     => true,
-                                'showOverview' => false
-                            ),
-                            'userId'      => array(
-                                'readonly'     => true,
-                                'showOverview' => false
-                            )
+                        'serviceServer' => array(
+                            'header'  => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_SERVICE_SERVER']
+                        ),
+                        'serviceId'   => array(
+                            'readonly'     => true,
+                            'showOverview' => false
+                        ),
+                        'userId'      => array(
+                            'readonly'     => true,
+                            'showOverview' => false
                         )
                     )
-                );
-                $template->setVariable('TABLE', $backupAndRestore->render());
-            }
-            
+                )
+            );
+            $template->setVariable('TABLE', $backupAndRestore->render());
         }
-        
+                    
         // Upload File
         $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
         $uploader->setFinishedCallback(array(

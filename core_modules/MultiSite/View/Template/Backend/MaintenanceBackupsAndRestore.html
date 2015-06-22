@@ -1,33 +1,3 @@
-<script type="text/javascript">
-  function websiteRestoreCallbackJs(callback) {
-      if ($J.trim(callback) !== '') {
-          var params = {uploadedFilePath: callback[0]};
-          $J.ajax({
-              url: cx.variables.get('cadminPath', 'contrexx') + "?cmd=JsonData&object=MultiSite&act=checkUserStatusOnRestore",
-              data: params,
-              dataType: 'json',
-              type: 'POST',
-              success: function (response) {
-                  var resp = (response.data) ? response.data : response;
-                  if (resp.status === 'success') {
-                    Multisite.websiteRestore(params, true, resp.userId ? resp.userId : 0);
-                  }
-              }
-          });
-      }
-  }
-  
-  cx.ready(function () {
-    $J('#serviceServerList').append(getEditOption('dropdown', 'serviceServer', 'serviceServer', '', cx.variables.get('serviceServers', 'multisite/lang')));
-    cx.bind("userSelected", Multisite.showSubscriptionSelection, "user/live-search/restoreUserId");
-    cx.bind("userCleared", function () {
-        $J('#subscriptionSelection').hide();
-        $J('#SubscriptionOption').hide();
-        $J('#subscriptionSelection #subscriptionList').html('');
-    }, "user/live-search/restoreUserId");
-  });
-</script>
-
 <div id="instance_table">
   <form method="get" action="" name="websitebackupAndRestore" id="websitebackupAndRestore">
     <input type='hidden' name="cmd" value="MultiSite" />
@@ -78,8 +48,8 @@
             <label><strong>{TXT_CORE_MODULE_MULTISITE_CHOOSE_USER}&nbsp;<span class="mandatory">*</span></strong></label>
           </td>
           <td id="userSelection">
-            <label> <input type="radio" name="selectUserType"  checked = "checked" onchange = "Multisite.showUserOrSubscriptionSelection()" value = "1" required="" class = "selectUserType" id="createUserFromBackup"/> <strong>{TXT_CORE_MODULE_MULTISITE_CREATE_BACKUP_USER}</strong> <br/> </label> 
-            <label> <input type="radio" name="selectUserType" required="" value = "2"  onchange = "Multisite.showUserOrSubscriptionSelection()" class = "selectUserType" id="selectUserFromOther"/> <strong>{TXT_CORE_MODULE_MULTISITE_CHOOSE_ANOTHER_USER}</strong> <br/> </label> 
+            <label> <input type="radio" name="selectUserType"  checked = "checked" onchange = "MultisiteBackupAndRestore.showUserOrSubscriptionSelection()" value = "1" required="" class = "selectUserType" id="createUserFromBackup"/> <strong>{TXT_CORE_MODULE_MULTISITE_CREATE_BACKUP_USER}</strong> <br/> </label> 
+            <label> <input type="radio" name="selectUserType" required="" value = "2"  onchange = "MultisiteBackupAndRestore.showUserOrSubscriptionSelection()" class = "selectUserType" id="selectUserFromOther"/> <strong>{TXT_CORE_MODULE_MULTISITE_CHOOSE_ANOTHER_USER}</strong> <br/> </label> 
             <input class="live-search-user-id" id="restoreUserId" type="hidden" name="restoreUserId" value="" />
             <input class="live-search-user-name" id="restoreUserName" type="hidden" name="restoreUserName" value="" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
             <span class="restore_error">Please select the user.</span>
@@ -90,8 +60,8 @@
             <label><strong>{TXT_CORE_MODULE_MULTISITE_CHOOSE_SUBSCRIPTION}&nbsp;<span class="mandatory">*</span></strong></label>
           </td>
           <td id="Subscription">
-            <label> <input type="radio" name="subscription"  checked  id ="createNewSubscription" onchange = "Multisite.showUserOrSubscriptionSelection(null, 'subscriptionOption')" value = "1" /> <strong>{TXT_CORE_MODULE_MULTISITE_CREATE_NEW_SUBSCRIPTION}</strong> <br/> </label> 
-            <label> <input type="radio" name="subscription" id ="useExistingSubscription" onchange = "Multisite.showUserOrSubscriptionSelection(null, 'subscriptionOption')" value = "2"  /> <strong>{TXT_CORE_MODULE_MULTISITE_USE_EXISTING_SUBSCRIPTION}</strong> <br/> </label> 
+            <label> <input type="radio" name="subscription"  checked  id ="createNewSubscription" onchange = "MultisiteBackupAndRestore.showUserOrSubscriptionSelection(null, 'subscriptionOption')" value = "1" /> <strong>{TXT_CORE_MODULE_MULTISITE_CREATE_NEW_SUBSCRIPTION}</strong> <br/> </label> 
+            <label> <input type="radio" name="subscription" id ="useExistingSubscription" onchange = "MultisiteBackupAndRestore.showUserOrSubscriptionSelection(null, 'subscriptionOption')" value = "2"  /> <strong>{TXT_CORE_MODULE_MULTISITE_USE_EXISTING_SUBSCRIPTION}</strong> <br/> </label> 
           </td>
         </tr>
         <tr id="subscriptionSelection">

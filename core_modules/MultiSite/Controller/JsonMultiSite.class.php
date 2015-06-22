@@ -3780,7 +3780,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param string                                          $backupLocation websiteBackupLocation
      * @throws MultiSiteJsonException
      */
-    private function websiteDataBackup(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website, $backupLocation)
+    protected function websiteDataBackup(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website, $backupLocation)
     {
         $websiteName       = $website->getName();
         $websitePath       = \Cx\Core\Setting\Controller\Setting::getValue('websitePath', 'MultiSite').'/'.$websiteName;
@@ -3820,7 +3820,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @throws MultiSiteJsonException
      */
-    private function createWebsiteArchive($websiteBackupPath) 
+    protected function createWebsiteArchive($websiteBackupPath) 
     {
         $websiteZipArchive       = new \PclZip($websiteBackupPath . '_'.date('Y-m-d H:i:s').'.zip');
         $websiteArchiveFileCount = $websiteZipArchive->add($websiteBackupPath, PCLZIP_OPT_REMOVE_PATH, $websiteBackupPath);
@@ -3846,7 +3846,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @throws MultiSiteJsonException
      */
-    private function websiteRepositoryBackup($websiteBackupPath, $websitePath)
+    protected function websiteRepositoryBackup($websiteBackupPath, $websitePath)
     {
         if (   !\Cx\Lib\FileSystem\FileSystem::exists($websitePath) 
             || !\Cx\Lib\FileSystem\FileSystem::copy_folder($websitePath, $websiteBackupPath . '/dataRepository', true)
@@ -4014,7 +4014,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @throws MultiSiteJsonException
      */
-    private function websiteInfoBackup($websiteId, $websiteBackupPath)
+    protected function websiteInfoBackup($websiteId, $websiteBackupPath)
     {
         global $_ARRAYLANG;
         
@@ -4054,7 +4054,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param string $websitePath       websitePath
      * @throws MultiSiteJsonException
      */
-    private function websiteDatabaseBackup($websiteBackupPath, $websitePath) 
+    protected function websiteDatabaseBackup($websiteBackupPath, $websitePath) 
     {
         $configFilePath = $websitePath . '/config/configuration.php';
         $output = $error = null;
@@ -4100,7 +4100,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return array
      * @throws MultiSiteJsonException
      */
-    private function getWebsiteDatabaseInfo($configFilePath)
+    protected function getWebsiteDatabaseInfo($configFilePath)
     {
         if (!\Cx\Lib\FileSystem\FileSystem::exists($configFilePath)) {
             throw new MultiSiteJsonException(__METHOD__.' failed! : Website configuration file is not exists in the website.');
@@ -4209,7 +4209,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return array
      * @throws MultiSiteJsonException
      */
-    private function getWebsiteInfoFromZip($websiteBackupFilePath, $file)
+    protected function getWebsiteInfoFromZip($websiteBackupFilePath, $file)
     {
         try {
             $websiteBackupFile = new \PclZip($websiteBackupFilePath);
@@ -4230,7 +4230,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param string $websiteName
      * @return mixed boolean | string
      */
-    private function getWebsiteLinkByName($websiteName)
+    protected function getWebsiteLinkByName($websiteName)
     {
         if (empty($websiteName)) {
             return false;
@@ -4254,7 +4254,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param integer $subscriptionId        subscriptionId
      * @throws MultiSiteJsonException
      */
-    private function createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath, $serviceServerId, $selectedUserId, $subscriptionId)
+    protected function createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath, $serviceServerId, $selectedUserId, $subscriptionId)
     {
         global $_ARRAYLANG;
         
@@ -4311,7 +4311,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param string $websiteBackupFilePath website backup path
      * @throws MultiSiteJsonException
      */
-    private function websiteDataRestore($websiteName, $websiteBackupFilePath)
+    protected function websiteDataRestore($websiteName, $websiteBackupFilePath)
     {
         $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath', 'MultiSite') . '/' . $websiteName;
         try {
@@ -4335,7 +4335,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param string $websiteBackupFilePath website backup path
      * @throws MultiSiteJsonException
      */
-    private function websiteRepositoryRestore($websitePath, $websiteBackupFilePath)
+    protected function websiteRepositoryRestore($websitePath, $websiteBackupFilePath)
     {
         if (!\Cx\Lib\FileSystem\FileSystem::exists($websiteBackupFilePath)) {
             throw new MultiSiteJsonException(__METHOD__.' failed! : Website Backup file doesnot exists!.');
@@ -4354,7 +4354,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param string $websiteBackupFilePath website backup path
      * @throws MultiSiteJsonException
      */
-    private function extractWebsiteDatabase($websitePath, $websiteBackupFilePath)
+    protected function extractWebsiteDatabase($websitePath, $websiteBackupFilePath)
     {
         $websiteTempDir = $websitePath . '/website_temp';
         if (   !\Cx\Lib\FileSystem\FileSystem::exists($websiteTempDir)
@@ -4375,7 +4375,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param string $websitePath           website path
      * @throws MultiSiteJsonException
      */
-    private function websiteDatabaseRestore($websitePath)
+    protected function websiteDatabaseRestore($websitePath)
     {
         $configFilePath = $websitePath . '/config/configuration.php';
         $websiteTempPath = $websitePath.'/website_temp';
@@ -4423,7 +4423,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param integer $subscriptionId        subscriptionId
      * @throws MultiSiteJsonException
      */
-    private function websiteInfoRestore($websiteName, $websiteBackupFilePath, $subscriptionId)
+    protected function websiteInfoRestore($websiteName, $websiteBackupFilePath, $subscriptionId)
     {
         global $_ARRAYLANG;
         
@@ -4510,7 +4510,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @throws MultiSiteJsonException
      */
-    private function updateWebsiteNetDomainsOnRestore(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website, $websiteBackupFilePath)
+    protected function updateWebsiteNetDomainsOnRestore(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website, $websiteBackupFilePath)
     {
         $domainRepositoryFile  = 'dataRepository/config/DomainRepository.yml';
         $websiteDomainObjArray = $this->getWebsiteInfoFromZip($websiteBackupFilePath, $domainRepositoryFile);
@@ -4536,7 +4536,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @param array $websiteInfo websiteConfig details
      * @throws MultiSiteJsonException
      */
-    private function updateWebsiteConfigOnRestore($websiteInfo)
+    protected function updateWebsiteConfigOnRestore($websiteInfo)
     {
         if (empty($websiteInfo)) {
             throw new MultiSiteJsonException(__METHOD__.' : failed!. Website info should not be empty');
@@ -4567,7 +4567,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @throws MultiSiteJsonException
      */
-    private function updateWebsiteMultisiteConfigOnRestore($websiteInfo)
+    protected function updateWebsiteMultisiteConfigOnRestore($websiteInfo)
     {
         if (empty($websiteInfo)) {
             throw new MultiSiteJsonException(__METHOD__.' : failed!. Website info should not be empty');
@@ -4587,7 +4587,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * 
      * @throws MultiSiteJsonException
      */
-    private function updateWebsiteSubscriptionDetails($websiteBackupFilePath, $websiteId)
+    protected function updateWebsiteSubscriptionDetails($websiteBackupFilePath, $websiteId)
     {
         try {
             $websiteInfoArray = $this->getWebsiteInfoFromZip($websiteBackupFilePath, 'info/meta.yml');
@@ -4981,7 +4981,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return array
      * @throws MultiSiteJsonException
      */
-    private function moveFileToRemoteServer($destinationFolder = null)
+    protected function moveFileToRemoteServer($destinationFolder = null)
     {
         $fileLocation = !empty($destinationFolder) 
                         ? $destinationFolder 
@@ -5072,7 +5072,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return array
      * @throws MultiSiteJsonException
      */
-    private function deleteWebsiteBackupFile($backupedWebsiteName, $websiteServiceServerId)
+    protected function deleteWebsiteBackupFile($backupedWebsiteName, $websiteServiceServerId)
     {
         global $_ARRAYLANG;
         

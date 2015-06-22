@@ -50,11 +50,20 @@ a.showLicense {
     cursor: pointer;
 }
 
-a.remoteWebsiteLogin, a.websiteBackup, a.websiteRestore {
+a.remoteWebsiteLogin, a.websiteRestore {
     background-image: url(../Media/RemoteLogin.png);
     display: inline-block;
     height: 16px;
     width: 16px;
+    margin-top: 4px;
+    margin-left: 4px;
+    cursor: pointer;
+}
+a.websiteBackup {
+    background-image: url(../Media/Backup.png);
+    display: inline-block;
+    height: 15px;
+    width: 15px;
     margin-top: 4px;
     margin-left: 4px;
     cursor: pointer;
