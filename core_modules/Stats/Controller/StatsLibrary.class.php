@@ -54,9 +54,16 @@ class StatsLibrary
     public $arrProxy = array();
     public $md5Id = 0;
     public $currentTime = 0;
-
-
-    function __construct() {
+    
+    /**
+     * Instance of contrexx
+     * 
+     * @var object \Cx\Core\Core\Controller\Cx
+     */
+    protected $cx;
+            
+    function __construct() {        
+        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $this->_initConfiguration();
     }
 
@@ -111,7 +118,7 @@ class StatsLibrary
                 $referer = "";
             }
 
-            $ascms_core_module_web_path = ASCMS_CORE_MODULE_WEB_PATH;
+            $ascms_core_module_web_path = $this->cx->getCodeBaseCoreModuleWebPath();
             $counterTag = file_get_contents(dirname(dirname(__FILE__)).'/Data/stats_script.html');
             $replaces = array(
                 '[CORE_MODULE_URL]' => $ascms_core_module_web_path,
@@ -133,11 +140,11 @@ class StatsLibrary
     */
     function checkForSpider()
     {
-        if ($this->arrConfig['count_spiders']['status']) {
+        if ($this->arrConfig['count_spiders']['status']) {            
             $arrRobots = array();
-            \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Stats/Data/spiders.inc.php');
+            include_once $this->cx->getCodeBaseCoreModulePath().'/Stats/Data/spiders.inc.php';
             $useragent =  htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, CONTREXX_CHARSET);
-             $spiderAgent = false;
+            $spiderAgent = false;                        
             foreach ($arrRobots as $spider) {
                 $spiderName = trim($spider);
                 if (preg_match("=".$spiderName."=",$useragent)) {
@@ -233,7 +240,7 @@ class StatsLibrary
     function _getRequestedUrl()
     {
         $arrBannedWords = array();
-        \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Stats/Data/banned.inc.php');
+        include_once $this->cx->getCodeBaseCoreModulePath() . '/Stats/Data/banned.inc.php';
         $uriString="";
 
         $completeUriString = substr(strstr($_SERVER['REQUEST_URI'], "?"),1);
@@ -749,7 +756,7 @@ class StatsLibrary
         $imgWidth = round((($maxWidth * $percWidth) / 100),0);
         $imgHeight = round((($maxHeight * $percHeight) / 100),0);
 
-        $imgPath = '..'.ASCMS_CORE_MODULE_WEB_PATH .'/Stats/View/Media/'.($maxWidth > $maxHeight ? $gif : $gif.'_v').'.gif';
+        $imgPath = '..'. $this->cx->getCodeBaseCoreModuleWebPath() .'/Stats/View/Media/'.($maxWidth > $maxHeight ? $gif : $gif.'_v').'.gif';
         return "<img src=\"$imgPath\" height=\"$imgHeight\" width=\"$imgWidth\" title=\"$title\" alt=\"$title\" />";
     }
 

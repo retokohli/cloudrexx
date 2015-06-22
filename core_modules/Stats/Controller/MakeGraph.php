@@ -349,11 +349,13 @@ class MakeGraph
     function _generateGraph()
     {
         global $_ARRAYLANG;
-
+        
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        
         $graph = new \ykcee;
         $graph->SetImageSize($this->graphWidth, $this->graphHeight);
-        $graph->SetTitleFont(ASCMS_LIBRARY_PATH.'/ykcee/VERDANA.TTF');
-        $graph->SetFont(ASCMS_LIBRARY_PATH.'/ykcee/VERDANA.TTF');
+        $graph->SetTitleFont($cx->getCodeBaseLibraryPath().'/ykcee/VERDANA.TTF');
+        $graph->SetFont($cx->getCodeBaseLibraryPath().'/ykcee/VERDANA.TTF');
         $graph->SetFileFormat("png");
         $graph->SetMaxStringSize($this->graphAxisXMaxStringSize);
         $graph->SetBackgroundColor($this->graphBackgroundColor);
@@ -398,7 +400,7 @@ error_reporting(0);
 global $objDatabase, $objInit, $_ARRAYLANG, $adminPage;
 \Env::get('ClassLoader')->loadFile(dirname(__FILE__).'/../../core/Core/init.php');
 $cx = init('minimal');
-\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php');
+\Env::get('ClassLoader')->loadFile($cx->getCodeBaseLibraryPath().'/ykcee/ykcee.php');
 $objDatabase = $cx->getDb()->getAdoDb();
 
 $adminPage = true;
