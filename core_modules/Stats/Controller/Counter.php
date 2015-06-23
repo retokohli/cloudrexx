@@ -30,15 +30,18 @@ $arrRobots = array();
 /**
  * @ignore
  */
-include_once $cx->getCodeBaseCoreModulePath().'/Stats/Data/spiders.inc.php';
+$spidersDataFile = $cx->getClassLoader()->getFilePath($cx->getCoreModuleFolderName().'/Stats/Data/spiders.inc.php');
+include_once $spidersDataFile;
 /**
  * @ignore
  */
-include_once $cx->getCodeBaseCoreModulePath().'/Stats/Data/referers.inc.php';
+$referersDataFile = $cx->getClassLoader()->getFilePath($cx->getCoreModuleFolderName().'/Stats/Data/referers.inc.php');
+include_once $referersDataFile;
 /**
  * @ignore
  */
-include_once $cx->getCodeBaseCoreModulePath().'/Stats/Data/banned.inc.php';
+$bannedDataFile = $cx->getClassLoader()->getFilePath($cx->getCoreModuleFolderName().'/Stats/Data/banned.inc.php');
+include_once $bannedDataFile;
 
 
 $counter = new \Cx\Core_Modules\Stats\Controller\Counter($arrRobots, $arrBannedWords);
@@ -559,7 +562,9 @@ class Counter
         $arrBrowserRegExps = array();
         $arrBrowserNames = array();
         $arrBrowser = array();
-        include_once \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath().'/Stats/Data/useragents.inc.php';
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $userAgentDataFile = $cx->getClassLoader()->getFilePath($cx->getCoreModuleFolderName().'/Stats/Data/useragents.inc.php');
+        include_once $userAgentDataFile;
         if (!empty($arrBrowserRegExps)) {
             foreach ($arrBrowserRegExps as $browserRegExp) {
                 if (preg_match($browserRegExp, $userAgent, $arrBrowser)) {
@@ -605,7 +610,9 @@ class Counter
         $operationgSystem = '';
         $userAgent = $this->arrClient['useragent'];
         $arrOperatingSystems = array();
-        include_once \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath().'/Stats/Data/operatingsystems.inc.php';
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $operatingSystemsDataFile = $cx->getClassLoader()->getFilePath($cx->getCoreModuleFolderName().'/Stats/Data/operatingsystems.inc.php');
+        include_once $operatingSystemsDataFile;
         if (!empty($arrOperatingSystems)) {
             foreach ($arrOperatingSystems as $arrOperatingSystem) {
                 if (preg_match($arrOperatingSystem['regExp'], $userAgent)) {
