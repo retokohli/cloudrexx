@@ -1035,6 +1035,8 @@ namespace Cx\Core\Core\Controller {
         /**
          * Calls pre-init hooks
          * Pre-Init hooks are defined in /config/preInitHooks.yml.
+         * 
+         * @throws \Exception
          */
         protected function callPreInitHooks() {
             try {
@@ -1052,6 +1054,8 @@ namespace Cx\Core\Core\Controller {
         /**
          * Calls post-init hooks
          * Post-Init hooks are defined in /config/postInitHooks.yml.
+         * 
+         * @throws \Exception
          */
         protected function callPostInitHooks() {
             try {
@@ -1069,13 +1073,14 @@ namespace Cx\Core\Core\Controller {
         
         /**
          * Get component controller object by given component name and type
+         * Calls before the method preInit() and postInit() hooks are called
          * 
          * @param string $componentName component name
          * @param string $componentType component type
          * 
          * @return \Cx\Core\Core\Controller\SystemComponentController
          */
-        private function getComponentControllerByNameAndType($componentName, $componentType)
+        protected function getComponentControllerByNameAndType($componentName, $componentType)
         {
             $component = new \Cx\Core\Core\Model\Entity\SystemComponent();
             $component->setName($componentName);
