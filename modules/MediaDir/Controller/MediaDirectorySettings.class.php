@@ -75,6 +75,7 @@ class MediaDirectorySettings extends MediaDirectoryLibrary
             ");
 
         if ($objMasks !== false) {
+            $i = 0;
             while (!$objMasks->EOF) {
                 $strMaskTitle = htmlspecialchars($objMasks->fields['title'], ENT_QUOTES, CONTREXX_CHARSET);  
                 $intStatus = intval($objMasks->fields['active']);
@@ -131,7 +132,8 @@ class MediaDirectorySettings extends MediaDirectoryLibrary
             $objTpl->hideBlock($this->moduleNameLC.'FormList'); 
             
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_EDIT_EXPORT_MASK'];
-            $intMaskId = intval($_GET['id']);  
+            $intMaskId = intval($_GET['id']);
+            $i = 0;
             
             $objMask = $objDatabase->Execute("
                 SELECT
@@ -202,11 +204,10 @@ class MediaDirectorySettings extends MediaDirectoryLibrary
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $intMaskId = intval($arrData['maskId']);   
-        $intMaskFormId = intval($arrData['maskForm']);
         $strMaskTitle = contrexx_addslashes($arrData['maskTitle']);
-        $strMaskInputfields = contrexx_addslashes(join(',', $arrData['maskInputfields']));
         
         if(!empty($intMaskId) && $intMaskId != 0) {
+            $strMaskInputfields = isset($arrData['maskInputfields']) ? contrexx_addslashes(join(',', $arrData['maskInputfields'])) : '';
             $objEditMask = $objDatabase->Execute("
                 UPDATE
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_masks
@@ -220,6 +221,7 @@ class MediaDirectorySettings extends MediaDirectoryLibrary
                 return false;
             }            
         } else {
+            $intMaskFormId = contrexx_input2int($arrData['maskForm']);
             $objAddMask = $objDatabase->Execute("
                 INSERT INTO
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_masks
@@ -1098,7 +1100,10 @@ EOF;
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleNameLC.'_settings_modify_mail.html');
-
+        
+        $intTemplateActionId = null;
+        $intTemplateLangId = null;
+        
         //load teplate data
         if(isset($_GET['id']) && $_GET['id'] != 0) {
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_EDIT_MAIL_TEMPLATE'];
@@ -1106,23 +1111,23 @@ EOF;
 
             $objTemplate = $objDatabase->Execute("
                 SELECT
-                    title,content,recipients,lang_id,action_id
+                    title,content,recipients,lang_id,action_id,active
                 FROM
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_mails
                 WHERE
                     id='".$intTemplateId."'
                 LIMIT 1
                 ");
-    		if ($objTemplat !== false) {
-    			while (!$objTemplate->EOF) {
-    				$strTemplateTitle = htmlspecialchars($objTemplate->fields['title'], ENT_QUOTES, CONTREXX_CHARSET);
-    				$strTemplateContent = htmlspecialchars($objTemplate->fields['content'], ENT_QUOTES, CONTREXX_CHARSET);
-    				$strTemplateRecipients = htmlspecialchars($objTemplate->fields['recipients'], ENT_QUOTES, CONTREXX_CHARSET);
-    				$intTemplateLangId = intval($objTemplate->fields['lang_id']);
-                    $intTemplateActionId = intval($objTemplate->fields['action_id']);
-    				$intStatus = intval($objTemplate->fields['active']);
-    				$objTemplate->MoveNext();
-    			}
+    		if ($objTemplate !== false) {
+                    while (!$objTemplate->EOF) {
+                        $strTemplateTitle = htmlspecialchars($objTemplate->fields['title'], ENT_QUOTES, CONTREXX_CHARSET);
+                        $strTemplateContent = htmlspecialchars($objTemplate->fields['content'], ENT_QUOTES, CONTREXX_CHARSET);
+                        $strTemplateRecipients = htmlspecialchars($objTemplate->fields['recipients'], ENT_QUOTES, CONTREXX_CHARSET);
+                        $intTemplateLangId = intval($objTemplate->fields['lang_id']);
+                        $intTemplateActionId = intval($objTemplate->fields['action_id']);
+                        $intStatus = intval($objTemplate->fields['active']);
+                        $objTemplate->MoveNext();
+                    }
     		}
 
             //parse data variables

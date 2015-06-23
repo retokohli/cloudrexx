@@ -27,8 +27,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
     private $intRowCount;
     private $arrExpandedLevelIds = array();
 
-    private $arrSelectedList = array();
-    private $arrNotSelectedList = array();
     private $arrSelectedLevels;
     private $strNavigationPlaceholder;
 
@@ -533,7 +531,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
         $intId = intval($intLevelId);
         $intParentId = intval($arrData['levelPosition']);
         $intShowEntries = intval($arrData['levelShowEntries']);
-        $intShowSublevels = intval($arrData['levelShowSublevels']);
+        $intShowSublevels = isset($arrData['levelShowSublevels']) ? contrexx_input2int($arrData['levelShowSublevels']) : 0;
         $intShowCategories = intval($arrData['levelShowCategories']);
         $intActive = intval($arrData['levelActive']);
         $strPicture = contrexx_addslashes(contrexx_strip_tags($arrData['levelImage']));
@@ -561,6 +559,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
+                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
 
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
@@ -613,32 +612,29 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names WHERE level_id='".$intId."'");
 
+                foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                    if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
+                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
+
+                    $strName = $arrName[$arrLang['id']];
+                    $strDescription = $arrDescription[$arrLang['id']];
+
+                    if(empty($strName)) $strName = $arrName[0];
+                    if(empty($strDescription)) $strDescription = $arrDescription[0];
+
+                    $objInsertNames = $objDatabase->Execute("
+                        INSERT INTO
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
+                        SET
+                            `lang_id`='".intval($arrLang['id'])."',
+                            `level_id`='".intval($intId)."',
+                            `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
+                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
+                    ");
+                }
+
                 if($objInsertNames !== false) {
-                    foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                        if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                        
-                        $strName = $arrName[$arrLang['id']];
-                        $strDescription = $arrDescription[$arrLang['id']];
-
-                        if(empty($strName)) $strName = $arrName[0];
-                        if(empty($strDescription)) $strDescription = $arrDescription[0];
-
-                        $objInsertNames = $objDatabase->Execute("
-                            INSERT INTO
-                                ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
-                            SET
-                                `lang_id`='".intval($arrLang['id'])."',
-                                `level_id`='".intval($intId)."',
-                                `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
-                                `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
-                        ");
-                    }
-
-                    if($objInsertNames !== false) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    return true;
                 } else {
                     return false;
                 }

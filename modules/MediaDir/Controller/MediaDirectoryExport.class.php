@@ -158,7 +158,7 @@ class MediaDirectoryExport extends MediaDirectoryLibrary
                                 $strFieldValue = join($this->elementSeparator, $arrLevels);
                                 break;
                             default:
-                                $strFieldValue = $arrEntriesData[$intEntryId][$arrField['id']];
+                                $strFieldValue = isset($arrEntriesData[$intEntryId][$arrField['id']]) ? $arrEntriesData[$intEntryId][$arrField['id']] : '';
                                 $strFieldValue = strip_tags($strFieldValue);
                                 $strFieldValue = self::escapeCsvValue($strFieldValue);
                                 $strFieldValue = html_entity_decode($strFieldValue, ENT_QUOTES, CONTREXX_CHARSET);  

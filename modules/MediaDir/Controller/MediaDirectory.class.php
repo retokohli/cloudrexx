@@ -82,7 +82,7 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         switch ($_REQUEST['cmd']) {
             case 'delete':
-                if((intval($_REQUEST['eid']) != 0) || (intval($_REQUEST['entryId']) != 0)) {
+                if((!empty($_REQUEST['eid'])) || (!empty($_REQUEST['entryId']))) {
                     parent::checkAccess('delete_entry');
                     $this->deleteEntry();
                 } else {
@@ -633,7 +633,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         $bolFileSizesStatus = true;
         $strOkMessage = '';
         $strErrMessage = '';
-
+        $strOnSubmit = '';
         //count forms
         $objForms = new MediaDirectoryForm(null, $this->moduleName);
         $arrActiveForms = array();
