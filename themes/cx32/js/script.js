@@ -1,5 +1,40 @@
 (function ($) {
     $(document).ready(function () {
+         //jquery social plugin
+        $('#social-stream').dcSocialStream({
+		feeds: {
+			rss: {
+				id: 'https://www.cloudrexx.com/feed/news_de.xml'
+			},
+			facebook: {
+				id: '778168545600634',
+                                url: '/themes/cx32/jquery-social-stream/facebook.php'
+			},
+			google: {
+				id: '101022530429663496888'
+			},
+                        youtube: {
+                                id: 'UC1Zs1pHx2n4IouLADhP7FGQ'
+                        }, 
+                        tumblr: {
+				id: 'cloudrexx'
+			}     
+		},
+		rotate: {
+			delay: 0
+		},
+		control: false,
+		filter: true,
+		wall: true,
+		center: true,
+		cache: false,
+		max: 'limit',
+		limit: 3,
+		iconPath: '/themes/cx32/jquery-social-stream/images/dcsns-dark/',
+		imagePath: '/themes/cx32/jquery-social-stream/images/dcsns-dark/'
+	});
+
+        
         $('#plusgallery').plusGallery();
         $(".mb1").trigger("click");
 
