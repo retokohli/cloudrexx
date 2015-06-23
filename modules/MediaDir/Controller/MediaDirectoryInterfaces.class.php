@@ -121,7 +121,7 @@ class MediaDirectoryInterfaces extends MediaDirectoryLibrary
         $objForms = new MediaDirectoryForm(null, $this->moduleName);
         $strForms = $objForms->listForms($objTpl, 4);
         
-        $strMasks .= '<option value="0">'.$_ARRAYLANG['TXT_MEDIADIR_NO_EXPORT_MASK'].'</option>';
+        $strMasks = '<option value="0">'.$_ARRAYLANG['TXT_MEDIADIR_NO_EXPORT_MASK'].'</option>';
         $objResultMasks = $objDatabase->Execute("SELECT
                                                     id,title,form_id 
                                                 FROM

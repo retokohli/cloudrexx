@@ -160,7 +160,7 @@ EOF;
 <p><label>$strLevelName</label><select class="$strInputfieldSearch" name="lid"><option value="">$strPleaseChoose</option>$strLevelDropdown</select></p>
 EOF;
 
-            if (intval($arrIds[1]) != 0) {
+            if (!empty($arrIds[1])) {
                 $intCategoryCmd = $arrIds[1];
             } else {
                 $intCategoryCmd = 0;
@@ -369,9 +369,8 @@ EOF;
                     if (!empty($categoryFilterWhere)) {
                         $arrExpWhere[] = $categoryFilterWhere;
                     }
-                    if (!empty($arrFinalFrom)) {
-                        $finalFrom = join(',', $arrFinalFrom).',';
-                    }
+                    
+                    $finalFrom = !empty($arrFinalFrom) ? join(',', $arrFinalFrom).',' : '';
                     
                     $expJoin  = join(' ', $arrExpJoin);
                     $expWhere = join(' AND ', $arrExpWhere);
@@ -469,11 +468,8 @@ EOF;
         global $objDatabase;
         
         $arrFoundIds = array();
-        
-        if ($intCmdFormId != 0) {
-            $strWhereForm = "AND ".DBPREFIX."module_".$this->moduleTablePrefix."_entries.form_id = '".$intCmdFormId."'";
-        }
-        
+        $strWhereForm = $intCmdFormId ? "AND ".DBPREFIX."module_".$this->moduleTablePrefix."_entries.form_id = '".$intCmdFormId."'" : '';
+                        
         $objResultSearchCategories = $objDatabase->Execute("
         SELECT
             ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories.entry_id AS entry_id
@@ -515,10 +511,7 @@ EOF;
         global $objDatabase;
         
         $arrFoundIds = array();
-        
-        if ($intCmdFormId != 0) {
-            $strWhereForm = "AND ".DBPREFIX."module_".$this->moduleTablePrefix."_entries.form_id = '".$intCmdFormId."'";
-        }
+        $strWhereForm = $intCmdFormId ? "AND ".DBPREFIX."module_".$this->moduleTablePrefix."_entries.form_id = '".$intCmdFormId."'" : '';
         
         $objResultSearchCountry = $objDatabase->Execute("
         SELECT

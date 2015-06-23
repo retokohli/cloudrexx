@@ -426,25 +426,24 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
                 //get translation status date
                 if($this->arrSettings['settingsTranslationStatus'] == 1) {
-                	$ownerRowClass = "row1";
+                    $ownerRowClass = "row1";
 
-                	foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                    foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                        $strLangStatus = '';
                         if($intEntryId != 0) {
-	                		if(in_array($arrLang['id'], $objEntry->arrEntries[$intEntryId]['entryTranslationStatus'])) {
-	                			$strLangStatus = 'checked="checked"';
-	                		} else {
-	                            $strLangStatus = '';
-	                		}
+                            if(in_array($arrLang['id'], $objEntry->arrEntries[$intEntryId]['entryTranslationStatus'])) {
+                                $strLangStatus = 'checked="checked"';
+                            }
                         }
 
-	                    $this->_objTpl->setVariable(array(
-	                        'TXT_'.$this->moduleLangVar.'_TRANSLATION_LANG_NAME' => htmlspecialchars($arrLang['name'], ENT_QUOTES, CONTREXX_CHARSET),
-	                        $this->moduleLangVar.'_TRANSLATION_LANG_ID' => intval($arrLang['id']),
-	                        $this->moduleLangVar.'_TRANSLATION_LANG_STATUS' => $strLangStatus,
-	                    ));
+                        $this->_objTpl->setVariable(array(
+                            'TXT_'.$this->moduleLangVar.'_TRANSLATION_LANG_NAME' => htmlspecialchars($arrLang['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                            $this->moduleLangVar.'_TRANSLATION_LANG_ID' => intval($arrLang['id']),
+                            $this->moduleLangVar.'_TRANSLATION_LANG_STATUS' => $strLangStatus,
+                        ));
 
                         $this->_objTpl->parse($this->moduleNameLC.'TranslationLangList');
-                	}
+                    }
 
                     $this->_objTpl->parse($this->moduleNameLC.'TranslationStatus');
                 } else {
@@ -1276,13 +1275,16 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         
         $objInterfaces = new MediaDirectoryInterfaces($this->moduleName);    
         
+        $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';
+        $step = isset($_GET['step']) ? $_GET['step'] : '';
+        
         if(isset($_POST['submitInterfacesForm'])) {
             $strStatus = null;
             
-            switch ($_GET['tpl']) {
+            switch ($tpl) {
                 case 'import':
                     $objImport = new MediaDirectoryImport($this->moduleName);
-                    switch ($_GET['step']) {
+                    switch ($step) {
                         case 'insertSQL': 
                             $strStatus = $objImport->importSQL(contrexx_addslashes($_POST['interfacesImportSqlTable']),contrexx_addslashes($_POST['pairs_left_keys']),contrexx_addslashes($_POST['pairs_right_keys']),intval($_POST['interfacesImportSqlType']),intval($_POST['interfacesImportSqlForm']),intval($_POST['interfacesImportSqlCategory']),intval($_POST['interfacesImportSqlLevel'])); 
                             break;
@@ -1319,14 +1321,14 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             'TXT_'.$this->moduleLangVar.'_DEACTIVATE' => $_ARRAYLANG['TXT_MEDIADIR_DEAVTIVATE'],  
         ));                         
 
-        switch ($_GET['tpl']) {    
+        switch ($tpl) {
+            case 'import': 
+                $objInterfaces->showImport($step, $this->_objTpl);      
+                break;                                    
             case 'export':      
             default:
-                $objInterfaces->showExport($_GET['step'], $this->_objTpl);     
+                $objInterfaces->showExport($step, $this->_objTpl);     
                 break;
-            case 'import': 
-                $objInterfaces->showImport($_GET['step'], $this->_objTpl);      
-                break;                                    
         }    
     }                                                        
 

@@ -561,7 +561,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                         $objTpl->touchBlock($this->moduleNameLC.'AlphaIndex');     
                                                                                                    
                         foreach ($arrAlphaIndexes as $key => $strIndex) {        
-                            if(is_array($arrAlphaGroups[$strIndex])) {    
+                            if(array_key_exists($strIndex, $arrAlphaGroups)) {    
                                 $strAlphaIndex = '<a href="#'.$strIndex.'">'.$strIndex.'</a>';   
                             } else {                             
                                 $strAlphaIndex = ''.$strIndex.'';  
@@ -591,7 +591,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
                                 $objInputfields = new MediaDirectoryInputfield(intval($arrEntry['entryFormId']),false,$arrEntry['entryTranslationStatus'], $this->moduleName);
                                 $objInputfields->listInputfields($objTpl, 3, intval($arrEntry['entryId']));
-
+                                $strStatus = ($arrEntry['entryActive'] == 1) ? 'active' : 'inactive';
+                                
                                 if(intval($arrEntry['entryAddedBy']) != 0) {
                                     if ($objUser = $objFWUser->objUser->getUser(intval($arrEntry['entryAddedBy']))) {
                                         $strAddedBy = $objUser->getUsername();
@@ -935,7 +936,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         foreach ($this->getInputfields() as $arrInputfield) {
             // store selected category (field = category)
             if ($arrInputfield['id'] == 1) {
-                foreach ($arrData['selectedCategories'] as $intCategoryId) {
+                $selectedCategories = isset($arrData['selectedCategories']) ? $arrData['selectedCategories'] : array();
+                foreach ($selectedCategories as $intCategoryId) {
                     $objResult = $objDatabase->Execute("
                     INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories
                        SET `entry_id`='".intval($intId)."',
@@ -1077,7 +1079,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 (isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0])
                                   ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0]
                                   : null);
-                            $strNewDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID];
+                            $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID])
+                                                ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID]
+                                                : '';
                             if ($strNewDefault != $strMaster) {
                                 $strDefault = $strMaster;
                             } else {
