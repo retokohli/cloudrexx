@@ -142,7 +142,8 @@ class StatsLibrary
     {
         if ($this->arrConfig['count_spiders']['status']) {            
             $arrRobots = array();
-            include_once $this->cx->getCodeBaseCoreModulePath().'/Stats/Data/spiders.inc.php';
+            $spidersDataFile = $this->cx->getClassLoader()->getFilePath($this->cx->getCoreModuleFolderName().'/Stats/Data/spiders.inc.php');
+            include_once $spidersDataFile;
             $useragent =  htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, CONTREXX_CHARSET);
             $spiderAgent = false;                        
             foreach ($arrRobots as $spider) {
@@ -240,7 +241,8 @@ class StatsLibrary
     function _getRequestedUrl()
     {
         $arrBannedWords = array();
-        include_once $this->cx->getCodeBaseCoreModulePath() . '/Stats/Data/banned.inc.php';
+        $bannedDataFile = $this->cx->getClassLoader()->getFilePath($this->cx->getCoreModuleFolderName().'/Stats/Data/banned.inc.php');
+        include_once $bannedDataFile;
         $uriString="";
 
         $completeUriString = substr(strstr($_SERVER['REQUEST_URI'], "?"),1);

@@ -382,8 +382,8 @@ class Stats extends StatsLibrary
         if (count($this->arrCountries)>0) {
             $rowClass = 0;
 
-            // get country names from xml file
-            $xmlCountryFilePath  = $this->cx->getCodeBaseCoreModulePath() . '/Stats/Data/countries.xml';
+            // get country names from xml file            
+            $xmlCountryFilePath  = $this->cx->getClassLoader()->getFilePath($this->cx->getCoreModuleFolderName() . '/Stats/Data/countries.xml');
             $xml_parser = xml_parser_create();
             xml_set_object($xml_parser,$this);
             xml_set_element_handler($xml_parser,"_xmlCountryStartTag","_xmlCountryEndTag");
