@@ -35,6 +35,13 @@ class CrmContact
     * @var string
     */
     protected $moduleName = "crm";
+    
+    /**
+     * Option to send notification mail to the contact
+     * 
+     * @var int
+     */
+    protected $emailDelivery;
 
     /**
      * Load the record
@@ -57,7 +64,7 @@ class CrmContact
                              c.contact_role, c.contact_customer, c.contact_language,c.company_size,
                              c.notes, c.contact_type,c.user_account,c.added_date,c.industry_type,                             
                              e.email,p.phone, c.datasource,
-                             c.gender,c.profile_picture
+                             c.gender,c.profile_picture, c.`email_delivery`
                          FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
                          LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` as e
                              ON (c.`id` = e.`contact_id` AND e.`is_primary` = '1')
@@ -83,6 +90,7 @@ class CrmContact
                 $this->datasource       = $objResult->fields['datasource'];
                 $this->contact_gender   = $objResult->fields['gender'];
                 $this->profile_picture  = $objResult->fields['profile_picture'];
+                $this->emailDelivery    = $objResult->fields['email_delivery'];
 
                 $this->email            = $objResult->fields['email'];
                 $this->phone            = $objResult->fields['phone'];
@@ -124,7 +132,8 @@ class CrmContact
                            t.label AS cType,
                            lang.name AS language,
                            curr.name AS currency,
-                           c.profile_picture
+                           c.profile_picture,
+                           c.`email_delivery`
                        FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
                        LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_contacts` AS con
                          ON c.contact_customer =con.id
@@ -179,7 +188,8 @@ class CrmContact
             'contact_type'      => isset ($this->contactType) ? (int) $this->contactType : '',
             'user_account'      => isset ($this->account_id) ? (int) $this->account_id : '',
             'gender'            => isset ($this->contact_gender) ? (int) $this->contact_gender : '',
-            'profile_picture'   => array ( 'val' => isset ($this->profile_picture) && !empty($this->profile_picture) ? $this->profile_picture : null, 'omitEmpty' => true)
+            'profile_picture'   => array ( 'val' => isset ($this->profile_picture) && !empty($this->profile_picture) ? $this->profile_picture : null, 'omitEmpty' => true),
+            'email_delivery'    => isset ($this->emailDelivery) ? contrexx_input2int($this->emailDelivery) : 1,
         );
         
         if (!isset($this->id) || empty ($this->id)) {
@@ -298,6 +308,7 @@ class CrmContact
         $this->datasource       = 0;
         $this->contact_gender   = 0;
         $this->profile_picture  = '';
+        $this->emailDelivery    = 0;
 
         $this->email            = '';
         $this->phone            = '';
