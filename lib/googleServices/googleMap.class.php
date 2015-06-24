@@ -34,7 +34,7 @@ class googleMap
     /**
      * Constructor
      */
-    function __construct($modus)
+    function __construct()
     {
         global $_CONFIG;
 

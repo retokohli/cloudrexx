@@ -310,7 +310,7 @@ EOF;
         }
         
         if($objInit->mode == 'frontend') {
-            $intToday = mktime();
+            $intToday = time();
             $arrWhere[] = "(`duration_type` = 1 OR (`duration_type` = 2 AND (`duration_start` < '$intToday' AND `duration_end` > '$intToday')))";
         }
 

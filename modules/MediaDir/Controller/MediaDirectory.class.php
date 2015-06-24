@@ -384,9 +384,9 @@ class MediaDirectory extends MediaDirectoryLibrary
 
             if(!empty($objSearch->arrFoundIds)) {
                 $intNumEntries = count($objSearch->arrFoundIds);
-
+                
                 for($i=$intLimitStart; $i < ($intLimitStart+$intLimitEnd); $i++) {
-                    $intEntryId = $objSearch->arrFoundIds[$i];
+                    $intEntryId = isset($objSearch->arrFoundIds[$i]) ? $objSearch->arrFoundIds[$i] : 0;
                     if(intval($intEntryId) != 0) {
                         $objEntries->getEntries($intEntryId, null, null, null, null, null, 1, 0, 1, null, null);
                     }
