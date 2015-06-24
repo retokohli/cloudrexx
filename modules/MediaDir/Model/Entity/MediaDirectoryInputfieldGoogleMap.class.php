@@ -44,8 +44,11 @@ class MediaDirectoryInputfieldGoogleMap extends \Cx\Modules\MediaDir\Controller\
             case 1:
                 //modify (add/edit) View
                 $intId = intval($arrInputfield['id']);
+                $strValueStreet = '';
+                $strValueCity = '';
+                $strValueZip = '';
                 parent::getSettings();
-
+                
                 if(isset($intEntryId) && $intEntryId != 0) {
                     $objInputfieldValue = $objDatabase->Execute("
                         SELECT
@@ -232,7 +235,7 @@ EOF;
 
         $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
-        if($objDeleteEntry !== false) {
+        if($objDeleteInputfield !== false) {
             return true;
         } else {
             return false;

@@ -155,7 +155,7 @@ class MediaDirectoryInputfieldLink extends \Cx\Modules\MediaDir\Controller\Media
 
         $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
-        if($objDeleteEntry !== false) {
+        if($objDeleteInputfield !== false) {
             return true;
         } else {
             return false;

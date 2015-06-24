@@ -123,8 +123,8 @@ class MediaDirectoryInputfieldText extends \Cx\Modules\MediaDir\Controller\Media
 	                        } else {
 	                            $minimize = "";
 	                        }
-
-	                        $strInputfield .= '<input type="text" data-id="'.$intId.'" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'" value="'.$arrValue[$intLangId].'" class="'.$this->moduleNameLC.'InputfieldText '.$strInfoClass.'" '.$arrInfoValue[$intLangId].' onfocus="this.select();" />&nbsp;'.$arrLang['name'].'&nbsp;'.$minimize.'<br />';
+                                $value = isset($arrValue[$intLangId]) ? $arrValue[$intLangId] : '';
+	                        $strInputfield .= '<input type="text" data-id="'.$intId.'" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'" value="' . $value . '" class="'.$this->moduleNameLC.'InputfieldText '.$strInfoClass.'" '.$arrInfoValue[$intLangId].' onfocus="this.select();" />&nbsp;'.$arrLang['name'].'&nbsp;'.$minimize.'<br />';
 	                    }	                    
 	                    $strInputfield .= '</div>';
                     } else {

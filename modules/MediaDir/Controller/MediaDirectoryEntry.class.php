@@ -317,7 +317,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $objFWUser = \FWUser::getFWUserObject();
-        $intToday = mktime();
+        $intToday = time();
         
         $i = 0;
         switch ($intView) {
@@ -1085,7 +1085,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             if ($strNewDefault != $strMaster) {
                                 $strDefault = $strMaster;
                             } else {
-                                $strDefault = $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId];
+                                $strDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
+                                                ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId]
+                                                : '';
                             }                            
                             $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);        
                     } else {

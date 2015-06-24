@@ -282,7 +282,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 //Frontend View
                 $intNumBlocks = count($arrExistingBlocks);
                 $i = $intNumBlocks-1;
-
+                $strIndexHeader = '';
+                
                 //set first index header
                 if($this->arrSettings['settingsLevelOrder'] == 2) {
                     $strFirstIndexHeader = null;
@@ -326,7 +327,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevel['levelPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'" />',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel['levelPicture'],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevel['levelNumEntries'],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => isset($arrLevel['levelNumEntries']) ? $arrLevel['levelNumEntries'] : '',
                     ));
 
                     $intBlockId = $arrExistingBlocks[$i];

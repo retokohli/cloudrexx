@@ -135,7 +135,7 @@ INPUT;
         
         $filePath    = $arrValue[0];
         $displayName = null;
-        
+
         $strFilePreview = null;
         if(!empty($filePath) && file_exists(\Env::get('cx')->getWebsitePath().$filePath)) {
             $arrFileInfo = pathinfo($filePath);
@@ -238,10 +238,9 @@ INPUT;
         static $strNewDefault = null;        
         
         $strValue = contrexx_input2raw($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['file'][$langId]);
-        
-        if(!empty($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['name'][$langId])) {
-            $strName = ",".contrexx_input2raw($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['name'][$langId]);
-        }
+        $strName =  !empty($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['name'][$langId])
+                        ? ",".contrexx_input2raw($_POST[$this->moduleNameLC.'Inputfield'][$intInputfieldId]['name'][$langId])
+                        : '';
         $deleteMedia = !empty($_POST["deleteMedia"]) && !empty($_POST["deleteMedia"][$intInputfieldId]);
         
         if($objInit->mode == 'backend') {
