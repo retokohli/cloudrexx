@@ -462,6 +462,110 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
     public $cancellationCount = 0;
     
     /**
+     * Event street
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_street;
+    
+    /**
+     * Event zip
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_zip;
+    
+    /**
+     * Event city
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_city;
+    
+    /**
+     * Event country
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_country;
+    
+    /**
+     * Event map
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_map;
+    
+    /**
+     * Event link
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_link;
+    
+    /**
+     * Event organizer name
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_name;
+    
+    /**
+     * Event organizer street
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_street;
+    
+    /**
+     * Event organizer zip
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_zip;
+    
+    /**
+     * Event organizer city
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_city;
+    
+    /**
+     * Event organizer country
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_country;
+    
+    /**
+     * Event organizer link
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_link;
+    
+    /**
+     * Event organizer email
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_email;
+    
+    /**
      * Constructor
      * 
      * Loads the event object of given id
