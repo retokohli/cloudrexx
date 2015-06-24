@@ -521,11 +521,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),
                         'fields' => array(
                             'id' => array('showOverview' => false),
-                            'userId' => array(
-                                'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER'],
+                            'contactId' => array(
+                                'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CONTACT'],
                                 'table' => array(
-                                    'parse' => function($user) {
-                                        return \FWUser::getParsedUserLink($user);
+                                    'parse' => function($contactId) {
+                                        $contact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                                        $contact->load($contactId);
+                                        return $contact->customerName . ' ' . $contact->family_name;
                                     },
                                 ),
                             ),

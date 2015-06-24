@@ -31,21 +31,24 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
     }
     
     /**
-     * Send the Notification email to Website owners
+     * Send the Notification email to Website CRM Contact
      */
     public function sendNotificationMails() {
         $em              = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
         $cronMailRepo    = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\CronMail');
         $cronMailLogRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog');
+        $contact         = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+        $crmLibObj       = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
+        
         //Get all the cronMails
         $cronMails       = $cronMailRepo->findBy(array('active' => true));
         if (!$cronMails) {
             return;
         }
         
-        $notificationCancelledProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('notificationCancelledProfileAttributeId','MultiSite');                
         foreach ($cronMails as $cronMail) {
             $cronMailCriterias = $cronMail->getCronMailCriterias();
+            //if there is no CronMailCriterias exists, proceed next CronMail
             if (!count($cronMailCriterias)) {
                 continue;
             }
@@ -54,24 +57,40 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                 list($tableAlias, $attribute) = explode('.', $cronMailCriteria->getAttribute());
                 $criterias[$tableAlias][$attribute] = $cronMailCriteria->getCriteria();
             }
-            $isWebsiteCriteriaExists = isset($criterias['Website']) || isset($criterias['Subscription']);
             
-            //Get all the websites and owners based on the criteria
-            $results = $this->getWebsitesOrOwnersByCriteria($criterias);
+            //Get all the websites, owners and Contacts based on the criteria
+            $results = $this->getMailDetailsByCriteria($criterias);
             if (empty($results)) {
                 continue;
             }
             foreach ($results as $result) {
-                //if $isWebsiteCriteriaExists is set send mail to each website owner
-                $user    = !$isWebsiteCriteriaExists ? $result : $result->getOwner();
-                $website = !$isWebsiteCriteriaExists ? $em->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')
-                                                          ->findWebsitesByCriteria(array('user.id' => $user->getId()))
-                                                     : $result;
-                                                        
-                $objUser = \FWUser::getFWUserObject()->objUser->getUser($user->getId());
-                if ($objUser && !$objUser->getProfileAttribute($notificationCancelledProfileAttributeId)) {                    
-                    \DBG::msg(__METHOD__.": matched CronMail (ID={$cronMail->getId()}): User=".\FWUser::getParsedUserTitle($user).(($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) ? '; Website='.$website->getName() : ''));
-                    $this->sendMail($cronMail, $user, $website, $cronMailLogRepo);
+                $website   = null;
+                $contactId = null;
+                switch(true) {
+                    case ($result instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website):
+                        $website   = $result;
+                        $contactId = $crmLibObj->getCrmUserIdByUserId($result->getOwner()->getId());
+                        break;
+                    case ($result instanceof \Cx\Core\User\Model\Entity\User):
+                        $website   = $em->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')
+                                    ->findWebsitesByCriteria(array('user.id' => $result->getId()));
+                        $contactId = $crmLibObj->getCrmUserIdByUserId($result->getId());
+                        break;
+                    case (!empty($result['userId'])):
+                        $website   = $em->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website')
+                                      ->findWebsitesByCriteria(array('user.id' => $result['userId']));
+                    default:
+                        $contactId = $result['id'];
+                        break;
+                }
+                
+                if (empty($contactId) || !$contact->load($contactId)) {
+                    continue;
+                }
+                
+                if (!empty($contact->emailDelivery)) {
+                    \DBG::msg(__METHOD__.": matched CronMail (ID={$cronMail->getId()}): User=".$contact->customerName . ' ' . $contact->family_name .(($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) ? '; Website='.$website->getName() : ''));
+                    $this->sendMail($cronMail, $contact, $website, $cronMailLogRepo);
                 }
             }
         }
@@ -80,19 +99,21 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
     /**
      * Send Cron mail to website User
      * 
-     * @param \Cx\Core_Modules\MultiSite\Model\Entity\CronMail      $cronMail
-     * @param \Cx\Core_Modules\MultiSite\Model\Entity\MultiSiteUser $objUser
-     * @param mixed                                                 $websiteObj
-     * @param object                                                $cronMailLogRepo
+     * @param \Cx\Core_Modules\MultiSite\Model\Entity\CronMail $cronMail        CronMail object
+     * @param \Cx\Modules\Crm\Model\Entity\CrmContact          $objCrmUser      Crm contact object
+     * @param mixed                                            $websiteObj      Website or websiteCollection object
+     * @param object                                           $cronMailLogRepo cronMailLog repository object
      * 
-     * @return boolean
+     * @return boolean 
      */
-    public function sendMail(\Cx\Core_Modules\MultiSite\Model\Entity\CronMail $cronMail, 
-                             \Cx\Core\User\Model\Entity\User $objUser, 
-                             $websiteObj, $cronMailLogRepo) 
-    {
+    public function sendMail(
+        \Cx\Core_Modules\MultiSite\Model\Entity\CronMail $cronMail, 
+        \Cx\Modules\Crm\Model\Entity\CrmContact $objCrmUser, 
+        $websiteObj,
+        $cronMailLogRepo
+    ) {
         //check already mail send to that owner
-        $logCriteria = array('id' => $cronMail->getId(), 'userId' => $objUser->getId());
+        $logCriteria = array('id' => $cronMail->getId(), 'contactId' => $objCrmUser->id);
         if ($websiteObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
             $logCriteria['websiteId'] = $websiteObj->getId();
         }
@@ -106,7 +127,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
         //create a new log
         if (!$cronMailLogEntity) {
             $cronMailLogEntity = new \Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog();
-            $cronMailLogEntity->setUserId($objUser->getId());
+            $cronMailLogEntity->setContactId($objCrmUser->id);
             if ($websiteObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
                 $cronMailLogEntity->setWebsiteId($websiteObj->getId());
             }
@@ -134,10 +155,10 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
             $replace = array(
                             $websiteObj->getCreationDate()->format(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME),
                             $websiteObj->getName(),
-                            $objUser->getEmail(),
-                            $objUser->getEmail(),
+                            $objCrmUser->email,
+                            $objCrmUser->email,
                             $websiteObj->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'),
-                            \FWUser::getParsedUserTitle($objUser),
+                            $objCrmUser->customerName . ' ' . $objCrmUser->family_name,
                             $unSubscribeUrl
                         );
              $substitution = array();   
@@ -148,7 +169,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                     $websiteDetails[] = array(
                         'WEBSITE_CREATION_DATE' => $website->getCreationDate()->format(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME),
                         'WEBSITE_NAME'          => $website->getName(),
-                        'WEBSITE_MAIL'          => $objUser->getEmail(),
+                        'WEBSITE_MAIL'          => $objCrmUser->email,
                         'WEBSITE_DOMAIN'        => $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite')
                     );
                 }
@@ -160,10 +181,10 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                             '[[UNSUBSCRIBE]]'
                         );
             $replace = array(
-                            $objUser->getEmail(),
-                            \FWUser::getParsedUserTitle($objUser),
+                            $objCrmUser->email,
+                            $objCrmUser->customerName . ' ' . $objCrmUser->family_name,
                             $unSubscribeUrl
-                        );            
+                        );
             $substitution = array('WEBSITE_LIST' => array(0 => array('WEBSITE_DETAIL' => $websiteDetails)));
         }
         
@@ -172,12 +193,12 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                         'section' => 'MultiSite',
                         'lang_id' => 1,
                         'key'     => $cronMail->getMailTemplateKey(),
-                        'to'      => $objUser->getEmail(),
+                        'to'      => $objCrmUser->email,
                         'search'  => $search,
                         'replace' => $replace,
                         'substitution' => $substitution);
         
-        \DBG::msg(__METHOD__." ID={$cronMail->getId()}) / User=".\FWUser::getParsedUserTitle($objUser).(($websiteObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) ? '; Website='.$websiteObj->getName() : ''));
+        \DBG::msg(__METHOD__." ID={$cronMail->getId()}) / User=".$objCrmUser->email.(($websiteObj instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) ? '; Website='.$websiteObj->getName() : ''));
         $mailStatus = \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrValues);
         
         //If the owner already have a log and status failed, update the log
@@ -232,7 +253,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
     /**
      * Get the filter for the query
      * 
-     * @param array $cronMailCriterias
+     * @param array $cronMailCriterias CronMail filter conditions
      * 
      * return array $conditions
      */
@@ -264,13 +285,38 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
     }
 
     /**
-     * get the websites or owners by criteria
+     * Get the contact filter for the query
      * 
-     * @param array $cronMailCriterias
+     * @param array $criterias filter conditions
      * 
-     * @return array
+     * @return boolean|array
      */
-    public function getWebsitesOrOwnersByCriteria($cronMailCriterias)
+    protected function getFilterForContact($criterias)
+    {
+        if (empty($criterias)) {
+            return array();
+        }
+        
+        $conditions = array();
+        foreach ($criterias as $fieldName => $criteria) {
+            if ($fieldName == 'membership') {
+                $conditions[] = '(SELECT 1 FROM `'. DBPREFIX .'module_crm_customer_membership` as Membership WHERE `Membership`.`contact_id` = `Contact`.`id` AND `Membership`.`membership_id` = ' . $criteria . ' LIMIT 1)';
+            } else {
+                $conditions[] = $fieldName . ' = "'. $criteria .'"';
+            }
+        }
+        
+        return $conditions;
+    }
+    
+    /**
+     * get the websites or owners or contact by criteria
+     * 
+     * @param array $cronMailCriterias filter conditions
+     * 
+     * @return array $objResult resulting array
+     */
+    public function getMailDetailsByCriteria($cronMailCriterias)
     {
         try {
             $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
@@ -296,11 +342,15 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                                     `' . DBPREFIX . 'access_users` As User
                                 ON
                                     `User`.`id` = `Website`.`ownerId`
+                                LEFT JOIN
+                                    `' . DBPREFIX . 'module_crm_contacts` As Contact
+                                ON
+                                    `Contact`.`user_account` = `User`.`id`
                                 LEFT JOIN 
                                     `' . DBPREFIX . 'module_order_subscription` As Subscription
                                 ON 
                                     `Subscription`.`product_entity_id` = IF(`Website`.`websiteCollectionId` IS NULL, `Website`.`id`, `Website`.`websiteCollectionId`)';
-            } else {
+            } elseif (isset($cronMailCriterias['User'])) {
                 //NativeQuery for User Criteria
                 $rsm   = self::getResultSetMapping(
                             array('Cx\Core\User\Model\Entity\User' => ''),
@@ -308,10 +358,25 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                         );
                 $query = 'SELECT `User`.`id` as UserId, 
                                  `User`.`email` as UserEmail
-                                FROM `' . DBPREFIX . 'access_users` as User';
+                                FROM `' . DBPREFIX . 'access_users` as User
+                                LEFT JOIN
+                                    `' . DBPREFIX . 'module_crm_contacts` As Contact
+                                ON
+                                    `Contact`.`user_account` = `User`.`id`';
+            } elseif (isset($cronMailCriterias['Contact'])) {
+                return $this->getContactCrmUsersByCriteria($cronMailCriterias['Contact']);
             }
 
-            $conditions = $this->getFilter($cronMailCriterias);
+            //If the Contact criteria is exists, add it into $conditions
+            $conditionsForContact = array();
+            if (isset($cronMailCriterias['Contact'])) {
+                $conditionsForContact = $this->getFilterForContact($cronMailCriterias['Contact']);
+                unset($cronMailCriterias['Contact']);
+            }
+            
+            //add criteria of Website, User, Subscription
+            $conditionsForOthers = $this->getFilter($cronMailCriterias);
+            $conditions = array_merge($conditionsForContact, $conditionsForOthers);
             $query .= !empty($conditions) ? ' WHERE ' . implode(' AND ', array_filter($conditions)) : '';
             
             $queryObj  = $em->createNativeQuery($query, $rsm);
@@ -325,10 +390,42 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
     }
     
     /**
+     * Get the Contact Crm users by criteria
+     * 
+     * @param array $criterias filter conditions
+     * 
+     * @return boolean|array
+     */
+    protected function getContactCrmUsersByCriteria($criterias) {
+        global $objDatabase;
+
+        $query = 'SELECT `Contact`.`id`, '
+                      . '`Contact`.`user_account` as userId '
+                      . 'FROM `' . DBPREFIX . 'module_crm_contacts` as Contact';
+        
+        $conditions = $this->getFilterForContact($criterias);
+        $query .= !empty($conditions) ? ' WHERE ' . implode(' AND ', array_filter($conditions)) : '';
+        
+        $objCrmUser = $objDatabase->Execute($query);
+        if ($objCrmUser && $objCrmUser->RecordCount() > 0) {
+            $crmUsers = array();
+            while (!$objCrmUser->EOF) {
+                $crmUsers[$objCrmUser->fields['id']] = array(
+                    'id'        => $objCrmUser->fields['id'],
+                    'userId'    => $objCrmUser->fields['userId'],
+                );
+                $objCrmUser->MoveNext();
+            }
+            return $crmUsers;
+        }
+        return false;
+    }
+    
+    /**
      * Get the result set mapping object
      * 
-     * @param array  $entityClasses
-     * @param array  $requiredFields
+     * @param array  $entityClasses  array key as alias ans value as entity classe namespace
+     * @param array  $requiredFields required fields list
      * 
      * @return \Doctrine\ORM\Query\ResultSetMapping
      */
@@ -361,8 +458,8 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
     /**
      * Get the timestamp or date value based on the date time object
      * 
-     * @param \DateTime $date
-     * @param boolean   $timeStamp
+     * @param \DateTime $date      datetime object
+     * @param boolean   $timeStamp return value should be a timestamp or not
      * 
      * @return string
      */

@@ -27,9 +27,9 @@ class CronMailLog extends \Cx\Model\Base\EntityBase {
     protected $id;
 
     /**
-     * @var integer $userId 
+     * @var integer $contactId 
      */
-    protected $userId;
+    protected $contactId;
 
     /**
      * @var integer $websiteId 
@@ -81,21 +81,21 @@ class CronMailLog extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Get the userid
+     * Get the contact id
      * 
-     * @return integer $userId
+     * @return integer $contactId
      */
-    public function getUserId() {
-        return $this->userId;
+    public function getContactId() {
+        return $this->contactId;
     }
 
     /**
-     * Set the userid
+     * Set the contact id
      * 
-     * @param integer $userId
+     * @param integer $contactId
      */
-    public function setUserId($userId) {
-        $this->userId = $userId;
+    public function setContactId($contactId) {
+        $this->contactId = $contactId;
     }
 
     /**

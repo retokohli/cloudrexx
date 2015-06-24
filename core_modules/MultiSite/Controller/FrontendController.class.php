@@ -259,17 +259,15 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 throw new \Exception('Cron mail log doesnot exist, id : '. $cronMailLogId .', token : '. $cronMailLogToken);
             }
             $cronMailLog = current($cronMailLogResult);
-            $userId      = $cronMailLog->getUserId();
-            $objUser     = \FWUser::getFWUserObject()->objUser->getUser($userId);
-            if (!$objUser) {
-                throw new \Exception('User doesnot exist, User id : '. $userId);
+            $contactId   = $cronMailLog->getContactId();
+            $objContact  = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+            
+            if (!$objContact->load($contactId)) {
+                throw new \Exception('Contact doesnot exist, Contact id : '. $contactId);
             }
-            $notificationCancelledProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('notificationCancelledProfileAttributeId', 'MultiSite');
-            $objUser->setProfile(array(
-                $notificationCancelledProfileAttributeId => array(0 => true)
-            ));
-            if (!$objUser->store()) {
-                throw new \Exception('Could not update the user, User id : '. $userId);
+            $objContact->emailDelivery = 0;
+            if (!$objContact->save()) {
+                throw new \Exception('Could not update the contact, Contact id : '. $contactId);
             }
         } catch (\Exception $e) {
             \DBG::log('NotificationUnsubscribe : '. $e->getMessage());

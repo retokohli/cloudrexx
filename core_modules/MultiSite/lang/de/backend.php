@@ -340,9 +340,6 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE'] = 'Website';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ALL'] ='Alle';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NOTIFICATION_LOGS'] = 'Benachrichtigungsprotokoll';
 
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NOTIFICATIONCANCELLEDPROFILEATTRIBUTEID'] = 'ID der Benutzerprofil-Eigenschaft für abgemeldete E-Mail Benachrichtigungen';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NOTIFICATIONCANCELLEDPROFILEATTRIBUTEID_TOOLTIP']='ID der Benutzerprofil-Eigenschaft zum speichern des Status, ob der Benutzer die E-Mail Benachrichtigungen deaktiviert hat.';
-
 //update
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_TRIGGERING_WEBSITE_UPDATE'] = 'Website-Update wird gestartet';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_TRIGGERING_WEBSITE_UPDATE_SUCCESS_MSG'] = 'Website-Update wird ausgeführt';

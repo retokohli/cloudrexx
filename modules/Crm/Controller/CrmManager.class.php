@@ -2001,6 +2001,7 @@ END;
         $this->contact->contactType      = $contactType;
         $this->contact->companySize      = isset($_POST['companySize']) ? contrexx_input2raw($_POST['companySize']) : 0;      
         $this->contact->contact_gender   = isset($_POST['contact_gender']) ? (int) $_POST['contact_gender'] : 0;
+        $this->contact->emailDelivery    = empty($_POST) || isset($_POST['emailDelivery']) ? 1 : 0;
 
         $accountUserID                   = (isset($_POST['contactId'])) ? intVal($_POST['contactId']) : 0;
         $accountUserEmail                = (isset($_POST['contact_email'])) ? contrexx_input2raw($_POST['contact_email']) : '';
@@ -2459,6 +2460,7 @@ END;
                 'CRM_CONTACT_TYPE'          => ($contactType == 1) ? 'company' : 'contact',
                 'CRM_ACCOUNT_MANTORY'       => ($settings['create_user_account'] && $settings['user_account_mantatory']) ? '<font color="red">*</font>' : '',
                 'CRM_ACCOUNT_MANTORY_CLASS' => ($settings['create_user_account'] && $settings['user_account_mantatory']) ? 'mantatory' : '',
+                'CRM_EMAIL_DELIVERY'        => $this->contact->emailDelivery ? 'checked="checked"' : '',
 
                 'TXT_CRM_EMPLOYEE'          => $_ARRAYLANG['TXT_CRM_EMPLOYEE'],
                 'TXT_CRM_CITY'              => $_ARRAYLANG['TXT_CRM_TITLE_CITY'],
@@ -2516,6 +2518,7 @@ END;
                 'TXT_CRM_ACCOUNT_PASSWORD'    => $_ARRAYLANG['TXT_CRM_ACCOUNT_PASSWORD'],
                 'TXT_CRM_SEND_LOGIN_DETAILS'  => $_ARRAYLANG['TXT_CRM_SEND_LOGIN_DETAILS'],
                 'TXT_CRM_CHOOSE_MEMBERSHIPS'  => $_ARRAYLANG['TXT_CRM_CHOOSE_MEMBERSHIPS'],
+                'TXT_CRM_EMAIL_DELIVERY'      => $_ARRAYLANG['TXT_CRM_EMAIL_DELIVERY'],
 
                 'TXT_CRM_COMPANY_NAME'        =>    $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
                 'TXT_CRM_CUSTOMERTYPE'        =>    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],

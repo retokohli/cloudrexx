@@ -3234,6 +3234,27 @@ class CrmLibrary
     }
 
     /**
+     * Get the crm user id by user id
+     * 
+     * @param integer $userId
+     * 
+     * @return boolean|integer
+     */
+    public function getCrmUserIdByUserId($userId) {
+        global $objDatabase;
+        
+        if (empty($userId)) {
+            return false;
+        }
+        
+        $result = $objDatabase->SelectLimit("SELECT `id` FROM `" . DBPREFIX . "module_crm_contacts` WHERE `user_account` = " . intval($userId));
+        if ($result->RecordCount() == 0) {
+            return null;
+        }
+        return $result->fields['id'];
+    }
+    
+    /**
      * Get username
      *
      * @param Integer $userId

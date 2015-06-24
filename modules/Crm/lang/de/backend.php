@@ -593,3 +593,4 @@ $_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_CUSTOMER_TYPE']  = 'Profilattribut für de
 $_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_INDUSTRY_TYPE']  = 'Profilattribut für Branche';
 $_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_COMPANY_SIZE']  = 'Profilattribut für die Firmengrösse';
 $_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_CUSTOMER_TYPE']  = 'Profilattribut für den Kundentypen';
+$_ARRAYLANG['TXT_CRM_EMAIL_DELIVERY'] = 'E-Mail Zustellung';

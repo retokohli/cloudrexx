@@ -9,10 +9,10 @@ Cx\Core_Modules\MultiSite\Model\Entity\CronMailLog:
         strategy: AUTO
         
   fields:
-    userId:
+    contactId:
         type: integer
         length: 5
-        column: user_id
+        column: contact_id
     websiteId:
         type: integer
         length: 11

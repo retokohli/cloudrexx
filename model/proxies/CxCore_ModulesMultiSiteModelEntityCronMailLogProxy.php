@@ -39,16 +39,16 @@ class CxCore_ModulesMultiSiteModelEntityCronMailLogProxy extends \Cx\Core_Module
         return parent::setId($id);
     }
 
-    public function getUserId()
+    public function getContactId()
     {
         $this->_load();
-        return parent::getUserId();
+        return parent::getContactId();
     }
 
-    public function setUserId($userId)
+    public function setContactId($contactId)
     {
         $this->_load();
-        return parent::setUserId($userId);
+        return parent::setContactId($contactId);
     }
 
     public function getWebsiteId()
@@ -150,7 +150,7 @@ class CxCore_ModulesMultiSiteModelEntityCronMailLogProxy extends \Cx\Core_Module
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'userId', 'websiteId', 'success', 'sentDate', 'token', 'cronMail');
+        return array('__isInitialized__', 'id', 'contactId', 'websiteId', 'success', 'sentDate', 'token', 'cronMail');
     }
 
     public function __clone()

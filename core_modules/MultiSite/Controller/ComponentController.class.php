@@ -2468,7 +2468,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                    throw new MultiSiteException("Failed to add Setting entry for Product List");
             }
             if (   \Cx\Core\Setting\Controller\Setting::getValue('affiliateSystem', 'MultiSite') === NULL 
-                && !\Cx\Core\Setting\Controller\Setting::add('affiliateSystem', '0', 7,
+                && !\Cx\Core\Setting\Controller\Setting::add('affiliateSystem', '0', 6,
                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'manager')) {
                    throw new MultiSiteException("Failed to add Setting entry for Affiliate System");
             }
@@ -2479,12 +2479,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         'externalPaymentCustomerIdProfileAttributeId', 
                         'MultiSite External Payment Customer ID',
                         5);
-                    self::addOrUpdateConfigurationOptionUserProfileAttributeId(
-                        'notificationCancelledProfileAttributeId',
-                        'Cancelled notification emails user profile attribute ID',
-                        6,
-                        'manager',
-                        false);
                 }
                 //affiliate group
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'affiliate','FileSystem');
