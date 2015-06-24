@@ -475,6 +475,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CREATE_NEW_SUBSCRIPTION'] = 'Create New';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USE_EXISTING_SUBSCRIPTION'] = 'Use existing';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_ERROR'] = 'In the domain name, only lowercase letters and numbers may occur.';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHOOSE_USER_ERROR'] = 'Please select the user from user live search.';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DOWNLOAD_TITLE'] = 'Download';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DOWNLOAD_FAILED'] = 'Failed to download the  <strong> %s </strong>  file.';
 
 //delete the backuped website
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DELETE'] = 'Delete the website backup';

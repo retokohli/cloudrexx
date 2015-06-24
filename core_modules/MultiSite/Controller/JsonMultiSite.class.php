@@ -122,6 +122,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'triggerWebsiteRestore' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
             'getWebsiteInfo'        => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'deleteWebsiteBackup'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
+            'downloadWebsiteBackup' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'getAllBackupFilesInfo' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'sendFileToRemoteServer'=> new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'auth')),
             'updateWebsiteConfig'   => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
@@ -4007,6 +4008,73 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
     
     /**
+     * Download website backup file
+     * 
+     * @param array $params website backup file name
+     * 
+     * @return array
+     * @throws MultiSiteJsonException
+     */
+    public function downloadWebsiteBackup($params)
+    {
+        global $_ARRAYLANG;
+
+        if (   empty($params) 
+            || empty($params['post']) 
+            || empty($params['post']['websiteBackupFileName'])
+        ) {
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+        }
+        
+        $backupFileName = isset($params['post']['websiteBackupFileName']) 
+                          ? contrexx_input2raw($params['post']['websiteBackupFileName']) 
+                          : '';
+            
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
+                case ComponentController::MODE_MANAGER:
+                case ComponentController::MODE_HYBRID:
+                    $tempDir = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . BackendController::MULTISITE_BACKUP_TEMP_DIR;
+                    
+                    //cleanup tmp/backups direcory
+                    \Cx\Lib\FileSystem\FileSystem::delete_folder($tempDir, true);
+                    
+                    $files  = $this->getMovedFilesInRemoteServer($tempDir);
+                    if (!empty($files)) {
+                        return array (
+                            'status'      => 'success', 
+                            'filePath'    => current($files)
+                        );
+                    }
+                    
+                    throw new MultiSiteJsonException('Failed to get the Files from the serviceServer');
+                    break;
+                case ComponentController::MODE_SERVICE:
+                    $backupFileLocation = \Cx\Core\Setting\Controller\Setting::getValue('websiteBackupLocation', 'MultiSite');
+                    if (   !\Cx\Lib\FileSystem\FileSystem::exists($backupFileLocation) 
+                        || !\Cx\Lib\FileSystem\FileSystem::exists($backupFileLocation.'/'.$backupFileName)
+                    ) {
+                        throw new MultiSiteJsonException('The requested file '.$backupFileName.' doesnot exists.');
+                    }
+                    
+                    $resp  = self::executeCommandOnManager(
+                        'downloadWebsiteBackup', 
+                        array('websiteBackupFileName' => $backupFileName), 
+                        array($backupFileLocation.'/'.$backupFileName)
+                    );
+                    
+                    return isset($resp->data) ? $resp->data : $resp;
+                   break;
+                default:
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::log(__METHOD__.' failed! : '.$e->getMessage());
+            throw new MultiSiteJsonException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DOWNLOAD_FAILED'], $backupFileName));
+        }  
+    }
+    
+    /**
      * Website info backup
      * 
      * @param integer $websiteId         websiteId
@@ -4924,7 +4992,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     }
 
                     $destinationFolder = \Env::get('cx')->getWebsiteTempPath() . BackendController::MULTISITE_BACKUP_TEMP_DIR;
-                    $files = $this->moveFileToRemoteServer($destinationFolder);
+                    $files = $this->getMovedFilesInRemoteServer($destinationFolder);
                     $resp = self::executeCommandOnServiceServer('sendFileToRemoteServer', array('destinationServer' => $params['post']['serviceServerId']), $websiteServiceServer, $files);
                     if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
                         throw new MultiSiteJsonException('Failed to send file to destination service server');
@@ -4938,7 +5006,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     break;
                 case ComponentController::MODE_SERVICE:
                     if (isset($params['post']['destinationServer'])) {
-                        $this->moveFileToRemoteServer();
+                        $this->getMovedFilesInRemoteServer();
                         return array('status' => 'success');
                     }
                     
@@ -4974,14 +5042,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
     
     /**
-     * Move a File to remote server
+     * Get all Moved Files in remote server
      * 
      * @param string $destinationFolder destinationFolder name
      * 
      * @return array
      * @throws MultiSiteJsonException
      */
-    protected function moveFileToRemoteServer($destinationFolder = null)
+    protected function getMovedFilesInRemoteServer($destinationFolder = null)
     {
         $fileLocation = !empty($destinationFolder) 
                         ? $destinationFolder 
@@ -5007,9 +5075,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 throw new MultiSiteJsonException(__METHOD__.' :failed!. Failed to move/copy a file'.$file['name']);
             }
 
-            if (!empty($destinationFolder)) {
-                $filesArray[] = $fileLocation.'/'.$file['name'];
-            }
+            $filesArray[] = $fileLocation.'/'.$file['name'];
         }
         
         return $filesArray;
@@ -5088,7 +5154,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             if (!$websiteServiceServer) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
             }
-
+            
             $resp = JsonMultiSite::executeCommandOnServiceServer('deleteWebsiteBackup', array('websiteBackupFileName' => $backupedWebsiteName), $websiteServiceServer);
             
             return ($resp && isset($resp->data)) ? $resp->data : $resp;

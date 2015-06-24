@@ -59,6 +59,16 @@ a.remoteWebsiteLogin, a.websiteRestore {
     margin-left: 4px;
     cursor: pointer;
 }
+
+a.downloadWebsiteBackup{
+    background-image: url(../Media/download.png);
+    display: inline-block;
+    height: 14px;
+    width: 17px;
+    margin-top: 4px;
+    margin-left: 4px;
+    cursor: pointer;
+}
 a.websiteBackup {
     background-image: url(../Media/Backup.png);
     display: inline-block;

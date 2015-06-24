@@ -11,6 +11,11 @@
 namespace Cx\Core_Modules\MultiSite\Controller;
 
 /**
+ * Class MultiSiteBackendException
+ */
+class MultiSiteBackendException extends \Exception {}
+
+/**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
  * @copyright   Comvation AG
@@ -1115,6 +1120,16 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             'canCancel' => true,
             'canClear'  => true));
         
+        $downloadFile    = isset($_GET['downloadFile'])
+                           ? contrexx_input2raw($_GET['downloadFile'])
+                           : '';
+        $serviceServerId = isset($_GET['serviceId'])
+                           ? contrexx_input2int($_GET['serviceId'])
+                           : 0;
+        if (!empty($downloadFile) && !empty($serviceServerId)) {
+            $this->downloadBackup($downloadFile, $serviceServerId);
+        }
+        
         if (isset($_GET['show_all'])) {
             $term = (isset($_GET['term']) && !empty($_GET['term'])) 
                     ? contrexx_input2raw($_GET['term']) 
@@ -1129,11 +1144,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'sorting'  => true,
                         'paging'   => true,      
                         'filtering'=> false,
-                        'actions'  => function($rowData) {
-                                            $actions = \Cx\Core_Modules\MultiSite\Controller\BackendController::restoreOrDeleteBackupedWebsite($rowData);
-                                            $actions.= \Cx\Core_Modules\MultiSite\Controller\BackendController::restoreOrDeleteBackupedWebsite($rowData, true);
-                                        return $actions;
-                                    }
+                        'actions'  => array($this, 'parseActionsForBackupAndRestore')
                     ),
                     'fields' => array(
                         'websiteName' => array(
@@ -1212,6 +1223,74 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             'MULTISITE_DOMAIN'                               => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite'),
         ));
         
+    }
+    
+    /**
+     * Parse Actions For BackupAndRestore
+     * 
+     * @param array $rowData backup data
+     * 
+     * @return string
+     */
+    public function parseActionsForBackupAndRestore($rowData)
+    {
+        $actions = $this->restoreOrDeleteBackupedWebsite($rowData);
+        $actions.= $this->downloadBackupWebsite($rowData);
+        $actions.= $this->restoreOrDeleteBackupedWebsite($rowData, true);
+        return $actions;
+    }
+    
+    /**
+     * Download website backup file
+     * 
+     * @param string  $backupFileName  backupFilename
+     * @param integer $serviceServerId serviceServerId
+     * 
+     * @throws MultiSiteBackendException
+     */
+    protected function downloadBackup($backupFileName, $serviceServerId) 
+    {
+        global $_ARRAYLANG;
+        
+        try {
+            if (   empty($backupFileName) 
+                || empty($serviceServerId) 
+            ) {
+                throw new MultiSiteBackendException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
+            }
+            
+            $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('id' => $serviceServerId));
+            if (!$websiteServiceServer) {
+                throw new MultiSiteBackendException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
+            }
+            
+            $resp = JsonMultiSite::executeCommandOnServiceServer(
+                'downloadWebsiteBackup', 
+                array('websiteBackupFileName' => $backupFileName), 
+                $websiteServiceServer
+            );
+        
+            if (   !$resp 
+                || !$resp->data 
+                || !$resp->data->filePath 
+            ) {
+                throw new MultiSiteBackendException($resp && $resp->data ? $resp->data->message : $resp->message);
+            }
+            
+            //Download website backup file
+            $objHTTPDownload = new \HTTP_Download();
+            $objHTTPDownload->setFile($resp->data->filePath);
+            $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, $backupFileName);
+            $objHTTPDownload->setContentType();
+            $objHTTPDownload->send('application/force-download');
+            exit();
+        } catch (\Exception $e) {
+            \DBG::log(__METHOD__.' Failed! : '. $e->getMessage());
+            \Message::add(
+                sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DOWNLOAD_FAILED'], $backupFileName),
+                \Message::CLASS_ERROR
+            );
+        } 
     }
     
     /**
@@ -1600,7 +1679,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param array $rowData
      * @return mixed boolean | string
      */
-    public function restoreOrDeleteBackupedWebsite($rowData, $deleteBackupedWebsite = false)
+    protected function restoreOrDeleteBackupedWebsite($rowData, $deleteBackupedWebsite = false)
     {
         global $_ARRAYLANG;
         
@@ -1626,6 +1705,37 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return '<a href="javascript:void(0);" class="'.$class.'" data-serviceId = "'.$rowData['serviceId'].'" data-backupFile = "'.$websiteBackupFileName.'"  '.$userExists.'  title = "'.$title.'"></a>';
     }
    
+    /**
+     * Button to show download backup website
+     * 
+     * @param array $rowData backupData
+     * @return mixed boolean | string
+     */
+    protected function downloadBackupWebsite($rowData)
+    {
+        global $_ARRAYLANG;
+        
+        if (   empty($rowData) 
+            || empty($rowData['serviceId']) 
+            || empty($rowData['websiteName'])
+        ) {
+            return false;
+        }
+        
+        $websiteBackupFileName = isset($rowData['dateAndTime']) 
+                                 ? $rowData['websiteName'].'_'.$rowData['dateAndTime'].'.zip'
+                                 : $rowData['websiteName'];
+        $title = $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_BACKUP_DOWNLOAD_TITLE'];
+        $downloadUrl = \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
+        $downloadUrl->setParams(array(
+            'downloadFile' => $websiteBackupFileName,
+            'serviceId'    => $rowData['serviceId']
+            )
+        );
+        
+        return '<a href="'.$downloadUrl.'" class="downloadWebsiteBackup" title = "'.$title.'"></a>';
+    }
+    
     /**
      * Fetching the plans from the associated mail server
      * 
