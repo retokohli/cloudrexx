@@ -4,20 +4,21 @@
         $('#social-stream').dcSocialStream({
 		feeds: {
 			rss: {
-				id: 'https://www.cloudrexx.com/feed/news_de.xml'
+				id: 'https://www.cloudrexx.com/feed/news_de.xml'        //URL of RSS feed
 			},
 			facebook: {
-				id: '778168545600634',
-                                url: '/themes/cx32/jquery-social-stream/facebook.php'
+				id: '778168545600634',                                  //cloudrexx id of facebook
+                                url: '/themes/cx32/jquery-social-stream/facebook.php'   //calling the facebook.php file which have App id: 1630287603924454 and App secret key: b67f40190ba34210523934a3e4bbb052
 			},
 			google: {
-				id: '101022530429663496888'
+				id: '101022530429663496888'                             //cloudrexx id of google plus
 			},
                         youtube: {
-                                id: 'UC1Zs1pHx2n4IouLADhP7FGQ'
+                                id: 'UC1Zs1pHx2n4IouLADhP7FGQ'                          //cloudrexx channel id of youtube
                         }, 
                         tumblr: {
-				id: 'cloudrexx'
+				id: 'cloudrexx',                                         //account name of tumblr
+                                url: '/themes/cx32/jquery-social-stream/tumblr.php'
 			}     
 		},
 		rotate: {
@@ -29,9 +30,9 @@
 		center: true,
 		cache: false,
 		max: 'limit',
-		limit: 3,
-		iconPath: '/themes/cx32/jquery-social-stream/images/dcsns-dark/',
-		imagePath: '/themes/cx32/jquery-social-stream/images/dcsns-dark/'
+		limit: 3,                                                               // entries list of each social wall
+		iconPath: '/themes/cx32/jquery-social-stream/images/dcsns-dark/',       
+		imagePath: '/themes/cx32/jquery-social-stream/images/dcsns-dark/'       
 	});
 
         
