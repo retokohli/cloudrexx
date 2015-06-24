@@ -445,9 +445,10 @@ EOF;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
         $showFrom = true;
-        if(isset($_POST['submitFormModifyEvent'])) {
-            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
         
+        $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
+        
+        if (isset($_POST['submitFormModifyEvent'])) {
             $arrData = array();
             $arrData = $_POST;
             
@@ -466,8 +467,8 @@ EOF;
             }
         }
         
-        if($eventId != null) {
-            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
+        if ($eventId) {
+            $objEvent->get($eventId);
             $objEvent->getData();
         }
 
@@ -622,11 +623,22 @@ UPLOADER;
             $this->_objTpl->parse('eventTabMenuDescTab');
             
             //parse eventDescTab
+            $eventTitle       = !empty($objEvent->arrData['title'][$arrLang['id']]) 
+                                ? $objEvent->arrData['title'][$arrLang['id']] 
+                                : (!empty($objEvent->arrData['redirect'][$_LANGID]) ? $objEvent->arrData['redirect'][$_LANGID] : '');
+            $eventDescription = !empty($objEvent->arrData['description'][$arrLang['id']]) 
+                                ? $objEvent->arrData['description'][$arrLang['id']] 
+                                : '';
+            $eventRedirect    = !empty($objEvent->arrData['redirect'][$arrLang['id']]) 
+                                ? $objEvent->arrData['redirect'][$arrLang['id']] 
+                                : (!empty($objEvent->arrData['redirect'][$_LANGID]) ? $objEvent->arrData['redirect'][$_LANGID] : '');
             $this->_objTpl->setVariable(array(           
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY'               => $langChecked ? 'block' : 'none',
-                $this->moduleLangVar.'_EVENT_TITLE'                     => !empty($objEvent->arrData['title'][$arrLang['id']]) ? $objEvent->arrData['title'][$arrLang['id']] : $objEvent->arrData['redirect'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[{$arrLang['id']}]", contrexx_raw2xhtml($objEvent->arrData['description'][$arrLang['id']]), $eventId != 0 ? 'small' : 'bbcode'),
-                $this->moduleLangVar.'_EVENT_REDIRECT'                  => !empty($objEvent->arrData['redirect'][$arrLang['id']]) ? $objEvent->arrData['redirect'][$arrLang['id']] : $objEvent->arrData['redirect'][$_LANGID],
+                $this->moduleLangVar.'_EVENT_TITLE'                     => contrexx_raw2xhtml($eventTitle),
+                $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[{$arrLang['id']}]", 
+                                                                                                        contrexx_raw2xhtml($eventDescription), 
+                                                                                                        $eventId != 0 ? 'small' : 'bbcode'),
+                $this->moduleLangVar.'_EVENT_REDIRECT'                  => contrexx_raw2xhtml($eventRedirect),
                 $this->moduleLangVar.'_EVENT_TYPE_EVENT_DISPLAY'        => $objEvent->type == 0 ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_TYPE_REDIRECT_DISPLAY'     => $objEvent->type == 1 ? 'block' : 'none',
             ));
@@ -823,7 +835,7 @@ UPLOADER;
                 if(!$userLogin) {
                     
                     $this->_objTpl->setVariable(array(
-                        'TXT_'.$this->moduleLangVar.'_CAPTCHA' => $_CORELANG['TXT_CAPTCHA'],
+                        'TXT_'.$this->moduleLangVar.'_CAPTCHA' => $_CORELANG['TXT_CORE_CAPTCHA'],
                         $this->moduleLangVar.'_CAPTCHA_CODE'   => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(),
                     ));
                     $this->_objTpl->parse('calendarRegistrationCaptcha');
