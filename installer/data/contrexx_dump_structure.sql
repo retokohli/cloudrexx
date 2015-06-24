@@ -437,7 +437,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_cron_mail_log` (
   `id` int(11) NOT NULL auto_increment,
   `cron_mail_id` int(11) default NULL,
-  `user_id` int(5) NOT NULL,
+  `contact_id` int(11) NOT NULL,
   `websiteId` int(11) default NULL,
   `success` tinyint(1) NOT NULL default '0',
   `sent_date` datetime default NULL,
@@ -1303,6 +1303,7 @@ CREATE TABLE `contrexx_module_crm_contacts` (
   `profile_picture` varchar(256) NOT NULL,
   `status` tinyint(2) NOT NULL default '1',
   `added_date` date NOT NULL,
+  `email_delivery` tinyint(2) NOT NULL default '1',
   PRIMARY KEY  (`id`),
   KEY `contact_customer` (`contact_customer`),
   KEY `customer_id` (`customer_id`),
