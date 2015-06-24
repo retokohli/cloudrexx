@@ -1,4 +1,5 @@
 <?php
+global $arrOperatingSystems;
 
 /**
  * Defines operating systems
@@ -101,5 +102,3 @@ $arrOperatingSystems = array(
         'name' => 'OS/2'
     ),
 );
-
-?>
