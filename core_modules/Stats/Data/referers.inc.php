@@ -1,4 +1,5 @@
 <?php
+global $arrReferers;
 
 /**
  * Defines referrers
@@ -14,5 +15,3 @@ $arrReferers = array(
     '/^.*\..*\/.*[?&]q\=([^&]*)&?.*/i',
     '/^.*yahoo\..*\/.*[?&]p\=([^&]*)&?.*/i'
 );
-
-?>
