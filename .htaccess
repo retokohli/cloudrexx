@@ -23,7 +23,7 @@
 
     # MultiSite: Map requests to CONTENT DATA of a Website
     RewriteCond %{ENV:REDIRECT_END} !1
-    RewriteCond %{REQUEST_URI} ^/(feed\/|media\/|images\/|tmp\/public\/|robots\.txt)
+    RewriteCond %{REQUEST_URI} ^/(feed\/|media\/|images\/|tmp\/public\/|robots\.txt|sitemap_\w+\.xml)
     RewriteRule (.*) ${websiteDomainContentMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
 
     # MultiSite: Try to map the request of a webdesign template file to the
@@ -45,7 +45,8 @@
     RewriteRule (.*) ${websiteDomainCodeBaseMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
 
     # Resolve language specific sitemap.xml
-    RewriteRule ^(\w+)\/sitemap.xml$ sitemap_$1.xml [L,NC]
+    RewriteCond %{ENV:REDIRECT_END} !1
+    RewriteRule ^(\w+)\/sitemap.xml$ ${websiteDomainContentMap:%{HTTP_HOST}|}/sitemap_$1.xml [L,NC,E=END:1]
 
     # Allow directory index files
     RewriteCond %{REQUEST_FILENAME}/index.php -f
