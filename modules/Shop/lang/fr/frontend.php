@@ -8,8 +8,8 @@
  */
 $_ARRAYLANG['TXT_SHOP_BUTTON_REGISTRATION'] = "Register now";
 $_ARRAYLANG['TXT_SHOP_BUTTON_NO_REGISTRATION'] = "Order without registration";
-$_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART'] = "The item has been added to your cart.";
-$_ARRAYLANG['TXT_SHOP_PRODUCT_DETAILS'] = "Details";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART'] = "L'objet a été ajouté à votre panier.";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_DETAILS'] = "Détails";
 $_ARRAYLANG['TXT_STOCK'] = "Stock";
 $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'] = "Tous les groupes de produits ";
 $_ARRAYLANG['TXT_SHOPPING_CART'] = "Panier:";
@@ -367,7 +367,7 @@ $_ARRAYLANG['TXT_SHOP_PRICELIST_ERROR_MISSING_LIST_ID'] = "Keine Preisliste ID a
 $_ARRAYLANG['TXT_SHOP_PRICELIST_ERROR_SENDING'] = "Die Preisliste konnte nicht versandt werden";
 $_ARRAYLANG['TXT_SHOP_PRICELIST_FORMAT_PAGENUMBER'] = "{PAGENUM} von {TOTALPAGENUM}";
 $_ARRAYLANG['TXT_SHOP_PRICE_DISCOUNT'] = "Jetzt nur";
-$_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'] = "Produkte in der Kategorie %1\$s";
+$_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'] = "Produits dans la catégorie %1\$s";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_ANY'] = "beliebig";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_CODE'] = "Art. Nr.";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_NAME'] = "Produkt Name";
