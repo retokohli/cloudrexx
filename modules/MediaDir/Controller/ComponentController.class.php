@@ -115,7 +115,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $mediadirCheck, $objTemplate, $_CORELANG;
+        global $mediadirCheck, $objTemplate, $_CORELANG, $objInit;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $mediadirCheck = array();
@@ -125,6 +125,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     }
                 }
                 if ($mediadirCheck || $objTemplate->blockExists('mediadirLatest')) {
+                    $objInit->loadLanguageData('MediaDir');
+                    
                     $objMediadir = new MediaDirectory('', $this->getName());
                     $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
                 }
