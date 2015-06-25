@@ -623,7 +623,7 @@ class MediaLibrary
                             $dirName = utf8_encode($dirName);
                         }
 
-                        $dir['icon'][] = $this->_getIcon($path.$name);
+                        $dir['icon'][] = self::getFileTypeIconWebPath($path.$name);
                         $dir['name'][] = $dirName;
                         $dir['size'][] = $this->_getSize($path.$name);
                         $dir['type'][] = $this->_getType($path.$name);
@@ -643,7 +643,7 @@ class MediaLibrary
                             if (!\FWSystem::detectUtf8($fileName)) {
                                 $fileName = utf8_encode($fileName);
                             }
-                                $file['icon'][] = $this->_getIcon($path . $name);
+                                $file['icon'][] = self::getFileTypeIconWebPath($path.$name);
                                 $file['name'][] = $fileName;
                                 $file['size'][] = $this->_getSize($path . $name);
                                 $file['type'][] = $this->_getType($path . $name);
@@ -769,6 +769,19 @@ class MediaLibrary
         return $class;
     }
 
+    /**
+     * Get the web path to the icon used for displaying the file type of a file
+     *
+     * @param   string  File of which the related file type icon path shall be returned.
+     *                  File must be an absolute file system path or an URL.
+     * @return  string  Web path to the icon.
+     */
+    public static function getFileTypeIconWebPath($file)
+    {
+        $iconPath = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconPath() .
+                    \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($file) . '.png';
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getWebFilePath($iconPath);
+    }
 
     /**
      * Gets the icon for the file
@@ -782,7 +795,7 @@ class MediaLibrary
     {
         $icon = '';
         if (isset($fileType)) {
-            $icon = $fileType;
+            $icon = strtoupper($fileType);
         } elseif (is_file($file)) {
             $info = pathinfo($file);
             $icon = strtoupper($info['extension']);
@@ -846,7 +859,7 @@ class MediaLibrary
      */
     public static function _getIconPath()
     {
-        return ASCMS_CORE_MODULE_PATH.'/Media/View/Media/';
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath() . '/Media/View/Media/';
     }
 
     /**
@@ -856,9 +869,9 @@ class MediaLibrary
      */
     public static function _getIconWebPath()
     {
-        return ASCMS_CORE_MODULE_WEB_PATH.'/Media/View/Media/';        
-    }        
-    
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModuleWebPath() . '/Media/View/Media/';        
+    }
+
     // gets the filesize
     function _getSize($file)
     {
