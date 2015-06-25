@@ -1551,8 +1551,7 @@ class Download {
                     ? $this->getSource() 
                     : \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath() . '/' . $this->getSource(); 
         
-        return \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() .
-                \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($source, $this->getFileType()) . '.png';
+        return \Cx\Core_Modules\Media\Controller\MediaLibrary::getFileTypeIconWebPath($source, $this->getFileType());
     }
 
     public function getSize()
@@ -1731,7 +1730,7 @@ class Download {
                 }
                 $this->fileTypes[$langId] = (\FWValidator::isUri($source)) ? 'HTML' : null;
             } else {
-                $this->fileTypes[$langId] = strtoupper(pathinfo($source, PATHINFO_EXTENSION));
+                $this->fileTypes[$langId] = pathinfo($source, PATHINFO_EXTENSION);
                 $this->source_names[$langId] = isset($sourceNames[$langId]) ? $sourceNames[$langId] : basename($source);
             }
 
