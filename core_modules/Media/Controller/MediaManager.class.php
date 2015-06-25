@@ -620,7 +620,7 @@ class MediaManager extends MediaLibrary
 
                     $this->_objTpl->setVariable(array(  // file
                         'MEDIA_DIR_TREE_ROW'  => $class,
-                        'MEDIA_FILE_ICON'     => self::_getIconWebPath().$dirTree[$key]['icon'][$x].'.png',
+                        'MEDIA_FILE_ICON'     => $dirTree[$key]['icon'][$x],
                         'MEDIA_FILE_NAME'     => $fileName,
                         'MEDIA_FILE_SIZE'     => $this->_formatSize($dirTree[$key]['size'][$x]),
                         'MEDIA_FILE_TYPE'     => $this->_formatType($dirTree[$key]['type'][$x]),
