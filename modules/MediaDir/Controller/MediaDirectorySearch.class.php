@@ -211,6 +211,7 @@ EOF;
         $arrFoundLevelsCategories = array();
         $arrFoundCountries = array();
         $intCmdFormId = null;
+        $strTerm = '';
 
         //build search term query
         $arrData['term'] = trim($arrData['term']);
