@@ -55,9 +55,9 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
         if (!isset($_SESSION['MediaBrowser']['FolderWidget'])) {
             $_SESSION['MediaBrowser']['FolderWidget'] = array();
         }
-        $lastKey  = count($_SESSION['MediaBrowser']['FolderWidget']);
-        $widgetId = $lastKey++;
-        
+        $lastKey  = count($_SESSION['MediaBrowser']['FolderWidget']);        
+        $widgetId = ++$lastKey;
+
         $this->id = $widgetId;
         
         $this->folder = $folder;
@@ -106,6 +106,7 @@ class FolderWidget extends \Cx\Model\Base\EntityBase
     {
         \JS::activate('mediabrowser');
         \JS::registerJS('core_modules/MediaBrowser/View/Script/FolderWidget.js');
+        \JS::registerCSS('core_modules/MediaBrowser/View/Style/FolderWidget.css');
 
         $tpl = new \Cx\Core\Html\Sigma(\Cx\Core\Core\Controller\Cx::instanciate()->getCoreModuleFolderName().'/MediaBrowser/View/Template/');
         

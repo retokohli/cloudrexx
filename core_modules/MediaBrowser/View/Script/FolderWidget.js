@@ -33,7 +33,7 @@ folderWidgetApp.factory('mediabrowserFiles', function ($http, $q) {
           return this.get('folderWidget&id=' + widgetId);
       },
       removeMedia: function (file, widgetId) {
-          return this.get('removeFile&file=' + file + '&widget=' + widgetId);
+          return this.get('removeFileFromFolderWidget&file=' + file + '&widget=' + widgetId);
       }
   };
 });
@@ -51,7 +51,7 @@ folderWidgetApp.controller('MediaBrowserFolderWidgetCtrl', ['$scope', 'mediabrow
   };  
   $scope.removeFile = function (file) {
     mediabrowserFiles.removeMedia(file, folderWidgetConfig.get('widgetId')).then(
-        function getFiles(data) {
+        function loadFiles(data) {
             $scope.refreshBrowser();
         }
     );

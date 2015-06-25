@@ -7,7 +7,7 @@
   <ul class="filelist">
     <li data-ng-repeat="file in files">
       {{ file }}
-      <span data-ng-show="isEditable">
+      <span class="actions" data-ng-show="isEditable">
         <a data-ng-click="removeFile(file)" class="removeFile"></a>
       </span>
     </li>

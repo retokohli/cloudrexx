@@ -1,0 +1,15 @@
+.mediaBrowserfolderWidget .removeFile {
+  position: relative;
+  padding-left: 18px;
+  margin-right: 5px;
+}
+.mediaBrowserfolderWidget .removeFile:before {
+    background: url("../Media/Icons/remove.png") no-repeat;
+    background-size: 16px;
+    width: 16px;
+    height: 16px;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+}
