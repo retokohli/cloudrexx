@@ -1135,7 +1135,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     ? contrexx_input2raw($_GET['term']) 
                     : '';
             $allBackupsArray = self::getAllBackupFilesInfoAsArray($term);
-            $websiteBackupRepositoryDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($allBackupsArray);
+            $allBackupFilesInfo = !empty($allBackupsArray) ? $allBackupsArray : null;
+            $websiteBackupRepositoryDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($allBackupFilesInfo);
             $backupAndRestore = new \Cx\Core\Html\Controller\ViewGenerator($websiteBackupRepositoryDataSet,
                 array(
                     'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_BACKUPS_AND_RESTORE'],
