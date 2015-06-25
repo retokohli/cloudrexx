@@ -40,7 +40,7 @@ class LocalFileSystem implements FileSystem
         $recursiveIteratorIterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator(
-                    $this->rootPath . '/' . $directory
+                    rtrim($this->rootPath . '/' . $directory,'/')
                 ),
                 \RecursiveIteratorIterator::SELF_FIRST
             ), '/^((?!thumb(_[a-z]+)?).)*$/'
@@ -79,8 +79,9 @@ class LocalFileSystem implements FileSystem
                 $thumbnails = $this->getThumbnails(
                     $thumbnailList, $extension, $file, $thumbnails
                 );
-                if (file_exists($this->cx->getWebsitePath() . $thumbnails)) {
-                    $preview = current($thumbnails);
+                $preview = current($thumbnails);
+                if (!file_exists($this->cx->getWebsitePath() . $preview)) {
+                    $preview = '';
                 }
             }
 
