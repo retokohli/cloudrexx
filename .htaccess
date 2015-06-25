@@ -52,8 +52,10 @@
     RewriteCond %{REQUEST_FILENAME}/index.php -f
     RewriteRule   .  %{REQUEST_URI}/index.php [L,QSA]
 
-    # Redirect all requests to non-existing files to Contrexx
+    # Redirect all requests to non-existing files to Contrexx,
+    # except for media resources
     RewriteCond   %{REQUEST_FILENAME}  !-f
+    RewriteCond   %{REQUEST_URI} !.*\.(gif|jpg|png|bmp|js|css|woff|ttf|svg)$
     RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
 
     # Add captured request to index files
