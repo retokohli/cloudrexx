@@ -88,7 +88,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                     continue;
                 }
                 
-                if (!empty($contact->emailDelivery)) {
+                if (!\FWValidator::isEmpty($contact->emailDelivery)) {
                     \DBG::msg(__METHOD__.": matched CronMail (ID={$cronMail->getId()}): User=".$contact->customerName . ' ' . $contact->family_name .(($website instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) ? '; Website='.$website->getName() : ''));
                     $this->sendMail($cronMail, $contact, $website, $cronMailLogRepo);
                 }
@@ -321,6 +321,8 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
         try {
             $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
             if (isset($cronMailCriterias['Website']) || isset($cronMailCriterias['Subscription'])) {
+                $freeProductIds = $this->getProductIdsByEntityClass('Website');
+                $costProductIds = $this->getProductIdsByEntityClass('WebsiteCollection');
                 //NativeQuery for Website and Subscription Criteria
                 $rsm   = self::getResultSetMapping(
                             array(
@@ -349,7 +351,12 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                                 LEFT JOIN 
                                     `' . DBPREFIX . 'module_order_subscription` As Subscription
                                 ON 
-                                    `Subscription`.`product_entity_id` = IF(`Website`.`websiteCollectionId` IS NULL, `Website`.`id`, `Website`.`websiteCollectionId`)';
+                                    IF(`Website`.`websiteCollectionId` IS NULL, 
+                                       `Subscription`.`product_id` IN (' . implode(',', $freeProductIds) . ') 
+                                            AND `Subscription`.`product_entity_id` = `Website`.`id`, 
+                                        `Subscription`.`product_id` IN (' . implode(',', $costProductIds) . ') 
+                                            AND `Subscription`.`product_entity_id` = `Website`.`websiteCollectionId`
+                                    )';
             } elseif (isset($cronMailCriterias['User'])) {
                 //NativeQuery for User Criteria
                 $rsm   = self::getResultSetMapping(
@@ -403,7 +410,9 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                       . '`Contact`.`user_account` as userId '
                       . 'FROM `' . DBPREFIX . 'module_crm_contacts` as Contact';
         
-        $conditions = $this->getFilterForContact($criterias);
+        $conditions   = $this->getFilterForContact($criterias);
+        //Fetch the CRM persons alone
+        $conditions[] = 'Contact.contact_type = 2';
         $query .= !empty($conditions) ? ' WHERE ' . implode(' AND ', array_filter($conditions)) : '';
         
         $objCrmUser = $objDatabase->Execute($query);
@@ -465,5 +474,26 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
      */
     public static function parseTimeForFilter(\DateTime $date, $timeStamp = false) {
         return $timeStamp ? $date->getTimestamp() : $date->format('Y-m-d H:i:s');
+    }
+    
+    /**
+     * Get the product ids by entity class
+     * 
+     * @param string $entity namespace of Website or WebsiteCollections
+     * 
+     * @return array
+     */
+    public function getProductIdsByEntityClass($entity) {
+        $em          = $this->cx->getDb()->getEntityManager();
+        $entityClass = 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\'.$entity; 
+        $products    = $em->getRepository('\Cx\Modules\Pim\Model\Entity\Product')->findBy(array('entityClass' => $entityClass));
+        $productIds  = array();
+        
+        if ($products) {
+            foreach ($products as $product) {
+                $productIds[] = $product->getId();
+            }
+        }
+        return $productIds;
     }
 }
