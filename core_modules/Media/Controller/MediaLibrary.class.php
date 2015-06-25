@@ -772,14 +772,15 @@ class MediaLibrary
     /**
      * Get the web path to the icon used for displaying the file type of a file
      *
-     * @param   string  File of which the related file type icon path shall be returned.
-     *                  File must be an absolute file system path or an URL.
+     * @param   string  $file   File of which the related file type icon path shall be returned.
+     *                          File must be an absolute file system path or an URL.
+     * @param   string  $fileType  (optional) The file type of $file (as file extension). When supplied, the method will skip the file type detection and will run quite faster.
      * @return  string  Web path to the icon.
      */
-    public static function getFileTypeIconWebPath($file)
+    public static function getFileTypeIconWebPath($file, $fileType = null)
     {
         $iconPath = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconPath() .
-                    \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($file) . '.png';
+                    \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($file, $fileType) . '.png';
         return \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getWebFilePath($iconPath);
     }
 
