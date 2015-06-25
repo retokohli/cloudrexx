@@ -4,7 +4,7 @@
     <span class="{MESSAGE_CLASS}">{MESSAGE_TEXT}</span>
     <!-- END core_message -->
     <div class="menu">
-      <form role="form" name="shopSearch" action="index.php?section=Shop" method="post">
+      <form role="form" name="shopSearch" action="{NODE_SHOP}" method="post">
         <select class="form-control" name="catId" tabindex="2">
           {SHOP_CATEGORIES_MENUOPTIONS}
         </select>&nbsp;
@@ -21,7 +21,7 @@
           <!-- BEGIN subCategories -->
           <article class="col-md-4 info-item">
             <figure class="visual">
-              <a href="index.php?section=Shop{MODULE_INDEX}&amp;catId={SHOP_CATEGORY_ID}">
+              <a href="{NODE_SHOP}?catId={SHOP_CATEGORY_ID}">
                 <div class="categorie-image-wrapper">
                   <img class="center-block img-responsive" border="0" alt="{TXT_SHOP_GO_TO_CATEGORY}" src="{SHOP_CATEGORY_THUMBNAIL}" />
                 </div>
@@ -57,7 +57,7 @@
     <!-- BEGIN shopProductRow -->
     <div class="product">
       <div class="row">
-        <form role="form" id="{SHOP_PRODUCT_FORM_NAME}" name="{SHOP_PRODUCT_FORM_NAME}" action="index.php?section=Shop&amp;cmd=cart" method="post" {SHOP_FORM_ENCTYPE}>
+        <form role="form" id="{SHOP_PRODUCT_FORM_NAME}" name="{SHOP_PRODUCT_FORM_NAME}" action="{NODE_SHOP_CART}" method="post" {SHOP_FORM_ENCTYPE}>
           <input type="hidden" name="productId" value="{SHOP_PRODUCT_ID}" />
           <div class="container-fluid">
             <div class="row">
