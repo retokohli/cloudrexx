@@ -74,9 +74,11 @@ class XmlSitemapPageTree extends PageTree {
      */
     protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
         global $_CONFIG;
+        $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        $mainDn = $domainRepo->getMainDomain()->getName();
         
         $location = ASCMS_PROTOCOL . '://'
-                . $_CONFIG['domainUrl']
+                . $mainDn
                 . ($_SERVER['SERVER_PORT'] == 80 ? null : ':' . intval($_SERVER['SERVER_PORT']))
                 . \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()
                 . '/' . \FWLanguage::getLanguageCodeById($this->lang)
@@ -198,5 +200,10 @@ class XmlSitemapPageTree extends PageTree {
     protected function preRenderElement($level, $hasChilds, $lang, $page) {
         
     }
+    protected function getFullNavigation() {
+
+        return true;
+
+    } 
 }
 
