@@ -60,15 +60,14 @@ class ThumbnailGenerator extends EntityBase
             UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail
         ) {
             if (\Cx\Lib\FileSystem\FileSystem::exists(
-                MediaSourceManager::getAbsolutePath($path) . '/' ,
-                $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension
+                MediaSourceManager::getAbsolutePath($path) . $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension
             )) {
                 $success[$thumbnail['value']]
                     = self::THUMBNAIL_GENERATOR_NEUTRAL;
                 continue;
             }
             if ($imageManager->_createThumb(
-                MediaSourceManager::getAbsolutePath($path),
+                MediaSourceManager::getAbsolutePath($path) . '/',
                 '',
                 $fileNamePlain . '.' . $fileExtension,
                 $thumbnail['size'],
