@@ -694,8 +694,8 @@ class MediaLibrary
             // sort by name
             case 'name':
             default:
-                @array_multisort($d['name'], $direction, $d['size'], $d['type'], $d['date'], $d['perm'], $d['icon']);
-                @array_multisort($f['name'], $direction, $f['size'], $f['type'], $f['date'], $f['perm'], $f['icon']);
+                @array_multisort($d['name'], $direction, SORT_NATURAL | SORT_FLAG_CASE, $d['size'], $d['type'], $d['date'], $d['perm'], $d['icon']);
+                @array_multisort($f['name'], $direction, SORT_NATURAL | SORT_FLAG_CASE, $f['size'], $f['type'], $f['date'], $f['perm'], $f['icon']);
                 break;
         }
         

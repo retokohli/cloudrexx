@@ -674,7 +674,7 @@ class FileBrowser {
             }
             closedir($objDir);
 
-            sort($arrFiles);
+            sort($arrFiles, SORT_NATURAL | SORT_FLAG_CASE);
 
             foreach ($arrFiles as $file) {
                 if (is_dir($strPath.$file)) {
