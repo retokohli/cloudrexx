@@ -1814,7 +1814,7 @@ class Config
             if (!$allThumbnailsExists) {
                 if ($imageManager->_isImage($file->getRealPath())) {
                     ThumbnailGenerator::createThumbnail(
-                        $file->getPath() . '/', $fileNamePlain, $fileExtension, $imageManager, true
+                        $file->getPath(), $fileNamePlain, $fileExtension, $imageManager, true
                     );
                 }
             }
