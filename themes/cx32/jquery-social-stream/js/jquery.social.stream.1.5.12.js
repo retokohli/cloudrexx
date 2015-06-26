@@ -494,7 +494,6 @@
                 url += '?access_token=' + o.accessToken + '&client_id=' + o.clientId + '&count=' + n + qs;
                 break;
         }
-        console.log(url);
         var dataType = type == 'twitter' || type == 'facebook' ? 'json' : 'jsonp';
         jQuery.ajax({
             url: url,
