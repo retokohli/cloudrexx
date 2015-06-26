@@ -5967,7 +5967,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @throws MultiSiteJsonException
      */
     public function setMainDomain($params) {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CONFIG;
         self::loadLanguageData();
         
         if (empty($params['post']) || !isset($params['post']['mainDomainId'])) {
@@ -5980,6 +5980,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     \Cx\Core\Setting\Controller\Setting::init('Config', 'site', 'Yaml');
                     \Cx\Core\Setting\Controller\Setting::set('mainDomainId', $params['post']['mainDomainId']);
                     \Cx\Core\Setting\Controller\Setting::update('mainDomainId');
+                    if ($_CONFIG['xmlSitemapStatus'] == 'on') {
+                        \Cx\Core\PageTree\XmlSitemapPageTree::write();
+                    }
                     return array(
                         'status' => 'success'
                     );

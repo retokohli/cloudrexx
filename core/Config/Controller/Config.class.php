@@ -626,6 +626,9 @@ class Config
                     $domainUrl = $_SERVER['SERVER_NAME'];
                 }
                 $ymlArrayValues[$ymlValue['group']]['domainUrl'] = $domainUrl;
+                if ($_CONFIG['xmlSitemapStatus'] == 'on') {
+                    \Cx\Core\PageTree\XmlSitemapPageTree::write();
+                }
             }
 
             $intMaxLen = (strlen($key) > $intMaxLen) ? strlen($key) : $intMaxLen;
