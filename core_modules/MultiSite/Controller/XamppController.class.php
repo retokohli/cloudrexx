@@ -373,5 +373,40 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         \DBG::msg("MultiSite (XamppController): getAvailableServicePlansOfMailServer");
         return true;
     }
+    
+    /**
+     * Create new site/domain
+     * 
+     * @param string  $domain         Name of the site/domain to create
+     * @param integer $subscriptionId Id of the Subscription assigned for the new site/domain
+     * @param string  $documentRoot   Document root to create the site/domain
+     */
+    public function createSite($domain, $subscriptionId, $documentRoot = 'httpdocs') {
+        \DBG::msg("MultiSite (XamppController): Create new site on existing subscription.");
+        return true;
+    }
+    
+    /**
+     * Renaming the site/domain
+     * 
+     * @param string $oldDomainName old domain name
+     * @param string $newDomainName new domain name
+     */
+    public function renameSite($oldDomainName, $newDomainName) {
+        \DBG::msg("MultiSite (XamppController): Renaming the site on existing subscription.");
+        return true;
+    }
+    
+    
+    /**
+     * Remove the site by the domain name.
+     * 
+     * @param string $domain Domain name to remove
+     */
+    public function deleteSite($domain) {
+        \DBG::msg("MultiSite (XamppController): Removing the site on existing subscription.");
+        return true;
+    }
+    
 
 }

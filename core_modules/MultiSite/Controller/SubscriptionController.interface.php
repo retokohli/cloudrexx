@@ -123,5 +123,29 @@ interface SubscriptionController {
      * Get the all available service plans of mail service server
      */
     public function getAvailableServicePlansOfMailServer();
+    
+    /**
+     * Create new site/domain
+     * 
+     * @param string  $domain         Name of the site/domain to create
+     * @param integer $subscriptionId Id of the Subscription assigned for the new site/domain
+     * @param string  $documentRoot   Document root to create the site/domain
+     */
+    public function createSite($domain, $subscriptionId, $documentRoot = 'httpdocs');
+    
+    /**
+     * Renaming the site/domain
+     * 
+     * @param string $oldDomainName old domain name
+     * @param string $newDomainName new domain name
+     */
+    public function renameSite($oldDomainName, $newDomainName);
+    
+    /**
+     * Remove the site by the domain name.
+     * 
+     * @param string $domain Domain name to remove
+     */
+    public function deleteSite($domain);
 
 }

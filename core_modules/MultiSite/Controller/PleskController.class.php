@@ -1767,4 +1767,170 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         }
         return $servicePlans;
     }
+    
+    /**
+     * Create new site/domain
+     * 
+     * @param string  $domain          Name of the site/domain to create
+     * @param integer $subscriptionId  Id of the Subscription assigned for the new site/domain
+     * @param string  $documentRoot    Document root to create the site/domain
+     * 
+     * @return boolean true on success otherwise false
+     * 
+     * @throws ApiRequestException
+     */
+    public function createSite($domain, $subscriptionId, $documentRoot = 'httpdocs')
+    {
+        \DBG::msg("MultiSite (PleskController): Create new site on existing subscription.");
+        if (empty($domain)) {
+            return false;
+        }
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+        
+        $site = $xmldoc->createElement('site');
+        $packet->appendChild($site);
+        
+        $addTag = $xmldoc->createElement('add');
+        $site->appendChild($addTag);
+        
+        $genSetup = $xmldoc->createElement('gen_setup');
+        $addTag->appendChild($genSetup);
+        
+        $nameTag = $xmldoc->createElement('name', $domain);
+        $genSetup->appendChild($nameTag);
+        
+        $webspaceIdTag = $xmldoc->createElement('webspace-id', $subscriptionId);
+        $genSetup->appendChild($webspaceIdTag);
+        
+        $htypeTag = $xmldoc->createElement('htype', 'vrt_hst');
+        $genSetup->appendChild($htypeTag);
+        
+        $hostingTag = $xmldoc->createElement('hosting');
+        $addTag->appendChild($hostingTag);
+        
+        $virtualHostTag = $xmldoc->createElement('vrt_hst');
+        $hostingTag->appendChild($virtualHostTag);
+        
+        $propertyTag = $xmldoc->createElement('property');
+        $virtualHostTag->appendChild($propertyTag);
+        
+        $propertyNameTag = $xmldoc->createElement('name', 'www_root');
+        $propertyTag->appendChild($propertyNameTag);
+        
+        $propertyValueTag = $xmldoc->createElement('value', $documentRoot);
+        $propertyTag->appendChild($propertyValueTag);
+        
+        $response   = $this->executeCurl($xmldoc);
+        $resultNode = $response->site->add->result;
+        
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in creating site on existing subscription: {$error}");
+        }
+        return $resultNode->id;
+    }
+    
+    /**
+     * Renaming the site/domain
+     * 
+     * @param string $oldDomainName old domain name 
+     * @param string $newDomainName new domain name 
+     * 
+     * @return updated site/domain id
+     * 
+     * @throws ApiRequestException
+     */
+    public function renameSite($oldDomainName, $newDomainName)
+    {        
+        \DBG::msg("MultiSite (PleskController): Renaming the site on existing subscription.");
+        if (empty($oldDomainName) || empty($newDomainName)) {
+            return false;
+        }
+        
+        $xmldoc = $this->getXmlDocument();
+        $packet = $this->getRpcPacket($xmldoc);
+        
+        $site = $xmldoc->createElement('site');
+        $packet->appendChild($site);
+        
+        $setTag = $xmldoc->createElement('set');
+        $site->appendChild($setTag);
+        
+        $filterTag = $xmldoc->createElement('filter');
+        $setTag->appendChild($filterTag);
+        
+        $nameTag = $xmldoc->createElement('name', $oldDomainName);
+        $filterTag->appendChild($nameTag);
+        
+        $valuesTag = $xmldoc->createElement('values');
+        $setTag->appendChild($valuesTag);
+        
+        $genSetup = $xmldoc->createElement('gen_setup');
+        $valuesTag->appendChild($genSetup);
+        
+        $newDomainNameTag = $xmldoc->createElement('name', $newDomainName);
+        $genSetup->appendChild($newDomainNameTag);
+        
+        $response   = $this->executeCurl($xmldoc);
+        $resultNode = $response->site->set->result;
+        
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in Renaming the site on existing subscription: {$error}");
+        }
+        return $resultNode->id;
+    }
+    
+    /**
+     * Remove the site by the domain name.
+     * 
+     * @param string $domain Domain name to remove
+     * 
+     * @return boolean true on success false otherwise
+     * 
+     * @throws ApiRequestException
+     */
+    public function deleteSite($domain)
+    {
+        \DBG::msg("MultiSite (PleskController): Removing the site on existing subscription.");
+        if (empty($domain)) {
+            return false;
+        }
+        
+        $xmldoc  = $this->getXmlDocument();
+        $packet  = $this->getRpcPacket($xmldoc); 
+        
+        $site = $xmldoc->createElement('site');
+        $packet->appendChild($site);
+        
+        $delTag = $xmldoc->createElement('del');
+        $site->appendChild($delTag);
+        
+        $filterTag = $xmldoc->createElement('filter');
+        $delTag->appendChild($filterTag);
+        
+        $nameTag = $xmldoc->createElement('name', $domain);
+        $filterTag->appendChild($nameTag);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->site->del->result;
+        
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in Removing site on existing subscription: {$error}");
+        }
+        return true;
+    }
+    
 }
