@@ -63,13 +63,16 @@ class JsonData {
      * @author Michael Ritter <michael.ritter@comvation.com>
      */
     public function __construct() {
-        foreach (self::$adapter_classes as $ns=>$adapters) {
+            foreach (self::$adapter_classes as $ns=>$adapters) {
             foreach ($adapters as $adapter) {
                 $this->loadAdapter($adapter, $ns);
             }
         }
     }
     
+    /**
+     * @deprecated Use component framework instead (SystemComponentController->getControllersAccessableByJson())
+     */
     public static function addAdapter($className, $namespace = '\\') {
         if (!$className) {
             return;
@@ -88,8 +91,10 @@ class JsonData {
      * 
      * Either specify a fully qualified classname, or a classname and the containing
      * namespace separatly
+     * @todo Adapter loading could be optimized
      * @param string $className Fully qualified or class name located in $namespace
      * @param string $namespace (optional) Namespace for non fully qualified class name
+     * @throws \Exception if JsonAdapter interface is not implemented or controller can not be found
      */
     public function loadAdapter($className, $namespace = '') {
         if (substr($className, 0, 1) == '\\') {
@@ -97,23 +102,55 @@ class JsonData {
         } else {
             $adapter = $namespace . '\\' . $className;
         }
-        // check if its an adapter!
         
-        // find proper systemcomponent instead of empty one
-        $nsParts = explode('\\', $namespace);
-        $possibleComponentName = $nsParts[2];
+        // check if its an adapter!
+        if (!is_a($adapter, '\Cx\Core\Json\JsonAdapter', true)) {
+            throw new \Exception('Tried to load class as JsonAdapter, but interface is not implemented: "' . $adapter . '"');
+        }
+        
+        // load specified controller
+        $matches = array();
+        preg_match('/\\\\?Cx\\\\(?:Core|Core_Modules|Modules|modules)\\\\([^\\\\]*)/', $adapter, $matches);
+        $possibleComponentName = '';
+        if (isset($matches[1])) {
+            $possibleComponentName = $matches[1];
+        }
+        $nsParts = explode('\\', $adapter);
+        $controllerClass = end($nsParts);
+        
+        // legacy adapter
+        if (in_array($possibleComponentName, array('Json', 'Survey', 'Crm'))) {
+            $this->loadLegacyAdapter($adapter);
+            return;
+        }
+        
         $em = \Env::get('cx')->getDb()->getEntityManager();
         $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $component = $componentRepo->findOneBy(array('name'=>$possibleComponentName));
         if (!$component) {
-            // legacy adapter
-            $object = new $adapter();
-            $this->adapters[$object->getName()] = $object;
+            $this->loadLegacyAdapter($adapter);
             return;
+            //throw new \Exception('JsonAdapter component could not be found: "' . $adapter . '"');
         }
-        // new adapter
-        $object = new $adapter($component->getSystemComponent(), \Env::get('cx'));
-        \Env::get('init')->loadLanguageData($component->getName());
+        $object = $component->getController(preg_replace('/Controller$/', '', $controllerClass));
+        if (!$object) {
+            $this->loadLegacyAdapter($adapter, $component);
+            return;
+            //throw new \Exception('JsonAdapter controller could not be found: "' . $adapter . '"');
+        }
+        $this->adapters[$object->getName()] = $object;
+    }
+    
+    /**
+     * @deprecated: This load adapter in a way they shouldn't be loaded
+     */
+    protected function loadLegacyAdapter($adapter, $component = null) {
+        \DBG::msg('Loading legacy JsonAdapter: ' . $adapter);
+        if ($component) {
+            $object = new $adapter($component->getSystemComponent(), \Env::get('cx'));
+        } else {
+            $object = new $adapter();
+        }
         $this->adapters[$object->getName()] = $object;
     }
 
