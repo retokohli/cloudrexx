@@ -118,14 +118,25 @@ class SystemComponentController extends Controller {
      * Returns a controller instance if one already exists
      * @param $controllerClass Short or FQCN controller name
      * @return \Cx\Core\Core\Model\Entity\Controller Controller instance
+     * @throws \Exception if controller exists but cannot be loaded
      */
     public function getController($controllerClass) {
-        $this->getControllers(false);
-        $controllerClass = $this->getControllerClassName($controllerClass);
-        if (!isset($this->controllers[$controllerClass])) {
+        if (isset($this->controllers[$controllerClass])) {
+            return $this->controllers[$controllerClass];
+        }
+        
+        $classes = $this->getControllerClasses();
+        if (!in_array($controllerClass, $classes)) {
             return null;
         }
-        return $this->controllers[$controllerClass];
+        $class = '\\' . $this->getControllerClassName($controllerClass);
+        new $class($this, $this->cx);
+        
+        if (!isset($this->controllers[preg_replace('/^\\\\/', '', $class)])) {
+            throw new \Exception('Controller "' . $controllerClass . '" could not be loaded(' . preg_replace('/^\\\\/', '', $class) . ')');
+        }
+        
+        return $this->controllers[preg_replace('/^\\\\/', '', $class)];
     }
     
     /**
