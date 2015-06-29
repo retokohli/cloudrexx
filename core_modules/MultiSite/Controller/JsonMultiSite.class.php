@@ -3294,34 +3294,37 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         global $_ARRAYLANG;
         
         self::loadLanguageData();
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
+        
+        if (empty($params['post']) || empty($params['post']['userId'])) {
+            \DBG::log($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']);
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']);
+        }
+        
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                if (empty($params['post'])) {
-                    \DBG::log($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']);
-                    throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UNKOWN_USER_REQUEST']);
-                }
                 $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                 $website = $websiteRepository->findWebsitesByCriteria(array('user.id' => $params['post']['userId']));
-                if (!$website) {
-                    $objUser = \FWUser::getFWUserObject()->objUser->getUser($params['post']['userId']);
-                    $deleteUser = $objUser ? $objUser->delete() : true;
-                    if ($deleteUser) {
-                        return array(
-                            'status'    => 'success',
-                            'log'       => \DBG::getMemoryLogs(),
-                        );
-                    }
+                if ($website) {
+                    break;
                 }
-                return array(
-                    'status'    => 'error',
-                    'log'       => \DBG::getMemoryLogs(),
-                );
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
+                $objUser    = \FWUser::getFWUserObject()->objUser->getUser($params['post']['userId']);
+                $deleteUser = $objUser ? $objUser->delete() : true;
+                if ($deleteUser) {
+                    return array(
+                        'status' => 'success',
+                        'log'    => \DBG::getMemoryLogs(),
+                    );
+                }
                 break;
             default:
                 break;
         }
+        return array(
+            'status' => 'error',
+            'log'    => \DBG::getMemoryLogs(),
+        );
     }
     
     /**
