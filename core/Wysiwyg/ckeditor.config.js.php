@@ -104,7 +104,7 @@ CKEDITOR.editorConfig = function( config )
     ];
 
     config.toolbar_FrontendEditingContent = [
-        ['Publish','Save'],
+        ['Publish','Save','Templates'],
         ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
         ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
         ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
