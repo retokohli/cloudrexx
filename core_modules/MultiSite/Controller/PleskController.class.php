@@ -1804,9 +1804,6 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $webspaceIdTag = $xmldoc->createElement('webspace-id', $subscriptionId);
         $genSetup->appendChild($webspaceIdTag);
         
-        $htypeTag = $xmldoc->createElement('htype', 'vrt_hst');
-        $genSetup->appendChild($htypeTag);
-        
         $hostingTag = $xmldoc->createElement('hosting');
         $addTag->appendChild($hostingTag);
         
