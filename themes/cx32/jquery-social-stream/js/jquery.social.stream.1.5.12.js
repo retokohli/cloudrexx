@@ -366,7 +366,7 @@
                     replies = o.replies == true ? '&exclude_replies=false' : '&exclude_replies=true';
                 var param = '&include_entities=true&include_rts=' + o.retweets + replies;
                 url1 = cu.length > 1 ? curl + '&' : curl + '?';
-                url = cp.length > 1 ? url1 + 'url=list&list_id=' + cp[1] + '&per_page=' + n + param : url1 + 'url=timeline&screen_name=' + id + '&count=' + n + param;
+                url = cp.length > 1 ? url1 + 'url=timeline&list_id=' + cp[1] + '&per_page=' + n + param : url1 + 'url=timeline&screen_name=' + id + '&count=' + n + param;
                 if (cq.length > 1) {
                     var rts = o.retweets == false ? '+exclude:retweets' : '';
                     url = url1 + 'url=search&q=' + cq[1] + '&count=' + n;
