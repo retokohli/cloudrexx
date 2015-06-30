@@ -39,27 +39,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @return null
      */
-    public function postInit(\Cx\Core\Core\Controller\Cx $cx) {
-
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
+    {
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config', 'FileSystem');
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite') != \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE) {
             return;
         }
 
-        $updateFile = \Env::get('cx')->getWebsiteTempPath() . '/Update/PendingDbUpdates.yml';
+        $updateFile = $cx->getWebsiteTempPath() . '/Update/' . \Cx\Core_Modules\Update\Model\Repository\DeltaRepository::PENDING_DB_UPDATES_YML;
         if (!file_exists($updateFile)) {
             return;
         }
-        
-        //To initialize the variable \Cx\Core_Modules\MultiSite\Controller\ComponentController::cxMainDomain
-        $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-        $component = $componentRepo->findOneBy(array('name' => 'MultiSite'));
-        if (!$component) {
+
+        $componentController = $this->getComponent('MultiSite');
+        if (!$componentController) {
             return;
         }
-        $componentController = $component->getSystemComponentController();
         $componentController->setCustomerPanelDomainAsMainDomain();
-                    
+
         $updateController = $this->getController('Update');
         $updateController->applyDelta();
     }

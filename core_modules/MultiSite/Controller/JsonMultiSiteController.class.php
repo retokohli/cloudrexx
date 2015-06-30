@@ -4780,7 +4780,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             }
             
             $objUser = \FWUser::getFWUserObject()->objUser;
-            $multisiteComponentController = $this->getControllerObjectByComponentName('Multisite');
+            $multisiteComponentController = $this->getComponent('Multisite');
             if (!$multisiteComponentController) {
                 throw new MultiSiteJsonException('Failed to create the website in subscription.');
             }
@@ -5116,7 +5116,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     if (!empty($deleteBackupedWebsiteName)) {
                         $resp = $this->deleteWebsiteBackupFile($deleteBackupedWebsiteName, $serviceServerId);
                     } else {
-                        $multisiteComponentController = $this->getControllerObjectByComponentName('Multisite');
+                        $multisiteComponentController = $this->getComponent('Multisite');
                         if (!$multisiteComponentController) {
                             throw new MultiSiteJsonException($e->getMessage());
                         }
@@ -5189,7 +5189,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
-                    $multisiteComponentController = $this->getControllerObjectByComponentName('Multisite');
+                    $multisiteComponentController = $this->getComponent('Multisite');
                     if (!$multisiteComponentController) {
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_RESTORE_FAILED']);
                     }
@@ -6464,7 +6464,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                 case ComponentController::MODE_SERVICE:
                 case ComponentController::MODE_HYBRID:
                     
-                    $updateController = $this->getControllerObjectByComponentName('Update', 'Update');
+                    $updateController = $this->getComponent('Update') ? $this->getComponent('Update')->getController('Update') : null;
                     if (!$updateController) {
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_PROCESS_ERROR_MSG']);
                     }
@@ -6518,14 +6518,13 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                                     'codeBase' => $params['post']['codeBase'],
                                     'websites' => $params['post']['websites']
                                   );
-                    $folderPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . '/MultiSite';
-                    $filePath = $folderPath .'/PendingCodeBaseChanges.yml';
-                    
                     try {
-                        $updateController = $this->getControllerObjectByComponentName('Update', 'Update');
+                        $updateController = $this->getComponent('Update') ? $this->getComponent('Update')->getController('Update') : null;
                         if(!$updateController){
                            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_PROCESS_ERROR_MSG']); 
                         }
+                        $folderPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . '/MultiSite';
+                        $filePath = $folderPath . '/' . $updateController->getPendingCodeBaseChangesFile();
                         $updateController->storeUpdateWebsiteDetailsToYml($folderPath, $filePath, $ymlContent );
                         
                         // make the asynchronous call
@@ -6602,13 +6601,13 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                         return;
                     }
                     
-                    $updateController = $this->getControllerObjectByComponentName('Update', 'Update');
+                    $updateController = $this->getComponent('Update') ? $this->getComponent('Update')->getController('Update') : null;
                     if (!$updateController) {
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_ERROR_MSG']);
                     }
                     
                     $folderPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . '/Update';
-                    $filePath = $folderPath .'/PendingCodeBaseChanges.yml';
+                    $filePath = $folderPath .'/'. $updateController->getPendingCodeBaseChangesFile();
                     $ymlContent = array(
                                         'oldCodeBaseId'    => $oldVersion,
                                         'latestCodeBaseId' => $latestCodeBase
@@ -6773,31 +6772,6 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         }
     }
     
-    /**
-     * Get controller object
-     * 
-     * @param string $componentName  component name  
-     * @param string $controllerName controller name
-     * 
-     * @return object
-     */
-    protected function getControllerObjectByComponentName($componentName, $controllerName = '') {
-        if (empty($componentName)) {
-            return;
-        }
-
-        $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-        $component = $componentRepo->findOneBy(array('name' => $componentName));
-        if (!$component) {
-            return;
-        }
-        $componentController = $component->getSystemComponentController();
-        if (empty($controllerName)) {
-            return $componentController;
-        }
-        return $componentController->getController($controllerName);
-    }
-
     /**
      * Get the websites by codeBase
      * 

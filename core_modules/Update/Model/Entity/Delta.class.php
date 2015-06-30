@@ -146,7 +146,7 @@ class Delta extends \Cx\Core\Model\Model\Entity\YamlEntity {
      */
     protected function runMigrationCommand($version, $process) {
 
-         $argv = array(
+        $argv = array(
             __FILE__,
             'migrations:execute',
             $version,
@@ -155,8 +155,8 @@ class Delta extends \Cx\Core\Model\Model\Entity\YamlEntity {
         );
 
         $_SERVER['argv'] = $argv;
-        
-        $cli = \Cx\Core_Modules\Update\Controller\UpdateController::getDoctrineMigrationCli();        
+
+        $cli = $this->getComponentController()->getController('Update')->getDoctrineMigrationCli();
         return $cli->run();
     }
 

@@ -256,7 +256,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'filtering' => false,   // this does not exist yet
                         'actions' => function($rowData) {
                                         if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
-                                            $actions .= '<a href="javascript:void(0);" class = "websiteUpdate" data-id = '.$rowData['id'].' title = "update" ></a>';
+                                            $actions  = '<a href="javascript:void(0);" class = "websiteUpdate" data-id = '.$rowData['id'].' title = "update" ></a>';
                                             $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::websiteBackup($rowData, true);
                                             $actions .= \Cx\Core_Modules\MultiSite\Controller\BackendController::executeSql($rowData, true);
                                         }

@@ -23,7 +23,19 @@ namespace Cx\Core_Modules\Update\Controller;
  */
 class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
 
-
+    
+    /**
+     * pending codeBase changes yml
+     * @var string $pendingCodeBaseChangesYml
+     */
+    protected $pendingCodeBaseChangesYml = 'PendingCodeBaseChanges.yml';
+    
+    /**
+     * Command Line Interface
+     * @var \Symfony\Component\Console\Application | null
+     */
+    protected $cli = null;
+    
     /**
      * Calculate database delta
      *
@@ -79,7 +91,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
     /**
      * Register DB Update hooks
      * 
-     * This saves the calculated delta to /tmp/Update/PendingDbUpdates.yml. 
+     * This saves the calculated delta to /tmp/Update/$pendingCodeBaseChangesYml. 
      * It contains a serialized Delta.
      * 
      * @staticvar object $deltaRepo
@@ -127,7 +139,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
                 //Rollback to old state
                 $this->rollBackDelta();
                 //Rollback the codebase changes(settings.php, configuration.php and website codebase in manager and service)
-                $yamlFile = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . '/Update/PendingCodeBaseChanges.yml';
+                $yamlFile = $this->cx->getWebsiteTempPath() . '/Update/'. $this->pendingCodeBaseChangesYml;
                 if (file_exists($yamlFile)) {
                     $pendingCodeBaseChanges = $this->getUpdateWebsiteDetailsFromYml($yamlFile);
                     $oldCodeBase            = $pendingCodeBaseChanges['PendingCodeBaseChanges']['oldCodeBaseId'];
@@ -202,30 +214,27 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
         \Cx\Core\Setting\Controller\Setting::set('coreCmsVersion', $newCodeBaseVersion);
         \Cx\Core\Setting\Controller\Setting::update('coreCmsVersion');
     }
-
+    
     /**
-     * 
-     * @staticvar type $cli
+     * Get Doctrine Migration Command Line Interface
      * 
      * @return \Symfony\Component\Console\Application
      */
-    public static function getDoctrineMigrationCli()
+    public function getDoctrineMigrationCli()
     {
-        static $cli = null;
-        
-        if ($cli) {
-            return $cli;
+        if ($this->cli) {
+            return $this->cli;
         }
         
         $em = \Env::get('em');
         $conn = $em->getConnection();
 
-        $cli = new \Symfony\Component\Console\Application('Doctrine Command Line Interface', \Doctrine\Common\Version::VERSION);
-        $cli->setCatchExceptions(true);
-        $helperSet = $cli->getHelperSet();
+        $this->cli = new \Symfony\Component\Console\Application('Doctrine Migration Command Line Interface', \Doctrine\Common\Version::VERSION);
+        $this->cli->setCatchExceptions(true);
+        $helperSet = $this->cli->getHelperSet();
         $helpers = array(
             'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($conn),
-            'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper(\Env::get('cx')->getDb()->getEntityManager()),
+            'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($this->cx->getDb()->getEntityManager()),
         );
         foreach ($helpers as $name => $helper) {
             $helperSet->set($helper, $name);
@@ -236,21 +245,21 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
         $configuration->setName('Doctrine Migration');
         $configuration->setMigrationsNamespace('Cx\Core_Modules\Update\Data\Migrations');
         $configuration->setMigrationsTableName(DBPREFIX . 'migration_versions');
-        $configuration->setMigrationsDirectory(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath() . '/Update/Data/Migrations');
-        $configuration->registerMigrationsFromDirectory(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath() . '/Update/Data/Migrations');
+        $configuration->setMigrationsDirectory($this->cx->getCodeBaseCoreModulePath() . '/Update/Data/Migrations');
+        $configuration->registerMigrationsFromDirectory($this->cx->getCodeBaseCoreModulePath() . '/Update/Data/Migrations');
 
-        $cli->addCommands(array(
+        $this->cli->addCommands(array(
             // Migrations Commands
-            self::getDoctrineMigrationCommand('\Cx\Core_Modules\Update\Model\Entity\MigrationsDiffDoctrineCommand', $configuration),
-            self::getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\ExecuteCommand', $configuration),
-            self::getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\GenerateCommand', $configuration),
-            self::getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\MigrateCommand', $configuration),
-            self::getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\StatusCommand', $configuration),
-            self::getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\VersionCommand', $configuration),
+            $this->getDoctrineMigrationCommand('\Cx\Core_Modules\Update\Model\Entity\MigrationsDiffDoctrineCommand', $configuration),
+            $this->getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\ExecuteCommand', $configuration),
+            $this->getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\GenerateCommand', $configuration),
+            $this->getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\MigrateCommand', $configuration),
+            $this->getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\StatusCommand', $configuration),
+            $this->getDoctrineMigrationCommand('\Doctrine\DBAL\Migrations\Tools\Console\Command\VersionCommand', $configuration),
         ));
-        $cli->setAutoExit(false);
+        $this->cli->setAutoExit(false);
         
-        return $cli;
+        return $this->cli;
     }
     
     
@@ -262,7 +271,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
      * 
      * @return object doctrine migration command
      */
-    private static function getDoctrineMigrationCommand($migrationCommandNameSpace, $configuration) {
+    protected function getDoctrineMigrationCommand($migrationCommandNameSpace, $configuration) {
         $migrationCommand = new $migrationCommandNameSpace();
         $migrationCommand->setMigrationConfiguration($configuration);
         return $migrationCommand;
@@ -341,5 +350,13 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
         }
         return $codeBaseVersions;
     }
-
+    
+    /**
+     * Get codeBase Changes file
+     * 
+     * @return string $pendingCodeBaseChangesYml
+     */
+    public function getPendingCodeBaseChangesFile() {
+        return $this->pendingCodeBaseChangesYml;
+    }
 }
