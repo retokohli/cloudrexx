@@ -196,20 +196,20 @@ cx.jQuery(function($) {
       $("#uses").attr("disabled", false).val("1");
     }
   }).change();
-  <!-- BEGIN shopDiscountCouponEdit -->
-  var customer_id = "{SHOP_DISCOUNT_COUPON_CUSTOMER_ID}";
-  <!-- END shopDiscountCouponEdit -->
-  $("[name=global_or_customer]").change(function() {
-    var element = $("#customer_widget").find("input[name=customer_id]");
-    if ($("#global").is(":checked")) {
-      customer_id = element.val();
-      element.val("0");
-      $("#customer_widget").hide();
-    } else {
-      element.val(customer_id);
-      $("#customer_widget").show();
-    }
-  }).change();
+  cx.ready(function() {
+    $("[name=global_or_customer]").change(function() {
+      var element = $("#customer_widget").find("input[name=customer_id]");
+      var customer_id = element.val();
+      if ($("#global").is(":checked")) {
+        customer_id = element.val();
+        element.val("0");
+        $("#customer_widget").hide();
+      } else {
+        element.val(customer_id);
+        $("#customer_widget").show();
+      }
+    }).change();
+  });
   $(".icon_url").bind("click", function() {
     $(this).parents("tr").first().find(".layer_url").
       css("display", "block").find("input").focus();
@@ -239,6 +239,9 @@ function delete_coupon(index) {
       "index.php?{CSRF_PARAM}&cmd=Shop&act=settings&tpl=coupon&delete="+index);
   }
 }
+cx.ready(function() {
+
+});
 // ]]>
 </script>
 <!-- END module_shop_discount_coupon.html -->
