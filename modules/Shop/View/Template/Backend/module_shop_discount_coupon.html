@@ -196,7 +196,9 @@ cx.jQuery(function($) {
       $("#uses").attr("disabled", false).val("1");
     }
   }).change();
+  <!-- BEGIN shopDiscountCouponEdit -->
   var customer_id = "{SHOP_DISCOUNT_COUPON_CUSTOMER_ID}";
+  <!-- END shopDiscountCouponEdit -->
   $("[name=global_or_customer]").change(function() {
     var element = $("#customer_widget").find("input[name=customer_id]");
     if ($("#global").is(":checked")) {
