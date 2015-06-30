@@ -76,7 +76,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        $multiSiteProtocol = (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol','MultiSite') == 'mixed')? \Env::get('cx')->getRequest()->getUrl()->getProtocol(): \Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol','MultiSite');
+        $multiSiteProtocol = (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol','MultiSite') == 'mixed')? $this->cx->getRequest()->getUrl()->getProtocol(): \Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol','MultiSite');
         return array(
             'signup'                => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, null, null, array($this, 'verifySignupRequest')),
             'email'                 => new \Cx\Core_Modules\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
@@ -374,7 +374,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                 \DBG::msg('Website: generate auth-token for Cloudrexx user..');
                 try {
                     list($ownerUserId, $authToken) = $website->generateAuthToken();
-                    $autoLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $website->getBaseDn()->getName() . \Env::get('cx')->getWebsiteBackendPath() . '/?user-id='.$ownerUserId.'&auth-token='.$authToken);
+                    $autoLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $website->getBaseDn()->getName() . $this->cx->getWebsiteBackendPath() . '/?user-id='.$ownerUserId.'&auth-token='.$authToken);
                 } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
                     \DBG::msg($e->getMessage());
                 }
@@ -1893,7 +1893,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     }
                     break;
                 case ComponentController::MODE_WEBSITE:
-                    $license = \Env::get('cx')->getLicense();
+                    $license = $this->cx->getLicense();
                     $licenseState = isset($params['post']['state']) ? $params['post']['state'] : (isset($params['post']['licenseState']) ? $params['post']['licenseState'] : '');
                     $licenseValidTo = isset($params['post']['validTo']) ? $params['post']['validTo'] : (isset($params['post']['licenseValidTo']) ? $params['post']['licenseValidTo'] : '');
                     $licenseUpdateInterval = isset($params['post']['updateInterval']) ? $params['post']['updateInterval'] : (isset($params['post']['licenseUpdateInterval']) ? $params['post']['licenseUpdateInterval'] : '');
@@ -2167,7 +2167,10 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             $config = \Env::get('config');
             $params['auth'] = json_encode(array('sender' => $config['domainUrl']));
             try {
-                $objJsonMultiSite = new self();
+                // Get JsonMultiSiteController object
+                $componentRepo    = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                $component        = $componentRepo->findOneBy(array('name' => 'MultiSite'));
+                $objJsonMultiSite = $component->getController('JsonMultiSite');
                 $result = $objJsonMultiSite->$command(array('post' => $params));
                 // Convert $result (which is an array) into an object
                 // as JsonData->getJson (called by self::executeCommand())
@@ -3162,7 +3165,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
 
                 case ComponentController::MODE_WEBSITE:
-                    $license = \Env::get('cx')->getLicense();
+                    $license = $this->cx->getLicense();
                     if (!$license) {
                         throw new MultiSiteJsonException('JsonMultiSiteController::getLicense(): on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' $license was not set properly');
                     }
@@ -3366,7 +3369,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                         list($websiteOwnerUserId, $authToken) = $website->generateAuthToken();
                         
                         $websiteName     = $website->getBaseDn()->getName();
-                        $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $websiteName . \Env::get('cx')->getWebsiteBackendPath() . '/?user-id='.$websiteOwnerUserId.'&auth-token='.$authToken);
+                        $websiteLoginUrl = \Cx\Core\Routing\Url::fromMagic(ComponentController::getApiProtocol() . $websiteName . $this->cx->getWebsiteBackendPath() . '/?user-id='.$websiteOwnerUserId.'&auth-token='.$authToken);
                         $successMessage  = sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_REMOTE_LOGIN_SUCCESS'], $websiteName);
                     }
                     return array('status' => 'success', 'message' => $successMessage,'webSiteLoginUrl' => $websiteLoginUrl->toString());
@@ -4038,7 +4041,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
-                    $tempDir = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . BackendController::MULTISITE_BACKUP_TEMP_DIR;
+                    $tempDir = $this->cx->getWebsiteTempPath() . BackendController::MULTISITE_BACKUP_TEMP_DIR;
                     
                     //cleanup tmp/backups direcory
                     \Cx\Lib\FileSystem\FileSystem::delete_folder($tempDir, true);
@@ -4995,7 +4998,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
                     }
 
-                    $destinationFolder = \Env::get('cx')->getWebsiteTempPath() . BackendController::MULTISITE_BACKUP_TEMP_DIR;
+                    $destinationFolder = $this->cx->getWebsiteTempPath() . BackendController::MULTISITE_BACKUP_TEMP_DIR;
                     $files = $this->getMovedFilesInRemoteServer($destinationFolder);
                     $resp = self::executeCommandOnServiceServer('sendFileToRemoteServer', array('destinationServer' => $params['post']['serviceServerId']), $websiteServiceServer, $files);
                     if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
@@ -6209,7 +6212,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_WEBSITE:
-                    if((in_array($params['post']['component'], \Env::get('cx')->getLicense()->getLegalComponentsList()))) {
+                    if((in_array($params['post']['component'], $this->cx->getLicense()->getLegalComponentsList()))) {
                         return array('status' => 'success');
                     }
                     break;
@@ -6523,7 +6526,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                         if(!$updateController){
                            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_PROCESS_ERROR_MSG']); 
                         }
-                        $folderPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . '/MultiSite';
+                        $folderPath = $this->cx->getWebsiteTempPath() . '/MultiSite';
                         $filePath = $folderPath . '/' . $updateController->getPendingCodeBaseChangesFile();
                         $updateController->storeUpdateWebsiteDetailsToYml($folderPath, $filePath, $ymlContent );
                         
@@ -6606,7 +6609,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_ERROR_MSG']);
                     }
                     
-                    $folderPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteTempPath() . '/Update';
+                    $folderPath = $this->cx->getWebsiteTempPath() . '/Update';
                     $filePath = $folderPath .'/'. $updateController->getPendingCodeBaseChangesFile();
                     $ymlContent = array(
                                         'oldCodeBaseId'    => $oldVersion,
