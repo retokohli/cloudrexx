@@ -71,11 +71,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getControllerClasses()
     {
-        return array('Backend', 'Frontend', 'Cron');
+        return array('Backend', 'Frontend', 'Cron', 'JsonMultiSite');
     }
     
     public function getControllersAccessableByJson() { 
-        return array('JsonMultiSite');
+        return array('JsonMultiSiteController');
     }
 
     public function getCommandsForCommandMode() {

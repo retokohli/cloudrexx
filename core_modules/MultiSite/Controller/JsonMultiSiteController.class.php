@@ -55,7 +55,8 @@ class MultiSiteJsonException extends \Exception {
  * @package     contrexx
  * @subpackage  Multisite
 */
-class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
+class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller 
+                    implements \Cx\Core\Json\JsonAdapter {
 
     /**
      * @var boolean 
