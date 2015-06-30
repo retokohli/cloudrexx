@@ -197,9 +197,9 @@ cx.jQuery(function($) {
     }
   }).change();
   cx.ready(function() {
+    var element = $("#customer_widget").find("input[name=customer_id]");
+    var customer_id = element.val();
     $("[name=global_or_customer]").change(function() {
-      var element = $("#customer_widget").find("input[name=customer_id]");
-      var customer_id = element.val();
       if ($("#global").is(":checked")) {
         customer_id = element.val();
         element.val("0");
