@@ -84,7 +84,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                      }
                      break;
                  case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                    if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+                    if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isIscRequest()) {
 // TODO: add language variable
                         throw new \Exception('User management has been disabled as this Contrexx installation is being operated as a MultiSite Service Server.');
                     }
@@ -118,7 +118,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     }
                     
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite');
-                    if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+                    if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isIscRequest()) {
                         if (!$objUser->isVerified()) {
                             throw new \Exception('Diese Funktion ist noch nicht freigeschalten. Aus Sicherheitsgründen bitten wir Sie, Ihre Anmeldung &uuml;ber den im Willkommens-E-Mail hinterlegten Link zu best&auml;tigen. Anschliessend wird Ihnen diese Funktion zur Verf&uuml;gung stehen. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                         }
@@ -129,7 +129,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                         
                         $objWebsiteOwner = \FWUser::getFWUserObject()->objUser->getUser($websiteUserId);
                         $newEmail = $objUser->getEmail();
-                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('executeOnManager', array('command' => 'isUniqueEmail', 'params' => array('currentEmail'=> $objWebsiteOwner->getEmail(),'newEmail' => $newEmail)));
+                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnMyServiceServer('executeOnManager', array('command' => 'isUniqueEmail', 'params' => array('currentEmail'=> $objWebsiteOwner->getEmail(),'newEmail' => $newEmail)));
                         if ($response && $response->data->status == 'error') {
                             $customerPanelUrl  = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $response->data->customerPanelDomain . '/')->toString();
                             $customerPanelLink = '<a class="alert-link" href="'.$customerPanelUrl.'" target="_blank">'.$response->data->customerPanelDomain.'</a>';
@@ -140,7 +140,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                         $params = self::fetchUserData($objUser);
                         try {
                             $objJsonData = new \Cx\Core\Json\JsonData();
-                            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('executeOnManager', array('command' => 'updateUser', 'params' => $params));
+                            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnMyServiceServer('executeOnManager', array('command' => 'updateUser', 'params' => $params));
                             if ($resp->status == 'error' || $resp->data->status == 'error') {
                                 if (isset($resp->log)) {
                                     \DBG::appendLogs(array_map(function($logEntry) {return '(Website: './*$this->getName().*/') '.$logEntry;}, $resp->log));
@@ -155,7 +155,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                    if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+                    if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isIscRequest()) {
 // TODO: add language variable
                         throw new \Exception('User management has been disabled as this Contrexx installation is being operated as a MultiSite Service Server.');
                     }
@@ -177,13 +177,13 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite');
-                    if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+                    if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isIscRequest()) {
 // TODO: add language variable
                         throw new \Exception('Das Benutzerkonto des Websitebetreibers kann nicht ge&auml;ndert werden. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                     }
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                    if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+                    if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isIscRequest()) {
 // TODO: add language variable
                         throw new \Exception('User management has been disabled as this Contrexx installation is being operated as a MultiSite Service Server.');
                     }
@@ -199,7 +199,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
                         $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
                         foreach ($websiteServiceServers as $serviceServer) {
-                            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('removeUser', array('userId' => $objUser->getId()), $serviceServer);
+                            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('removeUser', array('userId' => $objUser->getId()), $serviceServer);
                             if (   (isset($resp->status) && $resp->status == 'error')
                                 || (isset($resp->data->status) && $resp->data->status == 'error')
                             ) {
@@ -247,7 +247,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     
                         if ($websiteServiceServer) {
                             \DBG::msg('Going to update user '.$objUser->getId().' on WebsiteServiceServer '.$websiteServiceServer->getLabel());
-                            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('updateUser', $params, $websiteServiceServer);
+                            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('updateUser', $params, $websiteServiceServer);
                         }
                     }
                     break;
@@ -257,7 +257,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $websites  = $webRepo->findWebsitesByCriteria(array('user.id' => $objUser->getId()));
                     foreach ($websites As $website) {
-                        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('updateUser', $params, $website);
+                        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('updateUser', $params, $website);
                     }
                     break;
                 default:
@@ -323,7 +323,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                 $adminUsersCount = count($adminUsers);
                 if ($adminUsersCount >= $options['AdminUser']) {
                     $errMsg = sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_ADMINS_REACHED'], $options['AdminUser']);
-                    if(!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isIscRequest()) {
+                    if(!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isIscRequest()) {
                         throw new \Cx\Core\Error\Model\Entity\ShinyException($errMsg.' <a href="index.php?cmd=Access">'.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GO_TO_OVERVIEW'].'</a>');
                     }
                     throw new \Cx\Core\Error\Model\Entity\ShinyException($errMsg);

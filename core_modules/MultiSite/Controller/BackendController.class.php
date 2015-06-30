@@ -272,7 +272,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'table' => array(
                                  'parse' => function($value) {
                                     $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('hostname' => $value));
-                                    $response   = JsonMultiSite::executeCommandOnServiceServer('ping', array(), $websiteServiceServer);
+                                    $response   = JsonMultiSiteController::executeCommandOnServiceServer('ping', array(), $websiteServiceServer);
                                     if ($response && $response->status == 'success' && $response->data->status == 'success'){
                                         $statusIcon       = '<img src="'. '../core/Core/View/Media/icons/status_green.gif"'. ' alt='."status_green".'/>';
                                         $hostNameStatus   = $statusIcon."&nbsp;".$value."&nbsp;".'<span class="'. 'icon-info tooltip-trigger"'. '></span><span class="'. 'tooltip-message"'. '> Bidirectional communication successfully established </span>';
@@ -1014,7 +1014,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function getFtpAccountsFromService(\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer $websiteServiceServer)
     {
         $ftpAccounts     = array();
-        $ftpAccountsResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('getFtpAccounts', array(), $websiteServiceServer);                    
+        $ftpAccountsResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('getFtpAccounts', array(), $websiteServiceServer);                    
         if ($ftpAccountsResp && $ftpAccountsResp->status == 'success') {
             foreach ($ftpAccountsResp->data->data as $ftpAccount) {                
                 $ftpAccounts[$ftpAccount->name] = array(
@@ -1265,7 +1265,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 throw new MultiSiteBackendException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
             }
             
-            $resp = JsonMultiSite::executeCommandOnServiceServer(
+            $resp = JsonMultiSiteController::executeCommandOnServiceServer(
                 'downloadWebsiteBackup', 
                 array('websiteBackupFileName' => $backupFileName), 
                 $websiteServiceServer
@@ -1335,7 +1335,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $allBackupFilesInfo = array();
             $params = array('searchTerm' => $searchTerm);
             foreach ($websiteServiceServers as $websiteServiceServer) {
-                $resp = JsonMultiSite::executeCommandOnServiceServer('getAllBackupFilesInfo', $params, $websiteServiceServer);
+                $resp = JsonMultiSiteController::executeCommandOnServiceServer('getAllBackupFilesInfo', $params, $websiteServiceServer);
                 if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
                     continue;
                 }
@@ -1385,7 +1385,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $params = array('setupArray' => \Cx\Core\Setting\Controller\Setting::getArray('MultiSite', 'setup'));
                     $webServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
                     foreach ($webServiceServers as $webServiceServer) {
-                        $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('updateServiceServerSetup', $params, $webServiceServer);
+                        $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('updateServiceServerSetup', $params, $webServiceServer);
                         if (!$resp || $resp->status == 'error') {
                             $errMsg = isset($resp->message) ? $resp->message : '';
                             \DBG::dump($errMsg);

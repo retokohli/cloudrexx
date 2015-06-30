@@ -366,11 +366,11 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
         switch ($mode) {
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
-                $result = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer($event, $params);
+                $result = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnMyServiceServer($event, $params);
                 break;
 
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                $result = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager($event, $params);
+                $result = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnManager($event, $params);
                 break;
 
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
@@ -416,7 +416,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             return;
         }
         
-        $result = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('domainManipulation', $params);
+        $result = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnMyServiceServer('domainManipulation', $params);
         if ($result && $result->status == 'error') {
             \DBG::log($result->message);
             throw new DomainEventListenerException('MultiSite (DomainEventListener): domainManipulation() Failed.');

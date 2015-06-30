@@ -185,7 +185,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 if ($this->id) {
                     break;
                 }
-                $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('getDefaultWebsiteIp', array(), $this->websiteServiceServer);
+                $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('getDefaultWebsiteIp', array(), $this->websiteServiceServer);
                 if(!$resp || $resp->status == 'error'){
                     $errMsg = isset($resp->message) ? $resp->message : '';
                     if (isset($resp->log)) {
@@ -208,7 +208,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 break;
         }
 
-        $this->secretKey = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::generateSecretKey();
+        $this->secretKey = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::generateSecretKey();
         $this->validate();
         $this->codeBase = \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase','MultiSite');
         $this->setFqdn();
@@ -532,7 +532,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             \DBG::msg('Website: Forward setup() to Website Service Server');
             $isServiceServer = false;
             //create user account in website service server
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createUser', array('userId' => $this->owner->getId(), 'email'  => $this->owner->getEmail()), $this->websiteServiceServer);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('createUser', array('userId' => $this->owner->getId(), 'email'  => $this->owner->getEmail()), $this->websiteServiceServer);
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
                 \DBG::dump($errMsg);
@@ -552,7 +552,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 'options'     => $options,
                 'themeId'     => $websiteThemeId
                 );
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('createWebsite', $params, $this->websiteServiceServer);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('createWebsite', $params, $this->websiteServiceServer);
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
                 \DBG::dump($errMsg);
@@ -665,12 +665,12 @@ class Website extends \Cx\Model\Base\EntityBase {
                 $params = \Cx\Core_Modules\MultiSite\Model\Event\AccessUserEventListener::fetchUserData($this->owner);
                 switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
-                        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('updateUser', $params, $this->websiteServiceServer);
+                        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('updateUser', $params, $this->websiteServiceServer);
                         break;
 
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
-                        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('updateUser', $params, $this);
+                        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('updateUser', $params, $this);
                         break;
                 }
                 $mailTemplateKey = 'newWebsiteCreated';
@@ -818,7 +818,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     public static function validateName($name) {
         global $_ARRAYLANG;
 
-        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::loadLanguageData();
+        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::loadLanguageData();
         $websiteName = $name;
 
         // verify that name is not a blocked word
@@ -952,7 +952,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 'coreAdminEmail'   => $this->owner->getEmail(),
                 'contactFormEmail' => $this->owner->getEmail()
             );
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setupConfig', $params, $this);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('setupConfig', $params, $this);
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
                 if (isset($resp->log)) {
@@ -1105,7 +1105,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             // assign user to first user group 
             'groups' => array(1),
         );
-        $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('createUser', $params, $this);
+        $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('createUser', $params, $this);
         if(!$resp || $resp->status == 'error'){
             $errMsg = isset($resp->message) ? $resp->message : '';
             \DBG::dump($resp);
@@ -1146,7 +1146,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     // remove the mail service of website
                     if ($this->mailServiceServer && $this->mailAccountId) {
-                        $deleteMailService = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('deleteMailServiceAccount', array('websiteId' => $this->id));
+                        $deleteMailService = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnManager('deleteMailServiceAccount', array('websiteId' => $this->id));
                         if (!$deleteMailService || $deleteMailService->status == 'error') {
                             $errorMsg = isset($deleteMailService->message) ? $deleteMailService->message : '';
                             if (isset($deleteMailService->log)) {
@@ -1155,7 +1155,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
                             throw new WebsiteException('Unable to delete the mail service: ' . serialize($errorMsg));
                         }  
                     }
-                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('destroyWebsite', array('websiteId' => $this->id), $this->websiteServiceServer);
+                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('destroyWebsite', array('websiteId' => $this->id), $this->websiteServiceServer);
                     if (!$resp || $resp->status == 'error') {
                         $errMsg = isset($resp->message) ? $resp->message : '';
                         if (isset($resp->log)) {
@@ -1335,7 +1335,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
     }
 
     function generateInstalationId(){
-        $randomHash = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::generateSecretKey();
+        $randomHash = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::generateSecretKey();
         $installationId = $randomHash . str_pad(dechex(crc32($randomHash)), 8, '0', STR_PAD_LEFT);    
         return $installationId;
     }
@@ -1597,7 +1597,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
                                     && isset($mailServiceConfig['planId'][$mailServicePlan])) 
                                         ? $mailServiceConfig['planId'][$mailServicePlan] : null;
             
-            $mailServiceStatusResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager($mailServiceStatus, array('websiteId' => $this->id));
+            $mailServiceStatusResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnManager($mailServiceStatus, array('websiteId' => $this->id));
             if ($mailServiceStatusResp && $mailServiceStatusResp->status == 'error' || $mailServiceStatusResp->data->status == 'error') {
                 \DBG::log('Failed to '.$mailServiceStatus);
                 throw new WebsiteException('Failed to '.$mailServiceStatus);
@@ -1609,7 +1609,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     'websiteId'      => $this->id,
                 );
 
-                $mailServicePlanResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('changePlanOfMailSubscription', $paramsData);
+                $mailServicePlanResp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnManager('changePlanOfMailSubscription', $paramsData);
                 if ($mailServicePlanResp && $mailServicePlanResp->status == 'error' || $mailServicePlanResp->data->status == 'error') {
                     \DBG::log('Failed to change the plan of the subscription.');
                     throw new WebsiteException('Failed to change the plan of the subscription.');
@@ -1634,7 +1634,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
             );
             //send the JSON Request 'setLicense' command from service to website
             try {
-                $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $params, $this);
+                $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('setLicense', $params, $this);
                 if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                     if (isset($resp->data->log)) {
                         \DBG::appendLogs(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->data->log));
@@ -1661,7 +1661,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
     public function initializeLanguage() {
         //send the JSON Request 'setDefaultLanguage' command from service to website
         try {
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setDefaultLanguage', array('langId' => $this->language), $this);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('setDefaultLanguage', array('langId' => $this->language), $this);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                 if (isset($resp->data->log)) {
                     \DBG::appendLogs(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->data->log));
@@ -1688,7 +1688,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 return;
             }
             
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setWebsiteTheme', array('themeId' => $websiteThemeId), $this);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('setWebsiteTheme', array('themeId' => $websiteThemeId), $this);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                 if (isset($resp->data->log)) {
                     \DBG::appendLogs(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->data->log));
@@ -1788,7 +1788,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
 
     public function generateAuthToken() {
         try {
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('generateAuthToken', array(), $this);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('generateAuthToken', array(), $this);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                 if (isset($resp->data->log)) {
                     \DBG::appendLogs(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->data->log));
@@ -1818,7 +1818,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
             'multisite_user_account_password_confirmed' => $newPassword,
         );
         try {
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('updateUser', $params);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnManager('updateUser', $params);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                 // do only append logs from executed command, if command was not executed on our own system,
                 // otherwise we would re-add our existing log-messages (-> duplicating whole log stack)
@@ -1927,7 +1927,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
         $adminUsers = array();
         
         try {
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getAdminUsers', array(), $this);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('getAdminUsers', array(), $this);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                 
                 if (\FWValidator::isEmpty($resp->data->users)) {
@@ -1970,7 +1970,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
             return;
         }
         try {
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getUser', array('id' => $id), $this);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('getUser', array('id' => $id), $this);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                 
                 if (\FWValidator::isEmpty($resp->data->user)) {
@@ -1997,7 +1997,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */
     public function getResourceUsageStats() {
         try {
-            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getResourceUsageStats', array(), $this);
+            $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('getResourceUsageStats', array(), $this);
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                 return $resp->data->resourceUsageStats;
             }

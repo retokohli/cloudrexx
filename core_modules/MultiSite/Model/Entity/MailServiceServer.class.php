@@ -316,14 +316,14 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
     {
         $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getMailServerHostingController($this);
         
-        $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getMainDomain', array(), $website);
+        $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('getMainDomain', array(), $website);
         $mainDomain = '';
         if ($resp->status == 'success' && $resp->data->status == 'success') {
             $mainDomain = $resp->data->mainDomain;
         }
         
         $additionalData = null;
-        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getModuleAdditionalData', array('moduleName' => 'MultiSite', 'additionalType' => 'Mail'), $website);
+        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('getModuleAdditionalData', array('moduleName' => 'MultiSite', 'additionalType' => 'Mail'), $website);
         if ($response->status == 'success' && $response->data->status == 'success') {
             $additionalData = $response->data->additionalData;
         }

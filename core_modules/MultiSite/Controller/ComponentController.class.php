@@ -116,7 +116,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         // load language data of MultiSite component
-        JsonMultiSite::loadLanguageData();
+        JsonMultiSiteController::loadLanguageData();
 
         // load application template
         $page = new \Cx\Core\ContentManager\Model\Entity\Page();
@@ -971,13 +971,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         //show section Domains if component NetManager is licensed on Website.
-        $response = JsonMultiSite::executeCommandOnWebsite('isComponentLicensed', array('component' => 'NetManager'), $website);
+        $response = JsonMultiSiteController::executeCommandOnWebsite('isComponentLicensed', array('component' => 'NetManager'), $website);
         $showDomainSectionStatus = isset($response->status) && $response->status == 'success' && isset($response->data) && $response->data->status == 'success';
         self::showOrHideBlock($objTemplate, 'showDomainsSection', $showDomainSectionStatus);
         
         //show website base domain and domain aliases
         if ($showDomainSectionStatus && $objTemplate->blockExists('showWebsiteDomains')) {
-            $resp = JsonMultiSite::executeCommandOnWebsite('getMainDomain', array(), $website);
+            $resp = JsonMultiSiteController::executeCommandOnWebsite('getMainDomain', array(), $website);
             $mainDomainName = '';
             if ($resp->status == 'success' && $resp->data->status == 'success') {
                 $mainDomainName = $resp->data->mainDomain;
@@ -1023,7 +1023,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $showMailService = false;
         if ($objTemplate->blockExists('activateMailService') && $objTemplate->blockExists('deactivateMailService')) {
             $mailServiceServerStatus = false;
-            $additionalDataResp = JsonMultiSite::executeCommandOnWebsite('getModuleAdditionalData', array('moduleName' => 'MultiSite', 'additionalType' => 'Mail'), $website);
+            $additionalDataResp = JsonMultiSiteController::executeCommandOnWebsite('getModuleAdditionalData', array('moduleName' => 'MultiSite', 'additionalType' => 'Mail'), $website);
             $additionalData     = null;
             if ($additionalDataResp->status == 'success' && $additionalDataResp->data->status == 'success') {
                 $additionalData = $additionalDataResp->data->additionalData;
@@ -1033,7 +1033,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 && isset($additionalData->service) 
                                 && !\FWValidator::isEmpty($additionalData->service));
             if ($website->getMailServiceServer() && !\FWValidator::isEmpty($website->getMailAccountId())) {
-                $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('getMailServiceStatus', array('websiteId' => $websiteId));
+                $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnManager('getMailServiceStatus', array('websiteId' => $websiteId));
                 if (!\FWValidator::isEmpty($response)
                         && $response->status == 'success' 
                         && $response->data->status == 'success'
@@ -1170,7 +1170,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
                 }
                 if (isset($command) && isset($params)) {
-                    $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite($command, $params, $website);
+                    $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite($command, $params, $website);
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         $message = ($submitFormAction == 'Select') 
                                     ? sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_SUCCESS_MSG'], contrexx_raw2xhtml($domainName))
@@ -1206,7 +1206,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $mailServiceServerStatus = false;
 
                     if ($website->getMailServiceServer() && !\FWValidator::isEmpty($website->getMailAccountId())) {
-                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager('getMailServiceStatus', array('websiteId' => $websiteId));
+                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnManager('getMailServiceStatus', array('websiteId' => $websiteId));
                         if (!\FWValidator::isEmpty($response)
                                 && $response->status == 'success' 
                                 && $response->data->status == 'success'
@@ -1288,7 +1288,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
                 }
                 if (isset($command) && isset($params)) {
-                    $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnManager($command, $params);
+                    $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnManager($command, $params);
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         return $this->parseJsonMessage(array('message' => $response->data->message, 'pwd' => $response->data->password), true);
                     } else {
@@ -1399,7 +1399,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
                 }
                 if (isset($command) && isset($params)) {
-                    $response = JsonMultiSite::executeCommandOnWebsite($command, $params, $website);
+                    $response = JsonMultiSiteController::executeCommandOnWebsite($command, $params, $website);
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         return $this->parseJsonMessage($successMsg, true);
                     } else {
@@ -1582,7 +1582,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $params['backupLocation'] = $backupLocation;
             
             if ($websiteServiceServer) {
-                $resp = JsonMultiSite::executeCommandOnServiceServer('websiteBackup', $params, $websiteServiceServer);
+                $resp = JsonMultiSiteController::executeCommandOnServiceServer('websiteBackup', $params, $websiteServiceServer);
                 return $responseType == 'json' ? $resp : ($resp->status == 'success' ? $resp->data->messsage : $resp->message);
             }
             
@@ -1690,7 +1690,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     );
                     
                     //Copy a file from  $backupedServiceServer to $restoreInServiceServer
-                    $response = JsonMultiSite::executeCommandOnServiceServer('sendFileToRemoteServer', $backupServiceServerParams, $backupedServiceServer);
+                    $response = JsonMultiSiteController::executeCommandOnServiceServer('sendFileToRemoteServer', $backupServiceServerParams, $backupedServiceServer);
                     if (!$response || $response->status == 'error' || $response->data->status == 'error') {
                         throw new MultiSiteException('Failed to copy/move a file to '.$restoreInServiceServer->getHostName());
                     }
@@ -1709,7 +1709,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'selectedUserId'        => $selectedUserId,
                 'subscriptionId'        => $subscriptionId
             );
-            $resp = JsonMultiSite::executeCommandOnServiceServer('websiteRestore', $params, $restoreInServiceServer);
+            $resp = JsonMultiSiteController::executeCommandOnServiceServer('websiteRestore', $params, $restoreInServiceServer);
             return $responseType == 'json' ? $resp : ($resp->status == 'success' ? $resp->data->messsage : $resp->message);
             
         } catch (\Exception $e) {
@@ -1741,7 +1741,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
 
             //Copy a backup file to selected service server
-            $resp = JsonMultiSite::executeCommandOnServiceServer('sendFileToRemoteServer', array('destinationServer' => $websiteServiceServer->getId()), $websiteServiceServer, array($filePath));
+            $resp = JsonMultiSiteController::executeCommandOnServiceServer('sendFileToRemoteServer', array('destinationServer' => $websiteServiceServer->getId()), $websiteServiceServer, array($filePath));
             if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
                 throw new MultiSiteException('Failed to send a file to '.$websiteServiceServer->getHostname());
             }
@@ -1927,7 +1927,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
             }
             
-            list($renewalUnit, $renewalQuantifier) = JsonMultiSite::getProductRenewalUnitAndQuantifier($renewalOption);
+            list($renewalUnit, $renewalQuantifier) = JsonMultiSiteController::getProductRenewalUnitAndQuantifier($renewalOption);
             // create new subscription of selected product
             $subscriptionOptions = array(
                 'renewalUnit'       => $renewalUnit,
@@ -3277,7 +3277,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
-        JsonMultiSite::loadLanguageData();
+        JsonMultiSiteController::loadLanguageData();
         $objTemplate = $this->cx->getTemplate();
         $warning = new \Cx\Core\Html\Sigma($this->cx->getCodeBaseCoreModulePath() . '/MultiSite/View/Template/Backend');
         $warning->loadTemplateFile('AccountActivation.html');

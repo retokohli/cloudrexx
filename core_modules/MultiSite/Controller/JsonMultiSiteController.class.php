@@ -55,8 +55,8 @@ class MultiSiteJsonException extends \Exception {
  * @package     contrexx
  * @subpackage  Multisite
 */
-class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller 
-                    implements \Cx\Core\Json\JsonAdapter {
+class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller 
+                              implements \Cx\Core\Json\JsonAdapter {
 
     /**
      * @var boolean 
@@ -597,7 +597,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                             try {
                                 $payrexx->update($updateSubscription);
                             } catch (\Payrexx\PayrexxException $e) {
-                                \DBG::log('JsonMultiSite::manageSubscription() - Could not update the a subscription ID => '. $newExternalSubscriptionId. ' / '. $e->getMessage());
+                                \DBG::log('JsonMultiSiteController::manageSubscription() - Could not update the a subscription ID => '. $newExternalSubscriptionId. ' / '. $e->getMessage());
                             }
                         }
                         
@@ -617,7 +617,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                         // create payment for order
                         ComponentController::createPayrexxPayment($transactionReference, $productPrice - $credit, $transactionData);
                     } else {
-                        \DBG::log('JsonMultiSite::manageSubscription() - Could not create a subscription.');
+                        \DBG::log('JsonMultiSiteController::manageSubscription() - Could not create a subscription.');
                         return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_'.$subscriptionType.'_FAILED']);
                     }
                 } catch (\Payrexx\PayrexxException $e) {
@@ -761,7 +761,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
     public function createUser($params) {
         try {
             if (empty($params['post'])) {
-                throw new MultiSiteJsonException('Invalid arguments specified for command JsonMultiSite::createUser.');
+                throw new MultiSiteJsonException('Invalid arguments specified for command JsonMultiSiteController::createUser.');
             }
 
             $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
@@ -850,7 +850,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 $password = contrexx_input2raw($data['multisite_user_account_password']);
                 $confirmedPassword = !empty($data['multisite_user_account_password_confirmed']) ? contrexx_input2raw($data['multisite_user_account_password_confirmed']) : '';
                 if (!$objUser->setPassword($password, $confirmedPassword)) {
-                    \DBG::msg("JsonMultiSite (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
+                    \DBG::msg("JsonMultiSiteController (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
                     throw new MultiSiteJsonException(array(
                         'object'    => 'password',
                         'type'      => 'danger',
@@ -869,7 +869,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 \DBG::log('Adding Admin user failed: ' . $objUser->getErrorMsg());
                 throw new MultiSiteJsonException($objUser->getErrorMsg());
             }
-            \DBG::log("JsonMultiSite (createAdminUser): User has been successfully added.");
+            \DBG::log("JsonMultiSiteController (createAdminUser): User has been successfully added.");
             return array(
                 'status' => 'success',
                 'log' => \DBG::getMemoryLogs(),
@@ -977,7 +977,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             $password = contrexx_input2raw($data['multisite_user_account_password']);
             $confirmedPassword = !empty($data['multisite_user_account_password_confirmed']) ? contrexx_input2raw($data['multisite_user_account_password_confirmed']) : '';
             if (!$objUser->setPassword($password, $confirmedPassword)) {
-                \DBG::msg("JsonMultiSite (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
+                \DBG::msg("JsonMultiSiteController (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
                 throw new MultiSiteJsonException(array(
                     'object'    => 'password',
                     'type'      => 'danger',
@@ -988,7 +988,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         }
 
         if (!$objUser->store()) {
-            \DBG::msg("JsonMultiSite (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
+            \DBG::msg("JsonMultiSiteController (updateUser): Failed to update {$objUser->getId()}: ".join("\n", $objUser->getErrorMsg()));
             throw new MultiSiteJsonException(array(
                 'object'    => 'form',
                 'type'      => 'danger',
@@ -997,7 +997,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             ));
         }
                 
-        \DBG::msg("JsonMultiSite (updateUser): User {$objUser->getId()} successfully updated.");
+        \DBG::msg("JsonMultiSiteController (updateUser): User {$objUser->getId()} successfully updated.");
         return array(
             'status'    => 'success',
             'log'       => \DBG::getMemoryLogs(),
@@ -1197,7 +1197,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         //check the website exists or not based on $websiteId
         $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
         if (!$website) {
-            \DBG::log('JsonMultiSite::verifyWebsiteOwnerOrIscRequest() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+            \DBG::log('JsonMultiSiteController::verifyWebsiteOwnerOrIscRequest() failed: Unkown Website-ID: '.$params['post']['websiteId']);
             return false;
         }
         
@@ -1268,23 +1268,23 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             || !isset($params['post']['componentId'])
             || !isset($params['post']['coreNetDomainId'])
         ) {
-            throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Insufficient mapping information supplied.');
+            throw new MultiSiteJsonException('JsonMultiSiteController::mapDomain() failed: Insufficient mapping information supplied.');
         }
 
         $authenticationValue = json_decode($params['post']['auth'], true);
         if (empty($authenticationValue) || !is_array($authenticationValue)) {
-            throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Insufficient mapping information supplied.');
+            throw new MultiSiteJsonException('JsonMultiSiteController::mapDomain() failed: Insufficient mapping information supplied.');
         }
         //check the black listed domains
         if (!self::checkBlackListDomains($params['post']['domainName'])) {
-            \DBG::log('JsonMultiSite::mapDomain() failed: ' . $params['post']['domainName'] . '(Domain name is black listed).');
+            \DBG::log('JsonMultiSiteController::mapDomain() failed: ' . $params['post']['domainName'] . '(Domain name is black listed).');
             throw new MultiSiteJsonException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'], $params['post']['domainName']));
         }
 
         try {
             //Check the domain name is subdomain of the domain or not.
             if ($this->isDomainASubDomainOfMultisiteDomain($params['post']['domainName'])) {
-                \DBG::log('JsonMultiSite::mapDomain() failed: The domain name is a subdomain of multiSite Domain');
+                \DBG::log('JsonMultiSiteController::mapDomain() failed: The domain name is a subdomain of multiSite Domain');
                 throw new MultiSiteJsonException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'], $params['post']['domainName']));
             }
             
@@ -1307,7 +1307,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     // be mapped to.
                     $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('hostname' => $authenticationValue['sender']));
                     if (!$websiteServiceServer) {
-                        throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Unkown Service Server: '.$authenticationValue['sender']);
+                        throw new MultiSiteJsonException('JsonMultiSiteController::mapDomain() failed: Unkown Service Server: '.$authenticationValue['sender']);
                     }
                     $componentId = $websiteServiceServer->getId();
                     break;
@@ -1319,7 +1319,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                             $componentId = $params['post']['componentId'];
                             $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneById($componentId);
                             if (!$website) {
-                                throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Unkown Website-ID: '.$componentId);
+                                throw new MultiSiteJsonException('JsonMultiSiteController::mapDomain() failed: Unkown Website-ID: '.$componentId);
                             }
                             break;
 
@@ -1328,17 +1328,17 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                             // componentId is the ID of the Website the request was made from
                             $objWebsiteDomain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
                             if (!$objWebsiteDomain) {
-                                throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Unkown Website: '.$authenticationValue['sender']);
+                                throw new MultiSiteJsonException('JsonMultiSiteController::mapDomain() failed: Unkown Website: '.$authenticationValue['sender']);
                             }
                             $website = $objWebsiteDomain->getWebsite();
                             if (!$website) {
-                                throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Unkown Website: '.$authenticationValue['sender']);
+                                throw new MultiSiteJsonException('JsonMultiSiteController::mapDomain() failed: Unkown Website: '.$authenticationValue['sender']);
                             }
                             $componentId = $website->getId();
                             break;
 
                         default:
-                            throw new MultiSiteJsonException('JsonMultiSite::mapDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'));
+                            throw new MultiSiteJsonException('JsonMultiSiteController::mapDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'));
                             break;
                     }
 
@@ -1388,7 +1388,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         self::loadLanguageData();
         
         if (empty($params['post']['domainName'])) {
-            \DBG::log('JsonMultiSite::mapNetDomain() failed: domainName is empty.');
+            \DBG::log('JsonMultiSiteController::mapNetDomain() failed: domainName is empty.');
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
         }
         try {
@@ -1407,8 +1407,8 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
             }
         } catch (\Exception $e) {
-            \DBG::log('JsonMultiSite::mapNetDomain() failed:'. $e->getMessage());
-            throw new MultiSiteJsonException('JsonMultiSite::mapNetDomain() failed:'. $e->getMessage());
+            \DBG::log('JsonMultiSiteController::mapNetDomain() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::mapNetDomain() failed:'. $e->getMessage());
         }
     }
 
@@ -1427,7 +1427,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         self::loadLanguageData();
         
         if (empty($params['post']['domainId'])) {
-            \DBG::log('JsonMultiSite::unMapNetDomain() failed: domainId is empty.');
+            \DBG::log('JsonMultiSiteController::unMapNetDomain() failed: domainId is empty.');
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
         }
         try {
@@ -1438,7 +1438,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     $domain = $domainRepo->findOneBy(array('id' => contrexx_input2raw($params['post']['domainId'])));
                     
                     if (!$domain) {
-                       \DBG::log('JsonMultiSite::unMapNetDomain() failed: Unknown DomainId:'. $params['post']['domainId']);
+                       \DBG::log('JsonMultiSiteController::unMapNetDomain() failed: Unknown DomainId:'. $params['post']['domainId']);
                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
                     }
                     
@@ -1451,8 +1451,8 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
             }
         } catch (\Exception $e) {
-            \DBG::dump('JsonMultiSite::unMapNetDomain() failed:'. $e->getMessage());
-            throw new MultiSiteJsonException('JsonMultiSite::unMapNetDomain() failed:'. $e->getMessage());
+            \DBG::dump('JsonMultiSiteController::unMapNetDomain() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::unMapNetDomain() failed:'. $e->getMessage());
         }
     }
 
@@ -1472,7 +1472,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         self::loadLanguageData();
         
         if (empty($params['post']['domainName']) || empty($params['post']['domainId'])) {
-            \DBG::log('JsonMultiSite::updateNetDomain() failed: domainName or domainId is empty.');
+            \DBG::log('JsonMultiSiteController::updateNetDomain() failed: domainName or domainId is empty.');
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
         }
         try {
@@ -1481,7 +1481,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     $domainRepo  = \Env::get('em')->getRepository('Cx\Core\Net\Model\Entity\Domain');
                     $objDomain   = $domainRepo->findOneBy(array('id' => $params['post']['domainId']));
                     if (!$objDomain) {
-                       \DBG::log('JsonMultiSite::updateNetDomain() failed: Unknown DomainId:'. $params['post']['domainId']);
+                       \DBG::log('JsonMultiSiteController::updateNetDomain() failed: Unknown DomainId:'. $params['post']['domainId']);
                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
                     }
                     $objDomain->setName(contrexx_input2raw($params['post']['domainName']));
@@ -1492,8 +1492,8 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
             }
         } catch (\Exception $e) {
-            \DBG::dump('JsonMultiSite::updateNetDomain() failed:'. $e->getMessage());
-            throw new MultiSiteJsonException('JsonMultiSite::updateNetDomain() failed:'. $e->getMessage());
+            \DBG::dump('JsonMultiSiteController::updateNetDomain() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::updateNetDomain() failed:'. $e->getMessage());
         }
     }
 
@@ -1512,12 +1512,12 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             || !isset($params['post']['componentId'])
             //|| !isset($params['post']['coreNetDomainId'])
         ) {
-            throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Insufficient mapping information supplied.');
+            throw new MultiSiteJsonException('JsonMultiSiteController::unMapDomain() failed: Insufficient mapping information supplied.');
         }
 
         $authenticationValue = json_decode($params['post']['auth'], true);
         if (empty($authenticationValue) || !is_array($authenticationValue)) {
-            throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Insufficient mapping information supplied.');
+            throw new MultiSiteJsonException('JsonMultiSiteController::unMapDomain() failed: Insufficient mapping information supplied.');
         }
 
         try {
@@ -1532,7 +1532,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     // be unmapped from.
                     $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('hostname' => $authenticationValue['sender']));
                     if (!$websiteServiceServer) {
-                        throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Unkown Service Server: '.$authenticationValue['sender']);
+                        throw new MultiSiteJsonException('JsonMultiSiteController::unMapDomain() failed: Unkown Service Server: '.$authenticationValue['sender']);
                     }
                     $componentId = $websiteServiceServer->getId();
                     break;
@@ -1544,7 +1544,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                             $componentId = $params['post']['componentId'];
                             $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneById($componentId);
                             if (!$website) {
-                                throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Unkown Website-ID: '.$componentId);
+                                throw new MultiSiteJsonException('JsonMultiSiteController::unMapDomain() failed: Unkown Website-ID: '.$componentId);
                             }
                             break;
 
@@ -1553,17 +1553,17 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                             // componentId is the ID of the Website the request was made from
                             $objWebsiteDomain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
                             if (!$objWebsiteDomain) {
-                                throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Unkown Website: '.$authenticationValue['sender']);
+                                throw new MultiSiteJsonException('JsonMultiSiteController::unMapDomain() failed: Unkown Website: '.$authenticationValue['sender']);
                             }
                             $website = $objWebsiteDomain->getWebsite();
                             if (!$website) {
-                                throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Unkown Website: '.$authenticationValue['sender']);
+                                throw new MultiSiteJsonException('JsonMultiSiteController::unMapDomain() failed: Unkown Website: '.$authenticationValue['sender']);
                             }
                             $componentId = $website->getId();
                             break;
 
                         default:
-                            throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'));
+                            throw new MultiSiteJsonException('JsonMultiSiteController::unMapDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'));
                             break;
                     }
                     break;
@@ -1589,7 +1589,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             $objDomain = $domainRepo->findOneBy($critieria);
 
             if (!$objDomain) {
-                throw new MultiSiteJsonException('JsonMultiSite::unMapDomain() failed: Domain to remove not found.');
+                throw new MultiSiteJsonException('JsonMultiSiteController::unMapDomain() failed: Domain to remove not found.');
             }
 
             if ($website && $objDomain->getWebsite() == $website) {
@@ -1644,24 +1644,24 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             //|| !isset($params['post']['coreNetDomainId'])
         ) {
             \DBG::dump($params);
-            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient mapping information supplied: '.var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSiteController::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient mapping information supplied: '.var_export($params, true));
         }
 
         $authenticationValue = json_decode($params['post']['auth'], true);
         if (empty($authenticationValue) || !is_array($authenticationValue)) {
             \DBG::dump($params);
-            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient mapping information supplied.'.var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSiteController::updateDomain() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient mapping information supplied.'.var_export($params, true));
         }
         //check the black listed domains
         if (!self::checkBlackListDomains($params['post']['domainName'])) {
-            \DBG::log('JsonMultiSite::updateDomain() failed: ' . $params['post']['domainName'] . '(Domain name is black listed).');
+            \DBG::log('JsonMultiSiteController::updateDomain() failed: ' . $params['post']['domainName'] . '(Domain name is black listed).');
             throw new MultiSiteJsonException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'], $params['post']['domainName']));
         }
         
         try {
             //Check the domain name is subdomain of the domain or not.
             if ($this->isDomainASubDomainOfMultisiteDomain($params['post']['domainName'])) {
-                \DBG::log('JsonMultiSite::updateDomain() failed: The domain name is a subdomain of multiSite Domain');
+                \DBG::log('JsonMultiSiteController::updateDomain() failed: The domain name is a subdomain of multiSite Domain');
                 throw new MultiSiteJsonException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAPPING_DOMAIN_FAILED'], $params['post']['domainName']));
             }
             
@@ -1682,7 +1682,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     // be updated of.
                     $websiteServiceServer = ComponentController::getServiceServerByCriteria(array('hostname' => $authenticationValue['sender']));
                     if (!$websiteServiceServer) {
-                        throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Unkown Service Server: '.$authenticationValue['sender']);
+                        throw new MultiSiteJsonException('JsonMultiSiteController::updateDomain() failed: Unkown Service Server: '.$authenticationValue['sender']);
                     }
                     $componentId = $websiteServiceServer->getId();
                     break;
@@ -1694,7 +1694,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                             $componentId = $params['post']['componentId'];
                             $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneById($componentId);
                             if (!$website) {
-                                throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Unkown Website-ID: '.$componentId);
+                                throw new MultiSiteJsonException('JsonMultiSiteController::updateDomain() failed: Unkown Website-ID: '.$componentId);
                             }
                             break;
 
@@ -1703,17 +1703,17 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                             // componentId is the ID of the Website the request was made from
                             $objWebsiteDomain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
                             if (!$objWebsiteDomain) {
-                                throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Unkown Website: '.$authenticationValue['sender']);
+                                throw new MultiSiteJsonException('JsonMultiSiteController::updateDomain() failed: Unkown Website: '.$authenticationValue['sender']);
                             }
                             $website = $objWebsiteDomain->getWebsite();
                             if (!$website) {
-                                throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Unkown Website: '.$authenticationValue['sender']);
+                                throw new MultiSiteJsonException('JsonMultiSiteController::updateDomain() failed: Unkown Website: '.$authenticationValue['sender']);
                             }
                             $componentId = $website->getId();
                             break;
 
                         default:
-                            throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'));
+                            throw new MultiSiteJsonException('JsonMultiSiteController::updateDomain() failed: Command not available for mode: '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'));
                             break;
                     }
                     break;
@@ -1738,7 +1738,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             $objDomain = $domainRepo->findOneBy($critieria);
 
             if (!$objDomain) {
-                throw new MultiSiteJsonException('JsonMultiSite::updateDomain() failed: Domain to update not found.');
+                throw new MultiSiteJsonException('JsonMultiSiteController::updateDomain() failed: Domain to update not found.');
             }
 
             $objDomain->setName($params['post']['domainName']);
@@ -1781,7 +1781,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
             $website = $webRepo->findOneById($params['post']['websiteId']);
             if (!$website) {
-                throw new MultiSiteJsonException('JsonMultiSite::setWebsiteDetails() failed: Website by ID '.$params['post']['websiteId'].' not found.');
+                throw new MultiSiteJsonException('JsonMultiSiteController::setWebsiteDetails() failed: Website by ID '.$params['post']['websiteId'].' not found.');
             }
             if (isset($params['post']['status'])) {
                 $website->setStatus($params['post']['status']);
@@ -2276,7 +2276,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
     public function executeOnManager($params) {
         if (empty($params['post']['command'])) {
             \DBG::dump($params);
-            throw new MultiSiteJsonException('JsonMultiSite::executeOnManager() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient arguments supplied: '.var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSiteController::executeOnManager() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient arguments supplied: '.var_export($params, true));
         }
 
         $passedParams = !empty($params['post']['params']) ? $params['post']['params'] : null;
@@ -2304,20 +2304,20 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 throw new MultiSiteJsonException(var_export($resp, true));
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::executeOnManager() failed: ' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::executeOnManager() failed: ' . $e->getMessage());
         }
     }
 
     public function executeOnWebsite($params) {
         if (empty($params['post']['command']) || empty($params['post']['websiteId'])) {
             \DBG::dump($params);
-            throw new MultiSiteJsonException('JsonMultiSite::executeOnWebsite() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient arguments supplied: '.var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSiteController::executeOnWebsite() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient arguments supplied: '.var_export($params, true));
         }
         
         $webRepo  = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
         $website  = $webRepo->findOneById($params['post']['websiteId']);
         if (!$website) {
-            throw new MultiSiteJsonException('JsonMultiSite::executeOnWebsite() failed: Website by ID '.$params['post']['websiteId'].' not found.');
+            throw new MultiSiteJsonException('JsonMultiSiteController::executeOnWebsite() failed: Website by ID '.$params['post']['websiteId'].' not found.');
         }
 
         $passedParams = !empty($params['post']['params']) ? $params['post']['params'] : null;
@@ -2373,7 +2373,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         } catch (\Exception $e) {
             throw new MultiSiteJsonException(array(
                 'log'       => \DBG::getMemoryLogs(),
-                'message'   => 'JsonMultiSite::generateAuthToken() failed: ' . $e->getMessage(),
+                'message'   => 'JsonMultiSiteController::generateAuthToken() failed: ' . $e->getMessage(),
             ));
         }
     }
@@ -2383,7 +2383,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
      */
     public function setupConfig($params) {
         if (empty($params['post']['coreAdminEmail']) || empty($params['post']['contactFormEmail']) || empty($params['post']['dashboardNewsSrc'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::setupConfig() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient arguments supplied: '.var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSiteController::setupConfig() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient arguments supplied: '.var_export($params, true));
         }
         
         \Cx\Core\Setting\Controller\Setting::init('Config', '','Yaml');
@@ -2420,7 +2420,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
 
     public function getDefaultWebsiteIp() {
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') != ComponentController::MODE_SERVICE) {
-            throw new MultiSiteJsonException('JsonMultiSite::getDefaultWebsiteIp() failed: Command is only on Website Service Server available.');
+            throw new MultiSiteJsonException('JsonMultiSiteController::getDefaultWebsiteIp() failed: Command is only on Website Service Server available.');
         }
 
         return array(
@@ -2443,7 +2443,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         global $objDatabase;
 
         if (empty($params['post']['langId'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::setDefaultLanguage() failed: No language specified.');
+            throw new MultiSiteJsonException('JsonMultiSiteController::setDefaultLanguage() failed: No language specified.');
         }
         
         try {
@@ -2471,7 +2471,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         } catch (\Exception $e) {
             throw new MultiSiteJsonException(array(
                 'log'       => \DBG::getMemoryLogs(),
-                'message'   => 'JsonMultiSite::setDefaultLanguage() failed: Updating Language status.' . $e->getMessage(),
+                'message'   => 'JsonMultiSiteController::setDefaultLanguage() failed: Updating Language status.' . $e->getMessage(),
             ));
         }
     }
@@ -2510,18 +2510,18 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     $authenticationValue = json_decode($params['post']['auth'], true);
                     if (empty($authenticationValue) || !is_array($authenticationValue)) {
                         \DBG::dump($params);
-                        throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') . ' failed: Insufficient reset information supplied.' . var_export($params, true));
+                        throw new MultiSiteJsonException('JsonMultiSiteController::getFtpUser() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') . ' failed: Insufficient reset information supplied.' . var_export($params, true));
                     }
 
                     $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
                     $domain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
                     if (!$domain) {
-                        throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() failed: Unkown Website: ' . $authenticationValue['sender']);
+                        throw new MultiSiteJsonException('JsonMultiSiteController::getFtpUser() failed: Unkown Website: ' . $authenticationValue['sender']);
                     }
 
                     $website = $domain->getWebsite();
                     if (!$website) {
-                        throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() failed: Unkown Website: ' . $authenticationValue['sender']);
+                        throw new MultiSiteJsonException('JsonMultiSiteController::getFtpUser() failed: Unkown Website: ' . $authenticationValue['sender']);
                     }
 
                     if ($website->getFtpUser()) {
@@ -2533,9 +2533,9 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     }
                     break;
             }
-            throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() failed: Website Ftp user field is empty.');
+            throw new MultiSiteJsonException('JsonMultiSiteController::getFtpUser() failed: Website Ftp user field is empty.');
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::getFtpUser() failed: to get website FTP user: ' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::getFtpUser() failed: to get website FTP user: ' . $e->getMessage());
         }
     }
     
@@ -2563,9 +2563,9 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     }
                     break;
             }
-            throw new MultiSiteJsonException('JsonMultiSite::getFtpAccounts() failed');
+            throw new MultiSiteJsonException('JsonMultiSiteController::getFtpAccounts() failed');
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::getFtpAccounts() failed: ' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::getFtpAccounts() failed: ' . $e->getMessage());
         }
     }
     
@@ -2605,18 +2605,18 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     $authenticationValue = json_decode($params['post']['auth'], true);
                     if (empty($authenticationValue) || !is_array($authenticationValue)) {
                         \DBG::dump($params);
-                        throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') . ' failed: Insufficient reset information supplied.' . var_export($params, true));
+                        throw new MultiSiteJsonException('JsonMultiSiteController::resetFtpPassword() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') . ' failed: Insufficient reset information supplied.' . var_export($params, true));
                     }
 
                     $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
                     $domain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
                     if (!$domain) {
-                        throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() failed: Unkown Website: ' . $authenticationValue['sender']);
+                        throw new MultiSiteJsonException('JsonMultiSiteController::resetFtpPassword() failed: Unkown Website: ' . $authenticationValue['sender']);
                     }
 
                     $website = $domain->getWebsite();
                     if (!$website) {
-                        throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() failed: Unkown Website: ' . $authenticationValue['sender']);
+                        throw new MultiSiteJsonException('JsonMultiSiteController::resetFtpPassword() failed: Unkown Website: ' . $authenticationValue['sender']);
                     }
                     
                     $hostingController = ComponentController::getHostingController();
@@ -2634,7 +2634,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
 
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_RESET_FTP_PASS_ERROR_MSG']);
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::resetFtpPassword() failed: Updating FTP password.' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::resetFtpPassword() failed: Updating FTP password.' . $e->getMessage());
         }
     }
     
@@ -2735,7 +2735,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
     public function updateServiceServerSetup($params) {
 
         if (empty($params['post']['setupArray'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::updateServiceServerSetup(): Updating setup data in server failed due to empty params in post method.');
+            throw new MultiSiteJsonException('JsonMultiSiteController::updateServiceServerSetup(): Updating setup data in server failed due to empty params in post method.');
         }
         
         try {
@@ -2746,7 +2746,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 \Cx\Core\Setting\Controller\Setting::update($valuesName);
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::updateServiceServerSetup() failed: Updating setup data in server .' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::updateServiceServerSetup() failed: Updating setup data in server .' . $e->getMessage());
         }
     }
     
@@ -2757,7 +2757,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
     public function destroyWebsite($params) {
         
         if (empty($params['post']['websiteId'])) {
-            throw new MultiSiteJsonException('JsonMultiSite (destroyWebsite): failed to destroy the website due to the empty param $websiteId');
+            throw new MultiSiteJsonException('JsonMultiSiteController (destroyWebsite): failed to destroy the website due to the empty param $websiteId');
         }
 
         try {
@@ -2778,7 +2778,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         } catch (\Exception $e) {
             throw new MultiSiteJsonException(array(
                 'log'       => \DBG::getMemoryLogs(),
-                'message'   => 'JsonMultiSite (destroyWebsite): failed to destroy the website.' . $e->getMessage(),
+                'message'   => 'JsonMultiSiteController (destroyWebsite): failed to destroy the website.' . $e->getMessage(),
             ));
         }
     }
@@ -2796,13 +2796,13 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         global $objDatabase;
 
         if (empty($params['post']['themeId'])) {
-            throw new MultiSiteJsonException('JsonMultiSite (setWebsiteTheme): failed to set the website theme due to the empty param $themeId');
+            throw new MultiSiteJsonException('JsonMultiSiteController (setWebsiteTheme): failed to set the website theme due to the empty param $themeId');
         }
         
         try {
             $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
             if (!$themeRepo->findById($params['post']['themeId'])) {
-                throw new MultiSiteJsonException('JsonMultiSite (setWebsiteTheme): failed to set the website theme due to no one theme exists with param $themeId');
+                throw new MultiSiteJsonException('JsonMultiSiteController (setWebsiteTheme): failed to set the website theme due to no one theme exists with param $themeId');
             }
 
             $langId = \FWLanguage::getDefaultLangId();
@@ -2819,7 +2819,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         } catch (\Exception $e) {
             throw new MultiSiteJsonException(array(
                 'log'       => \DBG::getMemoryLogs(),
-                'message'   => 'JsonMultiSite (setWebsiteTheme): failed to set the website theme.' . $e->getMessage(),
+                'message'   => 'JsonMultiSiteController (setWebsiteTheme): failed to set the website theme.' . $e->getMessage(),
             ));
         }
     }
@@ -2843,14 +2843,14 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     if (empty($params['post']['query'])) {
-                        throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query, the sql query is empty');
+                        throw new MultiSiteJsonException('JsonMultiSiteController (executeSql): failed to execute query, the sql query is empty');
                     }
                     $websiteServiceRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     //execute sql query on website
                     if (isset($params['post']['mode']) && $params['post']['mode'] == 'website') {
                         $website = $websiteServiceRepo->findOneBy(array('id' => $params['post']['id']));
                         if (empty($website)) {
-                            throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to find the website.');
+                            throw new MultiSiteJsonException('JsonMultiSiteController (executeSql): failed to find the website.');
                         }
                         $params['post']['websiteName'] = $website->getFqdn()->getName();
                         $resp = self::executeCommandOnWebsite('executeSql', $params['post'], $website);
@@ -2866,7 +2866,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     if (isset($params['post']['mode']) && $params['post']['mode'] == 'service') {
                         $websites = $websiteServiceRepo->findBy(array('websiteServiceServerId' => $params['post']['id']));
                         if (empty($websites)) {
-                            throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to find the service server.');
+                            throw new MultiSiteJsonException('JsonMultiSiteController (executeSql): failed to find the service server.');
                         }
                         
                         if (!isset($_SESSION['MultiSite'])) {
@@ -2947,7 +2947,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite (executeSql): failed to execute query' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController (executeSql): failed to execute query' . $e->getMessage());
         }
         return false;
     }
@@ -3034,7 +3034,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;    
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite (executeQueryBySession): failed to execute query' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController (executeQueryBySession): failed to execute query' . $e->getMessage());
         }
     }
     
@@ -3070,14 +3070,14 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     if (!isset($params['post']['mailServiceServerId']) && empty($params['post']['mailServiceServerId'])) {
-                        \DBG::log('JsonMultiSite::getMailServicePlans() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') . ' failed: Insufficient mapping information supplied: ' . var_export($params, true));
+                        \DBG::log('JsonMultiSiteController::getMailServicePlans() on ' . \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') . ' failed: Insufficient mapping information supplied: ' . var_export($params, true));
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_NO_MAIL_SERVER_FOUND']);
                     }
                     $mailServiceServerId   = contrexx_input2raw($params['post']['mailServiceServerId']);
                     $mailServiceServerRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\MailServiceServer');
                     $mailServiceServer     = $mailServiceServerRepo->findOneById($mailServiceServerId);
                     if (!$mailServiceServer) {
-                        \DBG::log('JsonMultiSite::getMailServicePlans() mail service server is not found for supplied mail service id ' . $mailServiceServerId);
+                        \DBG::log('JsonMultiSiteController::getMailServicePlans() mail service server is not found for supplied mail service id ' . $mailServiceServerId);
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_NO_MAIL_SERVER_FOUND']);
                     }
                     
@@ -3096,7 +3096,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                         'message' => $_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN']
                     );  
         } catch (\Exception $e) {
-            \DBG::log('JsonMultiSite::getMailServicePlans() failed: to get service plans from mail service server: ' . $e->getMessage());
+            \DBG::log('JsonMultiSiteController::getMailServicePlans() failed: to get service plans from mail service server: ' . $e->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_FAILED_TO_FETCH_MAIL_SERVICE_PLAN']);
         }
     }
@@ -3145,7 +3145,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     if (!isset($params['post']['websiteId'])) {
-                        throw new MultiSiteJsonException('JsonMultiSite::getLicense() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient mapping information supplied: '.var_export($params, true));
+                        throw new MultiSiteJsonException('JsonMultiSiteController::getLicense() on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' failed: Insufficient mapping information supplied: '.var_export($params, true));
                     }
                     //find User's Website
                     $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
@@ -3154,7 +3154,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                         'websiteId'   => $params['post']['websiteId'],
                         'activeLanguages'   => \FWLanguage::getActiveFrontendLanguages()
                     );
-                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('getLicense', $params, $website);
+                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('getLicense', $params, $website);
                     if ($resp->status == 'success' && $resp->data->status == 'success') {
                         return $resp->data;
                     }
@@ -3164,7 +3164,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 case ComponentController::MODE_WEBSITE:
                     $license = \Env::get('cx')->getLicense();
                     if (!$license) {
-                        throw new MultiSiteJsonException('JsonMultiSite::getLicense(): on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' $license was not set properly');
+                        throw new MultiSiteJsonException('JsonMultiSiteController::getLicense(): on '.\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite').' $license was not set properly');
                     }
                     $dashboardMessages = array();
                     $licenseMessage = array();
@@ -3280,7 +3280,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::getLicense() failed: to get License Information: ' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::getLicense() failed: to get License Information: ' . $e->getMessage());
         }
     }
 
@@ -3375,7 +3375,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::remoteLogin() failed: to get remote website Login Link: ' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::remoteLogin() failed: to get remote website Login Link: ' . $e->getMessage());
         }
     }
     
@@ -3395,7 +3395,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         $licenseOption = $params['post']['licenseLabel'];
         $licenseValue = $params['post']['licenseValue'];
         if (!$websiteId) {
-            throw new MultiSiteJsonException('Invalid websiteId for the command JsonMultiSite::editLicense.');
+            throw new MultiSiteJsonException('Invalid websiteId for the command JsonMultiSiteController::editLicense.');
         }
         try{
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
@@ -3408,7 +3408,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     );
                     $webRepo     = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $website     = $webRepo->findOneById($websiteId);
-                    $resp        = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('setLicense', $paramsArray, $website);
+                    $resp        = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('setLicense', $paramsArray, $website);
                     if (($resp->status == 'success') && ($resp->data->status == 'success')) {
                         return array('status' => 'success', 'data' => $licenseValue, 'message' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LICENSE_UPDATE_SUCCESS'], $licenseOption));
                     }
@@ -3418,7 +3418,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::editLicense() failed: to Update License Information of the This Website: ' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::editLicense() failed: to Update License Information of the This Website: ' . $e->getMessage());
         }
     }
     
@@ -3434,14 +3434,14 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     if (empty($params['post']['ownerEmail']) || empty($params['post']['websiteName'])) {
-                        throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                        throw new MultiSiteJsonException('JsonMultiSiteController::sendAccountActivation() failed: Insufficient arguments supplied: ' . var_export($params, true));
                     }
                     $objOwner = \FWUser::getFWUserObject()->objUser->getUser(array('email' => $params['post']['ownerEmail'])); 
                     $websiteRepository = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $websiteObj = $websiteRepository->findWebsitesByCriteria(array('user.id' => $objOwner->getId(), 'website.name' => $params['post']['websiteName']));
                     $website    = current($websiteObj);
                     if (!$website) {
-                        throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: Unknown Website-User-Id: ' . $objOwner->getId());
+                        throw new MultiSiteJsonException('JsonMultiSiteController::sendAccountActivation() failed: Unknown Website-User-Id: ' . $objOwner->getId());
                     }
                     
                     $websiteVerificationUrl = \FWUser::getVerificationLink(true, $objOwner, $website->getBaseDn()->getName());
@@ -3465,7 +3465,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     if (empty($params['post']['ownerEmail']) || empty($params['post']['websiteName'])) {
-                        throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                        throw new MultiSiteJsonException('JsonMultiSiteController::sendAccountActivation() failed: Insufficient arguments supplied: ' . var_export($params, true));
                     }
                     
                     $response = self::executeCommandOnManager('sendAccountActivation', array('ownerEmail' => $params['post']['ownerEmail'], 'websiteName' => $params['post']['websiteName']));
@@ -3487,9 +3487,9 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 default :
                     break;
             }
-            return array('status' => 'error', 'message' => 'JsonMultiSite::sendAccountActivation() failed: to Send Account Activation Mail of this Website.');
+            return array('status' => 'error', 'message' => 'JsonMultiSiteController::sendAccountActivation() failed: to Send Account Activation Mail of this Website.');
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::sendAccountActivation() failed: to Send Account Activation Mail of this Website: ' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::sendAccountActivation() failed: to Send Account Activation Mail of this Website: ' . $e->getMessage());
         }
     }
     
@@ -3503,7 +3503,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
      */
     public function getPayrexxUrl($params) {
         if (!isset($params['post']['product_id'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::getPayrexxUrl() failed: Insufficient mapping information supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSiteController::getPayrexxUrl() failed: Insufficient mapping information supplied: ' . var_export($params, true));
         }
 
         try {
@@ -3534,7 +3534,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 $referenceId = "|{$product->getId()}|owner|$userId|";
                 $purpose     = $productName;
             } else {
-                throw new MultiSiteJsonException('JsonMultiSite::getPayrexxUrl() failed: Insufficient mapping information supplied: ' . var_export($params, true));
+                throw new MultiSiteJsonException('JsonMultiSiteController::getPayrexxUrl() failed: Insufficient mapping information supplied: ' . var_export($params, true));
             }
             
             $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount','MultiSite');
@@ -3572,7 +3572,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 return array('status' => 'success', 'link' => $response->getLink());
             }
         } catch (\Payrexx\PayrexxException $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::getPayrexxUrl() failed: to get the payrexx url: ' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::getPayrexxUrl() failed: to get the payrexx url: ' . $e->getMessage());
         }
     }
 
@@ -3597,7 +3597,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         $configType = isset($params['post']['configType']) ? $params['post']['configType'] : '';
         $operation  = isset($params['post']['operation']) ? $params['post']['operation'] : 'fetch';
         if (!$websiteId) {
-            throw new MultiSiteJsonException('Invalid websiteId for the command JsonMultiSite::modifyMultisiteConfig.');
+            throw new MultiSiteJsonException('Invalid websiteId for the command JsonMultiSiteController::modifyMultisiteConfig.');
         }
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
@@ -3621,7 +3621,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                                                             'configValues' => $configValues,
                                                             'operation' => $operation
                                                        ) : array('websiteId' => $websiteId);
-                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnWebsite('modifyMultisiteConfig', $params, $website);
+                    $resp = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('modifyMultisiteConfig', $params, $website);
                     if ($resp->status == 'success' && $resp->data->status) {
                         switch ($resp->data->multisiteConfig) {
                             case 'add':
@@ -3697,7 +3697,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
             }
         } catch (\Exception $ex) {
-            throw new MultiSiteJsonException('JsonMultiSite::modifyMultisiteConfig() failed: to Fetch the Multisite Configuration of the This Website: ' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::modifyMultisiteConfig() failed: to Fetch the Multisite Configuration of the This Website: ' . $e->getMessage());
         }
     }
 
@@ -3724,7 +3724,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             $entityObject->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
             \Env::get('em')->flush();
 	} catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::push() failed: To add / update the repository'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::push() failed: To add / update the repository'. $e->getMessage());
 	}
 }
 
@@ -3802,19 +3802,19 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 throw new MultiSiteJsonException('Failed to create the backup location');
             }
             
-            \DBG::log('JsonMultisite: Website Info Backup...');
+            \DBG::log('JsonMultiSiteController: Website Info Backup...');
             $this->websiteInfoBackup($website->getId(), $websiteBackupPath);
             
-            \DBG::log('JsonMultisite: Website Database Backup...');
+            \DBG::log('JsonMultiSiteController: Website Database Backup...');
             $this->websiteDatabaseBackup($websiteBackupPath, $websitePath);
             
-            \DBG::log('JsonMultisite: Website Data Repository Backup...');
+            \DBG::log('JsonMultiSiteController: Website Data Repository Backup...');
             $this->websiteRepositoryBackup($websiteBackupPath, $websitePath);
             
-            \DBG::log('JsonMultisite: Create Website Zip Archive...');
+            \DBG::log('JsonMultiSiteController: Create Website Zip Archive...');
             $this->createWebsiteArchive($websiteBackupPath);
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultisite::websiteDataBackup() : failed !. : '. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::websiteDataBackup() : failed !. : '. $e->getMessage());
         } 
     }
         
@@ -4248,13 +4248,13 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 throw new MultiSiteJsonException('The website datafolder/backup repository doesnot exists!.');
             }
             
-            \DBG::log('JsonMultisite: Create a new website on restore..');
+            \DBG::log('JsonMultiSiteController: Create a new website on restore..');
             $this->createNewWebsiteOnRestore($websiteName, $websiteBackupFilePath, $serviceServerId, $selectedUserId, $subscriptionId);
             
-            \DBG::log('JsonMultisite: Restore website Database and Repository..');
+            \DBG::log('JsonMultiSiteController: Restore website Database and Repository..');
             $this->websiteDataRestore($websiteName, $websiteBackupFilePath);
             
-            \DBG::log('JsonMultisite: Website Info Restore..');
+            \DBG::log('JsonMultiSiteController: Website Info Restore..');
             $this->websiteInfoRestore($websiteName, $websiteBackupFilePath, $subscriptionId);
             
             $websiteUrl = $this->getWebsiteLinkByName($websiteName);
@@ -4366,7 +4366,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 $params['subscriptionId']  = $subscriptionId;
             }
             
-            $response = JsonMultiSite::executeCommandOnManager('addNewWebsiteInSubscription', $params);
+            $response = JsonMultiSiteController::executeCommandOnManager('addNewWebsiteInSubscription', $params);
             
             if ($response->status == 'error' || $response->data->status == 'error') {
                 throw new MultiSiteJsonException('Failed to create a website: '.$websiteName);
@@ -4387,13 +4387,13 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
     {
         $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath', 'MultiSite') . '/' . $websiteName;
         try {
-            \DBG::log('JsonMultisite: Extract website database file..');
+            \DBG::log('JsonMultiSiteController: Extract website database file..');
             $this->extractWebsiteDatabase($websitePath, $websiteBackupFilePath);
             
-            \DBG::log('JsonMultisite: Restore website database.. ');
+            \DBG::log('JsonMultiSiteController: Restore website database.. ');
             $this->websiteDatabaseRestore($websitePath);
             
-            \DBG::log('JsonMultisite: Restore website data repository files..');
+            \DBG::log('JsonMultiSiteController: Restore website data repository files..');
             $this->websiteRepositoryRestore($websitePath, $websiteBackupFilePath);
         } catch (\Exception $e) {
             throw new MultiSiteJsonException(__METHOD__.' Failed! : '.$e->getMessage());
@@ -4526,18 +4526,18 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 'websiteConfig'      => $configSettingArray
                 );
             
-            \DBG::log('JsonMultisite: Restore website net domains..');
+            \DBG::log('JsonMultiSiteController: Restore website net domains..');
             $this->updateWebsiteNetDomainsOnRestore($website, $websiteBackupFilePath);
             
-            \DBG::log('JsonMultisite: Restore website Configurations..');
-            $resp = JsonMultiSite::executeCommandOnWebsite('updateWebsiteConfig', $websiteConfigInfo, $website);
+            \DBG::log('JsonMultiSiteController: Restore website Configurations..');
+            $resp = JsonMultiSiteController::executeCommandOnWebsite('updateWebsiteConfig', $websiteConfigInfo, $website);
             if ($resp->status == 'error' || $resp->data->status == 'error') {
                 throw new MultiSiteJsonException('Failed to update website configurations.');
             }
             
             //Skip to restore subscription for user defined subscription
             if (empty($subscriptionId)) {
-                \DBG::log('JsonMultisite: Restore website subscription details..');
+                \DBG::log('JsonMultiSiteController: Restore website subscription details..');
                 $this->updateWebsiteSubscriptionDetails($websiteBackupFilePath, $website->getId());
             }
         } catch (\Exception $e) {
@@ -4561,10 +4561,10 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_PARAMS']);
             }
             
-            \DBG::log('JsonMultisite: Restore website multisite configurations..');
+            \DBG::log('JsonMultiSiteController: Restore website multisite configurations..');
             $this->updateWebsiteMultisiteConfigOnRestore($params['post']['websiteMultisite']);
             
-            \DBG::log('JsonMultisite: Restore website configurations / settings..');
+            \DBG::log('JsonMultiSiteController: Restore website configurations / settings..');
             $this->updateWebsiteConfigOnRestore($params['post']['websiteConfig']);
             
             return array('status' => 'success');
@@ -4592,7 +4592,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         
         try {
             foreach ($websiteDomainObjArray['data'] as $domain) {
-                $resp = JsonMultiSite::executeCommandOnWebsite('mapNetDomain', array('domainName' => $domain->getName()), $website);
+                $resp = JsonMultiSiteController::executeCommandOnWebsite('mapNetDomain', array('domainName' => $domain->getName()), $website);
                 if (!$resp || $resp->status == 'error' || $resp->data->status == 'error') {
                     throw new MultiSiteJsonException('Failed to restore the website domains.');
                 }
@@ -4675,7 +4675,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             );
             
             //update subscription details
-            $response = JsonMultiSite::executeCommandOnManager('updateWebsiteSubscriptionInfo', $params);
+            $response = JsonMultiSiteController::executeCommandOnManager('updateWebsiteSubscriptionInfo', $params);
             if ($response->status == 'error' || $response->data->status == 'error') {
                 throw new MultiSiteJsonException('Failed to update subscription details.');
             }
@@ -5159,7 +5159,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_INVALID_SERVICE_SERVER']);
             }
             
-            $resp = JsonMultiSite::executeCommandOnServiceServer('deleteWebsiteBackup', array('websiteBackupFileName' => $backupedWebsiteName), $websiteServiceServer);
+            $resp = JsonMultiSiteController::executeCommandOnServiceServer('deleteWebsiteBackup', array('websiteBackupFileName' => $backupedWebsiteName), $websiteServiceServer);
             
             return ($resp && isset($resp->data)) ? $resp->data : $resp;
             
@@ -5248,7 +5248,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         self::loadLanguageData();
 
         if (empty($params['post']['websiteId'])) {
-            \DBG::log('JsonMultiSite::createMailServiceAccount() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::log('JsonMultiSiteController::createMailServiceAccount() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
 
@@ -5286,7 +5286,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATE_MAIL_ACCOUNT_FAILED']);
         } catch (\Exception $ex) {
-            \DBG::log('JsonMultiSite::createMailServiceAccount() failed: To create mail service server'. $ex->getMessage());
+            \DBG::log('JsonMultiSiteController::createMailServiceAccount() failed: To create mail service server'. $ex->getMessage());
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_CREATE_MAIL_ACCOUNT_FAILED']);
         }
     }
@@ -5306,7 +5306,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         self::loadLanguageData();
         
         if (empty($params['post']['websiteId'])) {
-            \DBG::log('JsonMultiSite::deleteMailServiceAccount() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::log('JsonMultiSiteController::deleteMailServiceAccount() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
         try {
@@ -5379,7 +5379,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         self::loadLanguageData();
         
         if (empty($params['post']['websiteId'])) {
-            \DBG::log('JsonMultiSite::enableMailService() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::log('JsonMultiSiteController::enableMailService() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
                
@@ -5406,7 +5406,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
                     $status = $hostingController->getMailServiceStatus($website->getMailAccountId());
                     if($status == 'true') {
-                        \DBG::log('JsonMultiSite::enableMailService() failed: Mail service account was enabled.');
+                        \DBG::log('JsonMultiSiteController::enableMailService() failed: Mail service account was enabled.');
                          return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_SUCCESSFULLY'], 'pwd' => '');
                     } else {
                         if (
@@ -5431,7 +5431,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED']);
         } catch (\Exception $ex) {
-            \DBG::log('JsonMultiSite::enableMailService() failed: To enable mail service account.'. $ex->getMessage());
+            \DBG::log('JsonMultiSiteController::enableMailService() failed: To enable mail service account.'. $ex->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_ENABLED_FAILED']);
         }
     }
@@ -5450,7 +5450,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         self::loadLanguageData();
         
         if (empty($params['post']['websiteId'])) {
-            \DBG::log('JsonMultiSite::disableMailService() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::log('JsonMultiSiteController::disableMailService() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
                
@@ -5486,7 +5486,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_FAILED']);
         } catch (\Exception $ex) {
-            \DBG::log('JsonMultiSite::disableMailService() failed: To disable mail service'. $ex->getMessage());
+            \DBG::log('JsonMultiSiteController::disableMailService() failed: To disable mail service'. $ex->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_MAIL_DISABLED_FAILED']);
         }
     }
@@ -5505,7 +5505,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         self::loadLanguageData();
         
         if (empty($params['post']['websiteId'])) {
-            \DBG::log('JsonMultiSite::resetEmailPassword() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::log('JsonMultiSiteController::resetEmailPassword() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
                
@@ -5521,7 +5521,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     }
                     $mailServiceServer = $website->getMailServiceServer();
                     if (!$mailServiceServer || \FWValidator::isEmpty($website->getMailAccountId())) {
-                        throw new MultiSiteJsonException('JsonMultiSite::getPanelAutoLoginUrl() failed: Unkown mail service server.');
+                        throw new MultiSiteJsonException('JsonMultiSiteController::getPanelAutoLoginUrl() failed: Unkown mail service server.');
                     }
 
                     $hostingController = ComponentController::getMailServerHostingController($mailServiceServer);
@@ -5550,7 +5550,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_RESET_EMAIL_PASS_ERROR_MSG']);
         } catch (Exception $ex) {
-            \DBG::log('JsonMultiSite::resetEmailPassword() failed: Updating E-Mail password.'. $ex->getMessage());
+            \DBG::log('JsonMultiSiteController::resetEmailPassword() failed: Updating E-Mail password.'. $ex->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_RESET_EMAIL_PASS_ERROR_MSG']);
         }
     }
@@ -5569,7 +5569,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         self::loadLanguageData();
         
         if (empty($params['post']['websiteId'])) {
-            \DBG::log('JsonMultiSite::getMailServiceStatus() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::log('JsonMultiSiteController::getMailServiceStatus() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
                
@@ -5605,7 +5605,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             return array('status' => 'error');
         } catch (\Exception $ex) {
-            \DBG::log('JsonMultiSite::getMailServiceStatus() failed: To get mail service status.'. $ex->getMessage());
+            \DBG::log('JsonMultiSiteController::getMailServiceStatus() failed: To get mail service status.'. $ex->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
     }
@@ -5641,12 +5641,12 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
      */
     public function websiteLogin($params) {
         if (empty($params['post']['websiteId'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::websiteLogin() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSiteController::websiteLogin() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
         
         $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
         if (!$website) {
-            throw new MultiSiteJsonException('JsonMultiSite::websiteLogin() failed: Unkown Website-ID: '.$params['post']['websiteId']);
+            throw new MultiSiteJsonException('JsonMultiSiteController::websiteLogin() failed: Unkown Website-ID: '.$params['post']['websiteId']);
         }
         
         $userId = \FWUser::getFWUserObject()->objUser->getId();
@@ -5675,7 +5675,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             return array('status' => 'error');
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::getAdminUsers() failed: To get the Admin users' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::getAdminUsers() failed: To get the Admin users' . $e->getMessage());
         }
     }
     
@@ -5709,7 +5709,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::getUser() failed: To get the user' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::getUser() failed: To get the user' . $e->getMessage());
         }
     }
 
@@ -5772,7 +5772,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             return array('status' => 'error');
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::getResourceUsageStats() failed: To get the website Resource Usage Stats' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::getResourceUsageStats() failed: To get the website Resource Usage Stats' . $e->getMessage());
         }
     }
 
@@ -5788,21 +5788,21 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
     {
         global $_ARRAYLANG;
         if (\FWValidator::isEmpty($params['post']['websiteId'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::getPanelAutoLoginUrl() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSiteController::getPanelAutoLoginUrl() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                     $website = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website')->findOneBy(array('id' => $params['post']['websiteId']));
                     if (!$website) {
-                        throw new MultiSiteJsonException('JsonMultiSite::getPanelAutoLoginUrl() failed: Unkown Website-ID: ' . $params['post']['websiteId']);
+                        throw new MultiSiteJsonException('JsonMultiSiteController::getPanelAutoLoginUrl() failed: Unkown Website-ID: ' . $params['post']['websiteId']);
                     }
                     if ($website->getOwner()->getId() != \FWUser::getFWUserObject()->objUser->getId()) {
                         return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_MULTISITE_USER']);
                     }
                     $mailServiceServer = $website->getMailServiceServer();
                     if (!$mailServiceServer || \FWValidator::isEmpty($website->getMailAccountId())) {
-                        throw new MultiSiteJsonException('JsonMultiSite::getPanelAutoLoginUrl() failed: Unkown mail service server.');
+                        throw new MultiSiteJsonException('JsonMultiSiteController::getPanelAutoLoginUrl() failed: Unkown mail service server.');
                     }
 
                     $clientIp = !\FWValidator::isEmpty($_SERVER['HTTP_X_FORWARDED_FOR']) ? trim(end(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']))) : $_SERVER['REMOTE_ADDR'];
@@ -5820,7 +5820,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
             }
         } catch (\Exception $e) {
-            throw new MultiSiteJsonException('JsonMultiSite::getPanelAutoLoginUrl() failed:' . $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED'] . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::getPanelAutoLoginUrl() failed:' . $_ARRAYLANG['TXT_MULTISITE_WEBSITE_LOGIN_PLESK_FAILED'] . $e->getMessage());
         }
     }
 
@@ -5871,7 +5871,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED']);
         } catch (\Payrexx\PayrexxException $e) {
-            \DBG::log('JsonMultiSite::payrexxAutoLoginUrl() failed:' . $e->getMessage());
+            \DBG::log('JsonMultiSiteController::payrexxAutoLoginUrl() failed:' . $e->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_PAYREXX_LOGIN_FAILED']);
         }
     }
@@ -5895,8 +5895,8 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             return array('status' => 'error');       
         } catch (\Exception $e) {
-            \DBG::log('JsonMultiSite::getMainDomain() failed:' . $e->getMessage());
-            throw new MultiSiteJsonException('JsonMultiSite::getMainDomain() failed: to get the main domain');
+            \DBG::log('JsonMultiSiteController::getMainDomain() failed:' . $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::getMainDomain() failed: to get the main domain');
         }
         
     }
@@ -5957,7 +5957,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             $marketingWebsiteUrl = ComponentController::getApiProtocol().\Cx\Core\Setting\Controller\Setting::getValue('marketingWebsiteDomain','MultiSite');
             return array('status' => 'success', 'marketingWebsiteUrl' => $marketingWebsiteUrl);
         } catch (\Exception $e) {
-             \DBG::log('JsonMultiSite::deleteAccount() failed:' . $e->getMessage());
+             \DBG::log('JsonMultiSiteController::deleteAccount() failed:' . $e->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_USER_ACCOUNT_DELETE_FAILED']);
         }
         
@@ -5975,7 +5975,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         self::loadLanguageData();
         
         if (empty($params['post']) || !isset($params['post']['mainDomainId'])) {
-            \DBG::log('JsonMultiSite::setMainDomain() failed: mainDomainId is empty');
+            \DBG::log('JsonMultiSiteController::setMainDomain() failed: mainDomainId is empty');
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN']);
         }
         try {
@@ -5993,8 +5993,8 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
             }
         } catch (\Exception $e) {
-            \DBG::dump('JsonMultiSite::setMainDomain() failed:'. $e->getMessage());
-            throw new MultiSiteJsonException('JsonMultiSite::setMainDomain() failed:'. $e->getMessage());
+            \DBG::dump('JsonMultiSiteController::setMainDomain() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::setMainDomain() failed:'. $e->getMessage());
         }
     }
     
@@ -6016,7 +6016,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             || \FWValidator::isEmpty($params['post']['command'])
             || \FWValidator::isEmpty($params['post']['domainName'])
         ) {
-            \DBG::log('JsonMultiSite::domainManipulation() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::log('JsonMultiSiteController::domainManipulation() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
         }
         
@@ -6028,7 +6028,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     $website = $websiteRepo->findOneBy(array('name' => $params['post']['websiteName']));
                     
                     if (!$website) {
-                        \DBG::log('JsonMultiSite::domainManipulation() failed: Unknown website.');
+                        \DBG::log('JsonMultiSiteController::domainManipulation() failed: Unknown website.');
                         return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_WEBSITE_NOT_EXISTS']);
                     }
                     $mailServiceServer = $website->getMailServiceServer();
@@ -6037,7 +6037,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     
                         if (!$hostingController) {
                             \DBG::msg('Failed to get the hosting controller.');
-                            throw new MultiSiteJsonException('JsonMultiSite::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
+                            throw new MultiSiteJsonException('JsonMultiSiteController::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
                         }
                         $hostingController->setWebspaceId($website->getMailAccountId());
                         $methodName = $params['post']['command'];
@@ -6045,7 +6045,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                             case 'renameDomainAlias':
                                 if (!$hostingController->$methodName($params['post']['oldDomainName'], $params['post']['domainName'])) {
                                     \DBG::msg('Failed to process the method renameDomainAlias().');
-                                    throw new MultiSiteJsonException('JsonMultiSite::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
+                                    throw new MultiSiteJsonException('JsonMultiSiteController::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
                                 }
                                 break;
                             case 'deleteDomainAlias':
@@ -6053,7 +6053,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                             case 'renameSubscriptionName':
                                 if (!$hostingController->$methodName($params['post']['domainName'])) {
                                     \DBG::msg('Failed to process the method '.$params['post']['command'] . '().');
-                                    throw new MultiSiteJsonException('JsonMultiSite::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
+                                    throw new MultiSiteJsonException('JsonMultiSiteController::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
                                 }
                                 break;
                             default :
@@ -6082,10 +6082,10 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 default :
                     break;
             }
-            return array('status' => 'error', 'message' => 'JsonMultiSite::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
+            return array('status' => 'error', 'message' => 'JsonMultiSiteController::domainManipulation(): Failed to process the method '.$params['post']['command'] . '().');
         } catch (\Exception $e) {
-            \DBG::dump('JsonMultiSite::domainManipulation() failed:'. $e->getMessage());
-            throw new MultiSiteJsonException('JsonMultiSite::domainManipulation() failed:');
+            \DBG::dump('JsonMultiSiteController::domainManipulation() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::domainManipulation() failed:');
         }
     }
     
@@ -6099,7 +6099,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
      */
     public function getModuleAdditionalData($params) {
         if (\FWValidator::isEmpty($params['post']) || \FWValidator::isEmpty($params['post']['moduleName'])) {
-            throw new MultiSiteJsonException('JsonMultiSite::getModuleAdditionalData() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSiteController::getModuleAdditionalData() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
         
         $moduleName     = isset($params['post']['moduleName']) ? $params['post']['moduleName'] : '';
@@ -6118,8 +6118,8 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             
         } catch (\Exception $e) {
-            \DBG::dump('JsonMultiSite::getModuleAdditionalData() failed:'. $e->getMessage());
-            throw new MultiSiteJsonException('JsonMultiSite::getModuleAdditionalData() failed: Failed to get the Module additional data.');
+            \DBG::dump('JsonMultiSiteController::getModuleAdditionalData() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::getModuleAdditionalData() failed: Failed to get the Module additional data.');
         }
     }
     
@@ -6137,7 +6137,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             || \FWValidator::isEmpty($params['post']['planId'])
             || \FWValidator::isEmpty($params['post']['websiteId'])
         ) {
-            throw new MultiSiteJsonException('JsonMultiSite::changePlanOfMailSubscription() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException('JsonMultiSiteController::changePlanOfMailSubscription() failed: Insufficient arguments supplied: ' . var_export($params, true));
         }
         
         $planId = isset($params['post']['planId']) ? $params['post']['planId'] : '';
@@ -6188,8 +6188,8 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             return array('status' => 'error');
         } catch (\Exception $e) {
-            \DBG::log('JsonMultiSite::changePlanOfMailSubscription() failed:'. $e->getMessage());
-            throw new MultiSiteJsonException('JsonMultiSite::changePlanOfMailSubscription() failed: Failed to change the plan of mail subscription.');
+            \DBG::log('JsonMultiSiteController::changePlanOfMailSubscription() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::changePlanOfMailSubscription() failed: Failed to change the plan of mail subscription.');
         }
     }
     
@@ -6203,7 +6203,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
     public function isComponentLicensed($params) 
     {
         if (empty($params['post']) || !isset($params['post']['component'])) {
-            \DBG::log('JsonMultiSite::isComponentLicensed() failed: component is empty');
+            \DBG::log('JsonMultiSiteController::isComponentLicensed() failed: component is empty');
             throw new MultiSiteJsonException('Unknown component requested.');
         }
         try {
@@ -6216,8 +6216,8 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             return array('status' => 'error');
         } catch (\Exception $e) {
-            \DBG::dump('JsonMultiSite::isComponentLicensed() failed:'. $e->getMessage());
-            throw new MultiSiteJsonException('JsonMultiSite::isComponentLicensed() failed:'. $e->getMessage());
+            \DBG::dump('JsonMultiSiteController::isComponentLicensed() failed:'. $e->getMessage());
+            throw new MultiSiteJsonException('JsonMultiSiteController::isComponentLicensed() failed:'. $e->getMessage());
         }
     }
     
@@ -6256,7 +6256,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             || (   empty($params['post']['affiliateProfileAttributeId'])
                 && empty($params['post']['paypalEmailAddress']))
             ) {
-            \DBG::msg('JsonMultiSite::setAffiliate() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::msg('JsonMultiSiteController::setAffiliate() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
         }
         
@@ -6269,7 +6269,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                         $affiliateIdProfileAttributeId = \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdProfileAttributeId','MultiSite');
                         $affiliateId = $objUser->getProfileAttribute($affiliateIdProfileAttributeId);
                         if (!empty($affiliateId)) {
-                            \DBG::msg('JsonMultiSite::setAffiliate() failed: Already the AffiliateId value present.');
+                            \DBG::msg('JsonMultiSiteController::setAffiliate() failed: Already the AffiliateId value present.');
                             return array('status' => 'error', 'type' => 'affiliateId', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_SET_ALREADY']);
                         }
 
@@ -6298,7 +6298,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                         );
                     }
                     if (!$objUser->store()) {
-                        \DBG::msg('JsonMultiSite::setAffiliate() failed: can not store the AffiliateId.');
+                        \DBG::msg('JsonMultiSiteController::setAffiliate() failed: can not store the AffiliateId.');
                         return array('status' => 'error', 'type' => 'affiliateId', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
                     }
                     return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_USER_PROFILE_UPDATED_SUCCESS']);
@@ -6307,7 +6307,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
             }
         } catch (\Exception $e) {
-            \DBG::msg('JsonMultiSite::setAffiliate() failed: ' . $e->getMessage());
+            \DBG::msg('JsonMultiSiteController::setAffiliate() failed: ' . $e->getMessage());
             throw new MultiSiteJsonException($e->getMessage());
         }        
     }
@@ -6327,7 +6327,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         if (empty($params['post']) 
             || !isset($params['post']['affiliateProfileAttributeId'])
         ) {
-            \DBG::msg('JsonMultiSite::checkAvailabilityOfAffiliateId() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::msg('JsonMultiSiteController::checkAvailabilityOfAffiliateId() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
         }
         try {
@@ -6344,7 +6344,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             }
             return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_ERROR']);
         } catch (\Exception $e) {
-            \DBG::msg('JsonMultiSite::checkAvailabilityOfAffiliateId() failed:' . $e->getMessage());
+            \DBG::msg('JsonMultiSiteController::checkAvailabilityOfAffiliateId() failed:' . $e->getMessage());
             throw new MultiSiteJsonException($e->getMessage());
         }
     }
@@ -6361,30 +6361,30 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
     {
         global $_ARRAYLANG;
         if (empty($affiliateId)) {
-            \DBG::msg('JsonMultiSite::validateAffiliateId() failed: Insufficient arguments supplied.');
+            \DBG::msg('JsonMultiSiteController::validateAffiliateId() failed: Insufficient arguments supplied.');
             return false;
         } 
         if (ComponentController::isValidAffiliateId($affiliateId)) {
-            \DBG::msg('JsonMultiSite::validateAffiliateId() failed: AffiliateId not available.');
+            \DBG::msg('JsonMultiSiteController::validateAffiliateId() failed: AffiliateId not available.');
             throw new MultiSiteException($_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_NOT_AVAILABLE']);
         }
         // verify that affiliateId complies with naming scheme
         if (preg_match('/[^a-z0-9]/', $affiliateId)) {
-            \DBG::msg('JsonMultiSite::validateAffiliateId() failed: AffiliateId must contain only lowercase letters (a-z) and numbers.');
+            \DBG::msg('JsonMultiSiteController::validateAffiliateId() failed: AffiliateId must contain only lowercase letters (a-z) and numbers.');
             throw new MultiSiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_WRONG_CHARS']);
         }
         if (strlen($affiliateId) < \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength','MultiSite')) {
-            \DBG::msg('JsonMultiSite::validateAffiliateId() failed: Affiliate-ID too shorter.');
+            \DBG::msg('JsonMultiSiteController::validateAffiliateId() failed: Affiliate-ID too shorter.');
             throw new MultiSiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_TOO_SHORT'], \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength','MultiSite')));
         }
         if (strlen($affiliateId) > \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength','MultiSite')) {
-            \DBG::msg('JsonMultiSite::validateAffiliateId() failed: Affiliate-ID too longer.');
+            \DBG::msg('JsonMultiSiteController::validateAffiliateId() failed: Affiliate-ID too longer.');
             throw new MultiSiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_TOO_LONG'], \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength','MultiSite')));
         }
         // verify that AffiliateId is not a blocked word
         $unavailablePrefixesValue = explode(',',\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes','MultiSite'));
         if (in_array($affiliateId, $unavailablePrefixesValue)) {
-            \DBG::msg('JsonMultiSite::validateAffiliateId() failed: AffiliateId is a blocked word.');
+            \DBG::msg('JsonMultiSiteController::validateAffiliateId() failed: AffiliateId is a blocked word.');
             throw new MultiSiteException($_ARRAYLANG['TXT_MULTISITE_AFFILIATE_ID_BLOCKED']);
         }
         return true;
@@ -6511,7 +6511,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                         ||  empty($params['post']['codeBase']) 
                         ||  empty($params['post']['websites'])
                     ) {
-                        \DBG::msg('JsonMultiSite::triggerWebsiteUpdate() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                        \DBG::msg('JsonMultiSiteController::triggerWebsiteUpdate() failed: Insufficient arguments supplied: ' . var_export($params, true));
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_PROCESS_ERROR_MSG']);
                     }
                     $ymlContent = array(
@@ -6586,7 +6586,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             || empty($params['post']['codeBase'])
             || empty($params['post']['codeBasePath'])
         ) {
-            \DBG::msg('JsonMultiSite::websiteUpdate() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::msg('JsonMultiSiteController::websiteUpdate() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_ERROR_MSG']);
         }
         try {
@@ -6656,7 +6656,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         if (    empty($params['post']) 
             ||  empty($params['post']['codeBase'])
         ) {
-            \DBG::msg('JsonMultiSite::updateWebsiteCodeBase() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::msg('JsonMultiSiteController::updateWebsiteCodeBase() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_CODEBASE_ERROR_MSG']);
         }
         
@@ -6667,7 +6667,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     if (empty($params['post']['websiteIds'])) {
-                        \DBG::msg('JsonMultiSite::updateWebsiteCodeBase() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                        \DBG::msg('JsonMultiSiteController::updateWebsiteCodeBase() failed: Insufficient arguments supplied: ' . var_export($params, true));
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_CODEBASE_ERROR_MSG']);
                     }
                     $websiteIds  = isset($params['post']['websiteIds']) ? contrexx_input2raw($params['post']['websiteIds']) : array();
@@ -6682,7 +6682,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
                 case ComponentController::MODE_SERVICE:
                     if (empty($params['post']['websiteName'])) {
-                        \DBG::msg('JsonMultiSite::updateWebsiteCodeBase() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                        \DBG::msg('JsonMultiSiteController::updateWebsiteCodeBase() failed: Insufficient arguments supplied: ' . var_export($params, true));
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_CODEBASE_ERROR_MSG']);
                     }
                     $websiteName  = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
@@ -6715,7 +6715,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         if (    empty($params['post']) 
             ||  empty($params['post']['emailTemplateKey'])
         ) {
-            \DBG::msg('JsonMultiSite::sendUpdateNotification() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            \DBG::msg('JsonMultiSiteController::sendUpdateNotification() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_STATUS_ERROR_MSG']);
         }
         
@@ -6725,7 +6725,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
                 case ComponentController::MODE_MANAGER:
                     if (empty($params['post']['websiteIds'])) {
-                        \DBG::msg('JsonMultiSite::sendUpdateNotification() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                        \DBG::msg('JsonMultiSiteController::sendUpdateNotification() failed: Insufficient arguments supplied: ' . var_export($params, true));
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_STATUS_ERROR_MSG']);
                     }
                     $websiteIds  = isset($params['post']['websiteIds']) ? contrexx_input2raw($params['post']['websiteIds']) : array();
@@ -6755,7 +6755,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
                     break;
                 case ComponentController::MODE_SERVICE:
                     if (empty($params['post']['websiteName'])) {
-                        \DBG::msg('JsonMultiSite::sendUpdateNotification() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                        \DBG::msg('JsonMultiSiteController::sendUpdateNotification() failed: Insufficient arguments supplied: ' . var_export($params, true));
                         throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_STATUS_ERROR_MSG']);
                     }
                     $websiteName  = isset($params['post']['websiteName']) ? contrexx_input2raw($params['post']['websiteName']) : '';
@@ -6814,7 +6814,7 @@ class JsonMultiSite extends    \Cx\Core\Core\Model\Entity\Controller
         try {
             self::loadLanguageData();
             if (empty($params['post']) || !isset($params['post']['codeBase'])) {
-                \DBG::msg('JsonMultiSite::getWebsitesByCodeBase() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                \DBG::msg('JsonMultiSiteController::getWebsitesByCodeBase() failed: Insufficient arguments supplied: ' . var_export($params, true));
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_ERROR_MSG']);
             }
             $codeBase = isset($params['post']['codeBase']) ? contrexx_input2raw($params['post']['codeBase']) : '';

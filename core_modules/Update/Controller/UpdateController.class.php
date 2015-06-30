@@ -140,7 +140,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
                     \Cx\Core\Setting\Controller\Setting::init('MultiSite', '', 'FileSystem');
                     $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName', 'MultiSite');
                     $params = array('websiteName' => $websiteName, 'codeBase' => $oldCodeBase);
-                    \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('updateWebsiteCodeBase', $params);
+                    \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnMyServiceServer('updateWebsiteCodeBase', $params);
                 }
                 break;
             }
@@ -168,7 +168,7 @@ class UpdateController extends \Cx\Core\Core\Model\Entity\Controller {
             if (!$rollBackDelta->applyNext()) {
                 $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName', 'MultiSite');
                 $params = array('websiteName' => $websiteName, 'emailTemplateKey' => 'notification_update_error_email');
-                \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnMyServiceServer('sendUpdateNotification', $params);
+                \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnMyServiceServer('sendUpdateNotification', $params);
                 break;
             }
         }

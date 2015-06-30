@@ -101,7 +101,7 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                     'status'      => $website->getStatus(),
                     'codeBase'    => $website->getCodeBase(),
                 );
-                \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('setWebsiteDetails', $params, $websiteServiceServer);
+                \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('setWebsiteDetails', $params, $websiteServiceServer);
                 break;
         }
     }

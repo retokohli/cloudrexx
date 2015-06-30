@@ -79,7 +79,7 @@ class WebsiteTemplateEventListener implements \Cx\Core\Event\Model\Entity\EventL
                     $param['dataType'] = get_class($websiteTemplate);
                    
                     foreach ($websiteServiceServers as $websiteServiceServer) {
-                        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::executeCommandOnServiceServer('push', $param, $websiteServiceServer);
+                        \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('push', $param, $websiteServiceServer);
                     }
                     break;
             }

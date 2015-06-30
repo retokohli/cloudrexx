@@ -132,7 +132,7 @@ class CronController extends \Cx\Core\Core\Model\Entity\Controller {
                 $cronMailLogEntity->setWebsiteId($websiteObj->getId());
             }
             $cronMailLogEntity->setSuccess(false);
-            $cronMailLogEntity->setToken(\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::generateSecretKey());
+            $cronMailLogEntity->setToken(\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::generateSecretKey());
             $cronMail->addCronMailLog($cronMailLogEntity);
             \Env::get('em')->persist($cronMailLogEntity);
             \Env::get('em')->flush();
