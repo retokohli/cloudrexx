@@ -102,7 +102,7 @@ $_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Type";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'] = "We are afraid this event is already fully booked. There can not be any further registrations.";           
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'] = "Votre inscription a été correctement enregistrée dans notre système.";    
 $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'] = "sélectionnez svp.";  
-$_ARRAYLANG['TXT_CALENDAR_EVENT_IN_PAST'] = "Es können keine weiteren Anmeldungen entgegen genommen werden, da diese Veranstaltung bereits in der Vergangenheit liegt.";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_IN_PAST'] = "Il ne peut pas accepter d'autres applications, comme cet événement est dans le passé.";
 
 $_ARRAYLANG['TXT_CALENDAR_OCLOCK'] = "Heure";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'] = "Event successfull saved";

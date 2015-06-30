@@ -96,6 +96,7 @@ $_ARRAYLANG['TXT_CALENDAR_INVALID_CAPTCHA_CODE'] = "Bitte geben sie den Captcha 
 $_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Typ";
 $_ARRAYLANG['TXT_CALENDAR_EXPORT'] = "Exportieren";
 $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'] = "Bitte wählen";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_IN_PAST'] = "Es können keine weiteren Anmeldungen entgegen genommen werden, da diese Veranstaltung bereits in der Vergangenheit liegt.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'] = "Die Veranstaltung ist leider ausgebucht. Es können keine weiteren Anmeldungen entgegen genommen werden.";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'] = "Ihre <b>Anmeldung</b> wurde erfolgreich in unserem System gespeichert.";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED_SIGNOFF'] = "Ihre <b>Abmeldung</b> wurde erfolgreich in unserem System gespeichert.";
