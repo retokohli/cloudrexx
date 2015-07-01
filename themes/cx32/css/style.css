@@ -7654,3 +7654,25 @@ a#contact-btn{
     #communityday-text li {
         font-size: 1.25em;
     }
+    
+    @media screen and (max-width : 767px){
+        #header-and-main {
+            overflow-x: hidden;
+        }
+        li.level-1.no-click:after  {
+            content: none;
+        }
+        #mobile-navigation li.no-click > a {
+            display: block;
+        }
+        #mobile-navigation li.no-click > ul > li {
+            padding-left: 15px;
+        }
+    }
+    .navbar-collapse.in {
+        overflow-y: auto !important;
+        position: fixed;
+        height: 100%;
+        background: #000;
+        padding-bottom: 100px;
+    }
