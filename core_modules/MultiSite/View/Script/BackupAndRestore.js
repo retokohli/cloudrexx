@@ -1,7 +1,9 @@
 (function ($) {
     cx.ready(function () {
         if ($('#serviceServerList').length > 0) {
-            $('#serviceServerList').append(getEditOption('dropdown', 'serviceServer', 'serviceServer', '', cx.variables.get('serviceServers', 'multisite/lang')));
+            $.trim(cx.variables.get('serviceServers', 'multisite/lang')) == ''
+            ? $J('#serviceServerOption').remove()
+            : $('#serviceServerList').append(getEditOption('dropdown', 'serviceServer', 'serviceServer', '', cx.variables.get('serviceServers', 'multisite/lang')));            
         }
         
         cx.bind("userSelected", MultisiteBackupAndRestore.showSubscriptionSelection, "user/live-search/restoreUserId");
@@ -58,7 +60,8 @@
         //Website restore by clicking restore button
         $('.websiteRestore').click(function () {
             var userId = $(this).attr('data-userId') != undefined ? $(this).attr('data-userId') : 0;
-            var params = {backupedServiceServer: $(this).attr('data-serviceId'), websiteBackupFileName: $(this).attr('data-backupFile')};
+            var serviceServerId = $(this).attr('data-serviceId') != undefined ? $(this).attr('data-serviceId'): 0;
+            var params = {backupedServiceServer: serviceServerId, websiteBackupFileName: $(this).attr('data-backupFile')};
             MultisiteBackupAndRestore.websiteRestore(params, false, userId);
         });
 
@@ -152,7 +155,9 @@ var MultisiteBackupAndRestore = {
                         uploadedFilePath: upload ? data.uploadedFilePath : '',
                         backupedServiceServer: !upload ? data.backupedServiceServer : '',
                         websiteBackupFileName: !upload ? data.websiteBackupFileName : '',
-                        restoreOnServiceServer: $J('#restoreWebsite .serviceServer').val(),
+                        restoreOnServiceServer: $J('#restoreWebsite .serviceServer').length > 0
+                                                ? $J('#restoreWebsite .serviceServer').val()
+                                                : 0,
                         restoreWebsiteName: $J('#restoreWebsite #restoreWebsiteName').val(),
                         responseType: 'json',
                         selectedUserId: selectedUserId,
@@ -250,16 +255,16 @@ var MultisiteBackupAndRestore = {
             return false;
         }
 
-        var errElement = $J(error_block).find('.restore_error'),
-                errorMessage = (inputType == 'validateWebsiteName')
-                ? cx.variables.get('websiteNameRequired', 'multisite/lang')
-                : cx.variables.get('websiteUserRequired', 'multisite/lang'),
-                errorAttr = (inputType == 'validateWebsiteName')
-                ? 'websiteNameValid'
-                : 'validUserSelection',
-                valid = (inputType == 'validateWebsiteName')
-                ? !$J($this + '#restoreWebsiteName').val().match(/^[a-z0-9]+$/)
-                : ($J($this + ":checked").val() == '2') && $J('#restoreUserId').val() == 0;
+        var errElement   = $J(error_block).find('.restore_error'),
+            errorMessage = (inputType == 'validateWebsiteName')
+                            ? cx.variables.get('websiteNameRequired', 'multisite/lang')
+                            : cx.variables.get('websiteUserRequired', 'multisite/lang'),
+            errorAttr    = (inputType == 'validateWebsiteName')
+                            ? 'websiteNameValid'
+                            : 'validUserSelection',
+            valid        = (inputType == 'validateWebsiteName')
+                            ? !$J($this + '#restoreWebsiteName').val().match(/^[a-z0-9]+$/)
+                            : ($J($this + ":checked").val() == '2') && $J('#restoreUserId').val() == 0;
         MultisiteBackupAndRestore.parseErrorMessageOnRestore($restoreForm, errorAttr, errElement, $this, errorMessage, !valid);
     },
     showUserOrSubscriptionSelection: function (userId, selectedType) {
@@ -275,11 +280,12 @@ var MultisiteBackupAndRestore = {
                 $J('.live-search-user-add').hide();
                 if (userFromBackupObj.parent('label').is(':hidden')) {
                     userFromBackupObj.attr('checked', true).parent('label').show();
+                    $J("#selectUserFromOther").attr('checked', false).parent('label').show();
                 }
 
                 if (userId != 0 && userId != null) {
                     userFromBackupObj.attr('checked', false).parent('label').hide();
-                    $J("#selectUserFromOther").attr('checked', true);
+                    $J("#selectUserFromOther").attr('checked', true).parent('label').hide();
                 }
 
                 if ($J("input:radio[name='selectUserType']:checked").val() == '2') {
@@ -289,7 +295,6 @@ var MultisiteBackupAndRestore = {
         }
     },
     showSubscriptionSelection: function (objUser) {
-        var useExistingSubscription = $J('#useExistingSubscription').parent('label');
         $J('#createNewSubscription').attr('checked', true);
         $J('#subscriptionSelection').hide();
         $J('#userSelection').find('.restore_error').hide();
@@ -300,14 +305,14 @@ var MultisiteBackupAndRestore = {
             type: "POST",
             dataType: "json",
             success: function (response) {
-                $J('#SubscriptionOption').show();
                 var $resp = (response.data) ? response.data : response;
-                useExistingSubscription.hide();
                 if ($resp.subscriptionsList != undefined && $resp.status == 'success') {
-                    useExistingSubscription.show();
+                    $J('#SubscriptionOption').show();
                     $J('#subscriptionSelection #subscriptionList')
                             .html('')
                             .append(getEditOption('dropdown', 'subscription', 'subscriptionOptions', '', $resp.subscriptionsList));
+                } else {
+                    $J('#SubscriptionOption').hide();
                 }
             }
         });

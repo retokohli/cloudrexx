@@ -3,14 +3,19 @@
     <input type='hidden' name="cmd" value="MultiSite" />
     <input type='hidden' name="act" value="Maintenance/BackupsAndRestore" />
     <input type="hidden" name="show_all" value="1" />
-    <table cellspacing="0" cellpadding="5" border="0" width="100%" class="adminlist" ><tr>
+    <table cellspacing="0" cellpadding="5" border="0" width="100%" class="adminlist" >
+      <tr>
         <th valign="top" colspan="2">
-      <div align="left">{FILTER}</div>
-      </th></tr><tr><td>
+          <div align="left">{FILTER}</div>
+        </th>
+      </tr>
+      <tr>
+        <td>
           <input type="text" name="term" placeholder="{SEARCH_TERM}" id="term"  style="width: 300px;" class="search-box" value="" autocomplete="off" />
           &nbsp;&nbsp;
           <input type="submit" value="{SEARCH}"  id="searchButton"/>&nbsp;&nbsp;
-        </td></tr>
+        </td>
+      </tr>
     </table>
     {TABLE}
   </form>
@@ -23,7 +28,7 @@
     <form id="restoreWebsiteForm" >
       <span id="restoreform_error" >{TXT_CORE_MODULE_MULTISITE_WEBSITE_FIELD_REQUIRED}</span>
       <table id="MultisiteWebsiteRestore" class="adminlist" cellspacing = "0" cellpadding = "3" width = "100%">
-        <tr>
+        <tr id="serviceServerOption">
           <td width="40%">
             <label><strong>{TXT_CORE_MODULE_MULTISITE_CHOOSE_SERVICE_SERVER}&nbsp;<span class="mandatory">*</span></strong></label>
           </td>
@@ -32,10 +37,10 @@
           </td>
         </tr>
         <tr>
-          <td>
+          <td width="40%">
             <label><strong>{TXT_CORE_MODULE_MULTISITE_ENTER_WEBSITE_NAME}&nbsp;<span class="mandatory">*</span></strong></label>
           </td>
-          <td>
+          <td width="60%">
             <div id="restore_websiteName" >
               <input type="text" name="restoreWebsiteName" id ="restoreWebsiteName"  class="restoreWebsiteName"/>
               <div class="restoreWebsiteName">.{MULTISITE_DOMAIN}</div>
@@ -52,7 +57,7 @@
             <label> <input type="radio" name="selectUserType" required="" value = "2"  onchange = "MultisiteBackupAndRestore.showUserOrSubscriptionSelection()" class = "selectUserType" id="selectUserFromOther"/> <strong>{TXT_CORE_MODULE_MULTISITE_CHOOSE_ANOTHER_USER}</strong> <br/> </label> 
             <input class="live-search-user-id" id="restoreUserId" type="hidden" name="restoreUserId" value="" />
             <input class="live-search-user-name" id="restoreUserName" type="hidden" name="restoreUserName" value="" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
-            <span class="restore_error">Please select the user.</span>
+            <span class="restore_error"></span>
           </td>
         </tr>
         <tr id="SubscriptionOption">
