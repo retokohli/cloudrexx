@@ -183,7 +183,7 @@ class CrmTask extends CrmLibrary
                     $objtpl->setVariable(array(
                             'CRM_TASK_ID'           => (int) $objResult->fields['taskId'],
                             'CRM_TASKTITLE'         => contrexx_raw2xhtml($objResult->fields['task_title']),
-                            'CRM_TASKICON'          => !empty ($objResult->fields['icon']) ? CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb" : '../modules/Crm/View/Media/task_default.png',
+                            'CRM_TASKICON'          => !empty ($objResult->fields['icon']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb" : '../modules/Crm/View/Media/task_default.png',
                             'CRM_TASKTYPE'          => contrexx_raw2xhtml($objResult->fields['task_type_id']),
                             'CRM_CUSTOMERNAME'      => contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']),
                             'CRM_DUEDATE'           => contrexx_raw2xhtml(date('h:i A Y-m-d', strtotime($objResult->fields['due_date']))),
@@ -362,14 +362,15 @@ class CrmTask extends CrmLibrary
             $db = $objDatabase->Execute($query);
             if ($db) {
                 if ($notify) {
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                     $id = (!empty($id)) ? $id : $objDatabase->INSERT_ID();
                     $info['substitution'] = array(
                             'CRM_ASSIGNED_USER_NAME'            => contrexx_raw2xhtml(\FWUser::getParsedUserTitle($assignedto)),
                             'CRM_ASSIGNED_USER_EMAIL'           => $objFWUser->objUser->getUser($assignedto)->getEmail(),
-                            'CRM_DOMAIN'                        => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}".ASCMS_PATH_OFFSET,
+                            'CRM_DOMAIN'                        => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". $cx->getCodeBaseOffsetPath(),
                             'CRM_TASK_NAME'                     => $title,
-                            'CRM_TASK_LINK'                     => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd=".$this->moduleName."&act=task&tpl=modify&id=$id'>$title</a>",
-                            'CRM_TASK_URL'                      => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd=".$this->moduleName."&act=task&tpl=modify&id=$id",
+                            'CRM_TASK_LINK'                     => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". $cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName() ."/index.php?cmd=".$this->moduleName."&act=task&tpl=modify&id=$id'>$title</a>",
+                            'CRM_TASK_URL'                      => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". $cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName() ."/index.php?cmd=".$this->moduleName."&act=task&tpl=modify&id=$id",
                             'CRM_TASK_DUE_DATE'                 => $duedate,
                             'CRM_TASK_CREATED_USER'             => contrexx_raw2xhtml(\FWUser::getParsedUserTitle($objFWUser->objUser->getId())),
                             'CRM_TASK_DESCRIPTION_TEXT_VERSION' => contrexx_html2plaintext($description),
@@ -510,7 +511,7 @@ class CrmTask extends CrmLibrary
                             'id'           => (int) $objResult->fields['taskId'],
                             'activeImg'    => $objResult->fields['task_status'] == 1 ? 'led_green.gif':'led_red.gif',
                             'taskType'     => (int) $objResult->fields['task_type_id'],
-                            'taskTypeIcon' => !empty ($objResult->fields['icon']) ? CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb" : '../modules/Crm/View/Media/task_default.png',
+                            'taskTypeIcon' => !empty ($objResult->fields['icon']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb" : '../modules/Crm/View/Media/task_default.png',
                             'taskTitle'    => contrexx_raw2xhtml($objResult->fields['task_title']),
                             'dueDate'      => contrexx_raw2xhtml(date('h:i A Y-m-d', strtotime($objResult->fields['due_date']))),
                             'customerId'   => (int) $objResult->fields['customer_id'],

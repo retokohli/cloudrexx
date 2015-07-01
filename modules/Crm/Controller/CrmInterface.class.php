@@ -94,7 +94,7 @@ class CrmInterface extends CrmLibrary
     function __construct($objTpl, $name)
     {
         $this->_objTpl = $objTpl;
-        $this->_mediaPath = ASCMS_MEDIA_PATH.'/Crm';
+        $this->_mediaPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteMediaCrmPath();
         parent::__construct($name);
     }
 

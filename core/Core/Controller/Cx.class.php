@@ -521,7 +521,15 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesWebPath;
         protected $websitePublicTempPath;
         protected $websitePublicTempWebPath;
-
+        protected $websiteImagesCrmPath;
+        protected $websiteImagesCrmWebPath;
+        protected $websiteImagesCrmProfilePath;
+        protected $websiteImagesCrmProfileWebPath;
+        protected $websiteMediaCrmPath;
+        protected $websiteImagesAccessProfilePath;
+        protected $websiteImagesAccessProfileWebPath;
+        protected $websiteImagesAccessPhotoPath;
+        
         /**
          * @var \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
          */
@@ -2511,12 +2519,17 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesCalendarPath    = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Calendar';
             $this->websiteImagesPodcastPath     = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Podcast';
             $this->websiteImagesBlogPath        = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Blog';
+            $this->websiteImagesCrmPath         = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Crm';
+            $this->websiteImagesCrmProfilePath  = $this->websiteImagesCrmPath . '/profile';
+            $this->websiteImagesAccessProfilePath = $this->websiteImagesAccessPath .'/profile';
+            $this->websiteImagesAccessPhotoPath = $this->websiteImagesAccessPath .'/photo';
             $this->websiteMediaarchive1Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive1';
             $this->websiteMediaarchive2Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive2';
             $this->websiteMediaarchive3Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive3';
             $this->websiteMediaarchive4Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive4';
             $this->websiteMediaFileSharingPath  = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
-
+            $this->websiteMediaCrmPath          = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Crm';
+            
             $this->websiteImagesContentWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/content';
             $this->websiteImagesAttachWebPath   = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/attach';
             $this->websiteImagesShopWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Shop';
@@ -2527,12 +2540,15 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesCalendarWebPath = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Calendar';
             $this->websiteImagesPodcastWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Podcast';
             $this->websiteImagesBlogWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Blog';
+            $this->websiteImagesCrmWebPath      = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Crm';
+            $this->websiteImagesCrmProfileWebPath = $this->websiteImagesCrmWebPath . '/profile';
+            $this->websiteImagesAccessProfileWebPath = $this->websiteImagesAccessWebPath . '/profile';
             $this->websiteMediaarchive1WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive1';
             $this->websiteMediaarchive2WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive2';
             $this->websiteMediaarchive3WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive3';
             $this->websiteMediaarchive4WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive4';
             $this->websiteMediaFileSharingWebPath=$this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
-
+                        
             $this->websitePublicTempPath        = $this->websiteTempPath    . self::FOLDER_NAME_PUBLIC_TEMP;
             $this->websitePublicTempWebPath     = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;
         }
@@ -2927,6 +2943,79 @@ namespace Cx\Core\Core\Controller {
         public function getWebsitePublicTempWebPath() {
             return $this->websitePublicTempWebPath;
         }
+        
+         /**
+         * Return the absolute path to the website's data repository to the
+         * location of the /images/Crm
+         * @return string
+         */
+        public function getWebsiteImagesCrmPath() {
+            return $this->websiteImagesCrmPath;
+        }
+
+        /**
+         * Return the offset path from the website's data repository to the
+         * location of the /images/Crm
+         * @return string
+         */
+        public function getWebsiteImagesCrmWebPath() {
+            return $this->websiteImagesCrmWebPath;
+        }
+
+        /**
+         * Return the absolute path from the website's data repository to the
+         * location of the /images/Crm/profile
+         * @return string
+         */
+        public function getWebsiteImagesCrmProfilePath() {
+            return $this->websiteImagesCrmProfilePath;
+        }
+
+        /**
+         * Return the offset path from the website's data repository to the
+         * location of the /images/Crm/profile
+         * @return string
+         */
+        public function getWebsiteImagesCrmProfileWebPath() {
+            return $this->websiteImagesCrmProfileWebPath;
+        }
+
+        /**
+         * Return the absolute path from the website's data repository to the
+         * location of the /madia/Crm
+         * @return string
+         */
+        public function getWebsiteMediaCrmPath() {
+            return $this->websiteMediaCrmPath;
+        }
+
+        /**
+         * Return the absolute path to the data repository of the access profile.
+         * Formerly known as ASCMS_ACCESS_PROFILE_IMG_PATH.
+         * @return string
+         */
+        public function getWebsiteImagesAccessProfilePath() {
+            return $this->websiteImagesAccessProfilePath;
+        }
+
+        /**
+         * Return the offset path to the data repository of the access profile.
+         * Formerly known as ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.
+         * @return string
+         */
+        public function getWebsiteImagesAccessProfileWebPath() {
+            return $this->websiteImagesAccessProfileWebPath;
+        }
+
+        /**
+         * Return the absolute path to the data repository of the access photo.
+         * Formerly known as ASCMS_ACCESS_PHOTO_IMG_PATH.
+         * @return string
+         */
+        public function getWebsiteImagesAccessPhotoPath() {
+            return $this->websiteImagesAccessPhotoPath;
+        }
+
 
         /**
          * @return int
