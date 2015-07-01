@@ -176,12 +176,18 @@
 
     function mbCallback(data)
     {
-        if (data.type === "file" && data.data[0]) {
+        if (data.type === "file" && data.data[0]) {            
             var url = data.data[0].datainfo.filepath;
-
+            var thumbImage = data.data[0].datainfo.thumbnail[150];
+            $J.ajax({
+                type: "GET",
+                url: "index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=" + data.data[0].datainfo.filepath,
+                success: function() {
+                    document.getElementById('downloads_category_image_preview').src = thumbImage;
+                }
+            });
             document.getElementById('downloads_category_image').value = url;
-            document.getElementById('downloads_category_image_remove_button').style.display = '';
-            document.getElementById('downloads_category_image_preview').src = url+'.thumb';
+            document.getElementById('downloads_category_image_remove_button').style.display = '';            
             //document.getElementById('downloads_category_image_preview').src = thumb_url;
             //document.getElementById('downloads_category_image_preview').style.width = thumb_width;
             //document.getElementById('downloads_category_image_preview').style.height = thumb_height;
