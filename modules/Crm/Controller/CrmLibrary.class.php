@@ -14,12 +14,6 @@
 
 namespace Cx\Modules\Crm\Controller;
 
-define('CRM_ACCESS_PROFILE_IMG_WEB_PATH', ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/Crm/profile');
-define('CRM_ACCESS_PROFILE_IMG_PATH',     ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/Crm/profile');
-define('CRM_ACCESS_OTHER_IMG_WEB_PATH', ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/Crm');
-define('CRM_ACCESS_OTHER_IMG_PATH',     ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/Crm');
-define('CRM_MEDIA_PATH', ASCMS_MEDIA_PATH.'/Crm/');
-
 define('CRM_EVENT_ON_USER_ACCOUNT_CREATED', 'crm_user_account_created');
 define('CRM_EVENT_ON_TASK_CREATED', 'crm_task_assigned');
 define('CRM_EVENT_ON_ACCOUNT_UPDATED', 'crm_notify_staff_on_contact_added');
@@ -472,7 +466,7 @@ class CrmLibrary
                     $objTpl->touchBlock('delete_icon_block');
                 }
                 if (!empty ($objResult->fields['icon'])) {
-                    $iconPath = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb";
+                    $iconPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb";
                 } else {
                     $iconPath  = '../modules/Crm/View/Media/task_default.png';
                 }
@@ -572,7 +566,7 @@ class CrmLibrary
                 $first = false;
             }
             if (!empty ($objResult->fields['icon'])) {
-                $icons  = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb";
+                $icons  = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb";
             } else {
                 $icons  = '../modules/Crm/View/Media/task_default.png';
             }
@@ -1822,7 +1816,8 @@ class CrmLibrary
 
         }
         $message = base64_encode("dealsdeleted");
-        \Cx\Core\Csrf\Controller\Csrf::header("location:".ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=deals&mes=$message");
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        \Cx\Core\Csrf\Controller\Csrf::header("location:".$cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName()."/index.php?cmd=".$this->moduleName."&act=deals&mes=$message");
     }
 
     /**
@@ -2298,9 +2293,10 @@ class CrmLibrary
         
         //set profile picture
         $picture = $objDatabase->getOne("SELECT profile_picture FROM `".DBPREFIX."module_{$this->moduleNameLC}_contacts` WHERE id = '".$this->contact->id."'");
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if ($picture && !empty($picture)) {
-            if (!file_exists(ASCMS_ACCESS_PROFILE_IMG_PATH.'/'.$picture)) {
-                $file = CRM_ACCESS_PROFILE_IMG_PATH.'/';
+            if (!file_exists($cx->getWebsiteImagesAccessProfilePath().'/'.$picture)) {
+                $file = $cx->getWebsiteImagesCrmProfilePath().'/';
                 if (($picture = self::moveUploadedImageInToPlace($objUser, $file.$picture, $picture, true)) == true) {
                     // create thumbnail
                     if (self::createThumbnailOfImage($picture, true) !== false) {
@@ -2341,7 +2337,7 @@ class CrmLibrary
                         'CRM_CONTACT_SALUTATION'         => contrexx_raw2xhtml($saluation),
                         'CRM_ASSIGNED_USER_NAME'         => contrexx_raw2xhtml(\FWUser::getParsedUserTitle($objUser->getId())),
                         'CRM_CUSTOMER_COMPANY'           => $this->contact->customerName." ".$this->contact->family_name,
-                        'CRM_DOMAIN'                     => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}".ASCMS_PATH_OFFSET,
+                        'CRM_DOMAIN'                     => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}".$cx->getCodeBaseOffsetPath(),
                         'CRM_CONTACT_EMAIL'              => $email,
                         'CRM_CONTACT_USERNAME'           => $email,
                         'CRM_CONTACT_PASSWORD'           => $password,
@@ -2702,9 +2698,10 @@ class CrmLibrary
                 //set profile picture
                 if (!empty ($arrFormData['picture'][0])) {
                     $picture = $arrFormData['picture'][0];
-                    if (!file_exists(CRM_ACCESS_PROFILE_IMG_PATH.'/'.$picture)) {
-                        $file    = ASCMS_ACCESS_PROFILE_IMG_PATH.'/';
-                        $newFile = CRM_ACCESS_PROFILE_IMG_PATH.'/';
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    if (!file_exists($cx->getWebsiteImagesCrmProfilePath().'/'.$picture)) {
+                        $file    = $cx->getWebsiteImagesAccessProfilePath().'/';
+                        $newFile = $cx->getWebsiteImagesCrmProfilePath().'/';
                         if (copy($file.$picture, $newFile.$picture)) {
                             if ($this->createThumbnailOfPicture($picture)) {
                                 $this->contact->profile_picture = $picture;
@@ -2844,10 +2841,10 @@ class CrmLibrary
         if (empty($objImage)) {
             $objImage = new \ImageManager();
         }
-
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         return $objImage->_createThumbWhq(
-                ASCMS_ACCESS_PROFILE_IMG_PATH.'/',
-                ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                $cx->getWebsiteImagesAccessProfilePath().'/',
+                $cx->getWebsiteImagesAccessProfileWebPath().'/',
                 $imageName,
                 80,
                 60,
@@ -2881,8 +2878,8 @@ class CrmLibrary
             $arrSettings['max_profile_pic_width']['value'] = 160;
             $arrSettings['max_profile_pic_height']['value'] = 160;
         }
-
-        $imageRepo = $profilePic ? ASCMS_ACCESS_PROFILE_IMG_PATH : ASCMS_ACCESS_PHOTO_IMG_PATH;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $imageRepo = $profilePic ? $cx->getWebsiteImagesAccessProfilePath() : $cx->getWebsiteImagesAccessPhotoPath();
         $index = 0;
         $imageName = $objUser->getId().'_'.$name;
         while (file_exists($imageRepo.'/'.$imageName)) {
@@ -2940,10 +2937,10 @@ class CrmLibrary
         if (empty($objImage)) {
             $objImage = new \ImageManager();
         }
-
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $objImage->_createThumbWhq(
-                CRM_ACCESS_PROFILE_IMG_PATH.'/',
-                CRM_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                $cx->getWebsiteImagesCrmProfilePath().'/',
+                $cx->getWebsiteImagesCrmProfileWebPath().'/',
                 $imageName,
                 40,
                 40,
@@ -2952,8 +2949,8 @@ class CrmLibrary
             );
 
         return $objImage->_createThumbWhq(
-                CRM_ACCESS_PROFILE_IMG_PATH.'/',
-                CRM_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                $cx->getWebsiteImagesCrmProfilePath().'/',
+                $cx->getWebsiteImagesCrmProfileWebPath().'/',
                 $imageName,
                 121,
                 160,
@@ -2986,7 +2983,7 @@ class CrmLibrary
             
             if (!empty($callBackFun)) {
                 $uploader->setFinishedCallback(array(
-                    ASCMS_MODULE_PATH.'/Crm/Controller/CrmManager.class.php',
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath().'/Crm/Controller/CrmManager.class.php',
                     '\Cx\Modules\Crm\Controller\CrmManager',
                     $callBackFun
                 ));
@@ -3056,7 +3053,7 @@ class CrmLibrary
         foreach ($resources as $key => $value) {
             $emailIds[]    = $value['email'];
         }
-        
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         foreach ($emailIds As $emails) {
             if (!empty ($emails)) {
                 $objUsers = $objFWUser->objUser->getUsers($filter = array('email' => addslashes($emails)));
@@ -3066,9 +3063,9 @@ class CrmLibrary
                     'CRM_CONTACT_FIRSTNAME'             => contrexx_raw2xhtml($first_name),
                     'CRM_CONTACT_LASTNAME'              => contrexx_raw2xhtml($last_name),
                     'CRM_CONTACT_GENDER'                => contrexx_raw2xhtml($contact_gender),
-                    'CRM_DOMAIN'                        => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}".ASCMS_PATH_OFFSET,
-                    'CRM_CONTACT_DETAILS_URL'           => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id=$customerId",
-                    'CRM_CONTACT_DETAILS_LINK'          => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id=$customerId'>".$customer_name."</a>"
+                    'CRM_DOMAIN'                        => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". $cx->getCodeBaseOffsetPath(),
+                    'CRM_CONTACT_DETAILS_URL'           => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". $cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName() ."/index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id=$customerId",
+                    'CRM_CONTACT_DETAILS_LINK'          => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". $cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName() ."/index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id=$customerId'>".$customer_name."</a>"
                 );
                 //setting email template lang id
                 $availableMailTempLangAry = $this->getActiveEmailTemLangId('Crm', CRM_EVENT_ON_ACCOUNT_UPDATED);

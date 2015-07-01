@@ -606,7 +606,8 @@ class CrmSettings extends CrmLibrary
 
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
         if (empty($id)) {
-            \Cx\Core\Csrf\Controller\Csrf::header(ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=settings&tpl=currency");
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            \Cx\Core\Csrf\Controller\Csrf::header($cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName()."/index.php?cmd=".$this->moduleName."&act=settings&tpl=currency");
             exit();
         }
 
@@ -847,7 +848,7 @@ class CrmSettings extends CrmLibrary
 
         $objTpl->setVariable(array(
                 'TXT_CRM_ICON'                 => $_ARRAYLANG['TXT_CRM_ICON'],
-                'TXT_CRM_ICON_PATH'            => CRM_ACCESS_OTHER_IMG_WEB_PATH.'/',
+                'TXT_CRM_ICON_PATH'            => \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/',
                 'TXT_CRM_TASK_TYPES'           => $_ARRAYLANG['TXT_CRM_TASK_TYPES'],
                 'TXT_CRM_ADD_TASK_TYPE'        => $_ARRAYLANG['TXT_CRM_ADD_TASK_TYPE'],
                 'TXT_CRM_TASK_TYPE_STATUS'     => $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS'],
@@ -1364,7 +1365,7 @@ class CrmSettings extends CrmLibrary
     {
         global $_ARRAYLANG;
 
-        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/View/Template/Backend');
+        $objTemplate = new \Cx\Core\Html\Sigma(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath().'/'.$this->moduleName.'/View/Template/Backend');
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         if (!$objTemplate->loadTemplateFile('module_'.$this->moduleNameLC.'_settings_placeholders.html'))
             die("Failed to load template 'module_'.$this->moduleNameLC.'_settings_placeholders.html'");
