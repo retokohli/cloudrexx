@@ -1441,6 +1441,18 @@ EOF;
 
             $objTpl->hideBlock($this->moduleNameLC.'InputfieldsForm');
         }
+        $objTpl->setGlobalVariable(array(
+            $this->moduleLangVar.'_FORM_IMAGE_BROWSE' => $this->getMediaBrowserButton(
+                $_ARRAYLANG['TXT_BROWSE'],
+                array(
+                    'data-cx-mb-views' => 'filebrowser',
+                    'data-cx-mb-startmediatype' => $this->moduleNameLC,
+                    'type' => 'button',
+                    'data-input-id' => 'formImage2'
+                ),
+                'mediaBrowserCallback'
+            ),
+        ));
         
         $strFormName = '';
         $strFormDescription = '';
