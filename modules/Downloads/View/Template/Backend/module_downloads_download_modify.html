@@ -110,11 +110,19 @@ function mbCallback(data)
 
     if (data.type === "file" && downloadsElInsertBox != '' && data.data != '') {
         var url = data.data[0].datainfo.filepath;
+        var thumbImage = data.data[0].datainfo.thumbnail[150];
+
         downloadsElInsertBox.value = url;
         
-        if (downloadsElImagePreview != null) {
-           downloadsElImagePreview.src = url+'.thumb';
-        }
+        $J.ajax({
+            type: "GET",
+            url: "index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=" + data.data[0].datainfo.filepath,
+            success: function() {
+                if (downloadsElImagePreview != null) {
+                    downloadsElImagePreview.src = thumbImage;
+                }
+            }
+        });        
         if (downloadsElRemoveButton != null) {
            downloadsElRemoveButton.style.display = '';
         }
