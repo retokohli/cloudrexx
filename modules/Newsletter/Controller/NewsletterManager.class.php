@@ -785,12 +785,14 @@ class NewsletterManager extends NewsletterLib
             'NEWSLETTER_MAIL_EDIT_TITLE' => $mailId > 0 ? ($copy ? $_ARRAYLANG['TXT_NEWSLETTER_COPY_EMAIL'] : $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_EMAIL']) : $_ARRAYLANG['TXT_NEWSLETTER_CREATE_NEW_EMAIL']
         ));
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        
         if (isset($_POST['newsletter_mail_save'])) {
             $objAttachment = $objDatabase->Execute("SELECT file_name FROM ".DBPREFIX."module_newsletter_attachment WHERE newsletter=".$mailId);
             if ($objAttachment !== false) {
                 $arrCurrentAttachments = array();
                 while (!$objAttachment->EOF) {
-                    array_push($arrCurrentAttachments, ASCMS_NEWSLETTER_ATTACH_WEB_PATH.'/'.$objAttachment->fields['file_name']);
+                    array_push($arrCurrentAttachments, $cx->getWebsiteImagesAttachPath() . '/' . $objAttachment->fields['file_name']);
                     $objAttachment->MoveNext();
                 }
 
@@ -872,7 +874,7 @@ class NewsletterManager extends NewsletterLib
                         $objAttachment = $objDatabase->Execute("SELECT file_name FROM ".DBPREFIX."module_newsletter_attachment WHERE newsletter=".$mailId);
                         if ($objAttachment !== false) {
                             while (!$objAttachment->EOF) {
-                                array_push($arrAttachment, ASCMS_NEWSLETTER_ATTACH_WEB_PATH.'/'.$objAttachment->fields['file_name']);
+                                array_push($arrAttachment, $cx->getWebsiteImagesAttachWebPath() . '/' . $objAttachment->fields['file_name']);
                                 $objAttachment->MoveNext();
                             }
                         }
@@ -1371,14 +1373,15 @@ class NewsletterManager extends NewsletterLib
     function _addMailAttachment($attachment, $mailId = 0)
     {
         global $objDatabase;
-
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        
         $fileName = substr($attachment, strrpos($attachment, '/')+1);
 
         $objAttachment = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_attachment WHERE file_name='".$fileName."'", 1);
         if ($objAttachment !== false) {
             if ($objAttachment->RecordCount() == 1) {
-                $md5Current = @md5_file(ASCMS_NEWSLETTER_ATTACH_PATH.'/'.$fileName);
-                $md5New = @md5_file(ASCMS_PATH.$attachment);
+                $md5Current = @md5_file($cx->getWebsiteImagesAttachPath() . '/' . $fileName);
+                $md5New = @md5_file($cx->getWebsiteDocumentRootPath() . $attachment);
 
                 if ($md5Current !== false && $md5Current === $md5New) {
                     if ($objDatabase->Execute("    INSERT INTO ".DBPREFIX."module_newsletter_attachment (`newsletter`, `file_name`)
@@ -1390,9 +1393,9 @@ class NewsletterManager extends NewsletterLib
 
             $nr = 0;
             $fileNameTmp = $fileName;
-            while (file_exists(ASCMS_NEWSLETTER_ATTACH_PATH.'/'.$fileNameTmp)) {
-                $md5Current = @md5_file(ASCMS_NEWSLETTER_ATTACH_PATH.'/'.$fileNameTmp);
-                $md5New = @md5_file(ASCMS_PATH.$attachment);
+            while (file_exists($cx->getWebsiteImagesAttachPath().'/'.$fileNameTmp)) {
+                $md5Current = @md5_file($cx->getWebsiteImagesAttachPath() . '/' . $fileNameTmp);
+                $md5New = @md5_file($cx->getWebsiteDocumentRootPath() . $attachment);
 
                 if ($md5Current !== false && $md5Current === $md5New) {
                     if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_attachment (`newsletter`, `file_name`) VALUES (".$mailId.", '".$fileNameTmp."')") !== false) {
@@ -1403,8 +1406,8 @@ class NewsletterManager extends NewsletterLib
                 $PathInfo = pathinfo($fileName);
                 $fileNameTmp = substr($PathInfo['basename'],0,strrpos($PathInfo['basename'],'.')).$nr.'.'.$PathInfo['extension'];
             }
-
-            if (copy(ASCMS_PATH.$attachment, ASCMS_NEWSLETTER_ATTACH_PATH.'/'.$fileNameTmp)) {
+            
+            if (copy($cx->getWebsiteDocumentRootPath() . $attachment, $cx->getWebsiteImagesAttachPath().'/'.$fileNameTmp)) {
                 if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_attachment (`newsletter`, `file_name`) VALUES (".$mailId.", '".$fileNameTmp."')") !== false) {
                     return true;
                 }
@@ -1422,7 +1425,7 @@ class NewsletterManager extends NewsletterLib
         $objAttachment = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_attachment WHERE file_name='".$fileName."'", 2);
         if ($objAttachment !== false) {
             if ($objAttachment->RecordCount() < 2) {
-                @unlink(ASCMS_NEWSLETTER_ATTACH_PATH.'/'.$fileName);
+                @unlink(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesAttachPath().'/'.$fileName);
             }
 
             if ($objDatabase->SelectLimit("DELETE FROM ".DBPREFIX."module_newsletter_attachment WHERE file_name='".$fileName."' AND newsletter=".$mailId, 1) !== false) {
@@ -3028,7 +3031,7 @@ class NewsletterManager extends NewsletterLib
         $objResultATT = $objDatabase->Execute($queryATT);
         if ($objResultATT !== false) {
             while (!$objResultATT->EOF) {
-                $mail->AddAttachment(ASCMS_NEWSLETTER_ATTACH_PATH."/".$objResultATT->fields['file_name'], $objResultATT->fields['file_name']);
+                $mail->AddAttachment(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesAttachPath() . "/" . $objResultATT->fields['file_name'], $objResultATT->fields['file_name']);
                 $objResultATT->MoveNext();
             }
         }
