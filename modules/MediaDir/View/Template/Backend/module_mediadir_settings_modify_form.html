@@ -5,6 +5,10 @@ $J(function(){
        resetContextFields();
    });
    resetContextFields();
+   $J('.mediabrowser-button').click(function(){
+      var inputId = $J(this).data('inputId');
+      mediaBrowseInputBox = $J('#' + inputId);
+   });
 });
 
 function resetContextFields() {
@@ -109,34 +113,13 @@ function ExpandMinimizeForm(toggle){
     elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
 }
-
-function SetUrl(url, width, height, alt) {
-	switch (fileType) {
-    	case 'image':
-    	case 'webpages':
-    		document.getElementById(insertBox).value = url;
-    		break
-    	case 'link':
-    		if (insertText == '') {
-    			insertText = url;
-    		}
-    		newsInsertLink(document.getElementById(insertBox), '<a href="'+url+'">'+insertText+'</a>');
-    		break;
-	}
-}
-
-function getFileBrowser(name, type)
-{
-	insertBox = name;
-	fileType = type;
-
-	openWindow('?cmd=FileBrowser&standalone=true&type=MediaDir','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-}
-
-function openWindow(theURL,winName,features){
-	browserPopup = window.open(theURL,"Browser",features);
-	browserPopup.focus();
-}
+var mediaBrowseInputBox;
+var mediaBrowserCallback = function(data) {
+    if (data.type=="file") {
+      var path = data.data[0].datainfo.filepath;
+      mediaBrowseInputBox.val(path);      
+    }
+};
 
 var addInputfield = function(formId)
 {
@@ -204,7 +187,11 @@ var refreshInputfields = function(formId)
             </tr>
             <tr class="row1">
                 <td valign="top">{TXT_MEDIADIR_PICTURE}</td>
-                <td>{MEDIADIR_FORM_PICTURE_THUMB}<input type="text" name="formImage" value="{MEDIADIR_FORM_PICTURE}" id="formImage2" style="width: 300px;" />&nbsp;<input type="button" value="{TXT_MEDIADIR_BROWSE}" onClick="getFileBrowser('formImage2', 'image')" /></td>
+                <td>
+                    {MEDIADIR_FORM_PICTURE_THUMB}
+                    <input type="text" name="formImage" value="{MEDIADIR_FORM_PICTURE}" id="formImage2" style="width: 300px;" />&nbsp;
+                    {MEDIADIR_FORM_IMAGE_BROWSE}
+                </td>
             </tr>
             <tr class="row2">
                 <td valign="top">{TXT_MEDIADIR_CMD}</td>

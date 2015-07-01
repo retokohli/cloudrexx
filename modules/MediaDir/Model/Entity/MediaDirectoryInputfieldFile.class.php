@@ -165,6 +165,16 @@ INPUT;
 
         $mode = $cx->getMode();
         if ($mode == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            $mediaBrowseBtn = $this->getMediaBrowserButton(
+                $_ARRAYLANG['TXT_BROWSE'],
+                array(
+                    'data-cx-mb-views' => 'filebrowser',
+                    'data-cx-mb-startmediatype' => $this->moduleNameLC,
+                    'type' => 'button',
+                    'data-input-id' => $this->moduleNameLC . 'Inputfield_'. $id .'_'. $langId
+                ),
+                'mediaBrowserCallback'
+            );
             $strInputfield = <<<INPUT
             $strFilePreview
             <input type="text" name="{$this->moduleNameLC}Inputfield[$id][file][$langId]"
@@ -176,9 +186,7 @@ INPUT;
                 autocomplete="off"
                 onfocus="this.select();" />
             &nbsp;
-            <input type="button" value="{$_ARRAYLANG['TXT_BROWSE']}"
-            onClick="getFileBrowser('{$this->moduleNameLC}Inputfield_{$id}_$langId', '{$this->moduleName}', '/uploads')" />
-            &nbsp;
+            $mediaBrowseBtn
             <br />
             <input type="text" name="{$this->moduleNameLC}Inputfield[{$id}][name][$langId]" 
                 value="$displayName" 

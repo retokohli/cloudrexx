@@ -733,6 +733,15 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             $this->moduleLangVar.'_CATEGORY_DEFAULT_LANG_ID' => $_LANGID,
             'TXT_'.$this->moduleLangVar.'_BASIC_DATA' => $_ARRAYLANG['TXT_MEDIADIR_BASIC_DATA'],
             'TXT_'.$this->moduleLangVar.'_CATEGORY_DETAILS' => $_ARRAYLANG['TXT_MEDIADIR_CATEGORY_DETAILS'],
+            $this->moduleLangVar.'_CATEGORY_IMAGE_BROWSE' => $this->getMediaBrowserButton(
+                $_ARRAYLANG['TXT_BROWSE'],
+                array(
+                    'data-cx-mb-views' => 'filebrowser',
+                    'type' => 'button',
+                    'data-input-id' => 'categoryImage2'
+                ),
+                'mediaBrowserCallback'
+            ),
         ));
 
         if (count($this->arrFrontendLanguages) == 1) {
@@ -946,6 +955,15 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             $this->moduleLangVar.'_LEVEL_DEFAULT_LANG_ID' => $_LANGID,
             'TXT_'.$this->moduleLangVar.'_BASIC_DATA' => $_ARRAYLANG['TXT_MEDIADIR_BASIC_DATA'],
             'TXT_'.$this->moduleLangVar.'_LEVEL_DETAILS' => $_ARRAYLANG['TXT_MEDIADIR_LEVEL_DETAILS'],
+            $this->moduleLangVar.'_LEVEL_IMAGE_BROWSE' => $this->getMediaBrowserButton(
+                $_ARRAYLANG['TXT_BROWSE'],
+                array(
+                    'data-cx-mb-views' => 'filebrowser',
+                    'type' => 'button',
+                    'data-input-id' => 'levelImage2'
+                ),
+                'mediaBrowserCallback'
+            ),
         ));
 
         //get level dropdown
