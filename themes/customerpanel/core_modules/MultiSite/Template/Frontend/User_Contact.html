@@ -1,0 +1,65 @@
+<table>
+    <tbody>
+        <!-- BEGIN multisite_user_profile_attribute_gender -->
+        <tr>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_DESC}</td>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER}</td>
+        </tr>
+        <!-- END multisite_user_profile_attribute_gender --> 			
+        <!-- BEGIN multisite_user_profile_attribute_title -->
+        <tr>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_DESC}</td>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE}</td>
+        </tr>
+        <!-- END multisite_user_profile_attribute_title --> 			
+        <!-- BEGIN multisite_user_profile_attribute_firstname -->
+        <tr>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</td>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME}</td>
+        </tr>
+        <!-- END multisite_user_profile_attribute_firstname --> 			
+        <!-- BEGIN multisite_user_profile_attribute_lastname -->
+        <tr>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}</td>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME}</td>
+        </tr>
+        <!-- END multisite_user_profile_attribute_lastname --> 		 
+        <!-- BEGIN multisite_user_profile_attribute_phone_office -->
+        <tr>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_DESC}</td>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_OFFICE_VALUE}</td>
+        </tr>
+        <!-- END multisite_user_profile_attribute_phone_office --> 			
+        <!-- BEGIN multisite_user_profile_attribute_phone_private -->
+        <tr>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_PRIVATE_DESC}</td>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_PRIVATE_VALUE}</td>
+        </tr>
+        <!-- END multisite_user_profile_attribute_phone_private --> 			
+        <!-- BEGIN multisite_user_profile_attribute_phone_mobile -->
+        <tr>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_MOBILE_DESC}</td>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_MOBILE_VALUE}</td>
+        </tr>
+        <!-- END multisite_user_profile_attribute_phone_mobile --> 			
+        <!-- BEGIN multisite_user_profile_attribute_phone_fax -->
+        <tr>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_FAX_DESC}</td>
+            <td>{MULTISITE_USER_PROFILE_ATTRIBUTE_PHONE_FAX_VALUE}</td>
+        </tr>
+        <!-- END multisite_user_profile_attribute_phone_fax --> 	
+    </tbody>
+</table>
+<button type="button" class="userContactModal" data-remote="/api/MultiSite/User/Contact/Edit" data-target="multisite_settings_contact">Bearbeiten</button>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+  jQuery('.userContactModal').bind('click', function (event) {
+        showRemoteModal({
+          modalId   : jQuery(this).data('target'),
+          remoteUrl : jQuery(this).data('remote'),
+        });
+      });
+});
+/* ]]> */
+</script>

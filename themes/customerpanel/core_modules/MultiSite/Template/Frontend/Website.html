@@ -1,0 +1,46 @@
+<script type="text/javascript">
+/* <![CDATA[ */
+cx.ready(function() {
+    cx.variables.set('loadingText', '{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}', 'multisite/lang');
+    jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function() {
+        var $_GET = getQueryParams(document.location.search);
+        var id    = $_GET['id'];
+
+        loadContent('#multisite_website_info', '/api/MultiSite/Website/Info?id=' + id);
+        loadContent('#multisite_website_admins', '/api/MultiSite/Website/Admins?id=' + id);
+        loadContent('#multisite_website_domains', '/api/MultiSite/Website/Domains?id=' + id);
+        loadContent('#multisite_website_email', '/api/MultiSite/Website/Email?id=' + id);
+        loadContent('#multisite_website_resources', '/api/MultiSite/Website/Resources?id=' + id);
+    });
+});
+/* ]]> */
+</script>
+<div id='multisite_website_info'>
+    <!-- BEGIN showWebsiteDomainName -->
+    <h1>{MULTISITE_WEBSITE_DOMAIN_NAME}</h1>
+    <!-- END showWebsiteDomainName -->
+    <div class="grid-elm grid-align-1-1 grid-offset"></div>
+</div>
+<div id='multisite_website_admins'>
+  <div class="grid-elm grid-align-1-1 grid-offset"></div>
+</div>
+<div id='multisite_website_domains'>
+  <div class="grid-elm grid-align-1-1 grid-offset"></div>
+</div>
+<div id='multisite_website_email'>  
+    <div class="grid-elm grid-align-1-1 grid-offset"></div>
+</div>
+<div aria-hidden="true"  class="modal fade" id="EmailEdit" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content"></div>
+    </div>
+</div>
+<div id='multisite_website_resources'>
+  <div class="grid-elm grid-align-1-1 grid-offset"></div>
+</div>
+<div aria-hidden="true" class="modal fade " id="SubscriptionSelection" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}</div>
+    </div>
+</div>
+

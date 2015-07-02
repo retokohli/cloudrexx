@@ -1,0 +1,53 @@
+<div class="grid-elm grid-align-1-1 grid-offset">             
+    <form role="form" action="{MULTISITE_USER_PROFILE_SUBMIT_URL}" id="multisite_user_profile_form">                       
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h2>Profil</h2>   
+        
+        <fieldset>
+            <!-- BEGIN multisite_user_profile_attribute_gender -->       
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_GENDER}
+            </div>
+            <!-- END multisite_user_profile_attribute_gender --> 			
+
+            <!-- BEGIN multisite_user_profile_attribute_title -->     
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_TITLE}
+            </div>
+            <!-- END multisite_user_profile_attribute_title --> 			
+
+            <!-- BEGIN multisite_user_profile_attribute_firstname -->   
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_FIRSTNAME}
+            </div>
+            <!-- END multisite_user_profile_attribute_firstname --> 			
+
+            <!-- BEGIN multisite_user_profile_attribute_lastname -->   
+            <div class="row">
+                <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_ID}">{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME_DESC}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE_LASTNAME}
+            </div>
+            <!-- END multisite_user_profile_attribute_lastname --> 		
+            
+            <div class="row">
+                <input type="hidden" value="true" name="reload">
+                <button type="submit" class="save loadingProcess" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
+                <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+            </div>
+        <fieldset>
+
+    </form>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('#multisite_user_profile_form').submit(function() {
+      sendApiFormRequest('#multisite_user_profile_form',
+                         '#multisite_settings_profile',
+                         '#multisite_user_profile',
+                         '/api/MultiSite/User/Profile');
+      return false;
+    });
+});
+/* ]]> */
+</script>
+<script type="text/javascript" src= "/themes/customerpanel/js/removeMandatoryStar.js"></script>

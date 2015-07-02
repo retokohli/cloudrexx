@@ -1,0 +1,54 @@
+<!-- BEGIN showSiteTable -->
+<div  class="grid-elm grid-align-1-1 grid-offset">
+    <h2>{TXT_MULTISITE_SUBSCRIPTION_TRAIL}</h2>
+    <div class="subscription-table">
+        <table class="tablesort subscription-trial">
+            <thead>
+                <tr>
+                    <th width="55%">{TXT_MULTISITE_WEBSITE}</th>
+                    <th width="20%">{TXT_MULTISITE_WEBSITE_SUBSCRIPTION_EXPIRED}</th>
+                    <th width="25%" class="actions noSorting">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- BEGIN showSiteDetails -->
+                <!-- BEGIN showWebsites -->
+                <tr>
+                    <td>
+                        <!-- BEGIN websiteLinkActive -->
+                        <a class="entypo-popup" href="{MULTISITE_WEBSITE_LINK}" target="_blank">&nbsp;{MULTISITE_WEBSITE_NAME}</a>
+                        <!-- END websiteLinkActive -->
+
+                        <!-- BEGIN websiteLinkInactive -->
+                        <span class="entypo-popup">&nbsp;{MULTISITE_WEBSITE_NAME}</span>
+                        <!-- END websiteLinkInactive -->
+                    </td>
+                    <td>{MULTISITE_WEBSITE_EXPIRE_DATE}</td>
+                    <td class="actions">
+                        <!-- BEGIN actionButtonsActive -->
+                        <button onclick="window.location.href = '{NODE_MULTISITE_WEBSITE}?id={MULTISITE_WEBSITE_ID}';">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
+
+                        <!-- BEGIN showAdminButton -->
+                        <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}" onclick="getRemoteLoginToken(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
+                        <!-- END showAdminButton -->
+                       
+                        <button class="save remoteModal" data-remote="/api/MultiSite/SubscriptionSelection?id={MULTISITE_WEBSITE_ID}&subscriptionId={MULTISITE_SUBSCRIPTION_ID}" data-target="SubscriptionSelection">{TXT_MULTISITE_WEBSITE_CHOOSE_SUBSCRIPTION}</button>
+                        <!-- END actionButtonsActive -->
+                        <!-- BEGIN websiteInitializing -->
+                        {TXT_MULTISITE_WEBSITE_INITIALIZING}
+                        <!-- END websiteInitializing -->
+                    </td>
+                </tr>
+                <!-- END showWebsites -->
+                <!-- END showSiteDetails -->
+            </tbody>
+        </table>        
+    </div>
+</div>
+<!-- END showSiteTable -->
+<script type="text/javascript">
+/* <![CDATA[ */
+var sorterTable   = ['subscription-trial']; // define unique classes for table sorter
+addTableSorting(sorterTable); // init the table sorting  
+/* ]]> */
+</script>

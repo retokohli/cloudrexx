@@ -1,0 +1,490 @@
+<style type="text/css">
+/* <![CDATA[ */
+.actions a {color: #000000;}
+.table {display: table; margin-bottom: 0px;}
+.table-head{display: table-header-group;}
+.table-row{display: table-row;}
+.table-cell{display: table-cell;}
+input.text-select {background-color: #f5f5f5;}
+.table-row-spacing {margin-bottom: 20px;}
+/* ]]> */
+</style>
+<div class="grid-container  grid-offset" id="multisite_affiliate_profile_attribute_id">
+    <div class="grid-elm grid-align-2-3 grid-offset-larger-right">        
+            <div class="show-affiliate-paypal-profile-attribute-id">
+                <form id="affiliate-form" method="post">
+                    <div class="table">
+                        <div class="table-head">
+                            <div class="table-cell" style="width: 33%;"><h2>{TXT_CORE_MODULES_MULTISITE_AFFILIATE_ACCOUNT_LABEL}</h2></div>
+                            <div class="table-cell">&nbsp;</div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <label>{MULTISITE_AFFILIATE_PROFILE_ATTR_ID_LABEL}</label>
+                            </div>
+                            <div id="affiliateId" class="table-cell">
+                                <div class="table-row-spacing">
+                                    <!-- BEGIN affiliateIdInput -->
+                                    <input type="text" name="affiliateProfileAttributeId" id="affiliateProfileAttributeId" style="width: 33%;" value="">
+                                    <div class="errorBlock">&nbsp;</div>
+                                    <!-- END affiliateIdInput -->
+
+                                    <!-- BEGIN affiliateIdValue -->
+                                    <input type="text" value="https://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}" class="text-select" readonly="readonly"/>
+                                    <!-- END affiliateIdValue -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <label>{TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL}</label>
+                            </div>
+                            <div id="paypalAccountAddress" class="table-cell actions">
+                                <div class="table-row-spacing">
+                                    <!-- BEGIN paypalEmailAddressInput -->
+                                    <input type="email" id="paypalEmail" style="width: 33%;" name="paypalEmailAddress" value="{MULTISITE_PAYPAL_EMAIL_ADDRESS}">
+                                    <div class="errorBlock">&nbsp;</div>
+                                    <!-- END paypalEmailAddressInput -->
+
+                                    <!-- BEGIN paypalEmailAddressValue -->
+                                    {MULTISITE_PAYPAL_EMAIL_ADDRESS}
+                                    <a class="entypo-tools" href="#" data-target="#multisite_paypal_email_address_form" data-toggle="modal"></a>
+                                    <!-- END paypalEmailAddressValue -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="table-row">
+                            <!-- BEGIN affiliateFormSubmitBtn -->
+                            <div class="table-cell">
+                                <button style="margin-top: 0px;" type="button" class="btn save loadingProcess" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
+                            </div>
+                            <!-- END affiliateFormSubmitBtn -->
+                        </div>
+                    </div>
+                    <!-- BEGIN affiliateRefererCountEmpty -->
+                    <div><label>{TXT_CORE_MODULE_MULTISITE_AFFILIATE_ID_NOT_SET_NOTE}</label></div>
+                    <!-- END affiliateRefererCountEmpty -->
+                </form>
+
+                <!-- BEGIN showAffiliateIdPartTwo -->
+                <div class="table">
+                    <div class="table-row">
+                        <div class="table-cell" style="width: 33%;"><h2>{TXT_CORE_MODULES_MULTISITE_REFERRAL_LABEL}</h2></div>
+                        <div class="table-cell">&nbsp;</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="table-cell">
+                            <label>{TXT_CORE_MODULE_MULTISITE_REFERRALS_LABEL}</label>
+                        </div>
+                        <div class="table-cell">
+                            {MULTISITE_AFFILIATE_REFERRALS_COUNT}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BEGIN showReferralsSubscriptionCount -->
+                <div class="table">
+                    <div class="table-row">
+                        <div class="table-cell">
+                            <label>{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_REFERRALS_LABEL} : </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-elm grid-align-1-1">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}</th>
+                                <th style="text-align:right">{TXT_CORE_MODULES_MULTISITE_PENDING_LABEL}</th>
+                                <th style="text-align:right">{TXT_CORE_MODULES_MULTISITE_CREDITED_LABEL}</th>
+                                <th style="text-align:right">{TXT_CORE_MODULES_MULTISITE_PAIDOUT_LABEL}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <!-- BEGIN showSubscriptionsCountByProduct -->
+                            <tr>
+                                <td>{MULTISITE_SUBSCRIPTIONS_PRODUCT_NAME}</td>
+                                <td style="text-align:right">{MULTISITE_SUBSCRIPTIONS_PRODUCT_PENDING_COUNT}</td>
+                                <td style="text-align:right">{MULTISITE_SUBSCRIPTIONS_PRODUCT_CREDITED_COUNT}</td>
+                                <td style="text-align:right">{MULTISITE_SUBSCRIPTIONS_PRODUCT_PAYOUT_COUNT}</td>
+                            </tr>
+                        <!-- END showSubscriptionsCountByProduct -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- END showReferralsSubscriptionCount -->
+
+                <!-- BEGIN showNoReferralsMsg -->
+                <div class="table">
+                    <div class="table-row">
+                        <div class="table-cell">
+                            <label>{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTIONS_NO_REFERRALS_SIGNUP}</label>
+                        </div>
+                    </div>
+                </div>
+                <!-- END showNoReferralsMsg -->
+                
+                <!-- END showAffiliateIdPartTwo -->
+                
+                <!-- BEGIN showAffiliateCreditTotalAmt -->
+                <div class="row">&nbsp;</div>
+                <div class="row">&nbsp;</div>
+                <div class="table">
+                    <div class="table-head">
+                        <div class="table-cell"><h2>{TXT_CORE_MODULES_MULTISITE_PAYOUTS_LABEL}</h2></div>
+                        <div class="table-cell">&nbsp;</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="table-cell" style="width:33%">
+                            {TXT_CORE_MODULES_MULTISITE_NEXT_PAYMENT_LABEL}
+                        </div>
+                        <div class="table-cell">
+                            {MULTISITE_AFFILIATE_CREDIT_AMT_TOTAL}
+                            <!-- BEGIN showPayoutButton -->
+                            <button class="btn-xs loadingProcess save" onclick="sendNotificationForPayoutRequest(jQuery(this));" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULES_MULTISITE_PAYOUT_BUTTON_LABEL}</button>
+                            <!-- END showPayoutButton -->
+                        </div>
+                        <div class="table-cell">&nbsp;</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="table-cell" style="width:33%">
+                            <label>{TXT_CORE_MODULES_MULTISITE_TOTAL_LABEL}</label>
+                        </div>
+                        <div class="table-cell">
+                            {MULTISITE_AFFILIATE_TOTAL_AMT}
+                        </div>
+                        <div class="table-cell">&nbsp;</div>
+                    </div>
+                </div>
+                <!-- END showAffiliateCreditTotalAmt -->
+                
+                <!-- BEGIN showCloudrexxBannerLinks -->
+                <div class="row">&nbsp;</div>
+                <div class="row">&nbsp;</div>
+                <h2>Cloudrexx Werbebanner oder Link auf Ihrer Website</h2>
+                <span>Kopieren Sie den Quellcode von einem der folgenden Beispiele und fügen Sie den Code auf Ihrer Website ein, um Ihre Besucher auf Cloudrexx aufmerksam zu machen und die Affiliate-Provision zu kassieren, falls eine Bestellung zu Stande kommt.</span>
+                <div class="grid-elm grid-align-1-1">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Beispiel</th>
+                                <th>Quellcode</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"><img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_468x60.jpg" /></a>
+                                </td>
+                                <td>
+                                    <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;&lt;img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_468x60.jpg" /&gt;&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"><img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_728x90.jpg" /></a>
+                                </td>
+                                <td>
+                                    <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;&lt;img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_728x90.jpg" /&gt;&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"><img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_300x250.jpg" /></a>
+                                </td>
+                                <td>
+                                    <textarea class="text-select" style="height:250px">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;&lt;img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_300x250.jpg" /&gt;&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"><img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_160x600.jpg" /></a>
+                                </td>
+                                <td>
+                                    <textarea class="text-select" style="height:600px">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;&lt;img border="0" src="https://media.cloudrexx.com/banner/cloudrexx_160x600.jpg" /&gt;&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}">Cloudrexx - Starten Sie jetzt mit der kostenlosen Trial</a>
+                                </td>
+                                <td>
+                                    <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Cloudrexx - Starten Sie jetzt mit der kostenlosen Trial!&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}">Cloudrexx Website - Starten Sie jetzt mit der kostenlosen Trial</a>
+                                </td>
+                                <td>
+                                    <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Cloudrexx Website - Starten Sie jetzt mit der kostenlosen Trial!&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}">Business Websites online erstellen</a>
+                                </td>
+                                <td>
+                                    <textarea class="text-select">&lt;a href="http://{MULTISITE_MARKETING_WEBSITE}/?{MULTISITE_AFFILIATE_QUERY_STRING}={MULTISITE_AFFILIATE_PROFILE_ATTR_ID}"&gt;Business Websites online erstellen&lt;/a&gt;</textarea>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- END showCloudrexxBannerLinks -->
+           </div>
+        
+    </div><aside class="grid-elm grid-align-1-3 grid-offset-left show-on-screen">
+
+        <p><strong>Tracking, Reporting und Auszahlung:</strong></br>
+        <span class="note">Die Provisionsauszahlung erfolgt nur, wenn sich Kunden über die von Cloudrexx für das Affiliate-Programm zur Verfügung gestellten Werbemittel anmelden und eines der kostenpflichtigen Cloudrexx Solo, Non-profit- oder Cloudrexx Business-Abos erwerben. Alle von Ihnen geworbenen Kunden werden automatisch Kunden von Cloudrexx.</span></p>
+
+        <p><strong>Gültigkeit der Cookies:</strong></br>
+        <span class="note">Das Tracking der gewonnen Kunden erfolgt über Cookies. Die Cookies haben eine Gültigkeit von {MULTISITE_AFFILIATE_COOKIE_LIFETIME} Tagen nach Aktivierung. Cloudrexx zahlt die Provision jedoch auch für alle späteren Upgrades auf ein kostenpflichtiges Cloudrexx Abo im Sinne der Customer Lifetime aus (Beispiel: ein potenzieller Kunde klickt auf ein Werbemittel von Ihnen, registriert sich innerhalb der {MULTISITE_AFFILIATE_COOKIE_LIFETIME} Tage der Cookie gültigkeit bei Cloudrexx und erwirbt erst nach weiteren 60 Tagen ein Cloudrexx Abo, so erhalten Sie diesen Verkauf trotzdem vergütet).</span></p>
+
+        <p><strong>Anrechnung des Provisionsguthabens:</strong></br>
+        <span class="note">90 Tage, nachdem ein Cloudrexx Solo, Non-Profit oder Business-Abo bestellt und <strong>bezahlt</strong> worden ist, wird Ihnen dieser „Sale“ gutgeschrieben und in Ihrem Konto (unter <i>Empfehlungen</i>) auf <i>bestätigt</i> gesetzt.</span></p>
+
+        <p><strong>Auszahlung der Provision:</strong></br>
+        <span class="note">Sobald Sie die Auszahlungsgrenze von 50,- EUR / 50 CHF an bestätigten Provisionen erreicht haben, können Sie die Auszahlung über die entsprechende Funktion anfordern.</span></p>
+
+    </aside>
+</div>
+<!-- BEGIN payrexxAccountEditModal -->
+<div aria-hidden="true" class="modal fade" id="multisite_paypal_email_address_form" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="grid-elm grid-align-1-1 grid-offset">
+                <form role="form" action="{MULTISITE_USER_PROFILE_SUBMIT_URL}" id="multisite_user_profile_form">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h2>{TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL}</h2>
+                    <fieldset>
+                        <div class="row">
+                            {TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL_LABEL}:
+                        </div>
+                        <!-- BEGIN multisite_user_profile_attribute_list -->       
+                        <div class="row">
+                            <label for="{MULTISITE_USER_PROFILE_ATTRIBUTE_ID}">{TXT_CORE_MODULE_MULTISITE_PAYPAL_ACCOUNT_EMAIL}</label>{MULTISITE_USER_PROFILE_ATTRIBUTE}
+                            <div class="errorBlock">&nbsp;</div>
+                        </div>
+                        <!-- END multisite_user_profile_attribute_list --> 			
+                        <div class="row">
+                            <button type="submit" class="save loadingProcess" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
+                            <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+                        </div>
+                    </fieldset>
+                </form>    
+            </div>
+        </div>
+    </div>    
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        $paypalEmailAddressId = 'input[name="multisite_user_profile_attribute[{MULTISITE_PAYPAL_EMAIL_ATTRIBUTE_ID}][0]"]';
+        
+        jQuery('#multisite_user_profile_form').submit(function() {
+            var objPaypalEmail = jQuery($paypalEmailAddressId),
+                objPaypalErrorBlock = jQuery('#multisite_paypal_email_address_form .errorBlock');
+            if ((objPaypalEmail.length > 0) && !isValidEmail(objPaypalEmail.val())) {
+                showErrorBlock(objPaypalErrorBlock, '{TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR}');
+                return false;
+            } else {
+                hideErrorBlock(objPaypalErrorBlock);
+            }
+            var options = {
+                callback: function() {
+                    window.location.reload();
+                },
+                beforesend: function($opt) {
+                    $opt.button('loading');
+                    $opt.prop('disabled', true);
+                    $opt.removeClass('save');
+                },
+                complete: function($opt) {
+                    $opt.button('reset');
+                    $opt.prop('disabled', false);
+                    $opt.addClass('save');
+                }
+            };
+            sendApiFormRequest('#multisite_user_profile_form', 
+                               '#multisite_paypal_email_address_form', ' ', ' ', 
+                               options
+                              );
+            return false;
+        });
+    });
+</script>
+<!-- END payrexxAccountEditModal -->
+<script type="text/javascript">
+    /* <![CDATA[ */
+    cx.ready(function(){        
+        jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function(){
+            var submitButtonRequested = false;            
+            function checkAvailablityOfAffiliateId(affiliateId) {
+                var url        = cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=checkAvailabilityOfAffiliateId',
+                    errorBlock = jQuery('#affiliateId .errorBlock');
+
+                lastXhr = jQuery.ajax({
+                    dataType: "json",
+                    url: url,
+                    data: {
+                        affiliateProfileAttributeId :  affiliateId
+                    },
+                    type: "POST",
+                    beforeSend: function (xhr, settings) {
+                        // jQuery('#affiliate-form .save').prop('disabled', true);
+                    },
+                    success: function(response, status, xhr) {
+                        if (xhr === lastXhr) {
+                            var errMsg = false;
+                            if (response.status == 'success') {
+                                resp = response.data;
+                                if (resp.status == 'success') {
+                                    hideErrorBlock(errorBlock);                        
+                                } else {
+                                    errMsg = resp.message;
+                                }
+                            } else {
+                                errMsg = response.message;
+                            }
+                            if (errMsg !== false) {
+                                jQuery("#affiliateProfileAttributeId").data('isValid', false);
+                                showErrorBlock(errorBlock, errMsg);
+                            } else {
+                                jQuery("#affiliateProfileAttributeId").data('isValid', true);
+                            }
+                            jQuery("#affiliateProfileAttributeId").data('reValidate', false);
+                            showAffiliateSubmitButton();
+                            if (submitButtonRequested) {
+                                submitButtonRequested = false;
+                                saveAffiliateIdAndPayPalMailAddress();
+                            }
+                        }
+                    },
+                    complete: function (xhr, settings) {
+                        jQuery('#affiliate-form .save').button('reset');
+                    },
+                    error: function() { }
+                });
+            }
+
+            function saveAffiliateIdAndPayPalMailAddress() {
+                if (!validateAffiliateForm()) {
+                    return false;
+                }
+                var submitBtn = jQuery('#affiliate-form .save');
+                var data = jQuery( '#affiliate-form' ).serialize();
+                jQuery.ajax({
+                    dataType: "json",
+                    url: cadminPath + 'index.php&cmd=JsonData&object=MultiSite&act=setAffiliate',
+                    data: data,
+                    type: "POST",
+                    beforeSend: function (xhr, settings) {
+                        hideErrorBlock(jQuery('#affiliate-form .errorBlock'));
+                        submitBtn.button('loading');
+                        submitBtn.removeClass('save');
+                        submitBtn.prop('disabled', true);
+                    },
+                    success: function(response) {
+                        var errMsg = false;
+                        var errorBlock = '';
+                        if (response.status == 'success') {
+                            resp = response.data;
+                            if (resp.status == 'success') {
+                                showMessage(resp.message, 'success');
+                                window.location.reload();
+                            } else {
+                                errorBlock = (resp.type == 'mail') ? jQuery('#paypalAccountAddress .errorBlock') : jQuery('#affiliateId .errorBlock');
+                                errMsg = resp.message;
+                            }
+                        } else {
+                            errorBlock = (response.type == 'mail') ? jQuery('#paypalAccountAddress .errorBlock') : jQuery('#affiliateId .errorBlock');
+                            errMsg = response.message; 
+                        }
+                        if (errMsg !== false) {
+                            showErrorBlock(errorBlock, errMsg);
+                        }
+                    },
+                    complete: function (xhr, settings) {
+                        submitBtn.button('reset');
+                        submitBtn.addClass('save');
+                    },
+                    error: function() { }
+                });                
+            }
+
+            function validateAffiliateForm() {
+                if (jQuery("#affiliateProfileAttributeId").length) {
+                    var affiliateId = jQuery("#affiliateProfileAttributeId").val();
+                    if (affiliateId.length > 0) {
+                        if (jQuery("#affiliateProfileAttributeId").data('reValidate')) {
+                            checkAvailablityOfAffiliateId(affiliateId);
+                            return false;
+                        }
+                        if (!jQuery("#affiliateProfileAttributeId").data('isValid')) {
+                            return false;
+                        }
+                    } else {
+                        jQuery("#affiliateProfileAttributeId").data('isValid', true);
+                        hideErrorBlock(jQuery('#affiliateId .errorBlock'));
+                        if (!jQuery("#paypalEmail").length) {
+                            return false; // error when paypal is already set
+                        }
+                    }
+                }
+                if (jQuery("#paypalEmail").length) {
+                    var mailId = jQuery("#paypalEmail").val();
+                    if ((mailId.length > 0) && !isValidEmail(mailId)) {
+                        showErrorBlock(jQuery('#paypalAccountAddress .errorBlock'), '{TXT_CORE_MODULE_MULTISITE_PAYPAL_EMAIL_ADDRESS_ERROR}');
+                        return false;
+                    } else {
+                        hideErrorBlock(jQuery('#paypalAccountAddress .errorBlock'));
+                    }
+                }
+
+                return true;
+            }
+
+            function showAffiliateSubmitButton() {
+                if (validateAffiliateForm()) {
+                    jQuery('#affiliate-form .save').prop('disabled', false);
+                } else {
+                    jQuery('#affiliate-form .save').prop('disabled', true);
+                }
+            }
+            
+            jQuery('#affiliate-form .save').click(function(){
+                submitButtonRequested = true;
+                saveAffiliateIdAndPayPalMailAddress();
+                return false;
+            });
+            jQuery("#affiliateProfileAttributeId")
+                .data('reValidate', true)
+                .bind("input", function(){
+                    this.value = this.value.toLowerCase();
+                })
+                .bind('blur', function(){
+                    jQuery("#affiliateProfileAttributeId").data('reValidate', true);
+                    showAffiliateSubmitButton();
+                });
+            jQuery("#paypalEmail")
+                .bind("blur", function(){
+                    showAffiliateSubmitButton();                   
+                });           
+            showAffiliateSubmitButton();
+       });
+    });
+    jQuery(document).ready(function(){
+        jQuery(".text-select").on("click", function(e){
+            var $this = jQuery(this);
+            $this.select();
+            return false;
+        });        
+    });
+   /* ]]> */
+</script>
+

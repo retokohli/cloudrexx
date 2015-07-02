@@ -1,0 +1,29 @@
+<table>
+    <tbody>
+        <!-- BEGIN multisite_user_account_email -->
+        <tr>
+            <td>{MULTISITE_USER_ACCOUNT_EMAIL_DESC}</td>
+            <td>{MULTISITE_USER_ACCOUNT_EMAIL}</td>
+        </tr>
+        <!-- END multisite_user_account_email --> 			
+        <!-- BEGIN multisite_user_account_password -->
+        <tr>
+            <td>{MULTISITE_USER_ACCOUNT_PASSWORD_DESC}</td>
+            <td>******</td>
+        </tr>
+        <!-- END multisite_user_account_password --> 			
+    </tbody>
+</table>
+<button type="button" class="userAccountModal" data-remote="/api/MultiSite/User/Account/Edit" data-target="multisite_settings_account">Bearbeiten</button> 
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+  jQuery('.userAccountModal').bind('click', function (event) {
+        showRemoteModal({
+          modalId   : jQuery(this).data('target'),
+          remoteUrl : jQuery(this).data('remote'),
+        });
+      });
+});
+/* ]]> */
+</script>

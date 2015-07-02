@@ -1,0 +1,34 @@
+<div class="grid-elm grid-align-1-1 grid-offset">
+    <button type="button" class="add remoteModal" data-remote="/api/MultiSite/SubscriptionSelection" data-target="SubscriptionSelection">{TXT_MULTISITE_NEW_SUBSCRIPTION}</button>
+</div>
+<div id="multisite_active_site">
+    <div  class="grid-elm grid-align-1-1 grid-offset"></div>
+</div>
+<div id="multisite_trial_site">
+    <div  class="grid-elm grid-align-1-1 grid-offset"></div>
+</div>
+<div id="multisite_expired_site">
+    <div  class="grid-elm grid-align-1-1 grid-offset"></div>
+</div>
+<div aria-hidden="false" class="modal fade " id="SubscriptionSelection" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}</div>
+    </div>
+</div>
+<div aria-hidden="true" class="modal fade" id="SubscriptionAddWebsite" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}</div>
+    </div>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+cx.ready(function() {
+    cx.variables.set('loadingText', '{TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}', 'multisite/lang');
+    jQuery.getScript(cx.variables.get('path', 'contrexx') + "core_modules/MultiSite/View/Script/CustomerPanel.js", function() {
+        loadContent('#multisite_active_site', '/api/MultiSite/Subscription/Active?status=valid&exclude_product[]=1');
+        loadContent('#multisite_trial_site', '/api/MultiSite/Subscription/Trial?status=valid&include_product[]=1');
+        loadContent('#multisite_expired_site', '/api/MultiSite/Subscription/Expired?status=expired');
+    });
+});
+/* ]]> */
+</script>

@@ -1,0 +1,33 @@
+<!-- BEGIN showMailServiceSection -->
+<div  class="grid-elm grid-align-1-1 grid-offset">
+   <h2>{TXT_MULTISITE_WEBSITE_EMAIL}</h2>
+   {MULTISITE_WEBSITE_MAIL_SERVICE_STATUS}
+  <!-- BEGIN showWebsiteMailService  -->
+    <!-- BEGIN activateMailService -->
+    <button class="add" type="button" data-id="{MULTISITE_WEBSITE_ID}" data-act="enableMailService" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}" onclick="enableOrDisableMailService(jQuery(this));">{TXT_MULTISITE_WEBSITE_ACTIVATE_MAIL_SERVICE}</button>
+    <!-- END activateMailService -->
+    <!-- BEGIN deactivateMailService -->
+    <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-act="disableMailService" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}" onclick="enableOrDisableMailService(jQuery(this));">{TXT_MULTISITE_WEBSITE_DEACTIVATE_MAIL_SERVICE}</button>
+    <!-- END deactivateMailService -->
+        
+    <!-- BEGIN openAdministration -->
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}" onclick="pleskAutoLogin(jQuery(this));">{TXT_MULTISITE_WEBSITE_OPEN_ADMINISTRATION}</button>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <button type="button" class="emailModal" data-remote="/api/MultiSite/Email/Edit?website_id={MULTISITE_WEBSITE_ID}" data-target="EmailEdit" >{TXT_MULTISITE_WEBSITE_SHOW_EMAIL}</button>
+    <!-- END openAdministration -->
+  <!-- END showWebsiteMailService  -->
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('.emailModal').bind('click', function (event) {
+      showRemoteModal({
+        modalId   : jQuery(this).data('target'),
+        remoteUrl : jQuery(this).data('remote'),
+      });
+    });
+});
+/* ]]> */
+</script>
+<!-- END showMailServiceSection -->

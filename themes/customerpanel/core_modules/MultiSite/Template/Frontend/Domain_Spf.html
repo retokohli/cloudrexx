@@ -1,0 +1,38 @@
+<!-- BEGIN showSpfDomainInfo -->
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('#spfRecord').focus(function() {
+        var $this = jQuery(this);
+        $this.select();
+
+        // Work around Chrome's little problem
+        $this.mouseup(function() {
+            // Prevent further mouseup intervention
+            $this.unbind("mouseup");
+            return false;
+        });
+    });
+});
+/* ]]> */
+</script>
+<div class="grid-elm grid-align-1-1 grid-offset">
+    <form role="form" action="{MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL}" id="multisite_spf_domain_form">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF}</h2>
+        <fieldset>
+          <div class="row process">
+            <label for="spf_domain">{TXT_MULTISITE_SPF_DOMAIN_INFO}</label>
+            <br />
+            <label for="spf_domain_information">{TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_SEE} <a href="https://contrexx.freshdesk.com/solution/categories/5000113952/folders/5000138525/articles/5000594209-wie-erstelle-ich-einen-spf-record-" target="_blank">{TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SPF_MORE_INFORMATION}</a></label>
+            <br />
+            <label for="spf_domain_record">{TXT_MULTISITE_SPF_DOMAIN_INFO_RECORD}</label>
+            <textarea name="spf_domain_record" id="spfRecord">{TXT_MULTISITE_SPF_DOMAIN_RECORD}</textarea>
+          </div>
+          <div class="row">
+            <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CLOSE}</button>
+          </div>
+        </fieldset>
+    </form>
+</div>
+<!-- END showSpfDomainInfo -->

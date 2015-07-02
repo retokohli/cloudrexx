@@ -1,0 +1,101 @@
+<style type="text/css">
+/* <![CDATA[ */
+table.subscription-active-table tr td:nth-child(2) {
+    white-space: normal;
+}
+/* ]]> */
+</style>
+<!-- BEGIN showSiteTable -->
+<div  class="grid-elm grid-align-1-1 grid-offset">
+    <h2>{TXT_MULTISITE_SUBSCRIPTION_ACTIVE}</h2>
+    <div class="subscription-table">
+        <table class="tablesort subscription-active-table">
+            <thead>
+                <tr>
+                    <th width="5%" >{TXT_MULTISITE_REFERENCE_NUMBER}</th>
+                    <th width="30%">{TXT_CORE_MODULE_MULTISITE_SUBSCRIPTION_DESCRIPTION}</th>
+                    <th width="20%" >{TXT_MULTISITE_WEBSITE_SUBSCRIPTION}</th>
+                    <th width="20%" >{TXT_MULTISITE_NEXT_BILL_DATE}</th>
+                    <th width="25%" class="actions noSorting">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- BEGIN showSiteDetails -->
+                <tr class="subscription" data-ref-id="{MULTISITE_SUBSCRIPTION_ID}">
+                    <td><a href="#" class="show-websites">{MULTISITE_SUBSCRIPTION_ID}</a></td>
+                    <td>{MULTISITE_SUBSCRIPTION_DESCRIPTION}</td>
+                    <td>{MULTISITE_WEBSITE_PLAN}</td>
+                    <td>{MULTISITE_WEBSITE_INVOICE_DATE}</td>
+                    <td class="actions">
+                        <button type="button" class="manage" onclick="window.location.href = '{NODE_MULTISITE_SUBSCRIPTIONDETAIL}?id={MULTISITE_SUBSCRIPTION_ID}'">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
+                        <!-- BEGIN showUpgradeButton --><button class="upgrade remoteModal" data-remote="/api/MultiSite/SubscriptionSelection?subscriptionId={MULTISITE_SUBSCRIPTION_ID}" data-target="SubscriptionSelection">{TXT_MULTISITE_UPGRADE}</button><!-- END showUpgradeButton -->
+                        <!-- BEGIN showAddWebsiteButton -->
+                        <button class="add add-website" data-remote="/api/MultiSite/SubscriptionAddWebsite?id={MULTISITE_SUBSCRIPTION_ID}" >{TXT_MULTISITE_ADD_NEW_WEBSITE}</button>
+                        <!-- END showAddWebsiteButton -->
+                    </td>
+                </tr>
+                <!-- BEGIN showWebsites -->
+                <tr class="child-row website {MULTISITE_SUBSCRIPTION_ID}">
+                    <td class="center"><span class="{MULTISITE_WEBSITE_STATE_CLASS}"><!-- --></span></td>
+                    <td colspan="3">
+                        <!-- BEGIN websiteLinkActive -->
+                        <a class="entypo-popup" href="{MULTISITE_WEBSITE_LINK}" target="_blank">&nbsp;{MULTISITE_WEBSITE_NAME}</a>
+                        <!-- END websiteLinkActive -->
+
+                        <!-- BEGIN websiteLinkInactive -->
+                        <span class="entypo-popup">&nbsp;{MULTISITE_WEBSITE_NAME}</span>
+                        <!-- END websiteLinkInactive -->
+                    </td>
+                    <td class="actions">
+                        <!-- BEGIN actionButtonsActive -->
+                        <button onclick="window.location.href = '{NODE_MULTISITE_WEBSITE}?id={MULTISITE_WEBSITE_ID}';">{TXT_MULTISITE_WEBSITE_BUTTON_DETAIL}</button>
+
+                        <!-- BEGIN showAdminButton -->
+                        <button type="button" data-id="{MULTISITE_WEBSITE_ID}" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}" onclick="getRemoteLoginToken(jQuery(this));">{TXT_MULTISITE_WEBSITE_BUTTON_ADMIN_CONSOLE}</button>
+                        <!-- END showAdminButton -->
+                        <!-- END actionButtonsActive -->
+                        <!-- BEGIN websiteInitializing -->
+                        {TXT_MULTISITE_WEBSITE_INITIALIZING}
+                        <!-- END websiteInitializing -->
+                    </td>
+                </tr>
+                <!-- END showWebsites -->
+                <!-- END showSiteDetails -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('.subscription').bind('click', function (event) {
+        if (event.target.nodeName != 'BUTTON') {
+            var refId = jQuery(this).attr('data-ref-id');
+
+            jQuery(this).find('a.show-websites').toggleClass('open');
+            jQuery('.website.'+refId).toggle();
+
+            return false;
+        }
+    });
+    jQuery('.add-website').bind('click', function (event) {
+      showRemoteModal({
+        modalId   : 'SubscriptionAddWebsite',
+        remoteUrl : jQuery(this).data('remote'),
+        hidden : function() {
+          var signUpForm = jQuery('#multisite_signup_form');
+          var signUpModal = signUpForm.parents('.modal');
+          signUpModal.unbind();
+        }
+      });
+    });
+    
+    var sorterTable   = ['subscription-active-table']; // define unique classes for table sorter
+    addTableSorting(sorterTable); // init the table sorting    
+});
+
+/* ]]> */
+</script>
+
+<!-- END showSiteTable -->

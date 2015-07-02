@@ -1,19 +1,35 @@
+<<<<<<< HEAD
 SET FOREIGN_KEY_CHECKS = 0;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+--
+-- Contrexx WCMS SQL Dump
+--
+-- version: 4.0.0
+-- created: 02.09.2014 00:00
+--
+-- http://www.contrexx.com
+--
+>>>>>>> fx
 CREATE TABLE `contrexx_access_group_dynamic_ids` (
   `access_id` int(11) unsigned NOT NULL default '0',
   `group_id` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`access_id`,`group_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_access_group_static_ids` (
   `access_id` int(11) unsigned NOT NULL default '0',
   `group_id` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`access_id`,`group_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -26,26 +42,68 @@ CREATE TABLE `contrexx_access_id` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_access_rel_user_group` (
   `user_id` int(10) unsigned NOT NULL default '0',
   `group_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`user_id`,`group_id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_access_settings` (
   `key` varchar(32) NOT NULL default '',
   `value` varchar(255) NOT NULL default '',
   `status` tinyint(1) unsigned NOT NULL default '0',
   UNIQUE KEY `key` (`key`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_access_user_attribute` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `parent_id` int(10) unsigned default NULL,
+=======
+
+CREATE TABLE `contrexx_access_users` (
+  `id` int(5) unsigned NOT NULL auto_increment,
+  `is_admin` tinyint(1) unsigned NOT NULL default '0',
+  `username` varchar(255) default NULL,
+  `password` varchar(32) default NULL,
+  `auth_token` varchar(32) NOT NULL,
+  `auth_token_timeout` int(14) unsigned NOT NULL default '0',
+  `regdate` int(14) unsigned NOT NULL default '0',
+  `expiration` int(14) unsigned NOT NULL default '0',
+  `validity` int(10) unsigned NOT NULL default '0',
+  `last_auth` int(14) unsigned NOT NULL default '0',
+  `last_auth_status` int(1) NOT NULL default '1',
+  `last_activity` int(14) unsigned NOT NULL default '0',
+  `email` varchar(255) default NULL,
+  `email_access` enum('everyone','members_only','nobody') NOT NULL default 'nobody',
+  `frontend_lang_id` int(2) unsigned NOT NULL default '0',
+  `backend_lang_id` int(2) unsigned NOT NULL default '0',
+  `active` tinyint(1) NOT NULL default '0',
+  `verified` tinyint(1) unsigned NOT NULL default '1',
+  `primary_group` int(6) unsigned NOT NULL default '0',
+  `profile_access` enum('everyone','members_only','nobody') NOT NULL default 'members_only',
+  `restore_key` varchar(32) NOT NULL default '',
+  `restore_key_time` int(14) unsigned NOT NULL default '0',
+  `u2u_active` enum('0','1') NOT NULL default '1',
+  PRIMARY KEY  (`id`),
+  KEY `username` (`username`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_access_user_attribute` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `parent_id` int(10) unsigned NOT NULL default '0',
+>>>>>>> fx
   `type` enum('text','textarea','mail','uri','date','image','checkbox','menu','menu_option','group','frame','history') NOT NULL default 'text',
   `mandatory` enum('0','1') NOT NULL default '0',
   `sort_type` enum('asc','desc','custom') NOT NULL default 'asc',
@@ -54,18 +112,26 @@ CREATE TABLE `contrexx_access_user_attribute` (
   `access_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_access_user_attribute_name` (
   `attribute_id` int(10) unsigned NOT NULL default '0',
   `lang_id` int(10) unsigned NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`attribute_id`,`lang_id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_access_user_attribute_value` (
   `attribute_id` int(10) unsigned NOT NULL default '0',
   `user_id` int(10) unsigned NOT NULL default '0',
@@ -74,9 +140,13 @@ CREATE TABLE `contrexx_access_user_attribute_value` (
   PRIMARY KEY  (`attribute_id`,`user_id`,`history_id`),
   FULLTEXT KEY `value` (`value`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_access_user_core_attribute` (
   `id` varchar(25) NOT NULL,
   `mandatory` enum('0','1') NOT NULL default '0',
@@ -86,9 +156,13 @@ CREATE TABLE `contrexx_access_user_core_attribute` (
   `access_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_access_user_groups` (
   `group_id` int(6) unsigned NOT NULL auto_increment,
   `group_name` varchar(100) NOT NULL default '',
@@ -97,12 +171,19 @@ CREATE TABLE `contrexx_access_user_groups` (
   `type` enum('frontend','backend') NOT NULL default 'frontend',
   `homepage` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`group_id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_access_user_mail` (
   `type` enum('reg_confirm','reset_pw','user_activated','user_deactivated','new_user','user_account_invitation') NOT NULL default 'reg_confirm',
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_access_user_mail` (
+  `type` enum('reg_confirm','reset_pw','user_activated','user_deactivated','new_user') NOT NULL default 'reg_confirm',
+>>>>>>> fx
   `lang_id` tinyint(2) unsigned NOT NULL default '0',
   `sender_mail` varchar(255) NOT NULL default '',
   `sender_name` varchar(255) NOT NULL default '',
@@ -112,9 +193,13 @@ CREATE TABLE `contrexx_access_user_mail` (
   `body_html` text NOT NULL,
   UNIQUE KEY `mail` (`type`,`lang_id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_access_user_network` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `oauth_provider` varchar(100) NOT NULL default '',
@@ -122,9 +207,13 @@ CREATE TABLE `contrexx_access_user_network` (
   `user_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_access_user_profile` (
   `user_id` int(5) unsigned NOT NULL default '0',
   `gender` enum('gender_undefined','gender_female','gender_male') NOT NULL default 'gender_undefined',
@@ -143,15 +232,24 @@ CREATE TABLE `contrexx_access_user_profile` (
   `birthday` varchar(11) default NULL,
   `website` varchar(255) NOT NULL default '',
   `profession` varchar(150) NOT NULL default '',
+<<<<<<< HEAD
   `interests` text,
   `signature` text,
+=======
+  `interests` text ,
+  `signature` text ,
+>>>>>>> fx
   `picture` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`user_id`),
   KEY `profile` (`firstname`(100),`lastname`(100),`company`(50))
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_access_user_title` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
@@ -159,13 +257,18 @@ CREATE TABLE `contrexx_access_user_title` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `title` (`title`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_access_user_validity` (
   `validity` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`validity`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -199,6 +302,9 @@ CREATE TABLE `contrexx_access_users` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_backend_areas` (
   `area_id` int(6) unsigned NOT NULL auto_increment,
   `parent_area_id` int(6) unsigned NOT NULL default '0',
@@ -213,19 +319,28 @@ CREATE TABLE `contrexx_backend_areas` (
   `access_id` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`area_id`),
   KEY `area_name` (`area_name`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_component` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(100) NOT NULL,
   `type` enum('core','core_module','module') NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_content_node` (
   `id` int(11) NOT NULL auto_increment,
   `parent_id` int(11) default NULL,
@@ -236,9 +351,13 @@ CREATE TABLE `contrexx_content_node` (
   KEY `IDX_E5A18FDD727ACA70` (`parent_id`),
   CONSTRAINT `contrexx_content_node_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_content_page` (
   `id` int(11) NOT NULL auto_increment,
   `node_id` int(11) default NULL,
@@ -282,9 +401,13 @@ CREATE TABLE `contrexx_content_page` (
   KEY `IDX_D8E86F54460D9FD7` (`node_id`),
   CONSTRAINT `contrexx_content_page_ibfk_3` FOREIGN KEY (`node_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_core_country` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `alpha2` char(2) NOT NULL default '',
@@ -292,10 +415,15 @@ CREATE TABLE `contrexx_core_country` (
   `ord` int(5) unsigned NOT NULL default '0',
   `active` tinyint(1) unsigned NOT NULL default '1',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_core_mail_template` (
   `key` tinytext NOT NULL,
   `section` tinytext NOT NULL,
@@ -304,6 +432,7 @@ CREATE TABLE `contrexx_core_mail_template` (
   `protected` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`key`(32),`section`(32))
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -558,6 +687,9 @@ CREATE TABLE `contrexx_core_module_multisite_website_template` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_core_setting` (
   `section` varchar(32) NOT NULL default '',
   `name` varchar(255) NOT NULL default '',
@@ -568,9 +700,13 @@ CREATE TABLE `contrexx_core_setting` (
   `ord` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`section`,`name`,`group`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_core_text` (
   `id` int(10) unsigned NOT NULL default '0',
   `lang_id` int(10) unsigned NOT NULL default '1',
@@ -580,6 +716,7 @@ CREATE TABLE `contrexx_core_text` (
   PRIMARY KEY  (`id`,`lang_id`,`section`,`key`(32)),
   FULLTEXT KEY `text` (`text`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -595,6 +732,9 @@ CREATE TABLE `contrexx_core_wysiwyg_template` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_ids` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `timestamp` int(14) default NULL,
@@ -602,14 +742,22 @@ CREATE TABLE `contrexx_ids` (
   `remote_addr` varchar(15) default NULL,
   `http_x_forwarded_for` varchar(15) NOT NULL default '',
   `http_via` varchar(255) NOT NULL default '',
+<<<<<<< HEAD
   `user` mediumtext,
+=======
+  `user` mediumtext ,
+>>>>>>> fx
   `gpcs` mediumtext NOT NULL,
   `file` varchar(250) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_languages` (
   `id` int(2) unsigned NOT NULL auto_increment,
   `lang` varchar(5) NOT NULL default '',
@@ -629,10 +777,15 @@ CREATE TABLE `contrexx_languages` (
   KEY `defaultstatus` (`is_default`),
   KEY `name` (`name`),
   FULLTEXT KEY `name_2` (`name`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_lib_country` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(64) NOT NULL,
@@ -642,9 +795,13 @@ CREATE TABLE `contrexx_lib_country` (
   UNIQUE KEY `unique` (`iso_code_2`),
   KEY `INDEX_COUNTRIES_NAME` (`name`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_log` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `userid` int(6) unsigned default NULL,
@@ -659,9 +816,13 @@ CREATE TABLE `contrexx_log` (
   `referer` varchar(250) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_log_entry` (
   `id` int(11) NOT NULL auto_increment,
   `action` varchar(8) NOT NULL,
@@ -669,7 +830,11 @@ CREATE TABLE `contrexx_log_entry` (
   `version` int(11) NOT NULL,
   `object_id` varchar(32) default NULL,
   `object_class` varchar(255) NOT NULL,
+<<<<<<< HEAD
   `data` longtext,
+=======
+  `data` longtext ,
+>>>>>>> fx
   `username` varchar(255) default NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `log_class_unique_version_idx` (`version`,`object_id`,`object_class`),
@@ -677,9 +842,26 @@ CREATE TABLE `contrexx_log_entry` (
   KEY `log_date_lookup_idx` (`logged_at`),
   KEY `log_user_lookup_idx` (`username`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+CREATE TABLE `contrexx_modules` (
+  `id` int(2) unsigned default NULL,
+  `name` varchar(250) NOT NULL default '',
+  `distributor` char(50) NOT NULL,
+  `description_variable` varchar(50) NOT NULL default '',
+  `status` set('y','n') NOT NULL default 'n',
+  `is_required` tinyint(1) NOT NULL default '0',
+  `is_core` tinyint(4) NOT NULL default '0',
+  `is_active` tinyint(1) NOT NULL default '0',
+  `is_licensed` tinyint(1) NOT NULL,
+  UNIQUE KEY `id` (`id`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_block_blocks` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `start` int(10) NOT NULL default '0',
@@ -697,10 +879,15 @@ CREATE TABLE `contrexx_module_block_blocks` (
   `cat` int(10) NOT NULL default '0',
   `wysiwyg_editor` int(1) NOT NULL default '1',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_block_categories` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `parent` int(10) NOT NULL default '0',
@@ -709,10 +896,15 @@ CREATE TABLE `contrexx_module_block_categories` (
   `order` int(10) NOT NULL default '0',
   `status` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_block_rel_lang_content` (
   `block_id` int(10) unsigned NOT NULL default '0',
   `lang_id` int(10) unsigned NOT NULL default '0',
@@ -720,27 +912,40 @@ CREATE TABLE `contrexx_module_block_rel_lang_content` (
   `active` int(1) NOT NULL default '0',
   UNIQUE KEY `id_lang` (`block_id`,`lang_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_block_rel_pages` (
   `block_id` int(7) NOT NULL default '0',
   `page_id` int(7) NOT NULL default '0',
   `placeholder` enum('global','direct','category') NOT NULL default 'global',
   PRIMARY KEY  (`block_id`,`page_id`,`placeholder`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_block_settings` (
   `id` int(7) NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
   `value` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_blog_categories` (
   `category_id` int(4) unsigned NOT NULL default '0',
   `lang_id` int(2) unsigned NOT NULL default '0',
@@ -748,9 +953,13 @@ CREATE TABLE `contrexx_module_blog_categories` (
   `name` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`category_id`,`lang_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_blog_comments` (
   `comment_id` int(7) unsigned NOT NULL auto_increment,
   `message_id` int(6) unsigned NOT NULL default '0',
@@ -767,6 +976,7 @@ CREATE TABLE `contrexx_module_blog_comments` (
   PRIMARY KEY  (`comment_id`),
   KEY `message_id` (`message_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -780,6 +990,9 @@ CREATE TABLE `contrexx_module_blog_message_to_category` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_blog_messages` (
   `message_id` int(6) unsigned NOT NULL auto_increment,
   `user_id` int(5) unsigned NOT NULL default '0',
@@ -787,10 +1000,15 @@ CREATE TABLE `contrexx_module_blog_messages` (
   `time_edited` int(14) unsigned NOT NULL default '0',
   `hits` int(7) unsigned NOT NULL default '0',
   PRIMARY KEY  (`message_id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_blog_messages_lang` (
   `message_id` int(6) unsigned NOT NULL,
   `lang_id` int(2) unsigned NOT NULL,
@@ -801,9 +1019,21 @@ CREATE TABLE `contrexx_module_blog_messages_lang` (
   `image` varchar(250) NOT NULL default '',
   PRIMARY KEY  (`message_id`,`lang_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+CREATE TABLE `contrexx_module_blog_message_to_category` (
+  `message_id` int(6) unsigned NOT NULL default '0',
+  `category_id` int(4) unsigned NOT NULL default '0',
+  `lang_id` int(2) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`message_id`,`category_id`,`lang_id`),
+  KEY `category_id` (`category_id`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_blog_networks` (
   `network_id` int(8) unsigned NOT NULL auto_increment,
   `name` varchar(250) NOT NULL default '',
@@ -811,26 +1041,39 @@ CREATE TABLE `contrexx_module_blog_networks` (
   `url_link` varchar(255) NOT NULL default '',
   `icon` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`network_id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_blog_networks_lang` (
   `network_id` int(8) unsigned NOT NULL default '0',
   `lang_id` int(2) unsigned NOT NULL default '0',
   PRIMARY KEY  (`network_id`,`lang_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_blog_settings` (
   `name` varchar(50) NOT NULL,
   `value` varchar(250) NOT NULL,
   PRIMARY KEY  (`name`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_blog_votes` (
   `vote_id` int(8) unsigned NOT NULL auto_increment,
   `message_id` int(6) unsigned NOT NULL default '0',
@@ -840,27 +1083,40 @@ CREATE TABLE `contrexx_module_blog_votes` (
   PRIMARY KEY  (`vote_id`),
   KEY `message_id` (`message_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_category` (
   `id` int(5) NOT NULL auto_increment,
   `pos` int(5) default NULL,
   `status` int(1) default NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_category_name` (
   `cat_id` int(11) NOT NULL,
   `lang_id` int(11) default NULL,
   `name` varchar(225) default NULL,
   KEY `fk_contrexx_module_calendar_category_names_contrexx_module_ca1` (`cat_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_event` (
   `id` int(11) NOT NULL auto_increment,
   `type` int(11) NOT NULL default '0',
@@ -888,7 +1144,11 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `catid` int(11) NOT NULL default '0',
   `show_in` varchar(255) NOT NULL,
   `invited_groups` varchar(45) default NULL,
+<<<<<<< HEAD
   `invited_mails` mediumtext,
+=======
+  `invited_mails` mediumtext ,
+>>>>>>> fx
   `invitation_sent` int(1) NOT NULL,
   `invitation_email_template` varchar(255) NOT NULL,
   `registration` int(1) NOT NULL default '0',
@@ -935,23 +1195,36 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `host_mediadir_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1` (`catid`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_event_field` (
   `event_id` int(11) NOT NULL default '0',
   `lang_id` varchar(225) default NULL,
   `title` varchar(255) default NULL,
+<<<<<<< HEAD
   `description` mediumtext,
+=======
+  `description` mediumtext ,
+>>>>>>> fx
   `redirect` varchar(255) NOT NULL,
   KEY `lang_field` (`title`),
   KEY `fk_contrexx_module_calendar_note_field_contrexx_module_calend1` (`event_id`),
   FULLTEXT KEY `eventIndex` (`title`,`description`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_host` (
   `id` int(1) NOT NULL auto_increment,
   `title` varchar(255) NOT NULL,
@@ -963,9 +1236,13 @@ CREATE TABLE `contrexx_module_calendar_host` (
   PRIMARY KEY  (`id`),
   KEY `fk_contrexx_module_calendar_shared_hosts_contrexx_module_cale1` (`cat_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_mail` (
   `id` int(7) NOT NULL auto_increment,
   `title` varchar(255) NOT NULL,
@@ -977,20 +1254,30 @@ CREATE TABLE `contrexx_module_calendar_mail` (
   `is_default` int(1) NOT NULL,
   `status` int(1) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_mail_action` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
   `default_recipient` enum('empty','admin','author') NOT NULL,
   `need_auth` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_registration` (
   `id` int(7) NOT NULL auto_increment,
   `event_id` int(7) NOT NULL,
@@ -1005,20 +1292,30 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `payment_method` int(11) NOT NULL,
   `paid` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_registration_form` (
   `id` int(11) NOT NULL auto_increment,
   `status` int(11) NOT NULL,
   `order` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_registration_form_field` (
   `id` int(7) NOT NULL auto_increment,
   `form` int(11) NOT NULL,
@@ -1027,10 +1324,15 @@ CREATE TABLE `contrexx_module_calendar_registration_form_field` (
   `order` int(3) NOT NULL,
   `affiliation` varchar(45) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_registration_form_field_name` (
   `field_id` int(7) NOT NULL,
   `form_id` int(11) NOT NULL,
@@ -1038,24 +1340,36 @@ CREATE TABLE `contrexx_module_calendar_registration_form_field_name` (
   `name` varchar(255) NOT NULL,
   `default` mediumtext NOT NULL
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_registration_form_field_value` (
   `reg_id` int(7) NOT NULL,
   `field_id` int(7) NOT NULL,
   `value` mediumtext NOT NULL
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_rel_event_host` (
   `host_id` int(11) NOT NULL,
   `event_id` int(11) NOT NULL
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_settings` (
   `id` int(7) NOT NULL auto_increment,
   `section_id` int(11) NOT NULL,
@@ -1068,10 +1382,15 @@ CREATE TABLE `contrexx_module_calendar_settings` (
   `special` varchar(255) NOT NULL,
   `order` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_settings_section` (
   `id` int(11) NOT NULL auto_increment,
   `parent` int(11) NOT NULL,
@@ -1079,10 +1398,15 @@ CREATE TABLE `contrexx_module_calendar_settings_section` (
   `name` varchar(255) NOT NULL,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_calendar_style` (
   `id` int(11) NOT NULL auto_increment,
   `tableWidth` varchar(4) NOT NULL default '141',
@@ -1104,6 +1428,7 @@ CREATE TABLE `contrexx_module_calendar_style` (
   `periodTime` varchar(5) NOT NULL default '00 23',
   `stdCat` text NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1157,6 +1482,10 @@ CREATE TABLE `contrexx_module_checkout_transactions` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_contact_form` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `mails` text NOT NULL,
@@ -1168,12 +1497,18 @@ CREATE TABLE `contrexx_module_contact_form` (
   `use_email_of_sender` tinyint(1) NOT NULL default '0',
   `html_mail` tinyint(1) unsigned NOT NULL default '1',
   `send_attachment` tinyint(1) unsigned NOT NULL default '0',
+<<<<<<< HEAD
   `crm_customer_groups` text,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_contact_form_data` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_form` int(10) unsigned NOT NULL default '0',
@@ -1184,6 +1519,7 @@ CREATE TABLE `contrexx_module_contact_form_data` (
   `browser` varchar(255) NOT NULL default '',
   `ipaddress` varchar(15) NOT NULL default '',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1192,15 +1528,28 @@ CREATE TABLE `contrexx_module_contact_form_field` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_form` int(10) unsigned NOT NULL default '0',
   `type` enum('text','label','checkbox','checkboxGroup','country','date','file','multi_file','fieldset','hidden','horizontalLine','password','radio','select','textarea','recipient','special','datetime') NOT NULL default 'text',
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_contact_form_field` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_form` int(10) unsigned NOT NULL default '0',
+  `type` enum('text','label','checkbox','checkboxGroup','country','date','file','multi_file','fieldset','hidden','horizontalLine','password','radio','select','textarea','recipient','special','datetime') BINARY NOT NULL default 'text',
+>>>>>>> fx
   `special_type` varchar(20) NOT NULL,
   `is_required` set('0','1') NOT NULL default '0',
   `check_type` int(3) NOT NULL default '1',
   `order_id` smallint(5) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_contact_form_field_lang` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `fieldID` int(10) unsigned NOT NULL,
@@ -1209,10 +1558,15 @@ CREATE TABLE `contrexx_module_contact_form_field_lang` (
   `attributes` text NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `fieldID` (`fieldID`,`langID`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_contact_form_lang` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `formID` int(10) unsigned NOT NULL,
@@ -1225,10 +1579,15 @@ CREATE TABLE `contrexx_module_contact_form_lang` (
   `subject` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `formID` (`formID`,`langID`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_contact_form_submit_data` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_entry` int(10) unsigned NOT NULL,
@@ -1236,10 +1595,15 @@ CREATE TABLE `contrexx_module_contact_form_submit_data` (
   `formlabel` text NOT NULL,
   `formvalue` text NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_contact_recipient` (
   `id` int(11) NOT NULL auto_increment,
   `id_form` int(11) NOT NULL default '0',
@@ -1247,9 +1611,13 @@ CREATE TABLE `contrexx_module_contact_recipient` (
   `sort` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_contact_recipient_lang` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `recipient_id` int(10) unsigned NOT NULL,
@@ -1258,15 +1626,20 @@ CREATE TABLE `contrexx_module_contact_recipient_lang` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `recipient_id` (`recipient_id`,`langID`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_contact_settings` (
   `setid` int(6) unsigned NOT NULL auto_increment,
   `setname` varchar(250) NOT NULL default '',
   `setvalue` text NOT NULL,
   `status` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`setid`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1296,14 +1669,38 @@ CREATE TABLE `contrexx_module_crm_contacts` (
   `contact_language` int(11) default NULL,
   `gender` tinyint(2) NOT NULL,
   `notes` text,
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_crm_contacts` (
+  `id` int(11) NOT NULL auto_increment,
+  `customer_id` varchar(256) BINARY default NULL,
+  `customer_type` int(11) default NULL,
+  `customer_name` varchar(256) BINARY default NULL,
+  `customer_website` varchar(256) BINARY default NULL,
+  `customer_addedby` int(11) default NULL,
+  `customer_currency` int(11) default NULL,
+  `contact_familyname` varchar(256) BINARY default NULL,
+  `contact_role` varchar(256) BINARY default NULL,
+  `contact_customer` int(11) default NULL,
+  `contact_language` int(11) default NULL,
+  `gender` tinyint(2) NOT NULL,
+  `notes` text BINARY,
+>>>>>>> fx
   `industry_type` int(11) default NULL,
   `contact_type` tinyint(2) default NULL,
   `user_account` int(11) default NULL,
   `datasource` int(11) default NULL,
+<<<<<<< HEAD
   `profile_picture` varchar(256) NOT NULL,
   `status` tinyint(2) NOT NULL default '1',
   `added_date` date NOT NULL,
   `email_delivery` tinyint(2) NOT NULL default '1',
+=======
+  `profile_picture` varchar(256) BINARY NOT NULL,
+  `status` tinyint(2) NOT NULL default '1',
+  `added_date` date NOT NULL,
+>>>>>>> fx
   PRIMARY KEY  (`id`),
   KEY `contact_customer` (`contact_customer`),
   KEY `customer_id` (`customer_id`),
@@ -1311,10 +1708,15 @@ CREATE TABLE `contrexx_module_crm_contacts` (
   KEY `contact_familyname` (`contact_familyname`),
   KEY `contact_role` (`contact_role`),
   FULLTEXT KEY `customer_id_2` (`customer_id`,`customer_name`,`contact_familyname`,`contact_role`,`notes`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_currency` (
   `id` int(10) NOT NULL auto_increment,
   `name` varchar(400) NOT NULL,
@@ -1323,11 +1725,18 @@ CREATE TABLE `contrexx_module_crm_currency` (
   `hourly_rate` text NOT NULL,
   `default_currency` tinyint(1) NOT NULL,
   PRIMARY KEY  (`id`),
+<<<<<<< HEAD
   KEY `name` (`name`(255))
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+  KEY `name` (`name`(333)),
+  FULLTEXT KEY `name_2` (`name`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_customer_comment` (
   `id` int(11) NOT NULL auto_increment,
   `customer_id` int(11) default NULL,
@@ -1341,10 +1750,15 @@ CREATE TABLE `contrexx_module_crm_customer_comment` (
   PRIMARY KEY  (`id`),
   KEY `customer_id` (`customer_id`),
   FULLTEXT KEY `comment` (`comment`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_customer_contact_address` (
   `id` int(11) NOT NULL auto_increment,
   `address` varchar(256) NOT NULL,
@@ -1363,10 +1777,15 @@ CREATE TABLE `contrexx_module_crm_customer_contact_address` (
   KEY `zip` (`zip`),
   KEY `country` (`country`),
   FULLTEXT KEY `address_2` (`address`,`city`,`state`,`zip`,`country`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_customer_contact_emails` (
   `id` int(11) NOT NULL auto_increment,
   `email` varchar(256) NOT NULL,
@@ -1377,10 +1796,15 @@ CREATE TABLE `contrexx_module_crm_customer_contact_emails` (
   KEY `contact_id` (`contact_id`),
   KEY `email` (`email`),
   FULLTEXT KEY `email_2` (`email`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_customer_contact_phone` (
   `id` int(11) NOT NULL auto_increment,
   `phone` varchar(256) NOT NULL,
@@ -1391,10 +1815,15 @@ CREATE TABLE `contrexx_module_crm_customer_contact_phone` (
   KEY `contact_id` (`contact_id`),
   KEY `phone` (`phone`),
   FULLTEXT KEY `phone_2` (`phone`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_customer_contact_social_network` (
   `id` int(11) NOT NULL auto_increment,
   `url` varchar(256) NOT NULL,
@@ -1405,10 +1834,15 @@ CREATE TABLE `contrexx_module_crm_customer_contact_social_network` (
   KEY `contact_id` (`contact_id`),
   KEY `url` (`url`),
   FULLTEXT KEY `url_2` (`url`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_customer_contact_websites` (
   `id` int(11) NOT NULL auto_increment,
   `url` varchar(256) NOT NULL,
@@ -1420,10 +1854,15 @@ CREATE TABLE `contrexx_module_crm_customer_contact_websites` (
   KEY `contact_id` (`contact_id`),
   KEY `url` (`url`),
   FULLTEXT KEY `url_2` (`url`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_customer_documents` (
   `id` int(11) NOT NULL auto_increment,
   `document_name` varchar(256) NOT NULL,
@@ -1433,19 +1872,30 @@ CREATE TABLE `contrexx_module_crm_customer_documents` (
   PRIMARY KEY  (`id`),
   KEY `contact_id` (`contact_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_customer_membership` (
   `contact_id` int(11) NOT NULL,
   `membership_id` int(11) NOT NULL
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_crm_customer_types` (
   `id` int(11) NOT NULL auto_increment,
   `label` varchar(250) NOT NULL,
+=======
+
+CREATE TABLE `contrexx_module_crm_customer_types` (
+  `id` int(11) NOT NULL auto_increment,
+  `label` varchar(250) BINARY NOT NULL,
+>>>>>>> fx
   `hourly_rate` varchar(256) NOT NULL,
   `active` int(1) NOT NULL,
   `pos` int(10) NOT NULL default '0',
@@ -1453,19 +1903,29 @@ CREATE TABLE `contrexx_module_crm_customer_types` (
   PRIMARY KEY  (`id`),
   KEY `label` (`label`),
   FULLTEXT KEY `label_2` (`label`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_datasources` (
   `id` int(11) NOT NULL auto_increment,
   `datasource` varchar(256) NOT NULL,
   `status` tinyint(2) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_deals` (
   `id` int(11) NOT NULL auto_increment,
   `title` varchar(256) NOT NULL,
@@ -1481,6 +1941,7 @@ CREATE TABLE `contrexx_module_crm_deals` (
   `project_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `customer` (`customer`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1496,12 +1957,17 @@ CREATE TABLE `contrexx_module_crm_industry_type_local` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_industry_types` (
   `id` int(11) NOT NULL auto_increment,
   `parent_id` int(11) NOT NULL,
   `sorting` int(11) NOT NULL,
   `status` smallint(2) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1510,22 +1976,48 @@ CREATE TABLE `contrexx_module_crm_membership_local` (
   `entry_id` int(11) NOT NULL,
   `lang_id` int(11) NOT NULL,
   `value` varchar(256) NOT NULL,
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_crm_industry_type_local` (
+  `entry_id` int(11) NOT NULL,
+  `lang_id` int(11) NOT NULL,
+  `value` varchar(256) BINARY NOT NULL,
+>>>>>>> fx
   KEY `entry_id` (`entry_id`),
   KEY `value` (`value`),
   FULLTEXT KEY `value_2` (`value`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_memberships` (
   `id` int(11) NOT NULL auto_increment,
   `sorting` int(11) NOT NULL,
   `status` smallint(2) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_crm_membership_local` (
+  `entry_id` int(11) NOT NULL,
+  `lang_id` int(11) NOT NULL,
+  `value` varchar(256) BINARY NOT NULL,
+  KEY `entry_id` (`entry_id`),
+  KEY `value` (`value`),
+  FULLTEXT KEY `value_2` (`value`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_notes` (
   `id` int(1) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
@@ -1536,19 +2028,29 @@ CREATE TABLE `contrexx_module_crm_notes` (
   PRIMARY KEY  (`id`),
   KEY `name` (`name`),
   FULLTEXT KEY `name_2` (`name`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_settings` (
   `setid` int(7) NOT NULL auto_increment,
   `setname` varchar(255) NOT NULL,
   `setvalue` text NOT NULL,
   PRIMARY KEY  (`setid`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_stages` (
   `id` int(11) NOT NULL auto_increment,
   `label` varchar(256) NOT NULL,
@@ -1556,10 +2058,15 @@ CREATE TABLE `contrexx_module_crm_stages` (
   `status` tinyint(2) NOT NULL,
   `sorting` int(4) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_success_rate` (
   `id` int(11) NOT NULL auto_increment,
   `label` varchar(256) NOT NULL,
@@ -1567,6 +2074,7 @@ CREATE TABLE `contrexx_module_crm_success_rate` (
   `status` tinyint(2) NOT NULL,
   `sorting` int(4) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1575,20 +2083,37 @@ CREATE TABLE `contrexx_module_crm_task` (
   `id` int(2) NOT NULL auto_increment,
   `task_id` varchar(10) NOT NULL,
   `task_title` varchar(255) NOT NULL,
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_crm_task` (
+  `id` int(2) NOT NULL auto_increment,
+  `task_id` varchar(10) BINARY NOT NULL,
+  `task_title` varchar(255) BINARY NOT NULL,
+>>>>>>> fx
   `task_type_id` int(2) NOT NULL,
   `customer_id` int(2) NOT NULL,
   `due_date` datetime NOT NULL,
   `assigned_to` int(11) NOT NULL,
+<<<<<<< HEAD
   `description` text NOT NULL,
+=======
+  `description` text BINARY NOT NULL,
+>>>>>>> fx
   `task_status` tinyint(1) NOT NULL default '1',
   `added_by` int(11) NOT NULL,
   `added_date_time` datetime NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `customer_id` (`customer_id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_crm_task_types` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(256) NOT NULL,
@@ -1600,10 +2125,15 @@ CREATE TABLE `contrexx_module_crm_task_types` (
   PRIMARY KEY  (`id`),
   KEY `name` (`name`),
   FULLTEXT KEY `name_2` (`name`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_data_categories` (
   `category_id` int(4) unsigned NOT NULL default '0',
   `lang_id` int(2) unsigned NOT NULL default '0',
@@ -1619,6 +2149,7 @@ CREATE TABLE `contrexx_module_data_categories` (
   `template` text NOT NULL,
   PRIMARY KEY  (`category_id`,`lang_id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -1632,6 +2163,9 @@ CREATE TABLE `contrexx_module_data_message_to_category` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_data_messages` (
   `message_id` int(6) unsigned NOT NULL auto_increment,
   `user_id` int(5) unsigned NOT NULL default '0',
@@ -1645,9 +2179,13 @@ CREATE TABLE `contrexx_module_data_messages` (
   `release_time_end` int(15) NOT NULL default '0',
   PRIMARY KEY  (`message_id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_data_messages_lang` (
   `message_id` int(6) unsigned NOT NULL default '0',
   `lang_id` int(2) unsigned NOT NULL default '0',
@@ -1667,9 +2205,21 @@ CREATE TABLE `contrexx_module_data_messages_lang` (
   `forward_target` varchar(40) default NULL,
   PRIMARY KEY  (`message_id`,`lang_id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+CREATE TABLE `contrexx_module_data_message_to_category` (
+  `message_id` int(6) unsigned NOT NULL default '0',
+  `category_id` int(4) unsigned NOT NULL default '0',
+  `lang_id` int(2) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`message_id`,`category_id`,`lang_id`),
+  KEY `category_id` (`category_id`)
+) ENGINE=InnoDB;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_data_placeholders` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` set('cat','entry') NOT NULL default '',
@@ -1678,18 +2228,27 @@ CREATE TABLE `contrexx_module_data_placeholders` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `placeholder` (`placeholder`),
   UNIQUE KEY `type` (`type`,`ref_id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_data_settings` (
   `name` varchar(50) NOT NULL default '',
   `value` text NOT NULL,
   PRIMARY KEY  (`name`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_directory_categories` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `parentid` int(6) unsigned NOT NULL default '0',
@@ -1706,10 +2265,15 @@ CREATE TABLE `contrexx_module_directory_categories` (
   KEY `displayorder` (`displayorder`),
   KEY `status` (`status`),
   FULLTEXT KEY `directoryindex` (`name`,`description`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_directory_dir` (
   `id` int(7) unsigned NOT NULL auto_increment,
   `title` varchar(100) NOT NULL default '',
@@ -1804,10 +2368,15 @@ CREATE TABLE `contrexx_module_directory_dir` (
   FULLTEXT KEY `name` (`title`,`description`),
   FULLTEXT KEY `description` (`description`),
   FULLTEXT KEY `title` (`title`,`description`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_directory_inputfields` (
   `id` int(7) NOT NULL auto_increment,
   `typ` int(2) NOT NULL default '0',
@@ -1821,10 +2390,15 @@ CREATE TABLE `contrexx_module_directory_inputfields` (
   `exp_search` int(1) NOT NULL default '0',
   `is_search` int(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_directory_levels` (
   `id` int(7) NOT NULL auto_increment,
   `parentid` int(7) NOT NULL default '0',
@@ -1842,35 +2416,53 @@ CREATE TABLE `contrexx_module_directory_levels` (
   KEY `parentid` (`parentid`),
   KEY `name` (`name`),
   KEY `status` (`status`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_directory_mail` (
   `id` tinyint(4) NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
   `content` longtext NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_directory_rel_dir_cat` (
   `dir_id` int(7) NOT NULL default '0',
   `cat_id` int(7) NOT NULL default '0',
   PRIMARY KEY  (`dir_id`,`cat_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_directory_rel_dir_level` (
   `dir_id` int(7) NOT NULL default '0',
   `level_id` int(7) NOT NULL default '0',
   PRIMARY KEY  (`dir_id`,`level_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_directory_settings` (
   `setid` int(6) unsigned NOT NULL auto_increment,
   `setname` varchar(250) NOT NULL default '',
@@ -1878,10 +2470,15 @@ CREATE TABLE `contrexx_module_directory_settings` (
   `settyp` int(1) NOT NULL default '0',
   PRIMARY KEY  (`setid`),
   KEY `setname` (`setname`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_directory_settings_google` (
   `setid` int(6) unsigned NOT NULL auto_increment,
   `setname` varchar(250) NOT NULL default '',
@@ -1889,10 +2486,15 @@ CREATE TABLE `contrexx_module_directory_settings_google` (
   `settyp` int(1) NOT NULL default '0',
   PRIMARY KEY  (`setid`),
   KEY `setname` (`setname`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_directory_vote` (
   `id` int(7) NOT NULL auto_increment,
   `feed_id` int(7) NOT NULL default '0',
@@ -1901,10 +2503,15 @@ CREATE TABLE `contrexx_module_directory_vote` (
   `client` varchar(255) NOT NULL default '',
   `time` varchar(20) NOT NULL default '',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_docsys` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `date` int(14) default NULL,
@@ -1922,28 +2529,42 @@ CREATE TABLE `contrexx_module_docsys` (
   `changelog` int(14) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `newsindex` (`title`,`text`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_docsys_categories` (
   `catid` int(2) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
   `lang` int(2) unsigned NOT NULL default '1',
   `sort_style` enum('alpha','date','date_alpha') NOT NULL default 'alpha',
   PRIMARY KEY  (`catid`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_docsys_entry_category` (
   `entry` int(10) unsigned NOT NULL default '0',
   `category` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`entry`,`category`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_downloads_category` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `parent_id` int(11) unsigned NOT NULL default '0',
@@ -1962,10 +2583,15 @@ CREATE TABLE `contrexx_module_downloads_category` (
   PRIMARY KEY  (`id`),
   KEY `is_active` (`is_active`),
   KEY `visibility` (`visibility`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_downloads_category_locale` (
   `lang_id` int(11) unsigned NOT NULL default '0',
   `category_id` int(11) unsigned NOT NULL default '0',
@@ -1975,13 +2601,21 @@ CREATE TABLE `contrexx_module_downloads_category_locale` (
   FULLTEXT KEY `name` (`name`),
   FULLTEXT KEY `description` (`description`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_downloads_download` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` enum('file','url') NOT NULL default 'file',
   `mime_type` enum('image','document','pdf','media','archive','application','link') NOT NULL default 'image',
+<<<<<<< HEAD
+=======
+  `icon` enum('_blank','avi','bmp','css','doc','dot','exe','fla','gif','htm','html','inc','jpg','js','mp3','nfo','pdf','php','png','pps','ppt','rar','swf','txt','wma','xls','zip') NOT NULL default '_blank',
+>>>>>>> fx
   `size` int(10) unsigned NOT NULL default '0',
   `image` varchar(255) NOT NULL default '',
   `owner_id` int(5) unsigned NOT NULL default '0',
@@ -2002,26 +2636,38 @@ CREATE TABLE `contrexx_module_downloads_download` (
   PRIMARY KEY  (`id`),
   KEY `is_active` (`is_active`),
   KEY `visibility` (`visibility`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_downloads_download_locale` (
   `lang_id` int(11) unsigned NOT NULL default '0',
   `download_id` int(11) unsigned NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
   `source` varchar(1024) default NULL,
   `source_name` varchar(1024) default NULL,
+<<<<<<< HEAD
   `file_type` varchar(10) default NULL,
+=======
+>>>>>>> fx
   `description` text NOT NULL,
   `metakeys` text NOT NULL,
   PRIMARY KEY  (`lang_id`,`download_id`),
   FULLTEXT KEY `name` (`name`),
   FULLTEXT KEY `description` (`description`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_downloads_group` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `is_active` tinyint(1) NOT NULL default '1',
@@ -2029,9 +2675,13 @@ CREATE TABLE `contrexx_module_downloads_group` (
   `info_page` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_downloads_group_locale` (
   `lang_id` int(11) unsigned NOT NULL default '0',
   `group_id` int(11) unsigned NOT NULL default '0',
@@ -2039,43 +2689,64 @@ CREATE TABLE `contrexx_module_downloads_group_locale` (
   PRIMARY KEY  (`lang_id`,`group_id`),
   FULLTEXT KEY `name` (`name`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_downloads_rel_download_category` (
   `download_id` int(10) unsigned NOT NULL default '0',
   `category_id` int(10) unsigned NOT NULL default '0',
   `order` int(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`download_id`,`category_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_downloads_rel_download_download` (
   `id1` int(10) unsigned NOT NULL default '0',
   `id2` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id1`,`id2`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_downloads_rel_group_category` (
   `group_id` int(10) unsigned NOT NULL default '0',
   `category_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`group_id`,`category_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_downloads_settings` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(32) NOT NULL default '',
   `value` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_ecard_ecards` (
   `code` varchar(35) NOT NULL default '',
   `date` int(10) unsigned NOT NULL default '0',
@@ -2088,25 +2759,37 @@ CREATE TABLE `contrexx_module_ecard_ecards` (
   `message` text NOT NULL,
   PRIMARY KEY  (`code`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_ecard_settings` (
   `setting_name` varchar(100) NOT NULL default '',
   `setting_value` text NOT NULL,
   PRIMARY KEY  (`setting_name`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_egov_configuration` (
   `name` varchar(255) NOT NULL default '',
   `value` text NOT NULL,
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_egov_orders` (
   `order_id` int(11) NOT NULL auto_increment,
   `order_date` timestamp NOT NULL default '0000-00-00 00:00:00',
@@ -2118,6 +2801,7 @@ CREATE TABLE `contrexx_module_egov_orders` (
   PRIMARY KEY  (`order_id`),
   KEY `order_product` (`order_product`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -2150,6 +2834,9 @@ CREATE TABLE `contrexx_module_egov_product_fields` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_egov_products` (
   `product_id` int(11) NOT NULL auto_increment,
   `product_autostatus` tinyint(1) NOT NULL default '0',
@@ -2176,10 +2863,40 @@ CREATE TABLE `contrexx_module_egov_products` (
   `yellowpay` tinyint(1) unsigned NOT NULL default '0',
   `alternative_names` text NOT NULL,
   PRIMARY KEY  (`product_id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_egov_product_calendar` (
+  `calendar_id` int(11) NOT NULL auto_increment,
+  `calendar_product` int(11) NOT NULL default '0',
+  `calendar_order` int(11) NOT NULL default '0',
+  `calendar_day` int(2) NOT NULL default '0',
+  `calendar_month` int(2) unsigned zerofill NOT NULL default '00',
+  `calendar_year` int(4) NOT NULL default '0',
+  `calendar_act` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`calendar_id`),
+  KEY `calendar_product` (`calendar_product`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_egov_product_fields` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `product` int(10) unsigned NOT NULL default '0',
+  `name` varchar(255) NOT NULL default '',
+  `type` enum('text','label','checkbox','checkboxGroup','file','hidden','password','radio','select','textarea') NOT NULL default 'text',
+  `attributes` text NOT NULL,
+  `is_required` set('0','1') NOT NULL default '0',
+  `check_type` int(3) NOT NULL default '1',
+  `order_id` int(5) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `product` (`product`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_egov_settings` (
   `set_id` int(11) NOT NULL default '0',
   `set_sender_name` varchar(255) NOT NULL default '',
@@ -2207,9 +2924,13 @@ CREATE TABLE `contrexx_module_egov_settings` (
   `set_paypal_ipn` tinyint(1) NOT NULL default '0',
   KEY `set_id` (`set_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_feed_category` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(150) NOT NULL default '',
@@ -2218,10 +2939,15 @@ CREATE TABLE `contrexx_module_feed_category` (
   `lang` int(1) NOT NULL default '0',
   `pos` int(3) NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_feed_news` (
   `id` int(11) NOT NULL auto_increment,
   `subid` int(11) NOT NULL default '0',
@@ -2235,19 +2961,28 @@ CREATE TABLE `contrexx_module_feed_news` (
   `status` int(1) NOT NULL default '1',
   `pos` int(3) NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_feed_newsml_association` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `pId_master` text NOT NULL,
   `pId_slave` text NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_feed_newsml_categories` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `providerId` text NOT NULL,
@@ -2259,10 +2994,15 @@ CREATE TABLE `contrexx_module_feed_newsml_categories` (
   `showPics` enum('0','1') NOT NULL default '1',
   `auto_update` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_feed_newsml_documents` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `publicIdentifier` varchar(255) NOT NULL default '',
@@ -2282,9 +3022,13 @@ CREATE TABLE `contrexx_module_feed_newsml_documents` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`publicIdentifier`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_feed_newsml_providers` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `providerId` text NOT NULL,
@@ -2292,9 +3036,13 @@ CREATE TABLE `contrexx_module_feed_newsml_providers` (
   `path` text NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_filesharing` (
   `id` int(10) NOT NULL auto_increment,
   `file` varchar(250) NOT NULL,
@@ -2306,19 +3054,28 @@ CREATE TABLE `contrexx_module_filesharing` (
   `upload_id` int(10) default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_filesharing_mail_template` (
   `id` int(10) NOT NULL auto_increment,
   `lang_id` int(1) NOT NULL,
   `subject` varchar(250) NOT NULL,
   `content` text NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_forum_access` (
   `category_id` int(5) unsigned NOT NULL default '0',
   `group_id` int(5) unsigned NOT NULL default '0',
@@ -2331,9 +3088,13 @@ CREATE TABLE `contrexx_module_forum_access` (
   `sticky` set('0','1') NOT NULL default '0',
   PRIMARY KEY  (`category_id`,`group_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_forum_categories` (
   `id` int(5) unsigned NOT NULL auto_increment,
   `parent_id` int(5) unsigned NOT NULL default '0',
@@ -2341,10 +3102,15 @@ CREATE TABLE `contrexx_module_forum_categories` (
   `status` set('0','1') NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `parent_id` (`parent_id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_forum_categories_lang` (
   `category_id` int(5) unsigned NOT NULL default '0',
   `lang_id` int(5) unsigned NOT NULL default '0',
@@ -2352,9 +3118,13 @@ CREATE TABLE `contrexx_module_forum_categories_lang` (
   `description` text NOT NULL,
   PRIMARY KEY  (`category_id`,`lang_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_forum_notification` (
   `category_id` int(10) unsigned NOT NULL default '0',
   `thread_id` int(10) unsigned NOT NULL default '0',
@@ -2362,9 +3132,13 @@ CREATE TABLE `contrexx_module_forum_notification` (
   `is_notified` set('0','1') NOT NULL default '0',
   PRIMARY KEY  (`category_id`,`thread_id`,`user_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_forum_postings` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `category_id` int(5) unsigned NOT NULL default '0',
@@ -2385,10 +3159,15 @@ CREATE TABLE `contrexx_module_forum_postings` (
   PRIMARY KEY  (`id`),
   KEY `category_id` (`category_id`,`thread_id`,`prev_post_id`,`user_id`),
   FULLTEXT KEY `fulltext` (`keywords`,`subject`,`content`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_forum_rating` (
   `id` int(11) NOT NULL auto_increment,
   `user_id` int(11) NOT NULL default '0',
@@ -2397,18 +3176,27 @@ CREATE TABLE `contrexx_module_forum_rating` (
   PRIMARY KEY  (`id`),
   KEY `user_id` (`user_id`,`post_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_forum_settings` (
   `id` int(5) unsigned NOT NULL auto_increment,
   `name` varchar(50) NOT NULL default '',
   `value` text NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_forum_statistics` (
   `category_id` int(5) unsigned NOT NULL default '0',
   `thread_count` int(10) unsigned NOT NULL default '0',
@@ -2416,9 +3204,13 @@ CREATE TABLE `contrexx_module_forum_statistics` (
   `last_post_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`category_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_gallery_categories` (
   `id` int(11) NOT NULL auto_increment,
   `pid` int(11) NOT NULL default '0',
@@ -2431,10 +3223,15 @@ CREATE TABLE `contrexx_module_gallery_categories` (
   `frontendProtected` int(11) NOT NULL default '0',
   `frontend_access_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_gallery_comments` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `picid` int(10) unsigned NOT NULL default '0',
@@ -2446,9 +3243,13 @@ CREATE TABLE `contrexx_module_gallery_comments` (
   `comment` text NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_gallery_language` (
   `gallery_id` int(10) unsigned NOT NULL default '0',
   `lang_id` int(10) unsigned NOT NULL default '0',
@@ -2457,9 +3258,13 @@ CREATE TABLE `contrexx_module_gallery_language` (
   PRIMARY KEY  (`gallery_id`,`lang_id`,`name`),
   FULLTEXT KEY `galleryindex` (`value`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_gallery_language_pics` (
   `picture_id` int(10) unsigned NOT NULL default '0',
   `lang_id` int(10) unsigned NOT NULL default '0',
@@ -2468,9 +3273,13 @@ CREATE TABLE `contrexx_module_gallery_language_pics` (
   PRIMARY KEY  (`picture_id`,`lang_id`),
   FULLTEXT KEY `galleryindex` (`name`,`desc`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_gallery_pictures` (
   `id` int(11) NOT NULL auto_increment,
   `catid` int(11) NOT NULL default '0',
@@ -2489,19 +3298,29 @@ CREATE TABLE `contrexx_module_gallery_pictures` (
   `quality` tinyint(3) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `galleryPicturesIndex` (`path`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_gallery_settings` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(30) NOT NULL default '',
   `value` text NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_gallery_votes` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `picid` int(10) unsigned NOT NULL default '0',
@@ -2511,9 +3330,13 @@ CREATE TABLE `contrexx_module_gallery_votes` (
   `mark` int(2) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_guestbook` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `status` tinyint(1) unsigned NOT NULL default '0',
@@ -2529,15 +3352,21 @@ CREATE TABLE `contrexx_module_guestbook` (
   `datetime` timestamp NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `comment` (`comment`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_guestbook_settings` (
   `name` varchar(50) NOT NULL default '',
   `value` varchar(250) NOT NULL default '',
   KEY `name` (`name`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -2688,6 +3517,9 @@ CREATE TABLE `contrexx_module_immo_statistics` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_jobs` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `date` int(14) default NULL,
@@ -2707,40 +3539,59 @@ CREATE TABLE `contrexx_module_jobs` (
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `newsindex` (`title`,`text`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_jobs_categories` (
   `catid` int(2) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
   `lang` int(2) unsigned NOT NULL default '1',
   `sort_style` enum('alpha','date','date_alpha') NOT NULL default 'alpha',
   PRIMARY KEY  (`catid`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_jobs_location` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_jobs_rel_loc_jobs` (
   `job` int(10) unsigned NOT NULL default '0',
   `location` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`job`,`location`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_jobs_settings` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(250) NOT NULL default '',
   `value` text NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -2758,6 +3609,10 @@ CREATE TABLE `contrexx_module_knowledge_article_content` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_knowledge_articles` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `category` int(10) unsigned NOT NULL default '0',
@@ -2769,10 +3624,26 @@ CREATE TABLE `contrexx_module_knowledge_articles` (
   `date_created` int(14) NOT NULL default '0',
   `date_updated` int(14) NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_knowledge_article_content` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `article` int(10) unsigned NOT NULL default '0',
+  `lang` int(10) unsigned NOT NULL default '0',
+  `question` text NOT NULL,
+  `answer` text NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `module_knowledge_article_content_lang` (`lang`),
+  KEY `module_knowledge_article_content_article` (`article`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_knowledge_categories` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `active` tinyint(1) unsigned NOT NULL default '1',
@@ -2781,48 +3652,72 @@ CREATE TABLE `contrexx_module_knowledge_categories` (
   PRIMARY KEY  (`id`),
   KEY `module_knowledge_categories_sort` (`sort`),
   KEY `module_knowledge_categories_parent` (`parent`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_knowledge_categories_content` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `category` int(10) unsigned NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
   `lang` int(11) NOT NULL default '1',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_knowledge_settings` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `value` text NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `module_knowledge_settings_name` (`name`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_knowledge_tags` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `lang` int(10) unsigned NOT NULL default '1',
   PRIMARY KEY  (`id`),
   KEY `module_knowledge_tags_name` (`name`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_knowledge_tags_articles` (
   `article` int(10) unsigned NOT NULL default '0',
   `tag` int(10) unsigned NOT NULL default '0',
   UNIQUE KEY `article` (`article`,`tag`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_livecam` (
   `id` int(10) unsigned NOT NULL default '1',
   `currentImagePath` varchar(255) NOT NULL default '/webcam/cam1/current.jpg',
@@ -2835,18 +3730,27 @@ CREATE TABLE `contrexx_module_livecam` (
   `showTill` int(14) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_livecam_settings` (
   `setid` int(10) unsigned NOT NULL auto_increment,
   `setname` varchar(255) NOT NULL default '',
   `setvalue` text NOT NULL,
   PRIMARY KEY  (`setid`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_market` (
   `id` int(9) NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
@@ -2875,10 +3779,15 @@ CREATE TABLE `contrexx_module_market` (
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `description` (`description`),
   FULLTEXT KEY `title` (`description`,`title`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_market_categories` (
   `id` int(6) NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
@@ -2886,10 +3795,15 @@ CREATE TABLE `contrexx_module_market_categories` (
   `displayorder` int(4) NOT NULL default '0',
   `status` int(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_market_mail` (
   `id` int(4) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
@@ -2898,10 +3812,15 @@ CREATE TABLE `contrexx_module_market_mail` (
   `mailcc` mediumtext NOT NULL,
   `active` int(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_market_paypal` (
   `id` int(4) NOT NULL auto_increment,
   `active` int(1) NOT NULL default '0',
@@ -2909,10 +3828,15 @@ CREATE TABLE `contrexx_module_market_paypal` (
   `price` varchar(10) NOT NULL default '',
   `price_premium` varchar(10) NOT NULL default '',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_market_settings` (
   `id` int(6) NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
@@ -2920,10 +3844,15 @@ CREATE TABLE `contrexx_module_market_settings` (
   `description` varchar(255) NOT NULL default '',
   `type` int(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_market_spez_fields` (
   `id` int(5) NOT NULL auto_increment,
   `name` varchar(100) NOT NULL,
@@ -2932,6 +3861,7 @@ CREATE TABLE `contrexx_module_market_spez_fields` (
   `lang_id` int(2) NOT NULL default '0',
   `active` int(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -2944,6 +3874,10 @@ CREATE TABLE `contrexx_module_media_settings` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_categories` (
   `id` int(7) NOT NULL auto_increment,
   `parent_id` int(7) NOT NULL,
@@ -2953,10 +3887,15 @@ CREATE TABLE `contrexx_module_mediadir_categories` (
   `picture` mediumtext NOT NULL,
   `active` int(1) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_categories_names` (
   `lang_id` int(1) NOT NULL,
   `category_id` int(7) NOT NULL,
@@ -2965,9 +3904,13 @@ CREATE TABLE `contrexx_module_mediadir_categories_names` (
   KEY `lang_id` (`lang_id`),
   KEY `category_id` (`category_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_comments` (
   `id` int(7) NOT NULL auto_increment,
   `entry_id` int(7) NOT NULL,
@@ -2980,10 +3923,15 @@ CREATE TABLE `contrexx_module_mediadir_comments` (
   `notification` int(1) NOT NULL default '0',
   `comment` mediumtext NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_entries` (
   `id` int(10) NOT NULL auto_increment,
   `order` int(7) NOT NULL default '0',
@@ -3009,6 +3957,7 @@ CREATE TABLE `contrexx_module_mediadir_entries` (
   PRIMARY KEY  (`id`),
   KEY `lang_id` (`lang_id`),
   KEY `active` (`active`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -3022,6 +3971,10 @@ CREATE TABLE `contrexx_module_mediadir_form_names` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_forms` (
   `id` int(7) NOT NULL auto_increment,
   `order` int(7) NOT NULL,
@@ -3032,10 +3985,35 @@ CREATE TABLE `contrexx_module_mediadir_forms` (
   `use_ready_to_confirm` int(1) NOT NULL,
   `cmd` varchar(50) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_mediadir_form_names` (
+  `lang_id` int(1) NOT NULL,
+  `form_id` int(7) NOT NULL,
+  `form_name` varchar(255) NOT NULL,
+  `form_description` mediumtext NOT NULL
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_mediadir_inputfields` (
+  `id` int(10) NOT NULL auto_increment,
+  `form` int(7) NOT NULL,
+  `type` int(10) NOT NULL,
+  `verification` int(10) NOT NULL,
+  `search` int(10) NOT NULL,
+  `required` int(10) NOT NULL,
+  `order` int(10) NOT NULL,
+  `show_in` int(10) NOT NULL,
+  `context_type` enum('none','title','address','zip','city','country') NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_inputfield_names` (
   `lang_id` int(10) NOT NULL,
   `form_id` int(7) NOT NULL,
@@ -3046,9 +4024,13 @@ CREATE TABLE `contrexx_module_mediadir_inputfield_names` (
   KEY `field_id` (`field_id`),
   KEY `lang_id` (`lang_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_inputfield_types` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
@@ -3059,16 +4041,22 @@ CREATE TABLE `contrexx_module_mediadir_inputfield_types` (
   `comment` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_inputfield_verifications` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
   `regex` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -3099,6 +4087,10 @@ CREATE TABLE `contrexx_module_mediadir_level_names` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_levels` (
   `id` int(7) NOT NULL auto_increment,
   `parent_id` int(7) NOT NULL,
@@ -3109,6 +4101,7 @@ CREATE TABLE `contrexx_module_mediadir_levels` (
   `picture` mediumtext NOT NULL,
   `active` int(1) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -3123,6 +4116,19 @@ CREATE TABLE `contrexx_module_mediadir_mail_actions` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_mediadir_level_names` (
+  `lang_id` int(1) NOT NULL,
+  `level_id` int(7) NOT NULL,
+  `level_name` varchar(255) NOT NULL,
+  `level_description` mediumtext NOT NULL,
+  KEY `lang_id` (`lang_id`),
+  KEY `category_id` (`level_id`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_mails` (
   `id` int(7) NOT NULL auto_increment,
   `title` varchar(255) NOT NULL,
@@ -3133,10 +4139,23 @@ CREATE TABLE `contrexx_module_mediadir_mails` (
   `is_default` int(1) NOT NULL,
   `active` int(1) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_mediadir_mail_actions` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL,
+  `default_recipient` enum('admin','author') NOT NULL,
+  `need_auth` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_masks` (
   `id` int(7) NOT NULL auto_increment,
   `title` varchar(255) NOT NULL,
@@ -3145,27 +4164,39 @@ CREATE TABLE `contrexx_module_mediadir_masks` (
   `form_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_order_rel_forms_selectors` (
   `selector_id` int(7) NOT NULL,
   `form_id` int(7) NOT NULL,
   `selector_order` int(7) NOT NULL,
   `exp_search` int(1) NOT NULL
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_rel_entry_categories` (
   `entry_id` int(10) NOT NULL,
   `category_id` int(10) NOT NULL,
   KEY `entry_id` (`entry_id`),
   KEY `category_id` (`category_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_rel_entry_inputfields` (
   `entry_id` int(7) NOT NULL,
   `lang_id` int(7) NOT NULL,
@@ -3175,6 +4206,7 @@ CREATE TABLE `contrexx_module_mediadir_rel_entry_inputfields` (
   UNIQUE KEY `entry_id` (`entry_id`,`lang_id`,`form_id`,`field_id`),
   FULLTEXT KEY `value` (`value`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -3191,54 +4223,82 @@ CREATE TABLE `contrexx_module_mediadir_rel_entry_inputfields_clean1` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_rel_entry_levels` (
   `entry_id` int(10) NOT NULL,
   `level_id` int(10) NOT NULL,
   KEY `entry_id` (`entry_id`),
   KEY `category_id` (`level_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_settings` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(100) NOT NULL,
   `value` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_settings_num_categories` (
   `group_id` int(1) NOT NULL,
   `num_categories` varchar(10) NOT NULL
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_settings_num_entries` (
   `group_id` int(1) NOT NULL,
   `num_entries` varchar(10) NOT NULL default 'n'
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_settings_num_levels` (
   `group_id` int(1) NOT NULL,
   `num_levels` varchar(10) NOT NULL
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_settings_perm_group_forms` (
   `group_id` int(7) NOT NULL,
   `form_id` int(1) NOT NULL,
   `status_group` int(1) NOT NULL
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_mediadir_votes` (
   `id` int(7) NOT NULL auto_increment,
   `entry_id` int(7) NOT NULL,
@@ -3247,10 +4307,21 @@ CREATE TABLE `contrexx_module_mediadir_votes` (
   `ip` varchar(100) NOT NULL,
   `vote` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_media_settings` (
+  `name` varchar(50) NOT NULL,
+  `value` varchar(250) NOT NULL,
+  KEY `name` (`name`)
+) ENGINE=InnoDB;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_memberdir_directories` (
   `dirid` int(10) unsigned NOT NULL auto_increment,
   `parentdir` int(11) NOT NULL default '0',
@@ -3264,10 +4335,15 @@ CREATE TABLE `contrexx_module_memberdir_directories` (
   `lang_id` int(2) unsigned NOT NULL default '1',
   PRIMARY KEY  (`dirid`),
   FULLTEXT KEY `memberdir_dir` (`name`,`description`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_memberdir_name` (
   `field` int(10) unsigned NOT NULL default '0',
   `dirid` int(10) unsigned NOT NULL default '0',
@@ -3275,19 +4351,28 @@ CREATE TABLE `contrexx_module_memberdir_name` (
   `active` set('0','1') NOT NULL default '',
   `lang_id` int(2) unsigned NOT NULL default '1'
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_memberdir_settings` (
   `setid` int(4) unsigned NOT NULL auto_increment,
   `setname` varchar(255) NOT NULL default '',
   `setvalue` text NOT NULL,
   `lang_id` int(2) unsigned NOT NULL default '1',
   PRIMARY KEY  (`setid`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_memberdir_values` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `dirid` int(14) NOT NULL default '0',
@@ -3314,10 +4399,15 @@ CREATE TABLE `contrexx_module_memberdir_values` (
   `18` text NOT NULL,
   `lang_id` int(2) unsigned NOT NULL default '1',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_news` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `date` int(14) default NULL,
@@ -3325,6 +4415,10 @@ CREATE TABLE `contrexx_module_news` (
   `source` varchar(250) NOT NULL default '',
   `url1` varchar(250) NOT NULL default '',
   `url2` varchar(250) NOT NULL default '',
+<<<<<<< HEAD
+=======
+  `catid` int(2) unsigned NOT NULL default '0',
+>>>>>>> fx
   `typeid` int(2) unsigned NOT NULL default '0',
   `publisher` varchar(255) NOT NULL default '',
   `publisher_id` int(5) unsigned NOT NULL default '0',
@@ -3344,6 +4438,7 @@ CREATE TABLE `contrexx_module_news` (
   `teaser_image_thumbnail_path` text NOT NULL,
   `changelog` int(14) NOT NULL default '0',
   `allow_comments` tinyint(1) NOT NULL default '0',
+<<<<<<< HEAD
   `enable_related_news` tinyint(1) NOT NULL default '0',
   `enable_tags` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
@@ -3548,6 +4643,31 @@ CREATE TABLE `contrexx_module_newsletter` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_newsletter` (
+  `id` int(11) NOT NULL auto_increment,
+  `subject` varchar(255) NOT NULL default '',
+  `template` int(11) NOT NULL default '0',
+  `content` text NOT NULL,
+  `attachment` enum('0','1') NOT NULL default '0',
+  `priority` tinyint(1) NOT NULL default '0',
+  `sender_email` varchar(255) NOT NULL default '',
+  `sender_name` varchar(255) NOT NULL default '',
+  `return_path` varchar(255) NOT NULL default '',
+  `smtp_server` int(10) unsigned NOT NULL default '0',
+  `status` int(1) NOT NULL default '0',
+  `count` int(11) NOT NULL default '0',
+  `recipient_count` int(11) unsigned NOT NULL default '0',
+  `date_create` int(14) unsigned NOT NULL default '0',
+  `date_sent` int(14) unsigned NOT NULL default '0',
+  `tmp_copy` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_access_user` (
   `accessUserID` int(5) unsigned NOT NULL,
   `newsletterCategoryID` int(11) NOT NULL,
@@ -3555,9 +4675,13 @@ CREATE TABLE `contrexx_module_newsletter_access_user` (
   UNIQUE KEY `rel` (`accessUserID`,`newsletterCategoryID`),
   KEY `accessUserID` (`accessUserID`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_attachment` (
   `id` int(11) NOT NULL auto_increment,
   `newsletter` int(11) NOT NULL default '0',
@@ -3566,9 +4690,13 @@ CREATE TABLE `contrexx_module_newsletter_attachment` (
   PRIMARY KEY  (`id`),
   KEY `newsletter` (`newsletter`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_category` (
   `id` int(11) NOT NULL auto_increment,
   `status` tinyint(1) NOT NULL default '0',
@@ -3576,20 +4704,30 @@ CREATE TABLE `contrexx_module_newsletter_category` (
   `notification_email` varchar(250) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_confirm_mail` (
   `id` int(1) NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
   `content` longtext NOT NULL,
   `recipients` text NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_email_link` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `email_id` int(11) unsigned NOT NULL,
@@ -3597,10 +4735,15 @@ CREATE TABLE `contrexx_module_newsletter_email_link` (
   `url` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `email_id` (`email_id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_email_link_feedback` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `link_id` int(11) unsigned NOT NULL,
@@ -3611,14 +4754,19 @@ CREATE TABLE `contrexx_module_newsletter_email_link_feedback` (
   UNIQUE KEY `link_id` (`link_id`,`email_id`,`recipient_id`,`recipient_type`),
   KEY `email_id` (`email_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_rel_cat_news` (
   `newsletter` int(11) NOT NULL default '0',
   `category` int(11) NOT NULL default '0',
   PRIMARY KEY  (`newsletter`,`category`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -3630,14 +4778,27 @@ CREATE TABLE `contrexx_module_newsletter_rel_user_cat` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_rel_usergroup_newsletter` (
   `userGroup` int(10) unsigned NOT NULL,
   `newsletter` int(10) unsigned NOT NULL,
   UNIQUE KEY `uniq` (`userGroup`,`newsletter`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+CREATE TABLE `contrexx_module_newsletter_rel_user_cat` (
+  `user` int(11) NOT NULL default '0',
+  `category` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`user`,`category`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_settings` (
   `setid` int(6) unsigned NOT NULL auto_increment,
   `setname` varchar(250) NOT NULL default '',
@@ -3645,10 +4806,15 @@ CREATE TABLE `contrexx_module_newsletter_settings` (
   `status` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`setid`),
   UNIQUE KEY `setname` (`setname`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_template` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
@@ -3657,10 +4823,15 @@ CREATE TABLE `contrexx_module_newsletter_template` (
   `required` int(1) NOT NULL default '0',
   `type` enum('e-mail','news') NOT NULL default 'e-mail',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_tmp_sending` (
   `id` int(11) NOT NULL auto_increment,
   `newsletter` int(11) NOT NULL default '0',
@@ -3672,9 +4843,13 @@ CREATE TABLE `contrexx_module_newsletter_tmp_sending` (
   UNIQUE KEY `unique_email` (`newsletter`,`email`),
   KEY `email` (`email`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_user` (
   `id` int(11) NOT NULL auto_increment,
   `code` varchar(255) NOT NULL default '',
@@ -3704,15 +4879,21 @@ CREATE TABLE `contrexx_module_newsletter_user` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `email` (`email`),
   KEY `status` (`status`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_newsletter_user_title` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `title` (`title`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -3839,6 +5020,123 @@ CREATE TABLE `contrexx_module_pim_product_upgrade` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_categories` (
+  `catid` int(2) unsigned NOT NULL auto_increment,
+  `parent_id` int(11) NOT NULL,
+  `left_id` int(11) NOT NULL,
+  `right_id` int(11) NOT NULL,
+  `sorting` int(11) NOT NULL,
+  `level` int(11) NOT NULL,
+  PRIMARY KEY  (`catid`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_categories_catid` (
+  `id` int(11) NOT NULL
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_categories_locale` (
+  `category_id` int(11) unsigned NOT NULL default '0',
+  `lang_id` int(11) unsigned NOT NULL default '0',
+  `name` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`category_id`,`lang_id`),
+  FULLTEXT KEY `name` (`name`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_categories_locks` (
+  `lockId` varchar(32) NOT NULL,
+  `lockTable` varchar(32) NOT NULL,
+  `lockStamp` bigint(11) NOT NULL
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_comments` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `title` varchar(250) NOT NULL default '',
+  `text` mediumtext NOT NULL,
+  `newsid` int(6) unsigned NOT NULL default '0',
+  `date` int(14) default NULL,
+  `poster_name` varchar(255) NOT NULL default '',
+  `userid` int(5) unsigned NOT NULL default '0',
+  `ip_address` varchar(15) NOT NULL default '0.0.0.0',
+  `is_active` enum('0','1') NOT NULL default '1',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_locale` (
+  `news_id` int(11) unsigned NOT NULL default '0',
+  `lang_id` int(11) unsigned NOT NULL default '0',
+  `is_active` int(1) unsigned NOT NULL default '1',
+  `title` varchar(250) NOT NULL default '',
+  `text` mediumtext NOT NULL,
+  `teaser_text` text NOT NULL,
+  PRIMARY KEY  (`news_id`,`lang_id`),
+  FULLTEXT KEY `newsindex` (`text`,`title`,`teaser_text`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_settings` (
+  `name` varchar(50) NOT NULL default '',
+  `value` varchar(250) NOT NULL default '',
+  KEY `name` (`name`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_settings_locale` (
+  `name` varchar(50) NOT NULL default '',
+  `lang_id` int(11) unsigned NOT NULL default '0',
+  `value` varchar(250) NOT NULL default '',
+  PRIMARY KEY  (`name`,`lang_id`),
+  FULLTEXT KEY `name` (`name`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_stats_view` (
+  `user_sid` char(32) NOT NULL,
+  `news_id` int(6) unsigned NOT NULL,
+  `time` timestamp NOT NULL ,
+  KEY `idx_user_sid` (`user_sid`),
+  KEY `idx_news_id` (`news_id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_teaser_frame` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `lang_id` int(3) unsigned NOT NULL default '0',
+  `frame_template_id` int(10) unsigned NOT NULL default '0',
+  `name` varchar(50) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_teaser_frame_templates` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `description` varchar(100) NOT NULL default '',
+  `html` text NOT NULL,
+  `source_code_mode` enum('0','1') NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_ticker` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL default '',
+  `charset` enum('ISO-8859-1','UTF-8') NOT NULL default 'ISO-8859-1',
+  `urlencode` tinyint(1) unsigned NOT NULL default '0',
+  `prefix` varchar(250) NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_types` (
+  `typeid` int(2) unsigned NOT NULL auto_increment,
+  PRIMARY KEY  (`typeid`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_news_types_locale` (
+  `lang_id` int(11) unsigned NOT NULL default '0',
+  `type_id` int(11) unsigned NOT NULL default '0',
+  `name` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`lang_id`,`type_id`),
+  FULLTEXT KEY `name` (`name`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_podcast_category` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
@@ -3846,10 +5144,15 @@ CREATE TABLE `contrexx_module_podcast_category` (
   `status` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `podcastindex` (`title`,`description`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_podcast_medium` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
@@ -3868,34 +5171,52 @@ CREATE TABLE `contrexx_module_podcast_medium` (
   `date_added` int(14) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `podcastindex` (`title`,`description`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_podcast_rel_category_lang` (
   `category_id` int(10) unsigned NOT NULL default '0',
   `lang_id` int(10) unsigned NOT NULL default '0'
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_podcast_rel_medium_category` (
   `medium_id` int(10) unsigned NOT NULL default '0',
   `category_id` int(10) unsigned NOT NULL default '0'
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_podcast_settings` (
   `setid` int(6) unsigned NOT NULL auto_increment,
   `setname` varchar(250) NOT NULL default '',
   `setvalue` text NOT NULL,
   `status` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`setid`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_podcast_template` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `description` varchar(255) NOT NULL default '',
@@ -3903,20 +5224,30 @@ CREATE TABLE `contrexx_module_podcast_template` (
   `extensions` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `description` (`description`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_recommend` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `value` text NOT NULL,
   `lang_id` int(11) NOT NULL default '1',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_repository` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `moduleid` int(5) unsigned NOT NULL default '0',
@@ -3930,6 +5261,7 @@ CREATE TABLE `contrexx_module_repository` (
   `displayorder` smallint(6) NOT NULL default '100',
   UNIQUE KEY `contentid` (`id`),
   FULLTEXT KEY `fulltextindex` (`title`,`content`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -3941,14 +5273,28 @@ CREATE TABLE `contrexx_module_shop_article_group` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_shop_article_group` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_attribute` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` tinyint(1) unsigned NOT NULL default '1',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_categories` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `parent_id` int(10) unsigned NOT NULL default '0',
@@ -3958,10 +5304,15 @@ CREATE TABLE `contrexx_module_shop_categories` (
   `flags` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `flags` (`flags`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_currencies` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `code` char(3) NOT NULL default '',
@@ -3972,6 +5323,7 @@ CREATE TABLE `contrexx_module_shop_currencies` (
   `default` tinyint(1) unsigned NOT NULL default '0',
   `increment` decimal(6,5) unsigned NOT NULL default '0.01000',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -3983,6 +5335,27 @@ CREATE TABLE `contrexx_module_shop_customer_group` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_shop_customer_group` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_shop_discountgroup_count_name` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_shop_discountgroup_count_rate` (
+  `group_id` int(10) unsigned NOT NULL default '0',
+  `count` int(10) unsigned NOT NULL default '1',
+  `rate` decimal(5,2) unsigned NOT NULL default '0.00',
+  PRIMARY KEY  (`group_id`,`count`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_discount_coupon` (
   `code` varchar(20) NOT NULL default '',
   `customer_id` int(10) unsigned NOT NULL default '0',
@@ -3997,6 +5370,7 @@ CREATE TABLE `contrexx_module_shop_discount_coupon` (
   `discount_rate` decimal(3,0) unsigned NOT NULL default '0',
   PRIMARY KEY  (`code`,`customer_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -4016,6 +5390,9 @@ CREATE TABLE `contrexx_module_shop_discountgroup_count_rate` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_importimg` (
   `img_id` int(10) unsigned NOT NULL auto_increment,
   `img_name` varchar(255) NOT NULL default '',
@@ -4024,9 +5401,13 @@ CREATE TABLE `contrexx_module_shop_importimg` (
   `img_fields_db` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`img_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_lsv` (
   `order_id` int(10) unsigned NOT NULL,
   `holder` tinytext NOT NULL,
@@ -4034,6 +5415,7 @@ CREATE TABLE `contrexx_module_shop_lsv` (
   `blz` tinytext NOT NULL,
   PRIMARY KEY  (`order_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -4044,11 +5426,20 @@ CREATE TABLE `contrexx_module_shop_manufacturer` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+CREATE TABLE `contrexx_module_shop_manufacturer` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_option` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `attribute_id` int(10) unsigned NOT NULL,
   `price` decimal(9,2) NOT NULL default '0.00',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -4080,6 +5471,10 @@ CREATE TABLE `contrexx_module_shop_order_items` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_orders` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `customer_id` int(10) unsigned NOT NULL default '0',
@@ -4121,10 +5516,38 @@ CREATE TABLE `contrexx_module_shop_orders` (
   `billing_email` varchar(255) default NULL,
   PRIMARY KEY  (`id`),
   KEY `status` (`status`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_shop_order_attributes` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `item_id` int(10) unsigned NOT NULL default '0',
+  `attribute_name` varchar(255) NOT NULL default '',
+  `option_name` varchar(255) NOT NULL default '',
+  `price` decimal(9,2) NOT NULL default '0.00',
+  PRIMARY KEY  (`id`),
+  KEY `item_id` (`item_id`)
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_module_shop_order_items` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `order_id` int(10) unsigned NOT NULL default '0',
+  `product_id` int(10) unsigned NOT NULL default '0',
+  `product_name` varchar(255) NOT NULL default '',
+  `price` decimal(9,2) unsigned NOT NULL default '0.00',
+  `quantity` int(10) unsigned NOT NULL default '0',
+  `vat_rate` decimal(5,2) unsigned default NULL,
+  `weight` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `order` (`order_id`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_payment` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `processor_id` int(10) unsigned NOT NULL default '0',
@@ -4133,10 +5556,15 @@ CREATE TABLE `contrexx_module_shop_payment` (
   `ord` int(5) unsigned NOT NULL default '0',
   `active` tinyint(1) unsigned NOT NULL default '1',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_payment_processors` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` enum('internal','external') NOT NULL default 'internal',
@@ -4146,16 +5574,22 @@ CREATE TABLE `contrexx_module_shop_payment_processors` (
   `status` tinyint(1) unsigned NOT NULL default '1',
   `picture` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_pricelists` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(25) NOT NULL default '',
   `lang_id` int(10) unsigned NOT NULL default '0',
   `border_on` tinyint(1) unsigned NOT NULL default '1',
   `header_on` tinyint(1) unsigned NOT NULL default '1',
+<<<<<<< HEAD
   `header_left` text,
   `header_right` text,
   `footer_on` tinyint(1) unsigned NOT NULL default '0',
@@ -4167,6 +5601,17 @@ CREATE TABLE `contrexx_module_shop_pricelists` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+  `header_left` text ,
+  `header_right` text ,
+  `footer_on` tinyint(1) unsigned NOT NULL default '0',
+  `footer_left` text ,
+  `footer_right` text ,
+  `categories` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_products` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `picture` varchar(4096) default NULL,
@@ -4191,23 +5636,35 @@ CREATE TABLE `contrexx_module_shop_products` (
   `group_id` int(10) unsigned default NULL,
   `article_id` int(10) unsigned default NULL,
   `usergroup_ids` varchar(4096) default NULL,
+<<<<<<< HEAD
   `minimum_order_quantity` int(10) NOT NULL default '0',
+=======
+>>>>>>> fx
   PRIMARY KEY  (`id`),
   KEY `group_id` (`group_id`),
   KEY `article_id` (`article_id`),
   FULLTEXT KEY `flags` (`flags`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_rel_countries` (
   `zone_id` int(10) unsigned NOT NULL default '0',
   `country_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`country_id`,`zone_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_rel_customer_coupon` (
   `code` varchar(20) NOT NULL default '',
   `customer_id` int(10) unsigned NOT NULL default '0',
@@ -4216,43 +5673,63 @@ CREATE TABLE `contrexx_module_shop_rel_customer_coupon` (
   `amount` decimal(9,2) unsigned NOT NULL default '0.00',
   PRIMARY KEY  (`code`,`customer_id`,`order_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_rel_discount_group` (
   `customer_group_id` int(10) unsigned NOT NULL default '0',
   `article_group_id` int(10) unsigned NOT NULL default '0',
   `rate` decimal(9,2) NOT NULL default '0.00',
   PRIMARY KEY  (`customer_group_id`,`article_group_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_rel_payment` (
   `zone_id` int(10) unsigned NOT NULL default '0',
   `payment_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`zone_id`,`payment_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_rel_product_attribute` (
   `product_id` int(10) unsigned NOT NULL default '0',
   `option_id` int(10) unsigned NOT NULL,
   `ord` int(10) NOT NULL default '0',
   PRIMARY KEY  (`product_id`,`option_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_rel_shipper` (
   `zone_id` int(10) unsigned NOT NULL default '0',
   `shipper_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`shipper_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_shipment_cost` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `shipper_id` int(10) unsigned NOT NULL default '0',
@@ -4260,31 +5737,47 @@ CREATE TABLE `contrexx_module_shop_shipment_cost` (
   `fee` decimal(9,2) unsigned default NULL,
   `free_from` decimal(9,2) unsigned default NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_shipper` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `active` tinyint(1) unsigned NOT NULL default '1',
   `ord` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_vat` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `rate` decimal(5,2) unsigned NOT NULL default '0.00',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_shop_zones` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `active` tinyint(1) unsigned NOT NULL default '1',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -4405,24 +5898,36 @@ CREATE TABLE `contrexx_module_survey_surveygroup` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_u2u_address_list` (
   `id` int(11) NOT NULL auto_increment,
   `user_id` int(11) NOT NULL default '0',
   `buddies_id` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_u2u_message_log` (
   `message_id` int(11) unsigned NOT NULL auto_increment,
   `message_text` text NOT NULL,
   `message_title` text NOT NULL,
   PRIMARY KEY  (`message_id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_u2u_sent_messages` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `userid` int(11) unsigned NOT NULL default '0',
@@ -4432,18 +5937,26 @@ CREATE TABLE `contrexx_module_u2u_sent_messages` (
   `date_time` timestamp NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_u2u_settings` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_module_u2u_user_log` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `userid` int(11) unsigned NOT NULL default '0',
@@ -4452,6 +5965,7 @@ CREATE TABLE `contrexx_module_u2u_user_log` (
   `user_status` enum('0','1') NOT NULL default '1',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -4485,6 +5999,9 @@ CREATE TABLE `contrexx_session_variable` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_sessions` (
   `sessionid` varchar(255) NOT NULL default '',
   `remember_me` int(1) NOT NULL default '0',
@@ -4494,6 +6011,7 @@ CREATE TABLE `contrexx_sessions` (
   `user_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`sessionid`),
   KEY `LastUpdated` (`lastupdated`)
+<<<<<<< HEAD
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -4508,15 +6026,35 @@ CREATE TABLE `contrexx_settings` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_session_variable` (
+  `id` int(11) NOT NULL auto_increment,
+  `parent_id` int(11) NOT NULL,
+  `sessionid` varchar(32) NOT NULL default '',
+  `lastused` timestamp NOT NULL ,
+  `key` varchar(100) NOT NULL default '',
+  `value` text ,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `key_index` (`parent_id`,`key`,`sessionid`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_settings_image` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,
   `value` text NOT NULL,
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_settings_smtp` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,
@@ -4527,6 +6065,7 @@ CREATE TABLE `contrexx_settings_smtp` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -4539,6 +6078,9 @@ CREATE TABLE `contrexx_settings_thumbnail` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_skins` (
   `id` int(2) unsigned NOT NULL auto_increment,
   `themesname` varchar(50) NOT NULL default '',
@@ -4547,6 +6089,7 @@ CREATE TABLE `contrexx_skins` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `theme_unique` (`themesname`),
   UNIQUE KEY `folder_unique` (`foldername`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -4554,13 +6097,24 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_stats_browser` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `name` varchar(255) binary NOT NULL default '',
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_stats_browser` (
+  `id` int(6) unsigned NOT NULL auto_increment,
+  `name` varchar(255) BINARY NOT NULL default '',
+>>>>>>> fx
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`name`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_stats_colourdepth` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `depth` tinyint(3) unsigned NOT NULL default '0',
@@ -4568,15 +6122,20 @@ CREATE TABLE `contrexx_stats_colourdepth` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`depth`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_stats_config` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(64) NOT NULL default '',
   `value` varchar(255) NOT NULL default '',
   `status` int(1) default '1',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -4584,68 +6143,112 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_stats_country` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `country` varchar(100) binary NOT NULL default '',
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_stats_country` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `country` varchar(100) BINARY NOT NULL default '',
+>>>>>>> fx
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`country`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_stats_hostname` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `hostname` varchar(255) binary NOT NULL default '',
+=======
+
+CREATE TABLE `contrexx_stats_hostname` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `hostname` varchar(255) BINARY NOT NULL default '',
+>>>>>>> fx
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`hostname`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_stats_javascript` (
   `id` int(3) unsigned NOT NULL auto_increment,
   `support` enum('0','1') default '0',
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_stats_operatingsystem` (
   `id` int(6) unsigned NOT NULL auto_increment,
   `name` varchar(255) binary NOT NULL default '',
+=======
+
+CREATE TABLE `contrexx_stats_operatingsystem` (
+  `id` int(6) unsigned NOT NULL auto_increment,
+  `name` varchar(255) BINARY NOT NULL default '',
+>>>>>>> fx
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`name`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_stats_referer` (
   `id` int(8) unsigned NOT NULL auto_increment,
   `uri` varchar(255) binary NOT NULL default '',
+=======
+
+CREATE TABLE `contrexx_stats_referer` (
+  `id` int(8) unsigned NOT NULL auto_increment,
+  `uri` varchar(255) BINARY NOT NULL default '',
+>>>>>>> fx
   `timestamp` int(11) unsigned NOT NULL default '0',
   `count` mediumint(8) unsigned NOT NULL default '0',
   `sid` varchar(32) NOT NULL default '',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`uri`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_stats_requests` (
   `id` int(9) unsigned NOT NULL auto_increment,
   `timestamp` int(11) default '0',
   `pageId` int(6) unsigned NOT NULL default '0',
+<<<<<<< HEAD
   `page` varchar(255) binary NOT NULL default '',
+=======
+  `page` varchar(255) BINARY NOT NULL default '',
+>>>>>>> fx
   `visits` int(9) unsigned NOT NULL default '0',
   `sid` varchar(32) NOT NULL default '',
   `pageTitle` varchar(250) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`page`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_stats_requests_summary` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` varchar(10) NOT NULL default '',
@@ -4654,9 +6257,13 @@ CREATE TABLE `contrexx_stats_requests_summary` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`type`,`timestamp`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_stats_screenresolution` (
   `id` int(5) unsigned NOT NULL auto_increment,
   `resolution` varchar(11) NOT NULL default '',
@@ -4664,18 +6271,26 @@ CREATE TABLE `contrexx_stats_screenresolution` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`resolution`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_stats_search` (
   `id` int(5) unsigned NOT NULL auto_increment,
   `name` varchar(100) binary NOT NULL default '',
+=======
+
+CREATE TABLE `contrexx_stats_search` (
+  `id` int(5) unsigned NOT NULL auto_increment,
+  `name` varchar(100) BINARY NOT NULL default '',
+>>>>>>> fx
   `count` int(10) unsigned NOT NULL default '0',
   `sid` varchar(32) NOT NULL default '',
   `external` enum('0','1') NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`name`,`external`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -4683,6 +6298,13 @@ CREATE TABLE `contrexx_stats_spiders` (
   `id` int(9) unsigned NOT NULL auto_increment,
   `last_indexed` int(14) default NULL,
   `page` varchar(100) binary default NULL,
+=======
+
+CREATE TABLE `contrexx_stats_spiders` (
+  `id` int(9) unsigned NOT NULL auto_increment,
+  `last_indexed` int(14) default NULL,
+  `page` varchar(100) BINARY default NULL,
+>>>>>>> fx
   `pageId` mediumint(6) unsigned NOT NULL default '0',
   `count` int(11) NOT NULL default '0',
   `spider_useragent` varchar(255) default NULL,
@@ -4691,20 +6313,31 @@ CREATE TABLE `contrexx_stats_spiders` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`page`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_stats_spiders_summary` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) binary NOT NULL default '',
+=======
+
+CREATE TABLE `contrexx_stats_spiders_summary` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(255) BINARY NOT NULL default '',
+>>>>>>> fx
   `timestamp` int(11) NOT NULL default '0',
   `count` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`name`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_stats_visitors` (
   `id` int(8) unsigned NOT NULL auto_increment,
   `sid` varchar(32) NOT NULL default '',
@@ -4718,9 +6351,13 @@ CREATE TABLE `contrexx_stats_visitors` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`sid`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_stats_visitors_summary` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` varchar(10) NOT NULL default '',
@@ -4729,6 +6366,7 @@ CREATE TABLE `contrexx_stats_visitors_summary` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`type`,`timestamp`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -4744,6 +6382,9 @@ CREATE TABLE `contrexx_syslog` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_voting_additionaldata` (
   `id` int(11) NOT NULL auto_increment,
   `nickname` varchar(80) NOT NULL default '',
@@ -4755,6 +6396,7 @@ CREATE TABLE `contrexx_voting_additionaldata` (
   `email` varchar(80) NOT NULL default '',
   `comment` text NOT NULL,
   `voting_system_id` int(11) NOT NULL default '0',
+<<<<<<< HEAD
   `date_entered` timestamp NOT NULL,
   `forename` varchar(80) NOT NULL default '',
   PRIMARY KEY  (`id`),
@@ -4763,16 +6405,29 @@ CREATE TABLE `contrexx_voting_additionaldata` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+  `date_entered` timestamp NOT NULL ,
+  `forename` varchar(80) NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  KEY `voting_system_id` (`voting_system_id`)
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_voting_email` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `email` varchar(255) NOT NULL,
   `valid` enum('0','1') NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `email` (`email`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+) ENGINE=MyISAM;
+
+>>>>>>> fx
 CREATE TABLE `contrexx_voting_rel_email_system` (
   `email_id` int(10) unsigned NOT NULL default '0',
   `system_id` int(10) unsigned NOT NULL default '0',
@@ -4780,15 +6435,20 @@ CREATE TABLE `contrexx_voting_rel_email_system` (
   `valid` enum('0','1') NOT NULL default '0',
   UNIQUE KEY `email_id` (`email_id`,`system_id`)
 ) ENGINE=MyISAM;
+<<<<<<< HEAD
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+=======
+
+>>>>>>> fx
 CREATE TABLE `contrexx_voting_results` (
   `id` int(11) NOT NULL auto_increment,
   `voting_system_id` int(11) default NULL,
   `question` char(200) default NULL,
   `votes` int(11) default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -4798,6 +6458,15 @@ CREATE TABLE `contrexx_voting_system` (
   `date` timestamp NOT NULL,
   `title` varchar(60) NOT NULL default '',
   `question` text,
+=======
+) ENGINE=MyISAM;
+
+CREATE TABLE `contrexx_voting_system` (
+  `id` int(11) NOT NULL auto_increment,
+  `date` timestamp NOT NULL ,
+  `title` varchar(60) NOT NULL default '',
+  `question` text ,
+>>>>>>> fx
   `status` tinyint(1) default '1',
   `submit_check` enum('cookie','email') NOT NULL default 'cookie',
   `votes` int(11) default '0',
@@ -4811,5 +6480,9 @@ CREATE TABLE `contrexx_voting_system` (
   `additional_city` tinyint(1) NOT NULL default '0',
   `additional_comment` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
+<<<<<<< HEAD
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
+=======
+) ENGINE=MyISAM;
+>>>>>>> fx

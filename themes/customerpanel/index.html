@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8" />
+        <title>{METATITLE} | {GLOBAL_TITLE}</title>
+        <meta name="description" content="{METADESC}" />
+        <meta name="keywords" content="{METAKEYS}" />
+        <meta name="robots" content="{METAROBOTS}" />
+        <meta name="generator" content="{VERSION}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+
+        <link type="images/x-icon" rel="icon" href="themes/customerpanel/img/favicon.ico"/>
+        <link rel="apple-touch-icon-precomposed" href="themes/customerpanel/img/apple-touch-icon.png" />
+        <link rel="apple-touch-startup-image" href="themes/customerpanel/img/apple-touch-startup.png" />
+        
+        <link rel="alternate" type="application/rss+xml" title="GLOBAL_TITLE}" href="http://{DOMAIN_URL}/feed/news_headlines_de.xml" />
+        
+        <meta property="og:site_name" content="{GLOBAL_TITLE}" />
+        <meta property="og:title" content="{METATITLE}" />
+        <meta property="og:description" content="{METADESC}" />
+        <meta property="og:url" content="http://{DOMAIN_URL}{CURRENT_URL}" />
+        <meta property="og:image" content="{BASE_URL}/themes/customerpanel/img/logo_social_media.png" />
+        
+        <meta name="twitter:title" content="{METATITLE}" />
+        <meta name="twitter:description" content="{METADESC}" />
+        <meta name="twitter:image" content="{BASE_URL}/themes/customerpanel/img/logo_social_media.png" />
+        
+        <script type="text/javascript" src="themes/customerpanel/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script> 
+        <script type="text/javascript" src="themes/customerpanel/js/responsivetable/jquery.responsivetable.min.js"></script>
+        
+        {JAVASCRIPT}
+        {STYLE_FILE}
+        {JAVASCRIPT_FILE}
+        {LOGIN_CONTENT}
+        {GOOGLE_ANALYTICS}
+        
+
+
+        <link href='https://fonts.googleapis.com/css?family=Roboto:400,300' rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="themes/customerpanel/css/normalize.min.css">
+        <link rel="stylesheet" href="themes/customerpanel/css/entypo.css?v=1.0">
+        <link rel="stylesheet" href="themes/customerpanel/css/main.css?v=1.0">
+
+        <!--[if (gte IE 6)&(lte IE 8)]>
+            <script type="text/javascript" src="themes/customerpanel//vendor/DOMAssistantCompressed-2.8.1.js"></script>
+            <script type="text/javascript" src="themes/customerpanel/js/vendor/selectivizr-min.js"></script>
+        <![endif]-->
+
+        <script type="text/javascript" src= "/themes/customerpanel/js/jquery.tablesorter.js"></script>
+    </head>
+                                                          
+    <body>
+        <div class="modal fade" id="error_msg_container" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="grid-elm grid-align-1-1 grid-offset msg-error">                                                                                             
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> 
+                        <div class="msg_text">This is an Error Message!</div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="warning_msg_container" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="grid-elm grid-align-1-1 grid-offset msg-warning">                                                                                             
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> 
+                        <div class="msg_text">This is an Warning!</div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+        
+        <div class="modal fade" id="info_msg_container" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="grid-elm grid-align-1-1 grid-offset msg-info">                                                                                             
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> 
+                        <div class="msg_text">This is an Information!</div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+        
+        <div class="modal fade" id="success_msg_container" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="grid-elm grid-align-1-1 grid-offset msg-success">                                                                                             
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> 
+                        <div class="msg_text">This is an Success Message!</div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+    
+        {CONTENT_FILE}
+        
+        <footer>
+            <div class="grid-container">     
+            </div> 
+        </footer>                  
+                                                                                                        
+        <script src= "themes/customerpanel/js/main.js?v=2.0"></script>
+        <script src= "themes/customerpanel/js/plugins.js?v=2.0"></script>
+        
+		{COUNTER}
+    </body>
+</html>

@@ -1,0 +1,123 @@
+<!-- BEGIN showDomainsSection -->
+<div class="grid-elm grid-align-1-1 grid-offset">
+<h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAINS}</h2>
+<table class="tablesort website-domains">
+    <thead>
+        <tr>
+            <th>{TXT_MULTISITE_WEBSITE_TITLE_NAME}</th>
+            <th class="noSorting">{TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN}</th>
+            <th class="actions noSorting">{TXT_MULTISITE_WEBSITE_TITLE_FUNCTIONS}</th>
+        </tr>
+    </thead>
+    <tbody> 
+        <!-- BEGIN showWebsiteDomains -->
+        <tr>
+            <td>{MULTISITE_WEBSITE_DOMAIN_NAME}</td>
+            <td>
+            <!-- BEGIN showWebsiteMainDomain -->
+            <input type="radio" name="mainDomain" class="mainDomainModal"  {MULTISITE_WEBSITE_MAIN_DOMAIN_RADIO_CHECKED} data-domain="{MULTISITE_WEBSITE_DOMAIN}" data-url="{MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL}" data-target="#SetMainDomain" />
+            <!-- END showWebsiteMainDomain -->
+            </td>
+            <td class="actions">
+              <!-- BEGIN showWebsiteSpfAction -->
+              <a class="entypo-help domainModal" data-remote="/api/MultiSite/Domain/Spf?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="DomainSpf" ></a>&nbsp;
+              <!-- END showWebsiteSpfAction -->
+              <!-- BEGIN showWebsiteDomainActions -->
+              <a class="entypo-tools domainModal" data-remote="/api/MultiSite/Domain/Edit?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="DomainEdit" ></a>&nbsp;
+              <a class="entypo-trash domainModal" data-remote="/api/MultiSite/Domain/Delete?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="DomainDelete" ></a>
+              <!-- END showWebsiteDomainActions -->
+            </td>
+        </tr>
+        <!-- END showWebsiteDomains -->
+
+    </tbody>
+</table>
+<!-- BEGIN showWebsiteAddDomain -->
+<button class="add domainModal" data-remote="/api/MultiSite/Domain/Add?website_id={MULTISITE_WEBSITE_ID}" data-target="DomainAdd" >{TXT_MULTISITE_WEBSITE_ADD_DOMAIN}</button>
+<!-- END showWebsiteAddDomain -->
+</div>
+<div aria-hidden="true" class="modal fade" id="DomainAdd" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content"></div>
+    </div>
+</div>
+<div aria-hidden="true" class="modal fade" id="DomainEdit" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content"></div>
+    </div>
+</div>
+<div aria-hidden="true" class="modal fade" id="DomainDelete" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content"></div>
+    </div>
+</div>
+<div aria-hidden="true" class="modal fade" id="DomainSpf" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content"></div>
+    </div>
+</div>
+
+<div aria-hidden="true" class="modal fade" id="SetMainDomain" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="grid-elm grid-align-1-1 grid-offset">
+                <form role="form" action="" id="multisite_website_domain_select">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h2>{TXT_CORE_MODULE_MULTISITE_WEBSITE_SELECT_MAIN_DOMAIN}</h2>
+                    <fieldset>
+                        <div class="row">
+                            {TXT_CORE_MODULE_MULTISITE_WEBSITE_MAIN_DOMAIN_CONTENT}
+                        </div>
+                        <div class="row">
+                            <button type="submit"  class="save loadingProcess" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}" >{TXT_CORE_MODULE_MULTISITE_SELECT}</button>
+                            <button type="button" class="cancel" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('#multisite_website_domain_select').submit(function() {
+          var apiUrl = '/api/MultiSite/Website/Domains?id=' + getQueryParams(document.location.search)['id'];
+          sendApiFormRequest('#multisite_website_domain_select', '#SetMainDomain','#multisite_website_domains', apiUrl);
+          return false;
+    });
+    jQuery('#SetMainDomain').modal('hide');
+    jQuery("input[name=mainDomain]:radio").change(function () {
+        jQuery('#SetMainDomain').modal('show');
+    });   
+    jQuery('.mainDomainModal').bind('click', function (event) {
+        var domainName = jQuery(this).data('domain'),
+            url        = jQuery(this).data('url');
+        jQuery('#multisite_website_domain_select').attr('action', url);
+        jQuery('#domainName').text(domainName);
+    });
+    
+    var defaultDomainId = jQuery('input:radio[name=mainDomain]:checked').data('domain');
+    jQuery('#SetMainDomain .close, #SetMainDomain .cancel').bind('click', function (event) {
+        jQuery('.mainDomainModal').each(function(){
+           if (jQuery(this).data('domain') === defaultDomainId) {
+               jQuery(this).prop('checked', true);
+               return false;
+           } 
+        });
+    });
+    
+    jQuery('.domainModal').bind('click', function (event) {
+      showRemoteModal({
+        modalId   : jQuery(this).data('target'),
+        remoteUrl : jQuery(this).data('remote'),
+      });
+    }); 
+    
+    var sorterTable   = ['website-domains']; // define unique classes for table sorter
+    addTableSorting(sorterTable); // init the table sorting
+});
+/* ]]> */
+</script>
+<!-- END showDomainsSection -->
+

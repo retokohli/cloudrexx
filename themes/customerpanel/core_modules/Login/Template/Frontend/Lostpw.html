@@ -1,0 +1,13 @@
+<div class="grid-elm grid-align-1-1 grid-offset-bottom">   
+    <p>{LOGIN_STATUS_MESSAGE}</p>
+    <form class="resetForm" role="form" method="post" action="{NODE_LOGIN_LOSTPW}">
+        <!-- BEGIN login_lost_password -->
+        <fieldset>   
+            <div class="row"><label for="email">{TXT_EMAIL}</label><input id="email" name="email" value="" type="text"><i>{TXT_LOST_PASSWORD_TEXT}</i></div>
+        </fieldset>   
+        <div class="grid-elm grid-align-1-2">
+            <input type="submit" name="restore_pw" value="{TXT_RESET_PASSWORD}" />
+        </div>
+        <!-- END login_lost_password -->          
+    </form>
+</div>

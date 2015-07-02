@@ -1,0 +1,60 @@
+<style type="text/css">
+/* <![CDATA[ */
+.functions{
+    float: right;
+    font-size: 1.2em;
+}
+.functions a{
+  color: inherit;
+  padding: 0 2px;
+}
+/* ]]> */
+</style>
+<div class="grid-elm grid-align-1-1 grid-offset"> 
+<!-- BEGIN showWebsiteAdminUsers -->
+<h2>{TXT_MULTISITE_WEBSITE_ADMINISTRATORS}</h2> 
+{ADMIN_USERS}
+<!-- END showWebsiteAdminUsers -->
+
+<!-- BEGIN showWebsiteAdminAddUser -->
+<button class="add" data-page="Add" data-user_id="" >{TXT_MULTISITE_WEBSITE_ADD_ACCOUNT}</button>
+<!-- END showWebsiteAdminAddUser -->
+</div>
+<div aria-hidden="true" class="modal fade" id="AdminAdd" role="dialog" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content"></div>
+  </div>
+</div>
+
+<div aria-hidden="true" class="modal fade" id="AdminEdit" role="dialog" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content"></div>
+  </div>
+</div>
+
+<div aria-hidden="true" class="modal fade" id="AdminDelete" role="dialog" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content"></div>
+  </div>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('table.adminlist tr').find('th').last().addClass('actions noSorting');    
+    jQuery('table.adminlist').prepend(
+        jQuery('<thead></thead>').append(jQuery('.adminlist tr:first').remove())
+    );
+    
+    var sorterTable   = ['adminlist']; // define unique classes for table sorter
+    addTableSorting(sorterTable); // init the table sorting  
+    
+    jQuery('.entypo-tools, .entypo-trash, .add ').bind('click', function (event) {
+      var remoteUrl = '/api/MultiSite/Admin/' + jQuery(this).data('page') +'?website_id={MULTISITE_WEBSITE_ID}&user_id='+ jQuery(this).data('user_id');
+      showRemoteModal({
+        modalId   : 'Admin' + jQuery(this).data('page'),
+        remoteUrl : remoteUrl,
+      });
+    });  
+});
+/* ]]> */
+</script>

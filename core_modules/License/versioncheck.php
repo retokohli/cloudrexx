@@ -1,4 +1,5 @@
 <?php
+return true;
 global $sessionObj, $_CONFIG, $_CORELANG, $objUser, $objDatabase;
 
 if (!isset($objUser) || !isset($objDatabase) || !isset($license)) {

@@ -1,0 +1,118 @@
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function(){
+    if (typeof(cx_multisite_options) == 'undefined') {
+        cx_multisite_options = {};
+    }
+    var options = {
+        address: '',
+        signUpUrl: '{MULTISITE_ADD_WEBSITE_URL}',
+        addressUrl: '{MULTISITE_ADDRESS_URL}',
+        multisiteDomain: '{MULTISITE_DOMAIN}',
+        headerInitTxt: '',
+        headerSetupTxt: '',
+        headerSuccessTxt: '',
+        headerErrorTxt: '',
+        messageErrorTxt: '{TXT_MULTISITE_BUILD_ERROR_MSG}',
+        messageBuildTxt: '{TXT_MULTISITE_BUILD_WEBSITE_MSG} <img src="{MULTISITE_PATH}/lib/javascript/jquery/jstree/themes/default/throbber.gif" />',
+        messageRedirectTxt: '',
+        IsPayment: '{TXT_MULTISITE_PAYMENT_MODE}',
+        callBackOnSuccess: function(response) {
+            jQuery('#SubscriptionAddWebsite').on('hidden.bs.modal', function () {
+                showMessage(response.message, 'success');//show success message
+                $selectedProduct = jQuery('#product_name').val();
+                if ((   jQuery('#multisite_trial_site').length > 0 
+                     || jQuery('#multisite_active_site').length > 0)
+                     && (jQuery.inArray($selectedProduct, ['Free', 'Trial']) >= 0)) {
+                    switch($selectedProduct) {
+                      case 'Trial':
+                        loadContent('#multisite_trial_site', '/api/MultiSite/Subscription/Trial?status=valid&include_product[]=1');
+                        break;
+                      case 'Free':
+                        loadContent('#multisite_active_site', '/api/MultiSite/Subscription/Active?status=valid&exclude_product[]=1');
+                        break;
+                      default:
+                        break;
+                    }
+                } else {
+                    window.location.href = '{NODE_MULTISITE_WEBSITE}?id='+response.websiteId;
+                } 
+            });
+            jQuery("#SubscriptionAddWebsite").modal('hide');
+       }
+    };
+    for (var option in options) {
+      cx_multisite_options[option] = options[option];
+    }
+    jQuery.getScript("{MULTISITE_PATH}/lib/javascript/jquery/bootstrapvalidator/js/bootstrapValidator.min.js", function() {
+        jQuery.getScript('{MULTISITE_PATH}/core_modules/MultiSite/View/Script/SignUp.js');
+    });
+
+});
+
+var validateAdress = function (value, validator, $field) {
+    var message = '';
+    if (!value.match(/^[a-z0-9]+$/)) {
+        message +=  'Im Domainnamen dürfen nur Kleinbuchstaben und Zahlen vorkommen.';
+    }
+    if (jQuery($field).data('server-msg') != true && jQuery($field).data('server-msg')){
+        message +=   jQuery($field).data('server-msg') ;
+    }
+    if (message != ''){
+        return {
+            valid: false,
+            message: message
+        };
+    }
+    return true;
+};
+
+/* ]]> */
+</script>
+<style type="text/css">
+/* <![CDATA[ */
+.multisite-status,
+.multisite-progress {
+    display: none;
+}
+/* ]]> */
+</style>
+<div class="grid-elm grid-align-1-1 grid-offset">
+    <div class="multisite-status"></div>
+    <div class="multisite-form">
+        <form role="form" id="multisite_signup_form">
+            <input type="hidden" id="product_id" name="product_id" value="{PRODUCT_ID}">
+            <input type="hidden" id="product_name" value="{PRODUCT_NAME}">
+            <input type="hidden" id="multisite_domain" value="{MULTISITE_DOMAIN}">
+            <input type="hidden" id="multisite_page_reload" value="{MULTISITE_RELOAD_PAGE}">
+
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h2>{TXT_MULTISITE_ADD_NEW_WEBSITE}</h2>
+            <fieldset>
+                <div class="row">
+
+                    <div class="form-group">
+                        <div class="input-group multisite-address">
+                            <input  data-bv-notempty="true" data-bv-notempty-message=" " data-bv-callback="true" data-bv-callback-callback="validateAdress"  id="multisite_address" name="multisite_address" type="text" title="{TXT_MULTISITE_SITE_ADDRESS_INFO}" class="form-control" value="" required="">
+                            <div class="input-group-addon">.{MULTISITE_DOMAIN}</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <button type="button" class="add multisite_submit">{TXT_MULTISITE_CREATE_WEBSITE}</button>
+                    <!-- BEGIN multisite_pay_button -->
+                    <button type="button" class="add multisite_pay">{TXT_MULTISITE_CREATE_WEBSITE}</button>
+                    <a data-href="" href="javascript:void();" class="multisite_pay_button hidden">{TXT_MULTISITE_ORDER_NOW}</a>
+                    <!-- END multisite_pay_button -->
+                    <button type="button" data-dismiss="modal">{TXT_MULTISITE_CLOSE}</button>
+                </div>
+
+            </fieldset>
+        </form>
+    </div>
+    <div class="modal-body multisite-progress">
+        <div></div>
+    </div>
+</div>
