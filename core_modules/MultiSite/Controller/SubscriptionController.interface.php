@@ -148,4 +148,30 @@ interface SubscriptionController {
      */
     public function deleteSite($domain);
 
+    /**
+     * Install the SSL Certificate for the domain
+     * 
+     * @param string $name                      Certificate name
+     * @param string $domain                    Domain name
+     * @param string $certificateSigningRequest certificate signing request
+     * @param string $certificatePrivateKey     certificate private key
+     * @param string $certificateBody           certificate body
+     * @param string $certificateAuthority      certificate authority
+     */
+    public function installSSLCertificate($name, $domain, $certificateSigningRequest, $certificatePrivateKey, $certificateBody = null, $certificateAuthority = null);
+    
+    /**
+     * Fetch the SSL Certificate details
+     * 
+     * @param string $domain domain name
+     */
+    public function getSSLCertificates($domain);
+    
+    /**
+     * Remove the SSL Certificate
+     * 
+     * @param string $name   certificate name
+     * @param string $domain domain name
+     */
+    public function removeSSLCertificate($name, $domain);
 }

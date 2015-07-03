@@ -408,5 +408,39 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         return true;
     }
     
+    /**
+     * Install the SSL Certificate for the domain
+     * 
+     * @param string $name                      Certificate name
+     * @param string $domain                    Domain name
+     * @param string $certificateSigningRequest certificate signing request
+     * @param string $certificatePrivateKey     certificate private key
+     * @param string $certificateBody           certificate body
+     * @param string $certificateAuthority      certificate authority
+     */
+    public function installSSLCertificate($name, $domain, $certificateSigningRequest, $certificatePrivateKey, $certificateBody = null, $certificateAuthority = null) {
+        \DBG::msg("MultiSite (XamppController): Install the SSL Certificate for the domain.");
+        return true;
+    }
 
+    /**
+     * Fetch the SSL Certificate details
+     * 
+     * @param string $domain domain name
+     */
+    public function getSSLCertificates($domain) {
+        \DBG::msg("MultiSite (XamppController): Fetch the SSL Certificate details.");
+        return true;
+    }
+    
+    /**
+     * Remove the SSL Certificate
+     * 
+     * @param string $name   certificate name
+     * @param string $domain domain name
+     */
+    public function removeSSLCertificate($name, $domain) {
+        \DBG::msg("MultiSite (XamppController): Fetch the SSL Certificate details.");
+        return true;
+    }
 }
