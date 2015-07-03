@@ -1,0 +1,124 @@
+<?php
+
+/**
+ * Class RewriteRule
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Project Team SS4U <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_routing
+ */
+
+namespace Cx\Core\Routing\Model\Entity;
+
+/**
+ * Class RewriteRule
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Project Team SS4U <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_routing
+ */
+class RewriteRule extends \Cx\Model\Base\EntityBase
+{
+    /**
+     * @var integer $id
+     */
+    protected $id;
+
+    /**
+     * Regex
+     * 
+     * @var string $regularExpression
+     */
+    protected $regularExpression;
+    
+    
+    /**
+     * Rewrite Status Code
+     * 
+     * @var integer
+     */
+    protected $rewriteStatusCode;
+
+    /**     
+     * @var boolean $continueOnMatch
+     */
+    protected $continueOnMatch;
+    
+    /**
+     * Get id
+     * 
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get Regular expression
+     * 
+     * @return string 
+     */
+    public function getRegularExpression()
+    {
+        return $this->regularExpression;
+    }
+
+    /**
+     * Get Rewrite Status Code
+     * 
+     * @return integer
+     */
+    function getRewriteStatusCode()
+    {
+        return $this->rewriteStatusCode;
+    }
+    
+    /**
+     * @return boolean
+     */
+    public function getContinueOnMatch()
+    {
+        return $this->continueOnMatch;
+    }
+
+    /**
+     * Set regular expression
+     * 
+     * @param string $regularExpression
+     */
+    public function setRegularExpression($regularExpression)
+    {
+        $this->regularExpression = $regularExpression;
+    }
+
+    /**
+     * Set the rewrite status code
+     * 
+     * @param integer $rewriteStatusCode
+     */
+    function setRewriteStatusCode($rewriteStatusCode)
+    {
+        $this->rewriteStatusCode = $rewriteStatusCode;
+    }
+    
+    /**
+     * Set continue on match
+     * 
+     * @param boolean $continueOnMatch
+     */
+    public function setContinueOnMatch($continueOnMatch)
+    {
+        $this->continueOnMatch = $continueOnMatch;
+    }
+    
+    /**
+     * Resolve
+     */
+    public function resolve(\Cx\Core\Routing\Url $url, &$continue)
+    {
+        
+    }
+}
