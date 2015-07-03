@@ -3078,24 +3078,32 @@ class NewsletterManager extends NewsletterLib
                 }
             } */
         } else {
+            $performRejectedMailOperation = false;
             if (strstr($mail->ErrorInfo, 'authenticate')) {
+                // -> smtp error
                 self::$strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_MAIL_AUTH_FAILED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
             } elseif (strstr($mail->ErrorInfo, 'from_failed')) {
+                // -> mail error
                 self::$strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_FROM_ADDR_REJECTED'], htmlentities($sender_email, ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
             } elseif (strstr($mail->ErrorInfo, 'recipients_failed')) {
+                // -> recipient error
+                $performRejectedMailOperation = true;
                 self::$strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_FAILED'], htmlentities($TargetEmail, ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
             } elseif (strstr($mail->ErrorInfo, 'instantiate')) {
+                // -> php error
                 self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_LOCAL_SMTP_FAILED'].'<br />';
             } elseif (strstr($mail->ErrorInfo, 'connect_host')) {
+                // -> smtp error
                 self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_CONNECT_SMTP_FAILED'].'<br />';
             } else {
+                // -> mail error
                 self::$strErrMessage .= $mail->ErrorInfo.'<br />';
             }
             $ReturnVar = false;
 
             if ($TmpEntry == 1) {
                 $arrSettings = $this->_getSettings();
-                if ($arrSettings['rejected_mail_operation']['setvalue'] != 'ignore') {
+                if ($performRejectedMailOperation && $arrSettings['rejected_mail_operation']['setvalue'] != 'ignore') {
                     switch ($arrSettings['rejected_mail_operation']['setvalue']) {
                         case 'deactivate':
                             // Remove temporary data from the module
