@@ -119,6 +119,19 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
      */
     public function resolve(\Cx\Core\Routing\Url $url, &$continue)
     {
+<<<<<<< Updated upstream
         
+=======
+        if (!$this->matches($url)) {
+            return $url;
+        }
+
+        $continue = $this->getContinueOnMatch();
+        $newUrl = \Cx\Core\Routing\Url::fromMagic(
+            $this->getRegularExpression()->replace($url->toString())
+        );
+        \DBG::log('Redirecting to ' . $newUrl->toString());
+        return $newUrl;
+>>>>>>> Stashed changes
     }
 }
