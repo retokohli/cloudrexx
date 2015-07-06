@@ -87,11 +87,11 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
     /**
      * Set regular expression
      * 
-     * @param string $regularExpression
+     * @param \Helpers\RegularExpression $regularExpression
      */
-    public function setRegularExpression($regularExpression)
+    public function setRegularExpression(\Helpers\RegularExpression $regularExpression)
     {
-        $this->regularExpression = $regularExpression;
+        $this->regularExpression = $regularExpression->getRegex();
     }
 
     /**

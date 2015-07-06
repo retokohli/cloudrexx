@@ -9,7 +9,7 @@
  * @subpackage  lib_helpers
  */
 
-namespace Cx\Lib\Helpers;
+namespace Helpers;
 
 /**
  * Class RegularExpression

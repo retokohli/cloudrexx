@@ -4813,3 +4813,10 @@ CREATE TABLE `contrexx_voting_system` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
+CREATE TABLE `contrexx_core_rewrite_rule` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `regularExpression` varchar(255) NOT NULL,
+  `rewriteStatusCode` int(11) NOT NULL,
+  `continueOnMatch` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
