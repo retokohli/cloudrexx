@@ -174,7 +174,11 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
             if (\Cx\Lib\FileSystem\FileSystem::exists($this->sessionPath)) {
                 \Cx\Lib\FileSystem\FileSystem::delete_folder($this->sessionPath, true);
             }
-
+            
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $evm = $cx->getEvents();
+            $evm->triggerEvent('csrfDestroy', array('sessionId' => $aKey));
+            
             if ($destroyCookie) {
                 setcookie("PHPSESSID", '', time() - 3600, '/');
             }
@@ -548,8 +552,44 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
      * @return bool
      */
     function gc($maxlifetime) {
-        \Env::get('db')->Execute('DELETE s.*, v.* FROM `' . DBPREFIX . 'sessions` AS s, `' . DBPREFIX . 'session_variable` AS v WHERE s.sessionid = v.sessionid AND ((`s`.`remember_me` = 0) AND (`s`.`lastupdated` < ' . (time() - $this->defaultLifetime) . '))');
-        \Env::get('db')->Execute('DELETE s.*, v.* FROM `' . DBPREFIX . 'sessions` AS s, `' . DBPREFIX . 'session_variable` AS v WHERE s.sessionid = v.sessionid AND ((`s`.`remember_me` = 1) AND (`s`.`lastupdated` < ' . (time() - $this->defaultLifetimeRememberMe) . '))');
+        $db = \Env::get('db');
+        $sessoinIds = array();
+        $objResult  = $db->Execute('
+            SELECT 
+                s.sessionid As sessionId
+            FROM 
+                `' . DBPREFIX . 'sessions` AS s
+            LEFT JOIN 
+                `' . DBPREFIX . 'session_variable` AS v
+            ON
+                s.sessionid = v.sessionid 
+            WHERE 
+               (((`s`.`remember_me` = 0) AND (`s`.`lastupdated` < ' . (time() - $this->defaultLifetime) . '))
+               OR
+               ((`s`.`remember_me` = 1) AND (`s`.`lastupdated` < ' . (time() - $this->defaultLifetimeRememberMe) . ')))
+                ');
+        if ($objResult && $objResult->RecordCount() > 0) {
+            $evm = \Cx\Core\Core\Controller\Cx::instanciate()->getEvents();
+
+            while (!$objResult->EOF) {
+                $sessionId = $objResult->fields['sessionId'];
+                array_push($sessoinIds, $sessionId);
+                $evm->triggerEvent('csrfDestroy', array('sessionId' => $sessionId));
+                $objResult->MoveNext();
+            }
+        }
+        if (!empty($sessoinIds)) {
+            $db->Execute('DELETE 
+                            s.*, 
+                            v.* 
+                          FROM 
+                            `' . DBPREFIX . 'sessions` AS s, 
+                            `' . DBPREFIX . 'session_variable` AS v 
+                          WHERE 
+                            s.sessionid 
+                          IN
+                          ("' . implode('", "', $sessoinIds) . '")');
+        }
         return true;
     }
 
@@ -899,5 +939,15 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
         }
         
         return true;
+    }
+    
+    /**
+     * Get session id
+     *  
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->sessionid;
     }
 }

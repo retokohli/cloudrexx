@@ -1,0 +1,25 @@
+Cx\Core\Csrf\Model\Entity\Csrf:
+  type: entity
+  repositoryClass: Cx\Core\Csrf\Model\Repository\CsrfRepository
+  table: core_csrf
+  
+  id:
+    id:
+      type: integer
+      generator: 
+        strategy: AUTO
+  fields:
+    sessionId:
+      type: string
+      length: 32
+      column: session_id
+    token:
+        type: string
+        length: 32
+    count:
+        type: decimal
+        precision: 4
+        scale: 2
+  uniqueConstraints:
+    unique_token_idx:
+      columns: [ session_id, token ]

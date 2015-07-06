@@ -64,13 +64,13 @@ class Csrf {
     private static $already_added_code = false;
     private static $already_checked    = false;
 
-    private static $sesskey = '__csrf_data__';
     private static $formkey = 'csrf';
 
     private static $current_code = NULL;
 
     private static $frontend_mode = false;
 
+    private static $csrfRepo;
 
     private static function __get_code()
     {
@@ -375,14 +375,23 @@ class Csrf {
         return htmlspecialchars(contrexx_stripslashes($str), ENT_QUOTES, CONTREXX_CHARSET);
     }
 
-
+    /**
+     * Reduce the csrf Tokens count 
+     * 
+     * @param string $code
+     */
     private static function __reduce($code)
     {
-        foreach ($_SESSION[self::$sesskey] as $key => $value) {
-            $_SESSION[self::$sesskey][$key] = $_SESSION[self::$sesskey][$key] -
-                ($code == $key
-                    ? self::$active_decrease : self::$unused_decrease);
+        self::initCsrf();
+        $csrfArray = self::$csrfRepo->findBySessionId($_SESSION->getId());
+        if (empty($csrfArray)) {
+            return;
         }
+        foreach ($csrfArray as $csrf) {
+            $count = $csrf->getCount() - ($csrf->getToken() == $code ? self::$active_decrease : self::$unused_decrease);
+            $csrf->setCount($count);
+        }
+        \Env::get('em')->flush();
     }
 
 
@@ -393,32 +402,72 @@ class Csrf {
              && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest');
     }
 
-
+    /*
+     * Remove the token
+     * 
+     * @return null 
+     */
     private static function __cleanup()
     {
-        foreach ($_SESSION[self::$sesskey] as $key => $count) {
-            if ($count < 0) {
-                unset($_SESSION[self::$sesskey][$key]);
+        self::initCsrf();
+        $csrfArray = self::$csrfRepo->findBySessionId($_SESSION->getId());
+        if (empty($csrfArray)) {
+            return;
+        }
+        
+        $needFlush = false;
+        foreach ($csrfArray as $csrf) {
+            if ($csrf->getCount() < 0) {
+                \Env::get('em')->remove($csrf);                
+                $needFlush = true;
             }
         }
+        if ($needFlush) {
+            \Env::get('em')->flush();
+        }
     }
 
-
+    /**
+     * Get the specified token
+     * 
+     * @param string $key
+     * @return string
+     */
     private static function __getkey($key)
     {
-        return !empty($_SESSION[self::$sesskey][$key]);
+        self::initCsrf();
+        return self::$csrfRepo->findBy(array('sessionId' => $_SESSION->getId(), 'token' => $key));
     }
 
-
-    private static function __setkey($key, $value)
+    /**
+     * Add the token
+     * 
+     * @param string $key
+     * @param string $count 
+     */
+    private static function __setkey($key, $count)
     {
-        if (!isset($_SESSION[self::$sesskey])) {
-            \cmsSession::getInstance();
-            $_SESSION[self::$sesskey] = array();
-        }
-        $_SESSION[self::$sesskey][$key] = $value;
+        self::initCsrf();
+        $csrf = new \Cx\Core\Csrf\Model\Entity\Csrf();
+        $csrf->setSessionId($_SESSION->getId());
+        $csrf->setToken($key);
+        $csrf->setCount($count); 
+        \Env::get('em')->persist($csrf);
+        \Env::get('em')->flush();
     }
+    
+    /**
+     * initialize the csrf 
+     */
+    private static function initCsrf()
+    {
+        if (self::$csrfRepo) {
+            return;
+        }        
+        \cmsSession::getInstance();
 
+        self::$csrfRepo = \Env::get('em')->getRepository('Cx\Core\Csrf\Model\Entity\Csrf');        
+    }
 
     private static function __is_logged_in()
     {

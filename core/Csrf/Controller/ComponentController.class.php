@@ -20,12 +20,23 @@ namespace Cx\Core\Csrf\Controller;
  */
 
 
-class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController 
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener
 {
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
         return array();
+    }
+
+    /**
+     * Register the Event listeners
+     */
+    public function registerEventListeners()
+    {
+        $evm = \Env::get('cx')->getEvents();
+
+        $evm->addEvent('csrfDestroy');
+        $evm->addEventListener('csrfDestroy', $this);
     }
 
     /**
@@ -76,5 +87,32 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         Csrf::add_placeholder($objTemplate);
                
     }
-}
+    
+    /**
+     * To call the event
+     * 
+     * @param string $eventName function name
+     * @param array  $eventArgs arguments
+     */
+    public function onEvent($eventName, array $eventArgs) {
+        switch ($eventName) {
+            case 'csrfDestroy':
+                $em = \Env::get('em');
+                $sessionId = isset($eventArgs['sessionId']) ? $eventArgs['sessionId'] : '';
+                if (empty($sessionId)) {
+                    break;
+                }
+                $csrfs = $em->getRepository('Cx\Core\Csrf\Model\Entity\Csrf')->findBySessionId($sessionId);
+                if ($csrfs) {
+                    foreach ($csrfs as $csrf) {
+                        $em->remove($csrf);
+                    }
+                }
+                $em->flush();
+                break;
+            default:
+                break;
+        }
+    }
 
+}
