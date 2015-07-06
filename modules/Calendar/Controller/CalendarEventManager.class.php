@@ -794,13 +794,30 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
             if(($objEvent->registration == 1) && (time() <= $objEvent->startDate)) {  
                 
                 if($numRegistrations < $objEvent->numSubscriber || $objEvent->external == 1) {
-                    $regLink = '<a href="'.$hostUri. '/' .CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
+                    $regLinkSrc = $hostUri. '/' .CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate;
+                    $regLink = '<a href="'.$regLinkSrc.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
+                    $objTpl->setVariable(array(
+                        $this->moduleLangVar.'_EVENT_REGISTRATION_LINK'    => $regLink,
+                        $this->moduleLangVar.'_EVENT_REGISTRATION_LINK_SRC'=> $regLinkSrc,
+                    ));
+                    if ($objTpl->blockExists('calendarEventRegistrationOpen')) {
+                        $objTpl->parse('calendarEventRegistrationOpen');
+                    }
+                    if ($objTpl->blockExists('calendarEventRegistrationClosed')) {
+                        $objTpl->hideBlock('calendarEventRegistrationClosed');
+                    }
                 } else {
                     $regLink = '<i>'.$_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'].'</i>';
+                    $objTpl->setVariable(array(
+                        $this->moduleLangVar.'_EVENT_REGISTRATION_LINK'    => $regLink,
+                    ));
+                    if ($objTpl->blockExists('calendarEventRegistrationOpen')) {
+                        $objTpl->hideBlock('calendarEventRegistrationOpen');
+                    }
+                    if ($objTpl->blockExists('calendarEventRegistrationClosed')) {
+                        $objTpl->touchBlock('calendarEventRegistrationClosed');
+                    }
                 }
-                $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_EVENT_REGISTRATION_LINK'    => $regLink,
-                ));
                 
                 $objTpl->parse('calendarEventRegistration');
             } else {   
