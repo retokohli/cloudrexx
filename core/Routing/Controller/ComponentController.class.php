@@ -23,8 +23,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
         return array('Backend');
-<<<<<<< Updated upstream
-=======
     }
 
     public function preResolve(\Cx\Core\Routing\Url $url) {
@@ -42,6 +40,5 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($originalUrl->toString() != $url->toString()) {
             \Cx\Lib\CSRF::header('Location: ' . $url->toString(), true, $rewriteRule->getRewriteStatusCode());
         }
->>>>>>> Stashed changes
     }    
 }
