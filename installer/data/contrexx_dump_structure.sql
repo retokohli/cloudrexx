@@ -3594,3 +3594,11 @@ CREATE TABLE `contrexx_voting_system` (
   `additional_comment` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_core_csrf` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `session_id` varchar(32) NOT NULL,
+  `token` varchar(32) NOT NULL,
+  `count` decimal(4,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_token_idx` (`session_id`,`token`)
+) ENGINE=InnoDB;
