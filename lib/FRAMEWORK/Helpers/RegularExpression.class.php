@@ -9,7 +9,7 @@
  * @subpackage  lib_helpers
  */
 
-namespace Helpers;
+namespace Cx\Lib\Helpers;
 
 /**
  * Class RegularExpression
@@ -36,6 +36,23 @@ class RegularExpression
     protected $replacement;
     
     /**
+     * Delimiter
+     * 
+     * @var string 
+     */
+    protected $delimiter;
+
+    /**
+     * Contructor for RegularExpression
+     * 
+     * @param string $regex Regular expression
+     */
+    public function __construct($regex)
+    {
+        $this->regex = $regex;
+    }
+
+    /**
      * Getter for $regex
      * 
      * @return string
@@ -54,7 +71,17 @@ class RegularExpression
     {
         return $this->replacement;
     }
-
+    
+    /**
+     * Getter for Delimiter
+     * 
+     * @return string
+     */
+    function getDelimiter()
+    {
+        return $this->delimiter;
+    }
+    
     /**
      * Set the regular expression
      * 
@@ -64,7 +91,7 @@ class RegularExpression
     {
         $this->regex = $regex;
     }
-
+    
     /**
      * Set the replacement string
      * 
@@ -73,6 +100,16 @@ class RegularExpression
     function setReplacement($replacement)
     {
         $this->replacement = $replacement;
+    }
+    
+    /**
+     * Set the delimiter
+     * 
+     * @param string $delimiter
+     */
+    function setDelimiter($delimiter)
+    {
+        $this->delimiter = $delimiter;
     }
 
     /**
@@ -97,5 +134,15 @@ class RegularExpression
     function replace($input)
     {
         return preg_replace($this->regex, $this->replacement, $input);
+    }
+    
+    /**
+     * Return the regular expression string($this->regex)
+     * 
+     * @return string Return the regular expression string($this->regex)
+     */
+    function __toString()
+    {
+        return $this->regex;
     }
 }

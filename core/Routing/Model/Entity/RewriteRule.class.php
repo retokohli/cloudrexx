@@ -29,7 +29,7 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
     /**
      * Regex
      * 
-     * @var string $regularExpression
+     * @var \Cx\Lib\Helpers\RegularExpression $regularExpression
      */
     protected $regularExpression;
     
@@ -59,7 +59,7 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
     /**
      * Get Regular expression
      * 
-     * @return string 
+     * @return \Cx\Lib\Helpers\RegularExpression 
      */
     public function getRegularExpression()
     {
@@ -87,11 +87,15 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
     /**
      * Set regular expression
      * 
-     * @param \Helpers\RegularExpression $regularExpression
+     * @param mixed $regularExpression \Cx\Lib\Helpers\RegularExpression or string
      */
-    public function setRegularExpression(\Helpers\RegularExpression $regularExpression)
+    public function setRegularExpression($regularExpression)
     {
-        $this->regularExpression = $regularExpression->getRegex();
+        if (!($regularExpression instanceof \Cx\Lib\Helpers\RegularExpression)) {
+            $regularExpression = new \Cx\Lib\Helpers\RegularExpression($regularExpression);
+        }
+        
+        $this->regularExpression = $regularExpression;
     }
 
     /**
