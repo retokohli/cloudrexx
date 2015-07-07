@@ -1930,4 +1930,54 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         return true;
     }
     
+    /**
+     * Check whether the site exists by domain name and subscription id
+     * 
+     * @return integer site id by its domain name
+     * 
+     * @throws ApiRequestException
+     */
+    public function checkSiteExistsByName($domainName, $subscriptionId) {
+        \DBG::msg("MultiSite (PleskController): Check whether the domain exists in the existing subscription.");
+        if (empty($domainName) || empty($subscriptionId)) {
+            return false;
+        }
+
+        $xmldoc  = $this->getXmlDocument();
+        $packet  = $this->getRpcPacket($xmldoc); 
+
+        $site = $xmldoc->createElement('site');
+        $packet->appendChild($site);
+
+        $get = $xmldoc->createElement('get');
+        $site->appendChild($get); 
+
+        $filter = $xmldoc->createElement('filter');
+        $get->appendChild($filter);
+
+        $filterNameTag = $xmldoc->createElement('name', $domainName);
+        $filter->appendChild($filterNameTag);
+
+        $filterTag = $xmldoc->createElement('parent-id', $subscriptionId);
+        $filter->appendChild($filterTag);
+
+        $dataset = $xmldoc->createElement('dataset');
+        $get->appendChild($dataset);
+
+        $genInfo = $xmldoc->createElement('gen_info');
+        $dataset->appendChild($genInfo);
+
+        $response = $this->executeCurl($xmldoc);
+
+        $resultNode = $response->site->get->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Check whether the domain exists in the existing subscription: {$error}");
+        }
+        
+        return $resultNode->id;
+    }
 }

@@ -147,5 +147,13 @@ interface SubscriptionController {
      * @param string $domain Domain name to remove
      */
     public function deleteSite($domain);
+    
+    /**
+     * Check whether the site exists by domain name and subscription id.
+     * 
+     * @param string $domainName Domain name to check site
+     * @param integer $subscriptionId Subscription id to check site under particular subscription
+     */
+    public function checkSiteExistsByName($domainName, $subscriptionId);
 
 }

@@ -169,6 +169,8 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             'websiteUpdate' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'sendUpdateNotification' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'updateWebsiteCodeBase' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'getDomainSslCertificate' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'linkSsl'                 => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth'))
         );  
     }
 
@@ -6946,5 +6948,94 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_ERROR_MSG']);
         }
     }
-
+    
+    /**
+     * Fetch the SSL Certificate details from website controller
+     * 
+     * @param array $params supplied arguments from JsonData-request
+     * 
+     * @return array JsonData-response
+     * @throws MultiSiteJsonException
+     */
+    public function getDomainSslCertificate($params)
+    {
+        global $_ARRAYLANG;
+        
+        if (empty($params['post']) || empty($params['post']['domainName'])) {
+            \DBG::msg('JsonMultiSiteController::getDomainSslCertificate() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SSL_FAILED']);
+        }
+        try {                        
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
+                case ComponentController::MODE_SERVICE:
+                case ComponentController::MODE_HYBRID:
+                    $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+                    $sslCertificates   = $hostingController->getSSLCertificates($params['post']['domainName']);
+                    if ($sslCertificates) {
+                        return array('status' => 'success', 'sslCertificate' => $sslCertificates);
+                    }
+                    break;
+                default :
+                    break;
+            }
+            return array('status' => 'error');
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SSL_FAILED']);
+        }
+    }
+    
+    /**
+     * Link SSL certificate with the domain
+     * 
+     * @param  array $params     supplied arguments from JsonData-request
+     * 
+     * @return array JsonData-response
+     * @throws MultiSiteJsonException
+     */
+    public function linkSsl($params)
+    {
+        global $_ARRAYLANG;
+        
+        if (   empty($params['post']) 
+            || empty($params['post']['domainName']) 
+            || empty($params['post']['subscriptionId'])
+            || empty($params['post']['certificateName']) 
+            || empty($params['post']['privateKey']) 
+        ) {
+            \DBG::msg('JsonMultiSiteController::linkSsl() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SSL_FAILED']);
+        }
+        try {                        
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
+                case ComponentController::MODE_SERVICE:
+                case ComponentController::MODE_HYBRID:
+                    $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
+                    
+                    $isSiteExists = $hostingController->checkSiteExistsByName($params['post']['domainName'], $params['post']['subscriptionId']);
+                    
+                    if (!$isSiteExists) {
+                        $hostingController->createSite($params['post']['domainName'], $params['post']['subscriptionId']);                        
+                    }
+                                        
+                    $installSslCertificate = $hostingController->installSSLCertificate(
+                                                                        $params['post']['certificateName'], 
+                                                                        $params['post']['domainName'], 
+                                                                        $params['post']['certificate'], 
+                                                                        $params['post']['privateKey'],
+                                                                        null, 
+                                                                        $params['post']['caCertificate']);   
+                    return $installSslCertificate
+                           ? array('status' => 'success')
+                           : array('status' => 'error');
+                    break;
+                default :
+                    break;
+            }
+            return array('status' => 'error');
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SSL_FAILED']);
+        }
+    }
 }
