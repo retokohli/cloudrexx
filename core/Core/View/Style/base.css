@@ -1182,7 +1182,7 @@ table tr.reset td {
     font-weight: bold;
 }
 body #content input[type=button],
-body #content button,
+body #content button:not(.ace_searchbtn),
 body #navigation_wrapper input[type=button],
 body #content input[type=reset],
 body #navigation_wrapper input[type=reset],
