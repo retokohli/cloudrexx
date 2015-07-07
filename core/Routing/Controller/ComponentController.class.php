@@ -32,13 +32,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $last = false;
         $originalUrl = clone $url;
         foreach ($rewriteRules as $rewriteRule) {
-            $url = $rewriteRule->resolve($this->url, $last);
+            $url = $rewriteRule->resolve($url, $last);
             if ($last) {
                 break;
             }
         }
         if ($originalUrl->toString() != $url->toString()) {
-            \Cx\Lib\CSRF::header('Location: ' . $url->toString(), true, $rewriteRule->getRewriteStatusCode());
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . $url->toString(), true, $rewriteRule->getRewriteStatusCode());
+            die();
         }
     }    
 }

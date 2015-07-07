@@ -63,6 +63,10 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
      */
     public function getRegularExpression()
     {
+        if (!($this->regularExpression instanceof \Cx\Lib\Helpers\RegularExpression)) {
+            $this->regularExpression = new \Cx\Lib\Helpers\RegularExpression($this->regularExpression);
+        }
+        
         return $this->regularExpression;
     }
 
@@ -116,6 +120,11 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
     public function setContinueOnMatch($continueOnMatch)
     {
         $this->continueOnMatch = $continueOnMatch;
+    }
+
+    public function matches(\Cx\Core\Routing\Url $url)
+    {
+        return $this->getRegularExpression()->match($url->toString());
     }
     
     /**

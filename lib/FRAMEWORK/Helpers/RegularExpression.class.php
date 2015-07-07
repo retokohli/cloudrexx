@@ -26,7 +26,7 @@ class RegularExpression
      * 
      * @var string 
      */
-    protected $regex;
+    protected $regex = '';
     
     /**
      * Replacement string
@@ -34,13 +34,20 @@ class RegularExpression
      * @var string
      */
     protected $replacement;
+
+    /**
+     * Wheter this regex has a replacement or not
+     *
+     * @var boolean
+     */
+    protected $hasReplacement = false;
     
     /**
      * Delimiter
      * 
      * @var string 
      */
-    protected $delimiter;
+    protected $delimiter = '/';
     
     /**
      * Flags
@@ -59,25 +66,21 @@ class RegularExpression
         if (empty($regex)) {
             return;
         }
-        
-        $delimeter = $expression = $replacement = null;
-        $flags     = array();
-        
-        $matches = preg_split('/[\/#~+%]/m', $regex, -1);        
-        if (empty($matches[0])) {
-            $delimeter = substr($regex, 0, 1);
-            array_shift($matches);
 
-            list($expression, $replacement) = $matches;
-            $flags = count($matches) > 2 ? array_slice($matches, 2) : array();            
+        $this->delimiter = substr($regex, 0, 1);
+        $parts = explode($this->delimiter, $regex);
+
+        $this->regex = $parts[1];
+        if (count($parts) == 3) {
+            $this->flags = str_split($parts[2]);
+            $this->hasReplacement = false;
+        } else if (count($parts) == 4) {
+            $this->replacement = $parts[2];
+            $this->hasReplacement = true;
+            $this->flags = str_split($parts[3]);
         } else {
-            $expression = $regex;
+            throw new \Exception('Illegal regex syntax');
         }
-
-        $this->regex       = $expression;
-        $this->replacement = $replacement;
-        $this->delimiter   = $delimeter;
-        $this->flags       = $flags;
     }
 
     /**
@@ -138,6 +141,7 @@ class RegularExpression
     function setReplacement($replacement)
     {
         $this->replacement = $replacement;
+        $this->hasReplacement = true;
     }
     
     /**
@@ -169,7 +173,7 @@ class RegularExpression
      */
     function match($input)
     {
-        return preg_match($this->regex, $input, $matches);
+        return preg_match($this->delimiter . $this->regex . $this->delimiter, $input, $matches);
     }
     
     /**
@@ -181,7 +185,10 @@ class RegularExpression
      */
     function replace($input)
     {
-        return preg_replace($this->regex, $this->replacement, $input);
+        if (!$this->hasReplacement) {
+            throw new \Exception('Nothing to replace with');
+        }
+        return preg_replace($this->delimiter . $this->regex . $this->delimiter, $this->replacement, $input);
     }
     
     /**
@@ -191,13 +198,11 @@ class RegularExpression
      */
     function __toString()
     {
-        $regularExpression = array_merge(
-                                array(
-                                    $this->regex,
-                                    $this->replacement
-                                ),
-                                $this->flags
-                             );
-        return $this->delimiter . implode($this->delimiter, $regularExpression);
+        $regularExpression = $this->delimiter . $this->regex . $this->delimiter;
+        if ($this->hasReplacement) {
+            $regularExpression .= $this->replacement . $this->delimiter;
+        }
+        $regularExpression .= implode('', $this->flags);
+        return $regularExpression;
     }
 }
