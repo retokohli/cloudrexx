@@ -41,15 +41,43 @@ class RegularExpression
      * @var string 
      */
     protected $delimiter;
+    
+    /**
+     * Flags
+     * 
+     * @var array
+     */
+    protected $flags = array();
 
     /**
      * Contructor for RegularExpression
      * 
      * @param string $regex Regular expression
      */
-    public function __construct($regex)
+    public function __construct($regex = '')
     {
-        $this->regex = $regex;
+        if (empty($regex)) {
+            return;
+        }
+        
+        $delimeter = $expression = $replacement = null;
+        $flags     = array();
+        
+        $matches = preg_split('/[\/#~+%]/m', $regex, -1);        
+        if (empty($matches[0])) {
+            $delimeter = substr($regex, 0, 1);
+            array_shift($matches);
+
+            list($expression, $replacement) = $matches;
+            $flags = count($matches) > 2 ? array_slice($matches, 2) : array();            
+        } else {
+            $expression = $regex;
+        }
+
+        $this->regex       = $expression;
+        $this->replacement = $replacement;
+        $this->delimiter   = $delimeter;
+        $this->flags       = $flags;
     }
 
     /**
@@ -80,6 +108,16 @@ class RegularExpression
     function getDelimiter()
     {
         return $this->delimiter;
+    }
+
+    /**
+     * Getter for flags
+     * 
+     * @return array
+     */
+    function getFlags()
+    {
+        return $this->flags;
     }
     
     /**
@@ -113,6 +151,16 @@ class RegularExpression
     }
 
     /**
+     * Set the flags
+     * 
+     * @param array $flags
+     */
+    function setFlags($flags)
+    {
+        $this->flags = $flags;
+    }
+    
+    /**
      * Match the input string with regular expression
      * 
      * @param string $input Input string
@@ -137,12 +185,19 @@ class RegularExpression
     }
     
     /**
-     * Return the regular expression string($this->regex)
+     * Return the regular expression concatenated by delimiter
      * 
-     * @return string Return the regular expression string($this->regex)
+     * @return string Return the regular expression concatenated by delimiter
      */
     function __toString()
     {
-        return $this->regex;
+        $regularExpression = array_merge(
+                                array(
+                                    $this->regex,
+                                    $this->replacement
+                                ),
+                                $this->flags
+                             );
+        return $this->delimiter . implode($this->delimiter, $regularExpression);
     }
 }
