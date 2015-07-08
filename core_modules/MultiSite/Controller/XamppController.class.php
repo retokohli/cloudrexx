@@ -409,13 +409,10 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
-     * Check whether the site exists by domain name and subscription id.
-     * 
-     * @param string $domainName Domain name to check site
-     * @param integer $subscriptionId Subscription id to check site under particular subscription
-     */
-    public function checkSiteExistsByName($domainName, $subscriptionId) {
-        \DBG::msg("MultiSite (XamppController): Check whether the domain exists in the existing subscription.");
+     * Get all the sites under the existing subscription
+    */
+    public function getAllSites() {
+        \DBG::msg("MultiSite (XamppController): Get all sites on existing subscription.");
         return true;
     }
 

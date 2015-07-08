@@ -1169,14 +1169,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     
                     case 'Ssl':
                         $command = 'linkSsl';
-                        $subscription = self::getSubscriptionByWebsiteId($websiteId);
-                        $subscriptionId = $subscription ? $subscription->getId() : '';
                         $params = array(
-                            'subscriptionId' => $subscriptionId,
                             'domainName'     => $domainName,
                             'certificateName' => isset($_POST['certificate_name']) ? $_POST['certificate_name'] : '',
                             'privateKey'      => isset($_POST['private_key']) ? $_POST['private_key'] : '',
-                            'certificate'     => isset($_POST['certificate_name']) ? $_POST['certificate_name'] : '',
+                            'certificate'     => isset($_POST['certificate']) ? $_POST['certificate'] : '',
                             'caCertificate'   => isset($_POST['ca_certificate']) ? $_POST['ca_certificate'] : '' ,
                         );
                         break;

@@ -1931,17 +1931,14 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
-     * Check whether the site exists by domain name and subscription id
+     * Get all the sites under the existing subscription
      * 
-     * @return integer site id by its domain name
+     * @return array $siteList Name of all the sites under the subscription
      * 
      * @throws ApiRequestException
      */
-    public function checkSiteExistsByName($domainName, $subscriptionId) {
-        \DBG::msg("MultiSite (PleskController): Check whether the domain exists in the existing subscription.");
-        if (empty($domainName) || empty($subscriptionId)) {
-            return false;
-        }
+    public function getAllSites() {
+        \DBG::msg("MultiSite (PleskController): Get all sites under the existing subscription.");
 
         $xmldoc  = $this->getXmlDocument();
         $packet  = $this->getRpcPacket($xmldoc); 
@@ -1955,10 +1952,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $filter = $xmldoc->createElement('filter');
         $get->appendChild($filter);
 
-        $filterNameTag = $xmldoc->createElement('name', $domainName);
-        $filter->appendChild($filterNameTag);
-
-        $filterTag = $xmldoc->createElement('parent-id', $subscriptionId);
+        $filterTag = $xmldoc->createElement('parent-id', $this->webspaceId);
         $filter->appendChild($filterTag);
 
         $dataset = $xmldoc->createElement('dataset');
@@ -1969,15 +1963,24 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
 
         $response = $this->executeCurl($xmldoc);
 
-        $resultNode = $response->site->get->result;
+        $resultNode  = $response->site->get->result;
         $systemError = $response->system->errtext;
         if ('error' == (string) $resultNode->status || $systemError) {
             \DBG::dump($xmldoc->saveXML());
             \DBG::dump($response);
             $error = (isset($systemError) ? $systemError : $resultNode->errtext);
-            throw new ApiRequestException("Check whether the domain exists in the existing subscription: {$error}");
+            throw new ApiRequestException("Get all sites on existing subscription: {$error}");
+        }
+
+        $responseJson = json_encode($response);
+        $respArr      = json_decode($responseJson, true);
+        $resultArr    = $respArr['site']['get']['result'];
+        
+        $siteList = array();
+        foreach ($resultArr as $result) {
+            $siteList[] = $result['data']['gen_info']['name'];
         }
         
-        return $resultNode->id;
+        return $siteList;
     }
 }

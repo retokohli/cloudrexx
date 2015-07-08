@@ -6950,7 +6950,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
     }
     
     /**
-     * Fetch the SSL Certificate details from website controller
+     * Fetch the SSL Certificate details from hosting controller
      * 
      * @param array $params supplied arguments from JsonData-request
      * 
@@ -6972,7 +6972,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
                     $sslCertificates   = $hostingController->getSSLCertificates($params['post']['domainName']);
                     if ($sslCertificates) {
-                        return array('status' => 'success', 'sslCertificate' => $sslCertificates);
+                        return array('status' => 'success', 'sslCertificate' => $sslCertificates[0]);
                     }
                     break;
                 default :
@@ -6999,7 +6999,6 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         
         if (   empty($params['post']) 
             || empty($params['post']['domainName']) 
-            || empty($params['post']['subscriptionId'])
             || empty($params['post']['certificateName']) 
             || empty($params['post']['privateKey']) 
         ) {
@@ -7012,19 +7011,18 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                 case ComponentController::MODE_HYBRID:
                     $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
                     
-                    $isSiteExists = $hostingController->checkSiteExistsByName($params['post']['domainName'], $params['post']['subscriptionId']);
+                    $siteList = $hostingController->getAllSites();
                     
-                    if (!$isSiteExists) {
-                        $hostingController->createSite($params['post']['domainName'], $params['post']['subscriptionId']);                        
+                    if (!in_array($params['post']['domainName'], $siteList)) {
+                        $hostingController->createSite($params['post']['domainName'], $hostingController->getWebspaceId()); 
                     }
                                         
                     $installSslCertificate = $hostingController->installSSLCertificate(
                                                                         $params['post']['certificateName'], 
                                                                         $params['post']['domainName'], 
-                                                                        $params['post']['certificate'], 
                                                                         $params['post']['privateKey'],
-                                                                        null, 
-                                                                        $params['post']['caCertificate']);   
+                                                                        $params['post']['certificate'], 
+                                                                        $params['post']['caCertificate']);  
                     return $installSslCertificate
                            ? array('status' => 'success')
                            : array('status' => 'error');
