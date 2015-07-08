@@ -32,6 +32,7 @@ abstract class PageTree {
     protected $currentPagePath = null;
     protected $pageRepo = null;
     protected $skipInvisible = true;
+    protected $considerLogin = true;
 
     /**
      * @param $entityManager the doctrine em
@@ -40,8 +41,10 @@ abstract class PageTree {
      * @param \Cx\Core\ContentManager\Model\Entity\Node $rootNode node to use as root
      * @param int $lang the language
      * @param \Cx\Core\ContentManager\Model\Entity\Page $currentPage if set, renderElement() will receive a correctly set $current flag.
+     * @param bool $skipInvisible value to skip invisible pages
+     * @param bool $considerLogin value to consider whether the user is logged in or not
      */
-    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null, $skipInvisible = true) {
+    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null, $skipInvisible = true, $considerLogin = true) {
         $this->lang = $lang;
         $this->depth = $maxDepth;
         $this->em = $entityManager;
@@ -49,6 +52,7 @@ abstract class PageTree {
         $this->rootNode = $rootNode;
         $this->currentPage = $currentPage;
         $this->skipInvisible = $skipInvisible;
+        $this->considerLogin = $considerLogin;
         $pageI = $currentPage;
         while ($pageI) {
             $this->pageIdsAtCurrentPath[] = $pageI->getId();
@@ -154,6 +158,18 @@ abstract class PageTree {
                     }
                 }
             }
+            
+            //if page is protected, protected pages are hidden and user has not 
+            //sufficent permissions, then hide all child elements from this page
+            if($page && $page->isFrontendProtected() && $_CONFIG['coreListProtectedPages'] != 'on' &&
+               !(
+                    \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true) && 
+                    $this->considerLogin
+                )
+            ){
+                $hasChilds = false;
+            }
+            
             if ($hasChilds && !$dontDescend) {
                 // add preRenderLevel to stack
                 $pageTree = $this;
@@ -176,7 +192,7 @@ abstract class PageTree {
             if (!$page || !$page->isActive() || !$page->isVisible()) {
                 continue;
             }
-
+            
             try {
                 $parentPage = $page->getParent();
                 // if parent is invisible or unpublished and parent node is not start node
@@ -191,7 +207,10 @@ abstract class PageTree {
             }
             // if page is protected, user has not sufficent permissions and protected pages are hidden
             if ($page->isFrontendProtected() && $_CONFIG['coreListProtectedPages'] != 'on' &&
-                !\Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true)
+                !(
+                    \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true) && 
+                    $this->considerLogin
+                )
             ) {
                 continue;
             }
