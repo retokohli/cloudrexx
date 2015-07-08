@@ -37,13 +37,13 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
     function getInputfield($intView, $arrInputfield, $intEntryId=null)
     {
         global $objDatabase, $_LANGID, $objInit;
-
+        
+        $intId = intval($arrInputfield['id']);
+        
         switch ($intView) {
             default:
             case 1:
-                //modify (add/edit) View
-                $intId = intval($arrInputfield['id']);
-
+                //modify (add/edit) View                
                 if(isset($intEntryId) && $intEntryId != 0) {
                     $objInputfieldValue = $objDatabase->Execute("
                         SELECT
@@ -114,6 +114,20 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
                 break;
             case 2:
                 //search View
+                $strOptions = empty($arrInputfield['default_value'][$_LANGID]) ? $arrInputfield['default_value'][0] : $arrInputfield['default_value'][$_LANGID];
+                $arrOptions = explode(",", $strOptions);
+                
+                $arrSelected = isset($_GET[$intId]) ? $_GET[$intId] : array();
+                $strChecked = '';
+                
+                foreach($arrOptions as $intKey => $strDefaultValue) {
+                    $intKey++;
+                    $strChecked = in_array($intKey, $arrSelected) ? 'checked="checked"' : '';
+
+                    $strInputfield .= '<input type="checkbox" name="'.$intId.'[]" " class="'.$this->moduleNameLC.'InputfieldSearch" id="'.$this->moduleNameLC.'InputfieldSearch_'. $intId .'_'. $intKey .'" value="'. $intKey.'" '. $strChecked .' /><label for="'.$this->moduleNameLC.'InputfieldSearch_'. $intId .'_'. $intKey .'">'. contrexx_raw2xhtml($strDefaultValue) .'</label>';
+                }
+                
+                return $strInputfield;
                 break;
         }
     }
