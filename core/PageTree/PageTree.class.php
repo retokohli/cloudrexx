@@ -32,7 +32,7 @@ abstract class PageTree {
     protected $currentPagePath = null;
     protected $pageRepo = null;
     protected $skipInvisible = true;
-    protected $emulateLogIn = true;
+    protected $considerLogin = true;
 
     /**
      * @param $entityManager the doctrine em
@@ -42,9 +42,9 @@ abstract class PageTree {
      * @param int $lang the language
      * @param \Cx\Core\ContentManager\Model\Entity\Page $currentPage if set, renderElement() will receive a correctly set $current flag.
      * @param bool $skipInvisible value to skip invisible pages
-     * @param bool $emulateLogIn emulate if the user is logged in or not
+     * @param bool $considerLogin value to consider whether the user is logged in or not
      */
-    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null, $skipInvisible = true, $emulateLogIn = true) {
+    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null, $skipInvisible = true, $considerLogin = true) {
         $this->lang = $lang;
         $this->depth = $maxDepth;
         $this->em = $entityManager;
@@ -52,7 +52,7 @@ abstract class PageTree {
         $this->rootNode = $rootNode;
         $this->currentPage = $currentPage;
         $this->skipInvisible = $skipInvisible;
-        $this->emulateLogIn = $emulateLogIn;
+        $this->considerLogin = $considerLogin;
         $pageI = $currentPage;
         while ($pageI) {
             $this->pageIdsAtCurrentPath[] = $pageI->getId();
@@ -164,7 +164,7 @@ abstract class PageTree {
             if($page && $page->isFrontendProtected() && $_CONFIG['coreListProtectedPages'] != 'on' &&
                !(
                     \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true) && 
-                    $this->emulateLogIn
+                    $this->considerLogin
                 )
             ){
                 $hasChilds = false;
@@ -209,7 +209,7 @@ abstract class PageTree {
             if ($page->isFrontendProtected() && $_CONFIG['coreListProtectedPages'] != 'on' &&
                 !(
                     \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true) && 
-                    $this->emulateLogIn
+                    $this->considerLogin
                 )
             ) {
                 continue;

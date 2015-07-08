@@ -38,14 +38,14 @@ class XmlSitemapPageTree extends PageTree {
      * @param type $lang
      * @param type $currentPage
      * @param type $skipInvisible
-     * @param type $emulateLogIn
+     * @param type $considerLogin
      */
     public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, 
                                 $lang = null, $currentPage = null, $skipInvisible = true, 
-                                $emulateLogIn = false
+                                $considerLogin = false
     ) {
         parent::__construct($entityManager, $license, $maxDepth, $rootNode, $lang,
-                            $currentPage, $skipInvisible, $emulateLogIn);
+                            $currentPage, $skipInvisible, $considerLogin);
     }
     
     /**
