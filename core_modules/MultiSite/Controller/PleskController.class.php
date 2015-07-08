@@ -2000,6 +2000,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * Fetch the SSL Certificate details
      * 
      * @param string $domain domain name
+     * 
+     * @return array list of certificates
      */
     public function getSSLCertificates($domain) {
         \DBG::msg("MultiSite (XamppController): Fetch the SSL Certificate details.");
@@ -2033,7 +2035,18 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             throw new ApiRequestException("Error in fetching the SSL Certificate: {$error}");
         }
         
-        return $resultNode->certificates;
+        $responseJson = json_encode($resultNode);
+        $respArr      = json_decode($responseJson, true);
+        $resultArr    = (count($respArr['certificates']['certificate']) == count($respArr['certificates']['certificate'], COUNT_RECURSIVE)) 
+                        ? $respArr['certificates'] : $respArr['certificates']['certificate'];
+        
+        //store all the certificate names into an array
+        $certificateList = array();
+        foreach($resultArr as $result) {
+            $certificateList[] = $result['name'];
+        }
+        
+        return $certificateList;
     }
     
     /**
