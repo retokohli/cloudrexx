@@ -323,9 +323,10 @@ function sendApiFormRequest(jsFormSelector, jsModalSelector, loadContentSelector
       message = (response.status == 'success') ? response.data.message : (jQuery.type(response.message) === 'object') 
                                                                          ? response.message.message
                                                                          : response.message;
+      var reload =  (jQuery.type(response.data) === 'object') ? response.data.reload : false;
       
       jQuery(jsModalSelector).on('hidden.bs.modal', function () {
-        showMessage(message, response.status, true, response.data.reload);//show status message
+        showMessage(message, response.status, true, reload);//show status message
       });
       jQuery(jsModalSelector).modal('hide');
       if (response.status == 'success') {

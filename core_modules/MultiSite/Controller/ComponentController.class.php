@@ -1168,11 +1168,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
                     
                     case 'Ssl':
+                        $certificateName = isset($_POST['certificate_name']) ? $_POST['certificate_name'] : '';
+                        $privateKey = isset($_POST['private_key']) ? $_POST['private_key'] : '';
+                        if (empty($certificateName) || empty($privateKey)) {
+                            return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SSL_FAILED'], false);
+                        }
                         $command = 'linkSsl';
                         $params = array(
-                            'domainName'     => $domainName,
-                            'certificateName' => isset($_POST['certificate_name']) ? $_POST['certificate_name'] : '',
-                            'privateKey'      => isset($_POST['private_key']) ? $_POST['private_key'] : '',
+                            'domainName'      => $domainName,
+                            'certificateName' => $certificateName,
+                            'privateKey'      => $privateKey,
                             'certificate'     => isset($_POST['certificate']) ? $_POST['certificate'] : '',
                             'caCertificate'   => isset($_POST['ca_certificate']) ? $_POST['ca_certificate'] : '' ,
                         );
@@ -1255,7 +1260,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
 
             $objTemplate->setVariable(array(
-                'MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL' => '/api/MultiSite/Domain?action=' . $loadPageAction . '&website_id=' . $websiteId . '&domain_id=' . $domainId,
+                'MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL' => '/api/MultiSite/Domain?action=' . $loadPageAction . '&website_id=' . $websiteId . '&domain_id=' . $domainId . '&domain_name=' . $domainName,
             ));
 
             return $objTemplate->get();
