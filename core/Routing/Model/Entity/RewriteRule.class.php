@@ -32,8 +32,14 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
      * @var \Cx\Lib\Helpers\RegularExpression $regularExpression
      */
     protected $regularExpression;
-    
-    
+
+    /**
+     * Order of the Rewrite rule
+     * 
+     * @var integer
+     */
+    protected $orderNo;
+
     /**
      * Rewrite Status Code
      * 
@@ -69,6 +75,16 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
         
         return $this->regularExpression;
     }
+    
+    /**
+     * Get the order no
+     * 
+     * @return integer
+     */
+    function getOrderNo()
+    {
+        return $this->orderNo;
+    }
 
     /**
      * Get Rewrite Status Code
@@ -101,7 +117,17 @@ class RewriteRule extends \Cx\Model\Base\EntityBase
         
         $this->regularExpression = $regularExpression;
     }
-
+    
+    /**
+     * Set the order no
+     * 
+     * @param integer $orderNo
+     */
+    function setOrderNo($orderNo)
+    {
+        $this->orderNo = $orderNo;
+    }
+    
     /**
      * Set the rewrite status code
      * 

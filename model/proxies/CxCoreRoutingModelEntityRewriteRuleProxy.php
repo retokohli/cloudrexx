@@ -39,6 +39,12 @@ class CxCoreRoutingModelEntityRewriteRuleProxy extends \Cx\Core\Routing\Model\En
         return parent::getRegularExpression();
     }
 
+    public function getOrderNo()
+    {
+        $this->_load();
+        return parent::getOrderNo();
+    }
+
     public function getRewriteStatusCode()
     {
         $this->_load();
@@ -57,6 +63,12 @@ class CxCoreRoutingModelEntityRewriteRuleProxy extends \Cx\Core\Routing\Model\En
         return parent::setRegularExpression($regularExpression);
     }
 
+    public function setOrderNo($orderNo)
+    {
+        $this->_load();
+        return parent::setOrderNo($orderNo);
+    }
+
     public function setRewriteStatusCode($rewriteStatusCode)
     {
         $this->_load();
@@ -67,6 +79,12 @@ class CxCoreRoutingModelEntityRewriteRuleProxy extends \Cx\Core\Routing\Model\En
     {
         $this->_load();
         return parent::setContinueOnMatch($continueOnMatch);
+    }
+
+    public function matches(\Cx\Core\Routing\Url $url)
+    {
+        $this->_load();
+        return parent::matches($url);
     }
 
     public function resolve(\Cx\Core\Routing\Url $url, &$continue)
@@ -114,7 +132,7 @@ class CxCoreRoutingModelEntityRewriteRuleProxy extends \Cx\Core\Routing\Model\En
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'regularExpression', 'rewriteStatusCode', 'continueOnMatch');
+        return array('__isInitialized__', 'id', 'regularExpression', 'orderNo', 'rewriteStatusCode', 'continueOnMatch');
     }
 
     public function __clone()
