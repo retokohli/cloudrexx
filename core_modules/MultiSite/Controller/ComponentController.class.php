@@ -1000,7 +1000,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // hide the edit/delete icons if the domain is selected as main domain or  base domain.
                 $domainActionStatus = !$statusDisabled ? ($domain->getName() !== $mainDomainName && !$isBaseDomain) : false;
                 self::showOrHideBlock($objTemplate, 'showWebsiteDomainActions', $domainActionStatus);
-                // hide the ssl certificate icon if the domain is the base domain.
+                // hide the ssl certificate icon if it is a base domain.
                 self::showOrHideBlock($objTemplate, 'showDomainWithSslCertificateAction', $domainActionStatus);
                 // hide the spf icon if the domain is the base domain.
                 $domainSpfStatus = !$statusDisabled ? (!$isBaseDomain) : false;
@@ -1226,10 +1226,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 
                 if (($loadPageAction == 'Ssl') && $objTemplate->blockExists('showSslCertificateForm')) {
                     $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('getDomainSslCertificate', array('domainName' => $domainName), $website->getWebsiteServiceServer());                    
-                    $sslCertificate = ($response && $response->status == 'success' && $response->data->status == 'success') ? $response->data->sslCertificate : '';
+                    $sslCertificate = ($response && $response->status == 'success' && $response->data->status == 'success') ? implode(', ', $response->data->sslCertificate) : '';
                     self::showOrHideBlock($objTemplate, 'showSslCertificate', $sslCertificate);                    
                     $objTemplate->setVariable(array(                        
-                        'TXT_MULTISITE_DOMAIN_CERTIFICATE' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DOMAIN_CERTIFICATE'], $sslCertificate),
+                        'TXT_MULTISITE_DOMAIN_CERTIFICATE' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DOMAIN_CERTIFICATE'], contrexx_raw2xhtml($sslCertificate)),
                     ));
                 }
                 

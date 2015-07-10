@@ -6972,7 +6972,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
                     $sslCertificates   = $hostingController->getSSLCertificates($params['post']['domainName']);
                     if ($sslCertificates) {
-                        return array('status' => 'success', 'sslCertificate' => $sslCertificates[0]);
+                        return array('status' => 'success', 'sslCertificate' => $sslCertificates);
                     }
                     break;
                 default :
@@ -7015,8 +7015,13 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     
                     if (!in_array($params['post']['domainName'], $siteList)) {
                         $hostingController->createSite($params['post']['domainName'], $hostingController->getWebspaceId()); 
+                    } else {
+                        $sslCertificate = $hostingController->getSSLCertificates($params['post']['domainName']);
+                        if (!empty($sslCertificate)) {
+                            $hostingController->removeSSLCertificates($params['post']['domainName'], $sslCertificate); 
+                        }
                     }
-                                        
+                    
                     $installSslCertificate = $hostingController->installSSLCertificate(
                                                                         $params['post']['certificateName'], 
                                                                         $params['post']['domainName'], 
