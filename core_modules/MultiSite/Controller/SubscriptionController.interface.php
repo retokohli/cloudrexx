@@ -168,10 +168,10 @@ interface SubscriptionController {
     public function getSSLCertificates($domain);
     
     /**
-     * Remove the SSL Certificate
+     * Remove the SSL Certificates
      * 
-     * @param string $name   certificate name
      * @param string $domain domain name
+     * @param array  $names  certificate names
      */
-    public function removeSSLCertificate($name, $domain);
+    public function removeSSLCertificates($domain, $names = array());
 }

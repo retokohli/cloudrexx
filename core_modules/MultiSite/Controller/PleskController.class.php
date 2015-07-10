@@ -2032,7 +2032,8 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             \DBG::dump($xmldoc->saveXML());
             \DBG::dump($response);
             $error = (isset($systemError) ? $systemError : $resultNode->errtext);
-            throw new ApiRequestException("Error in fetching the SSL Certificate: {$error}");
+            \DBG::msg("Error in fetching the SSL Certificate: {$error}");
+            return false;
         }
         
         $responseJson = json_encode($resultNode);
@@ -2050,14 +2051,14 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
-     * Remove the SSL Certificate
+     * Remove the SSL Certificates
      * 
-     * @param string $name   certificate name
      * @param string $domain domain name
+     * @param array  $names  certificate names
      */
-    public function removeSSLCertificate($name, $domain) {
-        \DBG::msg("MultiSite (XamppController): Fetch the SSL Certificate details.");
-        if (empty($name) || empty($domain)) {
+    public function removeSSLCertificates($domain, $names = array()) {
+        \DBG::msg("MultiSite (XamppController): Remove the SSL Certificates.");
+        if (!is_array($names) || empty($names) || empty($domain)) {
             return false;
         }
         
@@ -2073,8 +2074,10 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $filterTag = $xmldoc->createElement('filter');
         $removeTag->appendChild($filterTag);
         
-        $certificateNameTag = $xmldoc->createElement('name', $name);
-        $filterTag->appendChild($certificateNameTag);
+        foreach ($names as $name) {
+            $certificateNameTag = $xmldoc->createElement('name', $name);
+            $filterTag->appendChild($certificateNameTag);
+        }
         
         $webspaceTag = $xmldoc->createElement('webspace', $domain);
         $removeTag->appendChild($webspaceTag);

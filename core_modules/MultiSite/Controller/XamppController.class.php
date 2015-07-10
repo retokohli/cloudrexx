@@ -434,13 +434,13 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
-     * Remove the SSL Certificate
+     * Remove the SSL Certificates
      * 
-     * @param string $name   certificate name
      * @param string $domain domain name
+     * @param array  $names  certificate names
      */
-    public function removeSSLCertificate($name, $domain) {
-        \DBG::msg("MultiSite (XamppController): Fetch the SSL Certificate details.");
+    public function removeSSLCertificates($domain, $names = array()) {
+        \DBG::msg("MultiSite (XamppController): Remove the SSL Certificates.");
         return true;
     }
 }
