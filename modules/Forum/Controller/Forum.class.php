@@ -657,7 +657,7 @@ class Forum extends ForumLibrary {
             $pos = $this->_getEditPos($intPostId, $intThreadId);
             $arrPosts = $this->createPostArray($intThreadId, $pos);
             $arrPosts[$intPostId]['subject'] = !empty($_REQUEST['subject']) ? contrexx_strip_tags($_REQUEST['subject']) : $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'];
-            $arrPosts[$intPostId]['content'] = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForDb($_REQUEST['message']);
+            $arrPosts[$intPostId]['content'] = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForOutput($_REQUEST['message']);
         }
 
         $userId  = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
@@ -703,9 +703,9 @@ class Forum extends ForumLibrary {
         $firstPost = current($arrPosts);
 
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
-            $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('message', stripslashes($content), 'bbcode');
+            $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('message', ($_REQUEST['act'] == 'edit' ? $content : stripslashes($content)), 'bbcode');
         }else{ //plain textarea
-            $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'.stripslashes($content).'</textarea>';
+            $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'.($_REQUEST['act'] == 'edit' ? $content : stripslashes($content)).'</textarea>';
         }
         $this->_objTpl->setGlobalVariable(array(
             'FORUM_JAVASCRIPT_GOTO'                 =>    $this->getJavascript('goto'),
