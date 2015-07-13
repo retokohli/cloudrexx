@@ -143,15 +143,8 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 } else {
                     $author = '';
                 }
-                if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
-                    $image = $objResult->fields['teaser_image_thumbnail_path'];
-                } elseif (!empty($objResult->fields['teaser_image_path']) && file_exists(ASCMS_PATH.\ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']))) {
-                    $image = \ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']);
-                } elseif (!empty($objResult->fields['teaser_image_path'])) {
-                    $image = $objResult->fields['teaser_image_path'];
-                } else {
-                    $image = ASCMS_CORE_MODULE_WEB_PATH.'/News/View/Media/pixel.gif';
-                }
+                
+                //Get the news categories, by news id
                 $newsCategories = $this->getCategoriesByNewsId($objResult->fields['id']);
                 $this->arrTeasers[$objResult->fields['id']] = array(
                     'id'                => $objResult->fields['id'],
@@ -166,7 +159,8 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     'teaser_text'       => $objResult->fields['teaser_text'],
                     'teaser_show_link'  => $objResult->fields['teaser_show_link'],
                     'author'            => $author,
-                    'teaser_image_path' => $image,
+                    'teaser_image_path' => $objResult->fields['teaser_image_path'],
+                    'teaser_image_thumbnail_path' => $objResult->fields['teaser_image_thumbnail_path'],
                 );
                 $objResult->MoveNext();
             }
@@ -274,58 +268,111 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 $funcSort = create_function('$a, $b', '{$aNr = preg_replace("/^[^_]+_/", "", $a);$bNr = preg_replace("/^[^_]+_/", "", $b);if ($aNr == $bNr) {return 0;} return ($aNr < $bNr) ? -1 : 1;}');
                 usort($arrTeaserBlocks[0], $funcSort);
                 usort($arrTeaserBlocks[1], $funcSort);
-                $arrMatch = array();
-                foreach ($arrTeaserBlocks[1] as $nr => $teaserBlock) {
+                $arrMatch = array();                
+                foreach ($arrTeaserBlocks[1] as $nr => $teaserBlock) {                    
                     if (preg_match('/<!-- BEGIN '.$teaserBlock.' -->(.*)<!-- END '.$teaserBlock.' -->/s', $teaserFrame, $arrMatch)) {
                         $teaserBlockCode = $arrMatch[1];
                     } else {
                         $teaserBlockCode = '';
                     }
 
-                    if (isset($this->arrFrameTeaserIds[$id][$nr])) {
-                        $teaserBlockCode = str_replace('{TEASER_CATEGORY}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category'], $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_LONG_DATE}', date(ASCMS_DATE_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_DATE}', date(ASCMS_DATE_FORMAT_DATE, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_TIME}', date(ASCMS_DATE_FORMAT_TIME, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_TITLE}', contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['title']), $teaserBlockCode);
-                        if ($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_show_link']) {
-                            $teaserBlockCode = str_replace(
-                                '{TEASER_URL}', 
-                                empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'])
-                                    ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category_id']), FRONTEND_LANG_ID, array('newsid' => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'], 'teaserId' => $this->arrTeaserFrames[$id]['id']))
-                                    : $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'], $teaserBlockCode
-                            );
-                            $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? '_self' : '_blank', $teaserBlockCode);
-                            $teaserBlockCode = str_replace('<!-- BEGIN teaser_link -->', '', $teaserBlockCode);
-                            $teaserBlockCode = str_replace('<!-- END teaser_link -->', '', $teaserBlockCode);
+                    $objTpl = new \Cx\Core\Html\Sigma();
+                    $objTpl->setTemplate($teaserBlockCode); 
+                    
+                    if (isset ($this->arrFrameTeaserIds[$id][$nr])) {
+                        $imagePath     = $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_image_path'];
+                        $thumbnailPath = $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_image_thumbnail_path'];
+                        $title         =  $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['title'];
+                        //Sets the news url link for the details page of the news message
+                        $newsUrl       = empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'])
+                                         ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category_id']), FRONTEND_LANG_ID, array('newsid' => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'], 'teaserId' => $this->arrTeaserFrames[$id]['id']))
+                                         : $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'];
+                        
+                        //Image or thumbnail Placeholders parsing
+                        list($image, $htmlLinkImage, $imageSource) = self::parseImageThumbnail($imagePath, $thumbnailPath, $title, $newsUrl);
+                        
+                        if (!empty($image)) {
+                            $objTpl->setVariable(array(
+                                'TEASER_IMAGE'               => $image,
+                                'TEASER_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
+                                'TEASER_IMAGE_ALT'           => contrexx_raw2xhtml($title),
+                                'TEASER_IMAGE_LINK'          => $htmlLinkImage,
+                            ));
+
+                            if ($objTpl->blockExists('news_teaser_image')) {
+                                $objTpl->parse('news_teaser_image');
+                            }
                         } else {
-                            $teaserBlockCode = preg_replace('/<!-- BEGIN teaser_link -->[\S\s]*<!-- END teaser_link -->/', '', $teaserBlockCode);
+                            if ($objTpl->blockExists('news_teaser_image')) {
+                                $objTpl->hideBlock('news_teaser_image');
+                            }
                         }
-                        $teaserBlockCode = str_replace('{TEASER_IMAGE_PATH}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_image_path'], $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_TEXT}', nl2br($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_text']), $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_FULL_TEXT}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_full_text'], $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_AUTHOR}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['author'], $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_EXT_URL}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['ext_url'], $teaserBlockCode);
+                        
+                        //Parsing Images and Thumbnails Blocks
+                        self::parseImageBlock($objTpl, $imagePath, $title, $newsUrl, 'teaser_image_detail');
+                        self::parseImageBlock($objTpl, $thumbnailPath, $title, $newsUrl, 'teaser_image_thumbnail');
+                        
+                        if ($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_show_link']) {
+                            $objTpl->setVariable(array(
+                                'TEASER_URL'          => $newsUrl,
+                                'TEASER_URL_TARGET'   => empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? '_self' : '_blank',
+                                
+                            ));
+                            if ($objTpl->blockExists('teaser_link')) {
+                                $objTpl->parse('teaser_link');
+                            }
+                        } else {
+                            if ($objTpl->blockExists('teaser_link')) { 
+                                $objTpl->hideBlock('teaser_link');
+                            }
+                        }
+                        
+                        $objTpl->setVariable(array(
+                            'TEASER_CATEGORY'    => contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category']),
+                            'TEASER_LONG_DATE'   => date(ASCMS_DATE_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']),
+                            'TEASER_DATE'        => date(ASCMS_DATE_FORMAT_DATE, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']),
+                            'TEASER_TIME'        => date(ASCMS_DATE_FORMAT_TIME, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']),
+                            'TEASER_TITLE'       => contrexx_raw2xhtml($title),
+                            'TEASER_IMAGE_PATH'  => contrexx_raw2xhtml($imageSource),
+                            'TEASER_TEXT'        => contrexx_raw2xhtml(nl2br($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_text'])),
+                            'TEASER_FULL_TEXT'   => contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_full_text']),
+                            'TEASER_AUTHOR'      => contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['author']),
+                            'TEASER_EXT_URL'     => contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['ext_url']),
+                            
+                        ));
                     } elseif ($this->administrate) {
-                        $teaserBlockCode = str_replace('{TEASER_CATEGORY}', 'TXT_CATEGORY', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_DATE}', 'TXT_DATE', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_LONG_DATE}', 'TXT_LONG_DATE', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_TITLE}', 'TXT_TITLE', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_URL}', 'TXT_URL', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', 'TXT_URL_TARGET', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_IMAGE_PATH}', 'TXT_IMAGE_PATH', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_TEXT}', 'TXT_TEXT', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_FULL_TEXT}', 'TXT_FULL_TEXT', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_AUTHOR}', 'TEASER_AUTHOR', $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_EXT_URL}', 'TEASER_EXT_URL', $teaserBlockCode);
-                    } else {
-                        $teaserBlockCode = '&nbsp;';
+                        $objTpl->setVariable(array(
+                            'TEASER_CATEGORY'     => 'TXT_CATEGORY',
+                            'TEASER_DATE'         => 'TXT_DATE',
+                            'TEASER_TIME'         => 'TXT_TIME',
+                            'TEASER_LONG_DATE'    => 'TXT_LONG_DATE',
+                            'TEASER_TITLE'        => 'TXT_TITLE',
+                            'TEASER_URL'          => 'TXT_URL',
+                            'TEASER_URL_TARGET'   => 'TXT_URL_TARGET',
+                            'TEASER_IMAGE_PATH'   => 'TXT_IMAGE_PATH',
+                            'TEASER_TEXT'         => 'TXT_TEXT',
+                            'TEASER_FULL_TEXT'    => 'TXT_FULL_TEXT',
+                            'TEASER_AUTHOR'       => 'TEASER_AUTHOR',
+                            'TEASER_EXT_URL'      => 'TEASER_EXT_URL',
+                            'TEASER_IMAGE'        => 'TEASER_IMAGE',
+                            'TEASER_IMAGE_SRC'    => 'TEASER_IMAGE_SRC',
+                            'TEASER_IMAGE_ALT'    => 'TEASER_IMAGE_ALT',
+                            'TEASER_IMAGE_LINK'   => 'TEASER_IMAGE_LINK',
+                            'NEWS_TEASER_IMAGE_THUMBNAIL'      => 'NEWS_TEASER_IMAGE_THUMBNAIL',
+                            'NEWS_TEASER_IMAGE_THUMBNAIL_SRC'  => 'NEWS_TEASER_IMAGE_THUMBNAIL_SRC',
+                            'NEWS_TEASER_IMAGE_THUMBNAIL_ALT'  => 'NEWS_TEASER_IMAGE_THUMBNAIL_ALT',
+                            'NEWS_TEASER_IMAGE_THUMBNAIL_LINK' => 'NEWS_TEASER_IMAGE_THUMBNAIL_LINK',
+                            'NEWS_TEASER_IMAGE_DETAIL'         => 'NEWS_TEASER_IMAGE_DETAIL',
+                            'NEWS_TEASER_IMAGE_DETAIL_SRC'     => 'NEWS_TEASER_IMAGE_DETAIL_SRC',
+                            'NEWS_TEASER_IMAGE_DETAIL_ALT'     => 'NEWS_TEASER_IMAGE_DETAIL_ALT',
+                            'NEWS_TEASER_IMAGE_DETAIL_LINK'    => 'NEWS_TEASER_IMAGE_DETAIL_LINK',
+                        ));
                     }
 
                     if (!$this->administrate) {
-                        $teaserFrame = preg_replace('/<!-- BEGIN '.$teaserBlock.' -->[\S\s]*<!-- END '.$teaserBlock.' -->/', $teaserBlockCode, $teaserFrame);
+                        $teaserFrame = preg_replace('/<!-- BEGIN '.$teaserBlock.' -->[\S\s]*<!-- END '.$teaserBlock.' -->/', $objTpl->get(), $teaserFrame);                        
                     } else {
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->)[\S\s]*(<!-- END '.$teaserBlock.' -->)/', '<table cellspacing="0" cellpadding="0" style="border:1px dotted #aaaaaa;"><tr><td>'.$teaserBlockCode.'</td></tr></table>', $teaserFrame);
+                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->)[\S\s]*(<!-- END '.$teaserBlock.' -->)/', '<table cellspacing="0" cellpadding="0" style="border:1px dotted #aaaaaa;"><tr><td>'. $objTpl->get() .'</td></tr></table>', $teaserFrame);                        
                     }
                 }
             }

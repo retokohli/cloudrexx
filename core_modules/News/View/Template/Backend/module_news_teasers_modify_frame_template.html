@@ -38,6 +38,14 @@
             <td width="85%">{TXT_NEWS_DATE_DESCRIPTION}</td>
         </tr>
         <tr class="row1">
+            <td width="15%">[[TEASER_LONG_DATE]]</td>
+            <td width="85%">{TXT_NEWS_LONG_DATE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[TEASER_TIME]]</td>
+            <td>{TXT_NEWS_TIME_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
             <td width="15%">[[TEASER_TITLE]]</td>
             <td width="85%">{TXT_NEWS_TITLE_DESCRIPTION}</td>
         </tr>
@@ -46,8 +54,88 @@
             <td width="85%">{TXT_NEWS_LINK_DESCRIPTION}</td>
         </tr>
         <tr class="row1">
+            <td width="15%">[[TEASER_TEXT]]</td>
+            <td width="85%">{TXT_NEWS_TEASER_TEXT_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td width="15%">[[TEASER_FULL_TEXT]]</td>
+            <td width="85%">{TXT_NEWS_TEXT_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td width="15%">[[TEASER_AUTHOR]]</td>
+            <td width="85%">{TXT_NEWS_AUTHOR_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td width="15%">[[TEASER_EXT_URL]]</td>
+            <td width="85%">{TXT_NEWS_EXT_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
             <td width="15%">[[TEASER_IMAGE_PATH]]</td>
             <td width="85%">{TXT_NEWS_IMAGE_PATH_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td width="15%">[[TEASER_IMAGE]]</td>
+            <td width="85%">{TXT_NEWS_IMAGE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td width="15%">[[TEASER_IMAGE_SRC]]</td>
+            <td width="85%">{TXT_NEWS_IMAGE_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td width="15%">[[TEASER_IMAGE_ALT]]</td>
+            <td width="85%">{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td width="15%">[[TEASER_IMAGE_LINK]]</td>
+            <td width="85%">{TXT_NEWS_IMAGE_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td width="15%">[[NEWS_TEASER_IMAGE_DETAIL]]</td>
+            <td width="85%">{TXT_NEWS_IMAGE_DETAIL_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td width="15%">[[NEWS_TEASER_IMAGE_DETAIL_SRC]]</td>
+            <td width="85%">{TXT_NEWS_IMAGE_DETAIL_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td width="15%">[[NEWS_TEASER_IMAGE_DETAIL_ALT]]</td>
+            <td width="85%">{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td width="15%">[[NEWS_TEASER_IMAGE_DETAIL_LINK]]</td>
+            <td width="85%">{TXT_NEWS_IMAGE_DETAIL_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td width="15%">[[NEWS_TEASER_IMAGE_THUMBNAIL]]</td>
+            <td width="85%">{TXT_NEWS_IMAGE_THUMBNAIL_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td width="15%">[[NEWS_TEASER_IMAGE_THUMBNAIL_SRC]]</td>
+            <td width="85%">{TXT_NEWS_IMAGE_THUMBNAIL_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td width="15%">[[NEWS_TEASER_IMAGE_THUMBNAIL_ALT]]</td>
+            <td width="85%">{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td width="15%">[[NEWS_TEASER_IMAGE_THUMBNAIL_LINK]]</td>
+            <td width="85%">{TXT_NEWS_IMAGE_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td width="15%">&lt;!-- teaser_link --&gt;</td>
+            <td width="85%">{TXT_NEWS_TEASER_LINK_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td width="15%">&lt;!-- news_teaser_image --&gt;</td>
+            <td width="85%">{TXT_NEWS_TEASER_IMAGE_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td width="15%">&lt;!-- news_teaser_image_detail --&gt;</td>
+            <td width="85%">{TXT_NEWS_TEASER_IMAGE_DETAIL_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td width="15%">&lt;!-- news_teaser_image_thumbnail --&gt;</td>
+            <td width="85%">{TXT_NEWS_TEASER_IMAGE_THUMBNAIL_ROW_DESCRIPTION}</td>
         </tr>
         <tr class="row2">
             <td width="15%">&lt;!-- teaser_1-n --&gt;</td>
@@ -75,6 +163,9 @@
                                     &lt;a href="<div style="background-color:#FF9999; display:inline;">[[TEASER_URL]]</div>"&gt; &gt;&gt;{TXT_CONTINUE}&lt;/a&gt;<br />
 &lt;img alt="" src="<div style="background-color:#FF9999; display:inline;">[[TEASER_IMAGE_PATH]]</div>" /&gt;
 <div style="background-color:#FF9999; display:inline;">[[TEASER_TEXT]]</div><br />
+&lt;!-- BEGIN teaser_link --&gt;<br />
+&lt;a href="<div style="background-color:#FF9999; display:inline;">[[TEASER_URL]]</div>" target="<div style="background-color:#FF9999; display:inline;">[[TEASER_URL_TARGET]]</div>"&gt; &gt;&gt;{TXT_CONTINUE}&lt;/a&gt;<br />
+&lt;!-- END teaser_link --&gt;<br />
 &lt;!-- END teaser_1 --&gt;
 </td>
                                     <td bgcolor="#FFCC33">
@@ -88,6 +179,9 @@
 &lt;img alt="" src="<div style="background-color:#FF9999; display:inline;">[[TEASER_IMAGE_PATH]]</div>" /&gt;
 <div style="background-color:#FF9999; display:inline;">[[TEASER_TEXT]]</div>
 <br />
+&lt;!-- BEGIN teaser_link --&gt;<br />
+&lt;a href="<div style="background-color:#FF9999; display:inline;">[[TEASER_URL]]</div>" target="<div style="background-color:#FF9999; display:inline;">[[TEASER_URL_TARGET]]</div>"&gt; &gt;&gt;{TXT_CONTINUE}&lt;/a&gt;<br />
+&lt;!-- END teaser_link --&gt;<br />
 &lt;!-- END teaser_2 --&gt; </td>
                                 </tr>
                                 <tr>
@@ -102,6 +196,9 @@
 &lt;img alt="" src="<div style="background-color:#FF9999; display:inline;">[[TEASER_IMAGE_PATH]]</div>" /&gt;
 <div style="background-color:#FF9999; display:inline;">[[TEASER_TEXT]]</div>
 <br />
+&lt;!-- BEGIN teaser_link --&gt;<br />
+&lt;a href="<div style="background-color:#FF9999; display:inline;">[[TEASER_URL]]</div>" target="<div style="background-color:#FF9999; display:inline;">[[TEASER_URL_TARGET]]</div>"&gt; &gt;&gt;{TXT_CONTINUE}&lt;/a&gt;<br />
+&lt;!-- END teaser_link --&gt;<br />
 &lt;!-- END teaser_3 --&gt; </td>
                                     <td bgcolor="#FFCC33">
                                         &lt;!-- BEGIN teaser_4 --&gt;<br />
@@ -114,6 +211,9 @@
 &lt;img alt="" src="<div style="background-color:#FF9999; display:inline;">[[TEASER_IMAGE_PATH]]</div>" /&gt;
 <div style="background-color:#FF9999; display:inline;">[[TEASER_TEXT]]</div>
 <br />
+&lt;!-- BEGIN teaser_link --&gt;<br />
+&lt;a href="<div style="background-color:#FF9999; display:inline;">[[TEASER_URL]]</div>" target="<div style="background-color:#FF9999; display:inline;">[[TEASER_URL_TARGET]]</div>"&gt; &gt;&gt;{TXT_CONTINUE}&lt;/a&gt;<br />
+&lt;!-- END teaser_link --&gt;<br />
 &lt;!-- END teaser_4 --&gt; </td>
                                 </tr>
                             </table>
