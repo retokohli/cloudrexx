@@ -413,12 +413,11 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * 
      * @param string $name                      Certificate name
      * @param string $domain                    Domain name
-     * @param string $certificateSigningRequest certificate signing request
      * @param string $certificatePrivateKey     certificate private key
      * @param string $certificateBody           certificate body
      * @param string $certificateAuthority      certificate authority
      */
-    public function installSSLCertificate($name, $domain, $certificateSigningRequest, $certificatePrivateKey, $certificateBody = null, $certificateAuthority = null) {
+    public function installSSLCertificate($name, $domain, $certificatePrivateKey, $certificateBody = null, $certificateAuthority = null) {
         \DBG::msg("MultiSite (XamppController): Install the SSL Certificate for the domain.");
         return true;
     }
