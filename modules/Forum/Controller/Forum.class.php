@@ -703,9 +703,9 @@ class Forum extends ForumLibrary {
         $firstPost = current($arrPosts);
 
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
-            $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('message', $content, 'bbcode');
+            $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('message', stripslashes($content), 'bbcode');
         }else{ //plain textarea
-            $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'.$content.'</textarea>';
+            $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'.stripslashes($content).'</textarea>';
         }
         $this->_objTpl->setGlobalVariable(array(
             'FORUM_JAVASCRIPT_GOTO'                 =>    $this->getJavascript('goto'),
@@ -958,7 +958,7 @@ class Forum extends ForumLibrary {
                 'FORUM_POST_NUMBER'                =>    '#'.($this->_postCount+1),
                 'FORUM_POST_ICON'                =>    $this->getThreadIcon($icon),
                 'FORUM_POST_SUBJECT'            =>    stripslashes($subject),
-                'FORUM_POST_MESSAGE'            =>    $content,
+                'FORUM_POST_MESSAGE'            =>    stripslashes($content),
                 'FORUM_POST_RATING'                =>    '0',
             ));
             $this->_objTpl->touchBlock('createPost');
