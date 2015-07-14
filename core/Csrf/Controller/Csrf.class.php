@@ -307,7 +307,7 @@ class Csrf {
 
         $data = ($_SERVER['REQUEST_METHOD'] == 'GET' ? $_GET : $_POST);
         self::add_code();
-        $tpl = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath() . '/Csrf/View/Template/Generic/');
+        $tpl = new \Cx\Core\Html\Sigma(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCorePath() . '/Csrf/View/Template/Generic/');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         $tpl->loadTemplateFile('Warning.html');
         $form = '';
@@ -391,7 +391,7 @@ class Csrf {
             $count = $csrf->getCount() - ($csrf->getToken() == $code ? self::$active_decrease : self::$unused_decrease);
             $csrf->setCount($count);
         }
-        \Env::get('em')->flush();
+        \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->flush();
     }
 
 
@@ -414,16 +414,16 @@ class Csrf {
         if (empty($csrfArray)) {
             return;
         }
-        
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
         $needFlush = false;
         foreach ($csrfArray as $csrf) {
             if ($csrf->getCount() < 0) {
-                \Env::get('em')->remove($csrf);                
+                $em->remove($csrf);                
                 $needFlush = true;
             }
         }
         if ($needFlush) {
-            \Env::get('em')->flush();
+            $em->flush();
         }
     }
 
@@ -448,12 +448,14 @@ class Csrf {
     private static function __setkey($key, $count)
     {
         self::initCsrf();
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        
         $csrf = new \Cx\Core\Csrf\Model\Entity\Csrf();
         $csrf->setSessionId($_SESSION->getId());
         $csrf->setToken($key);
         $csrf->setCount($count); 
-        \Env::get('em')->persist($csrf);
-        \Env::get('em')->flush();
+        $em->persist($csrf);
+        $em->flush();
     }
     
     /**
@@ -466,7 +468,7 @@ class Csrf {
         }        
         \cmsSession::getInstance();
 
-        self::$csrfRepo = \Env::get('em')->getRepository('Cx\Core\Csrf\Model\Entity\Csrf');        
+        self::$csrfRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\Csrf\Model\Entity\Csrf');        
     }
 
     private static function __is_logged_in()
