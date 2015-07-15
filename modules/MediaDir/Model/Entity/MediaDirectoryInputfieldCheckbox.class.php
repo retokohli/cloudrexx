@@ -86,7 +86,7 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
                             $strChecked = '';
                         }
 
-                        $strInputfield .= '<input type="checkbox" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;'.$strDefaultValue.'<br />';
+                        $strInputfield .= '<input type="checkbox" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;' . contrexx_raw2xhtml($strDefaultValue) . '<br />';
                     }
 
                     $strInputfield .= '</span>';
@@ -101,7 +101,7 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
                             $strChecked = '';
                         }
 
-                        $strInputfield .= '<input class="'.$this->moduleNameLC.'InputfieldCheckbox '.$strInfoClass.'" '.$strInfoValue.' type="checkbox" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;'.$strDefaultValue.'<br />';
+                        $strInputfield .= '<input class="'.$this->moduleNameLC.'InputfieldCheckbox '.$strInfoClass.'" '.$strInfoValue.' type="checkbox" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;' . contrexx_raw2xhtml($strDefaultValue) . '<br />';
                     }
 
 

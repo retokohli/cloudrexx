@@ -362,7 +362,7 @@ EOF;
                             foreach ($strExpTerm as $value) {
                                 $checkboxSearch[] = ' FIND_IN_SET("'. $value .'",' . $strTableName . '.`value`) <> 0';
                             }
-                            $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND ('. implode(' OR ', $checkboxSearch) .'))';                        
+                            $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND ('. implode(' AND ', $checkboxSearch) .'))';                        
                         } else {
                             $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND '.$strTableName.'.`value` LIKE "%'.$strExpTerm.'%")';
                         }
