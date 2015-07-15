@@ -95,5 +95,33 @@ class ThumbnailGenerator extends EntityBase
         );
     }
 
+    /**
+     * Get the Thumbnails name, create new thumbnails if not exists
+     * 
+     * @param string  $path     Directory path to the file
+     * @param strin   $filename Name of the file
+     * @param boolean $create   TRUE|FALSE when True it creates thumbnail if thumbnail not exists
+     * 
+     * @return array thumbnail name array
+     */
+    public static function getThumbnails($path, $filename, $create = false)
+    {
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $filename  = pathinfo($filename, PATHINFO_FILENAME);
 
-} 
+        $websitepath   = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath();
+        $thumbnailList = UploaderConfiguration::getInstance()->getThumbnails();
+        $thumbnails    = array();
+        foreach ($thumbnailList as $thumbnail) {
+            $thumbnails[$thumbnail['size']] = preg_replace(
+                    '/\.' . lcfirst($extension) . '$/', $thumbnail['value'] . '.' . lcfirst($extension), \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . str_replace(
+                            $websitepath, '', rtrim($path, '/') . '/' . $filename . '.' . $extension
+                    )
+            );
+        }
+        if ($create && file_exists($websitepath . str_replace($websitepath, '', rtrim($path, '/')) . '/' . $filename . '.' . $extension)) {
+            self::createThumbnailFromPath(rtrim($path, '/') . '/' . $filename . '.' . $extension);
+        }
+        return $thumbnails;
+    }
+}

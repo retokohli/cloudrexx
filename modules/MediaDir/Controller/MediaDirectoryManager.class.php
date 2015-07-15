@@ -577,7 +577,17 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 //get form onsubmit
                 $strOnSubmit = parent::getFormOnSubmit($objInputfields->arrJavascriptFormOnSubmit);
                 
-                $this->_objTpl->setVariable($this->moduleLangVar.'_ENTRY_STATUS', ($intEntryId && intval($objEntry->arrEntries[$intEntryId]['entryActive']) ? 'checked="checked"' : ''));
+                $this->_objTpl->setVariable(array(
+                    $this->moduleLangVar.'_ENTRY_STATUS' =>($intEntryId && intval($objEntry->arrEntries[$intEntryId]['entryActive']) ? 'checked="checked"' : ''),
+                    $this->moduleLangVar.'_MEDIABROWSER_BUTTON' => $this->getMediaBrowserButton(
+                        $_ARRAYLANG['TXT_BROWSE'],
+                        array(
+                            'type'  => 'button',
+                            'id'    => 'mediabrowser_button',
+                            'style' => 'display:none;'
+                        )
+                    ),
+                ));
                 
                 //parse blocks
                 $this->_objTpl->hideBlock($this->moduleNameLC.'FormList');
@@ -605,7 +615,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 $this->moduleLangVar.'_DISPLAYDURATION_SELECT_PERIOD' =>  $intEntryDourationPeriod,
                 $this->moduleLangVar.'_DISPLAYDURATION_SHOW_PERIOD' =>  $intEntryDourationShowPeriod,
                 'TXT_'.$this->moduleLangVar.'_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'],
-                'TXT_'.$this->moduleLangVar.'_ENTRY_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_ACTIVE'],
+                'TXT_'.$this->moduleLangVar.'_ENTRY_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_ACTIVE'],                
             ));
         } else {
 			\Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=".$this->moduleName."&act=settings&tpl=forms");
@@ -677,10 +687,15 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 $activeOff = 'checked="checked"';
             }
 
-            if(empty($objCategory->arrCategories[$intCategoryId]['catPicture']) || !file_exists(\Env::get('cx')->getWebsitePath().$objLevel->arrCategories[$intCategoryId]['catPicture'])) {
-                $catImage = '<img src="images/content_manager/no_picture.gif" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
+            $cx         = \Cx\Core\Core\Controller\Cx::instanciate();
+            $catPicture =  !empty($objCategory->arrCategories[$intCategoryId]['catPicture'])
+                         ? $objCategory->arrCategories[$intCategoryId]['catPicture']
+                         : '';
+            if(empty($catPicture) || !file_exists($cx->getWebsitePath().$catPicture)) {
+                $catImage = '<img src="'. $cx->getCodeBaseOffsetPath() .'images/MediaDir/no_picture.gif" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
             } else {
-                $catImage = '<img src="'.$objCategory->arrCategories[$intCategoryId]['catPicture'].'.thumb" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
+                $thumbnail = $this->getThumbImage($catPicture);
+                $catImage  = '<img src="'. $thumbnail .'" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
             }
 
             //parse data variables
@@ -899,12 +914,17 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 $activeOff = 'checked="checked"';
             }
 
-            if(empty($objLevel->arrLevels[$intLevelId]['levelPicture']) || !file_exists(\Env::get('cx')->getWebsitePath().$objLevel->arrLevels[$intLevelId]['levelPicture'])) {
-                $levelImage = '<img src="images/content_manager/no_picture.gif" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
+            $cx           = \Cx\Core\Core\Controller\Cx::instanciate();
+            $levelPicture =  !empty($objLevel->arrLevels[$intLevelId]['levelPicture'])
+                           ? $objLevel->arrLevels[$intLevelId]['levelPicture']
+                           : '';
+            if(empty($levelPicture) || !file_exists($cx->getWebsitePath().$levelPicture)) {
+                $levelImage = '<img src="'. $cx->getCodeBaseOffsetPath() .'images/MediaDir/no_picture.gif" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
             } else {
-                $levelImage = '<img src="'.$objLevel->arrLevels[$intLevelId]['levelPicture'].'.thumb" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
+                $thumbnail = $this->getThumbImage($levelPicture);
+                $levelImage = '<img src="'. $thumbnail .'" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
             }
-
+            
             //parse data variables
             $this->_objTpl->setGlobalVariable(array(
                 $this->moduleLangVar.'_LEVEL_ID' => $intLevelId,

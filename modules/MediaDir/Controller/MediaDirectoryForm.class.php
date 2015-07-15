@@ -198,6 +198,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                     if($arrForm['formActive'] == 1) {
 
                         $hasPicture = $arrForm['formPicture'] != '';
+                        $thumbImage = $this->getThumbImage($arrForm['formPicture']);
                         //parse data variables
                         $objTpl->setVariable(array(
                             $this->moduleLangVar.'_FORM_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
@@ -206,8 +207,8 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                             'TXT_'.$this->moduleLangVar.'_FORM_DESCRIPTION' => nl2br(contrexx_raw2xhtml($arrForm['formDescription'][0])),
                             'TXT_'.$this->moduleLangVar.'_FORM_IMAGE' => $hasPicture ? '<img src="'.$arrForm['formPicture'].'" alt="'.contrexx_raw2xhtml($arrForm['formName'][0]).'" />' : '',
                             'TXT_'.$this->moduleLangVar.'_FORM_IMAGE_SRC' => $arrForm['formPicture'],
-                            'TXT_'.$this->moduleLangVar.'_FORM_IMAGE_SRC_THUMB' => $arrForm['formPicture']."thumb",
-                            'TXT_'.$this->moduleLangVar.'_FORM_IMAGE_THUMB' => $hasPicture ?'<img src="'.$arrForm['formPicture'].'.thumb" alt="'.contrexx_raw2xhtml($arrForm['formName'][0]).'" />' : '',
+                            'TXT_'.$this->moduleLangVar.'_FORM_IMAGE_SRC_THUMB' => $thumbImage,
+                            'TXT_'.$this->moduleLangVar.'_FORM_IMAGE_THUMB' => $hasPicture ?'<img src="'. $thumbImage .'" alt="'.contrexx_raw2xhtml($arrForm['formName'][0]).'" />' : '',
                         ));
 
                         $i++;
