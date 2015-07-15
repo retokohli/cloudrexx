@@ -268,17 +268,16 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 $funcSort = create_function('$a, $b', '{$aNr = preg_replace("/^[^_]+_/", "", $a);$bNr = preg_replace("/^[^_]+_/", "", $b);if ($aNr == $bNr) {return 0;} return ($aNr < $bNr) ? -1 : 1;}');
                 usort($arrTeaserBlocks[0], $funcSort);
                 usort($arrTeaserBlocks[1], $funcSort);
-                $arrMatch = array();                
-                foreach ($arrTeaserBlocks[1] as $nr => $teaserBlock) {                    
+                $arrMatch = array();
+                $objTpl = new \Cx\Core\Html\Sigma();
+                foreach ($arrTeaserBlocks[1] as $nr => $teaserBlock) {
                     if (preg_match('/<!-- BEGIN '.$teaserBlock.' -->(.*)<!-- END '.$teaserBlock.' -->/s', $teaserFrame, $arrMatch)) {
                         $teaserBlockCode = $arrMatch[1];
                     } else {
                         $teaserBlockCode = '';
                     }
 
-                    $objTpl = new \Cx\Core\Html\Sigma();
-                    $objTpl->setTemplate($teaserBlockCode); 
-                    
+                    $objTpl->setTemplate($teaserBlockCode);
                     if (isset ($this->arrFrameTeaserIds[$id][$nr])) {
                         $imagePath     = $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_image_path'];
                         $thumbnailPath = $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_image_thumbnail_path'];
@@ -287,10 +286,10 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         $newsUrl       = empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'])
                                          ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category_id']), FRONTEND_LANG_ID, array('newsid' => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'], 'teaserId' => $this->arrTeaserFrames[$id]['id']))
                                          : $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'];
-                        
+
                         //Image or thumbnail Placeholders parsing
                         list($image, $htmlLinkImage, $imageSource) = self::parseImageThumbnail($imagePath, $thumbnailPath, $title, $newsUrl);
-                        
+
                         if (!empty($image)) {
                             $objTpl->setVariable(array(
                                 'TEASER_IMAGE'               => $image,
@@ -298,35 +297,28 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                                 'TEASER_IMAGE_ALT'           => contrexx_raw2xhtml($title),
                                 'TEASER_IMAGE_LINK'          => $htmlLinkImage,
                             ));
-
-                            if ($objTpl->blockExists('news_teaser_image')) {
-                                $objTpl->parse('news_teaser_image');
-                            }
-                        } else {
-                            if ($objTpl->blockExists('news_teaser_image')) {
-                                $objTpl->hideBlock('news_teaser_image');
-                            }
                         }
-                        
+
+                        if ($objTpl->blockExists('news_teaser_image')) {
+                            !empty($image) ? $objTpl->parse('news_teaser_image') : $objTpl->hideBlock('news_teaser_image');
+                        }
+
                         //Parsing Images and Thumbnails Blocks
                         self::parseImageBlock($objTpl, $imagePath, $title, $newsUrl, 'teaser_image_detail');
                         self::parseImageBlock($objTpl, $thumbnailPath, $title, $newsUrl, 'teaser_image_thumbnail');
-                        
-                        if ($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_show_link']) {
+
+                        $showTeaserLink = $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_show_link'];
+                        if ($showTeaserLink) {
                             $objTpl->setVariable(array(
                                 'TEASER_URL'          => $newsUrl,
                                 'TEASER_URL_TARGET'   => empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? '_self' : '_blank',
-                                
                             ));
-                            if ($objTpl->blockExists('teaser_link')) {
-                                $objTpl->parse('teaser_link');
-                            }
-                        } else {
-                            if ($objTpl->blockExists('teaser_link')) { 
-                                $objTpl->hideBlock('teaser_link');
-                            }
                         }
-                        
+
+                        if ($objTpl->blockExists('teaser_link')) {
+                            $showTeaserLink ? $objTpl->parse('teaser_link') : $objTpl->hideBlock('teaser_link');
+                        }
+
                         $objTpl->setVariable(array(
                             'TEASER_CATEGORY'    => contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category']),
                             'TEASER_LONG_DATE'   => date(ASCMS_DATE_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']),
@@ -335,10 +327,9 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                             'TEASER_TITLE'       => contrexx_raw2xhtml($title),
                             'TEASER_IMAGE_PATH'  => contrexx_raw2xhtml($imageSource),
                             'TEASER_TEXT'        => contrexx_raw2xhtml(nl2br($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_text'])),
-                            'TEASER_FULL_TEXT'   => contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_full_text']),
+                            'TEASER_FULL_TEXT'   => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_full_text'],
                             'TEASER_AUTHOR'      => contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['author']),
                             'TEASER_EXT_URL'     => contrexx_raw2xhtml($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['ext_url']),
-                            
                         ));
                     } elseif ($this->administrate) {
                         $objTpl->setVariable(array(
@@ -367,12 +358,14 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                             'NEWS_TEASER_IMAGE_DETAIL_ALT'     => 'NEWS_TEASER_IMAGE_DETAIL_ALT',
                             'NEWS_TEASER_IMAGE_DETAIL_LINK'    => 'NEWS_TEASER_IMAGE_DETAIL_LINK',
                         ));
+                    } else {
+                        $objTpl->setTemplate('&nbsp;');
                     }
 
                     if (!$this->administrate) {
-                        $teaserFrame = preg_replace('/<!-- BEGIN '.$teaserBlock.' -->[\S\s]*<!-- END '.$teaserBlock.' -->/', $objTpl->get(), $teaserFrame);                        
+                        $teaserFrame = preg_replace('/<!-- BEGIN '.$teaserBlock.' -->[\S\s]*<!-- END '.$teaserBlock.' -->/', $objTpl->get(), $teaserFrame);
                     } else {
-                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->)[\S\s]*(<!-- END '.$teaserBlock.' -->)/', '<table cellspacing="0" cellpadding="0" style="border:1px dotted #aaaaaa;"><tr><td>'. $objTpl->get() .'</td></tr></table>', $teaserFrame);                        
+                        $teaserFrame = preg_replace('/(<!-- BEGIN '.$teaserBlock.' -->)[\S\s]*(<!-- END '.$teaserBlock.' -->)/', '<table cellspacing="0" cellpadding="0" style="border:1px dotted #aaaaaa;"><tr><td>'. $objTpl->get() .'</td></tr></table>', $teaserFrame);
                     }
                 }
             }
