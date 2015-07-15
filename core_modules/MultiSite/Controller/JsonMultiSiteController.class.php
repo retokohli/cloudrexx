@@ -7016,9 +7016,9 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     if (!in_array($params['post']['domainName'], $siteList)) {
                         $hostingController->createSite($params['post']['domainName'], $hostingController->getWebspaceId()); 
                     } else {
-                        $sslCertificate = $hostingController->getSSLCertificates($params['post']['domainName']);
-                        if (!empty($sslCertificate)) {
-                            $hostingController->removeSSLCertificates($params['post']['domainName'], $sslCertificate); 
+                        $sslCertificates = $hostingController->getSSLCertificates($params['post']['domainName']);
+                        if (!empty($sslCertificates)) {
+                            $hostingController->removeSSLCertificates($params['post']['domainName'], $sslCertificates);
                         }
                     }
                     

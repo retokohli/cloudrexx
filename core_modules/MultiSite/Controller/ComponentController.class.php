@@ -1168,8 +1168,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         break;
                     
                     case 'Ssl':
-                        $certificateName = isset($_POST['certificate_name']) ? $_POST['certificate_name'] : '';
-                        $privateKey = isset($_POST['private_key']) ? $_POST['private_key'] : '';
+                        $certificateName = isset($_POST['certificate_name']) ? contrexx_input2raw($_POST['certificate_name']) : '';
+                        $privateKey      = isset($_POST['private_key']) ? contrexx_input2raw($_POST['private_key']) : '';
                         if (empty($certificateName) || empty($privateKey)) {
                             return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SSL_FAILED'], false);
                         }
@@ -1178,26 +1178,26 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'domainName'      => $domainName,
                             'certificateName' => $certificateName,
                             'privateKey'      => $privateKey,
-                            'certificate'     => isset($_POST['certificate']) ? $_POST['certificate'] : '',
-                            'caCertificate'   => isset($_POST['ca_certificate']) ? $_POST['ca_certificate'] : '' ,
+                            'certificate'     => isset($_POST['certificate']) ? contrexx_input2raw($_POST['certificate']) : '',
+                            'caCertificate'   => isset($_POST['ca_certificate']) ? contrexx_input2raw($_POST['ca_certificate']) : ''
                         );
                         break;
-                    
+
                     default :
                         return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'], false);
                         break;
                 }
                 if (isset($command) && isset($params)) {
                     if ($submitFormAction == 'Ssl') {
-                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer($command, $params, $website->getWebsiteServiceServer());                    
+                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer($command, $params, $website->getWebsiteServiceServer());
                     } else {                    
-                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite($command, $params, $website);                    
+                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite($command, $params, $website);
                     }
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         $message = ($submitFormAction == 'Select') 
                                     ? sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_SUCCESS_MSG'], contrexx_raw2xhtml($domainName))
                                     : $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_SUCCESS_MSG'];
-                                
+
                         return $this->parseJsonMessage($message, true);
                     } else {
                         return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_FAILED'], false);
