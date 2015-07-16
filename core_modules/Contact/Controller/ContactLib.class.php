@@ -1444,8 +1444,7 @@ function checkAllFields() {
             }
         } else if (type == 'file' || type == 'multi_file') {
             var required = fields[field][1];
-            var folderWidget = cx.instances.get('uploadWidget' + field, 'upload/folderWidget');
-            if(required && folderWidget.isEmpty()) {
+            if(required && angular.element('#contactFormUpload_'+field+ ' div.mediaBrowserfolderWidget').scope().isEmpty()) {
                 isOk = false;
                 \$J('#contactFormFieldId_'+field).css('outline', '1px solid red');
             } else {
@@ -1698,7 +1697,7 @@ JS_misc;
 
                 case 'file':
                 case 'multi_file':
-                    $sourcecode[] = '<div class="contactFormUpload"><div class="contactFormClass_uploadWidget" id="contactFormField_uploadWidget_'.$fieldId.'"></div>';
+                    $sourcecode[] = '<div class="contactFormUpload" id="contactFormUpload_'.$fieldId.'">{CONTACT_UPLOADER_FOLDER_WIDGET_'.$fieldId.'}<input type="hidden" name="contactFormUploadId_'.$fieldId.'" value = "{CONTACT_UPLOADER_ID_'.$fieldId.'}"/>';
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" disabled="disabled"/></div>';
                     break;
                 
