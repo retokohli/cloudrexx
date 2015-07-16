@@ -53,7 +53,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
      */
     public function getAccessableMethods()
     {
-        return array('upload');
+        return array('upload' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false));
     }
 
     /**
@@ -175,7 +175,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 $uploader['path'], $fileLocation[0] . '/' . $uploader['name'],
                 true
             );
-            \Cx\Lib\FileSystem\FileSystem::delete_file($uploader['path']);
+           // \Cx\Lib\FileSystem\FileSystem::delete_file($uploader['path']);
 
             if (isset($fileLocation[2])){
                 $uploader['name'] = $fileLocation[2];
