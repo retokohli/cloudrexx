@@ -2579,14 +2579,20 @@ class CrmLibrary
                 }
 
                 //insert address
-                if (!empty ($fieldValues['access_address']) || !empty ($fieldValues['access_city']) || !empty ($fieldValues['access_zip']) || !empty ($fieldValues['access_country'])) {
+                $accessAddress = !empty ($fieldValues['access_address']) ? contrexx_input2db($fieldValues['access_address']) : '';
+                $accessCity    = !empty ($fieldValues['access_city']) ? contrexx_input2db($fieldValues['access_city']) : '';
+                $accessZip     = !empty ($fieldValues['access_zip']) ? contrexx_input2db($fieldValues['access_zip']) : '';
+                $accessCountry = !empty ($fieldValues['access_country']) ? contrexx_input2db($fieldValues['access_country']) : '';
+                $accessState   = !empty ($fieldValues['access_state']) ? contrexx_input2db($fieldValues['access_state']) : '';
+                
+                if ($accessAddress || $accessCity || $accessZip || $accessCountry) {
 
                     $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` SET
-                                    address      = '". contrexx_input2db($fieldValues['access_address']) ."',
-                                    city         = '". contrexx_input2db($fieldValues['access_city']) ."',
-                                    state        = '". contrexx_input2db($fieldValues['access_state']) ."',
-                                    zip          = '". contrexx_input2db($fieldValues['access_zip']) ."',
-                                    country      = '". contrexx_input2db($fieldValues['access_country']) ."',
+                                    address      = '". $accessAddress ."',
+                                    city         = '". $accessCity ."',
+                                    state        = '". $accessState ."',
+                                    zip          = '". $accessZip ."',
+                                    country      = '". $accessCountry ."',
                                     Address_Type = '2',
                                     is_primary   = '1',
                                     contact_id   = '{$this->contact->id}'";
@@ -2633,8 +2639,8 @@ class CrmLibrary
                     $query .= implode(",", $values);
                     $objDatabase->Execute($query);
                 }
-                if (!empty($arrFormData['assigned_membreships'])) {
-                    $this->updateCustomerMemberships($arrFormData['assigned_membreships'], $this->contact->id);
+                if (!empty($arrFormData['crmCustomerGroups'])) {
+                    $this->updateCustomerMemberships($arrFormData['crmCustomerGroups'], $this->contact->id);
                 }
                 // notify the staff's
                 $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName, $this->contact->family_name, $this->contact->contact_gender);

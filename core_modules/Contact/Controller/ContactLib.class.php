@@ -107,7 +107,7 @@ class ContactLib
                     'recipients'        => $this->getRecipients($objResult->fields['id'], true),
                     'number'            => 0,
                     'last'              => 0,
-                    'crmCustomerGroups' => ($objResult->fields['crm_customer_groups']) ? unserialize(contrexx_stripslashes($objResult->fields['crm_customer_groups'])) :  array()
+                    'crmCustomerGroups' => $objResult->fields['crm_customer_groups'] ? unserialize($objResult->fields['crm_customer_groups']) : array()
                 );                
                 $objResult->MoveNext();
             }
@@ -214,12 +214,13 @@ class ContactLib
         return $this->_arrSettings;
     }
 
-    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$mailTemplate, &$showForm, &$useCaptcha, &$sendCopy, &$useEmailOfSender, &$htmlMail, &$sendAttachment)
+    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$mailTemplate, &$showForm, &$useCaptcha, &$sendCopy, &$useEmailOfSender, &$htmlMail, &$sendAttachment, &$saveDataInCRM, &$crmCustomerGroups)
     {
         global $objDatabase, $_CONFIG, $_ARRAYLANG, $_LANGID;
 
         $objContactForm = $objDatabase->SelectLimit("SELECT f.mails, l.subject, l.feedback, l.mailTemplate, f.showForm,
-                                                            f.use_captcha, f.send_copy, f.use_email_of_sender, f.html_mail, f.send_attachment
+                                                            f.use_captcha, f.send_copy, f.use_email_of_sender, f.html_mail, f.send_attachment,
+                                                            f.save_data_in_crm, f.crm_customer_groups
                                                      FROM ".DBPREFIX."module_contact_form AS f
                                                      LEFT JOIN ".DBPREFIX."module_contact_form_lang AS l
                                                      ON ( f.id = l.formID )
@@ -239,6 +240,8 @@ class ContactLib
             $useEmailOfSender    = $objContactForm->fields['use_email_of_sender'];
             $htmlMail            = $objContactForm->fields['html_mail'];
             $sendAttachment      = $objContactForm->fields['send_attachment'];
+            $saveDataInCRM       = $objContactForm->fields['save_data_in_crm'];
+            $crmCustomerGroups   = $objContactForm->fields['crm_customer_groups'] ? unserialize($objContactForm->fields['crm_customer_groups']) : array();
             return true;
         } else {
             return false;
