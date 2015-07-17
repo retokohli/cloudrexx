@@ -1035,11 +1035,11 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         }
         
         if($objInit->mode == 'frontend') {
-            $unique_id = intval($_REQUEST[self::MAP_FIELD_KEY]);
-
-            if (!empty($unique_id)) {
-                $picture = $this->_handleUpload('mapUpload', $unique_id);
-
+            $mapUploaderId = isset($_REQUEST[self::MAP_FIELD_KEY])
+                             ? contrexx_input2raw($_REQUEST[self::MAP_FIELD_KEY])
+                             : '';
+            if (!empty($mapUploaderId)) {
+                $picture = $this->_handleUpload($mapUploaderId);
                 if (!empty($picture)) {
                     $placeMap = $picture;
                 }
@@ -1067,11 +1067,15 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
 
         //frontend picture upload & thumbnail creation
         if($objInit->mode == 'frontend') {
-            $unique_id = intval($_REQUEST[self::PICTURE_FIELD_KEY]);
-            $attachmentUniqueId = intval($_REQUEST[self::ATTACHMENT_FIELD_KEY]);
+            $pictureUploaderId    = isset($_REQUEST[self::PICTURE_FIELD_KEY]) 
+                                    ? contrexx_input2raw($_REQUEST[self::PICTURE_FIELD_KEY])
+                                    : '';
+            $attachmentUploaderId = isset($_REQUEST[self::ATTACHMENT_FIELD_KEY])
+                                    ? contrexx_input2raw($_REQUEST[self::ATTACHMENT_FIELD_KEY])
+                                    : '';
             
-            if (!empty($unique_id)) {
-                $picture = $this->_handleUpload('pictureUpload', $unique_id);
+            if (!empty($pictureUploaderId)) {
+                $picture = $this->_handleUpload($pictureUploaderId);
 
                 if (!empty($picture)) {
                     //delete thumb
@@ -1088,8 +1092,8 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 }
             }
             
-            if (!empty($attachmentUniqueId)) {
-                $attachment = $this->_handleUpload('attachmentUpload', $attachmentUniqueId);
+            if (!empty($attachmentUploaderId)) {
+                $attachment = $this->_handleUpload($attachmentUploaderId);
                 if ($attachment) {
                     //delete file
                     if (file_exists("{$this->uploadImgPath}$attach")) {
@@ -1688,20 +1692,23 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
     /**
      * Handle the calendar image upload
      * 
-     * @param string $id unique form id
+     * @param string $id uploaderId
      * 
      * @return string image path
      */
-    function _handleUpload($fieldName, $id)
+    function _handleUpload($id)
     {
-        $tup              = self::getTemporaryUploadPath($fieldName, $id);
-        $tmpUploadDir     = \Env::get('cx')->getWebsitePath().$tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here  
+        global $sessionObj;
+
+        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
+        $tmpUploadDir     = $_SESSION->getTempPath().'/'.$id.'/'; //all the files uploaded are in here
         $depositionTarget = $this->uploadImgPath; //target folder
         $pic              = '';
 
         //move all files
-        if(!\Cx\Lib\FileSystem\FileSystem::exists($tmpUploadDir))
-            throw new \Exception("could not find temporary upload directory '$tmpUploadDir'");
+        if(!\Cx\Lib\FileSystem\FileSystem::exists($tmpUploadDir)) {
+            return $pic;
+        }
 
         $h = opendir($tmpUploadDir);
         if ($h) {
