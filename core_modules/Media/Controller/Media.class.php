@@ -298,15 +298,19 @@ class Media extends MediaLibrary
                     'webPath' => $this->webPath
                 );
 
-                $comboUp = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
-                $comboUp->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/Media/Controller/MediaLibrary.class.php', '\Cx\Core_modules\Media\Controller\MediaLibrary', 'uploadFinished'));
-                $comboUp->setData($data);
-                //set instance name to combo_uploader so we are able to catch the instance with js
-                $comboUp->setJsInstanceName('exposed_combo_uploader');
+                //new uploader
+                $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+                $uploader->setData($data);
+                $uploader->setCallback('mediaCallbackJs');
+                $uploader->setFinishedCallback(array(
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath().'/Media/Controller/MediaLibrary.class.php',
+                    '\Cx\Core_modules\Media\Controller\MediaLibrary',
+                    'uploadFinished'
+                ));
 
                 $this->_objTpl->setVariable(array(
                     'TXT_MEDIA_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_MEDIA_ADD_NEW_FILE'],
-                    'COMBO_UPLOADER_CODE'       => $comboUp->getXHtml(true),
+                    'MEDIA_UPLOADER_CODE'       => $uploader->getXHtml($_ARRAYLANG['TXT_MEDIA_BROWSE']),
                     'REDIRECT_URL'              => '?section='.$_REQUEST['section'].'&path='.contrexx_raw2encodedUrl($this->webPath)
                 ));
                 $this->_objTpl->parse('media_simple_file_upload');
@@ -335,8 +339,8 @@ class Media extends MediaLibrary
      */
     private function uploadAccessGranted()
     {
-        $uploadAccessSetting = isset($this->_arrSettings[$this->archive . '_frontend_changable'])
-                                ? $this->_arrSettings[$this->archive . '_frontend_changable']
+        $uploadAccessSetting = isset($this->_arrSettings[strtolower($this->archive) . '_frontend_changable'])
+                                ? $this->_arrSettings[strtolower($this->archive) . '_frontend_changable']
                                 : '';
         if (is_numeric($uploadAccessSetting)
            && \Permission::checkAccess(intval($uploadAccessSetting), 'dynamic', true)) { // access group

@@ -48,15 +48,13 @@
     </div>
     <!-- BEGIN media_simple_file_upload -->
     <h3>{TXT_MEDIA_ADD_NEW_FILE}</h3>
-    <p class="mediaUploadInput"><input type="file" id="exposedComboUploaderStarter" /></p>
-    {COMBO_UPLOADER_CODE} {JS_INSTANCE_CODE}     <script type="text/javascript">
-                            cx.ready(function() {
-                                var uploader = cx.instances.get('exposed_combo_uploader', 'uploader');
-                                uploader.dialog().bind('close', function() {
-                                    window.location = '{REDIRECT_URL}';
-                                });
-                            }, true);
-    </script>  <!-- END media_simple_file_upload -->
+    {MEDIA_UPLOADER_CODE}
+    <script type="text/javascript">
+        function mediaCallbackJs(callback) {
+            window.location = '{REDIRECT_URL}';
+        }
+    </script>
+    <!-- END media_simple_file_upload -->
     <!-- BEGIN media_create_directory -->
     <h3>{TXT_MEDIA_CREATE_DIRECTORY}</h3>
     <form name="media_create_directory" method="post" action="{MEDIA_CREATE_DIRECTORY_URL}">
