@@ -4091,7 +4091,7 @@ INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`,
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (2,'textarea',1,1,1,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (3,'dropdown',1,0,1,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (4,'radio',1,0,1,0,'');
-INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (5,'checkbox',1,0,1,0,'');
+INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (5,'checkbox',1,0,0,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (7,'file',1,1,0,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (8,'image',1,1,0,0,'');
 INSERT INTO `contrexx_module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES (9,'gallery',0,0,0,0,'not yet developed');
