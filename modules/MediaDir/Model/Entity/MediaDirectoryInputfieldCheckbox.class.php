@@ -120,13 +120,14 @@ class MediaDirectoryInputfieldCheckbox extends \Cx\Modules\MediaDir\Controller\M
                 $arrSelected = isset($_GET[$intId]) ? $_GET[$intId] : array();
                 $strChecked = '';
                 
+                $strInputfield = '<div class="checkboxes_' . $intId . '">';
                 foreach($arrOptions as $intKey => $strDefaultValue) {
                     $intKey++;
                     $strChecked = in_array($intKey, $arrSelected) ? 'checked="checked"' : '';
 
-                    $strInputfield .= '<input type="checkbox" name="'.$intId.'[]" " class="'.$this->moduleNameLC.'InputfieldSearch" id="'.$this->moduleNameLC.'InputfieldSearch_'. $intId .'_'. $intKey .'" value="'. $intKey.'" '. $strChecked .' /><label for="'.$this->moduleNameLC.'InputfieldSearch_'. $intId .'_'. $intKey .'">'. contrexx_raw2xhtml($strDefaultValue) .'</label>';
+                    $strInputfield .= '<input type="checkbox" name="'.$intId.'[]" class="'.$this->moduleNameLC.'InputfieldSearch" id="'.$this->moduleNameLC.'InputfieldSearch_'. $intId .'_'. $intKey .'" value="'. $intKey.'" '. $strChecked .' /><label for="'.$this->moduleNameLC.'InputfieldSearch_'. $intId .'_'. $intKey .'">'. contrexx_raw2xhtml($strDefaultValue) .'</label>';
                 }
-                
+                $strInputfield .= '</div>';
                 return $strInputfield;
                 break;
         }
