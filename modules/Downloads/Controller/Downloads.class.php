@@ -475,6 +475,7 @@ class Downloads extends DownloadsLibrary
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         foreach ($arrLanguageIds as $langId) {
             $arrNames[$langId] = $sourceName;
+            $arrMetakeys[$langId] = '';
             $arrDescriptions[$langId] = '';
             $arrSourcePaths[$langId] = $cx->getWebsiteImagesDownloadsWebPath().'/'.$fileName.$suffix.'.'.$fileExtension;
             $arrSourceNames[$langId] = $sourceName;
@@ -492,6 +493,7 @@ class Downloads extends DownloadsLibrary
         }
 
         $objDownload->setNames($arrNames);
+        $objDownload->setMetakeys($arrMetakeys);
         $objDownload->setDescriptions($arrDescriptions);
         $objDownload->setType('file');
         $objDownload->setSources($arrSourcePaths, $arrSourceNames);
