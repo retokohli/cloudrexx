@@ -120,11 +120,11 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite');
                     if ($websiteUserId == $objUser->getId() && !\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isIscRequest()) {
                         if (!$objUser->isVerified()) {
-                            throw new \Exception('Diese Funktion ist noch nicht freigeschalten. Aus Sicherheitsgründen bitten wir Sie, Ihre Anmeldung &uuml;ber den im Willkommens-E-Mail hinterlegten Link zu best&auml;tigen. Anschliessend wird Ihnen diese Funktion zur Verf&uuml;gung stehen. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
+                            throw new \Cx\Core\Error\Model\Entity\ShinyException('Diese Funktion ist noch nicht freigeschalten. Aus Sicherheitsgründen bitten wir Sie, Ihre Anmeldung &uuml;ber den im Willkommens-E-Mail hinterlegten Link zu best&auml;tigen. Anschliessend wird Ihnen diese Funktion zur Verf&uuml;gung stehen. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                         }
 
                         if ($objUser->getId() != \FWUser::getFWUserObject()->objUser->getId()) {
-                            throw new \Exception('Das Benutzerkonto des Websitebetreibers kann nicht ge&auml;ndert werden. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
+                            throw new \Cx\Core\Error\Model\Entity\ShinyException('Das Benutzerkonto des Websitebetreibers kann nicht ge&auml;ndert werden. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                         }
                         
                         $objWebsiteOwner = \FWUser::getFWUserObject()->objUser->getUser($websiteUserId);
@@ -134,7 +134,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                             $customerPanelUrl  = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . $response->data->customerPanelDomain . '/')->toString();
                             $customerPanelLink = '<a class="alert-link" href="'.$customerPanelUrl.'" target="_blank">'.$response->data->customerPanelDomain.'</a>';
                             $mailLink          = '<a class="alert-link" href="mailto:'.$newEmail.'" target="_blank">'.$newEmail.'</a>';
-                            throw new \Exception(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_OWNER_EMAIL_UNIQUE_ERROR'], $mailLink, $customerPanelLink));
+                            throw new \Cx\Core\Error\Model\Entity\ShinyException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_OWNER_EMAIL_UNIQUE_ERROR'], $mailLink, $customerPanelLink));
                         }
                         
                         $params = self::fetchUserData($objUser);
