@@ -35,10 +35,10 @@
                 jQuery(this).data('plUrl', cx.variables.get('cadminPath','contrexx')+'?cmd=jsondata&object=Uploader&act=upload&id=' + iAttrs.uploaderId + '&csrf=' + cx.variables.get('csrf'));
             }
             if (!iAttrs.plFlashSwfUrl) {
-                jQuery(this).data('plFlashSwfUrl', 'lib/plupload/plupload.flash.swf');
+                jQuery(this).data('plFlashSwfUrl', 'lib/plupload/js/Moxie.swf');
             }
             if (!iAttrs.plSilverlightXapUrl) {
-                jQuery(this).data('plSilverlightXapUrl', 'lib/plupload/plupload.flash.silverlight.xap');
+                jQuery(this).data('plSilverlightXapUrl', 'lib/plupload/js/Moxie.xap');
             }
             if (!iAttrs.uploadLimit) {
                 jQuery(this).data('uploadLimit', "0");
