@@ -64,11 +64,13 @@ class LinkGenerator {
 
         $lg->fetch(Env::get('em'));        
 
+        // insert block containers into template
         foreach ($arrTemplates as &$template) {
             $lg->replaceIn($template);
+            \Cx\Modules\Block\Controller\BlockLibrary::replacePlaceholdersInContent($template);
         }
     }
-    
+
     public function __construct($absoluteUris = false, $domain = null) {
         $this->absoluteUris = $absoluteUris;
         $this->domain = $domain;

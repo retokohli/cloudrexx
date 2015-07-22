@@ -998,4 +998,32 @@ class BlockLibrary
         }
         return $objRS->fields;
     }
+
+    /**
+     * Replace the block placeholders by their associated content
+     * within a supplied string
+     *
+     * @param   string  &$content    The content to replace all block placeholders by their content in
+     */
+    static function replacePlaceholdersInContent(&$content) {
+        // functionality is only available in frontend -> abort if we're not in frontend mode
+        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
+
+        // only proceed if the block system is active
+        $config = \Env::get('config');
+        if (!$config['blockStatus']) {
+            return;
+        }
+
+        // the block assignements are based on content pages, therefore it's
+        // necessarily that a content page has been requested and loaded to proceed
+        if (!\Env::get('cx')->getPage()) {
+            return;
+        }
+
+        // finally, replace the placeholders by their associated blocks
+        \Cx\Modules\Block\Controller\Block::setBlocks($content, \Env::get('cx')->getPage());
+    }
 }
