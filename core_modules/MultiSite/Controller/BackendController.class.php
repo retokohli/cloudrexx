@@ -1475,15 +1475,24 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             }
             
             $isAffiliateSystemActivated = \Cx\Core\Setting\Controller\Setting::getValue('affiliateSystem', 'MultiSite');            
-            if (   in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID)) 
-                && $isAffiliateSystemActivated
-            ) {
-                \Cx\Core\Setting\Controller\Setting::setEngineType('MultiSite', 'FileSystem', 'affiliate');
+            if (in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+                if ($isAffiliateSystemActivated) {
+                    \Cx\Core\Setting\Controller\Setting::setEngineType('MultiSite', 'FileSystem', 'affiliate');
+                    \Cx\Core\Setting\Controller\Setting::show(
+                        $objTemplate,
+                        'index.php?cmd=MultiSite&act=settings',
+                        $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'],
+                        'Affiliate',
+                        'TXT_CORE_MODULE_MULTISITE_'
+                    );                    
+                }
+                // for tab Conversions
+                \Cx\Core\Setting\Controller\Setting::setEngineType('MultiSite', 'FileSystem', 'conversion');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
                     $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'],
-                    'Affiliate',
+                    'Conversions',
                     'TXT_CORE_MODULE_MULTISITE_'
                 );
             }

@@ -494,6 +494,11 @@
     }
 
     function trackConversions() {
+        // check if conversion tracking shall be done
+        if (!options.conversionTrack) {
+            return;
+        }
+        
         price = options.productPrice;
         currency = options.orderCurrency;
         trackGoogleConversion(price, currency);
