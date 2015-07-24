@@ -100,6 +100,7 @@ class WebsiteEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
                     'websiteId'   => $website->getId(),
                     'status'      => $website->getStatus(),
                     'codeBase'    => $website->getCodeBase(),
+                    'ownerId'     => $website->getOwner() ? $website->getOwner()->getId() : 0,
                 );
                 \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('setWebsiteDetails', $params, $websiteServiceServer);
                 break;

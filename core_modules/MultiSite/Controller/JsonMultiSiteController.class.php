@@ -1789,6 +1789,12 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             if (isset($params['post']['codeBase'])) {
                 $website->setCodeBase($params['post']['codeBase']);
             }
+            if (!empty($params['post']['ownerId'])) {
+                $owner = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User')->findOneById($params['post']['ownerId']);
+                if ($owner) {
+                    $website->setOwner($owner);
+                }
+            }
             \Env::get('em')->flush();
             return true;
         }
