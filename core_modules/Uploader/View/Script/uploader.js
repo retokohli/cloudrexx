@@ -32,7 +32,7 @@
                 jQuery(this).data('plMaxFileSize', '500mb');
             }
             if (!iAttrs.plUrl) {
-                jQuery(this).data('plUrl', cx.variables.get('cadminPath','contrexx')+'?cmd=jsondata&object=Uploader&act=upload&id=' + iAttrs.uploaderId + '&csrf=' + cx.variables.get('csrf'));
+                jQuery(this).data('plUrl', cx.variables.get('cadminPath','contrexx')+'?cmd=jsondata&object=Uploader&act=upload&contentType=0&id=' + iAttrs.uploaderId + '&csrf=' + cx.variables.get('csrf'));
             }
             if (!iAttrs.plFlashSwfUrl) {
                 jQuery(this).data('plFlashSwfUrl', 'lib/plupload/js/Moxie.swf');
@@ -103,7 +103,7 @@
             };
 
             var options = {
-                runtimes: 'html5,flash,silverlight',
+                runtimes: 'html5,flash,silverlight,html4',
                 multi_selection: (iAttrs.uploadLimit !== 1) ? true : false,
                 drop_element: 'drop-target-' + iAttrs.id,
                 browse_button: 'drop-target-btn-' + iAttrs.id,
@@ -120,10 +120,11 @@
                 chunk_size: '500kb'
             };
 
-
+			options.multipart_params = {};
             if (scope.plMultiParamsModel) {
                 options.multipart_params = scope.plMultiParamsModel;
             }
+			options.multipart_params.csrf = cx.variables.get('csrf');
 
 
             $J('#drop-target-' + iAttrs.id).bind('dragover', dragover);
@@ -247,8 +248,7 @@
                 }
 
                 angular.forEach(files, function (file) {
-
-                    $J('#uploader-modal-' + iAttrs.uploaderId).find(' .fileList tr:last').after('<tr style="display:none;" class="upload-file file-' + file.id + '"><td> <div class="previewImage"></div></td><td><div class="fileInfos">    ' + file.name + ' <span class="errorMessage"></span> <div class="progress"> <div class="progress-bar upload-progress" role="progressbar"style="width: 0%"></div></div></div></td><td class="text-right">' + readablizeBytes(file.size) + ' <br/> <a class="remove-file">' + cx.variables.get('TXT_CORE_MODULE_UPLOADER_REMOVE_FILE', 'mediabrowser') + '</a> </td>  </tr>');
+                    $J('#uploader-modal-' + iAttrs.uploaderId).find(' .fileList tr:last').after('<tr style="display:none;" class="upload-file file-' + file.id + '"><td> <div class="previewImage"></div></td><td><div class="fileInfos">    ' + file.name + ' <span class="errorMessage"></span> <div class="progress"> <div class="progress-bar upload-progress" role="progressbar"style="width: 0%"></div></div></div></td><td class="text-right">' + (file.size ? readablizeBytes(file.size) : '') + ' <br/> <a class="remove-file">' + cx.variables.get('TXT_CORE_MODULE_UPLOADER_REMOVE_FILE', 'mediabrowser') + '</a> </td>  </tr>');
                     $J('.file-' + file.id).fadeIn();
                     var removeFile = function () {
                         $J.each(uploaderData.filesToUpload, function (i) {
@@ -273,6 +273,10 @@
                     };
                     $J('#uploader-modal-' + iAttrs.uploaderId).find(' .file-' + file.id + ' .remove-file').bind('click', removeFile);
 
+					// Image preview feature not available in html4
+					if (uploader.runtime == 'html4') {
+						return;
+					}
                     var image = $J(new Image()).appendTo('.file-' + file.id + ' .previewImage');
                     var preloader = new mOxie.Image();
                     preloader.onload = function () {
@@ -289,9 +293,13 @@
             uploader.bind('FileUploaded', function (up, file, res) {
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .file-' + file.id + ' .remove-file').remove();
                 try {
-                    var response = jQuery.parseJSON(res.response);
+					// When html4 runtime enabled browser sends response wrapped with <pre>
+					var responseText = res.response.replace(/^\s*<pre[^>]*>/, "").replace(/<\/pre>\s*$/, "");
+                    var response     = jQuery.parseJSON(responseText);
                     if (response.status != 'error') {
-                        $J('.file-' + file.id).find('.upload-progress').addClass('progress-bar-success');
+                        $J('.file-' + file.id).find('.upload-progress')
+								.css({width: '100%'}) // hack on ie flash uploader
+								.addClass('progress-bar-success');
                         $J('.file-' + file.id).addClass('success');
                         if (up.settings.max_file_count > 0) {
                             ++uploaderData.uploaded_file_count;

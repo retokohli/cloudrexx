@@ -37,9 +37,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // TODO: Verify that the arguments are actually present!
                 $adapter = contrexx_input2raw($_GET['object']);
                 $method = contrexx_input2raw($_GET['act']);
+		$setContentType = isset($_GET['contentType']) ? contrexx_input2raw($_GET['contentType']) : 1;
                 // TODO: Replace arguments by something reasonable
                 $arguments = array('get' => $_GET, 'post' => $_POST);
-                echo $json->jsondata($adapter, $method, $arguments);
+                echo $json->jsondata($adapter, $method, $arguments, $setContentType);
                 die();
                 break;
         }
@@ -61,9 +62,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // TODO: Verify that the arguments are actually present!
                     $adapter = contrexx_input2raw($_GET['object']);
                     $method = contrexx_input2raw($_GET['act']);
+		    $setContentType = isset($_GET['contentType']) ? contrexx_input2raw($_GET['contentType']) : 1;
                     // TODO: Replace arguments by something reasonable
                     $arguments = array('get' => $_GET, 'post' => $_POST);
-                    echo $json->jsondata($adapter, $method, $arguments);
+                    echo $json->jsondata($adapter, $method, $arguments, $setContentType);
                     die();
                 }
                 break;
