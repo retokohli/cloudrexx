@@ -2848,7 +2848,7 @@ CREATE TABLE `contrexx_module_pim_product` (
   `cancellation_unit` varchar(5) NOT NULL,
   `cancellation_quantifier` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB ;
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_pim_product_upgrade` (
   `product_id` int(11) NOT NULL,
   `upgrade_product_id` int(11) NOT NULL,
