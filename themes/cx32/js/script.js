@@ -1,5 +1,8 @@
 (function ($) {
     $(document).ready(function () {
+         $('.navbar-toggle').click(function () {
+            $('body').toggleClass('bg-scroll');
+        });
         $(".mb1").trigger("click");
 
         $('#toggleShow').click(function(){

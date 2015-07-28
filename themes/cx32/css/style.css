@@ -7676,3 +7676,7 @@ a#contact-btn{
         background: #000;
         padding-bottom: 100px;
     }
+    .bg-scroll {
+        overflow: hidden;
+        position: fixed;
+    }

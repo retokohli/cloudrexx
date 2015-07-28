@@ -93,7 +93,6 @@ class DBG
         if (!self::$fileskiplength) {
             self::$fileskiplength = strlen(dirname(dirname(dirname(dirname(__FILE__))))) + 1;
         }
-<<<<<<< HEAD
         $oldMode = self::$mode;
         if (self::$mode === DBG_NONE) {
             // activate DBG_LOG by default
@@ -130,22 +129,7 @@ class DBG
         );
         return join(' | ', $flags);
     }
-=======
-        if ($mode === DBG_NONE) {
-            self::$mode = DBG_NONE;
-        } elseif ($mode === null) {
-            self::$mode = (DBG_ALL & ~DBG_LOG_FILE & ~DBG_LOG_FIREPHP) | DBG_LOG;
-        } else {
-            self::$mode = self::$mode | $mode | DBG_LOG;
-        }
-        self::__internal__setup();
-        if ($mode !== DBG_NONE) {
-            self::log('DBG enabled');
-            self::stack();
-        }
-    }
->>>>>>> fx
-    
+
     public static function activateIf($condition, $mode = null) {
         if (
             (!is_callable($condition) && $condition) ||
@@ -154,15 +138,15 @@ class DBG
             static::activate($mode);
         }
     }
-    
+
     public static function isIp($ip) {
         return $_SERVER['REMOTE_ADDR'] == $ip;
     }
-    
+
     public static function hasCookie($cookieName) {
         return isset($_COOKIE[$cookieName]);
     }
-    
+
     public static function hasCookieValue($cookieName, $cookieValue) {
         if (!static::hasCookie($cookieName)) {
             return false;
@@ -185,19 +169,11 @@ class DBG
         } else {
             self::$mode = self::$mode  & ~$mode;
         }
-<<<<<<< HEAD
         if ($mode === DBG_NONE) {
             self::log('DBG disabled ('.self::getActivatedFlagsAsString().')');
             self::stack();
         }
         self::__internal__setup();
-=======
-        self::__internal__setup();
-        if ($mode === DBG_NONE) {
-            self::log('DBG disabled');
-            self::stack();
-        }
->>>>>>> fx
     }
 
 
@@ -638,11 +614,7 @@ class DBG
             $out = var_export($val, true);
         }
         $out = str_replace("\n", "\n        ", $out);
-<<<<<<< HEAD
         if (!self::$log_file && !self::$log_memory && php_sapi_name() != 'cli') {
-=======
-        if (!self::$log_file && !self::$log_memory) {
->>>>>>> fx
             // we're logging directly to the browser
             // can't use contrexx_raw2xhtml() here, because it might not
             // have been loaded till now
@@ -651,7 +623,7 @@ class DBG
             self::_log('DUMP:   '.$out);
         }
     }
-    
+
     private static function _escapeDoctrineDump(&$val)
     {
         if (   $val instanceof \Cx\Model\Base\EntityBase
@@ -794,7 +766,7 @@ class DBG
         } elseif (self::$log_file) {
             // this constant might not exist when updating from older versions
             if (defined('ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME')) {
-                $dateFormat = ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME;	
+                $dateFormat = ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME;
             } else {
                 $dateFormat = 'Y-m-d H:i:s';
             }
@@ -811,7 +783,7 @@ class DBG
         } elseif (self::$log_memory) {
             // this constant might not exist when updating from older versions
             if (defined('ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME')) {
-                $dateFormat = ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME;	
+                $dateFormat = ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME;
             } else {
                 $dateFormat = 'Y-m-d H:i:s';
             }
@@ -833,18 +805,13 @@ class DBG
 
     private static function isLogWorthy($text) {
         $unworthLogs = array();
-<<<<<<< HEAD
         //$unworthLogs = array('File', 'FTPFile', 'YamlRepository');
-=======
-        $unworthLogs = array('File', 'FTPFile');
->>>>>>> fx
         if (empty($unworthLogs)) {
             return true;
         }
         return !preg_match('/^MSG: ('.join('|', $unworthLogs).')[^:]*:/', $text);
     }
 
-<<<<<<< HEAD
     public static function appendLogs($logs) {
         if (self::$mode & DBG_LOG_MEMORY) {
             self::$memory_logs = array_merge(self::$memory_logs, $logs);
@@ -855,10 +822,6 @@ class DBG
                 self::_log($log);
             }
         }
-=======
-    public static function appendLogsToMemory($logs) {
-        self::$memory_logs = array_merge(self::$memory_logs, $logs);
->>>>>>> fx
     }
 
     public static function setSQLQueryCache($msg)
@@ -935,4 +898,3 @@ function DBG_log_adodb($msg)
     $sql = preg_replace('#^\([^\)]+\):\s*#', '', $msg);
     DBG::logSQL($sql);
 }
-
