@@ -171,7 +171,6 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
             $url = "index.php?section=Data&amp;act=shadowbox&amp;lang=".$lang;
         }
 
-var_dump($url);
         foreach ($this->entryArray as $entryId => $entry) {
             if (!$entry['active'] || !$entry['translation'][$_LANGID]['is_active'])
                 continue;
@@ -213,7 +212,7 @@ var_dump($url);
                 } else {
                     $image = '';
                 }
-                var_dump($url);
+                
                 if ($entry['mode'] == "normal") {
                     $href = $url."&amp;id=".$entryId;
                 } else {
