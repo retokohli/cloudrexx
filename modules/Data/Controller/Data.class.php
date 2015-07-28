@@ -296,7 +296,7 @@ class Data extends \Cx\Modules\Data\Controller\DataLibrary
     function showDetails($intMessageId)
     {
         global $_ARRAYLANG;
-
+        
         $arrEntries = $this->createEntryArray();
         $entry = $arrEntries[$intMessageId];
 

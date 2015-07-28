@@ -38,16 +38,11 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
      */
     function __construct()
     {
-        global $objDatabase, $objInit;
+        global $objInit;
 
-        $objRs = $objDatabase->Execute("
-            SELECT 
-                `setvalue`
-            FROM 
-                `".DBPREFIX."settings`
-            WHERE 
-                `setname`='dataUseModule'");
-        if ($objRs && $objRs->fields['setvalue'] == 1) {
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        
+        if (\Cx\Core\Setting\Controller\Setting::getValue('dataUseModule')) {
             $this->active = true;
         } else {
             return;
@@ -169,7 +164,6 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         if ($parcat) {
             $this->_objTpl->setVariable("CATTITLE", $this->arrCategories[$id][$_LANGID]['name']);
         }
-
         if ($this->arrCategories[$id]['action'] == "content") {
             $cmd = $this->arrCategories[$id]['cmd'];
             $url = "index.php?section=Data&amp;cmd=".$cmd;
@@ -177,6 +171,7 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
             $url = "index.php?section=Data&amp;act=shadowbox&amp;lang=".$lang;
         }
 
+var_dump($url);
         foreach ($this->entryArray as $entryId => $entry) {
             if (!$entry['active'] || !$entry['translation'][$_LANGID]['is_active'])
                 continue;
@@ -218,7 +213,7 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
                 } else {
                     $image = '';
                 }
-                
+                var_dump($url);
                 if ($entry['mode'] == "normal") {
                     $href = $url."&amp;id=".$entryId;
                 } else {
