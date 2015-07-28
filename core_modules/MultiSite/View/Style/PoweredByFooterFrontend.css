@@ -20,3 +20,8 @@ div#PoweredByFooter {
 #PoweredByFooterMessage a {
     color: rgb(255, 255, 255);
 }
+
+#PoweredByFooter img {
+    display: inline;
+    vertical-align: middle;
+}
