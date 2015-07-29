@@ -303,19 +303,19 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         if ($entry['mode'] == "normal") {
             if ($this->_arrSettings['data_entry_action'] == "content") {
                 $cmd = $this->_arrSettings['data_target_cmd'];
-                $url = "index.php?section=Data&amp;cmd=".$cmd;
+                $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Data', $cmd, '', array('id' => $id));
             } else {
-                $url = "index.php?section=Data&amp;act=shadowbox&amp;height=".$height."&amp;width=".$width."&amp;lang=".$lang;
+                $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Data', '', '', array('height' => $height, 'width' => $width, 'id' => $id, 'lang' => $lang ));
             }
         } else {
-            $url = $entry['translation'][$_LANGID]['forward_url'];
+            $url = $entry['translation'][$_LANGID]['forward_url'].'&amp;id='.$id;
         }
 
         $templateVars = array(
             "TITLE"         => $title,
             "IMAGE"         => $image,
             "CONTENT"       => $content,
-            "HREF"          => $url."&amp;id=".$id,
+            "HREF"          => $url,
             "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "rel=\"shadowbox;width=".$width.";height=".$height."\"" : "",
             "TXT_MORE"      => $this->langVars['TXT_DATA_MORE']
         );
