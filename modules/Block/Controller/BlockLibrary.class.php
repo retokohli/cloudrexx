@@ -543,8 +543,8 @@ class BlockLibrary
                 $content = $objRs->fields['content'];
                 \LinkGenerator::parseTemplate($content);
                 
-                $em = \Env::get('cx')->getDb()->getEntityManager();
-                $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                $em                       = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+                $systemComponentRepo      = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
                 $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
                 
                 $frontendEditingComponent->prepareBlock($id, $content);
@@ -590,8 +590,8 @@ class BlockLibrary
 
         $content = array();
         
-        $em = \Env::get('cx')->getDb()->getEntityManager();
-        $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $em                       = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        $systemComponentRepo      = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
         
         if ($objResult !== false && $objResult->RecordCount() > 0) {
@@ -668,8 +668,8 @@ class BlockLibrary
         $objResult = $objDatabase->Execute($query);
         $block = '';
         
-        $em = \Env::get('cx')->getDb()->getEntityManager();
-        $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $em                       = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        $systemComponentRepo      = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
         if ($objResult !== false) {
             while (!$objResult->EOF) {
@@ -747,8 +747,8 @@ class BlockLibrary
 
             $objBlock = $objDatabase->SelectLimit("SELECT content FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$ranId." AND lang_id=".FRONTEND_LANG_ID, 1);
             if ($objBlock !== false) {
-                $em = \Env::get('cx')->getDb()->getEntityManager();
-                $systemComponentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                $em                       = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+                $systemComponentRepo      = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
                 $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
                 
                 $content = $objBlock->fields['content'];
@@ -1006,8 +1006,9 @@ class BlockLibrary
      * @param   string  &$content    The content to replace all block placeholders by their content in
      */
     static function replacePlaceholdersInContent(&$content) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         // functionality is only available in frontend -> abort if we're not in frontend mode
-        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+        if ($cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
 
@@ -1019,11 +1020,11 @@ class BlockLibrary
 
         // the block assignements are based on content pages, therefore it's
         // necessarily that a content page has been requested and loaded to proceed
-        if (!\Env::get('cx')->getPage()) {
+        if (!$cx->getPage()) {
             return;
         }
 
         // finally, replace the placeholders by their associated blocks
-        \Cx\Modules\Block\Controller\Block::setBlocks($content, \Env::get('cx')->getPage());
+        \Cx\Modules\Block\Controller\Block::setBlocks($content, $cx->getPage());
     }
 }

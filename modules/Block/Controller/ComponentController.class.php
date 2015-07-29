@@ -56,9 +56,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 if ($_CONFIG['blockStatus'] == '1') {
-                    $content = \Env::get('cx')->getPage()->getContent();
+                    $content = $this->cx->getPage()->getContent();
                     \Cx\Modules\Block\Controller\Block::setBlocks($content, $page);
-                    \Env::get('cx')->getPage()->setContent($content);
+                    $this->cx->getPage()->setContent($content);
                     \Cx\Modules\Block\Controller\Block::setBlocks($themesPages, $page);
                     // TODO: this call in unhappy, becase the content/home template already gets parsed just the line above
                     \Cx\Modules\Block\Controller\Block::setBlocks($page_template, $page);

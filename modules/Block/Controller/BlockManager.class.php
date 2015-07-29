@@ -803,7 +803,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         $objJs->setVariable('categoryPagesUnselectedOptions', $jsonData->json($blockCategoryPageSelects[1]), 'block');
         $objJs->setVariable('categoryPagesSelectedOptions', $jsonData->json($blockCategoryPageSelects[0]), 'block');
 
-        $objJs->setVariable('ckeditorconfigpath', substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT)+1), 'block');
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $objJs->setVariable('ckeditorconfigpath', substr($cx->getClassLoader()->getFilePath($cx->getCodeBaseCorePath() . '/Wysiwyg/ckeditor.config.js.php'), strlen($cx->getCodeBaseDocumentRootPath())+1), 'block');
 
         $arrActiveSystemFrontendLanguages = \FWLanguage::getActiveFrontendLanguages();
         $this->parseLanguageOptionsByPlaceholder($arrActiveSystemFrontendLanguages, 'global');
