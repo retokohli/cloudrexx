@@ -345,6 +345,11 @@
                 }
             });
 
+            // workaround to make the upload-button work in Chromium
+            $J('#drop-target-btn-' + iAttrs.uploaderId).mouseenter(function() {
+                uploader.refresh();
+            });
+
             uploader.init();
 
             function parseStatusMessage(objElement, file, status, message, progress, code) {

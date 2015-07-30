@@ -164,6 +164,18 @@ CREATE TABLE `contrexx_backend_areas` (
   PRIMARY KEY (`area_id`),
   KEY `area_name` (`area_name`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_backups` (
+  `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `date` varchar(14) NOT NULL DEFAULT '',
+  `version` varchar(20) NOT NULL DEFAULT '',
+  `edition` varchar(30) NOT NULL DEFAULT '',
+  `type` enum('sql','csv') NOT NULL DEFAULT 'sql',
+  `description` varchar(100) NOT NULL DEFAULT '',
+  `usedtables` text NOT NULL,
+  `size` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `date` (`date`)
+) ENGINE=MyISAM;
 CREATE TABLE `contrexx_component` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -2848,7 +2860,7 @@ CREATE TABLE `contrexx_module_pim_product` (
   `cancellation_unit` varchar(5) NOT NULL,
   `cancellation_quantifier` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB ;
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_pim_product_upgrade` (
   `product_id` int(11) NOT NULL,
   `upgrade_product_id` int(11) NOT NULL,
