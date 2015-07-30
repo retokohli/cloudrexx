@@ -173,7 +173,14 @@
 </div>
 <script type="text/javascript">// <[CDATA[
 
-cx.jQuery(function($) {
+function delete_coupon(index) {
+    if (confirm("{TXT_SHOP_DISCOUNT_COUPON_DELETE_CONFIRM}\n\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
+        window.location.replace(
+        "index.php?{CSRF_PARAM}&cmd=Shop&act=settings&tpl=coupon&delete="+index);
+    }
+}
+cx.ready(function() {
+  var $ = cx.jQuery;
   $("#end_time_unlimited").change(function() {
     if ($("#end_time_unlimited").is(":checked")) {
       $("#end_date").attr("disabled", true);
@@ -196,9 +203,9 @@ cx.jQuery(function($) {
       $("#uses").attr("disabled", false).val("1");
     }
   }).change();
-  var customer_id = "{SHOP_DISCOUNT_COUPON_CUSTOMER_ID}";
+  var element = $("#customer_widget").find("input[name=customer_id]");
+  var customer_id = element.val();
   $("[name=global_or_customer]").change(function() {
-    var element = $("#customer_widget").find("input[name=customer_id]");
     if ($("#global").is(":checked")) {
       customer_id = element.val();
       element.val("0");
@@ -231,12 +238,6 @@ cx.jQuery(function($) {
   };
   change_type("{SHOP_DISCOUNT_COUPON_TYPE_SELECTED}");
 });
-function delete_coupon(index) {
-  if (confirm("{TXT_SHOP_DISCOUNT_COUPON_DELETE_CONFIRM}\n\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
-    window.location.replace(
-      "index.php?{CSRF_PARAM}&cmd=shop&act=settings&tpl=coupon&delete="+index);
-  }
-}
 // ]]>
 </script>
 <!-- END module_shop_discount_coupon.html -->
