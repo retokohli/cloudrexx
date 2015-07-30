@@ -1,0 +1,5 @@
+Order Deny,Allow
+Deny from all
+<FilesMatch "\.thumb$">
+	Allow from all
+</FilesMatch>

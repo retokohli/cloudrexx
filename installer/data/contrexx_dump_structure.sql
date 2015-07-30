@@ -309,6 +309,14 @@ CREATE TABLE `contrexx_core_module_linkmanager_link` (
   `brokenLinkText` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_rewrite_rule` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `regular_expression` varchar(255) NOT NULL,
+  `continue_on_match` tinyint(1) NOT NULL,
+  `rewrite_status_code` int(11) NOT NULL,
+  `order_no` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_setting` (
   `section` varchar(32) NOT NULL DEFAULT '',
   `name` varchar(255) NOT NULL DEFAULT '',
