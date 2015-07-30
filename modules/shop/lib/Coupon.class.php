@@ -1317,7 +1317,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                     $attribute_discount_rate),
             'SHOP_DISCOUNT_COUPON_AMOUNT' =>
                 Html::getInputText('discount_amount',
-                    number_format($objCouponEdit->discount_amount, 2), false,
+                    number_format($objCouponEdit->discount_amount, 2, '.', ''), false,
                     $attribute_discount_amount),
             'SHOP_DISCOUNT_COUPON_USES' =>
                 Html::getInputText('uses',

@@ -196,11 +196,13 @@ cx.ready(function() {
       });
     }
   }).change();
+  var uses = $("#uses").val();
   $("#unlimited").change(function() {
     if ($("#unlimited").is(":checked")) {
+      uses = $("#uses").val();
       $("#uses").attr("disabled", true).val("");
     } else {
-      $("#uses").attr("disabled", false).val("1");
+      $("#uses").attr("disabled", false).val(uses);
     }
   }).change();
   var element = $("#customer_widget").find("input[name=customer_id]");
