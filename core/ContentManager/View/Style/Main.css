@@ -473,6 +473,9 @@ h1{ font-size: 20px }
     float: left;
     overflow: hidden;
 }
+#content-manager.edit_view #site-tree .name {
+    max-width: 202px;
+}
 
 #site-tree .jstree-move {
     display: none;
