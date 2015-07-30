@@ -24,9 +24,30 @@ class SitemapPageTree extends SigmaPageTree {
     const cssPrefix = "sitemap_level";
     const subTagStart = "<ul>";
     const subTagEnd = "</ul>";
-   
+    
+    /**
+     * Override the constructor from the PageTree
+     * @see Cx\Core\PageTree::__construct()
+     * @param type $entityManager
+     * @param type $license
+     * @param type $maxDepth
+     * @param type $rootNode
+     * @param type $lang
+     * @param type $currentPage
+     * @param type $skipInvisible
+     * @param type $considerLogin
+     */
+    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null,
+                                $lang = null, $currentPage = null, $skipInvisible = true,
+                                $considerLogin = false
+    ) {
+        parent::__construct($entityManager, $license, $maxDepth, $rootNode, $lang,
+                            $currentPage, $skipInvisible, $considerLogin);
+    }
+    
     protected function renderHeader($lang) {
     }
+    
     protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
         $width = $level*25;
         $spacer = "<img src='".ASCMS_CORE_MODULE_FOLDER."/Sitemap/View/Media/spacer.gif' width='$width' height='12' alt='' />";
