@@ -1421,10 +1421,11 @@ class CalendarEventManager extends CalendarLibrary
                 $isAllowedEvent = (boolean) $objCloneEvent->seriesData['seriesPatternEnd']; 
                 break;
             case 3:
-                if($objCloneEvent->startDate <= $objCloneEvent->seriesData['seriesPatternEnd']) {
+                if($objCloneEvent->startDate <= $objCloneEvent->seriesData['seriesPatternEndDate']) {
                     $getNextEvent = true;
                 } else {
-                    $getNextEvent = false;
+                    // don't show the event when startdate is greater then seriesPatternEndDate 
+                    $isAllowedEvent = $getNextEvent = false; 
                 }
                 break;
         }
