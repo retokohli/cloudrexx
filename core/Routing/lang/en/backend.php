@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CONTREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@comvation.com>
  * @access      public
  * @package     contrexx

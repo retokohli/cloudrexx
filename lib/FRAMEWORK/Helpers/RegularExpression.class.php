@@ -3,7 +3,7 @@
 /**
  * Class RegularExpression
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CONTREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  lib_helpers
@@ -14,7 +14,7 @@ namespace Cx\Lib\Helpers;
 /**
  * Class RegularExpression
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CONTREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  lib_helpers

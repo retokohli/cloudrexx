@@ -3,7 +3,7 @@
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  core_routing
@@ -14,7 +14,7 @@ namespace Cx\Core\Routing\Controller;
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  core_routing

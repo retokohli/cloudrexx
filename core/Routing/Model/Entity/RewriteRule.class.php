@@ -3,7 +3,7 @@
 /**
  * Class RewriteRule
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CONTREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  core_routing
@@ -14,7 +14,7 @@ namespace Cx\Core\Routing\Model\Entity;
 /**
  * Class RewriteRule
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CONTREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  core_routing

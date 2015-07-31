@@ -2,7 +2,7 @@
 /**
  * Main controller for Routing
  * 
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  core_routing
@@ -13,7 +13,7 @@ namespace Cx\Core\Routing\Controller;
 /** 
  * Main controller for Routing
  * 
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
  * @subpackage  core_routing
@@ -32,7 +32,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $last = false;
         $originalUrl = clone $url;
         foreach ($rewriteRules as $rewriteRule) {
-            $url = $rewriteRule->resolve($url, $last);
+            try {
+                $url = $rewriteRule->resolve($url, $last);
+            } catch (\Exception $e) {
+                // This is thrown if the regex of the rule is not valid
+            }
             if ($last) {
                 break;
             }
