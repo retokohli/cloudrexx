@@ -1892,14 +1892,15 @@ class Installer
             $objTpl->parse('termination');
 
             @session_destroy();
-            
+            // clear cx in env, because from now on we use the core Cx and not longer the InstallerCx
+            \Env::clear('cx');
             // we will now initialize a new session and will login the administrator (userID = 1).
             // this is required to allow the License system (versioncheck.php) to update
             // the license section template
             // We might have some overhead, since versioncheck.php does more or less the same again
             $documentRoot = realpath(dirname($basePath));
             require_once($documentRoot.'/core/Core/init.php');
-            init('minimal');
+            init('minimal', false);
             
             if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = cmsSession::getInstance();
 

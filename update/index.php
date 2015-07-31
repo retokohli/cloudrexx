@@ -92,7 +92,7 @@ if (!isset($_CONFIG['coreCmsVersion']) && file_exists(ASCMS_DOCUMENT_ROOT . '/co
 }
 
 // Check if the system is installed
-if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
+if (!defined('CONTREXX_INSTALLED') || !CONTREXX_INSTALLED) {
     header('Location: ../installer/index.php');
     exit;
 } else if ($incSettingsStatus === false) {
