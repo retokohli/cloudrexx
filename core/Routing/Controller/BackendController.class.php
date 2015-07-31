@@ -30,6 +30,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return array('RewriteRule');
     }
     
+    /**
+     * This is used as a temporary workaround to set user titles of fieldnames
+     * If BackendTable and FormGenerator use a sensful format for getting the
+     * fieldname titles (/headers), this can be removed.
+     */
     protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
         global $_ARRAYLANG;
         
