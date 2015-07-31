@@ -2593,6 +2593,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $this->registerOrderPaymentEventListener();
                 $this->registerWebsiteCollectionEventListener();
                 $this->registerOrderSubscriptionEventListener();
+                $this->registerOrderOrderEventListener();
                 break;
 
             case self::MODE_HYBRID:
@@ -2604,6 +2605,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $this->registerOrderPaymentEventListener();
                 $this->registerWebsiteCollectionEventListener();
                 $this->registerOrderSubscriptionEventListener();
+                $this->registerOrderOrderEventListener();
                 break;
 
             case self::MODE_SERVICE:
@@ -2722,6 +2724,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Order\\Model\\Entity\\Payment', $orderPaymentEventListener);
         
+    }
+    
+    protected function registerOrderOrderEventListener() {
+        $orderOrderEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\OrderOrderEventListener();
+        $evm = \Env::get('cx')->getEvents();
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Modules\\Order\\Model\\Entity\\Order', $orderOrderEventListener);
     }
     
     protected function registerOrderSubscriptionEventListener() {

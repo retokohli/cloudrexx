@@ -169,6 +169,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             'websiteUpdate' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'sendUpdateNotification' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'updateWebsiteCodeBase' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'setWebsiteOwner' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
         );  
     }
 
@@ -1789,11 +1790,13 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             if (isset($params['post']['codeBase'])) {
                 $website->setCodeBase($params['post']['codeBase']);
             }
-            if (!empty($params['post']['ownerId'])) {
-                $owner = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User')->findOneById($params['post']['ownerId']);
-                if ($owner) {
-                    $website->setOwner($owner);
+            if (!empty($params['post']['userId']) && !empty($params['post']['email'])) {
+                $owner = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User')->findOneById($params['post']['userId']);
+                if (!$owner) {
+                    $userDetails = $this->createUser($params);
+                    $owner = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User')->findOneById($userDetails['userId']);
                 }
+                $website->setOwner($owner);
             }
             \Env::get('em')->flush();
             return true;
@@ -6953,4 +6956,102 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         }
     }
 
+    /**
+     * Set the user as the website owner
+     * 
+     * @global array $_ARRAYLANG language variable
+     * @param  array $params     supplied arguments from JsonData-request
+     * 
+     * @return array JsonData-response
+     * @throws MultiSiteJsonException
+     */
+    public function setWebsiteOwner($params) {
+        global $_ARRAYLANG;
+        
+        if (
+             empty($params['post']) || empty($params['post']['ownerEmail'])
+        ) {
+            \DBG::msg('JsonMultiSiteController::setWebsiteOwner() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHANGE_OWNER_USER_ERROR']);
+        }
+        
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
+                case ComponentController::MODE_WEBSITE:
+                    $ownerEmail = !empty($params['post']['ownerEmail']) ? contrexx_input2raw($params['post']['ownerEmail']) : '';
+                    $objFWUser  = \FWUser::getFWUserObject();
+                    $objUser    = $objFWUser->objUser->getUsers($filter = array('email' => $ownerEmail));
+                    $adminUsersList = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
+                    
+                    if ($objUser && array_key_exists($objUser->getId(), $adminUsersList)) {
+                        $this->setUserAsWebsiteOwner($objUser->getId());
+                        return array(
+                            'userId' => $objUser->getId(),
+                            'log'    => \DBG::getMemoryLogs(),
+                        );
+                    }
+                    
+                    $accessEventObj = new \Cx\Core_Modules\MultiSite\Model\Event\AccessUserEventListener;
+                    $adminUserQuota = $accessEventObj->checkAdminUsersQuota();
+                    
+                    if (!$adminUserQuota) {
+                        $oldOwner = $objFWUser->objUser->getUser(\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId', 'MultiSite'));
+                        $oldOwner->setAdminStatus(false, true);
+                        $oldOwner->setGroups(array());
+                        if (!$oldOwner->store()) {
+                            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHANGE_OWNER_USER_ERROR']);
+                        }
+                    }
+                    
+                    //set the user as Administrator
+                    if ($objUser instanceof \User) {
+                        $objUser->setAdminStatus(true);
+                        $objUser->setGroups(array(1));
+                        if (!$objUser->store()) {
+                            throw new MultiSiteJsonException($objUser->getErrorMsg());
+                        }
+                        $userId = $objUser->getId();
+                    } else {
+                        $params['post'] = array(
+                            'email' => $ownerEmail,
+                            'active'=> 1,
+                            'admin' => 1,
+                            'groups' => array(1),
+                        );
+                        $userDetails = $this->createUser($params);
+                        $userId      = $userDetails['userId'];
+                    }
+             
+                    if (!empty($userId)) {
+                        $this->setUserAsWebsiteOwner($userId);
+                        return array(
+                            'userId' => $userId,
+                            'log'    => \DBG::getMemoryLogs(),
+                        );
+                    }
+                    
+                    \DBG::msg('Adding user failed: ' . $objUser->getErrorMsg());
+                    throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHANGE_OWNER_USER_ERROR']);
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHANGE_OWNER_USER_ERROR']);
+        }
+    }
+    
+    /**
+     * Set the user as website Owner
+     * 
+     * @param integer $userId
+     * 
+     * @return boolean
+     */
+    public function setUserAsWebsiteOwner($userId) {
+        if (empty($userId)) {
+            return;
+        }
+        \Cx\Core\Setting\Controller\Setting::set('websiteUserId', $userId);
+        \Cx\Core\Setting\Controller\Setting::update('websiteUserId');
+    }
 }

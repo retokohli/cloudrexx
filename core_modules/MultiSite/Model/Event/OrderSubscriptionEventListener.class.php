@@ -34,9 +34,17 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
      * @var array
      */
     protected $entitiesToPersistOnPostFlush = array();
-
+    
     public function preUpdate($eventArgs) {
         $subscription = $eventArgs->getEntity();
+        
+        //Update website owner
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
+        if (in_array($mode, array(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER, 
+                                  \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID))
+        ) {
+            $this->updateWebsiteOwner($subscription, $eventArgs);
+        }
         
         // in case product has been changed, we have to migrate the associated entity
         if ($eventArgs->hasChangedField('product')) {
@@ -219,7 +227,7 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
         if (!count($this->entitiesToPersistOnPostFlush)) {
             return;
         }
-
+        
         // persist the new entities
         $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
         while ($entity = array_shift($this->entitiesToPersistOnPostFlush)) {
@@ -373,6 +381,47 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
         }
     }
 
+    /**
+     * Update the website Owner
+     * 
+     * @global array $_ARRAYLANG language variable
+     * 
+     * @param \Cx\Modules\Order\Model\Entity\Subscription $subscription
+     * @param object $eventArgs
+     * 
+     * @throws OrderSubscriptionEventListenerException
+     */
+    public function updateWebsiteOwner(\Cx\Modules\Order\Model\Entity\Subscription $subscription, $eventArgs) {
+        global  $_ARRAYLANG;
+        
+        $em  = $eventArgs->getEntityManager();
+        $uow = $em->getUnitOfWork();
+
+        $productEntity = $subscription->getProductEntity();
+        $order   = $subscription->getOrder();
+        $userId  = \Cx\Modules\Crm\Controller\CrmLibrary::getUserIdByCrmUserId($order->getContactId());
+        $objUser = $em->getRepository('\Cx\Core\User\Model\Entity\User')->findOneById($userId);
+        if (!$objUser) {
+            throw new OrderSubscriptionEventListenerException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHANGE_OWNER_USER_ERROR']);
+        }
+        
+        if ($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection) {
+            //Update the subscription details of all the websites associated owner
+            foreach ($productEntity->getWebsites() as $website) {
+                $website->setOwner($objUser);
+                $uow->computeChangeSet(
+                    $em->getClassMetadata('\Cx\Core_Modules\MultiSite\Model\Entity\Website'), $website
+                );
+            }
+        } elseif ($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+            //Update the subscription details of the website associated owner
+            $productEntity->setOwner($objUser);
+            $uow->computeChangeSet(
+                $em->getClassMetadata('\Cx\Core_Modules\MultiSite\Model\Entity\Website'), $productEntity
+            );
+        }
+    }
+    
     public function onEvent($eventName, array $eventArgs) {
         \DBG::msg(__METHOD__.": $eventName");
         $this->$eventName(current($eventArgs));
