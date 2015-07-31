@@ -27,27 +27,44 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     * @return array List of acts
     */
     public function getCommands() {
-        return array('Redirect');
+        return array('RewriteRule');
     }
     
-    
-    /**     
-     * Use this to parse your backend page
-     * 
-     * @param \Cx\Core\Html\Sigma $template Template for current CMD
-     * @param array $cmd CMD separated by slashes    
-    */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+    protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
+        global $_ARRAYLANG;
         
-        switch (current($cmd)) {
-            case 'Redirect':
-                $entity = 'RewriteRule';
-                $entityClassName = $this->getNamespace() . '\\Model\\Entity\\'. $entity;
-                $this->parseEntityClassPage($template, $entityClassName, $entity);
-                break;
-            case '':
-            default:
-                break;
+        $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
+        $header = '';
+        if (isset($_ARRAYLANG[$langVarName])) {
+            $header = $_ARRAYLANG[$langVarName];
         }
+        return array(
+            'header' => $header,
+            'fields' => array(
+                'id' => array(
+                    'showOverview' => false,
+                ),
+                'regularExpression' => array(
+                    'header' => $_ARRAYLANG['regularExpression'],
+                ),
+                'orderNo' => array(
+                    'header' => $_ARRAYLANG['orderNo'],
+                ),
+                'rewriteStatusCode' => array(
+                    'header' => $_ARRAYLANG['rewriteStatusCode'],
+                ),
+                'continueOnMatch' => array(
+                    'header' => $_ARRAYLANG['continueOnMatch'],
+                ),
+            ),
+            'functions' => array(
+                'add'       => true,
+                'edit'      => true,
+                'delete'    => true,
+                'sorting'   => true,
+                'paging'    => true,
+                'filtering' => false,
+            ),
+        );
     }
 }
