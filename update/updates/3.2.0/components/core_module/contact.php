@@ -421,7 +421,7 @@ function _contactUpdate()
          * Update the content pages
          */
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-            $em = \Env::em();
+            $em = \Env::get('em');
             $cl = \Env::get('ClassLoader');
             $cl->loadFile(ASCMS_CORE_MODULE_PATH . '/contact/admin.class.php');
             $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');

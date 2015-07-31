@@ -2598,7 +2598,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             $_SESSION['shop']['cancellation_terms'] = '';
         }
         // Since 3.1.0
-        $page_repository = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $page_repository = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         if ($page_repository->findOneByModuleCmdLang(
             'Shop', 'payment', FRONTEND_LANG_ID)) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(

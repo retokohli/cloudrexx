@@ -721,7 +721,7 @@ class UpdateUtil
         global $objUpdate, $_CONFIG;
 
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
-            $em = \Env::em();
+            $em = \Env::get('em');
             $allPages = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->getAllFromModuleCmdByLang($module, $cmd);
             foreach ($allPages as $lang => $pages) {
                 foreach ($pages as $page) {
@@ -764,7 +764,7 @@ class UpdateUtil
         }
 
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
-            $em = \Env::em();
+            $em = \Env::get('em');
             $pages = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy($criteria, true);
             foreach ($pages as $page) {
                 if ($page) {
@@ -811,7 +811,7 @@ class UpdateUtil
         }
 
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
-            $em = \Env::em();
+            $em = \Env::get('em');
             $pages = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy($criteria, true);
             foreach ($pages as $page) {
                 if ($page) {
@@ -850,7 +850,7 @@ class UpdateUtil
         global $objUpdate, $_CONFIG;
 
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
-            $em = \Env::em();
+            $em = \Env::get('em');
             $pages = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy($criteria, true);
             foreach ($pages as $page) {
                 if ($page) {

@@ -138,7 +138,7 @@ if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable')) {
 $sessionObj->cmsSessionStatusUpdate('backend');
 
 // Initialize base system
-$objInit = new InitCMS('update', Env::em());
+$objInit = new InitCMS('update', \Env::get('em'));
 Env::set('init', $objInit);
 
 JS::activate('cx');
