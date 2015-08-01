@@ -34,7 +34,7 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
      * @var array
      */
     protected $entitiesToPersistOnPostFlush = array();
-    
+
     public function preUpdate($eventArgs) {
         $subscription = $eventArgs->getEntity();
         
@@ -227,7 +227,7 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
         if (!count($this->entitiesToPersistOnPostFlush)) {
             return;
         }
-        
+
         // persist the new entities
         $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
         while ($entity = array_shift($this->entitiesToPersistOnPostFlush)) {

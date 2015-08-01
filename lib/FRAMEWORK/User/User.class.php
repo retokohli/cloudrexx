@@ -2489,14 +2489,15 @@ class User extends User_Profile
      * If $status is FALSE then it will only be accepted if this object
      * isn't the only administrator.
      * @param boolean $status
+     * @param boolean $force
      * @global array
      * @return boolean
      */
-    public function setAdminStatus($status)
+    public function setAdminStatus($status, $force = false)
     {
         global $_CORELANG;
 
-        if ($status || !$this->isLastAdmin()) {
+        if ($status || !$this->isLastAdmin() || $force) {
             $this->is_admin = (bool)$status;
             return true;
         }
