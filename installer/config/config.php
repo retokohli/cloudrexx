@@ -54,7 +54,7 @@ if ($selectedTimezoneId !== '') {
     @ini_set('date.timezone', $arrTimezones[$selectedTimezoneId]);
 }
 
-$_CONFIG['coreCmsName']         = 'ContrexxÂ® Web Content Management System';
+$_CONFIG['coreCmsName']         = 'Contrexx&copy; Web Content Management System';
 $_CONFIG['coreCmsVersion']      = '1.2.0';
 $_CONFIG['coreCmsStatus']       = 'RC1';
 $_CONFIG['coreCmsEdition']      = 'Premium';
