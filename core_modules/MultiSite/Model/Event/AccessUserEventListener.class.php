@@ -43,7 +43,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                         $componentRepo    = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
                         $component        = $componentRepo->findOneBy(array('name' => 'MultiSite'));
                         $objJsonMultiSite = $component->getController('JsonMultiSite');
-                        $objJsonMultiSite->setUserAsWebsiteOwner($objUser->getId());
+                        $objJsonMultiSite->updateWebsiteOwnerId($objUser->getId());
                         //set the user as Administrator
                         $objUser->setAdminStatus(1);
                         $objUser->store();

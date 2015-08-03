@@ -1779,7 +1779,8 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
      */
     public function setWebsiteDetails($params) {
          if (!empty($params['post'])) {
-            $webRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+            $webRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
             $website = $webRepo->findOneById($params['post']['websiteId']);
             if (!$website) {
                 throw new MultiSiteJsonException('JsonMultiSiteController::setWebsiteDetails() failed: Website by ID '.$params['post']['websiteId'].' not found.');
@@ -1791,14 +1792,14 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                 $website->setCodeBase($params['post']['codeBase']);
             }
             if (!empty($params['post']['userId']) && !empty($params['post']['email'])) {
-                $owner = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User')->findOneById($params['post']['userId']);
+                $owner = $em->getRepository('Cx\Core\User\Model\Entity\User')->findOneById($params['post']['userId']);
                 if (!$owner) {
                     $userDetails = $this->createUser($params);
-                    $owner = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User')->findOneById($userDetails['userId']);
+                    $owner = $em->getRepository('Cx\Core\User\Model\Entity\User')->findOneById($userDetails['userId']);
                 }
                 $website->setOwner($owner);
             }
-            \Env::get('em')->flush();
+            $em->flush();
             return true;
         }
     }
@@ -6984,7 +6985,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     $adminUsersList = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
                     
                     if ($objUser && array_key_exists($objUser->getId(), $adminUsersList)) {
-                        $this->setUserAsWebsiteOwner($objUser->getId());
+                        $this->updateWebsiteOwnerId($objUser->getId());
                         return array(
                             'userId' => $objUser->getId(),
                             'log'    => \DBG::getMemoryLogs(),
@@ -7023,7 +7024,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     }
              
                     if (!empty($userId)) {
-                        $this->setUserAsWebsiteOwner($userId);
+                        $this->updateWebsiteOwnerId($userId);
                         return array(
                             'userId' => $userId,
                             'log'    => \DBG::getMemoryLogs(),
@@ -7047,7 +7048,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
      * 
      * @return boolean
      */
-    public function setUserAsWebsiteOwner($userId) {
+    public function updateWebsiteOwnerId($userId) {
         if (empty($userId)) {
             return;
         }
