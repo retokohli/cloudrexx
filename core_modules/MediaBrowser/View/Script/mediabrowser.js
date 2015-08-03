@@ -249,16 +249,17 @@
             };
 
             $scope.refreshBrowser = function () {
+                var files = $scope.dataFiles;
                 $scope.selectedFiles = [];
                 $scope.setFiles($scope.dataFiles);
                 $scope.path.forEach(function (pathpart) {
                     if (!pathpart.standard) {
-                        $scope.setFiles($scope.dataFiles[pathpart.path]);
+                        files = files[pathpart.path];
                     }
                 });
+                $scope.setFiles(files);
                 $scope.inRootDirectory = ($scope.path.length == 1);
             };
-
             /**
              * Move up in the directory structure to the specified directory
              * @param dirName
@@ -829,12 +830,11 @@
             if (key == 'datainfo') {
                 continue;
             }
-            if (searchArray[key]['datainfo'] != undefined) {
-                if (searchArray[key]['datainfo']['name'] != undefined) {
-                    if (searchObject(searchArray[key]['datainfo']['name'])) {
-                        resultArray.push(searchArray[key]);
-                    }
-                }
+            if (searchArray[key]['datainfo'] != undefined
+                && searchArray[key]['datainfo']['name'] != undefined
+                && searchArray[key]['datainfo']['extension'] != 'Dir'
+                && searchObject(searchArray[key]['datainfo']['name'])) {
+                resultArray.push(searchArray[key]);
             }
             if (searchArray[key] instanceof Object) {
                 resultArray = resultArray.concat(recursiveSearch(searchObject, searchArray[key], level++));
