@@ -61,10 +61,8 @@ class Env {
                 return \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
                 break;
             case 'cx':
-                if (!isset(self::$props[$prop])) {
-                    if (class_exists('\Cx\Core\Core\Controller\Cx')) {
-                        return \Cx\Core\Core\Controller\Cx::instanciate();
-                    }
+                if (!isset(self::$props[$prop]) && class_exists('\Cx\Core\Core\Controller\Cx')) {
+                    return \Cx\Core\Core\Controller\Cx::instanciate();
                 }
             default:
 		        if(isset(self::$props[$prop])) {
