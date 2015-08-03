@@ -1,0 +1,30 @@
+Cx\Core\Routing\Model\Entity\RewriteRule:
+  type: entity
+  repositoryClass: Cx\Core\Routing\Model\Repository\RewriteRuleRepository
+  table: core_rewrite_rule
+  fields:
+    id:
+      id: true
+      type: integer
+      length: 11
+      generator:
+        strategy: AUTO
+    regularExpression:
+      column: regular_expression
+      type: string
+      length: 255
+      nullable: false
+    orderNo:
+      column: order_no
+      type: integer
+      nullable: false
+    rewriteStatusCode:
+      column: rewrite_status_code
+      type: integer
+      length: 3
+      nullable: false
+    continueOnMatch:
+      column: continue_on_match
+      type: boolean
+      options:
+        default: true
