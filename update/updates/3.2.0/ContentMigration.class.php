@@ -25,7 +25,7 @@ class ContentMigration
             \DBG::disable_adodb_debug();
         }
 
-        self::$em = \Env::em();
+        self::$em = \Env::get('em');
         self::$defaultLang = \FWLanguage::getDefaultLangId();
 
         $this->initModuleNames();

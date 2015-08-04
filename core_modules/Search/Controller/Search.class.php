@@ -187,7 +187,7 @@ class Search
     {
         global $_ARRAYLANG;
 
-        $pageRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $criteria = array(
             'module' => $module,
             'lang'   => FRONTEND_LANG_ID,

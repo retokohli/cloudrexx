@@ -142,7 +142,7 @@ class ComponentManager
 
         $arrayInstalledModules = array();
         
-        $qb = \Env::em()->createQueryBuilder();
+        $qb = \Env::get('em')->createQueryBuilder();
 
         $qb->addSelect('p')
                 ->from('Cx\Core\ContentManager\Model\Entity\Page', 'p')

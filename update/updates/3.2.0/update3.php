@@ -1707,7 +1707,7 @@ while (!$result->EOF) {
 
 // fix fallback pages
 if ($version == 'rc1') {
-    $em = \Env::em();
+    $em = \Env::get('em');
     $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
     $fallbackPages = $pageRepo->findBy(array(
@@ -1787,7 +1787,7 @@ if ($version == 'rc1' || $version == 'rc2'
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     // contact core_module
     // update the content pages
-    $em = \Env::em();
+    $em = \Env::get('em');
     $cl = \Env::get('ClassLoader');
     $cl->loadFile(ASCMS_CORE_MODULE_PATH . '/contact/admin.class.php');
     $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -2367,7 +2367,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
 }
 
 // fix tree
-\Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
+\Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
 
 require(dirname(__FILE__).'/config.inc.php');
 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsVersion'] . '\' WHERE `setname` = \'coreCmsVersion\'');
