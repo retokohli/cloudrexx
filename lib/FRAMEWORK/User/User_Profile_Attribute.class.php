@@ -465,7 +465,7 @@ class User_Profile_Attribute
         global $_LANGID, $objInit;
 
         // this is a crapy solution! but the problem is, that this class gets initialized before the backend language ID is loaded.
-        $this->langId = $_LANGID ? $_LANGID : (!empty($_COOKIE['backendLangId']) ? intval($_COOKIE['backendLangId']) : (isset($objInit) ? ($objInit->mode == 'frontend' ? $objInit->defaultFrontendLangId : $objInit->defaultBackendLangId) : 1));
+        $this->langId = $_LANGID ? $_LANGID : (isset($objInit) ? ($objInit->mode == 'frontend' ? $objInit->defaultFrontendLangId : $objInit->defaultBackendLangId) : 1);
 
         $this->init();
         $this->first();
