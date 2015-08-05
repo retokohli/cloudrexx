@@ -48,7 +48,9 @@ class Uploader extends EntityBase
      */
     protected $cx;
 
-    public static $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip', 'tar', 'gz', 'docx', 'doc');
+    public static $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip', 'tar', 'gz', 'docx',
+        'doc','mp3','wav','act','aiff','aac','amr','ape','au','awb','dct','dss','flac','gsm','m4a','m4p',
+        'mp3','mpc','ogg','oga','opus','ra','rm','raw','sln','tta','vox','wav','wma','wv','webm');
 
     function __construct()
     {

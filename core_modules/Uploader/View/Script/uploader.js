@@ -47,7 +47,9 @@
                 jQuery('.close-upload-modal').hide();
             }
             if (!iAttrs.allowedExtensions) {
-                iAttrs.allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip', 'tar', 'gz', 'docx', 'doc'];
+                iAttrs.allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip', 'tar', 'gz', 'docx',
+                    'doc','mp3','wav','act','aiff','aac','amr','ape','au','awb','dct','dss','flac','gsm','m4a','m4p',
+                    'mp3','mpc','ogg','oga','opus','ra','rm','raw','sln','tta','vox','wav','wma','wv','webm'];
             }
 
             if (typeof scope.plFiltersModel == "undefined") {
