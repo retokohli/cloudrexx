@@ -324,7 +324,7 @@
             $scope.finishedUpload = false;
 
             $scope.template = {
-                url: '../core_modules/MediaBrowser/View/Template/_Uploader.html'
+                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/_Uploader.html'
             };
 
             $scope.loadedTemplate = function () {
@@ -424,7 +424,7 @@
             };
 
             $scope.template = {
-                url: '../core_modules/MediaBrowser/View/Template/_FileBrowser.html'
+                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/_FileBrowser.html'
             };
             // __construct
 
@@ -656,7 +656,7 @@
         function ($scope, mediabrowserConfig) {
 
             $scope.template = {
-                url: '../core_modules/MediaBrowser/View/Template/_Sitestructure.html'
+                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/_Sitestructure.html'
             };
 
             $scope.clickPage = function (site) {
@@ -910,7 +910,7 @@
                 }
 
                 $modal.open({
-                    templateUrl: '../core_modules/MediaBrowser/View/Template/MediaBrowserModal.html',
+                    templateUrl: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/MediaBrowserModal.html',
                     controller: 'MainCtrl',
                     dialogClass: 'media-browser-modal',
                     size: 'lg',
