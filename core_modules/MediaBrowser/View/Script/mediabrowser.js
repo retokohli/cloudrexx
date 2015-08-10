@@ -197,13 +197,17 @@
                 var isStartviewInViews = false;
                 var newTabNames = mediabrowserConfig.get('views');
 
-                var newTabs = [];
+                if(newTabNames.indexOf("filebrowser") !== -1 && newTabNames.indexOf("uploader") === -1){
+                    newTabNames.push("uploader");
+                }
 
+                var newTabs = [];
                 newTabNames.forEach(function (newTabName) {
                     $scope.dataTabs.forEach(function (tab) {
                         if (tab.name === newTabName) {
-                            if (newTabName === mediabrowserConfig.get('startView'))
+                            if (newTabName === mediabrowserConfig.get('startView')){
                                 isStartviewInViews = true;
+                            }
                             newTabs.push(tab);
                         }
                     });
