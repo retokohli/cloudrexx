@@ -992,7 +992,6 @@ namespace Cx\Core\Core\Controller {
             $this->initClassLoader();
             $this->initLegacyEnv();
             $this->callPreInitHooks();
-            $this->adjustRequest();
         }
 
         /**
@@ -1401,6 +1400,8 @@ namespace Cx\Core\Core\Controller {
             $this->legacyGlobalsHook(2);                // $objInit, $_LANGID, $_CORELANG, $url;
 
             $this->postResolve();                       // Call post resolve hook scripts
+
+            $this->adjustRequest();
 
             // load content
             $this->preContentLoad();                    // Call pre content load hook scripts
