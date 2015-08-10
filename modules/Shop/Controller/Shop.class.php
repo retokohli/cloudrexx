@@ -3358,7 +3358,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 //\DBG::log("Shop::process(): Customer is not in final customer group (ID $usergroup_id), either");
                 // Neither one, add to the final customer group (default)
                 $arrGroups[] = $usergroup_id;
-                self::$objCustomer->setGroups(array($usergroup_id));
+                self::$objCustomer->setGroups($arrGroups);
 //\DBG::log("Shop::process(): Added Customer to final customer group (ID $usergroup_id): ".var_export(self::$objCustomer->getAssociatedGroupIds(), true));
             } else {
 //\DBG::log("Shop::process(): Customer is a final customer (ID $usergroup_id) already: ".var_export(self::$objCustomer->getAssociatedGroupIds(), true));
