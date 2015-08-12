@@ -409,6 +409,14 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
+     * Get all the sites under the existing subscription
+    */
+    public function getAllSites() {
+        \DBG::msg("MultiSite (XamppController): Get all sites on existing subscription.");
+        return true;
+    }
+
+    /**
      * Install the SSL Certificate for the domain
      * 
      * @param string $name                      Certificate name

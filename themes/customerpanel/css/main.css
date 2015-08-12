@@ -511,6 +511,19 @@ table tbody tr td.actions a{
     display: inline-block;
 }
 
+a.ssl-certificate-link {
+    width: 21px;
+    height: 21px;
+    top: 5px;
+    background-image: url('../img/shield.png');
+    background-size: 20px;
+    position: relative;
+}
+
+a.ssl-certificate-link:hover {
+    background-image: url('../img/shield_hover.png');
+}
+
 table tfoot tr td {
     background-color: #F5F5F5;
     border-bottom: 1px solid #dddddd;

@@ -1931,6 +1931,61 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
+     * Get all the sites under the existing subscription
+     * 
+     * @return array $siteList Name of all the sites under the subscription
+     * 
+     * @throws ApiRequestException
+     */
+    public function getAllSites() {
+        \DBG::msg("MultiSite (PleskController): Get all sites under the existing subscription.");
+
+        $xmldoc  = $this->getXmlDocument();
+        $packet  = $this->getRpcPacket($xmldoc); 
+
+        $site = $xmldoc->createElement('site');
+        $packet->appendChild($site);
+
+        $get = $xmldoc->createElement('get');
+        $site->appendChild($get); 
+
+        $filter = $xmldoc->createElement('filter');
+        $get->appendChild($filter);
+
+        $filterTag = $xmldoc->createElement('parent-id', $this->webspaceId);
+        $filter->appendChild($filterTag);
+
+        $dataset = $xmldoc->createElement('dataset');
+        $get->appendChild($dataset);
+
+        $genInfo = $xmldoc->createElement('gen_info');
+        $dataset->appendChild($genInfo);
+
+        $response = $this->executeCurl($xmldoc);
+
+        $resultNode  = $response->site->get->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Get all sites on existing subscription: {$error}");
+        }
+
+        $responseJson = json_encode($response->site->get);
+        $respArr      = json_decode($responseJson, true);
+
+        $siteList = array();
+        if (!empty($respArr)) {
+            $responseArr = isset($respArr['result'][0]) && is_array($respArr['result'][0]) ? $respArr['result'] : $respArr;
+            foreach ($responseArr as $result) {
+                $siteList[] = $result['data']['gen_info']['name'];
+            }
+        }
+        return $siteList;
+    }
+
+    /**
      * Install the SSL Certificate for the domain
      * 
      * @param string $name                      Certificate name

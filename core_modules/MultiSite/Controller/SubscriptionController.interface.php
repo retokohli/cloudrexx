@@ -147,6 +147,11 @@ interface SubscriptionController {
      * @param string $domain Domain name to remove
      */
     public function deleteSite($domain);
+    
+    /**
+     * Get all the sites under the existing subscription
+     */
+    public function getAllSites();
 
     /**
      * Install the SSL Certificate for the domain
