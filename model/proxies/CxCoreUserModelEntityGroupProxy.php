@@ -99,6 +99,12 @@ class CxCoreUserModelEntityGroupProxy extends \Cx\Core\User\Model\Entity\Group i
         return parent::addUser($user);
     }
 
+    public function removeUser(\Cx\Core\User\Model\Entity\User $user)
+    {
+        $this->_load();
+        return parent::removeUser($user);
+    }
+
     public function getUser()
     {
         $this->_load();

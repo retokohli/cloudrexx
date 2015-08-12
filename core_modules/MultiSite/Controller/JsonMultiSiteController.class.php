@@ -6979,12 +6979,16 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         try {
             switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
                 case ComponentController::MODE_WEBSITE:
-                    $ownerEmail = !empty($params['post']['ownerEmail']) ? contrexx_input2raw($params['post']['ownerEmail']) : '';
-                    $objFWUser  = \FWUser::getFWUserObject();
-                    $objUser    = $objFWUser->objUser->getUsers($filter = array('email' => $ownerEmail));
+                    $em             = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+                    $userRepo       = $em->getRepository('Cx\Core\User\Model\Entity\User');
+                    $ownerEmail     = !empty($params['post']['ownerEmail']) ? contrexx_input2raw($params['post']['ownerEmail']) : '';
                     $adminUsersList = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
+                    $objUser        = $userRepo->findOneBy(array('email' => $ownerEmail));
                     
-                    if ($objUser && array_key_exists($objUser->getId(), $adminUsersList)) {
+                    //Check if the new owner  already exists and is an Admin
+                    if (    $objUser instanceof \Cx\Core\User\Model\Entity\User 
+                        &&  array_key_exists($objUser->getId(), $adminUsersList)
+                    ) {
                         $this->updateWebsiteOwnerId($objUser->getId());
                         return array(
                             'userId' => $objUser->getId(),
@@ -6995,23 +6999,24 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     $accessEventObj = new \Cx\Core_Modules\MultiSite\Model\Event\AccessUserEventListener;
                     $adminUserQuota = $accessEventObj->checkAdminUsersQuota();
                     
+                    //If  the quota for  current admin user does not allow to set admin flag for new/existing users 
+                    //then we need to remove the admin permission from the previous Admin user.
                     if (!$adminUserQuota) {
-                        $oldOwner = $objFWUser->objUser->getUser(\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId', 'MultiSite'));
-                        $oldOwner->setAdminStatus(false, true);
-                        $oldOwner->setGroups(array());
-                        if (!$oldOwner->store()) {
-                            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHANGE_OWNER_USER_ERROR']);
+                        $oldOwner = $userRepo->findOneById(\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId', 'MultiSite'));
+                        $oldOwner->setIsAdmin(false);
+                        foreach($oldOwner->getGroup() as $group) {
+                            if ($group->getType() === 'backend') {
+                                $oldOwner->removeGroup($group);
+                            }
                         }
+                        $em->flush();
                     }
-                    
-                    //set the user as Administrator
-                    if ($objUser instanceof \User) {
-                        $objUser->setAdminStatus(true);
-                        $objUser->setGroups(array(1));
-                        if (!$objUser->store()) {
-                            throw new MultiSiteJsonException($objUser->getErrorMsg());
-                        }
-                        $userId = $objUser->getId();
+
+                    //if the user  already exists and is not an Admin, then set the user as Administrator 
+                    //else create a new admin user
+                    if ($objUser instanceof \Cx\Core\User\Model\Entity\User) {
+                        $objUser->setIsAdmin(true);
+                        $em->flush();
                     } else {
                         $params['post'] = array(
                             'email' => $ownerEmail,
@@ -7019,10 +7024,14 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                             'admin' => 1,
                             'groups' => array(1),
                         );
-                        $userDetails = $this->createUser($params);
-                        $userId      = $userDetails['userId'];
+                        $objUser = $this->createUser($params);
                     }
-             
+                    
+                    $userId = ($objUser instanceof \Cx\Core\User\Model\Entity\User) 
+                              ? $objUser->getId() 
+                              : $objUser['userId'];
+                    
+                    //Set the new/existing Admin user as website owner
                     if (!empty($userId)) {
                         $this->updateWebsiteOwnerId($userId);
                         return array(

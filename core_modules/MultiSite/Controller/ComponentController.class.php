@@ -3164,8 +3164,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $adminUsers = array();
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_WEBSITE:
-
-                $userRepo = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User');
+                $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+                $userRepo = $em->getRepository('Cx\Core\User\Model\Entity\User');
                 $users = $userRepo->findBy(array('isAdmin' => '1'));
 
                 
@@ -3173,7 +3173,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $adminUsers[$user->getId()] = $user;
                 }
 
-                $groupRepo = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\Group');
+                $groupRepo = $em->getRepository('Cx\Core\User\Model\Entity\Group');
                 $groups = $groupRepo->findBy(array('type' => 'backend'));
 
                 foreach ($groups as $group) {

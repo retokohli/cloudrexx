@@ -35,6 +35,12 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
      */
     protected $entitiesToPersistOnPostFlush = array();
 
+    /**
+     *
+     * @var boolean 
+     */
+    protected $entitiesToFlushOnPostFlush = false;
+    
     public function preUpdate($eventArgs) {
         $subscription = $eventArgs->getEntity();
         
@@ -43,7 +49,8 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
         if (in_array($mode, array(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER, 
                                   \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID))
         ) {
-            $this->updateWebsiteOwner($subscription, $eventArgs);
+            $this->updateWebsiteOwner($subscription);
+            $this->entitiesToFlushOnPostFlush = true;
         }
         
         // in case product has been changed, we have to migrate the associated entity
@@ -224,14 +231,16 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
 
     public function postFlush($eventArgs) {
         // check if there are any new entities present we need to persist
-        if (!count($this->entitiesToPersistOnPostFlush)) {
+        if (!count($this->entitiesToPersistOnPostFlush) && !$this->entitiesToFlushOnPostFlush) {
             return;
         }
 
         // persist the new entities
         $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
-        while ($entity = array_shift($this->entitiesToPersistOnPostFlush)) {
-            $em->persist($entity);
+        if ($this->entitiesToPersistOnPostFlush) {
+            while ($entity = array_shift($this->entitiesToPersistOnPostFlush)) {
+                $em->persist($entity);
+            }
         }
         $em->flush();
     }
@@ -391,12 +400,11 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
      * 
      * @throws OrderSubscriptionEventListenerException
      */
-    public function updateWebsiteOwner(\Cx\Modules\Order\Model\Entity\Subscription $subscription, $eventArgs) {
+    public function updateWebsiteOwner(\Cx\Modules\Order\Model\Entity\Subscription $subscription) {
         global  $_ARRAYLANG;
         
-        $em  = $eventArgs->getEntityManager();
-        $uow = $em->getUnitOfWork();
-
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        
         $productEntity = $subscription->getProductEntity();
         $order   = $subscription->getOrder();
         $userId  = \Cx\Modules\Crm\Controller\CrmLibrary::getUserIdByCrmUserId($order->getContactId());
@@ -409,16 +417,10 @@ class OrderSubscriptionEventListener implements \Cx\Core\Event\Model\Entity\Even
             //Update the subscription details of all the websites associated owner
             foreach ($productEntity->getWebsites() as $website) {
                 $website->setOwner($objUser);
-                $uow->computeChangeSet(
-                    $em->getClassMetadata('\Cx\Core_Modules\MultiSite\Model\Entity\Website'), $website
-                );
             }
         } elseif ($productEntity instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
             //Update the subscription details of the website associated owner
             $productEntity->setOwner($objUser);
-            $uow->computeChangeSet(
-                $em->getClassMetadata('\Cx\Core_Modules\MultiSite\Model\Entity\Website'), $productEntity
-            );
         }
     }
     

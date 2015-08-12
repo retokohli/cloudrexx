@@ -31,6 +31,12 @@ class OrderOrderEventListenerException extends \Exception {}
  */
 class OrderOrderEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
+    /**
+     *
+     * @var boolean
+     */
+    protected $entitiesToFlushOnPostFlush = false;
+    
     public function preUpdate($eventArgs) {
         global $_ARRAYLANG;
         
@@ -63,10 +69,22 @@ class OrderOrderEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         $subscriptions = $order->getSubscriptions();
         $OrderSubscriptionEventListener = new OrderSubscriptionEventListener();
         foreach ($subscriptions as $subscription) {
-            $OrderSubscriptionEventListener->updateWebsiteOwner($subscription, $eventArgs);
+            $OrderSubscriptionEventListener->updateWebsiteOwner($subscription);
         }
+        $this->entitiesToFlushOnPostFlush = true;
     }
 
+    public function postFlush($eventArgs) {
+        // check if there are any new entities present we need to persist
+        if (!$this->entitiesToFlushOnPostFlush) {
+            return;
+        }
+
+        // persist the new entities
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        $em->flush();
+    }
+    
     public function onEvent($eventName, array $eventArgs) {
         \DBG::msg(__METHOD__.": $eventName");
         $this->$eventName(current($eventArgs));
