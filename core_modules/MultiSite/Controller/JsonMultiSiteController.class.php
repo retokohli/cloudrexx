@@ -2330,12 +2330,18 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             if ($resp && $resp->status == 'success' && $resp->data->status == 'success') {
                 return $resp->data;
             } else {
-                \DBG::dump($resp);
-                throw new MultiSiteJsonException($resp->message);
+                if (isset($resp->log)) {
+                    \DBG::appendLogs(array_map(function($logEntry) {return '(Website: '.$website->getName().') '.$logEntry;}, $resp->log));
+                }
+                throw new MultiSiteJsonException($resp && $resp->message ? $resp->message : '');
             }
         } catch (\Exception $e) {
             \DBG::msg(__METHOD__.': ' . $e->getMessage());
-            throw new MultiSiteJsonException($e->getMessage());
+            return array(
+                'status'    => 'error',
+                'log'       => \DBG::getMemoryLogs(),
+                'message'   => $e->getMessage(),
+            );
         }
     }
 
