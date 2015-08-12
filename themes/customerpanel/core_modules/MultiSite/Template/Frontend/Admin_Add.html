@@ -47,6 +47,11 @@
           jQuery('#password').val('').hide();
           jQuery('#label_confirm_password').hide();
           jQuery('#confirm_password').val('').hide();
+          //FF complete the password field with the password from the password manager
+          //FF should not do such a stupid thing
+          setTimeout(function(){
+              jQuery('#password').val('');
+          }, 100);
       } else if(jQuery(this).val()==0) {
           jQuery('#label_password').show();
           jQuery('#password').show();

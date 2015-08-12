@@ -1795,8 +1795,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
                 }
                 return array($resp->data->userId, $resp->data->authToken);
             } else {
-                if (isset($resp->log)) {
-                    \DBG::appendLogs(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->log));
+                if (isset($resp->data) && isset($resp->data->log)) {
+                    \DBG::appendLogs(array_map(function($logEntry) {return '(Website: '.$this->getName().') '.$logEntry;}, $resp->data->log));
                 }
                 throw new WebsiteException('Command generateAuthToken failed');
             }

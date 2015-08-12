@@ -321,8 +321,13 @@ class JsonData {
             $request->addCookie(session_name(), $this->sessionId);
         }
         $request->setConfig(array(
+            // disable ssl peer verification
             'ssl_verify_host' => false,
             'ssl_verify_peer' => false,
+            // follow HTTP redirect
+            'follow_redirects' => true,
+            // resend original request to new location
+            'strict_redirects' => true,
         ));
         $response = $request->send();
         //echo '<pre>';var_dump($response->getBody());echo '<br /><br />';
