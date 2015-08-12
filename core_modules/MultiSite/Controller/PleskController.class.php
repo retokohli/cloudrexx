@@ -1972,15 +1972,16 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
             throw new ApiRequestException("Get all sites on existing subscription: {$error}");
         }
 
-        $responseJson = json_encode($response);
+        $responseJson = json_encode($response->site->get);
         $respArr      = json_decode($responseJson, true);
-        $resultArr    = $respArr['site']['get']['result'];
-        
+
         $siteList = array();
-        foreach ($resultArr as $result) {
-            $siteList[] = $result['data']['gen_info']['name'];
+        if (!empty($respArr)) {
+            $responseArr = isset($respArr['result'][0]) && is_array($respArr['result'][0]) ? $respArr['result'] : $respArr;
+            foreach ($responseArr as $result) {
+                $siteList[] = $result['data']['gen_info']['name'];
+            }
         }
-        
         return $siteList;
     }
 }
