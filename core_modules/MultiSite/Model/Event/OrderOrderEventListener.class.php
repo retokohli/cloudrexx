@@ -32,7 +32,6 @@ class OrderOrderEventListenerException extends \Exception {}
 class OrderOrderEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
     /**
-     *
      * @var boolean
      */
     protected $entitiesToFlushOnPostFlush = false;
@@ -41,6 +40,8 @@ class OrderOrderEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         global $_ARRAYLANG;
         
         $order = $eventArgs->getEntity();
+        $em    = $eventArgs->getEntityManager();
+        $uow   = $em->getUnitOfWork();
         
         if (!$eventArgs->hasChangedField('contactId')) {
             return;
@@ -62,8 +63,11 @@ class OrderOrderEventListener implements \Cx\Core\Event\Model\Entity\EventListen
             // create a new CRM Contact and link it to the User account
             $crmContactId = \Cx\Modules\Crm\Controller\CrmLibrary::addCrmContactFromAccessUser($objUser);
         }
-        $eventArgs->setNewValue('contactId', $crmContactId);
         $order->setContactId($crmContactId);
+        $uow->computeChangeSet(
+            $em->getClassMetadata('Cx\Modules\Order\Model\Entity\Order'),
+            $order
+        );
 
         //Update the website Owner
         $subscriptions = $order->getSubscriptions();
@@ -79,7 +83,8 @@ class OrderOrderEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         if (!$this->entitiesToFlushOnPostFlush) {
             return;
         }
-
+        
+        $this->entitiesToFlushOnPostFlush = false;
         // persist the new entities
         $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
         $em->flush();
