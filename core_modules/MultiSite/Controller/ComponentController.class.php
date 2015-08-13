@@ -2730,6 +2730,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $orderOrderEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\OrderOrderEventListener();
         $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Modules\\Order\\Model\\Entity\\Order', $orderOrderEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postFlush, 'Cx\\Modules\\Order\\Model\\Entity\\Order', $orderOrderEventListener);
     }
     
     protected function registerOrderSubscriptionEventListener() {
