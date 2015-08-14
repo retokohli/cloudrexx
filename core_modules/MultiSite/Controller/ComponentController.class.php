@@ -1000,6 +1000,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // hide the edit/delete icons if the domain is selected as main domain or  base domain.
                 $domainActionStatus = !$statusDisabled ? ($domain->getName() !== $mainDomainName && !$isBaseDomain) : false;
                 self::showOrHideBlock($objTemplate, 'showWebsiteDomainActions', $domainActionStatus);
+                // hide the ssl certificate icon if it is a base domain.
+                self::showOrHideBlock($objTemplate, 'showDomainWithSslCertificateAction', $domainActionStatus);
                 // hide the spf icon if the domain is the base domain.
                 $domainSpfStatus = !$statusDisabled ? (!$isBaseDomain) : false;
                 self::showOrHideBlock($objTemplate, 'showWebsiteSpfAction', $domainSpfStatus);
@@ -1165,17 +1167,37 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         );
                         break;
                     
+                    case 'Ssl':
+                        $certificateName = isset($_POST['certificate_name']) ? contrexx_input2raw($_POST['certificate_name']) : '';
+                        $privateKey      = isset($_POST['private_key']) ? contrexx_input2raw($_POST['private_key']) : '';
+                        if (empty($certificateName) || empty($privateKey)) {
+                            return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SSL_FAILED'], false);
+                        }
+                        $command = 'linkSsl';
+                        $params = array(
+                            'domainName'      => $domainName,
+                            'certificateName' => $certificateName,
+                            'privateKey'      => $privateKey,
+                            'certificate'     => isset($_POST['certificate']) ? contrexx_input2raw($_POST['certificate']) : '',
+                            'caCertificate'   => isset($_POST['ca_certificate']) ? contrexx_input2raw($_POST['ca_certificate']) : ''
+                        );
+                        break;
+
                     default :
                         return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'], false);
                         break;
                 }
                 if (isset($command) && isset($params)) {
-                    $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite($command, $params, $website);
+                    if ($submitFormAction == 'Ssl') {
+                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer($command, $params, $website->getWebsiteServiceServer());
+                    } else {                    
+                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite($command, $params, $website);
+                    }
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         $message = ($submitFormAction == 'Select') 
                                     ? sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_SUCCESS_MSG'], contrexx_raw2xhtml($domainName))
                                     : $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_SUCCESS_MSG'];
-                                
+
                         return $this->parseJsonMessage($message, true);
                     } else {
                         return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_FAILED'], false);
@@ -1199,6 +1221,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $objTemplate->setVariable(array(
                         'MULTISITE_DOMAIN_NAME' => contrexx_raw2xhtml($domainName),
                         'MULTISITE_WEBSITE_DOMAIN_ALIAS_ID' => contrexx_raw2xhtml($domainId)
+                    ));
+                }
+                
+                if (($loadPageAction == 'Ssl') && $objTemplate->blockExists('showSslCertificateForm')) {
+                    $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('getDomainSslCertificate', array('domainName' => $domainName), $website->getWebsiteServiceServer());                    
+                    $sslCertificate = ($response && $response->status == 'success' && $response->data->status == 'success') ? implode(', ', $response->data->sslCertificate) : '';
+                    self::showOrHideBlock($objTemplate, 'showSslCertificate', $sslCertificate);                    
+                    $objTemplate->setVariable(array(                        
+                        'TXT_MULTISITE_DOMAIN_CERTIFICATE' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DOMAIN_CERTIFICATE'], contrexx_raw2xhtml($sslCertificate)),
                     ));
                 }
                 
@@ -1229,7 +1260,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
 
             $objTemplate->setVariable(array(
-                'MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL' => '/api/MultiSite/Domain?action=' . $loadPageAction . '&website_id=' . $websiteId . '&domain_id=' . $domainId,
+                'MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL' => '/api/MultiSite/Domain?action=' . $loadPageAction . '&website_id=' . $websiteId . '&domain_id=' . $domainId . '&domain_name=' . $domainName,
             ));
 
             return $objTemplate->get();

@@ -1930,4 +1930,224 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         return true;
     }
     
+    /**
+     * Get all the sites under the existing subscription
+     * 
+     * @return array $siteList Name of all the sites under the subscription
+     * 
+     * @throws ApiRequestException
+     */
+    public function getAllSites() {
+        \DBG::msg("MultiSite (PleskController): Get all sites under the existing subscription.");
+
+        $xmldoc  = $this->getXmlDocument();
+        $packet  = $this->getRpcPacket($xmldoc); 
+
+        $site = $xmldoc->createElement('site');
+        $packet->appendChild($site);
+
+        $get = $xmldoc->createElement('get');
+        $site->appendChild($get); 
+
+        $filter = $xmldoc->createElement('filter');
+        $get->appendChild($filter);
+
+        $filterTag = $xmldoc->createElement('parent-id', $this->webspaceId);
+        $filter->appendChild($filterTag);
+
+        $dataset = $xmldoc->createElement('dataset');
+        $get->appendChild($dataset);
+
+        $genInfo = $xmldoc->createElement('gen_info');
+        $dataset->appendChild($genInfo);
+
+        $response = $this->executeCurl($xmldoc);
+
+        $resultNode  = $response->site->get->result;
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Get all sites on existing subscription: {$error}");
+        }
+
+        $responseJson = json_encode($response->site->get);
+        $respArr      = json_decode($responseJson, true);
+
+        $siteList = array();
+        if (!empty($respArr)) {
+            $responseArr = isset($respArr['result'][0]) && is_array($respArr['result'][0]) ? $respArr['result'] : $respArr;
+            foreach ($responseArr as $result) {
+                $siteList[] = $result['data']['gen_info']['name'];
+            }
+        }
+        return $siteList;
+    }
+
+    /**
+     * Install the SSL Certificate for the domain
+     * 
+     * @param string $name                      Certificate name
+     * @param string $domain                    Domain name
+     * @param string $certificatePrivateKey     certificate private key
+     * @param string $certificateBody           certificate body
+     * @param string $certificateAuthority      certificate authority
+     */
+    public function installSSLCertificate($name, $domain, $certificatePrivateKey, $certificateBody = null, $certificateAuthority = null) {
+        \DBG::msg("MultiSite (XamppController): Install the SSL Certificate for the domain.");
+        if (    empty($name) 
+            ||  empty($domain) 
+            ||  empty($certificatePrivateKey)
+        ) {
+            return false;
+        }
+        
+        $xmldoc  = $this->getXmlDocument();
+        $packet  = $this->getRpcPacket($xmldoc); 
+        
+        $certificate = $xmldoc->createElement('certificate');
+        $packet->appendChild($certificate);
+        
+        $install = $xmldoc->createElement('install');
+        $certificate->appendChild($install);
+        
+        $certificateName = $xmldoc->createElement('name', $name);
+        $install->appendChild($certificateName);
+        
+        $webspace = $xmldoc->createElement('webspace', $domain);
+        $install->appendChild($webspace);
+        
+        $content = $xmldoc->createElement('content');
+        $install->appendChild($content);
+        
+        $certificateSigningRequestTag = $xmldoc->createElement('csr', '');
+        $content->appendChild($certificateSigningRequestTag);
+        
+        $certificatePrivateKeyTag = $xmldoc->createElement('pvt', $certificatePrivateKey);
+        $content->appendChild($certificatePrivateKeyTag);
+        
+        if (!empty($certificateBody)) {
+            $certificateBodyTag = $xmldoc->createElement('cert', $certificateBody);
+            $content->appendChild($certificateBodyTag);
+        }
+
+        if (!empty($certificateAuthority)) {
+            $certificateAuthorityTag = $xmldoc->createElement('ca', $certificateAuthority);
+            $content->appendChild($certificateAuthorityTag);
+        }
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->certificate->install->result;
+        
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in installing SSL Certificate for the domain: {$error}");
+        }
+        
+        return true;
+    }
+
+    /**
+     * Fetch the SSL Certificate details
+     * 
+     * @param string $domain domain name
+     * 
+     * @return array list of certificates
+     */
+    public function getSSLCertificates($domain) {
+        \DBG::msg("MultiSite (XamppController): Fetch the SSL Certificate details.");
+        if (empty($domain)) {
+            return false;
+        }
+        
+        $xmldoc  = $this->getXmlDocument();
+        $packet  = $this->getRpcPacket($xmldoc); 
+        
+        $certificate = $xmldoc->createElement('certificate');
+        $packet->appendChild($certificate);
+        
+        $getTag = $xmldoc->createElement('get-pool');
+        $certificate->appendChild($getTag);
+        
+        $filterTag = $xmldoc->createElement('filter');
+        $getTag->appendChild($filterTag);
+        
+        $domainTag = $xmldoc->createElement('domain-name', $domain);
+        $filterTag->appendChild($domainTag);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->certificate->{'get-pool'}->result;
+        
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            \DBG::msg("Error in fetching the SSL Certificate: {$error}");
+            return false;
+        }
+        
+        $responseJson = json_encode($resultNode);
+        $respArr      = json_decode($responseJson, true);
+        $resultArr    = (count($respArr['certificates']['certificate']) == count($respArr['certificates']['certificate'], COUNT_RECURSIVE)) 
+                        ? $respArr['certificates'] : $respArr['certificates']['certificate'];
+        
+        //store all the certificate names into an array
+        $certificateList = array();
+        foreach($resultArr as $result) {
+            $certificateList[] = $result['name'];
+        }
+        
+        return $certificateList;
+    }
+    
+    /**
+     * Remove the SSL Certificates
+     * 
+     * @param string $domain domain name
+     * @param array  $names  certificate names
+     */
+    public function removeSSLCertificates($domain, $names = array()) {
+        \DBG::msg("MultiSite (XamppController): Remove the SSL Certificates.");
+        if (!is_array($names) || empty($names) || empty($domain)) {
+            return false;
+        }
+        
+        $xmldoc  = $this->getXmlDocument();
+        $packet  = $this->getRpcPacket($xmldoc); 
+        
+        $certificate = $xmldoc->createElement('certificate');
+        $packet->appendChild($certificate);
+        
+        $removeTag = $xmldoc->createElement('remove');
+        $certificate->appendChild($removeTag);
+        
+        $filterTag = $xmldoc->createElement('filter');
+        $removeTag->appendChild($filterTag);
+        
+        foreach ($names as $name) {
+            $certificateNameTag = $xmldoc->createElement('name', $name);
+            $filterTag->appendChild($certificateNameTag);
+        }
+        
+        $webspaceTag = $xmldoc->createElement('webspace', $domain);
+        $removeTag->appendChild($webspaceTag);
+        
+        $response = $this->executeCurl($xmldoc);
+        $resultNode = $response->certificate->remove->result;
+        
+        $systemError = $response->system->errtext;
+        if ('error' == (string) $resultNode->status || $systemError) {
+            \DBG::dump($xmldoc->saveXML());
+            \DBG::dump($response);
+            $error = (isset($systemError) ? $systemError : $resultNode->errtext);
+            throw new ApiRequestException("Error in removing the SSL Certificate: {$error}");
+        }
+        
+        return true;
+    }
 }
