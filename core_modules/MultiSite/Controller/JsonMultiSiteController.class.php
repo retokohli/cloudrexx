@@ -22,7 +22,7 @@ class MultiSiteJsonException extends \Exception {
      * We do overwrite this here to also allow $message to be an array
      * that can then be sent back in the JsonData-response.
      */
-    public function __construct($message = null, $code = 0, Exception $previous = null) {
+    public function __construct($message = "", $code = 0, \Exception $previous = null) {
         if (is_array($message)) {
             $msg = $message['message'];
             if (isset($message['object'])) {
