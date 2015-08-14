@@ -6982,12 +6982,11 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     $em             = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
                     $userRepo       = $em->getRepository('Cx\Core\User\Model\Entity\User');
                     $ownerEmail     = !empty($params['post']['ownerEmail']) ? contrexx_input2raw($params['post']['ownerEmail']) : '';
-                    $adminUsersList = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
                     $objUser        = $userRepo->findOneBy(array('email' => $ownerEmail));
                     
                     //Check if the new owner  already exists and is an Admin
                     if (    $objUser instanceof \Cx\Core\User\Model\Entity\User 
-                        &&  array_key_exists($objUser->getId(), $adminUsersList)
+                        &&  $objUser->getIsAdmin() && $objUser->isBackendGroupUser()
                     ) {
                         $this->updateWebsiteOwnerId($objUser->getId());
                         return array(
@@ -7001,7 +7000,9 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     
                     //If  the quota for  current admin user does not allow to set admin flag for new/existing users 
                     //then we need to remove the admin permission from the previous Admin user.
-                    if (!$adminUserQuota) {
+                    if (    (!$objUser && !$adminUserQuota) 
+                        ||  ($objUser && !$objUser->getIsAdmin() && !$objUser->isBackendGroupUser() && !$adminUserQuota)
+                    ) {
                         $oldOwner = $userRepo->findOneById(\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId', 'MultiSite'));
                         $oldOwner->setIsAdmin(false);
                         foreach($oldOwner->getGroup() as $group) {
@@ -7015,7 +7016,14 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     //if the user  already exists and is not an Admin, then set the user as Administrator 
                     //else create a new admin user
                     if ($objUser instanceof \Cx\Core\User\Model\Entity\User) {
-                        $objUser->setIsAdmin(true);
+                        if (!$objUser->getIsAdmin()) {
+                            $objUser->setIsAdmin(true);
+                        }
+                        if (!$objUser->isBackendGroupUser()) {
+                            $groupRepo = $em->getRepository('Cx\Core\User\Model\Entity\Group');
+                            $group     = $groupRepo->findOneBy(array('groupId' => 1));
+                            $objUser->addGroup($group);
+                        }
                         $em->flush();
                     } else {
                         $params['post'] = array(
@@ -7061,6 +7069,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         if (empty($userId)) {
             return;
         }
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
         \Cx\Core\Setting\Controller\Setting::set('websiteUserId', $userId);
         \Cx\Core\Setting\Controller\Setting::update('websiteUserId');
     }
