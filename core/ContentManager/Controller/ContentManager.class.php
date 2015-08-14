@@ -65,7 +65,7 @@ class ContentManager extends \Module
             $this->act = ''; //default action;
         }
 
-        $this->em             = \Env::em();
+        $this->em             = \Env::get('em');
         $this->db             = $db;
         $this->init           = $init;
         $this->pageRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');

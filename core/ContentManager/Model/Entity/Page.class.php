@@ -1055,7 +1055,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     public function getNode()
     {
         if (is_int($this->node)) {
-            $this->node = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->find($this->node);      
+            $this->node = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->find($this->node);
         }
         return $this->node;
     }
@@ -1773,7 +1773,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             'target' => $target,
         );
         
-        $pageRepo = \Env::em()->getRepository("Cx\Core\ContentManager\Model\Entity\Page");
+        $pageRepo = \Env::get('em')->getRepository("Cx\Core\ContentManager\Model\Entity\Page");
         
         // merge both resultsets
         $aliases = array_merge(
@@ -1830,7 +1830,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                 true    // followFallbacks
             );
             $page->setDisplay(false);
-            \Env::em()->persist($page);
+            \Env::get('em')->persist($page);
             // recursion
             return $pages[$sourceLang]->setupPath($targetLang);
         } else {

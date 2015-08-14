@@ -202,7 +202,7 @@ class Resolver {
                             if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($sessionObj)) {
                                 $sessionObj = \cmsSession::getInstance();
                             }
-                            $this->init($url, $this->lang, \Env::em(), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
+                            $this->init($url, $this->lang, \Env::get('em'), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
                             try {
                                 $this->resolvePage();
                                 $page = $this->getPage();
@@ -254,7 +254,7 @@ class Resolver {
                             if($history) {
                                 //access: backend access id for history requests
                                 $pageAccessId = $page->getBackendAccessId();
-                                $logRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
+                                $logRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
                                 try {
                                     $logRepo->revert($page, $history);
                                 }
@@ -653,7 +653,7 @@ class Resolver {
                 }
             }
 
-            $pageRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $this->page = $pageRepo->findOneByModuleCmdLang($section, $command, FRONTEND_LANG_ID);
 
             //fallback content

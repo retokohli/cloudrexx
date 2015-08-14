@@ -25,7 +25,7 @@ abstract class DoctrineTestCase extends ContrexxTestCase {
     protected static $em;
 
     public static function setUpBeforeClass() {        
-        self::$em = \Env::em();
+        self::$em = \Env::get('em');
     }
 
     public function setUp() {

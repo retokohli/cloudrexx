@@ -54,12 +54,12 @@ if ($selectedTimezoneId !== '') {
     @ini_set('date.timezone', $arrTimezones[$selectedTimezoneId]);
 }
 
-$_CONFIG['coreCmsName']         = 'ContrexxÂ® Web Content Management System';
-$_CONFIG['coreCmsVersion']      = '1.2.0';
-$_CONFIG['coreCmsStatus']       = 'RC1';
-$_CONFIG['coreCmsEdition']      = 'Premium';
-$_CONFIG['coreCmsCodeName']     = 'Cow Feeder';
-$_CONFIG['coreCmsReleaseDate']  = '22.10.2007';
+$_CONFIG['coreCmsName']         = 'Contrexx';
+$_CONFIG['coreCmsVersion']      = '4.0.0';
+$_CONFIG['coreCmsStatus']       = 'Stable';
+$_CONFIG['coreCmsEdition']      = 'Standard';
+$_CONFIG['coreCmsCodeName']     = 'Eric S. Raymond';
+$_CONFIG['coreCmsReleaseDate']  = '17.12.2014';
 
 $arrDefaultConfig = array(
     'dbHostname'        => 'localhost',

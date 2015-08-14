@@ -106,7 +106,7 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         $this->langId    = $langId;
         $this->langName  = $langName;
-        $this->em        = \Env::em();
+        $this->em        = \Env::get('em');
         if ($this->em) {
             $this->pageRepo    = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $this->crawlerRepo = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\Crawler');

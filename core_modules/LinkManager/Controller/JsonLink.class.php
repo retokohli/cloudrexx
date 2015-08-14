@@ -45,7 +45,7 @@ class JsonLink implements JsonAdapter {
      * the class JsonLink handles, the link status whether the link is resolved or not.
      */
     public function __construct() {
-        $this->em = \Env::em();
+        $this->em = \Env::get('em');
         if ($this->em) {
             $this->linkRepo = $this->em->getRepository('\Cx\Core_Modules\LinkManager\Model\Entity\Link');
         }
