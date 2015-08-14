@@ -333,6 +333,12 @@ class CxCoreUserModelEntityUserProxy extends \Cx\Core\User\Model\Entity\User imp
         return parent::getGroup();
     }
 
+    public function isBackendGroupUser()
+    {
+        $this->_load();
+        return parent::isBackendGroupUser();
+    }
+
     public function __get($name)
     {
         $this->_load();
