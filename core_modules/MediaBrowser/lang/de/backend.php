@@ -82,7 +82,7 @@ $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_ORIGINAL_SIZE']  = "Originale Grösse";
 
 $_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER']       = "Datei hierher ziehen";
 $_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_OR']    = "oder";
-$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK'] = "Bild vom Computer auswählen";
+$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK'] = "Datei vom Computer auswählen";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_BUTTON']          = "Hochladen";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_WATING']          = "Die Dateien werden hochgeladen...";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FINISHED']        = "Alle Dateien wurden hochgeladen.";
