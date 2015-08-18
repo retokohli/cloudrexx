@@ -2706,6 +2706,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
+
+// TODO: should we sync changes on Cx\Core\User\Model\Entity\User?
+        /*
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core\\User\\Model\\Entity\\User', $accessUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core\\User\\Model\\Entity\\User', $accessUserEventListener);
+        }*/
     }
 
     protected function registerCronMailEventListener() {

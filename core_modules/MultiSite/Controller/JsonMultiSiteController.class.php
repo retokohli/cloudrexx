@@ -774,6 +774,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                 $objUserExist = $objFWUser->objUser->getUser($userId);
                 if ($objUserExist) {
                     return array(
+                        'status' => 'success',
                         'userId' => $objUserExist->getId(),
                         'log' => \DBG::getMemoryLogs(),
                     );
@@ -795,6 +796,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             } else {
                 \DBG::msg('User successfully created');
                 return array(
+                    'status' => 'success',
                     'userId'=> $objUser->getId(),
                     'log'   => \DBG::getMemoryLogs(),
                 );
