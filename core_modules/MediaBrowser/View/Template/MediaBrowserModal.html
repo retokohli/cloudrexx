@@ -4,7 +4,7 @@
         </button>
         <h4 class="modal-title">{{ 'TXT_FILEBROWSER_MEDIABROWSER' | translate }}</h4>
     </div>
-    <div class="mediaBrowserMain" id="mediaBrowserMain">
+    <div class="mediaBrowserMain" id="mediaBrowserMain" data-ng-class="tabs.length == 1 ? 'no-nav': ''">
         <div>
             <nav class="mediaBrowserNavigation">
                 <ul>

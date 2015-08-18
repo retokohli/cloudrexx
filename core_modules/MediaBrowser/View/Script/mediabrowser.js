@@ -216,10 +216,6 @@
                 if (!isStartviewInViews) {
                     $scope.go($scope.tabs[0].controller);
                 }
-
-                if (newTabs.length === 1) {
-                    //jQuery(".mediaBrowserMain").addClass('no-nav');
-                }
             }
 
             $scope.selectedTab = $scope.tabs[0];
