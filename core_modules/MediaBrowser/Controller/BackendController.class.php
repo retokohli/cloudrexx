@@ -77,7 +77,8 @@ class BackendController extends SystemComponentBackendController
         $configurations = array(
             array(),
             array(
-                'startview' => 'sitestructure'
+                'startview' => 'sitestructure',
+                'views' => 'sitestructure'
             ),
             array(
                 'views' => 'uploader'
@@ -98,7 +99,7 @@ class BackendController extends SystemComponentBackendController
                 'multipleselect' => true
             ),
             array(
-                'modalopened' => 'testfunction'
+                'data-cx-Mb-Cb-Js-modalopened' => 'testfunction'
             )
         );
 
