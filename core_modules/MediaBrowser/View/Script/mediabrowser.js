@@ -225,6 +225,7 @@
 
             $scope.updateSource = function () {
                 var oldpath = $scope.path;
+                var oldSource = $scope.path[0].path;
                 $scope.path = [
                     {name: "" + $scope.selectedSource.name, path: $scope.selectedSource.value, standard: true}
                 ];
@@ -236,9 +237,11 @@
                         $scope.dataFiles = data;
                         $scope.files = data;
                         $timeout(function () {
-                            for (var i in oldpath){
-                                if (i > 0){
-                                    $scope.extendPath(oldpath[i].path);
+                            if (oldSource == $scope.selectedSource.value){
+                                for (var i in oldpath){
+                                    if (i > 0){
+                                        $scope.extendPath(oldpath[i].path);
+                                    }
                                 }
                             }
                             $scope.$apply();
