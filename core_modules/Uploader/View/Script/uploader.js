@@ -66,7 +66,7 @@
             if (iAttrs.uploadLimit > 0) {
                 $J('#uploader-modal-' + iAttrs.uploaderId)
                     .find('.notify-UploadLimit')
-                    .html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser') + iAttrs.uploadLimit)
+                    .html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser').replace('%s', iAttrs.uploadLimit))
                     .show();
             }
 
@@ -117,7 +117,8 @@
                 filters: scope.filters,
                 prevent_duplicates: true,
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Cloudrexx-Jsonadapter': 'Enabled'
                 },
                 chunk_size: cx.variables.get('chunk_size','uploader')
             };
@@ -293,7 +294,6 @@
                 try {
                     var response = jQuery.parseJSON(res.response);
                     if (response.status != 'error') {
-                        $J('.file-' + file.id).find('.upload-progress').addClass('progress-bar-success');
                         $J('.file-' + file.id).addClass('success');
                         if (up.settings.max_file_count > 0) {
                             ++uploaderData.uploaded_file_count;
