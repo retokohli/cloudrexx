@@ -1,11 +1,10 @@
 <?php
 
 /**
- * Contrexx
+ * Cloudrexx
  *
  * @link      http://www.cloudrexx.com
- * @copyright Comvation AG 2007-2015
- * @version   Contrexx 4.0
+ * @copyright Cloudrexx AG 2007-2015
  *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
@@ -20,7 +19,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
- * "Contrexx" is a registered trademark of Comvation AG.
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
  * The licensing of the program under the AGPLv3 does not imply a
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
