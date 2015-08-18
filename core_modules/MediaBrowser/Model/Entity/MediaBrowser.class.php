@@ -136,7 +136,7 @@ class MediaBrowser extends EntityBase
      * @return self
      */
     public function addClass($class) {
-        $this->addOption('option', $class);
+        $this->addOption('class', $class);
         return $this;
     }
 
