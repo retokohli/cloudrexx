@@ -14,9 +14,6 @@ namespace Cx\Core_Modules\Uploader\Controller;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use \Cx\Core\Json\JsonAdapter;
 use Cx\Core\Model\RecursiveArrayAccess;
-use Cx\Core_Modules\MediaBrowser\Model\MoveFileException;
-use Cx\Core_Modules\MediaBrowser\Model\RemoveDirectoryException;
-use Cx\Core_Modules\MediaBrowser\Model\RemoveFileException;
 use Cx\Lib\FileSystem\FileSystem;
 
 /**
@@ -53,7 +50,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
      */
     public function getAccessableMethods()
     {
-        return array('upload');
+        return array('upload' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('https','http'), array('post'), false));
     }
 
     /**
