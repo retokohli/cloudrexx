@@ -241,8 +241,14 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                         return;
                     }
                     
-                    foreach ($websites As $website) {
-                        $websiteServiceServerId = $website->getWebsiteServiceServerId();
+                    $affectedWebsiteServiceServerIds = array();
+                    foreach ($websites as $website) {
+                        if (in_array($website->getWebsiteServiceServerId(), $affectedWebsiteServiceServerIds)) {
+                            continue;
+                        }
+                        $affectedWebsiteServiceServerIds[] = $website->getWebsiteServiceServerId();
+                    }
+                    foreach ($affectedWebsiteServiceServerIds as $websiteServiceServerId) {
                         $websiteServiceServer   = $webServerRepo->findOneBy(array('id' => $websiteServiceServerId));
                     
                         if ($websiteServiceServer) {
@@ -256,7 +262,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     //find User's Website
                     $webRepo   = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
                     $websites  = $webRepo->findWebsitesByCriteria(array('user.id' => $objUser->getId()));
-                    foreach ($websites As $website) {
+                    foreach ($websites as $website) {
                         \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite('updateUser', $params, $website);
                     }
                     break;
@@ -334,7 +340,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         
         return true;
     }
-    
+
     public function onEvent($eventName, array $eventArgs) {        
         $this->$eventName(current($eventArgs));
     }
