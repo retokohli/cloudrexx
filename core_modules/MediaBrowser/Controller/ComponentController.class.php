@@ -131,6 +131,10 @@ class ComponentController extends
                 'mediabrowser'
             );
 
+            \ContrexxJavascript::getInstance()->setVariable(
+                'chunk_size', floor((\FWSystem::getMaxUploadFileSize()-1000000)/1000000).'mb', 'mediabrowser'
+            );
+
             \JS::activate('mediabrowser');
             \JS::registerJS('core_modules/MediaBrowser/View/Script/mediabrowser.js');
         }

@@ -119,7 +119,7 @@
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                chunk_size: '500kb'
+                chunk_size: cx.variables.get('chunk_size','uploader')
             };
 
 

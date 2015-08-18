@@ -340,7 +340,7 @@
                     url: '?csrf=' + cx.variables.get('csrf') + '&cmd=jsondata&object=Uploader&act=upload',
                     flash_swf_url: '/lib/plupload/js/Moxie.swf',
                     silverlight_xap_url: '/lib/plupload/js/Moxie.xap',
-                    chunk_size: '500kb',
+                    chunk_size: cx.variables.get('chunk_size','mediabrowser'),
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     },
