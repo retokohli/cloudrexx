@@ -8,6 +8,7 @@
 namespace Cx\Core\MediaSource\Model\Entity;
 
 
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
 use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 
 class LocalFileSystem implements FileSystem
@@ -74,14 +75,16 @@ class LocalFileSystem implements FileSystem
             $preview = 'none';
 
 
+            $hasPreview = false;
             $thumbnails = array();
             if ($this->isImage($extension)) {
+                $hasPreview = true;
                 $thumbnails = $this->getThumbnails(
                     $thumbnailList, $extension, $file, $thumbnails
                 );
                 $preview = current($thumbnails);
                 if (!file_exists($this->cx->getWebsitePath() . $preview)) {
-                    $preview = '';
+                    $hasPreview = false;
                 }
             }
 
@@ -92,10 +95,11 @@ class LocalFileSystem implements FileSystem
                 ),
                 // preselect in mediabrowser or mark a folder
                 'name' => $file->getFilename(),
-                'size' => $this->formatBytes($file->getSize()),
+                'size' => \FWSystem::getLiteralSizeFormat($file->getSize()),
                 'cleansize' => $file->getSize(),
                 'extension' => ucfirst(mb_strtolower($extension)),
                 'preview' => $preview,
+                'hasPreview' => $hasPreview,
                 'active' => false, // preselect in mediabrowser or mark a folder
                 'type' => $file->getType(),
                 'thumbnail' => $thumbnails
@@ -169,47 +173,6 @@ class LocalFileSystem implements FileSystem
         return $thumbnails;
     }
 
-    /**
-     * Format bytes
-     *
-     * @param        $bytes
-     * @param string $unit
-     * @param int    $decimals
-     *
-     * @return string
-     */
-    protected
-    function formatBytes(
-        $bytes, $unit = "", $decimals = 2
-    ) {
-        $units = array(
-            'B' => 0, 'KB' => 1, 'MB' => 2, 'GB' => 3, 'TB' => 4,
-            'PB' => 5, 'EB' => 6, 'ZB' => 7, 'YB' => 8
-        );
-
-        $value = 0;
-        if ($bytes > 0) {
-            // Generate automatic prefix by bytes
-            // If wrong prefix given
-            if (!array_key_exists($unit, $units)) {
-                $pow  = floor(log($bytes) / log(1024));
-                $unit = array_search($pow, $units);
-            }
-
-            // Calculate byte value by prefix
-            $value = ($bytes / pow(1024, floor($units[$unit])));
-        }
-
-        // If decimals is not numeric or decimals is less than 0
-        // then set default value
-        if (!is_numeric($decimals) || $decimals < 0) {
-            $decimals = 2;
-        }
-
-        // Format output
-        return sprintf('%.' . $decimals . 'f ' . $unit, $value);
-    }
-
     public function removeFile(File $file) {
         global $_ARRAYLANG;
         if ($file->getExtension() == ''
@@ -228,7 +191,7 @@ class LocalFileSystem implements FileSystem
             && !empty($strPath)
         ) {
             if (is_dir(
-                $this->rootPath . ltrim($file->getPath(), '.') . '/'
+                $this->getFullPath($file)
                 . $file->getName()
             )) {
                 if (\Cx\Lib\FileSystem\FileSystem::delete_folder(
@@ -254,6 +217,12 @@ class LocalFileSystem implements FileSystem
                     $this->rootPath . '/' . $strPath . '/' . $filename
                 )
                 ) {
+                    $thumbnails = glob('/home/robin/Web/contrexx.test/images/content/'.$file->getName().'.thumb*');
+                    foreach ($thumbnails as $thumbnail){
+                        \Cx\Lib\FileSystem\FileSystem::delete_file(
+                            $thumbnail
+                        );
+                    }
                     return (
                     sprintf(
                         $_ARRAYLANG['TXT_FILEBROWSER_FILE_SUCCESSFULLY_REMOVED'],
@@ -281,26 +250,26 @@ class LocalFileSystem implements FileSystem
         File $file, $destination
     ) {
         global $_ARRAYLANG;
-        if (!empty($destination)) {
+        if (!empty($destination) || !\FWValidator::is_file_ending_harmless($destination)) {
             if ($file->getExtension() == ''
                 && is_dir(
-                    $this->rootPath . ltrim($file->getPath(), '.') . '/'
+                    $this->getFullPath($file)
                     . $file->getName()
                 )
             ) {
                 $fileName            =
-                    $this->rootPath . ltrim($file->getPath(), '.') . '/'
+                    $this->getFullPath($file)
                     . $file->getName();
                 $destinationFileName =
-                    $this->rootPath . ltrim($file->getPath(), '.') . '/'
+                    $this->getFullPath($file)
                     . $destination;
             } else {
                 $fileName            =
-                    $this->rootPath . ltrim($file->getPath(), '.') . '/'
+                    $this->getFullPath($file)
                     . $file->getName()
                     . '.' . $file->getExtension();
                 $destinationFileName =
-                    $this->rootPath . ltrim($file->getPath(), '.') . '/'
+                    $this->getFullPath($file)
                     . $destination
                     . '.'
                     . $file->getExtension();
@@ -311,11 +280,27 @@ class LocalFileSystem implements FileSystem
                     $file->getName()
                 );
             }
+            $destinationFolder = realpath(pathinfo($this->getFullPath($file) . $destination, PATHINFO_DIRNAME));
+            if (!MediaSourceManager::isSubdirectory($this->rootPath,
+                $destinationFolder)){
+                return sprintf(
+                    $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULLY_RENAMED'],
+                    $file->getName()
+                );
+            }
+            $thumbnails = glob('/home/robin/Web/contrexx.test/images/content/'.$file->getName().'.thumb*');
+            foreach ($thumbnails as $thumbnail){
+                \Cx\Lib\FileSystem\FileSystem::delete_file(
+                    $thumbnail
+                );
+            }
+
             if (!\Cx\Lib\FileSystem\FileSystem::move(
                 $fileName, $destinationFileName
                 , false
             )
             ) {
+
                 return sprintf(
                     $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULLY_RENAMED'],
                     $file->getName()
@@ -398,5 +383,14 @@ class LocalFileSystem implements FileSystem
         return sprintf(
             $_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'], $directory
         );
+    }
+
+    /**
+     * @param File $file
+     *
+     * @return string
+     */
+    public function getFullPath(File $file) {
+        return $this->rootPath . ltrim($file->getPath(), '.') . '/';
     }
 }

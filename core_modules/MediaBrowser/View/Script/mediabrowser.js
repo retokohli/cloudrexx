@@ -677,31 +677,30 @@
 
     /* DIRECTIVES */
     /* preview function */
-    mediaBrowserApp.directive('previewImage', ['Thumbnail', function (Thumbnail) {
+    mediaBrowserApp.directive('previewImage', ['$http', function ($http) {
         return {
             restrict: 'A',
             link: function (scope, el, attrs) {
                 if (attrs.previewImage !== 'none') {
-                    Thumbnail.isImage(attrs.previewImage).then(function () {
+                    if (attrs.hasPreview){
                         jQuery(el).popover({
                             trigger: 'hover',
                             html: true,
                             content: '<img src="' + attrs.previewImage + '"  />',
                             placement: 'right'
                         });
-                    }, function () {
-                        //$http.get('index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=" + attrs.previewImage').
-                        //    success(function (data, status, headers, config) {
-                        //        jQuery(el).popover({
-                        //            trigger: 'hover',
-                        //            html: true,
-                        //            content: '<img src="' + attrs.previewImage + '"  />',
-                        //            placement: 'right'
-                        //        });
-                        //    })
-                    });
-
-
+                    }
+                    else {
+                        $http.get('index.php?cmd=jsondata&object=MediaBrowser&act=createThumbnails&file=' + attrs.previewImage).
+                            success(function (data, status, headers, config) {
+                                jQuery(el).popover({
+                                    trigger: 'hover',
+                                    html: true,
+                                    content: '<img src="' + attrs.previewImage + '"  />',
+                                    placement: 'right'
+                                });
+                            })
+                    }
                 }
             }
         };
