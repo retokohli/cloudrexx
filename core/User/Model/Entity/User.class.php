@@ -645,9 +645,20 @@ class User extends \Cx\Model\Base\EntityBase {
      */
     public function addGroup(\Cx\Core\User\Model\Entity\Group $group)
     {
+        $group->addUser($this);
         $this->group[] = $group;
     }
 
+    /**
+     * Remove the group
+     * 
+     * @param \Cx\Core\User\Model\Entity\Group $group
+     */
+    public function removeGroup(\Cx\Core\User\Model\Entity\Group $group) {
+        $group->removeUser($this);
+        $this->group->removeElement($group);
+    }
+    
     /**
      * Get group
      *
@@ -656,5 +667,24 @@ class User extends \Cx\Model\Base\EntityBase {
     public function getGroup()
     {
         return $this->group;
+    }
+    
+    /**
+     * Check if the user is backend group 
+     * 
+     * @return boolean
+     */
+    public function isBackendGroupUser()
+    {
+        if (!$this->group) {
+            return false;
+        }
+        
+        foreach ($this->group as $group) {
+            if ($group->getType() === 'backend') {
+                return true;
+            }
+        }
+        return false;
     }
 }

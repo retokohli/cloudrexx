@@ -94,6 +94,14 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
             $orders = $this->orderRepository->getAllByDesc();
         }
         
+        //User Live Search implementation
+        \JS::activate('cx');
+        \FWUser::getUserLiveSearch(array(
+            'minLength' => 3,
+            'canCancel' => true,
+            'canClear'  => true
+        ));
+        
         $view = new \Cx\Core\Html\Controller\ViewGenerator($orders, array(
             'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_DEFAULT'],
             'functions' => array(
@@ -129,6 +137,26 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                             return $url;
                         },
                     ),
+                    'formfield' => function ($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
+                            $userId    = \Cx\Modules\Crm\Controller\CrmLibrary::getUserIdByCrmUserId($fieldvalue);
+                            $objUser   = \FWUser::getFWUserObject()->objUser->getUser($userId);
+                            $userEmail = $objUser ? $objUser->getEmail() : '';
+                            
+                            $element = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                            //input field for contactId
+                            $contactId = new \Cx\Core\Html\Model\Entity\DataElement($fieldname, $userId);
+                            $contactId->setAttribute('class', 'live-search-user-id');
+                            $contactId->setAttribute('id', $fieldname);
+                            $contactId->setAttribute('type', 'hidden');
+                            $element->addChild($contactId);
+                            //input field for userEmail
+                            $userEmail = new \Cx\Core\Html\Model\Entity\DataElement('contactName', $userEmail);
+                            $userEmail->setAttribute('class', 'live-search-user-name');
+                            $userEmail->setAttribute('id', 'contactName');
+                            $userEmail->setAttribute('type', 'hidden');
+                            $element->addChild($userEmail);
+                            return $element;
+                    },
                 ),
                 'subscriptions' => array(
                     'header' => 'subscriptions',

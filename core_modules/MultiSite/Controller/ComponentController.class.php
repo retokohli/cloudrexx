@@ -2624,6 +2624,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $this->registerOrderPaymentEventListener();
                 $this->registerWebsiteCollectionEventListener();
                 $this->registerOrderSubscriptionEventListener();
+                $this->registerOrderOrderEventListener();
                 break;
 
             case self::MODE_HYBRID:
@@ -2635,6 +2636,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $this->registerOrderPaymentEventListener();
                 $this->registerWebsiteCollectionEventListener();
                 $this->registerOrderSubscriptionEventListener();
+                $this->registerOrderOrderEventListener();
                 break;
 
             case self::MODE_SERVICE:
@@ -2704,6 +2706,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
+
+// TODO: should we sync changes on Cx\Core\User\Model\Entity\User?
+        /*
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core\\User\\Model\\Entity\\User', $accessUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core\\User\\Model\\Entity\\User', $accessUserEventListener);
+        }*/
     }
 
     protected function registerCronMailEventListener() {
@@ -2753,6 +2761,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Order\\Model\\Entity\\Payment', $orderPaymentEventListener);
         
+    }
+    
+    protected function registerOrderOrderEventListener() {
+        $orderOrderEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\OrderOrderEventListener();
+        $evm = \Env::get('cx')->getEvents();
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Modules\\Order\\Model\\Entity\\Order', $orderOrderEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postFlush, 'Cx\\Modules\\Order\\Model\\Entity\\Order', $orderOrderEventListener);
     }
     
     protected function registerOrderSubscriptionEventListener() {
@@ -3187,8 +3202,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $adminUsers = array();
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_WEBSITE:
-
-                $userRepo = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User');
+                $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+                $userRepo = $em->getRepository('Cx\Core\User\Model\Entity\User');
                 $users = $userRepo->findBy(array('isAdmin' => '1'));
 
                 
@@ -3196,7 +3211,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $adminUsers[$user->getId()] = $user;
                 }
 
-                $groupRepo = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\Group');
+                $groupRepo = $em->getRepository('Cx\Core\User\Model\Entity\Group');
                 $groups = $groupRepo->findBy(array('type' => 'backend'));
 
                 foreach ($groups as $group) {
