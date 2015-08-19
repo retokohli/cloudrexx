@@ -1665,6 +1665,13 @@ class User extends User_Profile
         //for calling postPersist and postUpdate based on $callPostUpdateEvent
         $callPostUpdateEvent = $this->id;
         $generatedPassword = '';
+
+        // Track if a user account change is being flushed to the database.
+        // If so, we'll trigger the postUpdate event, but only in that case.
+        // Explanation: A flush would indicate that the user object has actually been altered.
+        // This is a pseudo emulation of doctrine's own event system behavior which triggers
+        // the postUpdate event on an entity only in case the entity has actually been altered.
+        $userChangeStatus = null;
         
         if (!$this->validateUsername()) {
             return false;
@@ -1677,9 +1684,11 @@ class User extends User_Profile
         }
         
         if ($this->id) {
+            // update existing account
             \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
-            $this->updateUser();
+            $this->updateUser($userChangeStatus);
         } else {
+            // add new account
             if(\FWValidator::isEmpty($this->getHashedPassword())){
                 $generatedPassword = $this->make_password();
                 $this->setPassword($generatedPassword);
@@ -1693,23 +1702,26 @@ class User extends User_Profile
             }
         }
 
-        if (!$this->storeGroupAssociations()) {
+        if (!$this->storeGroupAssociations($userChangeStatus)) {
             $this->error_msg[] = $_CORELANG['TXT_ARRAY_COULD_NOT_SET_GROUP_ASSOCIATIONS'];
             return false;
         }
 
-        if (!$this->storeNewsletterSubscriptions()) {
+        if (!$this->storeNewsletterSubscriptions($userChangeStatus)) {
             $this->error_msg[] = $_CORELANG['TXT_ARRAY_COULD_NOT_SET_NEWSLETTER_ASSOCIATIONS'];
             return false;
         }
 
-        if (!$this->storeProfile()) {
+        if (!$this->storeProfile($userChangeStatus)) {
             $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_STORE_PROFILE'];
             return false;
         }
 
         if (!empty($callPostUpdateEvent)) {
-            \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+            // only trigger postUpdate event in case an actual change on the user object has been flushed to the database
+            if ($userChangeStatus) {
+                \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+            }
         } else {
             \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         }
@@ -1794,7 +1806,12 @@ class User extends User_Profile
         }
     }
 
-    protected function updateUser() {
+    /**
+     * @param  mixed    $userChanged	If $userChanged is provided, then in case any account
+     *                                  changes are being flushed to the database, $userChanged
+     *                                  will be set to TRUE, otherwise it'll be left untouched.
+     */
+    protected function updateUser(&$userChanged = null) {
         global $objDatabase, $_CORELANG;
 
         if ($objDatabase->Execute("
@@ -1820,6 +1837,9 @@ class User extends User_Profile
         ) === false) {
             $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'];
             return false;
+        } elseif ($objDatabase->Affected_Rows()) {
+            // track flushed db change
+            $userChanged = true;
         }
         if (!empty($this->password)) {
             // deletes all sessions which are using this user (except the session changing the password)
@@ -1935,10 +1955,14 @@ class User extends User_Profile
      *
      * Stores the group associations of the loaded user.
      * Returns TRUE on success, FALSE on failure.
+     * @param  mixed    $associationChange	If $associationChange is provided, then in case any
+     *                                      group association changes are being flushed to the
+     *                                      database, $associationChange will be set to TRUE,
+     *                                      otherwise it'll be left untouched.
      * @global ADONewConnection
      * @return boolean
      */
-    private function storeGroupAssociations()
+    private function storeGroupAssociations(&$associationChange = null)
     {
         global $objDatabase;
 
@@ -1952,6 +1976,9 @@ class User extends User_Profile
                  WHERE `group_id`='.$groupId.'
                    AND `user_id`='.$this->id)) {
                 $status = false;
+            } elseif ($objDatabase->Affected_Rows()) {
+                // track flushed db change
+                $associationChange = true;
             }
         }
         foreach ($arrAddedGroups as $groupId) {
@@ -1962,6 +1989,9 @@ class User extends User_Profile
                     '.$this->id.', '.$groupId.'
                 )')) {
                 $status = false;
+            } elseif ($objDatabase->Affected_Rows()) {
+                // track flushed db change
+                $associationChange = true;
             }
         }
         return $status;
@@ -1970,9 +2000,13 @@ class User extends User_Profile
 
     /**
      * Store the user's newsletter-list-subscriptions to the database
+     * @param  mixed    $subscriptionChange	If $subscriptionChange is provided, then in case any
+     *                                      newsletter list subscription changes are being
+     *                                      flushed to the database, $subscriptionChange will
+     *                                      be set to TRUE, otherwise it'll be left untouched.
      * @return      bool
      */
-    private function storeNewsletterSubscriptions()
+    private function storeNewsletterSubscriptions(&$subscriptionChange = null)
     {
         global $objDatabase;
 
@@ -1997,7 +2031,11 @@ class User extends User_Profile
                     $categories[$key],
                     \Cx\Modules\Newsletter\Controller\NewsletterLib::_emailCode()
                 );
-                $objDatabase->execute($query);
+                $objDatabase->Execute($query);
+                if ($objDatabase->Affected_Rows()) {
+                    // track flushed db change
+                    $subscriptionChange = true;
+                }
             }
             $delString = implode(',', $categories);
             $query = sprintf('
@@ -2018,7 +2056,16 @@ class User extends User_Profile
 
         }
 
-        return (bool)$objDatabase->Execute($query);
+        if ($objDatabase->Execute($query) === false) {
+            return false;
+        }
+
+        if ($objDatabase->Affected_Rows()) {
+            // track flushed db change
+            $subscriptionChange = true;
+        }
+
+        return true;
     }
 
 
