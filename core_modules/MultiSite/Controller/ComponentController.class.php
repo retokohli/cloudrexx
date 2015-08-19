@@ -2965,6 +2965,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
+        // do not set main-domain to customer-panel-domain when having requested the backend
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            return;
+        }
+
         $customerPanelDomainName = \Cx\Core\Setting\Controller\Setting::getValue('customerPanelDomain','MultiSite');
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
         $customerPanelDomain = $domainRepository->findOneBy(array('name' => $customerPanelDomainName));
