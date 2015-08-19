@@ -85,50 +85,68 @@
 
             $scope.activeController = mediabrowserConfig.get('startView');
 
-            mediabrowserFiles.get('getSites').then(
-                function getSites(data) {
-                    $scope.sites = data;
-                }
-            );
-
-            mediabrowserFiles.get('getSources').then(
-                function getSources(data) {
-                    $scope.sources = data;
-
-                    if (mediabrowserConfig.get('startMedia')) {
-                        data.forEach(function (source) {
-                            if (source.value == mediabrowserConfig.get('startMedia')) {
-                                $scope.selectedSource = source;
-                                return false;
-                            }
-                        });
+            $scope.loadSites = function() {
+                mediabrowserFiles.get('getSites').then(
+                    function getSites(data) {
+                        $scope.sites = data;
                     }
-                    else {
-                        $scope.selectedSource = data[0];
-                    }
-                    $scope.path[0].path = $scope.selectedSource.value;
-                    if (mediabrowserConfig.get('mediatypes') != 'all') {
-                        var i = data.length;
-                        while (i--) {
-                            if (!(mediabrowserConfig.get('mediatypes').indexOf(data[i].value) > -1)) {
-                                data.splice(i, 1);
+                );
+            };
+
+            $scope.loadSources = function(){
+                var attempts = 0;
+                mediabrowserFiles.get('getSources').then(
+                    function getSources(data) {
+                        $scope.sources = data;
+
+                        if (mediabrowserConfig.get('startMedia')) {
+                            data.forEach(function (source) {
+                                if (source.value == mediabrowserConfig.get('startMedia')) {
+                                    $scope.selectedSource = source;
+                                    return false;
+                                }
+                            });
+                        }
+                        else {
+                            $scope.selectedSource = data[0];
+                        }
+                        $scope.path[0].path = $scope.selectedSource.value;
+                        if (mediabrowserConfig.get('mediatypes') != 'all') {
+                            var i = data.length;
+                            while (i--) {
+                                if (!(mediabrowserConfig.get('mediatypes').indexOf(data[i].value) > -1)) {
+                                    data.splice(i, 1);
+                                }
                             }
                         }
-                    }
 
-                    mediabrowserFiles.getByMediaType($scope.selectedSource.value).then(
-                        function getFiles(data) {
-                            $scope.dataFiles = data;
-                            $scope.files = $scope.dataFiles;
+                        mediabrowserFiles.getByMediaType($scope.selectedSource.value).then(
+                            function getFiles(data) {
+                                $scope.dataFiles = data;
+                                $scope.files = $scope.dataFiles;
+                            }
+                        );
+                    }, function (reason) {
+                        // If the request fails, try it 3 more times.
+                        attempts++;
+                        if (attempts != 4){
+                            $scope.loadSources();
                         }
-                    );
-                }, function (reason) {
-                    bootbox.dialog({
-                        title: "An error has occurred.",
-                        message: reason
-                    });
-                }
-            );
+                        else {
+                            console.error(reason);
+                            bootbox.dialog({
+                                title: "Kritischer Fehler aufgetreten",
+                                message: reason
+                            });
+                        }
+                    }
+                );
+            };
+
+            $scope.initialize = function(){
+                $scope.loadSites();
+                $scope.loadSources();
+            }();
 
             $scope.ok = function () {
                 $modalInstance.close();
