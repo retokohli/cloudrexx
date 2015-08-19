@@ -48,10 +48,6 @@ class Uploader extends EntityBase
      */
     protected $cx;
 
-    public static $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip', 'tar', 'gz', 'docx',
-        'doc','mp3','wav','act','aiff','aac','amr','ape','au','awb','dct','dss','flac','gsm','m4a','m4p',
-        'mp3','mpc','ogg','oga','opus','ra','rm','raw','sln','tta','vox','wav','wma','wv','webm');
-
     function __construct()
     {
         $this->cx = Cx::instanciate();
@@ -76,8 +72,7 @@ class Uploader extends EntityBase
             'data-pl-upload',
             'data-uploader-id' => $this->id,
             'class' => "uploader-button button",
-            'uploader-type' => self::UPLOADER_TYPE_MODAL,
-            'allowed-extensions' => self::$allowedExtensions
+            'uploader-type' => self::UPLOADER_TYPE_MODAL
         );
     }
 

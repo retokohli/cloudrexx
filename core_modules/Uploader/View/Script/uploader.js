@@ -46,19 +46,6 @@
             if (iAttrs.uploaderType == 'Inline'){
                 jQuery('.close-upload-modal').hide();
             }
-            if (!iAttrs.allowedExtensions) {
-                iAttrs.allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip', 'tar', 'gz', 'docx',
-                    'doc','mp3','wav','act','aiff','aac','amr','ape','au','awb','dct','dss','flac','gsm','m4a','m4p',
-                    'mp3','mpc','ogg','oga','opus','ra','rm','raw','sln','tta','vox','wav','wma','wv','webm'];
-            }
-
-            if (typeof scope.plFiltersModel == "undefined") {
-                scope.filters = [
-                    {title: "Allowed files", extensions: iAttrs.allowedExtensions.join(',')}
-                ];
-            } else {
-                scope.filters = scope.plFiltersModel;
-            }
 
             $J('#uploader-modal-' + iAttrs.uploaderId).find(' .drop-target').attr('id', 'drop-target-' + iAttrs.id);
             $J('#uploader-modal-' + iAttrs.uploaderId).find('.upload-limit-tooltip .btn').attr('id', 'drop-target-btn-' + iAttrs.id);
@@ -114,7 +101,6 @@
                 url: iAttrs.plUrl,
                 flash_swf_url: iAttrs.plFlashSwfUrl,
                 silverlight_xap_url: iAttrs.plSilverlightXapUrl,
-                filters: scope.filters,
                 prevent_duplicates: true,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -244,8 +230,8 @@
                 if ((up.settings.max_file_count > 0) && uploaderData.filesToUpload.length >= up.settings.max_file_count) {
                     uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_choose', {title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT_OVERWRITE', 'mediabrowser')}, 'add', true);
                     if (uploaderData.filesToUpload.length > up.settings.max_file_count) {
-                      uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_upload', {title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser') + up.settings.max_file_count}, 'add', true);
-                      $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').addClass('disabled');
+                        uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_upload', {title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser') + up.settings.max_file_count}, 'add', true);
+                        $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').addClass('disabled');
                     }
                 }
 
@@ -264,7 +250,7 @@
                                         $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').removeClass('disabled');
                                         uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_upload', {title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT_OVERWRITE', 'mediabrowser')}, 'add', uploaderData.uploadOverwiteOnLimit);
                                         if (uploaderData.filesToUpload.length < up.settings.max_file_count) {
-                                          uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_choose', '', 'remove', true);
+                                            uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_choose', '', 'remove', true);
                                         }
                                     }
                                     if (uploaderData.filesToUpload.length == 0) {

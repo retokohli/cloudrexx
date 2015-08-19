@@ -24,7 +24,7 @@ use Cx\Lib\FileSystem\FileSystem;
  */
 class JsonUploader extends SystemComponentController implements JsonAdapter
 {
-    
+
     /**
      * Message which gets displayed.
      *
@@ -97,13 +97,13 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 )
             );
         }
-        $allowedExtensions = \Cx\Core_Modules\Uploader\Model\Entity\Uploader::$allowedExtensions;
+        $allowedExtensions = false;
         if (isset($_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'])) {
             $allowedExtensions = $_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'];
         }
         $uploader = UploaderController::handleRequest(
             array(
-                'allow_extensions' => explode(', ', $allowedExtensions),
+                'allow_extensions' => is_array($allowedExtensions) ? explode(', ', $allowedExtensions) : $allowedExtensions,
                 'target_dir' => $path,
                 'tmp_dir' => $tmpPath
             )
@@ -182,7 +182,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 $fileLocation[1] . '/' . $uploader['name']
             );
         }
-        
+
         if ($response->getWorstStatus()) {
                 $result = $response->getResponse();
                 return array(

@@ -383,6 +383,12 @@ class UploaderController {
      */
     public static function sanitizeFileName($filename) {
         FileSystem::replaceCharacters($filename);
+        \FWValidator::getCleanFileName($filename);
+        if (!\FWValidator::is_file_ending_harmless(
+            $filename
+        )){
+            $filename = $filename.'.txt';
+        }
         return $filename;
     }
 
