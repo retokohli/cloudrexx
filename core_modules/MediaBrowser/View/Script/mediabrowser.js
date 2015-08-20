@@ -832,8 +832,8 @@
                     searchObject = function () {
                         var fileSearchWords = searchFile.split(" ");
                         return function (string) {
-                            for (var key in fileSearchWords) {
-                                if (!(string.toLowerCase().indexOf(fileSearchWords[key].toLowerCase()) >= 0)) {
+                            for (var i = 0; i < fileSearchWords.length; i++) {
+                                if (!(string.toLowerCase().indexOf(fileSearchWords[i].toLowerCase()) >= 0)) {
                                     return false;
                                 }
                             }
