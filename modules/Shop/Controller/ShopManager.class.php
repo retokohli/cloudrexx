@@ -1569,6 +1569,9 @@ if ($test === NULL) {
                 \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend','Shop'),
             'SHOP_SETTING_NUMOF_COUPON_PER_PAGE_BACKEND' =>
                 \Cx\Core\Setting\Controller\Setting::getValue('numof_coupon_per_page_backend','Shop'),
+            'SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_FRONTEND' =>
+                \Cx\Core\Setting\Controller\Setting::getValue('numof_products_per_page_frontend','Shop'),
+
 // TODO: Use \Cx\Core\Setting\Controller\Setting::show(), and add a proper setting type!
             'SHOP_SETTING_USERGROUP_ID_CUSTOMER' =>
                 \Html::getSelect(
