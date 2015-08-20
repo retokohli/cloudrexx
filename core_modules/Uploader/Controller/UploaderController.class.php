@@ -188,6 +188,13 @@ class UploaderController {
                 }
 
                 $new_path = $conf['target_dir'] . $fileName;
+                $new_path_default = $conf['target_dir'] . $fileName;
+                $i = 1;
+                while (file_exists($new_path)){
+                    $new_path = pathinfo($new_path_default, PATHINFO_DIRNAME).'/'. pathinfo($new_path_default, PATHINFO_FILENAME).'_'.$i.'.'.pathinfo($new_path_default, PATHINFO_EXTENSION);
+                    $i++;
+                }
+
                 \Cx\Lib\FileSystem\FileSystem::move($tmp_path, $new_path, true);
 
                 $rootPath      = $cx->getWebsitePath() . $conf['target_dir'];
