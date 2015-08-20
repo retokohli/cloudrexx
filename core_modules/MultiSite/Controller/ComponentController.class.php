@@ -1434,11 +1434,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         return $this->parseJsonMessage($successMsg, true);
                     } else {
-                        if (is_object($response->message)) {
-                            return $this->parseJsonMessage($response->message->message, false);
-                        } else {
-                            return $this->parseJsonMessage($response->message, false);
+                        $message = $response->message;
+                        if (is_object($response->message) && isEmpty($message)) {
+                            $message = $response->message->message;
+                        } else if(is_object($response->data) && isEmpty($message)) {
+                            $message = $response->data->message;
                         }
+                        return $this->parseJsonMessage($message, false);
                     }
                 }
             } catch (\Exception $e) {
