@@ -499,8 +499,13 @@
                             if (!jQuery.isEmptyObject($scope.lastActiveFile)) {
                                 $scope.lastActiveFile.datainfo.active = false;
                             }
-                            $scope.lastActiveFile = file;
                             $scope.closeModal();
+                        }
+                        else if (!mediabrowserConfig.get('multipleSelect')){
+                            if (!jQuery.isEmptyObject($scope.lastActiveFile)) {
+                                $scope.lastActiveFile.datainfo.active = false;
+                            }
+                            $scope.lastActiveFile = file;
                         }
                     }
 
