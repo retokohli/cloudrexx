@@ -486,8 +486,8 @@
                     }
                     else {
                         file.datainfo.active = true;
-                        $scope.selectedFiles.push(file);
                         if (!mediabrowserConfig.get('multipleSelect') && selectFile) {
+                            $scope.selectedFiles.push(file);
                             $scope.selectedFiles = [];
                             file.datainfo.active = false;
 
@@ -502,10 +502,12 @@
                             $scope.closeModal();
                         }
                         else if (!mediabrowserConfig.get('multipleSelect')){
+                            $scope.selectedFiles = [];
                             if (!jQuery.isEmptyObject($scope.lastActiveFile)) {
                                 $scope.lastActiveFile.datainfo.active = false;
                             }
                             $scope.lastActiveFile = file;
+                            $scope.selectedFiles.push(file);
                         }
                     }
 
