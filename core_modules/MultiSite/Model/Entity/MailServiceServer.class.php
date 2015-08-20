@@ -343,6 +343,7 @@ class MailServiceServer extends \Cx\Model\Base\EntityBase {
             $this->addWebsite($website);
             
             $website->setMailDn();
+            $website->setWebmailDn();
             $hostingController->renameSubscriptionName($website->getMailDn()->getName());
             
             $pwd = \User::make_password(8, true);
