@@ -262,6 +262,7 @@
                                     }
                                 }
                             }
+                            $scope.inRootDirectory = ($scope.path.length == 1);
                             $scope.$apply();
                             jQuery(".filelist").fadeIn();
                         });
