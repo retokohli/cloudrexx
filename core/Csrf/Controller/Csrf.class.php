@@ -388,9 +388,10 @@ class Csrf {
 
     private static function __is_ajax()
     {
-        return
-            (   isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-             && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest');
+        return (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+        || (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && $_SERVER['HTTP_CHECK_CSRF'] == 'false');
     }
 
 
