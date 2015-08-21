@@ -390,7 +390,7 @@ class Csrf {
     {
         return (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
             && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
-        || (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+        || (isset($_SERVER['HTTP_CHECK_CSRF'])
             && $_SERVER['HTTP_CHECK_CSRF'] == 'false');
     }
 
