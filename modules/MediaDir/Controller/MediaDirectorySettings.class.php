@@ -1328,7 +1328,7 @@ EOF;
             $this->moduleLangVar.'_USE_LEVEL_ON' => 'checked="checked"',
             $this->moduleLangVar.'_USE_READY_TO_CONFIRM_ON' => 'checked="checked"',
             'TXT_'.$this->moduleLangVar.'_USE_READY_TO_CONFIRM' =>  $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM'],
-            'TXT_'.$this->moduleLangVar.'_FORM_ENTRIES_PER_PAGE' =>  $_ARRAYLANG['TXT_MEDIADIR_FORM_ENTRIES_PER_PAGE'],
+            'TXT_'.$this->moduleLangVar.'_FORM_ENTRIES_PER_PAGE' =>  $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES'],
         ));
 
         if(isset($_GET['ajax'])) {
