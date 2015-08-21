@@ -89,7 +89,7 @@ class FTPFile implements FileInterface
      */
     private function getValidFilePath($file, $path)
     {
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx = \Env::get('cx');
 
 // TODO: Implement support for having a different document root for the Website repository than for the Code Base repository
         if (strpos($cx->getWebsiteDocumentRootPath(), $cx->getCodeBaseDocumentRootPath()) !== 0) {

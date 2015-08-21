@@ -45,7 +45,7 @@ class ContentTree {
     function __construct($langId = null) {
         global $_FRONTEND_LANGID;
 
-        $this->em = Env::em();
+        $this->em = \Env::get('em');
 
         if (!isset($langId)) {
             $langId = $_FRONTEND_LANGID;

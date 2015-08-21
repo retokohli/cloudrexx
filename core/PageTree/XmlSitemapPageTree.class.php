@@ -29,6 +29,26 @@ class XmlSitemapPageTree extends PageTree {
     private static $strFileNameWithLang = 'sitemap_%s.xml';
 
     /**
+     * Override the constructor from the PageTree
+     * @see Cx\Core\PageTree::__construct()
+     * @param type $entityManager
+     * @param type $license
+     * @param type $maxDepth
+     * @param type $rootNode
+     * @param type $lang
+     * @param type $currentPage
+     * @param type $skipInvisible
+     * @param type $considerLogin
+     */
+    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, 
+                                $lang = null, $currentPage = null, $skipInvisible = true, 
+                                $considerLogin = false
+    ) {
+        parent::__construct($entityManager, $license, $maxDepth, $rootNode, $lang,
+                            $currentPage, $skipInvisible, $considerLogin);
+    }
+    
+    /**
      * Writes the XML-Sitemap in all langs (if activated in config)
      * @global type $_CONFIG
      * @global type $_CORELANG

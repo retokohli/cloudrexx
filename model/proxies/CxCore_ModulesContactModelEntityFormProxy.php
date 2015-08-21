@@ -87,6 +87,12 @@ class CxCore_ModulesContactModelEntityFormProxy extends \Cx\Core_Modules\Contact
         return parent::setSendAttachment($sendAttachment);
     }
 
+    public function setCrmCustomerGroups($crmCustomerGroups)
+    {
+        $this->_load();
+        return parent::setCrmCustomerGroups($crmCustomerGroups);
+    }
+
     public function getId()
     {
         $this->_load();
@@ -147,10 +153,15 @@ class CxCore_ModulesContactModelEntityFormProxy extends \Cx\Core_Modules\Contact
         return parent::getSendAttachment();
     }
 
+    public function getCrmCustomerGroups()
+    {
+        $this->_load();
+        return parent::getCrmCustomerGroups();
+    }
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'mails', 'showForm', 'useCaptcha', 'useCustomStyle', 'saveDataInCrm', 'sendCopy', 'useEmailOfSender', 'htmlMail', 'sendAttachment');
+        return array('__isInitialized__', 'id', 'mails', 'showForm', 'useCaptcha', 'useCustomStyle', 'saveDataInCrm', 'sendCopy', 'useEmailOfSender', 'htmlMail', 'sendAttachment', 'crmCustomerGroups');
     }
 
     public function __clone()

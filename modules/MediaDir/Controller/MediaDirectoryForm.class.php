@@ -58,6 +58,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 form.`use_category` AS `use_category`,
                 form.`use_level` AS `use_level`,
                 form.`use_ready_to_confirm` AS `use_ready_to_confirm`,    
+                form.`entries_per_page` AS `entries_per_page`,
                 form.`active` AS `active`,
                 form_names.`form_name` AS `name`,
                 form_names.`form_description` AS `description`
@@ -103,16 +104,17 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                     }
                 }
 
-                $arrForm['formId'] = intval($objFormsRS->fields['id']);
-                $arrForm['formOrder'] = intval($objFormsRS->fields['order']);
-                $arrForm['formPicture'] = htmlspecialchars($objFormsRS->fields['picture'], ENT_QUOTES, CONTREXX_CHARSET);
-                $arrForm['formName'] = $arrFormName;
-                $arrForm['formDescription'] = $arrFormDesc;
-                $arrForm['formActive'] = intval($objFormsRS->fields['active']);
-                $arrForm['formCmd'] = htmlspecialchars($objFormsRS->fields['cmd'], ENT_QUOTES, CONTREXX_CHARSET);
-                $arrForm['formUseCategory'] = intval($objFormsRS->fields['use_category']);
-                $arrForm['formUseLevel'] = intval($objFormsRS->fields['use_level']);
+                $arrForm['formId']                = intval($objFormsRS->fields['id']);
+                $arrForm['formOrder']             = intval($objFormsRS->fields['order']);
+                $arrForm['formPicture']           = htmlspecialchars($objFormsRS->fields['picture'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrForm['formName']              = $arrFormName;
+                $arrForm['formDescription']       = $arrFormDesc;
+                $arrForm['formActive']            = intval($objFormsRS->fields['active']);
+                $arrForm['formCmd']               = htmlspecialchars($objFormsRS->fields['cmd'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrForm['formUseCategory']       = intval($objFormsRS->fields['use_category']);
+                $arrForm['formUseLevel']          = intval($objFormsRS->fields['use_level']);
                 $arrForm['formUseReadyToConfirm'] = intval($objFormsRS->fields['use_ready_to_confirm']);
+                $arrForm['formEntriesPerPage']    = $objFormsRS->fields['entries_per_page'];
 
                 $arrForms[$objFormsRS->fields['id']] = $arrForm;
                 $objFormsRS->MoveNext();
@@ -254,6 +256,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
         $intUseCategory = intval($arrData['formUseCategory']);
         $intUseLevel = isset($arrData['formUseLevel']) ? contrexx_input2int($arrData['formUseLevel']) : 0;
         $intUseReadyToConfirm = isset($arrData['formUseReadyToConfirm']) ? contrexx_input2int($arrData['formUseReadyToConfirm']) : 0;
+        $intEntriesPerPage = isset($arrData['formEntriesPerPage']) ? contrexx_input2int($arrData['formEntriesPerPage']) : 0;
 
         if(empty($intId)) {
             //insert new form
@@ -267,6 +270,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                     `use_category`='".$intUseCategory."',
                     `use_level`='".$intUseLevel."',
                     `use_ready_to_confirm`='".$intUseReadyToConfirm."',
+                    `entries_per_page`='".$intEntriesPerPage."',
                     `active`='0'
             ");
 
@@ -347,7 +351,8 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                     `cmd`='".$strCmd."',
                     `use_category`='".$intUseCategory."',
                     `use_level`='".$intUseLevel."',
-                    `use_ready_to_confirm`='".$intUseReadyToConfirm."'
+                    `use_ready_to_confirm`='".$intUseReadyToConfirm."',
+                    `entries_per_page`='".$intEntriesPerPage."'
                 WHERE
                     `id`='".$intId."'
             ");

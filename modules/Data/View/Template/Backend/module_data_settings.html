@@ -3,9 +3,9 @@
 //<![CDATA[
 var switchAction = function(obj)
 {
-    var pageSelect = $("select_display");
-    var boxWidth = $('box_width');
-    var boxHeight = $('box_height');
+    var pageSelect = jQuery("#select_display");
+    var boxWidth   = jQuery('#box_width');
+    var boxHeight  = jQuery('#box_height');
     if (obj.value == "overlaybox") {
         hideRow(pageSelect);
         showRow(boxWidth);
@@ -21,21 +21,21 @@ var switchAction = function(obj)
 var showRow = function(obj)
 {
     try {
-        obj.style.display = "table-row";
+        obj.css('display','table-row');
     } catch(e) {
-        obj.style.display = "block";
+        obj.show();
     }
 }
 
 var hideRow = function(obj)
 {
-    obj.style.display = "none";
+    obj.hide();
 }
 
 var setRows = function()
 {
     var row = 1;
-    var tb = $('settings_rows').getElementsByTagName("tr");
+    var tb = jQuery('#settings_rows tr');
     
     for (var i = 0; i<tb.length; i++) {
         if (tb[i].visible) {

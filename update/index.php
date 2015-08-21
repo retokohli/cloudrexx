@@ -92,7 +92,7 @@ if (!isset($_CONFIG['coreCmsVersion']) && file_exists(ASCMS_DOCUMENT_ROOT . '/co
 }
 
 // Check if the system is installed
-if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
+if (!defined('CONTREXX_INSTALLED') || !CONTREXX_INSTALLED) {
     header('Location: ../installer/index.php');
     exit;
 } else if ($incSettingsStatus === false) {
@@ -138,7 +138,7 @@ if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable')) {
 $sessionObj->cmsSessionStatusUpdate('backend');
 
 // Initialize base system
-$objInit = new InitCMS('update', Env::em());
+$objInit = new InitCMS('update', \Env::get('em'));
 Env::set('init', $objInit);
 
 JS::activate('cx');

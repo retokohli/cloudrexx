@@ -298,9 +298,14 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $bolLatest = true;
                 $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']);
             } else {
-                $bolLatest = false;
+                $bolLatest   = false;
                 $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
-            }                 
+                if (    !empty($intCmdFormId)
+                    &&  !empty($objForms->arrForms[$intCmdFormId]['formEntriesPerPage'])
+                ) {
+                    $intLimitEnd = $objForms->arrForms[$intCmdFormId]['formEntriesPerPage'];
+                }
+            }
 
             //check show entries
             if((isset($objLevel) && $objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1) || (isset($objCategory) && $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1) || $bolLatest == true || (!$bolFormUseCategory && !$bolFormUseLevel)) {
@@ -372,9 +377,22 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         $_GET['term'] = trim($_GET['term']);
 
-
-        $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+        $cmd         = isset($_GET['cmd']) ? contrexx_input2raw($_GET['cmd']) : '';
         $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
+        if (!empty($cmd)) {
+            $objForms = new MediaDirectoryForm(null, $this->moduleName);
+            foreach ($objForms->arrForms as $intFormId => $arrForm) {
+                if (    !empty($arrForm['formCmd'])
+                    &&  $arrForm['formCmd'] === $cmd
+                    &&  !empty($arrForm['formEntriesPerPage'])
+                ) {
+                    $intLimitEnd = $arrForm['formEntriesPerPage'];
+                    break;
+                }
+            }
+        }
+        
+        $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
         if(!empty($_GET['term']) || $_GET['type'] == 'exp') {
             $objSearch = new MediaDirectorySearch($this->moduleName);

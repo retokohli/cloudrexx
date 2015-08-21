@@ -428,7 +428,7 @@ class CheckoutManager extends CheckoutLibrary {
             }
         }
 
-        $pages = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->getFromModuleCmdByLang('Checkout');
+        $pages = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->getFromModuleCmdByLang('Checkout');
 
         $arrActiveFrontendLanguages = \FWLanguage::getActiveFrontendLanguages();
         if (isset($arrActiveFrontendLanguages[FRONTEND_LANG_ID]) && isset($pages[FRONTEND_LANG_ID])) {

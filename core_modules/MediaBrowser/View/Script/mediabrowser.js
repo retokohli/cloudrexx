@@ -249,16 +249,17 @@
             };
 
             $scope.refreshBrowser = function () {
+                var files = $scope.dataFiles;
                 $scope.selectedFiles = [];
                 $scope.setFiles($scope.dataFiles);
                 $scope.path.forEach(function (pathpart) {
                     if (!pathpart.standard) {
-                        $scope.setFiles($scope.dataFiles[pathpart.path]);
+                        files = files[pathpart.path];
                     }
                 });
+                $scope.setFiles(files);
                 $scope.inRootDirectory = ($scope.path.length == 1);
             };
-
             /**
              * Move up in the directory structure to the specified directory
              * @param dirName
@@ -323,7 +324,7 @@
             $scope.finishedUpload = false;
 
             $scope.template = {
-                url: '../core_modules/MediaBrowser/View/Template/_Uploader.html'
+                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/_Uploader.html'
             };
 
             $scope.loadedTemplate = function () {
@@ -346,6 +347,7 @@
                             {title: "Allowed files", extensions: "jpg,gif,png,bmp,jpeg,tif,tiff"},
                             {title: "Compressed files", extensions: "zip,tar,gz"},
                             {title: "PDF files", extensions: "pdf"},
+                            {title: "Audio Files", extensions: "3gp,act,aiff,aac,amr,ape,au,awb,dct,dss,flac,gsm,m4a,m4p,mp3,mpc,ogg,oga,opus,ra,rm,raw,sln,tta,vox,wav,wma,wv,webm"},
                             {title: "Words files", extensions: "doc,docx"}
                         ]
                     },
@@ -422,7 +424,7 @@
             };
 
             $scope.template = {
-                url: '../core_modules/MediaBrowser/View/Template/_FileBrowser.html'
+                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/_FileBrowser.html'
             };
             // __construct
 
@@ -654,7 +656,7 @@
         function ($scope, mediabrowserConfig) {
 
             $scope.template = {
-                url: '../core_modules/MediaBrowser/View/Template/_Sitestructure.html'
+                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/_Sitestructure.html'
             };
 
             $scope.clickPage = function (site) {
@@ -829,12 +831,11 @@
             if (key == 'datainfo') {
                 continue;
             }
-            if (searchArray[key]['datainfo'] != undefined) {
-                if (searchArray[key]['datainfo']['name'] != undefined) {
-                    if (searchObject(searchArray[key]['datainfo']['name'])) {
-                        resultArray.push(searchArray[key]);
-                    }
-                }
+            if (searchArray[key]['datainfo'] != undefined
+                && searchArray[key]['datainfo']['name'] != undefined
+                && searchArray[key]['datainfo']['extension'] != 'Dir'
+                && searchObject(searchArray[key]['datainfo']['name'])) {
+                resultArray.push(searchArray[key]);
             }
             if (searchArray[key] instanceof Object) {
                 resultArray = resultArray.concat(recursiveSearch(searchObject, searchArray[key], level++));
@@ -909,7 +910,7 @@
                 }
 
                 $modal.open({
-                    templateUrl: '../core_modules/MediaBrowser/View/Template/MediaBrowserModal.html',
+                    templateUrl: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/MediaBrowserModal.html',
                     controller: 'MainCtrl',
                     dialogClass: 'media-browser-modal',
                     size: 'lg',

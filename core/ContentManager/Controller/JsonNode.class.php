@@ -68,7 +68,7 @@ class JsonNode implements JsonAdapter {
      * Constructor
      */
     public function __construct() {
-        $this->em = \Env::em();
+        $this->em = \Env::get('em');
         if ($this->em) {
             $this->nodeRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
             $this->pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');

@@ -69,7 +69,7 @@ class Form {
     /**
      * array $crmCustomerGroups
      */
-    protected $crmCustomerGroups = array();
+    protected $crmCustomerGroups;
     
     /**
      * @var bool
@@ -92,7 +92,7 @@ class Form {
         $this->useEmailOfSender = false;
         $this->htmlMail = true;
         $this->sendAttachment = false;
-        $this->crmCustomerGroups = '';
+        $this->crmCustomerGroups = array();
     }
 
     /**

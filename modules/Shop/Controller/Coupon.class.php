@@ -1229,7 +1229,7 @@ class Coupon
             $count, $limit);
 //DBG::log("Paging: $paging");
         $objTemplate->setVariable('SHOP_PAGING', $paging);
-        $attribute_code = 'style="width: 230px; text-align: left;" maxlength="30"';
+        $attribute_code = 'style="width: 230px; text-align: left;" maxlength="20"';
         $attribute_time = 'style="width: 230px; text-align: left;" maxlength="10"';
         $attribute_discount_rate = 'style="width: 230px; text-align: right;" maxlength="3"';
         $attribute_discount_amount = 'style="width: 230px; text-align: right;" maxlength="9"';
@@ -1241,6 +1241,10 @@ class Coupon
         $attribute_payment = 'style="width: 230px;"';
         $type = ($objCouponEdit->discount_rate > 0 ? 'rate' : 'amount');
         $customer_name = '';
+        //reset the add view
+        if(!$edit) {
+            $objCouponEdit = new Coupon();
+        }
         if ($objCouponEdit->customer_id) {
             $customer_name = Customers::getNameById(
                 $objCouponEdit->customer_id, '%4$s (%3$u)');
@@ -1293,7 +1297,7 @@ class Coupon
                     $attribute_discount_rate),
             'SHOP_DISCOUNT_COUPON_AMOUNT' =>
                 \Html::getInputText('discount_amount',
-                    number_format($objCouponEdit->discount_amount, 2), false,
+                    number_format($objCouponEdit->discount_amount, 2, '.', ''), false,
                     $attribute_discount_amount),
             'SHOP_DISCOUNT_COUPON_USES' =>
                 \Html::getInputText('uses',

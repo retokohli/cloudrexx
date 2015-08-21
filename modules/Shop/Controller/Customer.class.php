@@ -636,9 +636,7 @@ class Customer extends \User
      */
     static function updatePassword($email, $password)
     {
-        global $objFWUser;
-
-        $objUser = $objFWUser->objUser->getUsers(
+        $objUser = \FWUser::getFWUserObject()->objUser->getUsers(
             array('email' => $email));
         if (!$objUser) return false;
         $objUser->setPassword($password);
