@@ -708,11 +708,11 @@
             restrict: 'A',
             link: function (scope, el, attrs) {
                 if (attrs.previewImage !== 'none') {
-                    if (attrs.hasPreview){
+                    if (attrs.hasPreviewImage == 'true'){
                         jQuery(el).popover({
                             trigger: 'hover',
                             html: true,
-                            content: '<img src="' + attrs.previewImage + '"  />',
+                            content: '<img src="' + attrs.previewImage.replace(/<[^>]*>/g, '') + '"  />',
                             placement: 'right'
                         });
                     }
@@ -722,7 +722,7 @@
                                 jQuery(el).popover({
                                     trigger: 'hover',
                                     html: true,
-                                    content: '<img src="' + attrs.previewImage + '"  />',
+                                    content: '<img src="' + attrs.previewImage.replace(/<[^>]*>/g, '') + '"  />',
                                     placement: 'right'
                                 });
                             })
