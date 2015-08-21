@@ -497,6 +497,7 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesCalendarPath;
         protected $websiteImagesPodcastPath;
         protected $websiteImagesBlogPath;
+        protected $websiteImagesDataPath;
         protected $websiteMediaarchive1Path;
         protected $websiteMediaarchive2Path;
         protected $websiteMediaarchive4Path;
@@ -512,6 +513,7 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesCalendarWebPath;
         protected $websiteImagesPodcastWebPath;
         protected $websiteImagesBlogWebPath;
+        protected $websiteImagesDataWebPath;
         protected $websiteMediaarchive1WebPath;
         protected $websiteMediaarchive2WebPath;
         protected $websiteMediaarchive3WebPath;
@@ -2523,6 +2525,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesPodcastPath     = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Podcast';
             $this->websiteImagesBlogPath        = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Blog';
             $this->websiteImagesCrmPath         = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Crm';
+            $this->websiteImagesDataPath        = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Data';
             $this->websiteImagesCrmProfilePath  = $this->websiteImagesCrmPath . '/profile';
             $this->websiteImagesAccessProfilePath = $this->websiteImagesAccessPath .'/profile';
             $this->websiteImagesAccessPhotoPath = $this->websiteImagesAccessPath .'/photo';
@@ -2544,6 +2547,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesPodcastWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Podcast';
             $this->websiteImagesBlogWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Blog';
             $this->websiteImagesCrmWebPath      = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Crm';
+            $this->websiteImagesDataWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Data';
             $this->websiteImagesCrmProfileWebPath = $this->websiteImagesCrmWebPath . '/profile';
             $this->websiteImagesAccessProfileWebPath = $this->websiteImagesAccessWebPath . '/profile';
             $this->websiteMediaarchive1WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive1';
@@ -2731,6 +2735,22 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteImagesBlogWebPath()
         {
             return $this->websiteImagesBlogWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesDataPath()
+        {
+            return $this->websiteImagesDataPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesDataWebPath()
+        {
+            return $this->websiteImagesDataWebPath;
         }
 
         /**
