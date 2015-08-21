@@ -190,7 +190,8 @@ class LocalFileSystem implements FileSystem
         if (!empty($filename)
             && !empty($strPath)
         ) {
-            if (is_dir(
+            if ($file->getExtension() == ''
+            && is_dir(
                 $this->getFullPath($file)
                 . $file->getName()
             )) {
@@ -214,7 +215,7 @@ class LocalFileSystem implements FileSystem
                 }
             } else {
                 if (\Cx\Lib\FileSystem\FileSystem::delete_file(
-                    $this->rootPath . '/' . $strPath . '/' . $filename
+                    $this->rootPath . $strPath  . $filename
                 )
                 ) {
                     $thumbnails = glob('/home/robin/Web/contrexx.test/images/content/'.$file->getName().'.thumb*');
