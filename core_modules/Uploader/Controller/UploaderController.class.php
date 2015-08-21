@@ -374,23 +374,23 @@ class UploaderController {
     }
 
     /**
-     * Sanitizes a filename replacing whitespace with dashes
-     *
-     * Removes special characters that are illegal in filenames on certain
-     * operating systems and special characters requiring special escaping
-     * to manipulate at the command line. Replaces spaces and consecutive
-     * dashes with a single dash. Trim period, dash and underscore from beginning
-     * and end of filename.
-     *
-     * @author WordPress
+     * Sanitizes the filename by adding a .txt file extension to files with
+     * bad extensions and by removing strange characters.
      *
      * @param string $filename The filename to be sanitized
      *
      * @return string The sanitized filename
      */
     public static function sanitizeFileName($filename) {
-        FileSystem::replaceCharacters($filename);
-        \FWValidator::getCleanFileName($filename);
+        $filename = FileSystem::replaceCharacters(filter_var($filename,FILTER_SANITIZE_URL));
+        $filename = \FWValidator::getCleanFileName($filename);
+        $fileInfo = pathinfo($filename);
+        if (empty($filename)){
+            $filename = 'file'.date('Y-m-d H:i:s');
+        }
+        if (!isset($fileInfo['extension'])){
+            $filename = $filename.'.txt';
+        }
         if (!\FWValidator::is_file_ending_harmless(
             $filename
         )){
