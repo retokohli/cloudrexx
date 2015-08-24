@@ -136,7 +136,7 @@ class ComponentController extends
             );
 
             \JS::activate('mediabrowser');
-            \JS::registerJS('core_modules/MediaBrowser/View/Script/mediabrowser.js');
+            \JS::registerJS('core_modules/MediaBrowser/View/Script/MediaBrowser.js');
         }
     }
 

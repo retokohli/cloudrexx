@@ -55,7 +55,7 @@ class ComponentController extends SystemComponentController
             );
 
             \JS::activate('mediabrowser');
-            \JS::registerJS('core_modules/Uploader/View/Script/uploader.js');
+            \JS::registerJS('core_modules/Uploader/View/Script/Uploader.js');
         }
     }
 
