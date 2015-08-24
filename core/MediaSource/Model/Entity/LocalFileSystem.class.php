@@ -215,12 +215,7 @@ class LocalFileSystem implements FileSystem
                     $this->rootPath . $strPath  . $filename
                 )
                 ) {
-                    $thumbnails = glob('/home/robin/Web/contrexx.test/images/content/'.$file->getName().'.thumb*');
-                    foreach ($thumbnails as $thumbnail){
-                        \Cx\Lib\FileSystem\FileSystem::delete_file(
-                            $thumbnail
-                        );
-                    }
+                    $this->removeThumbnails($file);
                     return (
                     sprintf(
                         $_ARRAYLANG['TXT_FILEBROWSER_FILE_SUCCESSFULLY_REMOVED'],
@@ -286,12 +281,8 @@ class LocalFileSystem implements FileSystem
                     $file->getName()
                 );
             }
-            $thumbnails = glob('/home/robin/Web/contrexx.test/images/content/'.$file->getName().'.thumb*');
-            foreach ($thumbnails as $thumbnail){
-                \Cx\Lib\FileSystem\FileSystem::delete_file(
-                    $thumbnail
-                );
-            }
+            $this->removeThumbnails($file);
+
 
             if (!\Cx\Lib\FileSystem\FileSystem::move(
                 $fileName, $destinationFileName
@@ -390,5 +381,23 @@ class LocalFileSystem implements FileSystem
      */
     public function getFullPath(File $file) {
         return $this->rootPath . ltrim($file->getPath(), '.') . '/';
+    }
+
+    /**
+     * @param File $file
+     *
+     * @return array
+     */
+    public function removeThumbnails(File $file) {
+        if ($this->isImage($file->getExtension())) {
+            $thumbnails = glob(
+                $this->getFullPath($file) . $file->getName() . '.thumb*'
+            );
+            foreach ($thumbnails as $thumbnail){
+                \Cx\Lib\FileSystem\FileSystem::delete_file(
+                    $thumbnail
+                );
+            }
+        }
     }
 }
