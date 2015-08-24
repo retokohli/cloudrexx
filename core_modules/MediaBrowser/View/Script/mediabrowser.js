@@ -385,16 +385,6 @@
                         'X-Requested-With': 'XMLHttpRequest',
                         'Check-CSRF': 'false'
                     },
-                    filters: {
-                        max_file_size: '50cxMb',
-                        mime_types: [
-                            {title: "Allowed files", extensions: "jpg,gif,png,bmp,jpeg,tif,tiff"},
-                            {title: "Compressed files", extensions: "zip,tar,gz"},
-                            {title: "PDF files", extensions: "pdf"},
-                            {title: "Audio Files", extensions: "3gp,act,aiff,aac,amr,ape,au,awb,dct,dss,flac,gsm,m4a,m4p,mp3,mpc,ogg,oga,opus,ra,rm,raw,sln,tta,vox,wav,wma,wv,webm"},
-                            {title: "Words files", extensions: "doc,docx"}
-                        ]
-                    },
                     multipart_params: {
                         "path": ''
                     },
