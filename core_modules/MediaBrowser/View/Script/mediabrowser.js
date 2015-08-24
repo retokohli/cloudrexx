@@ -59,6 +59,9 @@
             },
             get: function (key) {
                 return config[key];
+            },
+            isset: function (key) {
+                return key in config;
             }
         };
     });
@@ -124,6 +127,19 @@
                             function getFiles(data) {
                                 $scope.dataFiles = data;
                                 $scope.files = $scope.dataFiles;
+                                if (!mediabrowserConfig.isset('lastPath')){
+                                    mediabrowserConfig.set('lastPath',$scope.path);
+                                }
+                                else {
+                                    var oldpath = mediabrowserConfig.get('lastPath');
+                                    for (var i in oldpath){
+                                        if (i > 0){
+                                            $scope.extendPath(oldpath[i].path);
+                                        }
+                                    }
+                                    $scope.inRootDirectory = ($scope.path.length == 1);
+                                    jQuery(".filelist").fadeIn();
+                                }
                             }
                         );
                     }, function (reason) {
@@ -271,6 +287,7 @@
             };
 
             $scope.refreshBrowser = function () {
+                mediabrowserConfig.set('lastPath',$scope.path);
                 var files = $scope.dataFiles;
                 $scope.selectedFiles = [];
                 $scope.setFiles($scope.dataFiles);
@@ -925,6 +942,10 @@
                 mediabrowserConfig.set('modalOpened', false);
                 if (attrs.cxMbCbJsModalopened) {
                     mediabrowserConfig.set('modalOpened', attrs.cxMbCbJsModalopened);
+                }
+
+                if (attrs.startPath) {
+                    mediabrowserConfig.set('lastPath', attrs.startPath);
                 }
 
                 if (typeof(config) !== 'undefined' && typeof(config.callback) !== 'undefined') {
