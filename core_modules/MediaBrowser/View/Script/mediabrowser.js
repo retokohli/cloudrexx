@@ -33,9 +33,12 @@
         return {
             get: function (type) {
                 var deferred = $q.defer();
-                $http.get(cx.variables.get("cadminPath", "contrexx") + 'index.php?cmd=jsondata&object=MediaBrowser&act=' + type + '&csrf=' + cx.variables.get('csrf')).success(function (jsonadapter) {
+                $http.get(cx.variables.get("cadminPath", "contrexx") + 'index.php?cmd=jsondata&object=MediaBrowser&act=' + type + '&csrf=' + cx.variables.get('csrf')).success(function (jsonadapter, status, headers) {
                     if (jsonadapter.data instanceof Object) {
                         deferred.resolve(jsonadapter.data);
+                    }
+                    else if (jsonadapter.match(/login_form/)){
+                        deferred.reject(cx.variables.get('TXT_FILEBROWSER_LOGGED_OUT', 'mediabrowser'));
                     }
                     else {
                         deferred.reject("An error occured while fetching items for " + type);
@@ -96,8 +99,8 @@
                 );
             };
 
+            var attempts = 0;
             $scope.loadSources = function(){
-                var attempts = 0;
                 mediabrowserFiles.get('getSources').then(
                     function getSources(data) {
                         $scope.sources = data;
@@ -145,13 +148,13 @@
                     }, function (reason) {
                         // If the request fails, try it 3 more times.
                         attempts++;
-                        if (attempts != 4){
+                        if (attempts < 4){
                             $scope.loadSources();
                         }
                         else {
                             console.error(reason);
                             bootbox.dialog({
-                                title: "Kritischer Fehler aufgetreten",
+                                title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser'),
                                 message: reason
                             });
                         }

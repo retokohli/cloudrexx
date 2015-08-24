@@ -86,3 +86,5 @@ $_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK'] = "Datei vom Computer ausw
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_BUTTON']          = "Hochladen";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_WATING']          = "Die Dateien werden hochgeladen...";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FINISHED']        = "Alle Dateien wurden hochgeladen.";
+$_ARRAYLANG['TXT_FILEBROWSER_LOGGED_OUT']             = "Sie sind nicht mehr eingeloggt. Bitte laden sie die Seite neu um sich einzuloggen.";
+$_ARRAYLANG['TXT_FILEBROWSER_ERROR_HAS_HAPPEND']      = "Ein Fehler ist aufgetreten.";
