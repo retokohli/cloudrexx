@@ -196,6 +196,17 @@ class ShopSettings
                 intval($_POST['numof_coupon_per_page_backend']), 58,
                 SettingDb::TYPE_TEXT, null, 'config');
         }
+        if (!SettingDb::set(
+            'numof_products_per_page_frontend',
+            intval($_POST['numof_products_per_page_frontend'])
+        )
+        ) {
+            SettingDb::add(
+                'numof_products_per_page_frontend',
+                intval($_POST['numof_products_per_page_frontend']), null,
+                SettingDb::TYPE_TEXT, null, 'config'
+            );
+        }
     }
 
 
