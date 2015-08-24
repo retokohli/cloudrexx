@@ -4043,8 +4043,8 @@ INSERT INTO `contrexx_module_mediadir_form_names` (`lang_id`, `form_id`, `form_n
 INSERT INTO `contrexx_module_mediadir_form_names` (`lang_id`, `form_id`, `form_name`, `form_description`) VALUES (3,24,'Referenzen','Die Referenzen von MaxMuster AG');
 INSERT INTO `contrexx_module_mediadir_form_names` (`lang_id`, `form_id`, `form_name`, `form_description`) VALUES (2,24,'Referenzen','Die Referenzen von MaxMuster AG');
 INSERT INTO `contrexx_module_mediadir_form_names` (`lang_id`, `form_id`, `form_name`, `form_description`) VALUES (1,24,'Referenzen','Die Referenzen von MaxMuster AG');
-INSERT INTO `contrexx_module_mediadir_forms` (`id`, `order`, `picture`, `active`, `use_level`, `use_category`, `use_ready_to_confirm`, `cmd`) VALUES (24,99,'/images/MediaDir/uploads/referenzen.jpg',1,1,1,0,'referenzen');
-INSERT INTO `contrexx_module_mediadir_forms` (`id`, `order`, `picture`, `active`, `use_level`, `use_category`, `use_ready_to_confirm`, `cmd`) VALUES (23,99,'/images/MediaDir/uploads/team.jpg',1,1,1,0,'team');
+INSERT INTO `contrexx_module_mediadir_forms` (`id`, `order`, `picture`, `active`, `use_level`, `use_category`, `use_ready_to_confirm`, `entries_per_page`, `cmd`) VALUES (24,99,'/images/MediaDir/uploads/referenzen.jpg',1,1,1,0,0,'referenzen');
+INSERT INTO `contrexx_module_mediadir_forms` (`id`, `order`, `picture`, `active`, `use_level`, `use_category`, `use_ready_to_confirm`, `entries_per_page`, `cmd`) VALUES (23,99,'/images/MediaDir/uploads/team.jpg',1,1,1,0,0,'team');
 INSERT INTO `contrexx_module_mediadir_inputfield_names` (`lang_id`, `form_id`, `field_id`, `field_name`, `field_default_value`, `field_info`) VALUES (3,24,180,'Logo','','');
 INSERT INTO `contrexx_module_mediadir_inputfield_names` (`lang_id`, `form_id`, `field_id`, `field_name`, `field_default_value`, `field_info`) VALUES (2,24,180,'Logo','','');
 INSERT INTO `contrexx_module_mediadir_inputfield_names` (`lang_id`, `form_id`, `field_id`, `field_name`, `field_default_value`, `field_info`) VALUES (1,24,180,'Logo','','');

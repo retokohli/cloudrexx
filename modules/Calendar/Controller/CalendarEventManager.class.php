@@ -218,8 +218,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
         parent::getSettings();
         
         // need for database TIMESTAMP
-        $startDate = !empty($this->startDate) ? date("Y-m-d H:i:s", $this->startDate) : $this->startDate;
-        $endDate   = !empty($this->endDate) ? date("Y-m-d H:i:s", $this->endDate) : $this->endDate;
+        $startDate = !empty($this->startDate) ? date("Y-m-d H:i:s", $this->startDate) : '0000-00-00 00:00:00';
+        $endDate   = !empty($this->endDate) ? date("Y-m-d H:i:s", $this->endDate) : '0000-00-00 00:00:00';
         
         $onlyActive_where = ($this->onlyActive == true ? ' AND event.status=1' : '');  
         $categoryId_where = ($this->categoryId != 0 ? ' AND event.catid='.$this->categoryId : '');  
