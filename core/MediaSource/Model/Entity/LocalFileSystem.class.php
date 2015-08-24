@@ -176,11 +176,11 @@ class LocalFileSystem implements FileSystem
     public function removeFile(File $file) {
         global $_ARRAYLANG;
         if (is_dir(
-                $this->rootPath . ltrim($file->getPath(), '.') . '/'
-                . $file->getName() . $file->getExtension() ? '' : '.'. $file->getExtension()
-            )
+            $this->rootPath . ltrim($file->getPath(), '.') . '/'
+            . $file->getName() . ($file->getExtension() == '' ? '' : '.'. $file->getExtension())
+        )
         ) {
-            $filename = $file->getName(). $file->getExtension() ? '' : '.'. $file->getExtension();
+            $filename = $file->getName() . ($file->getExtension() == '' ? '' : '.'. $file->getExtension());
         } else {
             $filename = $file->getName() . '.' . $file->getExtension();
         }
@@ -193,7 +193,7 @@ class LocalFileSystem implements FileSystem
                 . $filename
             )) {
                 if (\Cx\Lib\FileSystem\FileSystem::delete_folder(
-                    $this->rootPath . $strPath . $filename, true
+                    $this->getFullPath($file) . $filename, true
                 )
                 ) {
                     return (
@@ -212,7 +212,7 @@ class LocalFileSystem implements FileSystem
                 }
             } else {
                 if (\Cx\Lib\FileSystem\FileSystem::delete_file(
-                    $this->rootPath . $strPath  . $filename
+                    $this->getFullPath($file)  . $filename
                 )
                 ) {
                     $this->removeThumbnails($file);
