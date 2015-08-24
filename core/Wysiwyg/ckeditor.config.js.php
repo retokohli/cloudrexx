@@ -25,6 +25,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
+header('Content-Type: application/javascript; charset=UTF-8');
 
 if (strpos(dirname(__FILE__), 'customizing') === false) {
     $contrexx_path = dirname(dirname(dirname(__FILE__)));
