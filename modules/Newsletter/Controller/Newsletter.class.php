@@ -414,6 +414,12 @@ class Newsletter extends NewsletterLib
                         // so lets be it like that > the user won't be subscribed to any list
                         break;
                 }
+            } else {
+                $arrLists = self::getLists();
+                if (count($arrLists) == 1) {
+                    // only one list is available so assign the list to the user.
+                    $arrAssociatedLists = array_keys($arrLists);
+                }
             }
 
             if (!$isAccessRecipient) {
