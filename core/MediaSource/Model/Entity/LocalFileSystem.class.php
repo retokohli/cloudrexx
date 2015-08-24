@@ -175,25 +175,22 @@ class LocalFileSystem implements FileSystem
 
     public function removeFile(File $file) {
         global $_ARRAYLANG;
-        if ($file->getExtension() == ''
-            && is_dir(
+        if (is_dir(
                 $this->rootPath . ltrim($file->getPath(), '.') . '/'
-                . $file->getName()
+                . $file->getName() . $file->getExtension() ? '' : '.'. $file->getExtension()
             )
         ) {
-            $filename = $file->getName();
+            $filename = $file->getName(). $file->getExtension() ? '' : '.'. $file->getExtension();
         } else {
             $filename = $file->getName() . '.' . $file->getExtension();
         }
-
         $strPath = $file->getPath();
         if (!empty($filename)
             && !empty($strPath)
         ) {
-            if ($file->getExtension() == ''
-            && is_dir(
+            if (is_dir(
                 $this->getFullPath($file)
-                . $file->getName()
+                . $filename
             )) {
                 if (\Cx\Lib\FileSystem\FileSystem::delete_folder(
                     $this->rootPath . $strPath . $filename, true
@@ -357,7 +354,7 @@ class LocalFileSystem implements FileSystem
     ) {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        if (preg_match('#^[0-9a-zA-Z_\-\/]+$#', $directory)) {
+        if (preg_match('#^[0-9a-zA-Z_\-\/\.]+$#', $directory)) {
             if (!\Cx\Lib\FileSystem\FileSystem::make_folder(
                 $path . '/' . $directory
             )
