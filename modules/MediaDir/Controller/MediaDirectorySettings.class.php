@@ -1328,6 +1328,7 @@ EOF;
             $this->moduleLangVar.'_USE_LEVEL_ON' => 'checked="checked"',
             $this->moduleLangVar.'_USE_READY_TO_CONFIRM_ON' => 'checked="checked"',
             'TXT_'.$this->moduleLangVar.'_USE_READY_TO_CONFIRM' =>  $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM'],
+            'TXT_'.$this->moduleLangVar.'_FORM_ENTRIES_PER_PAGE' =>  $_ARRAYLANG['TXT_MEDIADIR_FORM_ENTRIES_PER_PAGE'],
         ));
 
         if(isset($_GET['ajax'])) {
@@ -1399,7 +1400,7 @@ EOF;
                 $this->moduleLangVar.'_USE_LEVEL_OFF' => $objForm->arrForms[$intFormId]['formUseLevel'] == 0 ? 'checked="checked"' : '',
                 $this->moduleLangVar.'_USE_READY_TO_CONFIRM_ON' => $objForm->arrForms[$intFormId]['formUseReadyToConfirm'] == 1 ? 'checked="checked"' : '',
                 $this->moduleLangVar.'_USE_READY_TO_CONFIRM_OFF' => $objForm->arrForms[$intFormId]['formUseReadyToConfirm'] == 0 ? 'checked="checked"' : '',
-                
+                $this->moduleLangVar.'_FORM_ENTRIES_PER_PAGE' => contrexx_raw2xhtml($objForm->arrForms[$intFormId]['formEntriesPerPage']),
             ));
 
             parent::getCommunityGroups();
