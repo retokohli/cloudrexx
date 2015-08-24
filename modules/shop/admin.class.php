@@ -1577,6 +1577,8 @@ if ($test === NULL) {
                     'style="width: 270px;"'),
             'SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_BACKEND' =>
                 SettingDb::getValue('numof_products_per_page_backend'),
+            'SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_FRONTEND' =>
+                SettingDb::getValue('numof_products_per_page_frontend'),
             'SHOP_SETTING_NUMOF_ORDERS_PER_PAGE_BACKEND' =>
                 SettingDb::getValue('numof_orders_per_page_backend'),
             'SHOP_SETTING_NUMOF_CUSTOMERS_PER_PAGE_BACKEND' =>
