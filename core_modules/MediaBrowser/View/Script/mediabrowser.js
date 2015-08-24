@@ -27,6 +27,7 @@
 
     mediaBrowserApp.config(['$httpProvider', function ($httpProvider) {
         $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+        $httpProvider.defaults.headers.common["Check-CSRF"] = 'false';
     }]);
 
     mediaBrowserApp.factory('mediabrowserFiles', function ($http, $q) {
@@ -381,7 +382,8 @@
                     silverlight_xap_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.xap',
                     chunk_size: cx.variables.get('chunk_size','mediabrowser'),
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Check-CSRF': 'false'
                     },
                     filters: {
                         max_file_size: '50cxMb',

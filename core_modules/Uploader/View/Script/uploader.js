@@ -104,7 +104,7 @@
                 prevent_duplicates: true,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
-                    'Cloudrexx-Jsonadapter': 'Enabled'
+                    'Check-CSRF': 'false'
                 },
                 chunk_size: cx.variables.get('chunk_size','uploader')
             };
