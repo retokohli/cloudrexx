@@ -5,6 +5,7 @@
 
     angular.module('plupload.module', []).config(['$httpProvider', function ($httpProvider) {
         $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+        $httpProvider.defaults.headers.common["Check-CSRF"] = 'false';
     }]);
 
     mediaBrowserApp.config(['$provide', function ($provide) {
@@ -84,7 +85,8 @@
             $scope.files = [];
             $scope.dataFiles = [];
             $scope.sites = [];
-            $scope.inRootDirectory = true;
+            $scope.loadingSources = true;
+
 
             $scope.path = [
                 {name: cx.variables.get('TXT_FILEBROWSER_FILES', 'mediabrowser'), path: 'files', standard: true}
@@ -129,6 +131,7 @@
 
                         mediabrowserFiles.getByMediaType($scope.selectedSource.value).then(
                             function getFiles(data) {
+                                $scope.loadingSources = false;
                                 $scope.dataFiles = data;
                                 $scope.files = $scope.dataFiles;
                                 if (!mediabrowserConfig.isset('lastPath')){
@@ -238,6 +241,9 @@
                 if(newTabNames.indexOf("filebrowser") !== -1 && newTabNames.indexOf("uploader") === -1){
                     newTabNames.push("uploader");
                 }
+                if(newTabNames.indexOf("filebrowser") === -1 && newTabNames.indexOf("uploader") !== -1){
+                    newTabNames.push("filebrowser");
+                }
 
                 var newTabs = [];
                 newTabNames.forEach(function (newTabName) {
@@ -267,11 +273,10 @@
                 $scope.path = [
                     {name: "" + $scope.selectedSource.name, path: $scope.selectedSource.value, standard: true}
                 ];
-                jQuery(".loadingPlatform").fadeIn();
-                jQuery(".filelist").fadeOut();
+                $scope.loadingSources = true;
                 mediabrowserFiles.getByMediaType($scope.selectedSource.value).then(
                     function getFiles(data) {
-                        jQuery(".loadingPlatform").fadeOut();
+                        $scope.loadingSources = false;
                         $scope.dataFiles = data;
                         $scope.files = data;
                         $timeout(function () {
@@ -282,7 +287,6 @@
                                     }
                                 }
                             }
-                            $scope.inRootDirectory = ($scope.path.length == 1);
                             $scope.$apply();
                             jQuery(".filelist").fadeIn();
                         });
@@ -301,7 +305,6 @@
                     }
                 });
                 $scope.setFiles(files);
-                $scope.inRootDirectory = ($scope.path.length == 1);
             };
             /**
              * Move up in the directory structure to the specified directory
@@ -311,7 +314,6 @@
                 if (Array.isArray($scope.path)) {
                     $scope.path.push({name: dirName, path: dirName, standard: false});
                 }
-                $scope.inRootDirectory = ($scope.path.length == 1);
                 $scope.searchString = '';
                 $scope.refreshBrowser();
             };
@@ -327,7 +329,6 @@
                             $scope.path = $scope.path.slice(0, -1);
                     }
                 }
-                $scope.inRootDirectory = ($scope.path.length == 1);
                 $scope.refreshBrowser();
             };
 
@@ -352,6 +353,17 @@
                 $scope.updateSource();
             };
 
+            $scope.length = function (obj) {
+                var size = 0, key;
+                for (key in obj) {
+                    /* Angularjs */
+                    if (key != '$$hashKey'){
+                        if (obj.hasOwnProperty(key)) size++;
+                    }
+                }
+                return size;
+            };
+
         }]);
 
 
@@ -361,6 +373,9 @@
             $scope.uploaderData = {
                 filesToUpload: []
             };
+
+
+
 
             $scope.progress = 0;
             $scope.progressMessage = '';
@@ -373,7 +388,7 @@
             $scope.loadedTemplate = function () {
                 // PLUPLOADER INTEGRATION
                 $scope.uploader = new plupload.Uploader({
-                    runtimes: 'flash,html5,silverlight,html4',
+                    runtimes: 'html5,flash,silverlight,html4',
                     browse_button: 'selectFileFromComputer',
                     container: 'uploader',
                     drop_element: "uploader",
@@ -426,7 +441,12 @@
                     }
                 });
                 $scope.uploader.init();
+
+                jQuery( ".uploadPlatform" ).mouseenter(function() {
+                    $scope.uploader.refresh();
+                });
             };
+
 
             $scope.startUpload = function () {
                 $scope.uploader.start();
@@ -490,8 +510,8 @@
                 }
                 else {
                     if (file.datainfo.active === true && !selectFile) {
-                        for (var i in $scope.selectedFiles) {
-                            if ($scope.selectedFiles[i].datainfo.id == file.datainfo.id) {
+                        for (var i = 0; i < $scope.selectedFiles.length; i++) {
+                            if ($scope.selectedFiles[i].datainfo.filepath == file.datainfo.filepath) {
                                 $scope.selectedFiles.splice(i, 1);
                             }
                         }
@@ -499,9 +519,8 @@
                     }
                     else {
                         file.datainfo.active = true;
-                        if (!mediabrowserConfig.get('multipleSelect') && selectFile) {
+                        if (selectFile) {
                             $scope.selectedFiles.push(file);
-                            $scope.selectedFiles = [];
                             file.datainfo.active = false;
 
                             var fn = mediabrowserConfig.get('callbackWrapper');
@@ -522,14 +541,18 @@
                             $scope.lastActiveFile = file;
                             $scope.selectedFiles.push(file);
                         }
+                        else if (mediabrowserConfig.get('multipleSelect')){
+                            $scope.selectedFiles.push(file);
+                        }
                     }
-
                     $scope.noFileSelected = $scope.selectedFiles.length == 0;
                 }
             };
 
             $scope.escapeString = function(string){
-                return string.replace(/&/g, '&amp;').replace(/'/g, '&apos;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return string.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+                    return '&#'+i.charCodeAt(0)+';';
+                });
             };
 
             $scope.renameFile = function (file, index) {
@@ -696,6 +719,9 @@
     mediaBrowserApp.controller('SitestructureCtrl', ['$scope', 'mediabrowserConfig',
         function ($scope, mediabrowserConfig) {
 
+            $scope.activeLanguage = cx.variables.get('language','mediabrowser');
+            $scope.activeLanguages = cx.variables.get('languages','mediabrowser');
+
             $scope.template = {
                 url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/_Sitestructure.html'
             };
@@ -707,7 +733,16 @@
                     fn({type: 'page', data: [site]});
                 }
                 $scope.closeModal();
-            }
+            };
+
+            $scope.isActive = function (lang) {
+                return $scope.activeLanguage == lang;
+            };
+
+            $scope.setLang = function (lang) {
+                $scope.activeLanguage = lang;
+            };
+
 
         }
     ]);
@@ -788,7 +823,7 @@
     }]);
 
     mediaBrowserApp.filter('findPage', function () {
-        return function (items, search) {
+        return function (items, search,activeLanguage) {
             if (!items) {
                 return [];
             }
@@ -796,7 +831,7 @@
             var letterMatch = new RegExp(search, 'i');
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
-                if (letterMatch.test(item.name)) {
+                if (letterMatch.test(item.name[activeLanguage])) {
                     filtered.push(item);
                 }
             }

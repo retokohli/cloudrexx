@@ -142,6 +142,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
             array_push($pageStack, $entry);
         }
         $return = array();
+
         while (count($pageStack)) {
             $entry              = array_pop($pageStack);
             $page               = $entry['data'][0];
@@ -153,14 +154,16 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
                 $entry['attr']['level'] = $arrPage['level'] + 1;
                 array_push($pageStack, $entry);
             }
-            $arrPage['catname']   = $page['title'];
+            $arrPage['catname']= [];
+            foreach ($entry['data'] as $id => $langPage){
+                $arrPage['catname'][$langPage['language']]  = $langPage['title'];
+            }
             $arrPage['catid']     = $page['attr']['id'];
-            $arrPage['lang']      = BACKEND_LANG_ID;
             $arrPage['protected'] = $page['attr']['protected'];
             $arrPage['type']      = Page::TYPE_CONTENT;
             $arrPage['alias']     = $page['title'];
             $arrPage['frontend_access_id']
-                                          = $page['attr']['frontend_access_id'];
+                                  = $page['attr']['frontend_access_id'];
             $arrPage['backend_access_id'] = $page['attr']['backend_access_id'];
             $jsondata                     = json_decode(
                 $page['attr']['data-href']

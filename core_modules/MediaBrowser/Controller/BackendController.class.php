@@ -65,6 +65,7 @@ class BackendController extends SystemComponentBackendController
         );
 
         $uploader2 = new Uploader();
+        $uploader2->setUploadLimit(1);
         $uploader2->setFinishedCallback(
             '\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback'
         );

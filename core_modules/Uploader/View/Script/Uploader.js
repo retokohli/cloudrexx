@@ -12,6 +12,12 @@
         }
     });
 
+    function escapeString(string){
+        return string.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+            return '&#'+i.charCodeAt(0)+';';
+        });
+    }
+
     angular.module('plupload.module', []).config(['$httpProvider', function ($httpProvider) {
         $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
     }]);
@@ -92,15 +98,15 @@
             };
 
             var options = {
-                runtimes: 'html5,flash,silverlight',
-                multi_selection: (iAttrs.uploadLimit !== 1) ? true : false,
+                runtimes: 'html5,flash,silverlight,html4',
+                multi_selection: (iAttrs.uploadLimit !== 1),
                 drop_element: 'drop-target-' + iAttrs.id,
                 browse_button: 'drop-target-btn-' + iAttrs.id,
                 max_file_count: iAttrs.uploadLimit,
                 max_file_size: iAttrs.plMaxFileSize,
                 url: iAttrs.plUrl,
-                flash_swf_url: iAttrs.plFlashSwfUrl,
-                silverlight_xap_url: iAttrs.plSilverlightXapUrl,
+                flash_swf_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.swf',
+                silverlight_xap_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.xap',
                 prevent_duplicates: true,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -237,7 +243,7 @@
 
                 angular.forEach(files, function (file) {
 
-                    $J('#uploader-modal-' + iAttrs.uploaderId).find(' .fileList tr:last').after('<tr style="display:none;" class="upload-file file-' + file.id + '"><td> <div class="previewImage"></div></td><td><div class="fileInfos">    ' + file.name + ' <span class="errorMessage"></span> <div class="progress"> <div class="progress-bar upload-progress" role="progressbar"style="width: 0%"></div></div></div></td><td class="text-right">' + readablizeBytes(file.size) + ' <br/> <a class="remove-file">' + cx.variables.get('TXT_CORE_MODULE_UPLOADER_REMOVE_FILE', 'mediabrowser') + '</a> </td>  </tr>');
+                    $J('#uploader-modal-' + iAttrs.uploaderId).find(' .fileList tr:last').after('<tr style="display:none;" class="upload-file file-' + file.id + '"><td> <div class="previewImage"></div></td><td><div class="fileInfos">    ' + escapeString(file.name) + ' <span class="errorMessage"></span> <div class="progress"> <div class="progress-bar upload-progress" role="progressbar"style="width: 0%"></div></div></div></td><td class="text-right">' + readablizeBytes(file.size) + ' <br/> <a class="btn btn-default btn-small remove-file">' + cx.variables.get('TXT_CORE_MODULE_UPLOADER_REMOVE_FILE', 'mediabrowser') + '</a> </td>  </tr>');
                     $J('.file-' + file.id).fadeIn();
                     var removeFile = function () {
                         $J.each(uploaderData.filesToUpload, function (i) {
@@ -316,6 +322,10 @@
             });
 
             uploader.bind('UploadProgress', function (up, file) {
+                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .file-' + file.id).find('.upload-progress').css({width: file.percent + '%'});
+            });
+
+            uploader.bind('FileUploaded', function (up, file) {
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .file-' + file.id).find('.upload-progress').css({width: file.percent + '%'});
             });
 

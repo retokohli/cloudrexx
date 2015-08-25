@@ -55,15 +55,14 @@ class ThumbnailGenerator extends EntityBase
         $path, $fileNamePlain, $fileExtension, \ImageManager $imageManager,
         $generateThumbnailByRatio = false
     ) {
-        $success = array();
+        $thumbnails = array();
         foreach (
             UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail
         ) {
             if (\Cx\Lib\FileSystem\FileSystem::exists(
-                MediaSourceManager::getAbsolutePath($path) . $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension
+                MediaSourceManager::getAbsolutePath($path) .'/' . $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension
             )) {
-                $success[$thumbnail['value']]
-                    = self::THUMBNAIL_GENERATOR_NEUTRAL;
+                $thumbnails[] = $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension;
                 continue;
             }
             if ($imageManager->_createThumb(
@@ -76,20 +75,21 @@ class ThumbnailGenerator extends EntityBase
                 $generateThumbnailByRatio
             )
             ) {
-                $success[$thumbnail['value']]
-                    = self::THUMBNAIL_GENERATOR_SUCCESS;
+                $thumbnails[] = $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension;
                 continue;
             }
-            $success[$thumbnail['value']] = self::THUMBNAIL_GENERATOR_FAIL;
         }
-        return $success;
+        return $thumbnails;
     }
 
     public static function createThumbnailFromPath($filePath) {
         $cx       = Cx::instanciate();
-        $fileInfo = pathinfo($cx->getWebsitePath() . $filePath);
+        if (!file_exists($filePath)){
+            $filePath = $cx->getWebsitePath() .$filePath;
+        }
+        $fileInfo = pathinfo( $filePath);
         return self::createThumbnail(
-            $fileInfo['dirname'] . '/',
+            $fileInfo['dirname'],
             preg_replace('/\.thumb_[a-z]+/i', '', $fileInfo['filename']),
             $fileInfo['extension'], new \ImageManager()
         );

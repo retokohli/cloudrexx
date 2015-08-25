@@ -154,17 +154,6 @@ class UploaderController {
                 $fileName = $conf['fileName'];
             }
 
-            // Check if file type is allowed
-            if ($conf['allow_extensions']) {
-                if (is_string($conf['allow_extensions'])) {
-                    $conf['allow_extensions'] = preg_split('{\s*,\s*}', $conf['allow_extensions']);
-                }
-
-                if (!in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), $conf['allow_extensions'])) {
-                    throw new UploaderException('', PLUPLOAD_TYPE_ERR);
-                }
-            }
-
             $file_path = rtrim($conf['tmp_dir'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $fileName;
             $tmp_path = $file_path . ".part";
 
