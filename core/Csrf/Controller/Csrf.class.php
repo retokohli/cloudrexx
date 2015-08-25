@@ -444,8 +444,8 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
     /**
      * Add the token
      * 
-     * @param string $key
-     * @param string $count 
+     * @param string  $key
+     * @param decimal $count 
      */
     private static function __setkey($key, $count)
     {

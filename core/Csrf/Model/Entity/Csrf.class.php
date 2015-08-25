@@ -32,7 +32,7 @@ class Csrf extends \Cx\Model\Base\EntityBase {
     private $sessionId;
 
     /**
-     * @var string $tokens
+     * @var string $token
      */
     private $token;
     
@@ -71,7 +71,7 @@ class Csrf extends \Cx\Model\Base\EntityBase {
     /**
      * Set token
      *
-     * @param array $token
+     * @param string $token
      */
     public function setToken($token) {
         $this->token = $token;
@@ -80,7 +80,7 @@ class Csrf extends \Cx\Model\Base\EntityBase {
     /**
      * Get token
      *
-     * @return array $token
+     * @return string $token
      */
     public function getToken() {
         return $this->token;
@@ -89,7 +89,7 @@ class Csrf extends \Cx\Model\Base\EntityBase {
     /**
      * Set count
      *
-     * @param array $count
+     * @param decimal $count
      */
     public function setCount($count) {
         $this->count = $count;
@@ -98,7 +98,7 @@ class Csrf extends \Cx\Model\Base\EntityBase {
     /**
      * Get count
      *
-     * @return array $count
+     * @return decimal $count
      */
     public function getCount() {
         return $this->count;
