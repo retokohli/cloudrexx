@@ -74,7 +74,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
     {
         global $objTemplate, $_ARRAYLANG, $_CONFIG;
 
-        $this->em = \Env::em();
+        $this->em = \Env::get('em');
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCoreModulePath().'/Contact/View/Template/Backend');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);

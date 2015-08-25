@@ -65,7 +65,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         global $_CONFIG, $cl, $lang, $objInit, $dataBlocks, $lang, $dataBlocks, $themesPages, $page_template;
         // Initialize counter and track search engine robot
-        if ($_CONFIG['dataUseModule'] && $cl->loadFile(ASCMS_MODULE_PATH.'/Data/Controller/DataBlocks.class.php')) {
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        
+        if (\Cx\Core\Setting\Controller\Setting::getValue('dataUseModule') && $cl->loadFile(ASCMS_MODULE_PATH.'/Data/Controller/DataBlocks.class.php')) {
             $lang = $objInit->loadLanguageData('Data');
             $dataBlocks = new \Cx\Modules\Data\Controller\DataBlocks($lang);
             \Env::get('cx')->getPage()->setContent($dataBlocks->replace(\Env::get('cx')->getPage()->getContent()));

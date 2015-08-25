@@ -474,6 +474,10 @@ h1{ font-size: 20px }
     overflow: hidden;
 }
 
+#content-manager.edit_view #site-tree .name {
+    max-width: 202px;
+}
+
 #site-tree .jstree-move {
     display: none;
     float: left;
@@ -481,6 +485,18 @@ h1{ font-size: 20px }
     height: 16px;
     margin: 7px 0 0 10px;
     background: url(../Media/Move.png) no-repeat right bottom;
+}
+
+#content-manager.edit_view #site-tree .jstree-move {
+    float: none;
+    right: 33px;
+    position: absolute;
+    padding-left: 5px;
+    background: #FFFFD6 url(../Media/Move.png) no-repeat right bottom;
+}
+
+li.jstree-closed, li.jstree-leaf { 
+    height: auto !important; 
 }
 
 *+html #site-tree .jstree-move {

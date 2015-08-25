@@ -82,7 +82,7 @@ class ContentWorkflow extends \Module {
                 break;
         }
         
-        $this->em = \Env::em();
+        $this->em = \Env::get('em');
         $this->tpl = $template;
         $this->db = $db;
         $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');

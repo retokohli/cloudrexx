@@ -5,6 +5,9 @@ CKEDITOR.on('dialogDefinition', function (event) {
     var tabCount = dialogDefinition.contents.length;
 
     for (var i = 0; i < tabCount; i++) {
+        if(dialogDefinition.contents[i] == undefined){
+            continue;
+        }
         var browseButton = dialogDefinition.contents[i].get('browse');
 
         if (browseButton !== null) {

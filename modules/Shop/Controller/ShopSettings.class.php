@@ -180,6 +180,12 @@ class ShopSettings
                 intval($_POST['numof_coupon_per_page_backend']), 58,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         }
+        if (!\Cx\Core\Setting\Controller\Setting::set('numof_products_per_page_frontend',
+            intval($_POST['numof_products_per_page_frontend']))) {
+            \Cx\Core\Setting\Controller\Setting::add('numof_products_per_page_frontend',
+                intval($_POST['numof_products_per_page_frontend']), null,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        }
     }
 
 

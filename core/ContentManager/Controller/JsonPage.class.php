@@ -36,7 +36,7 @@ class JsonPage implements JsonAdapter {
      * Constructor
      */
     function __construct() {
-        $this->em = \Env::em();
+        $this->em = \Env::get('em');
         $this->db = \Env::get('db');
         if ($this->em) {
             $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');

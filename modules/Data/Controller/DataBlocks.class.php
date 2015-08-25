@@ -38,16 +38,11 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
      */
     function __construct()
     {
-        global $objDatabase, $objInit;
+        global $objInit;
 
-        $objRs = $objDatabase->Execute("
-            SELECT 
-                `setvalue`
-            FROM 
-                `".DBPREFIX."settings`
-            WHERE 
-                `setname`='dataUseModule'");
-        if ($objRs && $objRs->fields['setvalue'] == 1) {
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        
+        if (\Cx\Core\Setting\Controller\Setting::getValue('dataUseModule')) {
             $this->active = true;
         } else {
             return;
@@ -169,7 +164,6 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         if ($parcat) {
             $this->_objTpl->setVariable("CATTITLE", $this->arrCategories[$id][$_LANGID]['name']);
         }
-
         if ($this->arrCategories[$id]['action'] == "content") {
             $cmd = $this->arrCategories[$id]['cmd'];
             $url = "index.php?section=Data&amp;cmd=".$cmd;
@@ -309,19 +303,19 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         if ($entry['mode'] == "normal") {
             if ($this->_arrSettings['data_entry_action'] == "content") {
                 $cmd = $this->_arrSettings['data_target_cmd'];
-                $url = "index.php?section=Data&amp;cmd=".$cmd;
+                $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Data', $cmd, '', array('id' => $id));
             } else {
-                $url = "index.php?section=Data&amp;act=shadowbox&amp;height=".$height."&amp;width=".$width."&amp;lang=".$lang;
+                $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Data', '', '', array('height' => $height, 'width' => $width, 'id' => $id, 'lang' => $lang ));
             }
         } else {
-            $url = $entry['translation'][$_LANGID]['forward_url'];
+            $url = $entry['translation'][$_LANGID]['forward_url'].'&amp;id='.$id;
         }
 
         $templateVars = array(
             "TITLE"         => $title,
             "IMAGE"         => $image,
             "CONTENT"       => $content,
-            "HREF"          => $url."&amp;id=".$id,
+            "HREF"          => $url,
             "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "rel=\"shadowbox;width=".$width.";height=".$height."\"" : "",
             "TXT_MORE"      => $this->langVars['TXT_DATA_MORE']
         );
