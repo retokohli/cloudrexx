@@ -33,7 +33,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function registerEventListeners()
     {
-        $evm = \Env::get('cx')->getEvents();
+        $evm = $this->cx->getEvents();
 
         $evm->addEvent('csrfDestroy');
         $evm->addEventListener('csrfDestroy', $this);
@@ -97,7 +97,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function onEvent($eventName, array $eventArgs) {
         switch ($eventName) {
             case 'csrfDestroy':
-                $em = \Env::get('em');
+                $em = $this->cx->getDb()->getEntityManager();
                 $sessionId = isset($eventArgs['sessionId']) ? $eventArgs['sessionId'] : '';
                 if (empty($sessionId)) {
                     break;

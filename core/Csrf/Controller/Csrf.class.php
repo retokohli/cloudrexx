@@ -28,7 +28,8 @@ namespace Cx\Core\Csrf\Controller;
  * @package     contrexx
  * @subpackage  core_csrf
  */
-class Csrf {
+class Csrf extends \Cx\Core\Core\Model\Entity\Controller 
+{
 
     /**
      * This variable defines how many times a given code
