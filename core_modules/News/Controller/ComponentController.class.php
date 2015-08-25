@@ -77,12 +77,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $themesPages, $page_template;
+        global $themesPages, $page_template, $objInit;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 // Get Headlines
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsHeadlines.class.php';
                 if (file_exists($modulespath)) {
+                    $objInit->loadLanguageData('News');
                     for ($i = 0; $i < 5; $i++) {
                         $visibleI = '';
                         if ($i > 0) {
