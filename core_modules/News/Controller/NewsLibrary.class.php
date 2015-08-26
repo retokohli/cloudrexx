@@ -2309,15 +2309,17 @@ class NewsLibrary
     {
         global $_ARRAYLANG;
 
+        $newsTags = array();
+
         if (!empty($newsId)) {
             $newsTagDetails = $this->getNewsTags($newsId);
             $newsTags       = $newsTagDetails['tagList'];
         }
-        $tags = $this->getTags(array_keys($newsTags));
+        $tags = (!empty($newsId) && empty($newsTags)) ? '' : $this->getTags(array_keys($newsTags));
         if (empty($tags)) {
             if ($objTpl->blockExists('noTags')) {
                 $objTpl->setVariable('TXT_NEWS_NO_TAGS_FOUND', $_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND']);
-                $objTpl->showBlock('noTags');
+                $objTpl->touchBlock('noTags');
             }
             return;
         }
@@ -2870,7 +2872,7 @@ EOF;
      */
     public function parseNewsPlaceholders($objTpl, $objResult, $newsUrl)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $newsid = $objResult->fields['newsid'];
 
@@ -2893,6 +2895,7 @@ EOF;
         $newsTeaser = nl2br($objResult->fields['teaser_text']);
         \LinkGenerator::parseTemplate($newsTeaser);
 
+        $newsUrlLink          = '';
         if (!empty($url1)) {
             $newsUrlLink = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] . '<br />' . $this->getNewsLink($url1) . '<br />';
         }
@@ -2900,6 +2903,7 @@ EOF;
             $newsUrlLink .= $this->getNewsLink($url2).'<br />';
         }
 
+        $newsSource           = '';
         if (!empty($source)) {
             $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $this->getNewsLink($source) . '<br />';
         }
