@@ -578,7 +578,9 @@ class MediaManager extends MediaLibrary
         // Check if an image has been edited.
         // If yes, we know the edited file and want to highlight them.
         if (!empty($_GET['editedImage'])) {
-            $objFile = new \File();
+            \Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator::createThumbnailFromPath(
+                $this->path . $_GET['editedImage'], true
+            );
             $this->highlightName[] = $_GET['editedImage'];
         }
 
@@ -936,6 +938,7 @@ class MediaManager extends MediaLibrary
                 'TXT_MEDIA_SET_IMAGE_NAME'        => $_ARRAYLANG['TXT_MEDIA_SET_IMAGE_NAME'],
                 'TXT_MEDIA_CONFIRM_REPLACE_IMAGE' => $_ARRAYLANG['TXT_MEDIA_CONFIRM_REPLACE_IMAGE'],
                 'TXT_MEDIA_REPLACE'               => $_ARRAYLANG['TXT_MEDIA_REPLACE'],
+                'TXT_MEDIA_OR'                    => $_ARRAYLANG['TXT_MEDIA_OR'],
                 'TXT_MEDIA_SAVE_NEW_COPY'         => $_ARRAYLANG['TXT_MEDIA_SAVE_NEW_COPY'],
                 'TXT_MEDIA_CROP'                  => $_ARRAYLANG['TXT_MEDIA_CROP'],
                 'TXT_MEDIA_CROP_INFO'             => $_ARRAYLANG['TXT_MEDIA_CROP_INFO'],

@@ -32,7 +32,7 @@ class ThumbnailGenerator extends EntityBase
     /**
      * Create all the thumbnails for a picture.
      *
-     * @param string        $path Path to the file. This can be a virtual path or a absolute path.
+     * @param string        $path          Path to the file. This can be a virtual path or a absolute path.
      * @param string        $fileNamePlain Plain file name without extension
      * @param string        $fileExtension Extension of the file
      * @param \ImageManager $imageManager
@@ -49,19 +49,25 @@ class ThumbnailGenerator extends EntityBase
      * ?>
      * </code>
      *
+     * @param bool          $generateThumbnailByRatio
+     * @param bool          $force
+     *
      * @return array With all thumbnail types and if they were generated successfully.
      */
     public static function createThumbnail(
         $path, $fileNamePlain, $fileExtension, \ImageManager $imageManager,
-        $generateThumbnailByRatio = false
+        $generateThumbnailByRatio = false,$force = false
     ) {
         $thumbnails = array();
         foreach (
             UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail
         ) {
-            if (\Cx\Lib\FileSystem\FileSystem::exists(
+            if ($force){
+                \Cx\Lib\FileSystem\FileSystem::delete_file(MediaSourceManager::getAbsolutePath($path) .'/' . $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension);
+            }
+            elseif (\Cx\Lib\FileSystem\FileSystem::exists(
                 MediaSourceManager::getAbsolutePath($path) .'/' . $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension
-            )) {
+            ) ) {
                 $thumbnails[] = $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension;
                 continue;
             }
@@ -82,7 +88,7 @@ class ThumbnailGenerator extends EntityBase
         return $thumbnails;
     }
 
-    public static function createThumbnailFromPath($filePath) {
+    public static function createThumbnailFromPath($filePath, $force = false) {
         $cx       = Cx::instanciate();
         if (!file_exists($filePath)){
             $filePath = $cx->getWebsitePath() .$filePath;
@@ -91,7 +97,7 @@ class ThumbnailGenerator extends EntityBase
         return self::createThumbnail(
             $fileInfo['dirname'],
             preg_replace('/\.thumb_[a-z]+/i', '', $fileInfo['filename']),
-            $fileInfo['extension'], new \ImageManager()
+            $fileInfo['extension'], new \ImageManager(),false, $force
         );
     }
 

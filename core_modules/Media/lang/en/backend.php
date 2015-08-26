@@ -100,6 +100,7 @@ $_ARRAYLANG['TXT_MEDIA_SET_IMAGE_NAME'] = "Please enter a name.";
 $_ARRAYLANG['TXT_MEDIA_CONFIRM_REPLACE_IMAGE'] = "Confirm image replacement";
 $_ARRAYLANG['TXT_MEDIA_REPLACE'] = "Replace";
 $_ARRAYLANG['TXT_MEDIA_SAVE_NEW_COPY'] = "Save a new copy";
+$_ARRAYLANG['TXT_MEDIA_OR'] = "or";
 $_ARRAYLANG['TXT_MEDIA_CROP'] = "Crop";
 $_ARRAYLANG['TXT_MEDIA_CROP_INFO'] = "Select an area (click & drag) on a image with your mouse.";
 $_ARRAYLANG['TXT_MEDIA_CANCEL'] = "Cancel";
