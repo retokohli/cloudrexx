@@ -133,13 +133,16 @@ class ImageManager
      *
      * Note that all "Path" parameters are required to bring along their
      * own trailing slash.
-	 * 
-     * @param   string  $strPath
-     * @param   string  $strWebPath
-     * @param   string  $file
-     * @param   int     $maxSize      The maximum width or height of the image
-     * @param   int     $quality
-     * @return  boolean
+     *
+     * @param   string $strPath
+     * @param   string $strWebPath
+     * @param   string $file
+     * @param   int    $maxSize The maximum width or height of the image
+     * @param   int    $quality
+     * @param string   $thumb_name
+     * @param bool     $generateThumbnailByRatio
+     *
+     * @return bool
      */
     function _createThumb($strPath, $strWebPath, $file, $maxSize=80, $quality=90, $thumb_name='', $generateThumbnailByRatio = false)
     {
@@ -799,6 +802,7 @@ class ImageManager
      */
     static function getThumbnailFilename($file_name)
     {
+        $thumbs = \Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator::createThumbnailFromPath($file_name);
         if (preg_match('/\.thumb$/', $file_name)) return $file_name;
         // Compatibility with versions up to 2.2 that create thumbnails
         // in JPG format
@@ -806,7 +810,7 @@ class ImageManager
         if (file_exists($thumb_name.'.thumb')) {
             return $thumb_name.'.thumb';
         }
-        return $file_name.'.thumb';
+        return $thumbs[0];
     }
 
 
