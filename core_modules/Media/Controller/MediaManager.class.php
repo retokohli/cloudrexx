@@ -586,6 +586,8 @@ class MediaManager extends MediaLibrary
         $i       = 0;
         $dirTree = $this->_dirTree($this->path);
         $dirTree = $this->_sortDirTree($dirTree);
+        $thumbnails =
+            \Cx\Core_Modules\Uploader\Controller\UploaderConfiguration::getInstance()->getThumbnails();
         
         foreach(array_keys($dirTree) as $key)
         {
@@ -648,25 +650,13 @@ class MediaManager extends MediaLibrary
                     {
                         // make thumbnail if it doesn't exist
                         $tmpSize = @getimagesize($this->path . $fileName);
-
-                        if(!file_exists($this->path . $fileName . '.thumb') && $tmpSize[1] > $this->thumbHeight){
-                            $this->_createThumbnail($this->path . $fileName);
-
-                            $thbSize = @getimagesize($this->path . $fileName . '.thumb');
-                            $thumb   = $this->webPath . $fileName . '.thumb';
-                        }
-                        elseif($tmpSize[1] > $this->thumbHeight){
-                            $thbSize = @getimagesize($this->path . $fileName . '.thumb');
-                            $thumb   = $this->webPath . $fileName . '.thumb';
-                        } else{
-                            $thbSize = @getimagesize($this->path . $fileName);
-                            $thumb   = $this->webPath . $fileName;
-                        }
-
+                        $thumbnails = \Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator::createThumbnailFromPath(
+                            $this->path . $fileName
+                        );
+                        $thumb      = $this->webPath . $thumbnails[0];
                         if (in_array(
                             $fileName, $this->highlightName
-                        ))
-                        {
+                        )) {
                             $thumb .= '?lastAccess=' . fileatime(
                                     $this->path . $fileName
                                 );
@@ -677,7 +667,7 @@ class MediaManager extends MediaLibrary
                             'MEDIA_FILE_NAME_PRE'      =>'preview_' . $fileName,
                             'MEDIA_FILE_NAME_IMG_HREF' => $this->webPath . $fileName,
                             'MEDIA_FILE_NAME_IMG_SRC'  => $thumb,
-                            'MEDIA_FILE_NAME_IMG_SIZE' => $thbSize[3]
+                            'MEDIA_FILE_NAME_IMG_SIZE' => $thumbnails[0]['size']
                         ));
                         $this->_objTpl->parse('mediaShowThumbnail');
                         
