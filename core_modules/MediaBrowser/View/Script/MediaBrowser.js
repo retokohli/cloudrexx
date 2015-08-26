@@ -374,12 +374,11 @@
                 filesToUpload: []
             };
 
-
-
-
             $scope.progress = 0;
             $scope.progressMessage = '';
             $scope.finishedUpload = false;
+            $scope.uploadPending = false;
+            $scope.showUploadedHint = false;
 
             $scope.template = {
                 url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/_Uploader.html'
@@ -425,8 +424,12 @@
                             $scope.$digest();
                         },
                         UploadComplete: function () {
+                            console.log('UpladComplete');
                             $scope.finishedUpload = true;
-                            jQuery('.uploadFilesAdded').hide();
+                            $scope.uploadPending = false;
+                            $scope.showUploadedHint = true;
+
+                            $scope.$digest();
                             $scope.afterUpload();
                         },
                         Error: function (up, err) {
@@ -447,10 +450,14 @@
                 });
             };
 
-
             $scope.startUpload = function () {
                 $scope.uploader.start();
+                $scope.uploadPending = true;
                 jQuery('.uploadFilesAdded').show();
+            };
+
+            $scope.closeUploadedHint = function () {
+                $scope.showUploadedHint = false;
             };
 
             $scope.removeFile = function (file) {
@@ -933,6 +940,9 @@
 
             jQuery(this).on('click', function (event, config) {
                 var mediabrowserConfig = scope.get('mediabrowserConfig');
+                if (mediabrowserConfig.get('isOpen')){
+                    return;
+                }
                 var $modal = scope.get('$modal');
 
                 var attrs = jQuery(this).data();
@@ -988,6 +998,7 @@
                     }
                 }
 
+                mediabrowserConfig.set('isOpen',true);
                 $modal.open({
                     templateUrl: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/MediaBrowserModal.html',
                     controller: 'MainCtrl',
@@ -996,7 +1007,9 @@
                     backdrop: 'static',
                     backdropClass: 'media-browser-modal-backdrop',
                     windowClass: 'media-browser-modal-window'
-                });
+                }).result.finally(function(){
+                        mediabrowserConfig.set('isOpen',false);
+                    });
 
                 /**
                  * Configuring Callbacks

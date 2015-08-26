@@ -2032,12 +2032,12 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     position: absolute;
     text-align: left;
     font-size: 18px;
-    top: 10px;
+    top: -60px;
     background-color: #27ae60;
     color: #fff;
     padding: 10px;
-    right: 15px;
-    width: 200px;
+    right: 50%;
+    width: 500px;
     box-shadow: 0 5px 30px rgba(0,0,0,0.3);
     border-radius: 4px;
     opacity: 0;
@@ -2048,6 +2048,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     transition: 0.5s all;
     visibility: hidden;
     display: inline-block;
+    margin-right: -250px;
 }
 
 .media-browser-modal-window .successfulUpload p {

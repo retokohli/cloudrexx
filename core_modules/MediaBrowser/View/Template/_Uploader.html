@@ -21,7 +21,8 @@
                 </button>
             </div>
             <div class="uploadlist">
-                <div class="successfulUpload" data-ng-class="finishedUpload ? 'finished' : ''">
+                <div class="successfulUpload" data-ng-class="showUploadedHint ? 'finished' : ''">
+                    <button type="button" class="close" data-ng-click="closeUploadedHint()">×</button>
                     <div>{{ 'TXT_FILEBROWSER_UPLOAD_FINISHED' | translate }} </div>
                     <p>{{ 'TXT_FILEBROWSER_UPLOAD_FINISHED_HINT' | translate }} </p>
                 </div>
@@ -50,7 +51,7 @@
                     </tr>
                 </table>
             </div>
-            <div style="display: none;" class="uploadPlatform uploadFilesAdded">
+            <div class="uploadPlatform uploadFilesAdded" data-ng-show="uploadPending">
                 <img src="../core_modules/MediaBrowser/View/Media/ajax_loader_gray_128.gif" alt=""/>
                 <div class="dropzoneText2"> {{ 'TXT_FILEBROWSER_UPLOAD_WATING' | translate }}</div><br />
             </div>
