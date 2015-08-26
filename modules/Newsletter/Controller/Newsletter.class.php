@@ -684,35 +684,22 @@ class Newsletter extends NewsletterLib
             // only show newsletter-lists that are visible for new users (not yet registered ones)
             $excludeDisabledLists = $recipientId == 0;
             $arrLists = self::getLists($excludeDisabledLists);
-            if ($this->_objTpl->blockExists('newsletter_lists')) {
-                switch (count($arrLists)) {
-                    case 0:
-                        // no lists are active, therefore we shall not try to parse any non existing list
-                    case 1:
-                        // only one list is active, therefore we will not parse any list and will automatically subscribe the user to this very list
-                        if (!$isAccessRecipient) {
-                            $this->_objTpl->hideBlock('newsletter_lists');
-                            break;
-                        }
-
-                    default:
-                        foreach ($arrLists as $listId => $arrList) {
-                            if ($arrList['status'] || in_array($listId, $arrPreAssociatedInactiveLists)) {
-                                $this->_objTpl->setVariable(array(
-                                    'NEWSLETTER_LIST_ID'        => $listId,
-                                    'NEWSLETTER_LIST_NAME'      => contrexx_raw2xhtml($arrList['name']),
-                                    'NEWSLETTER_LIST_SELECTED'  => in_array($listId, $arrAssociatedLists) ? 'checked="checked"' : ''
-                                ));
-                                $this->_objTpl->parse('newsletter_list');
-                            }
-                        }
-
+            if ($this->_objTpl->blockExists('newsletter_lists') && !empty($arrLists)) {
+                foreach ($arrLists as $listId => $arrList) {
+                    if ($arrList['status'] || in_array($listId, $arrPreAssociatedInactiveLists)) {
                         $this->_objTpl->setVariable(array(
-                            'TXT_NEWSLETTER_LISTS'             => $_ARRAYLANG['TXT_NEWSLETTER_LISTS'],
+                            'NEWSLETTER_LIST_ID'        => $listId,
+                            'NEWSLETTER_LIST_NAME'      => contrexx_raw2xhtml($arrList['name']),
+                            'NEWSLETTER_LIST_SELECTED'  => in_array($listId, $arrAssociatedLists) ? 'checked="checked"' : ''
                         ));
-                        $this->_objTpl->parse('newsletter_lists');
-                        break;
+                        $this->_objTpl->parse('newsletter_list');
+                    }
                 }
+
+                $this->_objTpl->setVariable(array(
+                    'TXT_NEWSLETTER_LISTS'             => $_ARRAYLANG['TXT_NEWSLETTER_LISTS'],
+                ));
+                $this->_objTpl->parse('newsletter_lists');
             }
 
             $this->_objTpl->setVariable(array(
