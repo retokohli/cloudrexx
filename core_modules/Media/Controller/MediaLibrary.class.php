@@ -497,9 +497,7 @@ class MediaLibrary
             if (!$this->_objImage->saveNewImage($this->path.$this->fileLog, true)) {
                 throw new \Exception('Is not a valid image or image type');
             }
-            
-            // Update (overwrite) thumbnail
-            $this->_createThumbnail($this->path.$this->fileLog, true);
+
             
             // If no error occured, return true
             return $this->fileLog;
@@ -556,32 +554,6 @@ class MediaLibrary
             return $type;
         } else {
             return false;
-        }
-    }
-
-
-    // creates an image thumbnail
-    function _createThumbnail($file, $overwrite = false)
-    {
-        global $_ARRAYLANG;
-
-        $tmpSize    = getimagesize($file);
-        $thumbWidth = $this->thumbHeight / $tmpSize[1] * $tmpSize[0];
-        $thumb_name = \ImageManager::getThumbnailFilename($file);
-
-        $tmp = new \ImageManager();
-        $tmp->loadImage($file);
-        $tmp->resizeImage($thumbWidth, $this->thumbHeight, $this->thumbQuality);
-        $tmp->saveNewImage($thumb_name, $overwrite);
-
-        if (!file_exists($thumb_name)) {
-            $img     = imagecreate(100, 50);
-            $colBody = imagecolorallocate($img, 255, 255, 255);
-            ImageFilledRectangle($img, 0, 0, 100, 50, $colBody);
-            $colFont = imagecolorallocate($img, 0, 0, 0);
-            imagettftext($img, 10, 0, 18, 29, $colFont, self::_getIconPath().'arial.ttf', 'no preview');
-            imagerectangle($img, 0, 0, 99, 49, $colFont);
-            imagejpeg($img, $thumb_name, $this->thumbQuality);
         }
     }
 
