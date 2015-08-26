@@ -37,6 +37,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
         global $_ARRAYLANG;
+
+        \JS::registerJS('core/Routing/View/Script/Backend.js');
+        \JS::registerCSS('core/Routing/View/Style/Main.css');
+        \JS::activate('jqueryui');
+        \JS::activate('cx');
         
         $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
         $header = '';
@@ -46,14 +51,20 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return array(
             'header' => $header,
             'fields' => array(
+                'orderNo' => array(
+                    'header' => $_ARRAYLANG['orderNo'],
+                    'order' => [
+                        'callback' => [
+                            'object' => 'Routing',
+                            'act' => 'updateOrder'
+                        ]
+                    ]
+                ),
                 'id' => array(
                     'showOverview' => false,
                 ),
                 'regularExpression' => array(
                     'header' => $_ARRAYLANG['regularExpression'],
-                ),
-                'orderNo' => array(
-                    'header' => $_ARRAYLANG['orderNo'],
                 ),
                 'rewriteStatusCode' => array(
                     'header' => $_ARRAYLANG['rewriteStatusCode'],
