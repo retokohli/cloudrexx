@@ -7,6 +7,25 @@ function deleteVariable(id)
         window.location.replace("index.php?cmd=ComponentManager&{CSRF_PARAM}&act=del&maduleId="+id);
 }
 // -->
+jQuery(document).ready(function() {
+    jQuery('.description').click(function(event) {
+        var extendedHeight = jQuery(this).find('div').find('.desc-extended').height() + jQuery(this).find('div').height();
+        var extended = false;
+        event.preventDefault();
+
+        if (jQuery(this).find('.showText').length > 0) {
+            extended = true;
+        }
+
+        jQuery(this).find('div').toggleClass('showText');
+console.log(jQuery(this).find('.showText').height());
+        if (extended) {
+            jQuery(this).find('div').attr('style', '');
+        } else {
+            jQuery(this).find('.showText').attr('style', 'height: ' + extendedHeight + 'px');
+        }
+    });
+});
 </script>
 <br />
 <form name="moduleManagerForm" method="post" action="?cmd=ComponentManager&amp;act={MODULE_ACTION}">
@@ -42,7 +61,7 @@ function deleteVariable(id)
       <td>
         <div align="left">{MODULE_REQUIRED}&nbsp;</div>
       </td>
-      <td>
+      <td class="{MODULE_DESCRIPTION_CLASS}">
         <div align="left">{MODULE_DESCRIPTON}&nbsp;</div>
       </td>
       <td>
