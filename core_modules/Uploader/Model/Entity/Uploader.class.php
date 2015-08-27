@@ -255,6 +255,15 @@ class Uploader extends EntityBase
         $this->options['uploader-type'] = $type;
     }
 
+    /**
+     * Set the maximum file size for the upload
+     *
+     * @param string $type
+     */
+    public function setMaxFileSize($type) {
+        $this->options['pl-Max-File-Size'] = $type;
+    }
+
     public static function generateId(){
         $uploaders = $_SESSION['uploader']['handlers'];
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
