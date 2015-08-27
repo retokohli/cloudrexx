@@ -1415,9 +1415,10 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
                 if (!isset($objImage)) {
                     $objImage = new \ImageManager();
                 }
-                $strPath = dirname(ASCMS_DOCUMENT_ROOT.$arrEntryValues['image']).'/';
-                $strWebPath = substr($strPath, strlen(ASCMS_PATH_OFFSET));
+                $strPath = dirname($cx->getWebsitePath().$arrEntryValues['image']).'/';
+                $strWebPath = substr($strPath, strlen($cx->getWebsiteOffsetPath()));
                 $file = basename($arrEntryValues['image']);
+
                 $objImage->_createThumbWhq(
                         $strPath,
                         $strWebPath,
