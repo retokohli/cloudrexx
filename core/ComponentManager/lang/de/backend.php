@@ -53,3 +53,5 @@ $_ARRAYLANG['TXT_OPTIONAL'] = 'Optional';
 $_ARRAYLANG['TXT_MODULES_INSTALLED_SUCCESFULL'] = 'Modul(e) %s wurde(n) erfolgreich installiert.';
 $_ARRAYLANG['TXT_MODULES_REMOVED_SUCCESSFUL'] = 'Modul(e) %s wurde(n) erfolgreich entfernt.';
 $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'] = 'Fehler beim Ausführen der Datenbankabfrage!';
+$_ARRAYLANG['TXT_MORE'] = 'Mehr';
+$_ARRAYLANG['TXT_LESS'] = 'Weniger';

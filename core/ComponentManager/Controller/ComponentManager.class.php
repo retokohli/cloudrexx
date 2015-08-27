@@ -323,6 +323,18 @@ class ComponentManager
                     }
                     $_ARRAYLANG = $arrLang;
                 }
+
+                if (strpos($description, '.') !== (strlen($description) - 1)
+                    && (strpos($description, '.') != false || strpos($description, '.' != NULL ))) {
+                    $objTemplate->setVariable(array(
+                        'MODULE_DESCRIPTION_CLASS' => 'description',
+                    ));
+                    $descExtended = substr($description, strpos($description, '.') + 1);
+                    $description = substr($description, 0, strpos($description, '.') + 1) .
+                        ' <img src="core/Core/View/Media/angle-down-1x.png" alt=""/><span class="desc-extended">' .
+                        $descExtended . '</span>';
+                }
+
                 $objTemplate->setVariable(array(
                     'MODULE_ROWCLASS'   => $class . (!$objResult->fields['is_active'] ? ' rowInactive' : ''),
                     'MODULE_DESCRIPTON' => $description,
