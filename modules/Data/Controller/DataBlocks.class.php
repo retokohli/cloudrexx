@@ -312,7 +312,7 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         }
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $codeBasePath = $cx->getCodeBasePath();
+        $codeBasePath = $cx->getWebsitePath();
 
         if (!empty($thumbnailImage)) {
             $thumbnailImagePath = \ImageManager::getThumbnailFilename(
