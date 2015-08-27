@@ -312,7 +312,7 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         }
 
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $codeBasePath = $cx->getWebsitePath();
+        $websitePath = $cx->getWebsitePath();
 
         if (!empty($thumbnailImage)) {
             $thumbnailImagePath = \ImageManager::getThumbnailFilename(
@@ -321,7 +321,7 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
 
             if ($thumbType == 'original') {
                 $image = $thumbnailImage;
-            } elseif (file_exists($codeBasePath . $thumbnailImagePath)){
+            } elseif (file_exists($websitePath . $thumbnailImagePath)){
                 $image = $thumbnailImagePath;
             } else {
                 $image = $thumbnailImage;
@@ -330,16 +330,16 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
             $path = \ImageManager::getThumbnailFilename(
                     $cx->getWebsiteImagesDataWebPath() . '/' . $id . '_' . $_LANGID . '_' . basename($titleImage)
             );
-            if (file_exists($codeBasePath . '/' . $path)) {
+            if (file_exists($websitePath . '/' . $path)) {
                 $image = $path;
-            } elseif (file_exists($codeBasePath . \ImageManager::getThumbnailFilename($titleImage))) {
+            } elseif (file_exists($websitePath . \ImageManager::getThumbnailFilename($titleImage))) {
                 $image = \ImageManager::getThumbnailFilename($titleImage);
             } else {
                 $image = $titleImage;
             }
         }
 
-        return !empty($image) && file_exists($codeBasePath. '/' . $image)
+        return !empty($image) && file_exists($websitePath. '/' . $image)
                 ? '<img src="'.$image.'" alt= "" style="float: left" />'
                 : '';
     }
