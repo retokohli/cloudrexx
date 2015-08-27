@@ -2,6 +2,10 @@ table.adminlist tr.row2,
 table.adminlist tr.row1 {
     background: none;
     cursor: move;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 table.adminlist tr.row2 td:first-child,
