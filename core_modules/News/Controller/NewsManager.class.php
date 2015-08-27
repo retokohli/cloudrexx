@@ -3740,6 +3740,18 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_NEXT_LINK_DESCRITION'                             => $_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'],
             'TXT_NEWS_NEXT_TITLE_DESCRITION'                            => $_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'],
             'TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'               => $_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'],
+            'TXT_NEWS_USER_ID_DESCRIPTION'                              => $_ARRAYLANG['TXT_NEWS_USER_ID_DESCRIPTION'],
+            'TXT_NEWS_USERNAME_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_USERNAME_DESCRIPTION'],
+            'TXT_NEWS_USER_PROFILE_ATTRIBUTE_DESCRIPTION'               => $_ARRAYLANG['TXT_NEWS_USER_PROFILE_ATTRIBUTE_DESCRIPTION'],
+            'TXT_NEWS_TEASER_TEXT_ROW_DESCRIPTION'                      => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_ROW_DESCRIPTION'],
+            'TXT_NEWS_NEWS_COMMENT_COUNT_ROW_DESCRIPTION'               => $_ARRAYLANG['TXT_NEWS_NEWS_COMMENT_COUNT_ROW_DESCRIPTION'],
+            'TXT_NEWS_TEXT_ROW_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_TEXT_ROW_DESCRIPTION'],
+            'TXT_NEWS_REDIRECT_ROW_DESCRIPTION'                         => $_ARRAYLANG['TXT_NEWS_REDIRECT_ROW_DESCRIPTION'],
+            'TXT_NEWS_TAGS'                                             => $_ARRAYLANG['TXT_NEWS_TAGS'],
+            'TXT_NEWS_TAGS_ROW_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_TAGS_ROW_DESCRIPTION'],
+            'TXT_NEWS_TAG_NAME_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_TAG_NAME_DESCRIPTION'],
+            'TXT_NEWS_TAG_LINK_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_TAG_LINK_DESCRIPTION'],
+            'TXT_NEWS_NO_TAGS_FOUND'                                    => $_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'],
         ));
         $this->_objTpl->parse('settings_content');
     }
