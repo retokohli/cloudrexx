@@ -1331,6 +1331,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
         global $objDatabase;
 
         $intMessageId = intval($intMessageId);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
         //Collect data for every language
         $arrValues = array();
@@ -1417,7 +1418,18 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
                 $strPath = dirname(ASCMS_DOCUMENT_ROOT.$arrEntryValues['image']).'/';
                 $strWebPath = substr($strPath, strlen(ASCMS_PATH_OFFSET));
                 $file = basename($arrEntryValues['image']);
-                $objImage->_createThumbWhq($strPath, $strWebPath, $file, $arrEntryValues['thumbnail_width'], $arrEntryValues['thumbnail_height'], 90, '', ASCMS_DATA_IMAGES_PATH.'/', ASCMS_DATA_IMAGES_WEB_PATH.'/', $intMessageId.'_'.$intLanguageId.'_'.$file);
+                $objImage->_createThumbWhq(
+                        $strPath,
+                        $strWebPath,
+                        $file,
+                        $arrEntryValues['thumbnail_width'],
+                        $arrEntryValues['thumbnail_height'],
+                        90,
+                        '.thumb',
+                        $cx->getWebsiteImagesDataPath() . '/',
+                        $cx->getWebsiteImagesDataWebPath() . '/',
+                        $intMessageId.'_'.$intLanguageId.'_'.$file
+                );
             }
         }
     }
@@ -1739,7 +1751,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
         global $_ARRAYLANG, $objDatabase;
 
         $intEntryId = intval($intEntryId);
-
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if ($intEntryId > 0) {
 
 
@@ -1780,8 +1792,8 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
                                       WHERE ref_id = ".$intEntryId);
 
             $objFile = new \File();
-            foreach (glob(ASCMS_DATA_IMAGES_PATH.'/'.$intEntryId.'_*') as $image) {
-                $objFile->delFile(ASCMS_DATA_IMAGES_PATH.'/', ASCMS_DATA_IMAGES_WEB_PATH.'/', basename($image));
+            foreach (glob($cx->getWebsiteImagesDataPath() . '/' . $intEntryId . '_*') as $image) {
+                $objFile->delFile($cx->getWebsiteImagesDataPath() . '/', $cx->getWebsiteImagesDataWebPath() . '/', basename($image));
             }
 
             $this->writeMessageRSS();
