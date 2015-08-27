@@ -7,7 +7,7 @@ table.adminlist tr.row1 {
 table.adminlist tr.row2 td:first-child,
 table.adminlist tr.row1 td:first-child {
     padding-left: 60px;
-    background: url(http://contrexx.test/core/ContentManager/View/Media/Move.png) no-repeat 10px center;
+    background: url(../../../../core/ContentManager/View/Media/Move.png) no-repeat 10px center;
     background-size: 18px;
 }
 
