@@ -413,6 +413,7 @@ $_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'] = "Enable";
 $_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG'] = "Error Occured while saving the news tag!...";
 $_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG_RELATION'] = "Error occured while saving the news tag relationship!...";
 $_ARRAYLANG['TXT_ERROR_DELETE_NEWS_TAG_RELATION'] = "Error occured while removing the news tag relationship!...";
+$_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'] = "No tags found.";
 
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'] = "Tag to display the previous and next news link.<br />
 Starttag: &lt!-- BEGIN previousNextLink --&gt;<br />
