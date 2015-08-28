@@ -51,6 +51,7 @@ class FileBrowser {
         'Calendar'  => 'TXT_CALENDAR',
         'Podcast'   => 'TXT_FILEBROWSER_PODCAST',
         'Blog'      => 'TXT_FILEBROWSER_BLOG',
+        'Wysiwyg'   => 'TXT_FILEBROWSER_WYSIWYG',
     );
     private $mediaTypePaths = array(
         'files' => array(
@@ -94,6 +95,9 @@ class FileBrowser {
         ),
         'Blog' => array(
             ASCMS_BLOG_IMAGES_PATH, ASCMS_BLOG_IMAGES_WEB_PATH,
+        ),
+        'Wysiwyg' => array(
+            ASCMS_WYSIWYG_IMAGES_PATH, ASCMS_WYSIWYG_IMAGES_WEB_PATH,
         ),
     );
     public $highlightedFiles     = array(); // added files
@@ -312,6 +316,7 @@ class FileBrowser {
         global $_ARRAYLANG;
 
         $ckEditorFuncNum = isset($_GET['CKEditorFuncNum']) ? '&amp;CKEditorFuncNum='.contrexx_raw2xhtml($_GET['CKEditorFuncNum']) : '';
+        $ckEditor = isset($_GET['CKEditor']) ? '&amp;CKEditor='.contrexx_raw2xhtml($_GET['CKEditor']) : '';
 
         $this->_objTpl->addBlockfile('FILEBROWSER_NAVIGATION', 'fileBrowser_navigation', 'module_fileBrowser_navigation.html');
         $this->_objTpl->setVariable(array(
@@ -324,7 +329,7 @@ class FileBrowser {
             if (count($this->_arrDirectories) > 0) {
                 foreach ($this->_arrDirectories as $arrDirectory) {
                     $this->_objTpl->setVariable(array(
-                        'FILEBROWSER_FILE_PATH' => "index.php?cmd=FileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}&amp;CKEditor=".contrexx_raw2xhtml($_GET['CKEditor']).$ckEditorFuncNum,
+                        'FILEBROWSER_FILE_PATH' => "index.php?cmd=FileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}" . $ckEditor . $ckEditorFuncNum,
                         'FILEBROWSER_FILE_NAME' => $arrDirectory['name'],
                         'FILEBROWSER_FILE_ICON' => $arrDirectory['icon']
                     ));
@@ -346,6 +351,7 @@ class FileBrowser {
         $this->_objTpl->addBlockfile('FILEBROWSER_CONTENT', 'fileBrowser_content', 'module_fileBrowser_content.html');
 
         $ckEditorFuncNum = isset($_GET['CKEditorFuncNum']) ? '&amp;CKEditorFuncNum='.contrexx_raw2xhtml($_GET['CKEditorFuncNum']) : '';
+        $ckEditor = isset($_GET['CKEditor']) ? '&amp;CKEditor='.contrexx_raw2xhtml($_GET['CKEditor']) : '';
         $rowNr = 0;
 
         switch ($this->_mediaType) {
@@ -444,7 +450,7 @@ class FileBrowser {
                 \Permission::checkAccess(7, 'static');       //Access Media-Archive
                 \Permission::checkAccess(38, 'static');  //Edit Media-Files
                 \Permission::checkAccess(39, 'static');  //Upload Media-Files
-    
+
             //Hier soll wirklich kein break stehen! Beabsichtig!
     
     
@@ -453,7 +459,7 @@ class FileBrowser {
                     foreach ($this->_arrDirectories as $arrDirectory) {
                         $this->_objTpl->setVariable(array(
                             'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
-                            'FILEBROWSER_FILE_PATH_CLICK'   => "index.php?cmd=FileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}&amp;CKEditor=".contrexx_raw2xhtml($_GET['CKEditor']).$ckEditorFuncNum,
+                            'FILEBROWSER_FILE_PATH_CLICK'   => "index.php?cmd=FileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}". $ckEditor . $ckEditorFuncNum,
                             'FILEBROWSER_FILE_NAME'         => $arrDirectory['name'],
                             'FILEBROWSER_FILESIZE'          => '&nbsp;',
                             'FILEBROWSER_FILE_ICON'         => $arrDirectory['icon'],
@@ -468,18 +474,18 @@ class FileBrowser {
                     $arrEscapedPaths = array();
                     foreach ($this->_arrFiles as $arrFile) {
                         $arrEscapedPaths[] = contrexx_raw2encodedUrl($arrFile['path']);
-                        $this->_objTpl->setVariable(array(
-                            'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
-                            'FILEBROWSER_ROW_STYLE'				=> in_array($arrFile['name'], $this->highlightedFiles) ? ' style="background: '.$this->highlightColor.';"' : '',
-                            'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".contrexx_raw2xhtml($arrFile['path'])."',".$arrFile['width'].",".$arrFile['height'].",'')",
-                            'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
-                            'FILEBROWSER_FILE_NAME'             => contrexx_stripslashes($arrFile['name']),
-                            'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
-                            'FILEBROWSER_FILE_ICON'             => $arrFile['icon'],
-                            'FILEBROWSER_FILE_DIMENSION'        => (empty($arrFile['width']) && empty($arrFile['height'])) ? '' : intval($arrFile['width']).'x'.intval($arrFile['height'])
-                        ));
-                        $this->_objTpl->parse('content_files');
-                        $rowNr++;
+                            $this->_objTpl->setVariable(array(
+                                'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
+                                'FILEBROWSER_ROW_STYLE'				=> in_array($arrFile['name'], $this->highlightedFiles) ? ' style="background: '.$this->highlightColor.';"' : '',
+                                'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".contrexx_raw2xhtml($arrFile['path'])."',".$arrFile['width'].",".$arrFile['height'].",'')",
+                                'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
+                                'FILEBROWSER_FILE_NAME'             => contrexx_stripslashes($arrFile['name']),
+                                'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
+                                'FILEBROWSER_FILE_ICON'             => $arrFile['icon'],
+                                'FILEBROWSER_FILE_DIMENSION'        => (empty($arrFile['width']) && empty($arrFile['height'])) ? '' : intval($arrFile['width']).'x'.intval($arrFile['height'])
+                            ));
+                            $this->_objTpl->parse('content_files');
+                            $rowNr++;
                     }
     
                     $this->_objTpl->setVariable('FILEBROWSER_FILES_JS', "'".implode("','",$arrEscapedPaths)."'");
@@ -659,7 +665,7 @@ class FileBrowser {
             while ($file !== false) {
 // TODO: This match won't work for arbitrary thumbnail file names as they
 // may be created by the Image class!
-                if ($file == '.' || $file == '..' || preg_match('/\.thumb$/', $file) || $file == 'index.php') {
+                if ($file == '.' || $file == '..' || preg_match('/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i', $file)  || $file == 'index.php') {
                     $file = readdir($objDir);
                     continue;
                 }
@@ -668,7 +674,7 @@ class FileBrowser {
             }
             closedir($objDir);
 
-            sort($arrFiles);
+            sort($arrFiles, SORT_NATURAL | SORT_FLAG_CASE);
 
             foreach ($arrFiles as $file) {
                 if (is_dir($strPath.$file)) {

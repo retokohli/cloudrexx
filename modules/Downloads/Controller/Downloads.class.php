@@ -170,6 +170,18 @@ class Downloads extends DownloadsLibrary
     private function overview()
     {
         global $_LANGID;
+        
+        // load source code if cmd value is integer
+        if ($this->objTemplate->placeholderExists('APPLICATION_DATA')) {
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('Downloads');
+            // load source code
+            $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+            \LinkGenerator::parseTemplate($applicationTemplate);
+            $this->objTemplate->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
+        }
 
         $objDownload = new Download();
         $objCategory = Category::getCategory($this->categoryId);
@@ -640,9 +652,9 @@ class Downloads extends DownloadsLibrary
         }
 
         $imageSrc = $objCategory->getImage();
-        if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+        if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$imageSrc)) {
             $thumb_name = \ImageManager::getThumbnailFilename($imageSrc);
-            if (file_exists(ASCMS_PATH.$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
                 $thumbnailSrc = $thumb_name;
             } else {
                 $thumbnailSrc = \ImageManager::getThumbnailFilename(
@@ -877,9 +889,9 @@ JS_CODE;
         }
 
         $imageSrc = $objCategory->getImage();
-        if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+        if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$imageSrc)) {
             $thumb_name = \ImageManager::getThumbnailFilename($imageSrc);
-            if (file_exists(ASCMS_PATH.$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
                 $thumbnailSrc = $thumb_name;
             } else {
                 $thumbnailSrc = \ImageManager::getThumbnailFilename(
@@ -1076,9 +1088,9 @@ JS_CODE;
         }
 
         $imageSrc = $objDownload->getImage();
-        if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+        if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$imageSrc)) {
             $thumb_name = \ImageManager::getThumbnailFilename($imageSrc);
-            if (file_exists(ASCMS_PATH.$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
                 $thumbnailSrc = $thumb_name;
             } else {
                 $thumbnailSrc = \ImageManager::getThumbnailFilename(
@@ -1203,9 +1215,9 @@ JS_CODE;
                 }
 
                 $imageSrc = $objRelatedDownload->getImage();
-                if (!empty($imageSrc) && file_exists(ASCMS_PATH.$imageSrc)) {
+                if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$imageSrc)) {
                     $thumb_name = \ImageManager::getThumbnailFilename($imageSrc);
-                    if (file_exists(ASCMS_PATH.$thumb_name)) {
+                    if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
                         $thumbnailSrc = $thumb_name;
                     } else {
                         $thumbnailSrc = \ImageManager::getThumbnailFilename(

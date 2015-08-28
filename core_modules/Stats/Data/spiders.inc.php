@@ -1,4 +1,5 @@
 <?php
+global $arrRobots;
 
 /**
  * Defines spiders and robots
@@ -19,5 +20,3 @@ $arrRobots=array("google", "alexa", "msn","agent","bot","crawl","find","seek","s
 "nico","roach.smo.av.com-1.0","robozilla","rotondo","scooter","scoutAbout",
 "slurp","toutatis","validator","webclipping.com","webrank","wget","whizBang",
 "galaxy","webwombat","yandex","zeus","zippy","zyborg","Scooter","WSB WebCrawler","Xenu Link Sleuth","Acoon","Lycos");
-
-?>

@@ -458,7 +458,7 @@ class MemberDir extends MemberDirLibrary
 
 	    if($i > 0)
 		$lastDirectoryLevel = $this->directories[$directoryIds[$i-1]]['level'];
-	    if($i < $len-2)
+	    if($i < $len-1)
 		$nextDirectoryLevel = $this->directories[$directoryIds[$i+1]]['level'];
 
 

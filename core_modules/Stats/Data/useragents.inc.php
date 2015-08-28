@@ -1,4 +1,5 @@
 <?php
+global $arrBrowserRegExps, $arrBrowserNames;
 
 /**
  * Defines browser identification regular expressions and browser names
@@ -26,5 +27,3 @@ $arrBrowserNames = array(
     'MSIE'  => 'Internet Explorer',
     'Netscape'  => 'Netscape Navigator',
 );
-
-?>

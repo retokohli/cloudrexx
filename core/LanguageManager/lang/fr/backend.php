@@ -67,7 +67,6 @@ $_ARRAYLANG['TXT_REMARK'] = 'Remarque';
 $_ARRAYLANG['TXT_ADD_DELETE_LANGUAGE_REMARK'] = 'En ajoutant une nouvelle langue, toutes les variables multilingues seront dans la langue standard';
 $_ARRAYLANG['TXT_VIEW'] = 'Aperçu';
 $_ARRAYLANG['TXT_CORE_FALLBACK'] = 'Fallback';
-$_ARRAYLANG['TXT_CORE_NONE'] = 'None';
 $_ARRAYLANG['TXT_LANGUAGE_ACTION_COPY'] = 'Copy contents from this language"s fallback language to this language';
 $_ARRAYLANG['TXT_LANGUAGE_ACTION_LINK'] = 'Link contents from this language"s fallback language to this language';
 $_ARRAYLANG['TXT_COULD_NOT_WRITE_TO_FILE'] = 'Impossible d"écrire dans le fichier';

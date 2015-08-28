@@ -1051,7 +1051,7 @@ die("MailTemplate::init(): Empty section!");
         }
         if (empty($limit)) {
             \Cx\Core\Setting\Controller\Setting::init($section, $group);
-            $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend');
+            $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend', $section);
 // TODO: TEMPORARY
             if (is_null($limit)) {
               $limit = 25;

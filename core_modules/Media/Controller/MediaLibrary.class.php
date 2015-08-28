@@ -435,6 +435,8 @@ class MediaLibrary
             if (!$this->_objImage->showNewImage()) {
                 throw new \Exception('Is not a valid image or image type');
             }
+
+            return;
         }
         
         throw new \Exception('Path or file is empty');
@@ -610,7 +612,6 @@ class MediaLibrary
         $dir  = array();
         $file = array();
         $forbidden_files = array('.', '..', '.svn', '.htaccess', 'index.php');
-
         if (is_dir($path)) {
             $fd = @opendir($path);
             $name = @readdir($fd);
@@ -622,7 +623,7 @@ class MediaLibrary
                             $dirName = utf8_encode($dirName);
                         }
 
-                        $dir['icon'][] = $this->_getIcon($path.$name);
+                        $dir['icon'][] = self::getFileTypeIconWebPath($path.$name);
                         $dir['name'][] = $dirName;
                         $dir['size'][] = $this->_getSize($path.$name);
                         $dir['type'][] = $this->_getType($path.$name);
@@ -632,24 +633,23 @@ class MediaLibrary
 // TODO
 // This won't work for .jpg thumbnails made from .png images and other
 // ways to create thumbnail file names.  See the Image class.
-                        if (substr($name, -6) == '.thumb') {
-                            $tmpName = substr($name, 0, strlen($name) - strlen(substr($name, -6)));
-                            if (!file_exists($path.$tmpName)) {
-                                @unlink($path.$name);
+                        if (preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $name)) {
+                            $originalFileName = preg_replace("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)(\.[^.]+)$)|(?:\.thumb)$/mi", "$1", $name);
+                            if (!file_exists($path . $originalFileName)) {
+                                @unlink($path . $name);
                             }
                         } else {
                             $fileName = $name;
                             if (!\FWSystem::detectUtf8($fileName)) {
                                 $fileName = utf8_encode($fileName);
                             }
-                        
-                            $file['icon'][] = $this->_getIcon($path.$name);
-                            $file['name'][] = $fileName;
-                            $file['size'][] = $this->_getSize($path.$name);
-                            $file['type'][] = $this->_getType($path.$name);
-                            $file['date'][] = $this->_getDate($path.$name);
-                            $file['perm'][] = $this->_getPerm($path.$name);
-                        }
+                                $file['icon'][] = self::getFileTypeIconWebPath($path.$name);
+                                $file['name'][] = $fileName;
+                                $file['size'][] = $this->_getSize($path . $name);
+                                $file['type'][] = $this->_getType($path . $name);
+                                $file['date'][] = $this->_getDate($path . $name);
+                                $file['perm'][] = $this->_getPerm($path . $name);
+                            }
                     }
                 }
                 $name = @readdir($fd);
@@ -694,8 +694,8 @@ class MediaLibrary
             // sort by name
             case 'name':
             default:
-                @array_multisort($d['name'], $direction, $d['size'], $d['type'], $d['date'], $d['perm'], $d['icon']);
-                @array_multisort($f['name'], $direction, $f['size'], $f['type'], $f['date'], $f['perm'], $f['icon']);
+                @array_multisort($d['name'], $direction, SORT_NATURAL | SORT_FLAG_CASE, $d['size'], $d['type'], $d['date'], $d['perm'], $d['icon']);
+                @array_multisort($f['name'], $direction, SORT_NATURAL | SORT_FLAG_CASE, $f['size'], $f['type'], $f['date'], $f['perm'], $f['icon']);
                 break;
         }
         
@@ -769,12 +769,35 @@ class MediaLibrary
         return $class;
     }
 
+    /**
+     * Get the web path to the icon used for displaying the file type of a file
+     *
+     * @param   string  $file   File of which the related file type icon path shall be returned.
+     *                          File must be an absolute file system path or an URL.
+     * @param   string  $fileType  (optional) The file type of $file (as file extension). When supplied, the method will skip the file type detection and will run quite faster.
+     * @return  string  Web path to the icon.
+     */
+    public static function getFileTypeIconWebPath($file, $fileType = null)
+    {
+        $iconPath = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconPath() .
+                    \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($file, $fileType) . '.png';
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getWebFilePath($iconPath);
+    }
 
-    // gets the icon for the file
-    public static function _getIcon($file)
+    /**
+     * Gets the icon for the file
+     * 
+     * @param string $file      The File Path
+     * @param string $fileType  (optional) The File type
+     * 
+     * @return string           The Icon name
+     */
+    public static function _getIcon($file, $fileType = null)
     {
         $icon = '';
-        if (is_file($file)) {
+        if (isset($fileType)) {
+            $icon = strtoupper($fileType);
+        } elseif (is_file($file)) {
             $info = pathinfo($file);
             $icon = strtoupper($info['extension']);
         }
@@ -785,6 +808,7 @@ class MediaLibrary
         $arrPresentationExt = array('ODP', 'PPT', 'PPTX');
         $arrSpreadsheetExt  = array('CSV', 'ODS', 'XLS', 'XLSX');
         $arrDocumentsExt    = array('DOC', 'DOCX', 'ODT', 'RTF');
+        $arrWebDocumentExt  = array('HTML', 'HTM');
         
         switch (true) {
             case ($icon == 'TXT'):
@@ -811,6 +835,10 @@ class MediaLibrary
             case in_array($icon, $arrDocumentsExt):
                 $icon = 'TextDocument';
                 break;
+            case in_array($icon, $arrWebDocumentExt):
+            case \FWValidator::isUri($file):
+                $icon = 'WebDocument';
+                break;
             default :
                 $icon = 'Unknown';
                 break;
@@ -832,7 +860,7 @@ class MediaLibrary
      */
     public static function _getIconPath()
     {
-        return ASCMS_CORE_MODULE_PATH.'/Media/View/Media/';
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath() . '/Media/View/Media/';
     }
 
     /**
@@ -842,9 +870,9 @@ class MediaLibrary
      */
     public static function _getIconWebPath()
     {
-        return ASCMS_CORE_MODULE_WEB_PATH.'/Media/View/Media/';        
-    }        
-    
+        return \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModuleWebPath() . '/Media/View/Media/';        
+    }
+
     // gets the filesize
     function _getSize($file)
     {
@@ -1204,8 +1232,7 @@ END;
                 if (self::isIllegalFileName($file)) {
                     $response->addMessage(
                         \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-                        "You are not able to create the requested file.",
-                        $file
+                        "You are not able to create the requested file."
                     );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
                     continue;

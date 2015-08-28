@@ -63,7 +63,7 @@ class PostfinanceMobile
 
         if (!isset($ijustwanttotest))
             $ijustwanttotest =
-                \Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_ijustwanttotest');
+                \Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_ijustwanttotest','Shop');
         if (empty($amount)) {
             self::$arrError[] = sprintf(
                 $_ARRAYLANG['TXT_SHOP_POSTFINANCE_MOBILE_ERROR_INVALID_AMOUNT'],
@@ -83,12 +83,12 @@ class PostfinanceMobile
             self::$arrError[] = $_ARRAYLANG['TXT_SHOP_POSTFINANCE_MOBILE_ERROR_FAILED_TO_DETERMINE_ACTIVE_CURRENCY'];
             return false;
         }
-        $webuser = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_webuser');
+        $webuser = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_webuser','Shop');
         if (empty($webuser)) {
             self::$arrError[] = $_ARRAYLANG['TXT_SHOP_POSTFINANCE_MOBILE_ERROR_FAILED_TO_DETERMINE_WEBUSER'];
             return false;
         }
-        $sign = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_sign');
+        $sign = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_sign','Shop');
         if (empty($sign)) {
             self::$arrError[] = $_ARRAYLANG['TXT_SHOP_POSTFINANCE_MOBILE_ERROR_FAILED_TO_DETERMINE_SIGNATURE'];
             return false;
@@ -196,7 +196,7 @@ a successful payment.  Any other numbers will produce a failed transaction.
             self::$arrError[] = $_ARRAYLANG['TXT_SHOP_POSTFINANCE_MOBILE_ERROR_MISSING_SIGN'];
             return false;
         }
-        $sign     = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_sign');
+        $sign     = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_sign','Shop');
         $state    = $_POST['state'];
         if ($state != 'success') return false;
         $amount   = $_POST['amount'];

@@ -69,7 +69,7 @@
 </div>
 <br>
 <div id="newContact" class="alertbox"  style="display:none;"></div>
-<form id="access" name="newContact" onsubmit="membershipSelectAll()" action="" method="post">
+<form id="access" name="newContact" onsubmit="membershipSelectAll()" method="post">
     <div id="edit_contact">
         <div id="contact_form" style="float: left;width: 100%;">
             <div id="newContact"  style="display:none;background-color: #FFCCCC;border: 1px solid;color: #FF0000;font-size: 12px;line-height: 14px;padding: 5px;"></div>
@@ -80,6 +80,7 @@
                     <!-- BEGIN show-account-details -->
                     <li><a id="Entries_ShowAccount" class="inactive" href="javascript:{}" onclick="selectTab('ShowAccount')" title="{TXT_CRM_ACCOUNT}">{TXT_CRM_ACCOUNT}</a></li>
                     <!-- END show-account-details -->
+                    <li><a id="Entries_EmailDelivery" class="inactive" href="javascript:{}" onclick="selectTab('EmailDelivery')" title="{TXT_CRM_EMAIL_DELIVERY}">{TXT_CRM_EMAIL_DELIVERY}</a></li>
                 </ul>
                 <div class="Entries" id="ShowProfile">
                     <table class="adminlist" id="profile-info" cellspacing="0" cellpadding="3" width="100%" border="0">
@@ -468,6 +469,23 @@
                                 <!-- BEGIN emptyContactPassword -->
                                 <td colspan="2">&nbsp;</td>
                                 <!-- END emptyContactPassword -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="Entries" id="EmailDelivery" style="display:none;">
+                    <table class="adminlist" cellspacing="0" cellpadding="3" width="100%" border="0">
+                        <thead>
+                            <tr><th colspan="2">{TXT_CRM_EMAIL_DELIVERY}</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row1">
+                                <td width="200">
+                                    <label for="email_delivery">{TXT_CRM_EMAIL_DELIVERY}</label>
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="emailDelivery" value="1" id="email_delivery" {CRM_EMAIL_DELIVERY} />
+                                </td>
                             </tr>
                         </tbody>
                     </table>

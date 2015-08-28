@@ -74,9 +74,9 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
     {
         global $objTemplate, $_ARRAYLANG, $_CONFIG;
 
-        $this->em = \Env::em();
+        $this->em = \Env::get('em');
 
-        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Contact/View/Template/Backend');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCoreModulePath().'/Contact/View/Template/Backend');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -469,7 +469,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                                     foreach($arrFiles as $file) {
                                         $file = contrexx_raw2xhtml($file);
                                         $img  = $this->getFileIcon($file);
-                                        $value .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" style="white-space:nowrap;" target="_blank" onclick="return confirm(\''.str_replace("\n", '\n', $_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE']).'\')">'.$img.basename($file).'</a><br />';
+                                        $value .= '<a href="'.\Env::get('cx')->getWebsiteOffsetPath().$file.'" style="white-space:nowrap;" target="_blank" onclick="return confirm(\''.str_replace("\n", '\n', $_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE']).'\')">'.$img.basename($file).'</a><br />';
                                     }
                                 }
                             } elseif (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'recipient') {
@@ -607,11 +607,12 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 $langString = implode($lang);
 
                 $formName = contrexx_raw2xhtml($arrForm['lang'][$selectedInterfaceLanguage]['name']);
-                $useCrm   = $arrForm['saveDataInCRM'] ? "&nbsp;&nbsp;<img style='margin-top: 2px;' src='../core/Core/View/Media/navigation_level_1_189.png' class='tooltip-trigger' alt='crm' /><span class='tooltip-message'>".$_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM']."</span>" : '';
+                $useCrm   = !empty($arrForm['saveDataInCRM']) ? "&nbsp;&nbsp;<img style='margin-top: 2px;' src='../core/Core/View/Media/navigation_level_1_189.png' class='tooltip-trigger' alt='crm' /><span class='tooltip-message'>".$_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM']."</span>" : '';
 
                 // check if the form contains submitted data
-                if ($arrForm['number'] > 0) {
-                    $entryCount = $arrForm['number'];
+                $arrFormNumber = isset($arrForm['number']) ? $arrForm['number'] : 0;
+                if ($arrFormNumber > 0) {
+                    $entryCount = $arrFormNumber;
                     $formName = "<a href='index.php?cmd=Contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId."' title='".$_ARRAYLANG['TXT_CONTACT_SHOW_ENTRIES']."'>".$formName."</a>";
 
                     $this->_objTpl->touchBlock('contact_export');
@@ -624,7 +625,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                         'CONTACT_FORM_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
                         'CONTACT_FORM_NAME'                 => $formName,
                         'CONTACT_CRM_IMG'                   => $useCrm,
-                        'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '-',
+                        'CONTACT_FORM_LAST_ENTRY'           => !empty($arrForm['last']) ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '-',
                         'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $entryCount,
                         'CONTACT_DELETE_CONTENT'            => $pageExists ? 'true' : 'false',
                         'CONTACT_FORM_LANGUAGES'            => $langString
@@ -756,6 +757,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         $sendHtmlMail   = 1;
         $sendAttachment = 0;
         $emails         = $_CONFIG['contactFormEmail'];
+        $crmCustomerGroups = array();
 
         $arrActiveSystemFrontendLanguages = \FWLanguage::getActiveFrontendLanguages();
 
@@ -775,16 +777,19 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $sendHtmlMail   = $this->arrForms[$formId]['htmlMail'];
             $sendAttachment = $this->arrForms[$formId]['sendAttachment'];
             $emails         = $this->arrForms[$formId]['emails'];
+            $crmCustomerGroups = !empty($this->arrForms[$formId]['crmCustomerGroups']) ? $this->arrForms[$formId]['crmCustomerGroups'] : array();
         }
 
         if (count($arrActiveSystemFrontendLanguages) > 0) {
             $intLanguageCounter = 0;
-            $boolFirstLanguage  = true;
             $arrLanguages       = array(0 => '', 1 => '', 2 => '');
             $strJsTabToDiv      = '';
 
             foreach($arrActiveSystemFrontendLanguages as $langId => $arrLanguage) {
-                if ($formId) {
+                // Bugfix: if only one language is activated, it must be true, so the fields can be saved
+                if(count($arrActiveSystemFrontendLanguages) == 1){
+                    $boolLanguageIsActive = true;
+                }elseif ($formId) {
                     $boolLanguageIsActive = isset($this->arrForms[$formId]['lang'][$langId]) && $this->arrForms[$formId]['lang'][$langId]['is_active'];
                 } else {
                     $boolLanguageIsActive = $langId == FRONTEND_LANG_ID;
@@ -814,6 +819,10 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $fields = $this->_getFormFieldsFromPost();
             $recipients = $this->getRecipientsFromPost();
         }
+        
+        $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
+        $memberships   = array_keys($objCrmLibrary->getMemberships());
+        $objCrmLibrary->getMembershipDropdown($this->_objTpl, $memberships, "contactMembership", $crmCustomerGroups);
 
         // make an empty one so at least one is parsed
         if (empty($fields)) {
@@ -841,10 +850,14 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         } elseif (count($this->arrForms[$formId]['lang'])) {
             $selectedInterfaceLanguage = key($this->arrForms[$formId]['lang']);
         }
-
+        foreach(\FWLanguage::getLanguageArray() as $language){
+            if($language['id'] == $selectedInterfaceLanguage && $language["frontend"] == 0){
+                $selectedInterfaceLanguage = \FWLanguage::getDefaultLangId();
+            }
+        }
         //Get the fallback languages array
-        $fallBackArr = \FWLanguage::getFallbackLanguageArray();
-
+        $fallBackArr      = \FWLanguage::getFallbackLanguageArray();
+        $strJsFallBackArr = '';
         foreach ($fallBackArr as $languageId => $fallBackLanguageId) {
             $strJsFallBackArr .= 'arrFallBackLang['.$languageId.'] = "'.$fallBackLanguageId.'";'."\n";
         }
@@ -1089,8 +1102,12 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
             'CONTACT_FORM_FIELDS_TITLE'                     => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'],
             'CONTACT_FORM_RECIPIENTS_TITLE'                 => $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'],
             'CONTACT_FORM_SETTINGS'                         => $_ARRAYLANG['CONTACT_FORM_SETTINGS'],
-        ));
+            'TXT_CONTACT_CHOOSE_MEMBERSHIPS'                => $_ARRAYLANG['TXT_CONTACT_CHOOSE_MEMBERSHIPS'],
+            'TXT_CONTACT_ASSIGN_TO_CRM_CUSTOMER_GROUP'      => $_ARRAYLANG['TXT_CONTACT_ASSIGN_TO_CRM_CUSTOMER_GROUP'],
+            'TXT_CONTACT_ASSIGN_CRM_CUSTOMER_GROUP_DESCRIPTION'  => $_ARRAYLANG['TXT_CONTACT_ASSIGN_CRM_CUSTOMER_GROUP_DESCRIPTION']
 
+        ));
+        
         if (empty($recipients)) {
             // make an empty one so there's at least one
             $recipients[0] = array(
@@ -1151,12 +1168,11 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         case 'access_country':
             /* Only one instance of country select is allowed for any number of active language */
             if ($show) {
-                $objResult = $objDatabase->Execute("SELECT `name` FROM ".DBPREFIX."lib_country");
                 $field ="<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."]\">\n";
                 $field .= "<option value=\"".$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']."\" >".$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']."</option>\n";
-                while (!$objResult->EOF) {
-                    $field .= "<option value=\"".$objResult->fields['name']."\" ".(($attr == $objResult->fields['name'])?'selected="selected"':'')." >".$objResult->fields['name']."</option>\n";
-                    $objResult->MoveNext();
+                $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $langid);
+                foreach ($country as $id => $name) {
+                    $sourcecode[] = "<option value=\"" . $name . "\" " . ($attr == $name ? 'selected="selected"' : '') . ">" . $name . "</option>";
                 }
                 $field .= "</select>";
                 return $field;
@@ -1193,6 +1209,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         $content = isset($_POST['contentSiteAction']) ? $_POST['contentSiteAction'] : '';
 
         if (isset($_POST['saveForm'])) {
+            $crmCustomerGroups = array();
             $emails         = $this->getPostRecipients();
             $showForm       = !empty($_POST['contactFormShowForm']) ? 1 : 0;
             $useCaptcha     = !empty($_POST['contactFormUseCaptcha']) ? 1 : 0;
@@ -1223,7 +1240,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                         return;
                     }
                 }
-
+                
+                $crmCustomerGroups = !empty($_POST['assigned_memberships']) ? $_POST['assigned_memberships'] : array();
             }
 
             if (!$adding) {
@@ -1238,7 +1256,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                         $useEmailOfSender,
                         $sendHtmlMail,
                         $sendAttachment,
-                        $saveDataInCrm
+                        $saveDataInCrm,
+                        $crmCustomerGroups
                 );
             } else {
                 $formId = $this->addForm(
@@ -1250,7 +1269,8 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                         $useEmailOfSender,
                         $sendHtmlMail,
                         $sendAttachment,
-                        $saveDataInCrm
+                        $saveDataInCrm,
+                        $crmCustomerGroups
                 );
             }
 
@@ -1273,17 +1293,17 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
 
                 $formText =
                         isset($_POST['contactFormText'][$langID])
-                        ? contrexx_input2raw(html_entity_decode($_POST['contactFormText'][$langID], ENT_QUOTES, CONTREXX_CHARSET))
+                        ? contrexx_input2raw($_POST['contactFormText'][$langID])
                         : '';
 
                 $formFeedback =
                         isset($_POST['contactFormFeedback'][$langID])
-                        ? contrexx_input2raw(html_entity_decode($_POST['contactFormFeedback'][$langID], ENT_QUOTES, CONTREXX_CHARSET))
+                        ? contrexx_input2raw($_POST['contactFormFeedback'][$langID])
                         : '';
 
                 $formMailTemplate =
                         isset($_POST['contactMailTemplate'][$langID])
-                        ? preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}', contrexx_input2raw(html_entity_decode($_POST['contactMailTemplate'][$langID], ENT_QUOTES, CONTREXX_CHARSET)))
+                        ? preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}', contrexx_input2raw($_POST['contactMailTemplate'][$langID]))
                         :'';
 
                 $this->insertFormLangValues(
@@ -1784,7 +1804,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
                             foreach ($arrFiles as $file) {
                                 $file = contrexx_raw2xhtml($file);
                                 $img  = $this->getFileIcon($file);
-                                $value .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" target="_blank" onclick="return confirm(\''.str_replace("\n", '\n', $_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE']).'\')">'.$img.basename($file).'</a><br />';
+                                $value .= '<a href="'.\Env::get('cx')->getWebsiteOffsetPath().$file.'" target="_blank" onclick="return confirm(\''.str_replace("\n", '\n', $_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE']).'\')">'.$img.basename($file).'</a><br />';
                             }
                             break;
                         case 'recipient':
@@ -1946,7 +1966,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
 
                             case 'file':
                             case 'multi_file':
-                                print $this->_escapeCsvValue(isset($formEntriesValues['data'][$fieldId]['value']) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$formEntriesValues['data'][$fieldId]['value'] : '');
+                                print $this->_escapeCsvValue(isset($formEntriesValues['data'][$fieldId]['value']) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].\Env::get('cx')->getWebsiteOffsetPath().$formEntriesValues['data'][$fieldId]['value'] : '');
                                 break;
 
                             case 'text':
@@ -2218,7 +2238,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
      */
     private function getFileIcon($file)
     {
-        $icon = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon(ASCMS_DOCUMENT_ROOT.$file);
+        $icon = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon(\Env::get('cx')->getWebsiteDocumentRootPath().$file);
 
         $img = '<img src="'.\Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath().$icon.'.png" alt="Attach" border="0" style="position: relative; top: 3px;" />&nbsp;';
         return $img;

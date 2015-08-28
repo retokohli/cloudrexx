@@ -129,6 +129,9 @@ $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-Class: row1 or row2";
 $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Tag for defining News Entries<br />
 Starttag: &lt!-- BEGIN newsrow --&gt;<br />
 Endtag: &lt!-- END newsrow --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_ROW_DESCRIPTION'] = "Tag for defining News Entries<br />
+Starttag: &lt!-- BEGIN news_archive_link --&gt;<br />
+Endtag: &lt!-- END news_archive_link --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "The following Placeholders are available in the News Module.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Title of the news message";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Text of the news message";
@@ -201,6 +204,7 @@ $_ARRAYLANG['TXT_NEWS_DEFINE_LINK_ALT_TEXT'] = "Define a text that should be use
 $_ARRAYLANG['TXT_NEWS_INSERT_LINK'] = "Insert link";
 $_ARRAYLANG['TXT_NEWS_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_NEWS_ID_DESCRIPTION'] = "ID of the news entry";
+$_ARRAYLANG['TXT_NEWS_CATEGORY_ID_DESCRIPTION'] = "ID of the news category";
 $_ARRAYLANG['TXT_NOTIFY_GROUP'] = "Notify group:";
 $_ARRAYLANG['TXT_NOTIFY_USER'] = "Notify user:";
 $_ARRAYLANG['TXT_NEWS_PERMISSIONS'] = "Permissions";
@@ -225,6 +229,30 @@ $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Picture source/path ";
 $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
 Starttag: &lt!-- BEGIN news_image --&gt;<br />
 Endtag: &lt!-- END news_image --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
+Starttag: &lt!-- BEGIN news_archive_image --&gt;<br />
+Endtag: &lt!-- END news_archive_image --&gt;";
+$_ARRAYLANG['TXT_NEWS_IMAGE_DETAIL_ROW_DESCRIPTION'] = "Optional tag to display the teaser image.<br />
+Starttag: &lt!-- BEGIN news_image_detail --&gt;<br />
+Endtag: &lt!-- END news_image_detail --&gt;";
+$_ARRAYLANG['TXT_NEWS_IMAGE_THUMBNAIL_ROW_DESCRIPTION'] = "Optional tag to display the teaser thumbnail image.<br />
+Starttag: &lt!-- BEGIN news_image_thumbnail --&gt;<br />
+Endtag: &lt!-- END news_image_thumbnail --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_IMAGE_DETAIL_ROW_DESCRIPTION'] = "Optional tag to display the teaser image.<br />
+Starttag: &lt!-- BEGIN news_archive_image_detail --&gt;<br />
+Endtag: &lt!-- END news_archive_image_detail --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_IMAGE_THUMBNAIL_ROW_DESCRIPTION'] = "Optional tag to display the teaser thumbnail image.<br />
+Starttag: &lt!-- BEGIN news_archive_image_thumbnail --&gt;<br />
+Endtag: &lt!-- END news_archive_image_thumbnail --&gt;";
+$_ARRAYLANG['TXT_NEWS_IMAGE_DETAIL_DESCRIPTION'] = 'Teaser image';
+$_ARRAYLANG['TXT_NEWS_IMAGE_DETAIL_LINK_DESCRIPTION'] = 'Teaser image-link of the news message';
+$_ARRAYLANG['TXT_NEWS_IMAGE_DETAIL_SRC_DESCRIPTION'] = 'Teaser image source/path';
+$_ARRAYLANG['TXT_NEWS_IMAGE_THUMBNAIL_DESCRIPTION'] = 'Teaser thumbnail Image';
+$_ARRAYLANG['TXT_NEWS_IMAGE_THUMBNAIL_LINK_DESCRIPTION'] = 'Teaser thumbnail image-link of the news message';
+$_ARRAYLANG['TXT_NEWS_IMAGE_THUMBNAIL_SRC_DESCRIPTION'] = 'Teaser thumbnail image source/path';
+$_ARRAYLANG['TXT_NEWS_HEADLINES_ROW_DESCRIPTION'] = 'Tag for defining News Headlines Entries<br />
+Starttag: &lt!-- BEGIN headlines_row --&gt;<br />
+Endtag: &lt!-- END headlines_row --&gt;';
 $_ARRAYLANG['TXT_NEWS_COMMENT_LIST'] = "Comments list";
 $_ARRAYLANG['TXT_NEWS_COMMENT'] = "Comment";
 $_ARRAYLANG['TXT_NEWS_COMMENT_DATE'] = "Date &amp; time";
@@ -292,6 +320,9 @@ $_ARRAYLANG['TXT_NEWS_TYPE_DESCRIPTION'] = "Typ der Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_TYPE_NAME_DESCRIPTION'] = "Name des zugehörigen Typen";
 $_ARRAYLANG['TXT_NEWS_TYPE_ADD_ERROR_EMPTY'] = "Typ konnte nicht hinzugefügt werden, es wurde kein Name angegeben.";
 $_ARRAYLANG['TXT_USE_TEASER_TEXT'] = 'Use teaser text';
+$_ARRAYLANG['TXT_USE_RELATED_NEWS'] = 'Use related news';
+$_ARRAYLANG['TXT_USE_TAGS'] = 'Use tags';
+
 $_ARRAYLANG['TXT_USE_TYPES'] = "Typen verwenden";
 $_ARRAYLANG['TXT_NO_TYPE'] = "Keine Angabe";
 $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'] = "In der Designvorlage <b>top_news.html</b>. Diese Seite kann mit dem Platzhalter [[TOP_NEWS_FILE]] im Design oder in einer Content Seite eingebunden werden.";
@@ -352,4 +383,51 @@ $_ARRAYLANG['TXT_NEWS_COMMENTS_DATE_DESCRIPTION'] = "Comment added date";
 $_ARRAYLANG['TXT_NEWS_COMMENTS_TIME_DESCRIPTION'] = "Comment added time";
 $_ARRAYLANG['TXT_NEWS_COMMENT_LINK_DESCRIPTION'] = "News details link source";
 $_ARRAYLANG['TXT_NEWS_COMMENT_URL_DESCRIPTION'] = "News details link";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_MONTH_KEY_DESCRIPTION'] = "News archive month's key (for example september 2015 will be 2015_09)";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_MONTH_NAME_DESCRIPTION'] = "Month's name of news archive";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_MONTH_COUNT_DESCRIPTION'] = "Total number of news archives in a month";
+$_ARRAYLANG['TXT_NEWS_TIME_DESCRIPTION'] = "Time of the news message";
+$_ARRAYLANG['TXT_NEWS_LINK_TITLE_DESCRIPTION'] = "Link title of the news";
+$_ARRAYLANG['TXT_NEWS_LINK_URL_DESCRIPTION'] = "News url";
+$_ARRAYLANG['TXT_NEWS_PUBLISHER_DESCRIPTION'] = "Name of the Publisher";
+$_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Select category";
+$_ARRAYLANG['TXT_ERROR_DELETE_NEWS_CATGORY_RELATION'] = "Error occured while removing the news category relationship";
+$_ARRAYLANG['TXT_ERROR_SAVING_NEWS_CATGORY_RELATION'] = "Error occured while saving the news category relationship";
+$_ARRAYLANG['TXT_NEWS_NO_CATEGORY'] = "You must specify a category.";
+$_ARRAYLANG['TXT_NEWS_NO_TITLE'] = "You must specify a title";
+$_ARRAYLANG['TXT_NEWS_NO_TITLE_AND_CATEGORY'] = "You must specify a title and category";
+$_ARRAYLANG['TXT_NEWS_ERR_SAVING_FORM'] = "Error saving the news message";
+
+$_ARRAYLANG['TXT_NEWS_RELATED_NEWS'] = "Related News";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'] = "Include News";
+$_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Select the news to go to always related to this news";
+$_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Enter at least 3 character(s) of News title.";
+$_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Search News...";
+$_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "News not found...";
+$_ARRAYLANG['TXT_ERROR_DELETE_RELATED_NEWS_RELATION'] = "Error occured while removing the related news!...";
+$_ARRAYLANG['TXT_ERROR_SAVING_RELATED_NEWS_RELATION'] = "Error occured while saving the related news!...";
+
+$_ARRAYLANG['TXT_NEWS_TAGS'] = "Tags";
+$_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Add Tags";
+$_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'] = "Enable";
+$_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG'] = "Error Occured while saving the news tag!...";
+$_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG_RELATION'] = "Error occured while saving the news tag relationship!...";
+$_ARRAYLANG['TXT_ERROR_DELETE_NEWS_TAG_RELATION'] = "Error occured while removing the news tag relationship!...";
+
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'] = "Tag to display the previous and next news link.<br />
+Starttag: &lt!-- BEGIN previousNextLink --&gt;<br />
+  &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN previousNewsLink --&gt;<br />
+  &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END previousNewsLink --&gt;<br /><br />
+  &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN nextNewsLink --&gt;<br />
+  &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END nextNewsLink --&gt;<br />
+Endtag: &lt!-- END previousNextLink --&gt;";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINKS'] = "Previous Next Links";
+
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK_DESCRITION'] = "Previous news link";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_TITLE_DESCRITION'] = "Previous news title";
+
+$_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'] = "Next news link";
+$_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Next news title";
+
+
 ?>

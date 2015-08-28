@@ -52,15 +52,15 @@ class Stats extends StatsLibrary
     */
     function __construct()
     {
-        global $objTemplate, $_ARRAYLANG;
-
-        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Stats/View/Template/Backend');
+        parent::__construct();
+        
+        $this->_objTpl = new \Cx\Core\Html\Sigma($this->cx->getCodeBaseCoreModulePath().'/Stats/View/Template/Backend');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);       
 
-        $this->firstDate = time();
-        $this->_initConfiguration();
+        $this->firstDate = time();        
     }
+    
     private function setNavigation()
     {
         global $objTemplate, $_ARRAYLANG;
@@ -382,8 +382,8 @@ class Stats extends StatsLibrary
         if (count($this->arrCountries)>0) {
             $rowClass = 0;
 
-            // get country names from xml file
-            $xmlCountryFilePath  = ASCMS_CORE_MODULE_PATH.'/Stats/Data/countries.xml';
+            // get country names from xml file            
+            $xmlCountryFilePath  = $this->cx->getClassLoader()->getFilePath($this->cx->getCoreModuleFolderName() . '/Stats/Data/countries.xml');
             $xml_parser = xml_parser_create();
             xml_set_object($xml_parser,$this);
             xml_set_element_handler($xml_parser,"_xmlCountryStartTag","_xmlCountryEndTag");
@@ -391,14 +391,14 @@ class Stats extends StatsLibrary
 
             foreach ($this->arrCountries as $countryCode => $count) {
                 $country = isset($this->arrCountryNames[$countryCode]) ? $this->arrCountryNames[$countryCode] : strtoupper($countryCode);
-                if (file_exists(ASCMS_CORE_MODULE_PATH.'/Stats/View/Media/Flags/'.$countryCode.'.gif')) {
+                if (file_exists($this->cx->getCodeBaseCoreModulePath() . '/Stats/View/Media/Flags/'.$countryCode.'.gif')) {
                     $flag = $countryCode;
                 } else {
                     $flag = 'other';
                 }
                 $this->_objTpl->setVariable(array(
                     'STATS_CLIENTS_COUNTRY_ROW_CLASS'    => $rowClass % 2 == 0 ? "row2" : "row1",
-                    'STATS_CLIENTS_COUNTRY'                => '<img src="'.ASCMS_CORE_MODULE_WEB_PATH.'/Stats/View/Media/Flags/'.$flag.'.gif" style="width:18px;height:12px;" alt="'.$country.'" />&nbsp;'.$country,
+                    'STATS_CLIENTS_COUNTRY'                => '<img src="'.$this->cx->getCodeBaseCoreModuleWebPath().'/Stats/View/Media/Flags/'.$flag.'.gif" style="width:18px;height:12px;" alt="'.$country.'" />&nbsp;'.$country,
                     'STATS_CLIENTS_COUNTRY_COUNT'        => $this->_makePercentBar(200,10,100/$this->countriesSum*$count,100,1,$country).' '.round(100/$this->countriesSum*$count,2).'% ('.$count.')'
                 ));
                 $this->_objTpl->parse('stats_clients_countries_list');
@@ -970,7 +970,7 @@ class Stats extends StatsLibrary
             foreach ($this->arrIndexedPages as $values) {
                 $this->_objTpl->setVariable(array(
                     'STATS_SPIDERS_ROW_CLASS'        => (($i % 2) == 0) ? "row2" : "row1",
-                    'STATS_SPIDERS_PAGE'            => '<a href="'.ASCMS_PATH_OFFSET.$values['page'].'" target="_blank" alt="'.$values['title'].'" title="'.$values['title'].'">'.$values['title'].'&nbsp;'.$values['page'].'</a>',
+                    'STATS_SPIDERS_PAGE'            => '<a href="'. $this->cx->getCodeBaseOffsetPath() .$values['page'].'" target="_blank" alt="'.$values['title'].'" title="'.$values['title'].'">'.$values['title'].'&nbsp;'.$values['page'].'</a>',
                     'STATS_SPIDERS_LAST_INDEXED'    => $values['last_indexed'],
                     'STATS_SPIDERS_INDEXED_BY'        => $values['spider_useragent'].(!empty($values['spider_ip']) ? ' ('.$values['spider_ip'].(!empty($values['spider_host']) ? ' '.$values['spider_host'].' )' : ' )') : '')
                 ));

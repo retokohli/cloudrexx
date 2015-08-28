@@ -1,8 +1,8 @@
-.img-rounded {
-    border-radius: 6px
+.uploader-modal .img-rounded, .media-browser-modal-window .img-rounded {
+    border-radius: 6px;
 }
 
-.img-thumbnail {
+.uploader-modal .img-thumbnail, .media-browser-modal-window .img-thumbnail {
     padding: 4px;
     line-height: 1.42857143;
     background-color: #fff;
@@ -12,76 +12,63 @@
     transition: all .2s ease-in-out;
     display: inline-block;
     max-width: 100%;
-    height: auto
+    height: auto;
 }
 
-.fade {
-    opacity: 0;
-    -webkit-transition: opacity .15s linear;
-    transition: opacity .15s linear
+.uploader-modal .collapse, .media-browser-modal-window .collapse {
+    display: none;
 }
 
-.fade.in {
-    opacity: 1
+.uploader-modal .collapse.in, .media-browser-modal-window .collapse.in {
+    display: block;
 }
 
-.collapse {
-    display: none
-}
-
-.collapse.in {
-    display: block
-}
-
-.collapsing {
+.uploader-modal .collapsing, .media-browser-modal-window .collapsing {
     position: relative;
     height: 0;
     overflow: hidden;
     -webkit-transition: height .35s ease;
-    transition: height .35s ease
+    transition: height .35s ease;
 }
 
 @-webkit-keyframes progress-bar-stripes {
     from {
-        background-position: 40px 0
+        background-position: 40px 0;
     }
-
     to {
-        background-position: 0 0
+        background-position: 0 0;
     }
 }
 
 @-o-keyframes progress-bar-stripes {
     from {
-        background-position: 40px 0
+        background-position: 40px 0;
     }
-
     to {
-        background-position: 0 0
+        background-position: 0 0;
     }
 }
 
 @keyframes progress-bar-stripes {
     from {
-        background-position: 40px 0
+        background-position: 40px 0;
     }
-
     to {
-        background-position: 0 0
+        background-position: 0 0;
     }
 }
 
-.progress {
+.uploader-modal .progress, .media-browser-modal-window .progress {
     overflow: hidden;
     height: 20px;
     margin-bottom: 20px;
     background-color: #f5f5f5;
     border-radius: 4px;
     -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1)
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
 }
 
-.progress-bar {
+.uploader-modal .progress-bar, .media-browser-modal-window .progress-bar {
     float: left;
     width: 0;
     height: 100%;
@@ -93,97 +80,94 @@
     -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
     -webkit-transition: width .6s ease;
-    transition: width .6s ease
+    transition: width .6s ease;
 }
 
-.progress-striped .progress-bar {
+.uploader-modal .progress-striped .progress-bar, .media-browser-modal-window .progress-striped .progress-bar {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
     background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-    background-size: 40px 40px
+    background-size: 40px 40px;
 }
 
-.progress.active .progress-bar {
+.uploader-modal .progress.active .progress-bar, .media-browser-modal-window .progress.active .progress-bar {
     -webkit-animation: progress-bar-stripes 2s linear infinite;
-    animation: progress-bar-stripes 2s linear infinite
+    animation: progress-bar-stripes 2s linear infinite;
 }
 
-.progress-bar-success {
-    background-color: #5cb85c
+.uploader-modal .progress-bar-success, .media-browser-modal-window .progress-bar-success {
+    background-color: #5cb85c;
 }
 
-.progress-striped .progress-bar-success {
+.uploader-modal .progress-striped .progress-bar-success, .media-browser-modal-window .progress-striped .progress-bar-success {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent)
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
 }
 
-.progress-bar-info {
-    background-color: #5bc0de
+.uploader-modal .progress-bar-info, .media-browser-modal-window .progress-bar-info {
+    background-color: #5bc0de;
 }
 
-.progress-striped .progress-bar-info {
+.uploader-modal .progress-striped .progress-bar-info, .media-browser-modal-window .progress-striped .progress-bar-info {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent)
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
 }
 
-.progress-bar-warning {
-    background-color: #f0ad4e
+.uploader-modal .progress-bar-warning, .media-browser-modal-window .progress-bar-warning {
+    background-color: #f0ad4e;
 }
 
-.progress-striped .progress-bar-warning {
+.uploader-modal .progress-striped .progress-bar-warning, .media-browser-modal-window .progress-striped .progress-bar-warning {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent)
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
 }
 
-.progress-bar-danger {
-    background-color: #d9534f
+.uploader-modal .progress-bar-danger, .media-browser-modal-window .progress-bar-danger {
+    background-color: #d9534f;
 }
 
-.progress-striped .progress-bar-danger {
+.uploader-modal .progress-striped .progress-bar-danger, .media-browser-modal-window .progress-striped .progress-bar-danger {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent)
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
 }
 
 @-webkit-keyframes progress-bar-stripes {
     from {
-        background-position: 40px 0
+        background-position: 40px 0;
     }
-
     to {
-        background-position: 0 0
+        background-position: 0 0;
     }
 }
 
 @-o-keyframes progress-bar-stripes {
     from {
-        background-position: 40px 0
+        background-position: 40px 0;
     }
-
     to {
-        background-position: 0 0
+        background-position: 0 0;
     }
 }
 
 @keyframes progress-bar-stripes {
     from {
-        background-position: 40px 0
+        background-position: 40px 0;
     }
-
     to {
-        background-position: 0 0
+        background-position: 0 0;
     }
 }
 
-.progress {
+.uploader-modal .progress, .media-browser-modal-window .progress {
     height: 20px;
     margin-bottom: 20px;
     overflow: hidden;
     background-color: #f5f5f5;
     border-radius: 4px;
     -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1)
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
 }
 
-.progress-bar {
+.uploader-modal .progress-bar, .media-browser-modal-window .progress-bar {
     float: left;
     width: 0;
     height: 100%;
@@ -196,233 +180,67 @@
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
     -webkit-transition: width .6s ease;
     -o-transition: width .6s ease;
-    transition: width .6s ease
+    transition: width .6s ease;
 }
 
-.progress-striped .progress-bar, .progress-bar-striped {
+.uploader-modal .progress-striped .progress-bar, .media-browser-modal-window .progress-striped .progress-bar, .uploader-modal .progress-bar-striped, .media-browser-modal-window .progress-bar-striped {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
     background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
     background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
     -webkit-background-size: 40px 40px;
-    background-size: 40px 40px
+    background-size: 40px 40px;
 }
 
-.progress.active .progress-bar, .progress-bar.active {
+.uploader-modal .progress.active .progress-bar, .media-browser-modal-window .progress.active .progress-bar, .uploader-modal .progress-bar.active, .media-browser-modal-window .progress-bar.active {
     -webkit-animation: progress-bar-stripes 2s linear infinite;
     -o-animation: progress-bar-stripes 2s linear infinite;
-    animation: progress-bar-stripes 2s linear infinite
+    animation: progress-bar-stripes 2s linear infinite;
 }
 
-.progress-bar[aria-valuenow="1"], .progress-bar[aria-valuenow="2"] {
-    min-width: 30px
+.uploader-modal .progress-bar[aria-valuenow="1"], .media-browser-modal-window .progress-bar[aria-valuenow="1"], .uploader-modal .progress-bar[aria-valuenow="2"], .media-browser-modal-window .progress-bar[aria-valuenow="2"] {
+    min-width: 30px;
 }
 
-.progress-bar[aria-valuenow="0"] {
+.uploader-modal .progress-bar[aria-valuenow="0"], .media-browser-modal-window .progress-bar[aria-valuenow="0"] {
     min-width: 30px;
     color: #777;
     background-color: transparent;
     background-image: none;
     -webkit-box-shadow: none;
-    box-shadow: none
+    box-shadow: none;
 }
 
-.progress-bar-success {
-    background-color: #5cb85c
+.uploader-modal .progress-bar-success, .media-browser-modal-window .progress-bar-success {
+    background-color: #5cb85c;
 }
 
-.progress-striped .progress-bar-success {
+.uploader-modal .progress-striped .progress-bar-success, .media-browser-modal-window .progress-striped .progress-bar-success {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
     background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent)
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
 }
 
-.progress-bar-info {
-    background-color: #5bc0de
+.uploader-modal .progress-bar-info, .media-browser-modal-window .progress-bar-info {
+    background-color: #5bc0de;
 }
 
-.progress-striped .progress-bar-info {
+.uploader-modal .progress-striped .progress-bar-info, .media-browser-modal-window .progress-striped .progress-bar-info {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
     background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent)
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
 }
 
-.progress-bar-warning {
-    background-color: #f0ad4e
+.uploader-modal .progress-bar-warning, .media-browser-modal-window .progress-bar-warning {
+    background-color: #f0ad4e;
 }
 
-.progress-striped .progress-bar-warning {
+.uploader-modal .progress-striped .progress-bar-warning, .media-browser-modal-window .progress-striped .progress-bar-warning {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
     background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent)
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
 }
 
-.close {
-    float: right;
-    font-size: 21px;
-    font-weight: 700;
-    line-height: 1;
-    color: #000;
-    text-shadow: 0 1px 0 #fff;
-    opacity: .2;
-    filter: alpha(opacity=20)
-}
-
-.close:focus, .close:hover {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
-    opacity: .5;
-    filter: alpha(opacity=50)
-}
-
-button.close {
-    padding: 0;
-    cursor: pointer;
-    background: 0 0;
-    border: 0;
-    -webkit-appearance: none
-}
-
-#content div.modal div.modal-header button.close[type=button] {
-    background: none;
-    border: none;
-}
-
-.modal-open {
-    overflow: hidden
-}
-
-.modal {
-    display: none;
-    overflow: auto;
-    overflow-y: scroll;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1050;
-    -webkit-overflow-scrolling: touch;
-    outline: 0;
-    font-size: 14px;
-}
-
-.modal.fade .modal-dialog {
-    -webkit-transform: translate(0, -25%);
-    -ms-transform: translate(0, -25%);
-    transform: translate(0, -25%);
-    -webkit-transition: -webkit-transform .3s ease-out;
-    -moz-transition: -moz-transform .3s ease-out;
-    -o-transition: -o-transform .3s ease-out;
-    transition: transform .3s ease-out
-}
-
-.modal.in .modal-dialog {
-    -webkit-transform: translate(0, 0);
-    -ms-transform: translate(0, 0);
-    transform: translate(0, 0)
-}
-
-.modal-dialog {
-    position: relative;
-    width: auto;
-    margin: 10px
-}
-
-.modal-content {
-    position: relative;
-    background-color: #fff;
-    border: 1px solid #999;
-    border: 1px solid rgba(0, 0, 0, .2);
-    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
-    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
-    background-clip: padding-box;
-    outline: 0
-}
-
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1040;
-    background-color: #000
-}
-
-.modal-backdrop.fade {
-    opacity: 0;
-    filter: alpha(opacity=0)
-}
-
-.modal-backdrop.in {
-    opacity: .5;
-    filter: alpha(opacity=50)
-}
-
-.modal-header {
-    padding: 15px;
-    border-bottom: 1px solid #e5e5e5;
-    min-height: 16.43px
-}
-
-.modal-header .close {
-    margin-top: -2px
-}
-
-.modal-title {
-    margin: 0;
-    line-height: 1.42857143
-}
-
-.modal-body {
-    position: relative;
-    padding: 20px
-}
-
-.modal-footer {
-    margin-top: 15px;
-    padding: 19px 20px 20px;
-    text-align: right;
-    border-top: 1px solid #e5e5e5
-}
-
-.modal-footer .btn + .btn {
-    margin-left: 5px;
-    margin-bottom: 0
-}
-
-.modal-footer .btn-group .btn + .btn {
-    margin-left: -1px
-}
-
-.modal-footer .btn-block + .btn-block {
-    margin-left: 0
-}
-
-@media (min-width: 768px) {
-    .modal-dialog {
-        width: 600px;
-        margin: 60px auto
-    }
-
-    .modal-content {
-        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
-    }
-
-    .modal-sm {
-        width: 300px
-    }
-}
-
-@media (min-width: 992px) {
-    .modal-lg {
-        width: 900px
-    }
-}
-
-.popover {
+.uploader-modal .popover, .media-browser-modal-window .popover {
     position: absolute;
     top: 0;
     left: 0;
@@ -438,26 +256,26 @@ button.close {
     border-radius: 6px;
     -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
     box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
-    white-space: normal
+    white-space: normal;
 }
 
-.popover.top {
-    margin-top: -10px
+.uploader-modal .popover.top, .media-browser-modal-window .popover.top {
+    margin-top: -10px;
 }
 
-.popover.right {
-    margin-left: 10px
+.uploader-modal .popover.right, .media-browser-modal-window .popover.right {
+    margin-left: 10px;
 }
 
-.popover.bottom {
-    margin-top: 10px
+.uploader-modal .popover.bottom, .media-browser-modal-window .popover.bottom {
+    margin-top: 10px;
 }
 
-.popover.left {
-    margin-left: -10px
+.uploader-modal .popover.left, .media-browser-modal-window .popover.left {
+    margin-left: -10px;
 }
 
-.popover-title {
+.uploader-modal .popover-title, .media-browser-modal-window .popover-title {
     margin: 0;
     padding: 8px 14px;
     font-size: 14px;
@@ -465,121 +283,121 @@ button.close {
     line-height: 18px;
     background-color: #f7f7f7;
     border-bottom: 1px solid #ebebeb;
-    border-radius: 5px 5px 0 0
+    border-radius: 5px 5px 0 0;
 }
 
-.popover-content {
-    padding: 9px 14px
+.uploader-modal .popover-content, .media-browser-modal-window .popover-content {
+    padding: 9px 14px;
 }
 
-.popover > .arrow, .popover > .arrow:after {
+.uploader-modal .popover > .arrow, .media-browser-modal-window .popover > .arrow, .uploader-modal .popover > .arrow:after, .media-browser-modal-window .popover > .arrow:after {
     position: absolute;
     display: block;
     width: 0;
     height: 0;
     border-color: transparent;
-    border-style: solid
+    border-style: solid;
 }
 
-.popover > .arrow {
-    border-width: 11px
+.uploader-modal .popover > .arrow, .media-browser-modal-window .popover > .arrow {
+    border-width: 11px;
 }
 
-.popover > .arrow:after {
+.uploader-modal .popover > .arrow:after, .media-browser-modal-window .popover > .arrow:after {
     border-width: 10px;
-    content: ""
+    content: "";
 }
 
-.popover.top > .arrow {
+.uploader-modal .popover.top > .arrow, .media-browser-modal-window .popover.top > .arrow {
     left: 50%;
     margin-left: -11px;
     border-bottom-width: 0;
     border-top-color: #999;
     border-top-color: rgba(0, 0, 0, .25);
-    bottom: -11px
+    bottom: -11px;
 }
 
-.popover.top > .arrow:after {
+.uploader-modal .popover.top > .arrow:after, .media-browser-modal-window .popover.top > .arrow:after {
     content: " ";
     bottom: 1px;
     margin-left: -10px;
     border-bottom-width: 0;
-    border-top-color: #fff
+    border-top-color: #fff;
 }
 
-.popover.right > .arrow {
+.uploader-modal .popover.right > .arrow, .media-browser-modal-window .popover.right > .arrow {
     top: 50%;
     left: -11px;
     margin-top: -11px;
     border-left-width: 0;
     border-right-color: #999;
-    border-right-color: rgba(0, 0, 0, .25)
+    border-right-color: rgba(0, 0, 0, .25);
 }
 
-.popover.right > .arrow:after {
+.uploader-modal .popover.right > .arrow:after, .media-browser-modal-window .popover.right > .arrow:after {
     content: " ";
     left: 1px;
     bottom: -10px;
     border-left-width: 0;
-    border-right-color: #fff
+    border-right-color: #fff;
 }
 
-.popover.bottom > .arrow {
+.uploader-modal .popover.bottom > .arrow, .media-browser-modal-window .popover.bottom > .arrow {
     left: 50%;
     margin-left: -11px;
     border-top-width: 0;
     border-bottom-color: #999;
     border-bottom-color: rgba(0, 0, 0, .25);
-    top: -11px
+    top: -11px;
 }
 
-.popover.bottom > .arrow:after {
+.uploader-modal .popover.bottom > .arrow:after, .media-browser-modal-window .popover.bottom > .arrow:after {
     content: " ";
     top: 1px;
     margin-left: -10px;
     border-top-width: 0;
-    border-bottom-color: #fff
+    border-bottom-color: #fff;
 }
 
-.popover.left > .arrow {
+.uploader-modal .popover.left > .arrow, .media-browser-modal-window .popover.left > .arrow {
     top: 50%;
     right: -11px;
     margin-top: -11px;
     border-right-width: 0;
     border-left-color: #999;
-    border-left-color: rgba(0, 0, 0, .25)
+    border-left-color: rgba(0, 0, 0, .25);
 }
 
-.popover.left > .arrow:after {
+.uploader-modal .popover.left > .arrow:after, .media-browser-modal-window .popover.left > .arrow:after {
     content: " ";
     right: 1px;
     border-right-width: 0;
     border-left-color: #fff;
-    bottom: -10px
+    bottom: -10px;
 }
 
-.popover {
+.uploader-modal .popover, .media-browser-modal-window .popover {
     max-width: 350px;
-    border-radius: 0
+    border-radius: 0;
 }
 
-.popover-content {
-    padding: 0
+.uploader-modal .popover-content, .media-browser-modal-window .popover-content {
+    padding: 0;
 }
 
-.popover.right {
+.uploader-modal .popover.right, .media-browser-modal-window .popover.right {
     margin-left: 40px;
 }
 
-.popover.right > .arrow {
-    display: none
+.uploader-modal .popover.right > .arrow, .media-browser-modal-window .popover.right > .arrow {
+    display: none;
 }
 
-.popover img {
+.uploader-modal .popover img, .media-browser-modal-window .popover img {
     max-width: 350px;
 }
 
-.form-control {
+.form-control, .form-control, .bootbox .form-control {
     display: block;
     width: 100%;
     height: 34px;
@@ -590,53 +408,53 @@ button.close {
     background-color: #fff;
     background-image: none;
     border: 1px solid #ccc;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
     -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
     -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
 .form-control:focus {
     border-color: #66afe9;
     outline: 0;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, 0.6);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, 0.6)
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
 }
 
 .form-control::-moz-placeholder {
     color: #777;
-    opacity: 1
+    opacity: 1;
 }
 
 .form-control:-ms-input-placeholder {
-    color: #777
+    color: #777;
 }
 
 .form-control::-webkit-input-placeholder {
-    color: #777
+    color: #777;
 }
 
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
     cursor: not-allowed;
     background-color: #eee;
-    opacity: 1
+    opacity: 1;
 }
 
 textarea.form-control {
-    height: auto
+    height: auto;
 }
 
-input[type="date"].input-sm, input[type="time"].input-sm, input[type="datetime-local"].input-sm, input[type="month"].input-sm {
-    line-height: 30px
+input[type="date"].input-sm, input[type="date"].input-sm, input[type="time"].input-sm, input[type="time"].input-sm, input[type="datetime-local"].input-sm, input[type="datetime-local"].input-sm, input[type="month"].input-sm, input[type="month"].input-sm {
+    line-height: 30px;
 }
 
-input[type="date"].input-lg, input[type="time"].input-lg, input[type="datetime-local"].input-lg, input[type="month"].input-lg {
-    line-height: 46px
+input[type="date"].input-lg, input[type="date"].input-lg, input[type="time"].input-lg, input[type="time"].input-lg, input[type="datetime-local"].input-lg, input[type="datetime-local"].input-lg, input[type="month"].input-lg, input[type="month"].input-lg {
+    line-height: 46px;
 }
 
-.form-group {
-    margin-bottom: 15px
+.form-group, .form-group {
+    margin-bottom: 15px;
 }
 
 .radio, .checkbox {
@@ -644,25 +462,24 @@ input[type="date"].input-lg, input[type="time"].input-lg, input[type="datetime-l
     display: block;
     min-height: 20px;
     margin-top: 10px;
-    margin-bottom: 10px
+    margin-bottom: 10px;
 }
 
 .radio label, .checkbox label {
     padding-left: 20px;
     margin-bottom: 0;
     font-weight: normal;
-    cursor: pointer
+    cursor: pointer;
 }
 
-.radio input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
+.radio input[type="radio"], .radio input[type="radio"], .radio-inline input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
     position: absolute;
     margin-left: -20px;
-    margin-top: 4px \9
-
+    margin-top: 4px;
 }
 
 .radio + .radio, .checkbox + .checkbox {
-    margin-top: -5px
+    margin-top: -5px;
 }
 
 .radio-inline, .checkbox-inline {
@@ -671,23 +488,23 @@ input[type="date"].input-lg, input[type="time"].input-lg, input[type="datetime-l
     margin-bottom: 0;
     vertical-align: middle;
     font-weight: normal;
-    cursor: pointer
+    cursor: pointer;
 }
 
 .radio-inline + .radio-inline, .checkbox-inline + .checkbox-inline {
     margin-top: 0;
-    margin-left: 10px
+    margin-left: 10px;
 }
 
 .form-control-static {
     padding-top: 7px;
     padding-bottom: 7px;
-    margin-bottom: 0
+    margin-bottom: 0;
 }
 
 .form-control-static.input-lg, .form-control-static.input-sm {
     padding-left: 0;
-    padding-right: 0
+    padding-right: 0;
 }
 
 .input-sm, .form-horizontal .form-group-sm .form-control {
@@ -695,16 +512,16 @@ input[type="date"].input-lg, input[type="time"].input-lg, input[type="datetime-l
     padding: 5px 10px;
     font-size: 12px;
     line-height: 1.5;
-    border-radius: 3px
+    border-radius: 3px;
 }
 
 select.input-sm {
     height: 30px;
-    line-height: 30px
+    line-height: 30px;
 }
 
-textarea.input-sm, select[multiple].input-sm {
-    height: auto
+textarea.input-sm, select[multiple].input-sm, {
+    height: auto;
 }
 
 .input-lg, .form-horizontal .form-group-lg .form-control {
@@ -712,24 +529,24 @@ textarea.input-sm, select[multiple].input-sm {
     padding: 10px 16px;
     font-size: 18px;
     line-height: 1.33;
-    border-radius: 6px
+    border-radius: 6px;
 }
 
 select.input-lg {
     height: 46px;
-    line-height: 46px
+    line-height: 46px;
 }
 
 textarea.input-lg, select[multiple].input-lg {
-    height: auto
+    height: auto;
 }
 
 .has-feedback {
-    position: relative
+    position: relative;
 }
 
 .has-feedback .form-control {
-    padding-right: 42.5px
+    padding-right: 42.5px;
 }
 
 .form-control-feedback {
@@ -741,96 +558,95 @@ textarea.input-lg, select[multiple].input-lg {
     width: 34px;
     height: 34px;
     line-height: 34px;
-    text-align: center
+    text-align: center;
 }
 
 .input-lg + .form-control-feedback {
     width: 46px;
     height: 46px;
-    line-height: 46px
+    line-height: 46px;
 }
 
 .input-sm + .form-control-feedback {
     width: 30px;
     height: 30px;
-    line-height: 30px
+    line-height: 30px;
 }
 
 .form-horizontal .radio, .form-horizontal .checkbox, .form-horizontal .radio-inline, .form-horizontal .checkbox-inline {
     margin-top: 0;
     margin-bottom: 0;
-    padding-top: 7px
+    padding-top: 7px;
 }
 
 .form-horizontal .radio, .form-horizontal .checkbox {
-    min-height: 27px
+    min-height: 27px;
 }
 
 .form-horizontal .form-group {
     margin-left: -15px;
-    margin-right: -15px
+    margin-right: -15px;
 }
 
 @media (min-width: 768px) {
-    .form-horizontal .control-label {
+    .form-horizontal .control-label, .form-horizontal .control-label {
         text-align: right;
         margin-bottom: 0;
-        padding-top: 7px
+        padding-top: 7px;
     }
 }
 
-.form-horizontal .has-feedback .form-control-feedback {
+.form-horizontal .has-feedback .form-control-feedback, .form-horizontal .has-feedback .form-control-feedback {
     top: 0;
-    right: 15px
+    right: 15px;
 }
 
 @media (min-width: 768px) {
-    .form-horizontal .form-group-lg .control-label {
-        padding-top: 14.3px
+    .form-horizontal .form-group-lg .control-label, .form-horizontal .form-group-lg .control-label {
+        padding-top: 14.3px;
     }
 }
 
 @media (min-width: 768px) {
     .form-horizontal .form-group-sm .control-label {
-        padding-top: 6px
+        padding-top: 6px;
     }
 }
 
-.clearfix:before, .clearfix:after, .form-horizontal .form-group:before, .form-horizontal .form-group:after {
+.clearfix:before, .clearfix:before, .clearfix:after, .clearfix:after, .form-horizontal .form-group:before, .form-horizontal .form-group:before, .form-horizontal .form-group:after, .form-horizontal .form-group:after {
     content: " ";
-    display: table
+    display: table;
 }
 
-.clearfix:after, .form-horizontal .form-group:after {
-    clear: both
+.clearfix:after, .clearfix:after, .form-horizontal .form-group:after, .form-horizontal .form-group:after {
+    clear: both;
 }
 
-.center-block {
+.uploader-modal .center-block, .media-browser-modal-window .center-block {
     display: block;
     margin-left: auto;
-    margin-right: auto
+    margin-right: auto;
 }
 
-.hide {
-    display: none !important
+.uploader-modal #mediaBrowserMain .hide, .media-browser-modal-window #mediaBrowserMain .hide {
+    display: none !important;
 }
 
-.show {
-    display: block !important
+.uploader-modal #mediaBrowserMain .show, .media-browser-modal-window #mediaBrowserMain .show {
+    display: block !important;
 }
 
-.invisible {
-    visibility: hidden
+.uploader-modal .invisible, .media-browser-modal-window .invisible {
+    visibility: hidden;
 }
 
-.form-control {
+.uploader-modal .form-control, .media-browser-modal-window .form-control, .bootbox * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
 
-/* buttons */
-.modal .btn, .btn {
+.modal .btn, .btn, .bootbox .btn {
     color: #fff;
     height: auto;
     display: inline-block;
@@ -853,265 +669,264 @@ textarea.input-lg, select[multiple].input-lg {
     text-shadow: none;
 }
 
-.btn.active:focus, .btn:active:focus, .btn:focus {
+.btn.active:focus, .btn.active:focus, .btn:active:focus, .btn:active:focus, .btn:focus, .btn:focus {
     outline: thin dotted;
     outline: 5px auto -webkit-focus-ring-color;
-    outline-offset: -2px
+    outline-offset: -2px;
 }
 
-.btn:focus, .btn:hover {
+.btn:focus, .btn:focus, .btn:hover, .btn:hover {
     color: #333;
-    text-decoration: none
+    text-decoration: none;
 }
 
-.btn.active, .btn:active {
+.btn.active, .btn:active, .btn:active {
     background-image: none;
     outline: 0;
     -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
-    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125)
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
 }
 
-.btn.disabled, .btn[disabled], fieldset[disabled] .btn {
+.btn.disabled, .btn[disabled], .btn[disabled], fieldset[disabled] .btn, fieldset[disabled] .btn {
     pointer-events: none;
     cursor: not-allowed;
     filter: alpha(opacity=65);
     -webkit-box-shadow: none;
     box-shadow: none;
-    opacity: .65
+    opacity: .65;
 }
 
-.modal .btn-default, .btn-default {
+.modal .btn-default, .btn-default, .btn-default {
     color: #333;
     background-color: #fff;
-    border-color: #ccc
+    border-color: #ccc;
 }
 
-.btn-default.active, .btn-default:active, .btn-default:focus, .btn-default:hover, .open .dropdown-toggle.btn-default {
+.btn-default.active, .btn-default.active, .btn-default:active, .btn-default:active, .btn-default:focus, .btn-default:focus, .btn-default:hover, .btn-default:hover, .open .dropdown-toggle.btn-default, .open .dropdown-toggle.btn-default {
     color: #333;
     background-color: #ebebeb;
-    border-color: #adadad
+    border-color: #adadad;
 }
 
 .btn-default.active, .btn-default:active, .open .dropdown-toggle.btn-default {
-    background-image: none
+    background-image: none;
 }
 
-.btn-default.disabled, .btn-default.disabled.active, .btn-default.disabled:active, .btn-default.disabled:focus, .btn-default.disabled:hover, .btn-default[disabled], .btn-default[disabled].active, .btn-default[disabled]:active, .btn-default[disabled]:focus, .btn-default[disabled]:hover, fieldset[disabled] .btn-default, fieldset[disabled] .btn-default.active, fieldset[disabled] .btn-default:active, fieldset[disabled] .btn-default:focus, fieldset[disabled] .btn-default:hover {
+.btn-default.disabled, .btn-default.disabled, .btn-default.disabled.active, .btn-default.disabled.active, .btn-default.disabled:active, .btn-default.disabled:active, .btn-default.disabled:focus, .btn-default.disabled:focus, .btn-default.disabled:hover, .btn-default.disabled:hover, .btn-default[disabled], .btn-default[disabled], .btn-default[disabled].active, .btn-default[disabled].active, .btn-default[disabled]:active, .btn-default[disabled]:active, .btn-default[disabled]:focus, .btn-default[disabled]:focus, .btn-default[disabled]:hover, .btn-default[disabled]:hover, fieldset[disabled] .btn-default, fieldset[disabled] .btn-default, fieldset[disabled] .btn-default.active, fieldset[disabled] .btn-default.active, fieldset[disabled] .btn-default:active, fieldset[disabled] .btn-default:active, fieldset[disabled] .btn-default:focus, fieldset[disabled] .btn-default:focus, fieldset[disabled] .btn-default:hover, fieldset[disabled] .btn-default:hover {
     background-color: #fff;
-    border-color: #ccc
+    border-color: #ccc;
 }
 
-.btn-default .badge {
+.btn-default .badge, .btn-default .badge {
     color: #fff;
-    background-color: #333
+    background-color: #333;
 }
 
-.btn-primary {
+.btn-primary, .btn-primary {
     color: #fff;
     background-color: #0a85c8;
-    border-color: #357ebd
+    border-color: #357ebd;
 }
 
-.btn-primary.active, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open .dropdown-toggle.btn-primary {
+.btn-primary.active, .btn-primary.active, .btn-primary:active, .btn-primary:active, .btn-primary:focus, .btn-primary:focus, .btn-primary:hover, .btn-primary:hover, .open .dropdown-toggle.btn-primary, .open .dropdown-toggle.btn-primary {
     color: #fff;
     background-color: #3276b1;
-    border-color: #285e8e
+    border-color: #285e8e;
 }
 
-.btn-primary.active, .btn-primary:active, .open .dropdown-toggle.btn-primary {
-    background-image: none
+.btn-primary.active, .btn-primary.active, .btn-primary:active, .btn-primary:active, .open .dropdown-toggle.btn-primary, .open .dropdown-toggle.btn-primary {
+    background-image: none;
 }
 
-.btn-primary.disabled, .btn-primary.disabled.active, .btn-primary.disabled:active, .btn-primary.disabled:focus, .btn-primary.disabled:hover, .btn-primary[disabled], .btn-primary[disabled].active, .btn-primary[disabled]:active, .btn-primary[disabled]:focus, .btn-primary[disabled]:hover, fieldset[disabled] .btn-primary, fieldset[disabled] .btn-primary.active, fieldset[disabled] .btn-primary:active, fieldset[disabled] .btn-primary:focus, fieldset[disabled] .btn-primary:hover {
+.btn-primary.disabled, .btn-primary.disabled, .btn-primary.disabled.active, .btn-primary.disabled.active, .btn-primary.disabled:active, .btn-primary.disabled:active, .btn-primary.disabled:focus, .btn-primary.disabled:focus, .btn-primary.disabled:hover, .btn-primary.disabled:hover, .btn-primary[disabled], .btn-primary[disabled], .btn-primary[disabled].active, .btn-primary[disabled].active, .btn-primary[disabled]:active, .btn-primary[disabled]:active, .btn-primary[disabled]:focus, .btn-primary[disabled]:focus, .btn-primary[disabled]:hover, .btn-primary[disabled]:hover, fieldset[disabled] .btn-primary, fieldset[disabled] .btn-primary, fieldset[disabled] .btn-primary.active, fieldset[disabled] .btn-primary.active, fieldset[disabled] .btn-primary:active, fieldset[disabled] .btn-primary:active, fieldset[disabled] .btn-primary:focus, fieldset[disabled] .btn-primary:focus, fieldset[disabled] .btn-primary:hover, fieldset[disabled] .btn-primary:hover {
     background-color: #428bca;
-    border-color: #357ebd
+    border-color: #357ebd;
 }
 
-.btn-primary .badge {
+.btn-primary .badge, .btn-primary .badge {
     color: #428bca;
-    background-color: #fff
+    background-color: #fff;
 }
 
-.modal .btn-success, .btn-success {
+.modal .btn-success, .modal .btn-success, .btn-success, .btn-success {
     color: #fff;
     background-color: #5cb85c;
     border-color: #4cae4c;
 }
 
-.btn-success.active, .btn-success:active, .btn-success:focus, .btn-success:hover, .open .dropdown-toggle.btn-success {
+.btn-success.active, .btn-success.active, .btn-success:active, .btn-success:active, .btn-success:focus, .btn-success:focus, .btn-success:hover, .btn-success:hover, .open .dropdown-toggle.btn-success, .open .dropdown-toggle.btn-success {
     color: #fff;
     border-color: #398439;
     background: #47a447 none;
 }
 
-.btn-success.active, .btn-success:active, .open .dropdown-toggle.btn-success {
-    background-image: none
+.btn-success.active, .btn-success.active, .btn-success:active, .btn-success:active, .open .dropdown-toggle.btn-success, .open .dropdown-toggle.btn-success {
+    background-image: none;
 }
 
-.btn-success.disabled, .btn-success.disabled.active, .btn-success.disabled:active, .btn-success.disabled:focus, .btn-success.disabled:hover, .btn-success[disabled], .btn-success[disabled].active, .btn-success[disabled]:active, .btn-success[disabled]:focus, .btn-success[disabled]:hover, fieldset[disabled] .btn-success, fieldset[disabled] .btn-success.active, fieldset[disabled] .btn-success:active, fieldset[disabled] .btn-success:focus, fieldset[disabled] .btn-success:hover {
+.btn-success.disabled, .btn-success.disabled, .btn-success.disabled.active, .btn-success.disabled.active, .btn-success.disabled:active, .btn-success.disabled:active, .btn-success.disabled:focus, .btn-success.disabled:focus, .btn-success.disabled:hover, .btn-success.disabled:hover, .btn-success[disabled], .btn-success[disabled], .btn-success[disabled].active, .btn-success[disabled].active, .btn-success[disabled]:active, .btn-success[disabled]:active, .btn-success[disabled]:focus, .btn-success[disabled]:focus, .btn-success[disabled]:hover, .btn-success[disabled]:hover, fieldset[disabled] .btn-success, fieldset[disabled] .btn-success, fieldset[disabled] .btn-success.active, fieldset[disabled] .btn-success.active, fieldset[disabled] .btn-success:active, fieldset[disabled] .btn-success:active, fieldset[disabled] .btn-success:focus, fieldset[disabled] .btn-success:focus, fieldset[disabled] .btn-success:hover, fieldset[disabled] .btn-success:hover {
     background-color: #5cb85c;
-    border-color: #4cae4c
+    border-color: #4cae4c;
 }
 
-.btn-success .badge {
+.btn-success .badge, .btn-success .badge {
     color: #5cb85c;
-    background-color: #fff
+    background-color: #fff;
 }
 
-.btn-info {
+.btn-info, .btn-info {
     color: #fff;
     background-color: #5bc0de;
-    border-color: #46b8da
+    border-color: #46b8da;
 }
 
-.btn-info.active, .btn-info:active, .btn-info:focus, .btn-info:hover, .open .dropdown-toggle.btn-info {
+.btn-info.active, .btn-info.active, .btn-info:active, .btn-info:active, .btn-info:focus, .btn-info:focus, .btn-info:hover, .btn-info:hover, .open .dropdown-toggle.btn-info, .open .dropdown-toggle.btn-info {
     color: #fff;
     background-color: #39b3d7;
-    border-color: #269abc
+    border-color: #269abc;
 }
 
-.btn-info.active, .btn-info:active, .open .dropdown-toggle.btn-info {
-    background-image: none
+.btn-info.active, .btn-info.active, .btn-info:active, .btn-info:active, .open .dropdown-toggle.btn-info, .open .dropdown-toggle.btn-info {
+    background-image: none;
 }
 
-.btn-info.disabled, .btn-info.disabled.active, .btn-info.disabled:active, .btn-info.disabled:focus, .btn-info.disabled:hover, .btn-info[disabled], .btn-info[disabled].active, .btn-info[disabled]:active, .btn-info[disabled]:focus, .btn-info[disabled]:hover, fieldset[disabled] .btn-info, fieldset[disabled] .btn-info.active, fieldset[disabled] .btn-info:active, fieldset[disabled] .btn-info:focus, fieldset[disabled] .btn-info:hover {
+.btn-info.disabled, .btn-info.disabled, .btn-info.disabled.active, .btn-info.disabled.active, .btn-info.disabled:active, .btn-info.disabled:active, .btn-info.disabled:focus, .btn-info.disabled:focus, .btn-info.disabled:hover, .btn-info.disabled:hover, .btn-info[disabled], .btn-info[disabled], .btn-info[disabled].active, .btn-info[disabled].active, .btn-info[disabled]:active, .btn-info[disabled]:active, .btn-info[disabled]:focus, .btn-info[disabled]:focus, .btn-info[disabled]:hover, .btn-info[disabled]:hover, fieldset[disabled] .btn-info, fieldset[disabled] .btn-info, fieldset[disabled] .btn-info.active, fieldset[disabled] .btn-info.active, fieldset[disabled] .btn-info:active, fieldset[disabled] .btn-info:active, fieldset[disabled] .btn-info:focus, fieldset[disabled] .btn-info:focus, fieldset[disabled] .btn-info:hover, fieldset[disabled] .btn-info:hover {
     background-color: #5bc0de;
-    border-color: #46b8da
+    border-color: #46b8da;
 }
 
-.btn-info .badge {
+.btn-info .badge, .btn-info .badge {
     color: #5bc0de;
-    background-color: #fff
+    background-color: #fff;
 }
 
-.btn-warning {
+.btn-warning, .btn-warning {
     color: #fff;
     background-color: #f0ad4e;
-    border-color: #eea236
+    border-color: #eea236;
 }
 
-.btn-warning.active, .btn-warning:active, .btn-warning:focus, .btn-warning:hover, .open .dropdown-toggle.btn-warning {
+.btn-warning.active, .btn-warning.active, .btn-warning:active, .btn-warning:active, .btn-warning:focus, .btn-warning:focus, .btn-warning:hover, .btn-warning:hover, .open .dropdown-toggle.btn-warning, .open .dropdown-toggle.btn-warning {
     color: #fff;
     background-color: #ed9c28;
-    border-color: #d58512
+    border-color: #d58512;
 }
 
-.btn-warning.active, .btn-warning:active, .open .dropdown-toggle.btn-warning {
-    background-image: none
+.btn-warning.active, .btn-warning.active, .btn-warning:active, .btn-warning:active, .open .dropdown-toggle.btn-warning, .open .dropdown-toggle.btn-warning {
+    background-image: none;
 }
 
-.btn-warning.disabled, .btn-warning.disabled.active, .btn-warning.disabled:active, .btn-warning.disabled:focus, .btn-warning.disabled:hover, .btn-warning[disabled], .btn-warning[disabled].active, .btn-warning[disabled]:active, .btn-warning[disabled]:focus, .btn-warning[disabled]:hover, fieldset[disabled] .btn-warning, fieldset[disabled] .btn-warning.active, fieldset[disabled] .btn-warning:active, fieldset[disabled] .btn-warning:focus, fieldset[disabled] .btn-warning:hover {
+.btn-warning.disabled, .btn-warning.disabled, .btn-warning.disabled.active, .btn-warning.disabled.active, .btn-warning.disabled:active, .btn-warning.disabled:active, .btn-warning.disabled:focus, .btn-warning.disabled:focus, .btn-warning.disabled:hover, .btn-warning.disabled:hover, .btn-warning[disabled], .btn-warning[disabled], .btn-warning[disabled].active, .btn-warning[disabled].active, .btn-warning[disabled]:active, .btn-warning[disabled]:active, .btn-warning[disabled]:focus, .btn-warning[disabled]:focus, .btn-warning[disabled]:hover, .btn-warning[disabled]:hover, fieldset[disabled] .btn-warning, fieldset[disabled] .btn-warning, fieldset[disabled] .btn-warning.active, fieldset[disabled] .btn-warning.active, fieldset[disabled] .btn-warning:active, fieldset[disabled] .btn-warning:active, fieldset[disabled] .btn-warning:focus, fieldset[disabled] .btn-warning:focus, fieldset[disabled] .btn-warning:hover, fieldset[disabled] .btn-warning:hover {
     background-color: #f0ad4e;
-    border-color: #eea236
+    border-color: #eea236;
 }
 
-.btn-warning .badge {
+.btn-warning .badge, .btn-warning .badge {
     color: #f0ad4e;
-    background-color: #fff
+    background-color: #fff;
 }
 
-.btn-danger {
+.btn-danger, .btn-danger {
     color: #fff;
     background-color: #d9534f;
-    border-color: #d43f3a
+    border-color: #d43f3a;
 }
 
-.btn-danger.active, .btn-danger:active, .btn-danger:focus, .btn-danger:hover, .open .dropdown-toggle.btn-danger {
+.btn-danger.active, .btn-danger.active, .btn-danger:active, .btn-danger:active, .btn-danger:focus, .btn-danger:focus, .btn-danger:hover, .btn-danger:hover, .open .dropdown-toggle.btn-danger, .open .dropdown-toggle.btn-danger {
     color: #fff;
     background-color: #d2322d;
-    border-color: #ac2925
+    border-color: #ac2925;
 }
 
-.btn-danger.active, .btn-danger:active, .open .dropdown-toggle.btn-danger {
-    background-image: none
+.btn-danger.active, .btn-danger.active, .btn-danger:active, .btn-danger:active, .open .dropdown-toggle.btn-danger, .open .dropdown-toggle.btn-danger {
+    background-image: none;
 }
 
-.btn-danger.disabled, .btn-danger.disabled.active, .btn-danger.disabled:active, .btn-danger.disabled:focus, .btn-danger.disabled:hover, .btn-danger[disabled], .btn-danger[disabled].active, .btn-danger[disabled]:active, .btn-danger[disabled]:focus, .btn-danger[disabled]:hover, fieldset[disabled] .btn-danger, fieldset[disabled] .btn-danger.active, fieldset[disabled] .btn-danger:active, fieldset[disabled] .btn-danger:focus, fieldset[disabled] .btn-danger:hover {
+.btn-danger.disabled, .btn-danger.disabled, .btn-danger.disabled.active, .btn-danger.disabled.active, .btn-danger.disabled:active, .btn-danger.disabled:active, .btn-danger.disabled:focus, .btn-danger.disabled:focus, .btn-danger.disabled:hover, .btn-danger.disabled:hover, .btn-danger[disabled], .btn-danger[disabled], .btn-danger[disabled].active, .btn-danger[disabled].active, .btn-danger[disabled]:active, .btn-danger[disabled]:active, .btn-danger[disabled]:focus, .btn-danger[disabled]:focus, .btn-danger[disabled]:hover, .btn-danger[disabled]:hover, fieldset[disabled] .btn-danger, fieldset[disabled] .btn-danger, fieldset[disabled] .btn-danger.active, fieldset[disabled] .btn-danger.active, fieldset[disabled] .btn-danger:active, fieldset[disabled] .btn-danger:active, fieldset[disabled] .btn-danger:focus, fieldset[disabled] .btn-danger:focus, fieldset[disabled] .btn-danger:hover, fieldset[disabled] .btn-danger:hover {
     background-color: #d9534f;
-    border-color: #d43f3a
+    border-color: #d43f3a;
 }
 
-.btn-danger .badge {
+.btn-danger .badge, .btn-danger .badge {
     color: #d9534f;
-    background-color: #fff
+    background-color: #fff;
 }
 
-.btn-link {
+.btn-link, .btn-link {
     font-weight: 400;
     color: #428bca;
     cursor: pointer;
-    border-radius: 0
+    border-radius: 0;
 }
 
-.btn-link, .btn-link:active, .btn-link[disabled], fieldset[disabled] .btn-link {
+.btn-link, .btn-link, .btn-link:active, .btn-link:active, .btn-link[disabled], .btn-link[disabled], fieldset[disabled] .btn-link, fieldset[disabled] .btn-link {
     background-color: transparent;
     -webkit-box-shadow: none;
-    box-shadow: none
+    box-shadow: none;
 }
 
-.btn-link, .btn-link:active, .btn-link:focus, .btn-link:hover {
-    border-color: transparent
+.btn-link, .btn-link, .btn-link:active, .btn-link:active, .btn-link:focus, .btn-link:focus, .btn-link:hover, .btn-link:hover {
+    border-color: transparent;
 }
 
-.btn-link:focus, .btn-link:hover {
+.btn-link:focus, .btn-link:focus, .btn-link:hover, .btn-link:hover {
     color: #2a6496;
     text-decoration: underline;
-    background-color: transparent
+    background-color: transparent;
 }
 
-.btn-link[disabled]:focus, .btn-link[disabled]:hover, fieldset[disabled] .btn-link:focus, fieldset[disabled] .btn-link:hover {
+.btn-link[disabled]:focus, .btn-link[disabled]:focus, .btn-link[disabled]:hover, .btn-link[disabled]:hover, fieldset[disabled] .btn-link:focus, fieldset[disabled] .btn-link:focus, fieldset[disabled] .btn-link:hover, fieldset[disabled] .btn-link:hover {
     color: #999;
-    text-decoration: none
+    text-decoration: none;
 }
 
-.btn-group-lg > .btn, .btn-lg {
+.btn-group-lg > .btn, .btn-group-lg > .btn, .btn-lg, .btn-lg {
     padding: 10px 16px;
     font-size: 18px;
     line-height: 1.33;
-    border-radius: 6px
+    border-radius: 6px;
 }
 
-.btn-group-sm > .btn, .btn-sm {
+.btn-group-sm > .btn, .btn-group-sm > .btn, .btn-sm, .btn-sm {
     padding: 5px 10px;
     font-size: 12px;
     line-height: 1.5;
-    border-radius: 3px
+    border-radius: 3px;
 }
 
-.btn-group-xs > .btn, .btn-xs {
+.btn-group-xs > .btn, .btn-group-xs > .btn, .btn-xs, .btn-xs {
     padding: 1px 5px;
     font-size: 12px;
     line-height: 1.5;
-    border-radius: 3px
+    border-radius: 3px;
 }
 
 .btn-block {
     display: block;
     width: 100%;
     padding-right: 0;
-    padding-left: 0
+    padding-left: 0;
 }
 
 .btn-block + .btn-block {
-    margin-top: 5px
+    margin-top: 5px;
 }
 
-input[type=button].btn-block, input[type=reset].btn-block, input[type=submit].btn-block {
-    width: 100%
+input[type=button].btn-block, input[type=button].btn-block, input[type=reset].btn-block, input[type=reset].btn-block, input[type=submit].btn-block, input[type=submit].btn-block {
+    width: 100%;
 }
 
-/* contrexx customizings */
-.modal .btn-primary, .btn-primary {
+.modal .btn-primary .btn-primary {
     background-color: #0a85c8;
-    border-color: #0a85c8
+    border-color: #0a85c8;
 }
 
 .btn {
     border-radius: 0;
-    padding: 5px 13px
+    padding: 5px 13px;
 }
 
-.btn-primary.active, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open .dropdown-toggle.btn-primary {
+.btn-primary.active .btn-primary:active, .btn-primary:active, .btn-primary:focus, .btn-primary:focus, .btn-primary:hover, .btn-primary:hover, .open .dropdown-toggle.btn-primary {
     border-color: #3276b1;
 }
 
@@ -1119,283 +934,257 @@ input[type=button].btn-block, input[type=reset].btn-block, input[type=submit].bt
     border-radius: 0;
 }
 
-.progress-bar {
+.progress-bar, .progress-bar {
     background-color: #3276b1;
 }
 
-.progress-bar-danger {
-    background-color: #d9534f
+.progress-bar-danger, .progress-bar-danger {
+    background-color: #d9534f;
 }
 
-.progress-striped .progress-bar-danger {
+.uploader-modal .progress-striped .progress-bar-danger, .media-browser-modal-window .progress-striped .progress-bar-danger {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
     background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent)
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
 }
 
-/* mediabrowser Icons: */
-.icon-loading, .icon-addfolder, .icon-refresh, .icon-fileType, .icon-dropzone, .icon-fileTypeImage, .icon-fileTypePdf, .icon-fileTypePresentation, .icon-fileTypeSpreadsheet, .icon-fileTypeText, .icon-fileTypeTextdocument, .icon-fileTypeUnknown, .icon-fileTypeVideo, .icon-folder, .icon-folderHover, .icon-folderLarge, .icon-sitestructure, .icon-sitestructureLarge, .icon-sitestrukturHover, .icon-upload, .icon-uploadHover, .icon-uploadLarge {
-    background: url(../Media/Icons/sprites.png) no-repeat;
-    display: inline-block
+.uploader-modal .icon-loading, .media-browser-modal-window .icon-loading, .uploader-modal .icon-addfolder, .media-browser-modal-window .icon-addfolder, .uploader-modal .icon-refresh, .media-browser-modal-window .icon-refresh, .uploader-modal .icon-fileType, .media-browser-modal-window .icon-fileType, .uploader-modal .icon-dropzone, .media-browser-modal-window .icon-dropzone, .uploader-modal .icon-fileTypeImage, .media-browser-modal-window .icon-fileTypeImage, .uploader-modal .icon-fileTypePdf, .media-browser-modal-window .icon-fileTypePdf, .uploader-modal .icon-fileTypePresentation, .media-browser-modal-window .icon-fileTypePresentation, .uploader-modal .icon-fileTypeSpreadsheet, .media-browser-modal-window .icon-fileTypeSpreadsheet, .uploader-modal .icon-fileTypeText, .media-browser-modal-window .icon-fileTypeText, .uploader-modal .icon-fileTypeTextdocument, .media-browser-modal-window .icon-fileTypeTextdocument, .uploader-modal .icon-fileTypeUnknown, .media-browser-modal-window .icon-fileTypeUnknown, .uploader-modal .icon-fileTypeVideo, .media-browser-modal-window .icon-fileTypeVideo, .uploader-modal .icon-folder, .media-browser-modal-window .icon-folder, .uploader-modal .icon-folderHover, .media-browser-modal-window .icon-folderHover, .uploader-modal .icon-folderLarge, .media-browser-modal-window .icon-folderLarge, .uploader-modal .icon-sitestructure, .media-browser-modal-window .icon-sitestructure, .uploader-modal .icon-sitestructureLarge, .media-browser-modal-window .icon-sitestructureLarge, .uploader-modal .icon-sitestrukturHover, .media-browser-modal-window .icon-sitestrukturHover, .uploader-modal .icon-upload, .media-browser-modal-window .icon-upload, .uploader-modal .icon-uploadHover, .media-browser-modal-window .icon-uploadHover, .uploader-modal .icon-uploadLarge, .media-browser-modal-window .icon-uploadLarge {
+    background: url("../Media/Icons/sprites.png") no-repeat;
+    display: inline-block;
 }
 
-.icon-sitestructure {
+.uploader-modal .icon-sitestructure, .media-browser-modal-window .icon-sitestructure {
     background-position: -210px -17px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-sitestructureLarge {
+.uploader-modal .icon-sitestructureLarge, .media-browser-modal-window .icon-sitestructureLarge {
     background-position: -102px 0;
     width: 36px;
-    height: 34px
+    height: 34px;
 }
 
-.icon-sitestrukturHover {
+.uploader-modal .icon-sitestrukturHover, .media-browser-modal-window .icon-sitestrukturHover {
     background-position: -156px -35px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-folder {
+.uploader-modal .icon-folder, .media-browser-modal-window .icon-folder {
     background-position: -193px -34px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-folderHover {
+.uploader-modal .icon-folderHover, .media-browser-modal-window .icon-folderHover {
     background-position: -193px -51px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-folderLarge {
+.uploader-modal .icon-folderLarge, .media-browser-modal-window .icon-folderLarge {
     background-position: -102px -35px;
     width: 36px;
-    height: 34px
+    height: 34px;
 }
 
-.icon-dropzone {
+.uploader-modal .icon-dropzone, .media-browser-modal-window .icon-dropzone {
     margin-left: 21px;
     background-position: 0 0;
     width: 101px;
-    height: 74px
+    height: 74px;
 }
 
-.icon-upload {
+.uploader-modal .icon-upload, .media-browser-modal-window .icon-upload {
     background-position: -176px 0;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-upload:hover {
+.uploader-modal .icon-upload:hover, .media-browser-modal-window .icon-upload:hover {
     background-position: -176px -34px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-uploadLarge {
+.uploader-modal .icon-uploadLarge, .media-browser-modal-window .icon-uploadLarge {
     background-position: -139px 0;
     width: 36px;
-    height: 34px
+    height: 34px;
 }
 
-.icon-loading {
-    background: url(../Media/Icons/ajax_load.gif) no-repeat;
+.uploader-modal .icon-loading, .media-browser-modal-window .icon-loading {
+    background: url("../Media/Icons/ajax_load.gif") no-repeat;
     width: 128px;
-    height: 128px
+    height: 128px;
 }
 
-.icon-addfolder {
-    background: url(../Media/Icons/addfolder.png) no-repeat;
+.uploader-modal .icon-addfolder, .media-browser-modal-window .icon-addfolder {
+    background: url("../Media/Icons/addfolder.png") no-repeat;
     width: 32px;
-    height: 32px
+    height: 32px;
 }
 
-.icon-refresh {
-    background: url(../Media/Icons/refreshFolder.png) no-repeat;
+.uploader-modal .icon-refresh, .media-browser-modal-window .icon-refresh {
+    background: url("../Media/Icons/refreshFolder.png") no-repeat;
     width: 32px;
-    height: 32px
+    height: 32px;
 }
 
-.renameFile, .removeFile {
+.uploader-modal .renameFile, .media-browser-modal-window .renameFile, .uploader-modal .removeFile, .media-browser-modal-window .removeFile {
     position: relative;
     padding-left: 18px;
     margin-right: 5px;
 }
 
-table.adminlist.filelist .actions .renameFile:hover, table.adminlist.filelist .actions .removeFile:hover {
-    color: #222222;
+.uploader-modal table.adminlist.filelist .actions .renameFile:hover, .media-browser-modal-window table.adminlist.filelist .actions .renameFile:hover, .uploader-modal table.adminlist.filelist .actions .removeFile:hover, .media-browser-modal-window table.adminlist.filelist .actions .removeFile:hover {
+    color: #222;
 }
 
-.removeFile:before {
-    background: url(../Media/Icons/remove.png) no-repeat;
+.uploader-modal .removeFile:before, .media-browser-modal-window .removeFile:before {
+    background: url("../Media/Icons/remove.png") no-repeat;
     background-size: 16px;
     width: 16px;
     height: 16px;
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     top: 0;
 }
 
-.renameFile:before {
-    background: url(../Media/Icons/rename.png) no-repeat;
+.uploader-modal .renameFile:before, .media-browser-modal-window .renameFile:before {
+    background: url("../Media/Icons/rename.png") no-repeat;
     background-size: 16px;
     width: 16px;
     height: 16px;
-    content: '';
+    content: "";
     position: absolute;
     left: -1px;
     top: 0;
-
 }
 
-/* ADD YOUR FILEICONS HERE */
-/* standard */
-.icon-fileType {
+.uploader-modal .icon-fileType, .media-browser-modal-window .icon-fileType {
     background-position: -193px 0;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-/* specials */
-.icon-fileTypePptx, .icon-fileTypePpt {
+.uploader-modal .icon-fileTypePptx, .media-browser-modal-window .icon-fileTypePptx, .uploader-modal .icon-fileTypePpt, .media-browser-modal-window .icon-fileTypePpt {
     background-position: -139px -52px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-fileTypeXls, .icon-fileTypeXlsx {
+.uploader-modal .icon-fileTypeXls, .media-browser-modal-window .icon-fileTypeXls, .uploader-modal .icon-fileTypeXlsx, .media-browser-modal-window .icon-fileTypeXlsx {
     background-position: -210px 0;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-fileTypeTxt {
+.uploader-modal .icon-fileTypeTxt, .media-browser-modal-window .icon-fileTypeTxt {
     background-position: -176px -51px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-fileTypeDoc, .icon-fileTypeDocx, .icon-fileTypeOdt {
+.uploader-modal .icon-fileTypeDoc, .media-browser-modal-window .icon-fileTypeDoc, .uploader-modal .icon-fileTypeDocx, .media-browser-modal-window .icon-fileTypeDocx, .uploader-modal .icon-fileTypeOdt, .media-browser-modal-window .icon-fileTypeOdt {
     background-position: -156px -52px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-fileTypeVideo {
+.uploader-modal .icon-fileTypeVideo, .media-browser-modal-window .icon-fileTypeVideo {
     background-position: -139px -35px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-fileTypePng, .icon-fileTypeGif, .icon-fileTypeJpeg, .icon-fileTypeJpg {
+.uploader-modal .icon-fileTypePng, .media-browser-modal-window .icon-fileTypePng, .uploader-modal .icon-fileTypeGif, .media-browser-modal-window .icon-fileTypeGif, .uploader-modal .icon-fileTypeJpeg, .media-browser-modal-window .icon-fileTypeJpeg, .uploader-modal .icon-fileTypeJpg, .media-browser-modal-window .icon-fileTypeJpg {
     background-position: -193px -17px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-fileTypeDir {
+.uploader-modal .icon-fileTypeDir, .media-browser-modal-window .icon-fileTypeDir {
     background-position: -193px -34px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-.icon-fileTypePdf {
+.uploader-modal .icon-fileTypePdf, .media-browser-modal-window .icon-fileTypePdf {
     background-position: -176px -17px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-/* mediabrowser Icons hover*/
-li.active-tab .icon-upload, a:hover .icon-upload {
+.uploader-modal li.active-tab .icon-upload, .media-browser-modal-window li.active-tab .icon-upload, .uploader-modal a:hover .icon-upload, .media-browser-modal-window a:hover .icon-upload {
     background-position: -176px -34px;
     width: 16px;
     height: 16px;
 }
 
-li.active-tab .icon-sitestructure, a:hover .icon-sitestructure {
+.uploader-modal li.active-tab .icon-sitestructure, .media-browser-modal-window li.active-tab .icon-sitestructure, .uploader-modal a:hover .icon-sitestructure, .media-browser-modal-window a:hover .icon-sitestructure {
     background-position: -156px -35px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-li.active-tab .icon-folder, a:hover .icon-folder {
+.uploader-modal li.active-tab .icon-folder, .media-browser-modal-window li.active-tab .icon-folder, .uploader-modal a:hover .icon-folder, .media-browser-modal-window a:hover .icon-folder {
     background-position: -193px -51px;
     width: 16px;
-    height: 16px
+    height: 16px;
 }
 
-/* MediaBrowser CSS by Tobias Schmoker - <tobias.schmoker@comvation.com> */
-
-.media-browser-modal-upload, .media-browser-modal {
+.uploader-modal .media-browser-modal-upload, .media-browser-modal-window .media-browser-modal-upload, .uploader-modal .media-browser-modal, .media-browser-modal-window .media-browser-modal {
     padding-top: 8%;
 }
 
-.media-browser-modal {
-    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
-    -moz-user-select: none; /* mozilla browsers */
-    -khtml-user-select: none; /* webkit (konqueror) browsers */
-    -ms-user-select: none; /* IE10+ */
-    user-select: none; /* IE10+ */
+.uploader-modal .media-browser-modal, .media-browser-modal-window .media-browser-modal {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-.media-browser-modal-upload, .media-browser-modal .modal-content {
+.uploader-modal .media-browser-modal-upload, .media-browser-modal-window .media-browser-modal-upload, .uploader-modal .media-browser-modal .modal-content, .media-browser-modal-window .media-browser-modal .modal-content {
     border-radius: 0;
 }
 
-.media-browser-modal .modal-dialog {
+.uploader-modal .media-browser-modal .modal-dialog, .media-browser-modal-window .media-browser-modal .modal-dialog {
     width: 90%;
     max-width: 1024px;
 }
 
-.modal-backdrop {
-    background-color: white;
-}
-
-.modal-title {
-    font-size: 20px;
-    font-weight: lighter;
-}
-
-.modal-header {
-    background-color: #f5f5f5
-}
-
-.modal-header .close {
-    margin-top: 7px;
-}
-
-.mediaBrowserMain {
+.uploader-modal .mediaBrowserMain, .media-browser-modal-window .mediaBrowserMain {
     position: relative;
     width: 100%;
-    font-size: 0; /* inline-block space deletion */
+    font-size: 0;
 }
 
-.mediaBrowserNavigation, .mediaBrowserContent {
+.uploader-modal .mediaBrowserNavigation, .media-browser-modal-window .mediaBrowserNavigation, .uploader-modal .mediaBrowserContent, .media-browser-modal-window .mediaBrowserContent {
     font-size: 1rem;
     vertical-align: top;
     display: inline-block;
-    height: 585px
+    height: 585px;
 }
 
-/* Navigation */
-.mediaBrowserNavigation /* nav -> ul */      {
-    font-size: 14px; /* fallback */
+.uploader-modal .mediaBrowserNavigation, .media-browser-modal-window .mediaBrowserNavigation {
+    font-size: 14px;
     font-size: 1.2rem;
     width: 180px;
     border-right: 1px solid #e5e5e5;
 }
 
-.mediaBrowserNavigation ul {
+.uploader-modal .mediaBrowserNavigation ul, .media-browser-modal-window .mediaBrowserNavigation ul {
     padding: 0;
     list-style: none;
     margin: 18px 0 0;
     height: 521px;
 }
 
-.mediaBrowserNavigation > ul li a {
+.uploader-modal .mediaBrowserNavigation > ul li a, .media-browser-modal-window .mediaBrowserNavigation > ul li a {
     display: block;
     position: relative;
     padding: 10px 20px;
@@ -1403,18 +1192,18 @@ li.active-tab .icon-folder, a:hover .icon-folder {
     color: black;
 }
 
-.mediaBrowserNavigation > ul li a:hover, .mediaBrowserNavigation > ul li.active-tab a {
+.uploader-modal .mediaBrowserNavigation > ul li a:hover, .media-browser-modal-window .mediaBrowserNavigation > ul li a:hover, .uploader-modal .mediaBrowserNavigation > ul li.active-tab a, .media-browser-modal-window .mediaBrowserNavigation > ul li.active-tab a {
     background-color: #0a85c8;
     color: white;
 }
 
-.mediaBrowserNavigation i {
+.uploader-modal .mediaBrowserNavigation i, .media-browser-modal-window .mediaBrowserNavigation i {
     top: 2px;
     position: relative;
     right: 5px;
 }
 
-.mediaBrowserNavigation select {
+.uploader-modal .mediaBrowserNavigation select, .media-browser-modal-window .mediaBrowserNavigation select {
     height: 31px;
     width: 86%;
     margin: 0 7%;
@@ -1422,242 +1211,237 @@ li.active-tab .icon-folder, a:hover .icon-folder {
     padding: 5px;
 }
 
-.mediaBrowserContent {
+.uploader-modal .mediaBrowserContent, .media-browser-modal-window .mediaBrowserContent {
     display: inline-block;
     width: calc(100% - 181px);
-
 }
 
-/* TabSystem */
-.mediaBrowserContent .tab-pane {
+.uploader-modal .mediaBrowserContent .tab-pane, .media-browser-modal-window .mediaBrowserContent .tab-pane {
     width: 100%;
 }
 
-.mediaBrowserContent .tab-pane.active-tab {
+.uploader-modal .mediaBrowserContent .tab-pane.active-tab, .media-browser-modal-window .mediaBrowserContent .tab-pane.active-tab {
     display: inline-block;
 }
 
-.tabMediaBrowserHeader {
-    font-size: 21px; /* fallback */
+.uploader-modal .tabMediaBrowserHeader, .media-browser-modal-window .tabMediaBrowserHeader {
+    font-size: 21px;
     font-size: 1.75rem;
     border-bottom: 1px solid #e5e5e5;
     padding: 6px 20px;
     padding-bottom: 17px;
 }
 
-.tabMediaBrowserHeader i {
+.uploader-modal .tabMediaBrowserHeader i, .media-browser-modal-window .tabMediaBrowserHeader i {
     position: relative;
     top: 9px;
     margin-right: 8px;
 }
 
-/* BreadCrumbs */
-.tabMediaBrowserBreadcrumbs {
+.uploader-modal .tabMediaBrowserBreadcrumbs, .media-browser-modal-window .tabMediaBrowserBreadcrumbs {
     border-bottom: 1px solid #e5e5e5;
 }
 
-.tabMediaBrowserBreadcrumbs > ul {
+.uploader-modal .tabMediaBrowserBreadcrumbs > ul, .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul {
     height: 7px;
     padding-left: 24px;
     list-style: none;
 }
 
-.tabMediaBrowserBreadcrumbs > ul li {
+.uploader-modal .tabMediaBrowserBreadcrumbs > ul li, .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li {
     display: inline-block;
     float: left;
     width: auto;
-    /*background: url(../images/breadcrumb_list_style.jpg) no-repeat left center;*/
     padding: 0 0 0 2px;
     margin: 0;
-
-    font-size: 12px; /* fallback */
+    font-size: 12px;
     font-size: 1rem;
     line-height: 8px;
 }
 
-.tabMediaBrowserBreadcrumbs li:before {
-    content: '> '
+.uploader-modal .tabMediaBrowserBreadcrumbs li:before, .media-browser-modal-window .tabMediaBrowserBreadcrumbs li:before {
+    content: "> ";
 }
 
-.tabMediaBrowserBreadcrumbs li:first-child:before {
-    content: ' '
+.uploader-modal .tabMediaBrowserBreadcrumbs li:first-child:before, .media-browser-modal-window .tabMediaBrowserBreadcrumbs li:first-child:before {
+    content: " ";
 }
 
-.tabMediaBrowserBreadcrumbs > ul li a {
+.uploader-modal .tabMediaBrowserBreadcrumbs > ul li a, .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li a {
     color: #7c7c7c;
     text-decoration: none;
 }
 
-.tabMediaBrowserBreadcrumbs > ul li:last-child a {
+.uploader-modal .tabMediaBrowserBreadcrumbs > ul li:last-child a, .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li:last-child a {
     font-weight: bold;
 }
 
-.tabMediaBrowserBreadcrumbs > ul li a:hover, .tabMediaBrowserBreadcrumbs > ul li.active a {
+.uploader-modal .tabMediaBrowserBreadcrumbs > ul li a:hover, .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li a:hover, .uploader-modal .tabMediaBrowserBreadcrumbs > ul li.active a, .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li.active a {
     color: black;
     text-decoration: none;
 }
 
-.tabMediaBrowserContent {
+.uploader-modal .tabMediaBrowserContent, .media-browser-modal-window .tabMediaBrowserContent {
     height: 490px;
 }
 
-#sitestructure .tabMediaBrowserContent {
+.uploader-modal #sitestructure .tabMediaBrowserContent, .media-browser-modal-window #sitestructure .tabMediaBrowserContent {
     height: 452px;
 }
 
-/* Footer */
-.tabMediaBrowserFooter {
+.uploader-modal .tabMediaBrowserFooter, .media-browser-modal-window .tabMediaBrowserFooter {
     border-top: 1px solid #e5e5e5;
     vertical-align: bottom;
     padding: 14px;
 }
 
-/* no-navigation */
-.no-nav .mediaBrowserNavigation {
-    display: none
+.uploader-modal .no-nav .mediaBrowserNavigation, .media-browser-modal-window .no-nav .mediaBrowserNavigation {
+    display: none;
 }
 
-.no-nav .mediaBrowserContent {
-    width: 100%
+.uploader-modal .no-nav .mediaBrowserContent, .media-browser-modal-window .no-nav .mediaBrowserContent {
+    width: 100%;
 }
 
-/* dropzone & loading */
-.uploadPlatform, .loadingPlatform {
+.uploader-modal .uploadPlatform, .media-browser-modal-window .uploadPlatform, .uploader-modal .loadingPlatform, .media-browser-modal-window .loadingPlatform {
     text-align: center;
     padding-top: 140px;
     width: 80%;
     margin: auto;
 }
 
-.uploadPlatform {
+.uploader-modal .loadingPlatform, .media-browser-modal-window .loadingPlatform {
+    position: absolute;
+    background: #fff;
+    z-index: 10;
+}
+
+.uploader-modal .uploadPlatform, .media-browser-modal-window .uploadPlatform {
     padding-top: 60px;
     padding-bottom: 60px;
 }
 
-.loadingPlatform {
+.uploader-modal .loadingPlatform, .media-browser-modal-window .loadingPlatform {
     display: none;
 }
 
-.dropzoneText1, .dropzoneText2, .loadingText1, .loadingText2 {
+.uploader-modal .dropzoneText1, .media-browser-modal-window .dropzoneText1, .uploader-modal .dropzoneText2, .media-browser-modal-window .dropzoneText2, .uploader-modal .loadingText1, .media-browser-modal-window .loadingText1, .uploader-modal .loadingText2, .media-browser-modal-window .loadingText2 {
     margin: 5px 0;
     font-size: 31px;
     font-weight: normal;
-    color: #aaaaaa;
+    color: #aaa;
 }
 
-.loadingText2, .dropzoneText2 {
+.uploader-modal .loadingText2, .media-browser-modal-window .loadingText2, .uploader-modal .dropzoneText2, .media-browser-modal-window .dropzoneText2 {
     font-size: 18px;
 }
 
-/* filebrowser */
-table.adminlist.filelist {
+.uploader-modal table.adminlist.filelist, .media-browser-modal-window table.adminlist.filelist {
     width: 94%;
     margin: 20px 3% 0;
     font-size: 14px;
 }
 
-table.adminlist.filelist tr th:last-child {
+.uploader-modal table.adminlist.filelist tr th:last-child, .media-browser-modal-window table.adminlist.filelist tr th:last-child {
     text-align: right;
 }
 
-table.adminlist.filelist .actions a {
+.uploader-modal table.adminlist.filelist .actions a, .media-browser-modal-window table.adminlist.filelist .actions a {
     font-size: 12px;
     color: #7a7a7a;
 }
 
-table.adminlist.filelist .actions {
+.uploader-modal table.adminlist.filelist .actions, .media-browser-modal-window table.adminlist.filelist .actions {
     text-align: right;
 }
 
-.adminlist.filelist i {
-    margin-top: 3px
+.uploader-modal .adminlist.filelist i, .media-browser-modal-window .adminlist.filelist i {
+    margin-top: 3px;
 }
 
-.adminlist.filelist a:hover {
+.uploader-modal .adminlist.filelist a:hover, .media-browser-modal-window .adminlist.filelist a:hover {
     text-decoration: none;
 }
 
-.adminlist td.fileSize {
+.uploader-modal .adminlist td.fileSize, .media-browser-modal-window .adminlist td.fileSize {
     text-align: right;
 }
 
-.mediaBrowserListCtrl, .sitestructureCtrl {
+.uploader-modal .mediaBrowserListCtrl, .media-browser-modal-window .mediaBrowserListCtrl, .uploader-modal .sitestructureCtrl, .media-browser-modal-window .sitestructureCtrl {
     overflow-y: scroll;
     height: 100%;
 }
 
-.mediaBrowserListCtrl::-webkit-scrollbar, .sitestructureCtrl::-webkit-scrollbar {
+.uploader-modal .mediaBrowserListCtrl::-webkit-scrollbar, .media-browser-modal-window .mediaBrowserListCtrl::-webkit-scrollbar, .uploader-modal .sitestructureCtrl::-webkit-scrollbar, .media-browser-modal-window .sitestructureCtrl::-webkit-scrollbar {
     width: 10px;
-    height: 10px
+    height: 10px;
 }
 
-.mediaBrowserListCtrl::-webkit-scrollbar-track-piece, .sitestructureCtrl::-webkit-scrollbar-track-piece {
-    background-color: #ffffff;
+.uploader-modal .mediaBrowserListCtrl::-webkit-scrollbar-track-piece, .media-browser-modal-window .mediaBrowserListCtrl::-webkit-scrollbar-track-piece, .uploader-modal .sitestructureCtrl::-webkit-scrollbar-track-piece, .media-browser-modal-window .sitestructureCtrl::-webkit-scrollbar-track-piece {
+    background-color: #fff;
 }
 
-.mediaBrowserListCtrl::-webkit-scrollbar-thumb:vertical, .sitestructureCtrl::-webkit-scrollbar-thumb:vertical {
+.uploader-modal .mediaBrowserListCtrl::-webkit-scrollbar-thumb:vertical, .media-browser-modal-window .mediaBrowserListCtrl::-webkit-scrollbar-thumb:vertical, .uploader-modal .sitestructureCtrl::-webkit-scrollbar-thumb:vertical, .media-browser-modal-window .sitestructureCtrl::-webkit-scrollbar-thumb:vertical {
     height: 10px;
     background-color: #666;
 }
 
-.mediaBrowserListCtrl::-webkit-scrollbar-thumb:horizontal, .sitestructureCtrl::-webkit-scrollbar-thumb:horizontal {
+.uploader-modal .mediaBrowserListCtrl::-webkit-scrollbar-thumb:horizontal, .media-browser-modal-window .mediaBrowserListCtrl::-webkit-scrollbar-thumb:horizontal, .uploader-modal .sitestructureCtrl::-webkit-scrollbar-thumb:horizontal, .media-browser-modal-window .sitestructureCtrl::-webkit-scrollbar-thumb:horizontal {
     width: 10px;
     background-color: #666;
 }
 
-.uploadFiles {
+.uploader-modal .uploadFiles, .media-browser-modal-window .uploadFiles {
     margin-left: -54px;
     list-style: none;
 }
 
-.uploadFiles li {
+.uploader-modal .uploadFiles li, .media-browser-modal-window .uploadFiles li {
     display: block;
 }
 
-.uploadFiles li:after {
+.uploader-modal .uploadFiles li:after, .media-browser-modal-window .uploadFiles li:after {
     content: ", ";
 }
 
-.uploadFiles li:last-child:after {
-    content: ""
+.uploader-modal .uploadFiles li:last-child:after, .media-browser-modal-window .uploadFiles li:last-child:after {
+    content: "";
 }
 
-/* sitestructure css */
-.col-name, .col-icon {
+.uploader-modal .col-name, .media-browser-modal-window .col-name, .uploader-modal .col-icon, .media-browser-modal-window .col-icon {
     display: inline-block;
     min-width: 10px;
     padding: 4px;
     vertical-align: middle;
 }
 
-.data-row {
+.uploader-modal .data-row, .media-browser-modal-window .data-row {
     white-space: nowrap;
     font-size: 14px;
     line-height: 20px;
     width: 94%;
     margin: 1px 3%;
-
     border-bottom: 1px solid #e5e5e5;
 }
 
-.data-row a:hover {
+.uploader-modal .data-row a:hover, .media-browser-modal-window .data-row a:hover {
     text-decoration: none;
-    color: #0b4c7a
+    color: #0b4c7a;
 }
 
-.modal-drag-overlay, .modal-content {
-    -webkit-transition: all 0.2s ease;
-    -moz-transition: all 0.2s ease;
-    -o-transition: all 0.2s ease;
-    transition: all 0.2s ease
+.uploader-modal .modal-drag-overlay, .media-browser-modal-window .modal-drag-overlay, .uploader-modal .modal-content, .media-browser-modal-window .modal-content {
+    -webkit-transition: all .2s ease;
+    -moz-transition: all .2s ease;
+    -o-transition: all .2s ease;
+    transition: all .2s ease;
 }
 
-.fileOptions {
+.uploader-modal .fileOptions, .media-browser-modal-window .fileOptions {
     border-bottom: 1px solid #e5e5e5;
     padding: 0 20px 20px;
 }
 
-input#fileSearch {
+.uploader-modal input#fileSearch, .media-browser-modal-window input#fileSearch {
     margin-top: 20px;
     display: inline-block;
     width: 25%;
@@ -1667,7 +1451,6 @@ input#fileSearch {
     background-color: #fff;
     background-image: none;
     border: 1px solid #ccc;
-
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
     -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
@@ -1675,26 +1458,26 @@ input#fileSearch {
     font-family: inherit;
 }
 
-input#fileSearch:focus {
+.uploader-modal input#fileSearch:focus, .media-browser-modal-window input#fileSearch:focus {
     border-color: #0a85c8;
     outline: 0;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
 }
 
-.fileActions {
+.uploader-modal .fileActions, .media-browser-modal-window .fileActions {
     display: inline-block;
     position: absolute;
     right: 32px;
     top: 44px;
 }
 
-.fileActions > ul {
+.uploader-modal .fileActions > ul, .media-browser-modal-window .fileActions > ul {
     height: 7px;
     list-style: none;
 }
 
-.fileActions > ul li {
+.uploader-modal .fileActions > ul li, .media-browser-modal-window .fileActions > ul li {
     display: inline-block;
     float: left;
     padding: 0 0 0 5px;
@@ -1702,15 +1485,15 @@ input#fileSearch:focus {
     margin-top: -5px;
 }
 
-.fileActions > ul li a {
+.uploader-modal .fileActions > ul li a, .media-browser-modal-window .fileActions > ul li a {
     text-decoration: none;
 }
 
-.contentWithOptions {
+.uploader-modal .contentWithOptions, .media-browser-modal-window .contentWithOptions {
     height: 421px;
 }
 
-table.adminlist .text-right, .text-right {
+.uploader-modal table.adminlist .text-right, .media-browser-modal-window table.adminlist .text-right, .uploader-modal .text-right, .media-browser-modal-window .text-right {
     text-align: right;
 }
 
@@ -1729,194 +1512,193 @@ table.adminlist .text-right, .text-right {
 #mediabrowser-renamefile .file-extension {
     width: 20%;
     display: inline-block;
-
 }
 
-span.fileActions-text {
+.uploader-modal span.fileActions-text, .media-browser-modal-window span.fileActions-text {
     display: none;
     vertical-align: top;
     padding: 11px 0 0 0;
-    color: #3D3D3D;
+    color: #3d3d3d;
 }
 
 @media (min-width: 1024px) {
-    span.fileActions-text {
+    .uploader-modal span.fileActions-text, .media-browser-modal-window span.fileActions-text {
         display: inline-block;
     }
 }
 
-.col-icon {
-    -webkit-transition: 0.3s padding;
-    -moz-transition: 0.3s padding;
-    -ms-transition: 0.3s padding;
-    -o-transition: 0.3s padding;
-    transition: 0.3s padding;
+.uploader-modal .col-icon, .media-browser-modal-window .col-icon {
+    -webkit-transition: .3s padding;
+    -moz-transition: .3s padding;
+    -ms-transition: .3s padding;
+    -o-transition: .3s padding;
+    transition: .3s padding;
 }
 
-.col-icon.level_1 {
+.uploader-modal .col-icon.level_1, .media-browser-modal-window .col-icon.level_1 {
     padding-left: 30px;
 }
 
-.col-icon.level_2 {
+.uploader-modal .col-icon.level_2, .media-browser-modal-window .col-icon.level_2 {
     padding-left: 60px;
 }
 
-.col-icon.level_3 {
+.uploader-modal .col-icon.level_3, .media-browser-modal-window .col-icon.level_3 {
     padding-left: 90px;
 }
 
-.col-icon.level_4 {
+.uploader-modal .col-icon.level_4, .media-browser-modal-window .col-icon.level_4 {
     padding-left: 120px;
 }
 
-.col-icon.level_5 {
+.uploader-modal .col-icon.level_5, .media-browser-modal-window .col-icon.level_5 {
     padding-left: 150px;
 }
 
-.col-icon.level_6 {
+.uploader-modal .col-icon.level_6, .media-browser-modal-window .col-icon.level_6 {
     padding-left: 180px;
 }
 
-.col-icon.filtered {
+.uploader-modal .col-icon.filtered, .media-browser-modal-window .col-icon.filtered {
     padding-left: 0;
 }
 
-.animation {
-    -webkit-transition: 0.5s opacity;
-    -moz-transition: 0.5s opacity;
-    -ms-transition: 0.5s opacity;
-    -o-transition: 0.5s opacity;
-    transition: 0.5s opacity;
+.uploader-modal .animation, .media-browser-modal-window .animation {
+    -webkit-transition: .5s opacity;
+    -moz-transition: .5s opacity;
+    -ms-transition: .5s opacity;
+    -o-transition: .5s opacity;
+    transition: .5s opacity;
 }
 
-.animation.ng-enter {
+.uploader-modal .animation.ng-enter, .media-browser-modal-window .animation.ng-enter {
     opacity: 0;
 }
 
-.animation.ng-leave {
+.uploader-modal .animation.ng-leave, .media-browser-modal-window .animation.ng-leave {
     opacity: 1;
 }
 
-.animation.ng-enter.ng-enter-active {
+.uploader-modal .animation.ng-enter.ng-enter-active, .media-browser-modal-window .animation.ng-enter.ng-enter-active {
     opacity: 1;
 }
 
-.animation.ng-leave.ng-leave-active {
+.uploader-modal .animation.ng-leave.ng-leave-active, .media-browser-modal-window .animation.ng-leave.ng-leave-active {
     opacity: 0;
 }
 
-.table {
+.uploader-modal .table, .media-browser-modal-window .table {
     width: 100%;
     max-width: 100%;
-    margin-bottom: 20px
+    margin-bottom: 20px;
 }
 
-.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+.uploader-modal .table > thead > tr > th, .media-browser-modal-window .table > thead > tr > th, .uploader-modal .table > tbody > tr > th, .media-browser-modal-window .table > tbody > tr > th, .uploader-modal .table > tfoot > tr > th, .media-browser-modal-window .table > tfoot > tr > th, .uploader-modal .table > thead > tr > td, .media-browser-modal-window .table > thead > tr > td, .uploader-modal .table > tbody > tr > td, .media-browser-modal-window .table > tbody > tr > td, .uploader-modal .table > tfoot > tr > td, .media-browser-modal-window .table > tfoot > tr > td {
     padding: 8px;
     line-height: 1.42857143;
     vertical-align: top;
-    border-top: 1px solid #ddd
+    border-top: 1px solid #ddd;
 }
 
-.table > thead > tr > th {
+.uploader-modal .table > thead > tr > th, .media-browser-modal-window .table > thead > tr > th {
     vertical-align: bottom;
-    border-bottom: 2px solid #ddd
+    border-bottom: 2px solid #ddd;
 }
 
-.table > caption + thead > tr:first-child > th, .table > colgroup + thead > tr:first-child > th, .table > thead:first-child > tr:first-child > th, .table > caption + thead > tr:first-child > td, .table > colgroup + thead > tr:first-child > td, .table > thead:first-child > tr:first-child > td {
-    border-top: 0
+.uploader-modal .table > caption + thead > tr:first-child > th, .media-browser-modal-window .table > caption + thead > tr:first-child > th, .uploader-modal .table > colgroup + thead > tr:first-child > th, .media-browser-modal-window .table > colgroup + thead > tr:first-child > th, .uploader-modal .table > thead:first-child > tr:first-child > th, .media-browser-modal-window .table > thead:first-child > tr:first-child > th, .uploader-modal .table > caption + thead > tr:first-child > td, .media-browser-modal-window .table > caption + thead > tr:first-child > td, .uploader-modal .table > colgroup + thead > tr:first-child > td, .media-browser-modal-window .table > colgroup + thead > tr:first-child > td, .uploader-modal .table > thead:first-child > tr:first-child > td, .media-browser-modal-window .table > thead:first-child > tr:first-child > td {
+    border-top: 0;
 }
 
-.table > tbody + tbody {
-    border-top: 2px solid #ddd
+.uploader-modal .table > tbody + tbody, .media-browser-modal-window .table > tbody + tbody {
+    border-top: 2px solid #ddd;
 }
 
-.table .table {
-    background-color: #fff
+.uploader-modal .table .table, .media-browser-modal-window .table .table {
+    background-color: #fff;
 }
 
-.table-condensed > thead > tr > th, .table-condensed > tbody > tr > th, .table-condensed > tfoot > tr > th, .table-condensed > thead > tr > td, .table-condensed > tbody > tr > td, .table-condensed > tfoot > tr > td {
-    padding: 5px
+.uploader-modal .table-condensed > thead > tr > th, .media-browser-modal-window .table-condensed > thead > tr > th, .uploader-modal .table-condensed > tbody > tr > th, .media-browser-modal-window .table-condensed > tbody > tr > th, .uploader-modal .table-condensed > tfoot > tr > th, .media-browser-modal-window .table-condensed > tfoot > tr > th, .uploader-modal .table-condensed > thead > tr > td, .media-browser-modal-window .table-condensed > thead > tr > td, .uploader-modal .table-condensed > tbody > tr > td, .media-browser-modal-window .table-condensed > tbody > tr > td, .uploader-modal .table-condensed > tfoot > tr > td, .media-browser-modal-window .table-condensed > tfoot > tr > td {
+    padding: 5px;
 }
 
-.table-bordered {
-    border: 1px solid #ddd
+.uploader-modal .table-bordered, .media-browser-modal-window .table-bordered {
+    border: 1px solid #ddd;
 }
 
-.table-bordered > thead > tr > th, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > tbody > tr > td, .table-bordered > tfoot > tr > td {
-    border: 1px solid #ddd
+.uploader-modal .table-bordered > thead > tr > th, .media-browser-modal-window .table-bordered > thead > tr > th, .uploader-modal .table-bordered > tbody > tr > th, .media-browser-modal-window .table-bordered > tbody > tr > th, .uploader-modal .table-bordered > tfoot > tr > th, .media-browser-modal-window .table-bordered > tfoot > tr > th, .uploader-modal .table-bordered > thead > tr > td, .media-browser-modal-window .table-bordered > thead > tr > td, .uploader-modal .table-bordered > tbody > tr > td, .media-browser-modal-window .table-bordered > tbody > tr > td, .uploader-modal .table-bordered > tfoot > tr > td, .media-browser-modal-window .table-bordered > tfoot > tr > td {
+    border: 1px solid #ddd;
 }
 
-.table-bordered > thead > tr > th, .table-bordered > thead > tr > td {
-    border-bottom-width: 2px
+.uploader-modal .table-bordered > thead > tr > th, .media-browser-modal-window .table-bordered > thead > tr > th, .uploader-modal .table-bordered > thead > tr > td, .media-browser-modal-window .table-bordered > thead > tr > td {
+    border-bottom-width: 2px;
 }
 
-.table-striped > tbody > tr:nth-child(odd) > td, .table-striped > tbody > tr:nth-child(odd) > th {
-    background-color: #f9f9f9
+.uploader-modal .table-striped > tbody > tr:nth-child(odd) > td, .media-browser-modal-window .table-striped > tbody > tr:nth-child(odd) > td, .uploader-modal .table-striped > tbody > tr:nth-child(odd) > th, .media-browser-modal-window .table-striped > tbody > tr:nth-child(odd) > th {
+    background-color: #f9f9f9;
 }
 
-.table-hover > tbody > tr:hover > td, .table-hover > tbody > tr:hover > th {
-    background-color: #f5f5f5
+.uploader-modal .table-hover > tbody > tr:hover > td, .media-browser-modal-window .table-hover > tbody > tr:hover > td, .uploader-modal .table-hover > tbody > tr:hover > th, .media-browser-modal-window .table-hover > tbody > tr:hover > th {
+    background-color: #f5f5f5;
 }
 
-table col[class*=col-] {
+.uploader-modal table col[class*=col-], .media-browser-modal-window table col[class*=col-] {
     position: static;
     display: table-column;
-    float: none
+    float: none;
 }
 
-table td[class*=col-], table th[class*=col-] {
+.uploader-modal table td[class*=col-], .media-browser-modal-window table td[class*=col-], .uploader-modal table th[class*=col-], .media-browser-modal-window table th[class*=col-] {
     position: static;
     display: table-cell;
-    float: none
+    float: none;
 }
 
-.table > thead > tr > td.active, .table > tbody > tr > td.active, .table > tfoot > tr > td.active, .table > thead > tr > th.active, .table > tbody > tr > th.active, .table > tfoot > tr > th.active, .table > thead > tr.active > td, .table > tbody > tr.active > td, .table > tfoot > tr.active > td, .table > thead > tr.active > th, .table > tbody > tr.active > th, .table > tfoot > tr.active > th {
-    background-color: #f5f5f5
+.uploader-modal .table > thead > tr > td.active, .media-browser-modal-window .table > thead > tr > td.active, .uploader-modal .table > tbody > tr > td.active, .media-browser-modal-window .table > tbody > tr > td.active, .uploader-modal .table > tfoot > tr > td.active, .media-browser-modal-window .table > tfoot > tr > td.active, .uploader-modal .table > thead > tr > th.active, .media-browser-modal-window .table > thead > tr > th.active, .uploader-modal .table > tbody > tr > th.active, .media-browser-modal-window .table > tbody > tr > th.active, .uploader-modal .table > tfoot > tr > th.active, .media-browser-modal-window .table > tfoot > tr > th.active, .uploader-modal .table > thead > tr.active > td, .media-browser-modal-window .table > thead > tr.active > td, .uploader-modal .table > tbody > tr.active > td, .media-browser-modal-window .table > tbody > tr.active > td, .uploader-modal .table > tfoot > tr.active > td, .media-browser-modal-window .table > tfoot > tr.active > td, .uploader-modal .table > thead > tr.active > th, .media-browser-modal-window .table > thead > tr.active > th, .uploader-modal .table > tbody > tr.active > th, .media-browser-modal-window .table > tbody > tr.active > th, .uploader-modal .table > tfoot > tr.active > th, .media-browser-modal-window .table > tfoot > tr.active > th {
+    background-color: #f5f5f5;
 }
 
-.table-hover > tbody > tr > td.active:hover, .table-hover > tbody > tr > th.active:hover, .table-hover > tbody > tr.active:hover > td, .table-hover > tbody > tr:hover > .active, .table-hover > tbody > tr.active:hover > th {
-    background-color: #e8e8e8
+.uploader-modal .table-hover > tbody > tr > td.active:hover, .media-browser-modal-window .table-hover > tbody > tr > td.active:hover, .uploader-modal .table-hover > tbody > tr > th.active:hover, .media-browser-modal-window .table-hover > tbody > tr > th.active:hover, .uploader-modal .table-hover > tbody > tr.active:hover > td, .media-browser-modal-window .table-hover > tbody > tr.active:hover > td, .uploader-modal .table-hover > tbody > tr:hover > .active, .media-browser-modal-window .table-hover > tbody > tr:hover > .active, .uploader-modal .table-hover > tbody > tr.active:hover > th, .media-browser-modal-window .table-hover > tbody > tr.active:hover > th {
+    background-color: #e8e8e8;
 }
 
-.table > thead > tr > td.success, .table > tbody > tr > td.success, .table > tfoot > tr > td.success, .table > thead > tr > th.success, .table > tbody > tr > th.success, .table > tfoot > tr > th.success, .table > thead > tr.success > td, .table > tbody > tr.success > td, .table > tfoot > tr.success > td, .table > thead > tr.success > th, .table > tbody > tr.success > th, .table > tfoot > tr.success > th {
-    background-color: #dff0d8
+.uploader-modal .table > thead > tr > td.success, .media-browser-modal-window .table > thead > tr > td.success, .uploader-modal .table > tbody > tr > td.success, .media-browser-modal-window .table > tbody > tr > td.success, .uploader-modal .table > tfoot > tr > td.success, .media-browser-modal-window .table > tfoot > tr > td.success, .uploader-modal .table > thead > tr > th.success, .media-browser-modal-window .table > thead > tr > th.success, .uploader-modal .table > tbody > tr > th.success, .media-browser-modal-window .table > tbody > tr > th.success, .uploader-modal .table > tfoot > tr > th.success, .media-browser-modal-window .table > tfoot > tr > th.success, .uploader-modal .table > thead > tr.success > td, .media-browser-modal-window .table > thead > tr.success > td, .uploader-modal .table > tbody > tr.success > td, .media-browser-modal-window .table > tbody > tr.success > td, .uploader-modal .table > tfoot > tr.success > td, .media-browser-modal-window .table > tfoot > tr.success > td, .uploader-modal .table > thead > tr.success > th, .media-browser-modal-window .table > thead > tr.success > th, .uploader-modal .table > tbody > tr.success > th, .media-browser-modal-window .table > tbody > tr.success > th, .uploader-modal .table > tfoot > tr.success > th, .media-browser-modal-window .table > tfoot > tr.success > th {
+    background-color: #dff0d8;
 }
 
-.table-hover > tbody > tr > td.success:hover, .table-hover > tbody > tr > th.success:hover, .table-hover > tbody > tr.success:hover > td, .table-hover > tbody > tr:hover > .success, .table-hover > tbody > tr.success:hover > th {
-    background-color: #d0e9c6
+.uploader-modal .table-hover > tbody > tr > td.success:hover, .media-browser-modal-window .table-hover > tbody > tr > td.success:hover, .uploader-modal .table-hover > tbody > tr > th.success:hover, .media-browser-modal-window .table-hover > tbody > tr > th.success:hover, .uploader-modal .table-hover > tbody > tr.success:hover > td, .media-browser-modal-window .table-hover > tbody > tr.success:hover > td, .uploader-modal .table-hover > tbody > tr:hover > .success, .media-browser-modal-window .table-hover > tbody > tr:hover > .success, .uploader-modal .table-hover > tbody > tr.success:hover > th, .media-browser-modal-window .table-hover > tbody > tr.success:hover > th {
+    background-color: #d0e9c6;
 }
 
-.table > thead > tr > td.info, .table > tbody > tr > td.info, .table > tfoot > tr > td.info, .table > thead > tr > th.info, .table > tbody > tr > th.info, .table > tfoot > tr > th.info, .table > thead > tr.info > td, .table > tbody > tr.info > td, .table > tfoot > tr.info > td, .table > thead > tr.info > th, .table > tbody > tr.info > th, .table > tfoot > tr.info > th {
-    background-color: #d9edf7
+.uploader-modal .table > thead > tr > td.info, .media-browser-modal-window .table > thead > tr > td.info, .uploader-modal .table > tbody > tr > td.info, .media-browser-modal-window .table > tbody > tr > td.info, .uploader-modal .table > tfoot > tr > td.info, .media-browser-modal-window .table > tfoot > tr > td.info, .uploader-modal .table > thead > tr > th.info, .media-browser-modal-window .table > thead > tr > th.info, .uploader-modal .table > tbody > tr > th.info, .media-browser-modal-window .table > tbody > tr > th.info, .uploader-modal .table > tfoot > tr > th.info, .media-browser-modal-window .table > tfoot > tr > th.info, .uploader-modal .table > thead > tr.info > td, .media-browser-modal-window .table > thead > tr.info > td, .uploader-modal .table > tbody > tr.info > td, .media-browser-modal-window .table > tbody > tr.info > td, .uploader-modal .table > tfoot > tr.info > td, .media-browser-modal-window .table > tfoot > tr.info > td, .uploader-modal .table > thead > tr.info > th, .media-browser-modal-window .table > thead > tr.info > th, .uploader-modal .table > tbody > tr.info > th, .media-browser-modal-window .table > tbody > tr.info > th, .uploader-modal .table > tfoot > tr.info > th, .media-browser-modal-window .table > tfoot > tr.info > th {
+    background-color: #d9edf7;
 }
 
-.table-hover > tbody > tr > td.info:hover, .table-hover > tbody > tr > th.info:hover, .table-hover > tbody > tr.info:hover > td, .table-hover > tbody > tr:hover > .info, .table-hover > tbody > tr.info:hover > th {
-    background-color: #c4e3f3
+.uploader-modal .table-hover > tbody > tr > td.info:hover, .media-browser-modal-window .table-hover > tbody > tr > td.info:hover, .uploader-modal .table-hover > tbody > tr > th.info:hover, .media-browser-modal-window .table-hover > tbody > tr > th.info:hover, .uploader-modal .table-hover > tbody > tr.info:hover > td, .media-browser-modal-window .table-hover > tbody > tr.info:hover > td, .uploader-modal .table-hover > tbody > tr:hover > .info, .media-browser-modal-window .table-hover > tbody > tr:hover > .info, .uploader-modal .table-hover > tbody > tr.info:hover > th, .media-browser-modal-window .table-hover > tbody > tr.info:hover > th {
+    background-color: #c4e3f3;
 }
 
-.table > thead > tr > td.warning, .table > tbody > tr > td.warning, .table > tfoot > tr > td.warning, .table > thead > tr > th.warning, .table > tbody > tr > th.warning, .table > tfoot > tr > th.warning, .table > thead > tr.warning > td, .table > tbody > tr.warning > td, .table > tfoot > tr.warning > td, .table > thead > tr.warning > th, .table > tbody > tr.warning > th, .table > tfoot > tr.warning > th {
-    background-color: #fcf8e3
+.uploader-modal .table > thead > tr > td.warning, .media-browser-modal-window .table > thead > tr > td.warning, .uploader-modal .table > tbody > tr > td.warning, .media-browser-modal-window .table > tbody > tr > td.warning, .uploader-modal .table > tfoot > tr > td.warning, .media-browser-modal-window .table > tfoot > tr > td.warning, .uploader-modal .table > thead > tr > th.warning, .media-browser-modal-window .table > thead > tr > th.warning, .uploader-modal .table > tbody > tr > th.warning, .media-browser-modal-window .table > tbody > tr > th.warning, .uploader-modal .table > tfoot > tr > th.warning, .media-browser-modal-window .table > tfoot > tr > th.warning, .uploader-modal .table > thead > tr.warning > td, .media-browser-modal-window .table > thead > tr.warning > td, .uploader-modal .table > tbody > tr.warning > td, .media-browser-modal-window .table > tbody > tr.warning > td, .uploader-modal .table > tfoot > tr.warning > td, .media-browser-modal-window .table > tfoot > tr.warning > td, .uploader-modal .table > thead > tr.warning > th, .media-browser-modal-window .table > thead > tr.warning > th, .uploader-modal .table > tbody > tr.warning > th, .media-browser-modal-window .table > tbody > tr.warning > th, .uploader-modal .table > tfoot > tr.warning > th, .media-browser-modal-window .table > tfoot > tr.warning > th {
+    background-color: #fcf8e3;
 }
 
-.table-hover > tbody > tr > td.warning:hover, .table-hover > tbody > tr > th.warning:hover, .table-hover > tbody > tr.warning:hover > td, .table-hover > tbody > tr:hover > .warning, .table-hover > tbody > tr.warning:hover > th {
-    background-color: #faf2cc
+.uploader-modal .table-hover > tbody > tr > td.warning:hover, .media-browser-modal-window .table-hover > tbody > tr > td.warning:hover, .uploader-modal .table-hover > tbody > tr > th.warning:hover, .media-browser-modal-window .table-hover > tbody > tr > th.warning:hover, .uploader-modal .table-hover > tbody > tr.warning:hover > td, .media-browser-modal-window .table-hover > tbody > tr.warning:hover > td, .uploader-modal .table-hover > tbody > tr:hover > .warning, .media-browser-modal-window .table-hover > tbody > tr:hover > .warning, .uploader-modal .table-hover > tbody > tr.warning:hover > th, .media-browser-modal-window .table-hover > tbody > tr.warning:hover > th {
+    background-color: #faf2cc;
 }
 
-.table > thead > tr > td.danger, .table > tbody > tr > td.danger, .table > tfoot > tr > td.danger, .table > thead > tr > th.danger, .table > tbody > tr > th.danger, .table > tfoot > tr > th.danger, .table > thead > tr.danger > td, .table > tbody > tr.danger > td, .table > tfoot > tr.danger > td, .table > thead > tr.danger > th, .table > tbody > tr.danger > th, .table > tfoot > tr.danger > th {
-    background-color: #f2dede
+.uploader-modal .table > thead > tr > td.danger, .media-browser-modal-window .table > thead > tr > td.danger, .uploader-modal .table > tbody > tr > td.danger, .media-browser-modal-window .table > tbody > tr > td.danger, .uploader-modal .table > tfoot > tr > td.danger, .media-browser-modal-window .table > tfoot > tr > td.danger, .uploader-modal .table > thead > tr > th.danger, .media-browser-modal-window .table > thead > tr > th.danger, .uploader-modal .table > tbody > tr > th.danger, .media-browser-modal-window .table > tbody > tr > th.danger, .uploader-modal .table > tfoot > tr > th.danger, .media-browser-modal-window .table > tfoot > tr > th.danger, .uploader-modal .table > thead > tr.danger > td, .media-browser-modal-window .table > thead > tr.danger > td, .uploader-modal .table > tbody > tr.danger > td, .media-browser-modal-window .table > tbody > tr.danger > td, .uploader-modal .table > tfoot > tr.danger > td, .media-browser-modal-window .table > tfoot > tr.danger > td, .uploader-modal .table > thead > tr.danger > th, .media-browser-modal-window .table > thead > tr.danger > th, .uploader-modal .table > tbody > tr.danger > th, .media-browser-modal-window .table > tbody > tr.danger > th, .uploader-modal .table > tfoot > tr.danger > th, .media-browser-modal-window .table > tfoot > tr.danger > th {
+    background-color: #f2dede;
 }
 
-.table-hover > tbody > tr > td.danger:hover, .table-hover > tbody > tr > th.danger:hover, .table-hover > tbody > tr.danger:hover > td, .table-hover > tbody > tr:hover > .danger, .table-hover > tbody > tr.danger:hover > th {
-    background-color: #ebcccc
+.uploader-modal .table-hover > tbody > tr > td.danger:hover, .media-browser-modal-window .table-hover > tbody > tr > td.danger:hover, .uploader-modal .table-hover > tbody > tr > th.danger:hover, .media-browser-modal-window .table-hover > tbody > tr > th.danger:hover, .uploader-modal .table-hover > tbody > tr.danger:hover > td, .media-browser-modal-window .table-hover > tbody > tr.danger:hover > td, .uploader-modal .table-hover > tbody > tr:hover > .danger, .media-browser-modal-window .table-hover > tbody > tr:hover > .danger, .uploader-modal .table-hover > tbody > tr.danger:hover > th, .media-browser-modal-window .table-hover > tbody > tr.danger:hover > th {
+    background-color: #ebcccc;
 }
 
-.modal-table td {
+.uploader-modal .modal-table td, .media-browser-modal-window .modal-table td {
     vertical-align: middle;
     padding: 5px 0;
 }
 
-#FileSearchIsRegexLabel {
+.uploader-modal #FileSearchIsRegexLabel, .media-browser-modal-window #FileSearchIsRegexLabel {
     font-weight: normal;
     margin-left: 6px;
     margin-top: 29px;
@@ -1924,11 +1706,15 @@ table td[class*=col-], table th[class*=col-] {
     display: inline-block;
 }
 
-input#FileSearchIsRegex {
+.uploader-modal input#FileSearchIsRegex, .media-browser-modal-window input#FileSearchIsRegex {
     margin-top: 0;
 }
 
-.preview-image-path {
+.uploader-button-hidden {
+    display: none;
+}
+
+.uploader-modal .preview-image-path, .media-browser-modal-window .preview-image-path {
     background: #0071bc;
     padding: 5px 10px;
     color: #fff;
@@ -1936,17 +1722,17 @@ input#FileSearchIsRegex {
 }
 
 .uploader-modal .drag-zone {
-    color: #CFCFCF;
+    color: #cfcfcf;
     text-align: center;
     padding: 100px 30px;
     margin: 10px 0;
     font-size: 20px;
     overflow: hidden;
-    -webkit-transition: 0.6s color, 0.6s border;
-    -moz-transition: 0.6s color, 0.6s border;
-    -ms-transition: 0.6s color, 0.6s border;
-    -o-transition: 0.6s color, 0.6s border;
-    transition: 0.6s color, 0.6s border;
+    -webkit-transition: .6s color, .6s border;
+    -moz-transition: .6s color, .6s border;
+    -ms-transition: .6s color, .6s border;
+    -o-transition: .6s color, .6s border;
+    transition: .6s color, .6s border;
 }
 
 .uploader-modal .drag-zone.dragover {
@@ -1958,7 +1744,7 @@ input#FileSearchIsRegex {
     bottom: 0;
     position: absolute;
     background: #4eaa09;
-    content: '+';
+    content: "+";
     height: 30px;
     width: 30px;
     color: #fff;
@@ -1967,11 +1753,11 @@ input#FileSearchIsRegex {
     padding: 1px 4px 5px;
     border-radius: 100%;
     opacity: 0;
-    -webkit-transition: 0.6s bottom, 0.6s opacity;
-    -moz-transition: 0.6s bottom, 0.6s opacity;
-    -ms-transition: 0.6s bottom, 0.6s opacity;
-    -o-transition: 0.6s bottom, 0.6s opacity;
-    transition: 0.6s bottom, 0.6s opacity;
+    -webkit-transition: .6s bottom, .6s opacity;
+    -moz-transition: .6s bottom, .6s opacity;
+    -ms-transition: .6s bottom, .6s opacity;
+    -o-transition: .6s bottom, .6s opacity;
+    transition: .6s bottom, .6s opacity;
 }
 
 .uploader-modal .drag-zone.dragover:after {
@@ -1981,29 +1767,32 @@ input#FileSearchIsRegex {
     bottom: 30px;
 }
 
-.uploader-modal .drag-zone .error {
+.uploader-modal .drag-zone .error, .uploader-modal .uploadPlatform .error, .media-browser-modal-window .uploadPlatform .error {
     right: 15px;
     bottom: 0;
     position: absolute;
-    background: #AA0F09;
+    background: #aa0f09;
     color: #fff;
     text-align: center;
     padding: 5px 8px;
     opacity: 0;
-    -webkit-transition: 0.6s bottom, 0.6s opacity;
-    -moz-transition: 0.6s bottom, 0.6s opacity;
-    -ms-transition: 0.6s bottom, 0.6s opacity;
-    -o-transition: 0.6s bottom, 0.6s opacity;
-    transition: 0.6s bottom, 0.6s opacity;
+    -webkit-transition: .6s bottom, .6s opacity;
+    -moz-transition: .6s bottom, .6s opacity;
+    -ms-transition: .6s bottom, .6s opacity;
+    -o-transition: .6s bottom, .6s opacity;
+    transition: .6s bottom, .6s opacity;
     font-size: 15px;
 }
 
-.uploader-modal .drag-zone.fileError .error {
-
+.uploader-modal .drag-zone.fileError .error, .uploader-modal .uploadPlatform.fileError .error, .media-browser-modal-window .uploadPlatform.fileError .error {
     opacity: 1;
     position: absolute;
     right: 15px;
     bottom: 30px;
+}
+
+.uploader-modal .uploadPlatform.fileError .error, .media-browser-modal-window .uploadPlatform.fileError .error {
+    bottom: 15px;
 }
 
 .uploader-modal .upload-file .progress {
@@ -2012,8 +1801,7 @@ input#FileSearchIsRegex {
     margin-bottom: 10px;
 }
 
-.uploader-modal .upload-file .previewImage img,
-.uploader-modal .upload-file .previewImage {
+.uploader-modal .upload-file .previewImage img, .uploader-modal .upload-file .previewImage {
     width: 100%;
     max-width: 60px;
 }
@@ -2028,19 +1816,19 @@ input#FileSearchIsRegex {
 
 .uploader-modal .close-upload-modal {
     opacity: 1;
-    -webkit-transition: 0.5s opacity;
-    -moz-transition: 0.5s opacity;
-    -ms-transition: 0.5s opacity;
-    -o-transition: 0.5s opacity;
-    transition: 0.5s opacity;
+    -webkit-transition: .5s opacity;
+    -moz-transition: .5s opacity;
+    -ms-transition: .5s opacity;
+    -o-transition: .5s opacity;
+    transition: .5s opacity;
 }
 
 .uploader-modal .upload-file td {
-    -webkit-transition: 0.3s background;
-    -moz-transition: 0.3s background;
-    -ms-transition: 0.3s background;
-    -o-transition: 0.3s background;
-    transition: 0.3s background;
+    -webkit-transition: .3s background;
+    -moz-transition: .3s background;
+    -ms-transition: .3s background;
+    -o-transition: .3s background;
+    transition: .3s background;
 }
 
 .uploader-modal .uploadControl {
@@ -2054,36 +1842,35 @@ input#FileSearchIsRegex {
 }
 
 .uploader-modal .errorMessage {
-    color: #AA0F09;
+    color: #aa0f09;
     font-weight: bold;
     display: block;
 }
 
-.file-list-wrapper::-webkit-scrollbar,
-.uploadlist::-webkit-scrollbar,
-{
-    width: 10px;
-    height: 10px
+.uploader-modal .errorMessage .info, .uploader-modal .errorMessage .warning {
+    color: #000;
 }
 
-.file-list-wrapper::-webkit-scrollbar-track-piece,
-.uploadlist::-webkit-scrollbar-track-piece {
+.uploader-modal .file-list-wrapper::-webkit-scrollbar, .media-browser-modal-window .file-list-wrapper::-webkit-scrollbar, .uploader-modal .uploadlist::-webkit-scrollbar, .media-browser-modal-window .uploadlist::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.uploader-modal .file-list-wrapper::-webkit-scrollbar-track-piece, .media-browser-modal-window .file-list-wrapper::-webkit-scrollbar-track-piece, .uploader-modal .uploadlist::-webkit-scrollbar-track-piece, .media-browser-modal-window .uploadlist::-webkit-scrollbar-track-piece {
     background-color: #e6e6e6;
 }
 
-.file-list-wrapper::-webkit-scrollbar-thumb:vertical,
-.uploadlist::-webkit-scrollbar-thumb:vertical {
+.uploader-modal .file-list-wrapper::-webkit-scrollbar-thumb:vertical, .media-browser-modal-window .file-list-wrapper::-webkit-scrollbar-thumb:vertical, .uploader-modal .uploadlist::-webkit-scrollbar-thumb:vertical, .media-browser-modal-window .uploadlist::-webkit-scrollbar-thumb:vertical {
     height: 10px;
     background-color: #666;
 }
 
-.file-list-wrapper::-webkit-scrollbar-thumb:horizontal,
-.uploadlist::-webkit-scrollbar-thumb:horizontal {
+.uploader-modal .file-list-wrapper::-webkit-scrollbar-thumb:horizontal, .media-browser-modal-window .file-list-wrapper::-webkit-scrollbar-thumb:horizontal, .uploader-modal .uploadlist::-webkit-scrollbar-thumb:horizontal, .media-browser-modal-window .uploadlist::-webkit-scrollbar-thumb:horizontal {
     width: 10px;
     background-color: #666;
 }
 
-.tooltip {
+.uploader-modal .tooltip, .media-browser-modal-window .tooltip {
     position: absolute;
     z-index: 1030;
     display: block;
@@ -2091,144 +1878,144 @@ input#FileSearchIsRegex {
     font-size: 12px;
     line-height: 1.4;
     opacity: 0;
-    filter: alpha(opacity=0)
+    filter: alpha(opacity=0);
 }
 
-.tooltip.in {
+.uploader-modal .tooltip.in, .media-browser-modal-window .tooltip.in {
     opacity: .9;
-    filter: alpha(opacity=90)
+    filter: alpha(opacity=90);
 }
 
-.tooltip.top {
+.uploader-modal .tooltip.top, .media-browser-modal-window .tooltip.top {
     margin-top: -3px;
-    padding: 5px 0
+    padding: 5px 0;
 }
 
-.tooltip.right {
+.uploader-modal .tooltip.right, .media-browser-modal-window .tooltip.right {
     margin-left: 3px;
-    padding: 0 5px
+    padding: 0 5px;
 }
 
-.tooltip.bottom {
+.uploader-modal .tooltip.bottom, .media-browser-modal-window .tooltip.bottom {
     margin-top: 3px;
-    padding: 5px 0
+    padding: 5px 0;
 }
 
-.tooltip.left {
+.uploader-modal .tooltip.left, .media-browser-modal-window .tooltip.left {
     margin-left: -3px;
-    padding: 0 5px
+    padding: 0 5px;
 }
 
-.tooltip-inner {
+.uploader-modal .tooltip-inner, .media-browser-modal-window .tooltip-inner {
     max-width: 200px;
     padding: 3px 8px;
     color: #fff;
     text-align: center;
     text-decoration: none;
     background-color: #000;
-    border-radius: 4px
+    border-radius: 4px;
 }
 
-.tooltip-arrow {
+.uploader-modal .tooltip-arrow, .media-browser-modal-window .tooltip-arrow {
     position: absolute;
     width: 0;
     height: 0;
     border-color: transparent;
-    border-style: solid
+    border-style: solid;
 }
 
-.tooltip.top .tooltip-arrow {
+.uploader-modal .tooltip.top .tooltip-arrow, .media-browser-modal-window .tooltip.top .tooltip-arrow {
     bottom: 0;
     left: 50%;
     margin-left: -5px;
     border-width: 5px 5px 0;
-    border-top-color: #000
+    border-top-color: #000;
 }
 
-.tooltip.top-left .tooltip-arrow {
+.uploader-modal .tooltip.top-left .tooltip-arrow, .media-browser-modal-window .tooltip.top-left .tooltip-arrow {
     bottom: 0;
     left: 5px;
     border-width: 5px 5px 0;
-    border-top-color: #000
+    border-top-color: #000;
 }
 
-.tooltip.top-right .tooltip-arrow {
+.uploader-modal .tooltip.top-right .tooltip-arrow, .media-browser-modal-window .tooltip.top-right .tooltip-arrow {
     bottom: 0;
     right: 5px;
     border-width: 5px 5px 0;
-    border-top-color: #000
+    border-top-color: #000;
 }
 
-.tooltip.right .tooltip-arrow {
+.uploader-modal .tooltip.right .tooltip-arrow, .media-browser-modal-window .tooltip.right .tooltip-arrow {
     top: 50%;
     left: 0;
     margin-top: -5px;
     border-width: 5px 5px 5px 0;
-    border-right-color: #000
+    border-right-color: #000;
 }
 
-.tooltip.left .tooltip-arrow {
+.uploader-modal .tooltip.left .tooltip-arrow, .media-browser-modal-window .tooltip.left .tooltip-arrow {
     top: 50%;
     right: 0;
     margin-top: -5px;
     border-width: 5px 0 5px 5px;
-    border-left-color: #000
+    border-left-color: #000;
 }
 
-.tooltip.bottom .tooltip-arrow {
+.uploader-modal .tooltip.bottom .tooltip-arrow, .media-browser-modal-window .tooltip.bottom .tooltip-arrow {
     top: 0;
     left: 50%;
     margin-left: -5px;
     border-width: 0 5px 5px;
-    border-bottom-color: #000
+    border-bottom-color: #000;
 }
 
-.tooltip.bottom-left .tooltip-arrow {
+.uploader-modal .tooltip.bottom-left .tooltip-arrow, .media-browser-modal-window .tooltip.bottom-left .tooltip-arrow {
     top: 0;
     left: 5px;
     border-width: 0 5px 5px;
-    border-bottom-color: #000
+    border-bottom-color: #000;
 }
 
-.tooltip.bottom-right .tooltip-arrow {
+.uploader-modal .tooltip.bottom-right .tooltip-arrow, .media-browser-modal-window .tooltip.bottom-right .tooltip-arrow {
     top: 0;
     right: 5px;
     border-width: 0 5px 5px;
     border-bottom-color: #000;
 }
 
-#thumbnailSelector .image {
+ #thumbnailSelector .image,  {
     width: 100%;
     max-width: 100%;
     height: auto;
     display: block;
     margin: auto;
-    -webkit-transition: 0.5s all;
-    -moz-transition: 0.5s all;
-    -ms-transition: 0.5s all;
-    -o-transition: 0.5s all;
-    transition: 0.5s all;
+    -webkit-transition: .5s all;
+    -moz-transition: .5s all;
+    -ms-transition: .5s all;
+    -o-transition: .5s all;
+    transition: .5s all;
 }
 
 #thumbnailSelector .thumbnail-size {
     margin: 10px 0 0 0;
 }
 
-.uploadlist {
+.uploader-modal .uploadlist, .media-browser-modal-window .uploadlist {
     height: 200px;
     overflow-x: visible;
     overflow-y: scroll;
 }
 
-.uploadlist table {
+.uploader-modal .uploadlist table, .media-browser-modal-window .uploadlist table {
     max-width: 99%;
 }
 
-.modal .hidden {
+.uploader-modal .hidden, .media-browser-modal-window .hidden {
     display: none;
 }
 
-.uploadPlatform.uploadFilesAdded {
+.uploader-modal .uploadPlatform.uploadFilesAdded, .media-browser-modal-window .uploadPlatform.uploadFilesAdded {
     padding: 0;
     margin: 17px 20px 0 0;
     float: right;
@@ -2236,54 +2023,88 @@ input#FileSearchIsRegex {
     text-align: right;
 }
 
-.uploadPlatform.uploadFilesAdded .progress {
+.uploader-modal .uploadPlatform.uploadFilesAdded .progress, .media-browser-modal-window .uploadPlatform.uploadFilesAdded .progress {
     height: 34px;
 }
 
-.uploadPlatform.uploadFilesAdded .progress-bar {
+.uploader-modal .uploadPlatform.uploadFilesAdded .progress-bar, .media-browser-modal-window .uploadPlatform.uploadFilesAdded .progress-bar {
     line-height: 34px;
 }
 
-.uploadPlatform.uploadFilesAdded img {
+.uploader-modal .uploadPlatform.uploadFilesAdded img, .media-browser-modal-window .uploadPlatform.uploadFilesAdded img {
     height: 16px;
     width: auto;
     display: inline-block;
     margin-bottom: -3px;
 }
 
-.table-action {
+.uploader-modal .table-action, .media-browser-modal-window .table-action {
     width: 10%;
 }
 
-.table-action a {
+.uploader-modal .table-action a, .media-browser-modal-window .table-action a {
     text-decoration: none;
-    color: #444444;
+    color: #444;
 }
 
-.table-progress {
+.uploader-modal .table-progress, .media-browser-modal-window .table-progress {
     width: 40%;
 }
 
-.table-progress .progress {
+.uploader-modal .table-progress .progress, .media-browser-modal-window .table-progress .progress {
     margin: 0;
 }
 
-.uploadPlatform.uploadFilesAdded .dropzoneText2 {
+.uploader-modal .uploadPlatform.uploadFilesAdded .dropzoneText2, .media-browser-modal-window .uploadPlatform.uploadFilesAdded .dropzoneText2 {
     display: inline-block;
     margin: 0;
     font-size: 13px;
 }
 
-.successfulUpload {
+.uploader-modal .successfulUpload, .media-browser-modal-window .successfulUpload {
     color: #4eaa09;
     float: right;
     margin: 17px 20px 0 0;
 }
 
-.media-browser-modal-backdrop {
+.uploader-modal .media-browser-modal-backdrop, .media-browser-modal-window .media-browser-modal-backdrop {
     z-index: 10030 !important;
 }
 
 .media-browser-modal-window, .bootbox {
     z-index: 10050 !important;
+}
+
+.uploader-modal .upload-limit-tooltip, .media-browser-modal-window .upload-limit-tooltip {
+    display: inline-block;
+}
+
+.uploader-modal .alert-warning, .media-browser-modal-window .alert-warning {
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+    color: #8a6d3b;
+}
+
+.uploader-modal .alert, .media-browser-modal-window .alert {
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.uploader-modal .notify-UploadLimit, .media-browser-modal-window .notify-UploadLimit {
+    padding: 8px;
+    margin-top: 10px;
+    width: 100%;
+    font-size: 16px;
+    display: none;
+}
+
+.uploader-modal  .moxie-shim.moxie-shim-html5,
+.media-browser-modal-window .moxie-shim.moxie-shim-html5 {
+    z-index: 1;
+}
+
+#thumbnailSelector img {
+    max-width: 100%;
+    height: auto;
 }

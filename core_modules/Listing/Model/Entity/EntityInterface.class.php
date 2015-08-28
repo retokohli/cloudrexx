@@ -104,6 +104,11 @@ class EntityInterface implements Exportable, Importable
                     $entityValue = $associationObj;
                 }
                 
+                //checks if the string a serialized array
+                if(\FWValidator::is_serialized($entityValue)) {
+                    $entityValue = unserialize($entityValue);
+                }
+                
                 $entityObj->{'set' . ucfirst($entityField)}($entityValue);
                 
             }

@@ -1,34 +1,19 @@
 <!-- START module_mediadir_modify_category.html -->
 <script type="text/javascript">
 //<![CDATA[
-function SetUrl(url, width, height, alt) {
-    switch (fileType) {
-        case 'image':
-        case 'webpages':
-            document.getElementById(insertBox).value = url;
-            break
-        case 'link':
-            if (insertText == '') {
-                insertText = url;
-            }
-            newsInsertLink(document.getElementById(insertBox), '<a href="'+url+'">'+insertText+'</a>');
-            break;
+var mediaBrowseInputBox;
+var mediaBrowserCallback = function(data) {
+    if (data.type=="file") {
+      var path = data.data[0].datainfo.filepath;
+      mediaBrowseInputBox.val(path);      
     }
-}
-
-function getFileBrowser(name, type)
-{
-    insertBox = name;
-    fileType = type;
-
-    openWindow('?cmd=FileBrowser&standalone=true&type=MediaDir','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-}
-
-function openWindow(theURL,winName,features){
-    browserPopup = window.open(theURL,"Browser",features);
-    browserPopup.focus();
-}
-
+};
+$J(function(){
+   $J('.mediabrowser-button').click(function(){
+       var inputId = $J(this).data('inputId');
+       mediaBrowseInputBox = $J('#' + inputId);
+   });
+});
 //]]>
 </script>
 
@@ -52,7 +37,11 @@ function openWindow(theURL,winName,features){
     </tr>
     <tr class="row2">
         <td valign="top">{TXT_MEDIADIR_PICTURE}</td>
-        <td>{MEDIADIR_CATEGORY_PICTURE_THUMB}<input type="text" name="categoryImage" value="{MEDIADIR_CATEGORY_PICTURE}" id="categoryImage2" style="width: 300px;" />&nbsp;<input type="button" value="{TXT_MEDIADIR_BROWSE}" onClick="getFileBrowser('categoryImage2', 'image')" /></td>
+        <td>
+            {MEDIADIR_CATEGORY_PICTURE_THUMB}
+            <input type="text" name="categoryImage" value="{MEDIADIR_CATEGORY_PICTURE}" id="categoryImage2" style="width: 300px;" />&nbsp;
+            {MEDIADIR_CATEGORY_IMAGE_BROWSE}
+        </td>
     </tr>
 <!-- not yet implemented    <tr class="row1">
         <td valign="top">{TXT_MEDIADIR_SHOW_SUBCATEGORIES}</td>

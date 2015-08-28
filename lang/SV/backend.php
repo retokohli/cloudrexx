@@ -856,6 +856,7 @@ $_ARRAYLANG['TXT_CORE_SAVED_AS_DRAFT'] = "Saved as draft";
 $_ARRAYLANG['TXT_CORE_SAVED'] = "Saved";
 $_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Draft submitted for publishing";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH_DRAFT'] = "Publish draft";
+$_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH'] = 'Publish';
 
 $_ARRAYLANG['TXT_ACCESS_GROUP_NAME_INVALID'] = "Der gewählte Gruppenname ist nicht gültig! Wählen Sie bitte einen anderen Namen für die Gruppe.";
 $_ARRAYLANG['TXT_ACCESS_MENU_MULTI'] = "Menu mit Mehrfachauswahl";
@@ -1152,6 +1153,7 @@ $_ARRAYLANG['TXT_CORE_CM_METAKEYS'] = 'Keywords';
 $_ARRAYLANG['TXT_CORE_CM_METAKEYS_INFO'] = 'Search engines may use keywords as an additional search criteria. Example: Example, Pizza, Europe, Cheese.';
 $_ARRAYLANG['TXT_CORE_CM_THEMES'] = 'Theme';
 $_ARRAYLANG['TXT_CORE_CM_THEMES_INFO'] = 'The page is rendered within the selected theme.';
+$_ARRAYLANG['TXT_THEME_PREVIEW'] = 'Preview';
 $_ARRAYLANG['TXT_CORE_CM_CUSTOM_CONTENT'] = 'Content Template';
 $_ARRAYLANG['TXT_CORE_CM_CUSTOM_CONTENT_INFO'] = 'Use a custom content template. Custom templates are stored as content_<strong>name</strong>.html within the theme folder.';
 $_ARRAYLANG['TXT_CORE_CM_CSS_CLASS'] = 'Additional CSS Class';
@@ -1203,6 +1205,8 @@ $_ARRAYLANG['TXT_CORE_CM_CREATION_DENIED'] = "You don't have enough rights to cr
 $_ARRAYLANG['TXT_CORE_CM_DELETE_DENIED'] = "You don't have enough rights to delete pages";
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'] = "You don't have enough rights to change the access premissions.";
 $_ARRAYLANG['TXT_CORE_CM_PUBLISH_DENIED'] = "You don't have enough rights to publish pages.";
+$_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
+$_ARRAYLANG['TXT_CORE_NONE'] = 'None';
 
 // upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Upload more";

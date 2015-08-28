@@ -67,7 +67,6 @@ $_ARRAYLANG['TXT_REMARK'] = 'Commentaar';
 $_ARRAYLANG['TXT_ADD_DELETE_LANGUAGE_REMARK'] = 'Bij het toevoegen van een nieuwe taal zullen alle standaard taalvariabelen uitgedrukt worden in de standaardtaal';
 $_ARRAYLANG['TXT_VIEW'] = 'Zie';
 $_ARRAYLANG['TXT_CORE_FALLBACK'] = 'Fallback';
-$_ARRAYLANG['TXT_CORE_NONE'] = 'None';
 $_ARRAYLANG['TXT_LANGUAGE_ACTION_COPY'] = 'Copy contents from this language"s fallback language to this language';
 $_ARRAYLANG['TXT_LANGUAGE_ACTION_LINK'] = 'Link contents from this language"s fallback language to this language';
 $_ARRAYLANG['TXT_COULD_NOT_WRITE_TO_FILE'] = 'Kan niet naar bestand schrijven!';

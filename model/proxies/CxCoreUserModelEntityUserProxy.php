@@ -267,7 +267,7 @@ class CxCoreUserModelEntityUserProxy extends \Cx\Core\User\Model\Entity\User imp
         return parent::getProfileAccess();
     }
 
-    public function setRestoreKey($restoreKey)
+    public function setRestoreKey($restoreKey = NULL)
     {
         $this->_load();
         return parent::setRestoreKey($restoreKey);

@@ -116,6 +116,7 @@ class Csrf {
     public static function header($header, $replace = true, $httpResponseCode = null)
     {
         \DBG::msg('\Cx\Core\Csrf\Controller\Csrf::header(): Set header "' . $header . '"');
+        \DBG::stack();
         header(self::__enhance_header($header), $replace, $httpResponseCode);
     }
     
@@ -339,7 +340,17 @@ class Csrf {
             'IMAGES_PATH'       => ASCMS_ADMIN_WEB_PATH.'/images/csrfprotection',
         ));
         $tpl->parse();
-        die($tpl->get());
+        
+        $endcode = $tpl->get();
+        
+        // replace links from before contrexx 3
+        $ls = new \LinkSanitizer(
+            ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
+            $endcode);
+        $endcode = $ls->replace();
+        
+        echo $endcode;
+        die();
     }
 
 
@@ -377,9 +388,10 @@ class Csrf {
 
     private static function __is_ajax()
     {
-        return
-            (   isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-             && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest');
+        return (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+        || (isset($_SERVER['HTTP_CHECK_CSRF'])
+            && $_SERVER['HTTP_CHECK_CSRF'] == 'false');
     }
 
 

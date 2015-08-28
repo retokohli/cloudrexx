@@ -187,14 +187,17 @@ class Search
     {
         global $_ARRAYLANG;
 
-        $pageRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        // only list results in case the associated page of the module is active
-        $page = $pageRepo->findOneBy(array(
+        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $criteria = array(
             'module' => $module,
-            'lang' => FRONTEND_LANG_ID,
-            'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-            'cmd' => $command,
-        ));
+            'lang'   => FRONTEND_LANG_ID,
+            'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,            
+        );
+        if (!empty($command)) {
+            $criteria['cmd'] = $command;
+        }
+        // only list results in case the associated page of the module is active
+        $page = $pageRepo->findOneBy($criteria);
         if (!$page || !$page->isActive()) {
             return array();
         }

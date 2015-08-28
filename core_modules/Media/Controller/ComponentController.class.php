@@ -59,6 +59,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @throws \Cx\Core\Event\Controller\EventManagerException
      */
     public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        $this->cx->getEvents()->addEventListener('LoadMediaTypes', new \Cx\Core_Modules\Media\Model\Event\MediaEventListener($this->cx));
+        $this->cx->getEvents()->addEventListener('mediasource.load', new \Cx\Core_Modules\Media\Model\Event\MediaEventListener($this->cx));
     }
 }

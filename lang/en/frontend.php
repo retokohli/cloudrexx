@@ -259,8 +259,13 @@ $_ARRAYLANG['TXT_CORE_MONTH_ABBREV3_ARRAY'] = "M_0,Jan,Feb,Mär,Apr,Mai,Jun,Jul,
 $_ARRAYLANG['TXT_CORE_MONTH_ARRAY'] = "MONTH_0,Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember";
 $_ARRAYLANG['TXT_CORE_PHONE'] = "Telefon";
 $_ARRAYLANG['TXT_CORE_SEARCH'] = "Suchen";
-$_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "aufsteigend sortieren";
-$_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "absteigend sortieren";
+
+// core Sorting
+$_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "aufsteigend";
+$_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "absteigend";
+$_ARRAYLANG['TXT_CORE_SORTING_FORMAT_ASC'] = "%1\$s aufsteigend";
+$_ARRAYLANG['TXT_CORE_SORTING_FORMAT_DESC'] = "%1\$s absteigend";
+
 $_ARRAYLANG['TXT_CORE_TODAY'] = "Heute";
 $_ARRAYLANG['TXT_CORE_UNLIMITED'] = "unbegrenzt";
 $_ARRAYLANG['TXT_CORE_YEAR'] = "Jahr";
@@ -279,3 +284,5 @@ $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Some file(s) couldn't be uploaded:
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "The file extension is not allowed.";
 
 $_ARRAYLANG['TXT_ACCESS_UNKNOWN'] = "unknown";
+
+$_ARRAYLANG['TXT_LOGIN_WELCOME_PAGE'] = 'Forward to the <a href="%s" title="Website">Website</a>';

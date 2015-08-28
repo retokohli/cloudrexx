@@ -36,7 +36,7 @@ class JsonPage implements JsonAdapter {
      * Constructor
      */
     function __construct() {
-        $this->em = \Env::em();
+        $this->em = \Env::get('em');
         $this->db = \Env::get('db');
         if ($this->em) {
             $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -151,7 +151,7 @@ class JsonPage implements JsonAdapter {
         } else {
             throw new \Exception('cannot find that page');
         }
-        $additionalArguments = new \Cx\Core\Model\RecursiveArray(array());
+        $additionalArguments = new \Cx\Core\Model\RecursiveArrayAccess(array());
         //\Env::get('cx');
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $evm = $cx->getEvents();
@@ -370,6 +370,7 @@ class JsonPage implements JsonAdapter {
         
         $draftUpdateLog = null;
         $liveUpdateLog = null;
+        $updatingDraft = false;
         if (($action == 'publish') && \Permission::checkAccess(78, 'static', true)) {
             // User w/permission clicked save&publish. we should either publish the page or submit the draft for approval.
             if ($page->getEditingStatus() == 'hasDraftWaiting') {
@@ -1253,6 +1254,12 @@ class JsonPage implements JsonAdapter {
             }
             $result['area'] = ucfirst($cmd);
             $result['path'] = '/themes/'.$themeFolderName.'/'.$moduleFolderName.'/'.$section.'/Template/Frontend';
+            
+            $additionalArguments = new \Cx\Core\Model\RecursiveArrayAccess(array());
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $evm = $cx->getEvents();
+            $evm->triggerEvent('wysiwygCssReload', array(array('skin'=>$template), $additionalArguments));
+            $result['wysiwygCssReload'] = $additionalArguments->toArray();
         }
         return $result;
     }

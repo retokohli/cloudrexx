@@ -116,7 +116,7 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
         $pos = isset($_GET['pos']) ? $_GET['pos'] : 0;
         //set the settings value from DB
         \Cx\Core\Setting\Controller\Setting::init('LinkManager', 'config');
-        $pageLimit = \Cx\Core\Setting\Controller\Setting::getValue('entriesPerPage');
+        $pageLimit = \Cx\Core\Setting\Controller\Setting::getValue('entriesPerPage', 'LinkManager');
         $parameter = './index.php?cmd='.$this->moduleName.'&act=crawlerResult';
         $this->template->setVariable('ENTRIES_PAGING', \Paging::get($parameter, $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_LINKS'], $this->linkRepository->brokenLinkCount(), $pageLimit, true, $pos, 'pos'));
         $brokenLinks = $this->linkRepository->getBrokenLinks($pos, $pageLimit);

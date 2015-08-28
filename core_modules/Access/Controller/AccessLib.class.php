@@ -1037,7 +1037,12 @@ class AccessLib
                         }
                     }
                 } else {
-                    $objSelectedAttribute = $objAttribute->getById($objUser->getProfileAttribute($objAttribute->getId(), $historyId));
+                    // if menu is not set, the function returns false and we need to set 0 "Please select" as selected value
+                    if($objUser->getProfileAttribute($objAttribute->getId(), $historyId) !== false){
+                        $objSelectedAttribute = $objAttribute->getById($objUser->getProfileAttribute($objAttribute->getId(), $historyId));
+                    }else{
+                        $objSelectedAttribute = $objAttribute->getById(0);
+                    }
                     $value = $objSelectedAttribute->getName();
                 }
 
@@ -1330,14 +1335,10 @@ JSaccessRemoveGroupFromList
 // <![CDATA[
 accessProcessingUrlElement = '';
 accessProcessingUrlElementType = 'image';
-function accessGetFileBrowser(elementId, type)
+function accessGetFileBrowser(elementId)
 {
     accessProcessingUrlElement = elementId;
-    if (type) {
-        accessProcessingUrlElementType = type;
-    }
-    accessPopup = window.open('index.php?cmd=FileBrowser&standalone=true&type='+accessProcessingUrlElementType,'','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-    accessPopup.focus();
+    jQuery('#media-browser-button').trigger('click');
 }
 // ]]>
 </script>
@@ -1346,15 +1347,24 @@ JSaccessGetFileBrowser
                 'accessSetUrl' => <<<JSaccessSetUrl
 <script type="text/javascript">
 // <![CDATA[
-function SetUrl(url, width, height, alt)
+function SetUrl(data)
 {
-    switch (accessProcessingUrlElementType) {
-        case 'webpages':
-            accessSetWebpage(url, width, height, alt);
+    if (data.type === '' || !data.data[0]) {
+        return;
+    }
+            
+    switch (data.type) {
+        case 'page':
+            accessSetWebpage(data.data[0].node);
             break;
 
-        case 'image':
-            accessSetImage(url, width, height, alt);
+        case 'file':
+            var url    = data.data[0].datainfo.filepath;
+            var newImg = new Image();
+            newImg.onload = function() {
+                accessSetImage(url, newImg.width, newImg.height, '');
+            }
+            newImg.src = url;
             break;
     }
 }
@@ -1366,7 +1376,7 @@ JSaccessSetUrl
 <script type="text/javascript">
 // <![CDATA[
 
-function accessSetWebpage(url, width, height, alt)
+function accessSetWebpage(url)
 {
 
         document.getElementById(accessProcessingUrlElement).value = url;

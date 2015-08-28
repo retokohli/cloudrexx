@@ -15,8 +15,11 @@ class ViewGeneratorException extends \Exception {}
  * @todo    Refactor
  */
 class ViewGenerator {
+    protected static $increment = 0;
     protected $object;
     protected $options;
+    protected $number;
+    protected $formGenerator = null;
     
     /**
      *
@@ -26,6 +29,8 @@ class ViewGenerator {
      */
     public function __construct($object, $options = array()) {
         global $_ARRAYLANG;
+        
+        $this->number = static::$increment++;
         try {
             $this->options = $options;
             $entityNS=null;
@@ -55,14 +60,39 @@ class ViewGenerator {
                     $entityNS = get_class($this->object);
                 }
             }
+            
+            if (
+                (!isset($_POST['vg_increment_number']) || $_POST['vg_increment_number'] != $this->number) &&
+                (!isset($_GET['vg_increment_number']) || $_GET['vg_increment_number'] != $this->number)
+            ) {
+                $vgIncrementNo = 'empty';
+                if (isset($_POST['vg_increment_number'])) {
+                    $vgIncrementNo = '#' . $_POST['vg_increment_number'];
+                } else if (isset($_GET['vg_increment_number'])) {
+                    $vgIncrementNo = '#' . $_GET['vg_increment_number'];
+                }
+                // do not make any changes to entities of other view generator instances!
+                \DBG::msg('Omitting changes, my ID is #' . $this->number . ', supplied number was ' . $vgIncrementNo);
+                return;
+            }
 
             /** 
              *  postSave event
              *  execute save if entry is a doctrine entity (or execute callback if specified in configuration)
              */
             $add=(!empty($_GET['add'])? contrexx_input2raw($_GET['add']):null);
-            if (!empty($add) && !empty($this->options['functions']['add'])) {
-                $form = $this->renderFormForEntry(null);
+            if (
+                !empty($add) && (
+                    !empty($this->options['functions']['add']) &&
+                    $this->options['functions']['add'] != false
+                ) || (
+                    !empty($this->options['functions']['allowAdd']) &&
+                    $this->options['functions']['allowAdd'] != false
+                )
+            ) {
+                
+                $this->renderFormForEntry(null);
+                $form = $this->formGenerator;
                 if ($form === false) {
                     // cannot save, no such entry
                     \Message::add('Cannot save, no such entry', \Message::CLASS_ERROR);
@@ -85,27 +115,32 @@ class ViewGenerator {
                     if ($blankPost) {
                         \Message::add('Cannot save, You should fill any one field!', \Message::CLASS_ERROR);
                         return;
-                    }   
-                    $entityObject = \Env::get('em')->getClassMetadata($entityNS);  
-                    $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name 
-                    $entityColumnNames = $entityObject->getColumnNames(); //get all field names                 
+                    }
+                    $entityObject = \Env::get('em')->getClassMetadata($entityNS);
+                    $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name
+                    $entityColumnNames = $entityObject->getColumnNames(); //get all field names
 
                     // create new entity without calling the constructor
 // TODO: this might break certain entities!
                     $entityObj = $entityObject->newInstance();
                     foreach($entityColumnNames as $column) {
                         $field = $entityObject->getFieldName($column);
+                        if (
+                            isset($this->options['fields']) &&
+                            isset($this->options['fields'][$field]) &&
+                            isset($this->options['fields'][$field]['storecallback']) &&
+                            is_callable($this->options['fields'][$field]['storecallback'])
+                        ) {
+                            $storecallback = $this->options['fields'][$field]['storecallback'];
+                            $postedValue = null;
+                            if (isset($_POST['field'])) {
+                                $postedValue = contrexx_input2raw($_POST[$field]);
+                            }
+                            $_POST[$field] = $storecallback($postedValue);
+                        }
                         if (isset($_POST[$field]) && $field != $primaryKeyName) {
                             $fieldDefinition = $entityObject->getFieldMapping($field);
-                            if (
-                                isset($this->options['fields']) &&
-                                isset($this->options['fields'][$field]) &&
-                                isset($this->options['fields'][$field]['storecallback']) &&
-                                is_callable($this->options['fields'][$field]['storecallback'])
-                            ) {
-                                $storecallback = $this->options['fields'][$field]['storecallback'];
-                                $newValue = $storecallback(contrexx_input2raw($_POST[$field]));
-                            } else if ($fieldDefinition['type'] == 'datetime') {
+                            if ($fieldDefinition['type'] == 'datetime') {
                                 $newValue = new \DateTime($_POST[$field]);
                             } elseif ($fieldDefinition['type'] == 'array') {
                                 $newValue = unserialize($_POST[$field]);
@@ -116,7 +151,7 @@ class ViewGenerator {
                             } else {
                                 $newValue = contrexx_input2raw($_POST[$field]);
                             }
-                            $entityObj->{'set'.ucfirst($field)}($newValue);
+                            $entityObj->{'set'.preg_replace('/_([a-z])/', '\1', ucfirst($field))}($newValue);
                         }
                     }
 
@@ -156,10 +191,21 @@ class ViewGenerator {
              *  postEdit event
              *  execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
              */
-            if (isset($_POST['editid'])) {
-                $entityId = contrexx_input2raw($_POST['editid']);
+            if (
+                $this->isInEditMode() && (
+                    (
+                        !empty($this->options['functions']['edit']) &&
+                        $this->options['functions']['edit'] != false
+                    ) || (
+                        !empty($this->options['functions']['allowEdit']) &&
+                        $this->options['functions']['allowEdit'] != false
+                    )
+                )
+            ) {
+                $entityId = contrexx_input2raw($this->isInEditMode());
                 // render form for editid
-                $form = $this->renderFormForEntry($entityId);
+                $this->renderFormForEntry($entityId);
+                $form = $this->formGenerator;
                 if ($form === false) {
                     // cannot save, no such entry
                     \Message::add('Cannot save, no such entry', \Message::CLASS_ERROR);
@@ -184,40 +230,45 @@ class ViewGenerator {
                 $associationMappings = \Env::get('em')->getClassMetadata($entityNS)->getAssociationMappings();
                 $classMethods = get_class_methods($entityObj->newInstance());
                 foreach ($entityObject as $name=>$value) {
-                    if (isset ($_POST[$name])) {
+                    if (!isset ($_POST[$name])) {
+                        continue;
+                    }
+                    $methodName = 'set'.str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+                    if (   \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($name)
+                        && in_array($methodName, $classMethods)
+                    ) {
+                        // store single-valued-associations
+                        $col = $associationMappings[$name]['joinColumns'][0]['referencedColumnName'];
+                        $association = \Env::get('em')->getRepository($associationMappings[$name]['targetEntity'])->findOneBy(array($col => $_POST[$name]));
+                        $updateArray[$methodName] = $association;
+                    } elseif (   $_POST[$name] != $value
+                              && in_array($methodName, $classMethods)
+                    ) {
+                        $fieldDefinition = $entityObj->getFieldMapping($name);
                         if (
-                            \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($name) &&
-                            in_array('set'.ucfirst($name), $classMethods)
+                            isset($this->options['fields']) &&
+                            isset($this->options['fields'][$name]) &&
+                            isset($this->options['fields'][$name]['storecallback']) &&
+                            is_callable($this->options['fields'][$name]['storecallback'])
                         ) {
-                            // store single-valued-associations
-                            $col = $associationMappings[$name]['joinColumns'][0]['referencedColumnName'];
-                            $association = \Env::get('em')->getRepository($associationMappings[$name]['targetEntity'])->findOneBy(array($col => $_POST[$name]));
-                            $updateArray['set'.ucfirst($name)] = $association;
-                        } elseif (   $_POST[$name] != $value
-                                  && in_array('set'.ucfirst($name), $classMethods)
-                        ) { 
-                            $fieldDefinition = $entityObj->getFieldMapping($name);
-                            if (
-                                isset($this->options['fields']) &&
-                                isset($this->options['fields'][$name]) &&
-                                isset($this->options['fields'][$name]['storecallback']) &&
-                                is_callable($this->options['fields'][$name]['storecallback'])
-                            ) {
-                                $storecallback = $this->options['fields'][$name]['storecallback'];
-                                $newValue = $storecallback(contrexx_input2raw($_POST[$name]));
-                            } else if ($fieldDefinition['type'] == 'datetime') {
-                                $newValue = new \DateTime($_POST[$name]);
-                            } elseif ($fieldDefinition['type'] == 'array') {
-                                $newValue = unserialize($_POST[$name]);
-                                // verify that the value is actually an array -> prevent to store other php data
-                                if (!is_array($newValue)) {
-                                    $newValue = array();
-                                }
+                            $storecallback = $this->options['fields'][$name]['storecallback'];
+                            $newValue = $storecallback(contrexx_input2raw($_POST[$name]));
+                        } else if ($fieldDefinition['type'] == 'datetime') {
+                            if (empty($_POST[$name])) {
+                                $newValue = null;
                             } else {
-                                $newValue = contrexx_input2raw($_POST[$name]);
+                                $newValue = new \DateTime($_POST[$name]);
                             }
-                            $updateArray['set'.ucfirst($name)] = $newValue;
-                        } 
+                        } elseif ($fieldDefinition['type'] == 'array') {
+                            $newValue = unserialize($_POST[$name]);
+                            // verify that the value is actually an array -> prevent to store other php data
+                            if (!is_array($newValue)) {
+                                $newValue = array();
+                            }
+                        } else {
+                            $newValue = contrexx_input2raw($_POST[$name]);
+                        }
+                        $updateArray[$methodName] = $newValue;
                     }
                 }
                 $id = $entityObject[$primaryKeyName]; //get primary key value  
@@ -247,7 +298,17 @@ class ViewGenerator {
              * execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
              */
             $deleteId = !empty($_GET['deleteid']) ? contrexx_input2raw($_GET['deleteid']) : '';
-            if ($deleteId!='') {
+            if (
+                $deleteId!='' && (
+                    (
+                        !empty($this->options['functions']['delete']) &&
+                        $this->options['functions']['delete'] != false
+                    ) || (
+                        !empty($this->options['functions']['allowDelete']) &&
+                        $this->options['functions']['allowDelete'] != false
+                    )
+                )
+            ) {
                 $entityObject = $this->object->getEntry($deleteId);
                 if (empty($entityObject)) {
                     \Message::add('Cannot save, Invalid entry', \Message::CLASS_ERROR);
@@ -275,9 +336,49 @@ class ViewGenerator {
                 \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
             }
         } catch (\Exception $e) {
-            \Message::add($e->getMessage());   
+            \Message::add($e->getMessage());
             return;
         }
+    }
+    
+    /**
+     * $_GET['editid'] has the following format:
+     * {<vg_incr_no>,<id_to_edit>}[,{<vg_incr_no>,<id_to_edit>}[,...]
+     * <id_to_edit> can be a number, string or set of both, separated by comma
+     */
+    protected function isInEditMode() {
+        if (!isset($_GET['editid']) && !isset($_POST['editid'])) {
+            return false;
+        }
+        if (isset($_GET['editid'])) {
+            $edits = explode('},{', substr($_GET['editid'], 1, -1));
+            foreach ($edits as $edit) {
+                $edit = explode(',', $edit);
+                if ($edit[0] != $this->number) {
+                    continue;
+                }
+                unset($edit[0]);
+                if (count($edit) == 1) {
+                    return current($edit);
+                }
+                return $edit;
+            }
+        }
+        if (isset($_POST['editid'])) {
+            $edits = explode('},{', substr($_POST['editid'], 1, -1));
+            foreach ($edits as $edit) {
+                $edit = explode(',', $edit);
+                if ($edit[0] != $this->number) {
+                    continue;
+                }
+                unset($edit[0]);
+                if (count($edit) == 1) {
+                    return current($edit);
+                }
+                return $edit;
+            }
+        }
+        return false;
     }
     
     public function render(&$isSingle = false) {
@@ -291,17 +392,20 @@ class ViewGenerator {
         $entityClass = get_class($this->object);
         $entityId = '';
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet
-            && isset($_GET['editid'])) {
+            && $this->isInEditMode()) {
             $entityClass = $this->object->getDataType();
-            $entityId = contrexx_input2raw($_GET['editid']);
+            $entityId = contrexx_input2raw($this->isInEditMode());
             if ($this->object->entryExists($entityId)) {
                 $renderObject = $this->object->getEntry($entityId);
             }
         }
         if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+            if(!empty($this->options['order']['overview'])) {
+                $renderObject->sortColumns($this->options['order']['overview']);
+            }
             $addBtn = '';
+            $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             if (!empty($this->options['functions']['add'])) {
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $actionUrl->setParam('add', 1);
                 $addBtn = '<br /><br /><input type="button" name="addEtity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />'; 
             }
@@ -313,6 +417,7 @@ class ViewGenerator {
             }
             $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController($renderObject, array(), $this->options['functions']);
             $renderObject = $listingController->getData();
+            $this->options['functions']['vg_increment_number'] = $this->number;
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
 
             return $backendTable.$addBtn;
@@ -325,7 +430,11 @@ class ViewGenerator {
     protected function renderFormForEntry($entityId) {
         global $_CORELANG;
 
-        $renderArray=array();
+        $renderArray=array('vg_increment_number' => $this->number);
+        if (!isset($this->options['fields'])) {
+            $this->options['fields'] = array();
+        }
+        $this->options['fields']['vg_increment_number'] = array('type' => 'hidden');
         $entityTitle = isset($this->options['entityName']) ? $this->options['entityName'] : $_CORELANG['TXT_CORE_ENTITY'];
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $entityClass = $this->object->getDataType();
@@ -333,11 +442,12 @@ class ViewGenerator {
             $entityClass = get_class($this->object);
         }
         $entityObject = \Env::get('em')->getClassMetadata($entityClass);
-        $primaryKeyName = $entityObject->getSingleIdentifierFieldName(); //get primary key name
+        $primaryKeyNames = $entityObject->getIdentifierFieldNames();
         if (!$entityId && !empty($this->options['functions']['add'])) {
-            $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
-            $cancelUrl->setParam('add', null);
-            $this->options['cancelUrl'] = $cancelUrl;
+            if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Url')) {
+                $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
+            }
+            $this->options['cancelUrl']->setParam('add', null);
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
             $actionUrl->setParam('add', 1);
@@ -345,11 +455,16 @@ class ViewGenerator {
             if (empty($entityColumnNames)) return false;
             foreach($entityColumnNames as $column) {
                 $field = $entityObject->getFieldName($column);
-                if ($field != $primaryKeyName) {
-                    $fieldDefinition = $entityObject->getFieldMapping($field);
-                    $this->options[$field]['type']=$fieldDefinition['type'];
-                    $renderArray[$field]="";
+                if (in_array($field, $primaryKeyNames)) {
+                    continue;
                 }
+                $fieldDefinition = $entityObject->getFieldMapping($field);
+                $this->options[$field]['type'] = $fieldDefinition['type'];
+                if ($entityObject->getFieldValue($this->object, $field) !== null) {
+                    $renderArray[$field] = $entityObject->getFieldValue($this->object, $field);
+                    continue;
+                }
+                $renderArray[$field] = '';
             }
             // load single-valued-associations
             $associationMappings = \Env::get('em')->getClassMetadata($entityClass)->getAssociationMappings();
@@ -358,13 +473,18 @@ class ViewGenerator {
                 if (   \Env::get('em')->getClassMetadata($entityClass)->isSingleValuedAssociation($field)
                     && in_array('set'.ucfirst($field), $classMethods)
                 ) {
+                    if ($entityObject->getFieldValue($this->object, $field)) {
+                        $renderArray[$field] = $entityObject->getFieldValue($this->object, $field);
+                        continue;
+                    }
                     $renderArray[$field]= new $associationMapping['targetEntity']();
                 }
             }
         } elseif ($entityId && $this->object->entryExists($entityId)) {
-            $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
-            $cancelUrl->setParam('editid', null);
-            $this->options['cancelUrl'] = $cancelUrl;
+            if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Url')) {
+                $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
+            }
+            $this->options['cancelUrl']->setParam('editid', null);
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $title = sprintf($_CORELANG['TXT_CORE_EDIT_ENTITY'], $entityTitle);
             $actionUrl->setParam('editid', null);
@@ -374,15 +494,16 @@ class ViewGenerator {
                 if ($name == 'virtual') {
                     continue;
                 }
+                if (in_array($name, $primaryKeyNames)) {
+                    continue;
+                }
 
                 $fieldDefinition['type'] = null;
                 if (!\Env::get('em')->getClassMetadata($entityClass)->hasAssociation($name)) {
                     $fieldDefinition = $entityObject->getFieldMapping($name);
                 }
-                if ($name != $primaryKeyName) {
-                    $this->options[$name]['type'] = $fieldDefinition['type'];
-                    $renderArray[$name] = $value;
-                }
+                $this->options[$name]['type'] = $fieldDefinition['type'];
+                $renderArray[$name] = $value;
             }
 
             // load single-valued-associations
@@ -402,7 +523,30 @@ class ViewGenerator {
         } else {
             return false;
         }
-        return new FormGenerator($renderArray, $actionUrl,$title, $this->options);
+        
+        //sets the order of the fields
+        if(!empty($this->options['order']['form'])) {
+            $sortedData = array();
+            foreach ($this->options['order']['form'] as $orderVal) {
+                if(array_key_exists($orderVal, $renderArray)){
+                    $sortedData[$orderVal] = $renderArray[$orderVal];
+                }
+            }
+            $renderArray = array_merge($sortedData,$renderArray);
+        }
+        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClass, $title, $this->options);
+        // This should be moved to FormGenerator as soon as FormGenerator
+        // gets the real entity instead of $renderArray
+        $additionalContent = '';
+        if (isset($this->options['preRenderDetail'])) {
+            $callback = $this->options['preRenderDetail'];
+            $additionalContent = $callback($this, $this->formGenerator, $entityId);
+        }
+        return $this->formGenerator . $additionalContent;
+    }
+    
+    public function getObject() {
+        return $this->object;
     }
     
     public function __toString() {

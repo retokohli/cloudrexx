@@ -98,7 +98,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 verifications.`regex` AS `pattern`,
                 types.`name` AS `type_name`,
                 types.`multi_lang` AS `type_multi_lang`,
-                types.`dynamic` AS `type_dynamic`
+                types.`dynamic` AS `type_dynamic`,
+                types.`exp_search` As `exp_search`
             FROM
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS input,
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_names AS names,
@@ -167,29 +168,29 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 $arrInputfield['default_value'] = $arrInputfieldDefaultValue;
                 $arrInputfield['info'] = $arrInputfieldInfo;
                 $arrInputfield['context_type'] = $objInputfields->fields['context_type'];
-
+                $arrInputfield['exp_search']   = $objInputfields->fields['exp_search'];
                 $arrInputfields[$objInputfields->fields['id']] = $arrInputfield;
                 $objInputfields->MoveNext();
             }
         }
 
         $arrCategorySelector['id'] = 1;
-        $arrCategorySelector['order'] = $this->arrSettings['categorySelectorOrder'][$this->intFormId];
+        $arrCategorySelector['order'] = !empty($this->intFormId) ? $this->arrSettings['categorySelectorOrder'][$this->intFormId] : 0;
         $arrCategorySelector['name'][0] = $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'];
         $arrCategorySelector['type_name'] = '';
         $arrCategorySelector['required'] = 1;
         $arrCategorySelector['type'] = 0;
-        $arrCategorySelector['search'] = $this->arrSettings['categorySelectorExpSearch'][$this->intFormId];
+        $arrCategorySelector['search'] = !empty($this->intFormId) ? $this->arrSettings['categorySelectorExpSearch'][$this->intFormId] : 0;
         $arrInputfields[1] = $arrCategorySelector;
 
         if($this->arrSettings['settingsShowLevels']) {
             $arrLevelSelector['id'] = 2;
-            $arrLevelSelector['order'] = $this->arrSettings['levelSelectorOrder'][$this->intFormId];
+            $arrLevelSelector['order'] = !empty($this->intFormId) ? $this->arrSettings['levelSelectorOrder'][$this->intFormId] : 0;
             $arrLevelSelector['name'][0] = $_ARRAYLANG['TXT_MEDIADIR_LEVELS'];
             $arrLevelSelector['type_name'] = '';
             $arrLevelSelector['required'] = 1;
             $arrLevelSelector['type'] = 0;
-            $arrLevelSelector['search'] = $this->arrSettings['levelSelectorExpSearch'][$this->intFormId];
+            $arrLevelSelector['search'] = !empty($this->intFormId) ? $this->arrSettings['levelSelectorExpSearch'][$this->intFormId] : 0;
             $arrInputfields[2] = $arrLevelSelector;
         }
 
@@ -227,10 +228,12 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                     3 => $_ARRAYLANG['TXT_MEDIADIR_SHOW_BACKEND'],
                 );
 
+                $i=0;
+                $intLastId = 0;
                 foreach ($this->arrInputfields as $key => $arrInputfield) {
                     $strMustfield = $arrInputfield['required']==1 ? 'checked="checked"' : '';
                     $strExpSearch = $arrInputfield['search']==1 ? 'checked="checked"' : '';
-
+                    
                     if($arrInputfield['id'] > $intLastId) {
                         $intLastId = $arrInputfield['id'];
                     }
@@ -303,7 +306,13 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                             ));
                             $objTpl->parse($this->moduleNameLC.'InputfieldLanguagesList');
                         }
-
+                        
+                        if ($arrInputfield['exp_search'] == 0) {
+                            $objTpl->hideBlock($this->moduleNameLC . 'InputfieldAdvancedSearch');
+                        } else {
+                            $objTpl->touchBlock($this->moduleNameLC . 'InputfieldAdvancedSearch');
+                        }   
+                        
                         $objTpl->parse($this->moduleNameLC.'Inputfield');
                     } else {
                     	if(($arrInputfield['id'] == 2 && $objForms->arrForms[$this->intFormId]['formUseLevel']) || ($arrInputfield['id'] == 1 && $objForms->arrForms[$this->intFormId]['formUseCategory'])) {
@@ -518,6 +527,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 break;
             case 4:
                 //Exp Search View
+                $strInputfields = '';
                 foreach ($this->arrInputfields as $key => $arrInputfield) {
                     if($this->checkFieldTypeIsExpSeach($arrInputfield['type'])) {
                         if(!empty($arrInputfield['type'])) {
@@ -551,18 +561,20 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields WHERE form='".$this->intFormId."'");
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_names WHERE form_id='".$this->intFormId."'");
-
-        foreach ($arrData['inputfieldId'] as $intKey => $intFieldId) {
+        
+        $inputfieldId = isset($arrData['inputfieldId']) ? $arrData['inputfieldId'] : array();
+        
+        foreach ($inputfieldId as $intKey => $intFieldId) {
             $intFieldId = intval($intFieldId);
             $intFieldOrder = intval($arrData['inputfieldOrder'][$intFieldId]);
             $arrFieldNames = $arrData['inputfieldName'][$intFieldId];
             $intFieldType = intval($arrData['inputfieldType'][$intFieldId]);
             $intFieldShowIn = intval($arrData['inputfieldShow'][$intFieldId]);
             $arrFieldDefaultValues = $arrData['inputfieldDefaultvalue'][$intFieldId];
-            $arrFieldInfos = $arrData['inputfieldInfo'][$intFieldId];
+            $arrFieldInfos = isset($arrData['inputfieldInfo'][$intFieldId]) ? $arrData['inputfieldInfo'][$intFieldId] : array();
             $intFieldVerification = intval($arrData['inputfieldVerification'][$intFieldId]);
-            $intFieldMustfield = intval($arrData['inputfieldMustfield'][$intFieldId]);
-            $intFieldExpSearch = intval($arrData['inputfieldExpSearch'][$intFieldId]);
+            $intFieldMustfield = isset($arrData['inputfieldMustfield'][$intFieldId]) ? contrexx_input2int($arrData['inputfieldMustfield'][$intFieldId]) : 0;
+            $intFieldExpSearch = isset($arrData['inputfieldExpSearch'][$intFieldId]) ? contrexx_input2int($arrData['inputfieldExpSearch'][$intFieldId]) : 0;
             $fieldContextType = contrexx_input2db($arrData['inputfieldContext'][$intFieldId]);
 
             //add inputfield
@@ -598,8 +610,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                     if($this->arrInputfields[$intFieldId]['name'][0] == $arrFieldNames[0] && $this->arrInputfields[$intFieldId]['name'][$arrLang['id']] != $arrFieldNames[$arrLang['id']]) {
                         $strFieldName = $arrFieldNames[$_LANGID];
                     }
-
-                    if($this->arrInputfields[$intFieldId]['default_value'][0] == $strFieldDefaultValue[0] && $this->arrInputfields[$intFieldId]['default_value'][$arrLang['id']] != $arrFieldDefaultValues[$arrLang['id']]) {
+                    if($this->arrInputfields[$intFieldId]['default_value'][0] == $strFieldDefaultValue && $this->arrInputfields[$intFieldId]['default_value'][$arrLang['id']] != $arrFieldDefaultValues[$arrLang['id']]) {
                         $strFieldDefaultValue = $arrFieldDefaultValues[$_LANGID];
                     }
 
@@ -649,9 +660,19 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 }
             }
         }
-
-        $objCategorySelector = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_order_rel_forms_selectors SET `selector_order`='".intval($arrData['selectorOrder'][1])."', `exp_search`='".intval($arrData['selectorExpSearch'][1])."' WHERE `selector_id`='9' AND `form_id`='".$this->intFormId."'");
-        $objLevelSelector = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_order_rel_forms_selectors SET `selector_order`='".intval($arrData['selectorOrder'][2])."', `exp_search`='".intval($arrData['selectorExpSearch'][2])."' WHERE `selector_id`='10' AND `form_id`='".$this->intFormId."'");
+        
+        $selectorOrder = $selectorOrder2 = $selectorExpSearch = $selectorExpSearch2 = 0;
+        if (isset($arrData['selectorOrder'])) {
+            $selectorOrder = isset($arrData['selectorOrder'][1]) ? $arrData['selectorOrder'][1] : 0; 
+            $selectorOrder2 = isset($arrData['selectorOrder'][2]) ? $arrData['selectorOrder'][2] : 0;
+        }
+        if (isset($arrData['selectorExpSearch'])) {
+            $selectorExpSearch = isset($arrData['selectorExpSearch'][1]) ? $arrData['selectorExpSearch'][1] : 0;
+            $selectorExpSearch2 = isset($arrData['selectorExpSearch'][2]) ? $arrData['selectorExpSearch'][2] : 0;
+        }        
+        
+        $objCategorySelector = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_order_rel_forms_selectors SET `selector_order`='".  contrexx_input2int($selectorOrder)."', `exp_search`='".intval($selectorExpSearch)."' WHERE `selector_id`='9' AND `form_id`='".$this->intFormId."'");
+        $objLevelSelector = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_order_rel_forms_selectors SET `selector_order`='".  contrexx_input2int($selectorOrder2)."', `exp_search`='".intval($selectorExpSearch2)."' WHERE `selector_id`='10' AND `form_id`='".$this->intFormId."'");
 
         if ($objCategorySelector === false || $objLevelSelector === false) {
             return false;
@@ -834,6 +855,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
             3 => $_ARRAYLANG['TXT_MEDIADIR_SHOW_BACKEND'],
         );
 
+        $i = 0;
+        $intLastId = 0;
         foreach ($this->arrInputfields as $key => $arrInputfield) {
             $strMustfield = $arrInputfield['required']==1 ? 'checked="checked"' : '';
             $strExpSearch = $arrInputfield['search']==1 ? 'checked="checked"' : '';
@@ -869,7 +892,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_INPUTFIELD_NAME_LANG_ID' => $arrLang['id'],
                         $this->moduleLangVar.'_INPUTFIELD_NAME_LANG_SHORTCUT' => $arrLang['lang'],
                         $this->moduleLangVar.'_INPUTFIELD_NAME_LANG_NAME' => $arrLang['name'],
-                        $this->moduleLangVar.'_SETTINGS_INPUTFIELD_NAME' => $arrInputfield['name'][$arrLang['id']],
+                        $this->moduleLangVar.'_SETTINGS_INPUTFIELD_NAME' => isset($arrInputfield['name'][$arrLang['id']]) ? $arrInputfield['name'][$arrLang['id']] : '',
                     ));
                     $objTpl->parse($this->moduleNameLC.'InputfieldNameList');
                 }
@@ -880,7 +903,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_ID' => $arrLang['id'],
                         $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_SHORTCUT' => $arrLang['lang'],
                         $this->moduleLangVar.'_INPUTFIELD_DEFAULTVALUE_LANG_NAME' => $arrLang['name'],
-                        $this->moduleLangVar.'_SETTINGS_INPUTFIELD_DEFAULTVALUE' => $arrInputfield['default_value'][$arrLang['id']],
+                        $this->moduleLangVar.'_SETTINGS_INPUTFIELD_DEFAULTVALUE' => isset($arrInputfield['default_value'][$arrLang['id']]) ? $arrInputfield['default_value'][$arrLang['id']] : '',
                     ));
                     $objTpl->parse($this->moduleNameLC.'InputfieldDefaultvalueList');
                 }
@@ -893,7 +916,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 	                    $this->moduleLangVar.'_INPUTFIELD_INFO_LANG_ID' => $arrLang['id'],
 	                    $this->moduleLangVar.'_INPUTFIELD_INFO_LANG_SHORTCUT' => $arrLang['lang'],
 	                    $this->moduleLangVar.'_INPUTFIELD_INFO_LANG_NAME' => $arrLang['name'],
-	                    $this->moduleLangVar.'_SETTINGS_INPUTFIELD_INFO' => $arrInputfield['info'][$arrLang['id']],
+	                    $this->moduleLangVar.'_SETTINGS_INPUTFIELD_INFO' => isset($arrInputfield['info'][$arrLang['id']]) ? $arrInputfield['info'][$arrLang['id']] : '',
 	                ));
                     $objTpl->parse($this->moduleNameLC.'InputfieldInfoList');
                 }
@@ -912,7 +935,11 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                     ));
                     $objTpl->parse($this->moduleNameLC.'InputfieldLanguagesList');
                 }
-
+                if ($arrInputfield['exp_search'] == 0) {
+                    $objTpl->hideBlock($this->moduleNameLC . 'InputfieldAdvancedSearch');
+                } else {
+                    $objTpl->touchBlock($this->moduleNameLC . 'InputfieldAdvancedSearch');
+                }
                 $objTpl->parse($this->moduleNameLC.'Inputfield');
             } else {
             	if(($arrInputfield['id'] == 2 && $objForms->arrForms[$this->intFormId]['formUseLevel']) || ($arrInputfield['id'] == 1 && $objForms->arrForms[$this->intFormId]['formUseCategory'])) {

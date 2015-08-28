@@ -11,10 +11,12 @@
 
 namespace Cx\Modules\Shop\Model\Event;
 use Cx\Core\Core\Controller\Cx;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core_Modules\MediaBrowser\Model\MediaType;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
+use Cx\Core\Event\Model\Entity\DefaultEventListener;
 
 /**
+ * Class ShopEventListener
  * EventListener for Shop
  * 
  * @copyright   Comvation AG
@@ -22,23 +24,9 @@ use Cx\Core_Modules\MediaBrowser\Model\MediaType;
  * @package     contrexx
  * @subpackage  module_shop
  */
-class ShopEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
-
-    /**
-     * @var Cx
-     */
-    protected $cx;
-
-    function __construct(Cx $cx)
-    {
-        $this->cx = $cx;
-    }
-
-    public function onEvent($eventName, array $eventArgs) {
-        $this->$eventName(current($eventArgs));
-    }
+class ShopEventListener extends DefaultEventListener {
    
-    public static function SearchFindContent($search) {
+    public function SearchFindContent($search) {
         $term_db = $search->getTerm();
 
         $flagIsReseller = false;
@@ -64,18 +52,15 @@ class ShopEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $search->appendResult($result);
     }
 
-    public function LoadMediaTypes(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaSourceManager $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        $mediaType = new MediaType();
-        $mediaType->setName('shop');
-        $mediaType->setHumanName($_ARRAYLANG['TXT_FILEBROWSER_SHOP']);
-        $mediaType->setDirectory(array(
+        $mediaType = new MediaSource('shop',$_ARRAYLANG['TXT_FILEBROWSER_SHOP'],array(
             $this->cx->getWebsiteImagesShopPath(),
             $this->cx->getWebsiteImagesShopWebPath(),
         ));
-        $mediaType->getAccessIds(array(13));
+        $mediaType->setAccessIds(array(13));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 

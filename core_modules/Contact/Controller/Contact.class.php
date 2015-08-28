@@ -379,27 +379,25 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
 
                     case 'access_country':
                     case 'country':
-                        $objResult = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
                         if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
                             $arrField['lang'][$_LANGID]['value'] = $this->objTemplate->_globalVariables[trim($arrField['lang'][$_LANGID]['value'],'{}')];
-                        }
-                        
-                        while (!$objResult->EOF) {
-// TODO: where is this 'name' field comming from? do we have to escape it?
-                            $this->objTemplate->setVariable($fieldId.'_VALUE', $objResult->fields['name']);
+                        }                        
+                        $lang = $arrField['lang'][$_LANGID]['value'];
+                        $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $lang);
+                        foreach ($country as $id => $name) {
+                            $this->objTemplate->setVariable($fieldId.'_VALUE', $name);
                             
                             if ((!empty($_POST['contactFormField_'.$fieldId]))) {
-                              if (strcasecmp($objResult->fields['name'], $_POST['contactFormField_'.$fieldId]) == 0) {
+                              if (strcasecmp($name, $_POST['contactFormField_'.$fieldId]) == 0) {
                                   $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                               }
                             } elseif ((!empty($_GET[$fieldId]))) {
-                                if (strcasecmp($objResult->fields['name'], $_GET[$fieldId]) == 0) {
+                                if (strcasecmp($name, $_GET[$fieldId]) == 0) {
                                     $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                                 }
-                            } elseif ($objResult->fields['name'] == $arrField['lang'][$_LANGID]['value']) {
+                            } elseif ($name == $arrField['lang'][$_LANGID]['value']) {
                                     $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                             }
-                            $objResult->MoveNext();
                             $this->objTemplate->parse('field_'.$fieldId);
                         }
                         $this->objTemplate->setVariable(array(
@@ -444,7 +442,6 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 }
             }
         }
-        $saveCrmContact = $this->arrForms[$_GET['cmd']]['saveDataInCRM'];
 
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) { //form submitted
             $this->checkLegacyMode();
@@ -453,8 +450,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $arrFormData = $this->_getContactFormData();
             if ($arrFormData) {
                 if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) { //validation ok
-
-                    if ($saveCrmContact) {
+                    if (!empty($arrFormData['saveDataInCRM'])) {
                         $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
                         $objCrmLibrary->addCrmContact($arrFormData);
                     }
@@ -540,7 +536,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $uploader->setJsInstanceName($uploaderInstanceName);
 
             // specifies the function to call when upload is finished. must be a static function
-            $uploader->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/Contact/Controller/Contact.class.php','\Cx\Core_Modules\Contact\Controller\Contact','uploadFinished'));
+            $uploader->setFinishedCallback(array(\Env::get('cx')->getCodeBaseCoreModulePath().'/Contact/Controller/Contact.class.php','\Cx\Core_Modules\Contact\Controller\Contact','uploadFinished'));
             $uploader->setData(array('submissionId' => $this->submissionId, 'fieldId' => $fieldId, 'singlefile' => $restrictUpload2SingleFile));
 
 
@@ -674,7 +670,7 @@ CODE;
         if (isset($_POST) && !empty($_POST)) {
             $arrFormData = array();
             $arrFormData['id'] = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
-            if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['mailTemplate'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'], $arrFormData['useEmailOfSender'], $arrFormData['htmlMail'], $arrFormData['sendAttachment'])) {
+            if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['mailTemplate'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'], $arrFormData['useEmailOfSender'], $arrFormData['htmlMail'], $arrFormData['sendAttachment'], $arrFormData['saveDataInCRM'], $arrFormData['crmCustomerGroups'])) {
                 $arrFormData['fields'] = $this->getFormFields($arrFormData['id']);
                 foreach ($arrFormData['fields'] as $field) {
                     $this->arrFormFields[] = $field['lang'][$_LANGID]['name'];
@@ -754,6 +750,7 @@ CODE;
                 return array();
                 
             $arrFiles = array(); //we'll collect name => path of all files here and return this
+            $documentRootPath = \Env::get('cx')->getWebsiteDocumentRootPath();
             foreach ($arrFields as $fieldId => $arrField) {
                 // skip non-upload fields
                 if (!in_array($arrField['type'], array('file', 'multi_file'))) {
@@ -785,9 +782,9 @@ CODE;
                     //find an unique folder name for the uploaded files
                     $folderName = date("Ymd").'_'.$fieldId;
                     $suffix = "";
-                    if(file_exists(ASCMS_DOCUMENT_ROOT.$depositionTarget.$folderName)) {
+                    if(file_exists($documentRootPath.$depositionTarget.$folderName)) {
                         $suffix = 1;
-                        while(file_exists(ASCMS_DOCUMENT_ROOT.$depositionTarget.$folderName.'-'.$suffix))
+                        while(file_exists($documentRootPath.$depositionTarget.$folderName.'-'.$suffix))
                             $suffix++;
 
                         $suffix = '-'.$suffix;
@@ -795,8 +792,8 @@ CODE;
                     $folderName .= $suffix;
                     
                     //try to make the folder and change target accordingly on success
-                    if(\Cx\Lib\FileSystem\FileSystem::make_folder(\Env::get('cx')->getWebsitePath().ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName)) {
-                        \Cx\Lib\FileSystem\FileSystem::makeWritable(\Env::get('cx')->getWebsitePath().ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName);
+                    if(\Cx\Lib\FileSystem\FileSystem::make_folder($documentRootPath.$depositionTarget.$folderName)) {
+                        \Cx\Lib\FileSystem\FileSystem::makeWritable($documentRootPath.$depositionTarget.$folderName);
                         $depositionTarget .= $folderName.'/';
                     }
                     $this->depositionTarget[$fieldId] = $depositionTarget;
@@ -809,13 +806,13 @@ CODE;
                 //move all files
                 if(!\Cx\Lib\FileSystem\FileSystem::exists($tmpUploadDir))
                     throw new \Cx\Core_Modules\Contact\Controller\ContactException("could not find temporary upload directory '$tmpUploadDir'");
-
+                
                 $h = opendir(\Env::get('cx')->getWebsitePath().$tmpUploadDir);
                 while(false !== ($f = readdir($h))) {
                     if($f != '..' && $f != '.') {
                         //do not overwrite existing files.
                         $prefix = '';
-                        while (file_exists(ASCMS_DOCUMENT_ROOT.$depositionTarget.$prefix.$f)) {
+                        while (file_exists($documentRootPath.$depositionTarget.$prefix.$f)) {
                             if (empty($prefix)) {
                                 $prefix = 0;
                             }
@@ -826,7 +823,7 @@ CODE;
                             // move file
                             try {
                                 $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
-                                $objFile->move(ASCMS_DOCUMENT_ROOT.$depositionTarget.$prefix.$f, false);
+                                $objFile->move($documentRootPath.$depositionTarget.$prefix.$f, false);
                             } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                                 \DBG::msg($e->getMessage());
                             }
@@ -895,15 +892,16 @@ CODE;
                             $arrFile = pathinfo($fileName);
                             $i = '';
                             $suffix = '';
+                            $documentRootPath = \Env::get('cx')->getWebsiteDocumentRootPath();
                             $filePath = $arrSettings['fileUploadDepositionPath'].'/'.$arrFile['filename'].$suffix.'.'.$arrFile['extension'];
-                            while (file_exists(ASCMS_DOCUMENT_ROOT.$filePath)) {
+                            while (file_exists($documentRootPath.$filePath)) {
                                 $suffix = '-'.++$i;
                                 $filePath = $arrSettings['fileUploadDepositionPath'].'/'.$arrFile['filename'].$suffix.'.'.$arrFile['extension'];
                             }
                             
                             $arrMatch = array();
                             if (\FWValidator::is_file_ending_harmless($fileName)) {
-                                if (@move_uploaded_file($fileTmpName, ASCMS_DOCUMENT_ROOT.$filePath)) {
+                                if (@move_uploaded_file($fileTmpName, $documentRootPath.$filePath)) {
                                     $id = intval(substr($file, 17));
                                     $arrFiles[$id] = array(
                                         'path' => $filePath,
@@ -1307,8 +1305,8 @@ CODE;
                     if (isset($arrFormData['uploadedFiles'][$fieldId])) {
                         $htmlValue = "<ul>";
                         foreach ($arrFormData['uploadedFiles'][$fieldId] as $file) {
-                            $htmlValue .= "<li><a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.contrexx_raw2xhtml($file['path'])."' >".contrexx_raw2xhtml($file['name'])."</a></li>";
-                            $plaintextValue  .= ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$file['path']."\r\n";
+                            $htmlValue .= "<li><a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].\Env::get('cx')->getWebsiteOffsetPath().contrexx_raw2xhtml($file['path'])."' >".contrexx_raw2xhtml($file['name'])."</a></li>";
+                            $plaintextValue  .= ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].\Env::get('cx')->getWebsiteOffsetPath().$file['path']."\r\n";
                         }
                         $htmlValue .= "</ul>";
                     }
@@ -1408,10 +1406,10 @@ CODE;
         }
         $message .= $_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION']." : ".contrexx_raw2xhtml($arrFormData['meta']['browser'])."\n";
 
-        if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+        if (@include_once \Env::get('cx')->getCodeBaseLibraryPath().'/phpmailer/class.phpmailer.php') {
             $objMail = new \phpmailer();
 
-            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once \Env::get('cx')->getCodeBaseCorePath().'/SmtpSettings.class.php') {
                 if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                     $objMail->IsSMTP();
                     $objMail->Host = $arrSmtp['hostname'];
@@ -1450,7 +1448,7 @@ CODE;
             if (count($arrFormData['uploadedFiles']) > 0 && $arrFormData['sendAttachment'] == 1) {
                 foreach ($arrFormData['uploadedFiles'] as $arrFilesOfField) {
                     foreach ($arrFilesOfField as $file) {
-                        $objMail->AddAttachment(ASCMS_DOCUMENT_ROOT.$file['path'], $file['name']);
+                        $objMail->AddAttachment(\Env::get('cx')->getWebsiteDocumentRootPath().$file['path'], $file['name']);
                     }
                 }
             }

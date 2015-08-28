@@ -944,7 +944,7 @@ EOF;
             'TXT_PODCAST_YOUTUBE_ID_INVALID'=> $_ARRAYLANG['TXT_PODCAST_YOUTUBE_ID_INVALID'],
             'TXT_PODCAST_YOUTUBE_SPECIFY_ID'=> $_ARRAYLANG['TXT_PODCAST_YOUTUBE_SPECIFY_ID']
         ));
-
+        
         $this->_objTpl->setVariable(array(
             'PODCAST_SELECT_LOCAL_MEDIUM'       => $sourceType == 'local' ? 'checked="checked"' : '',
             'PODCAST_SELECT_LOCAL_MEDIUM_BOX'   => $sourceType == 'local' ? 'block' : 'none',
@@ -957,7 +957,15 @@ EOF;
             'PODCAST_YOUTUBE_SOURCE'            => $sourceType == 'youtube' ? $source : '',
             'PODCAST_YOUTUBE_ID_CHARACTERS'     => $this->_youTubeAllowedCharacters,
             'PODCAST_YOUTUBE_ID_LENGTH'         => $this->_youTubeIdLength,
-            'PODCAST_YOUTUBE_REGEX_JS'          => $this->_youTubeIdRegexJS
+            'PODCAST_YOUTUBE_REGEX_JS'          => $this->_youTubeIdRegexJS,
+            'PODCAST_BROWSE'                    => self::getMediaBrowserButton(
+                                                            $_ARRAYLANG['TXT_PODCAST_BROWSE'],
+                                                            array(
+                                                                'data-cx-mb-views' => 'filebrowser',
+                                                                'type' => 'button'
+                                                            ),
+                                                            'mediaBrowserCallback'
+                                                    ),
         ));
     }
 
@@ -1101,12 +1109,9 @@ EOF;
                         $this->_strOkMessage = $_ARRAYLANG['TXT_PODCAST_MEDIUM_ADDED_SUCCESSFULL'];
                         // Class in /core_modules/index.class.php is named Cache
                         // Class in /core_modules/admin.class.php is named CacheManager
-                        if (class_exists('Cache')) {
-                            $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
-                        } else {
-                            $objCache = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                        }
-                        $objCache->deleteAllFiles();
+                        $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
+                        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
+                        $cacheManager->deleteSingleFile($pageId);
                         $this->_createRSS();
                         return $this->_media();
                     } else {
@@ -1116,12 +1121,9 @@ EOF;
                     if ($this->_addMedium($mediumTitle, $mediumYoutubeID, $mediumAuthor, $mediumDescription, $mediumSource, $mediumThumbnail, $mediumTemplate, $mediumWidth, $mediumHeight, $mediumPlaylength, $mediumSize, $mediumCategories, $mediumStatus)) {
                         // Class in /core_modules/index.class.php is named Cache
                         // Class in /core_modules/admin.class.php is named CacheManager
-                        if (class_exists('Cache')) {
-                            $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
-                        } else {
-                            $objCache = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                        }
-                        $objCache->deleteAllFiles();
+                        $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
+                        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
+                        $cacheManager->deleteSingleFile($pageId);
                         $this->_createRSS();
 
                         if($_REQUEST['section'] != 'Podcast'){
@@ -1221,7 +1223,17 @@ EOF;
             'PODCAST_MEDIUM_THUMBNAIL_SRC'      => !empty($mediumThumbnail) ? $mediumThumbnail : $this->_noThumbnail,
             'PODCAST_MEDIUM_STATUS'             => $mediumStatus == 1 ? 'checked="checked"' : '',
             'PODCAST_MEDIUM_YOUTUBE_DISABLED'   => !empty($mediumYoutubeID) ? 'disabled="disabled"' : '',
-            'PODCAST_MEDIUM_YOUTUBE_ID'         => !empty($mediumYoutubeID) ? $mediumYoutubeID : ''
+            'PODCAST_MEDIUM_YOUTUBE_ID'         => !empty($mediumYoutubeID) ? $mediumYoutubeID : '',
+            'PODCAST_THUMB_BROWSE'              => self::getMediaBrowserButton(
+                                                        '',
+                                                        array(
+                                                            'data-cx-mb-views' => 'filebrowser',
+                                                            'type' => 'button',
+                                                            'style' => 'display:none',
+                                                            'id' => 'podcast_thumbnail_browser'
+                                                        ),
+                                                        'mediaBrowserCallback'
+                                                    )
         ));
 
         $arrCategories = &$this->_getCategories();
@@ -1464,5 +1476,25 @@ EOF;
         }
         return $status;
     }
+    
+    /**
+     * Get mediabrowser button
+     * 
+     * @param string $buttonValue Value of the button
+     * @param string $options     Input button options 
+     * @param string $callback    Media browser callback function
+     * 
+     * @return string html element of browse button
+     */
+    public static function getMediaBrowserButton($buttonValue, $options = array(), $callback = '')
+    {
+        // Mediabrowser
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+        $mediaBrowser->setOptions($options);
+        if ($callback) {
+            $mediaBrowser->setCallback($callback);
+        }
+        
+        return $mediaBrowser->getXHtml($buttonValue);        
+    }
 }
-?>

@@ -612,7 +612,7 @@ $_ARRAYLANG['TXT_USER_USERNAME'] = "Benutzername";
 $_ARRAYLANG['TXT_USER_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_USER_FIRSTNAME'] = "Vorname";
 $_ARRAYLANG['TXT_USER_LASTNAME'] = "Nachname";
-$_ARRAYLANG['TXT_USER_NOTIFICATION_EMAIL'] = "Senden Sie eine E-Mail-Benachrichtigung mit einem neuen Passwort.";
+$_ARRAYLANG['TXT_USER_NOTIFICATION_EMAIL'] = "Kennwort Festlegung";
 $_ARRAYLANG['TXT_USER_GROUP_INVERT_RESULT'] = "Gruppenfilter umkehren";
 $_ARRAYLANG['TXT_WORKFLOW_CLEAN_DESCRIPTION'] = "Hier können Sie Einträge, welche älter als ein bestimmtes Datum sind, aus dem Verlauf entfernen lassen. Wir empfehlen Ihnen, den Verlauf nur dann zu löschen, wenn Ihre Datenbank sehr viel Speicher belegt. In diesem Fall ist es ratsam, ältere Einträge aus der Datenbank löschen zu lassen. Geben Sie im nachfolgend Feld an, wie viele Tage alt die Archivversionen mindestens sein müssen, um gelöscht werden zu können. Beachten Sie, dass die gerade aktiven Verlaufsversionen nicht gelöscht werden können. Somit ist es möglich, dass Sie auch nach Durchführung der Operation noch Verlaufsdaten vorhanden sind. Es handelt sich dabei um keinen Fehler.";
 $_ARRAYLANG['TXT_WORKFLOW_CLEAN_OCCUPIED'] = "Belegter Datenbankspeicher";
@@ -676,13 +676,9 @@ $_ARRAYLANG['TXT_ACCESS_UNKOWN_FORMAT_SPECIFIED'] = "Das gewählte E-Mail Format
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATED'] = "Benutzerkonto aktiviert";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_DEACTIVATED'] = "Benutzerkonto deaktiviert";
 $_ARRAYLANG['TXT_ACCESS_USERNAME_DESC'] = "Benutzername";
-$_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_INVITATION'] = "Administrator Registrierung";
-$_ARRAYLANG['TXT_ACCESS_FIRSTNAME_DESC'] = "Vorname";
-$_ARRAYLANG['TXT_ACCESS_LASTNAME_DESC'] = "Nachname";
-$_ARRAYLANG['TXT_ACCESS_WEBSITE_DESC'] = "Website URL";
+$_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_INVITATION'] = "Benutzerkonto eingerichtet";
 $_ARRAYLANG['TXT_ACCESS_LINK_DESC'] = "Website Admin-URL";
 $_ARRAYLANG['TXT_ACCESS_EMAIL_DESC'] = "E-Mail Adresse des neuen Benutzers";
-$_ARRAYLANG['TXT_ACCESS_PASSWORD_DESC'] = "Passwort";
 $_ARRAYLANG['TXT_ACCESS_ADDRESS'] = "Adresse";
 $_ARRAYLANG['TXT_ACCESS_ALL'] = "Alle";
 $_ARRAYLANG['TXT_ACCESS_BIRTHDAY'] = "Geburtstag";
@@ -1207,6 +1203,7 @@ $_ARRAYLANG['TXT_CORE_SAVED'] = "Seite gespeichert";
 $_ARRAYLANG['TXT_CORE_SAVED_BLOCK'] = "Inhaltscontainer gespeichert";
 $_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Entwurf zur Ver&ouml;ffentlichung freigegeben";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH_DRAFT'] = "Entwurf veröffentlichen";
+$_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH'] = 'Aktivieren';
 
 $_ARRAYLANG['TXT_CORE_ALIAS_CREATION_DENIED'] = "Aliasse konnten nicht erstellt werden";
 
@@ -1218,6 +1215,7 @@ $_ARRAYLANG['TXT_GENERAL_OPTIONS'] = "Datumsgesteuerte Veröffentlichung";
 $_ARRAYLANG['TXT_MENU_NAME'] = "Linkname (für die Navigation)";
 $_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_UPDATING'] = "Fehler beim Aktualisieren des Benutzerkontos %1\$s";
 $_ARRAYLANG['TXT_THEMES'] = "Design Vorlage";
+$_ARRAYLANG['TXT_THEME_PREVIEW'] = 'Vorschau';
 
 $_ARRAYLANG['TXT_CORE_NAVTITLE'] = "Titel (Navigation)";
 $_ARRAYLANG['TXT_CORE_CONTENTTITLE'] = "Titel (Seite)";
@@ -1340,6 +1338,7 @@ $_ARRAYLANG['TXT_CORE_CM_COPY_OF_PAGE'] = 'Kopie';
 $_ARRAYLANG['TXT_CORE_CM_COPY_N_OF_PAGE'] = '%s. Kopie';
 $_ARRAYLANG['TXT_CORE_CM_HISTORY_ENTRIES'] = 'Einträge';
 $_ARRAYLANG['TXT_CORE_CM_HISTORY_HIDE_DRAFTS'] = 'Entwürfe ausblenden';
+$_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
 
 // core login
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
@@ -1407,3 +1406,10 @@ $_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON'] = 'Ihre Sitzung ist abgelaufen.<br /><a hre
 $_ARRAYLANG['TXT_COMPONENTMANAGER_ADD_NEW_APPLICATION'] = "Neue hinzufügen...";
 $_ARRAYLANG['TXT_CORE_MODULE_CRON'] = "Geplante Aufgaben";
 $_ARRAYLANG['TXT_NET_MANAGER'] = "Domains";
+
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'] = "MultiSite";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_COMMUNICATION_MANAGEMENT'] = "Kommunikationsverwaltung";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SYSTEM_MANAGEMENT']        = "Systemverwaltung";
+
+$_ARRAYLANG['TXT_CORE_EDIT_USER_CRM_ACCOUNT'] = 'Dieser Benutzer ist verknüpft mit einem CRM Kontakt, klicken um direkt zum CRM Kontakt zu gelangen.';
+$_ARRAYLANG['TXT_CORE_NONE'] = 'Keine';

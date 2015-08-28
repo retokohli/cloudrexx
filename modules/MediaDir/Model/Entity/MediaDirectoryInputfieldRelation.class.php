@@ -246,7 +246,7 @@ class MediaDirectoryInputfieldRelation extends \Cx\Modules\MediaDir\Controller\M
 
 
 
-    function saveInputfield($intInputfieldId, $intValue)
+    function saveInputfield($intInputfieldId, $intValue, $langId = 0)
     {
         $intValue = intval($intValue);
         return $intValue;
@@ -259,7 +259,7 @@ class MediaDirectoryInputfieldRelation extends \Cx\Modules\MediaDir\Controller\M
 
         $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
-        if($objDeleteEntry !== false) {
+        if($objDeleteInputfield !== false) {
             return true;
         } else {
             return false;

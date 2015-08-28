@@ -39,7 +39,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
-    public function executeCommand($command, $arguments) {
+    public function executeCommand($command, $arguments)
+    {
         new \Cx\Core_Modules\Workbench\Model\Entity\ConsoleInterface(array_merge(array($command), $arguments), $this->cx);
     }
 

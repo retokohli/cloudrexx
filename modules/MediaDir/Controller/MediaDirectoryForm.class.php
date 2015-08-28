@@ -58,6 +58,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 form.`use_category` AS `use_category`,
                 form.`use_level` AS `use_level`,
                 form.`use_ready_to_confirm` AS `use_ready_to_confirm`,    
+                form.`entries_per_page` AS `entries_per_page`,
                 form.`active` AS `active`,
                 form_names.`form_name` AS `name`,
                 form_names.`form_description` AS `description`
@@ -103,16 +104,17 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                     }
                 }
 
-                $arrForm['formId'] = intval($objFormsRS->fields['id']);
-                $arrForm['formOrder'] = intval($objFormsRS->fields['order']);
-                $arrForm['formPicture'] = htmlspecialchars($objFormsRS->fields['picture'], ENT_QUOTES, CONTREXX_CHARSET);
-                $arrForm['formName'] = $arrFormName;
-                $arrForm['formDescription'] = $arrFormDesc;
-                $arrForm['formActive'] = intval($objFormsRS->fields['active']);
-                $arrForm['formCmd'] = htmlspecialchars($objFormsRS->fields['cmd'], ENT_QUOTES, CONTREXX_CHARSET);
-                $arrForm['formUseCategory'] = intval($objFormsRS->fields['use_category']);
-                $arrForm['formUseLevel'] = intval($objFormsRS->fields['use_level']);
+                $arrForm['formId']                = intval($objFormsRS->fields['id']);
+                $arrForm['formOrder']             = intval($objFormsRS->fields['order']);
+                $arrForm['formPicture']           = htmlspecialchars($objFormsRS->fields['picture'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrForm['formName']              = $arrFormName;
+                $arrForm['formDescription']       = $arrFormDesc;
+                $arrForm['formActive']            = intval($objFormsRS->fields['active']);
+                $arrForm['formCmd']               = htmlspecialchars($objFormsRS->fields['cmd'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrForm['formUseCategory']       = intval($objFormsRS->fields['use_category']);
+                $arrForm['formUseLevel']          = intval($objFormsRS->fields['use_level']);
                 $arrForm['formUseReadyToConfirm'] = intval($objFormsRS->fields['use_ready_to_confirm']);
+                $arrForm['formEntriesPerPage']    = $objFormsRS->fields['entries_per_page'];
 
                 $arrForms[$objFormsRS->fields['id']] = $arrForm;
                 $objFormsRS->MoveNext();
@@ -247,14 +249,14 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
 
         $intId = intval($intFormId);
         $strPicture = contrexx_addslashes(contrexx_strip_tags($arrData['formImage']));
-        $intActive = intval($arrData['categoryActive']);
 
         $arrName = $arrData['formName'];
         $arrDescription = $arrData['formDescription'];
         $strCmd = strtolower(contrexx_addslashes(contrexx_strip_tags($arrData['formCmd'])));
         $intUseCategory = intval($arrData['formUseCategory']);
-        $intUseLevel = intval($arrData['formUseLevel']);
-        $intUseReadyToConfirm = intval($arrData['formUseReadyToConfirm']);
+        $intUseLevel = isset($arrData['formUseLevel']) ? contrexx_input2int($arrData['formUseLevel']) : 0;
+        $intUseReadyToConfirm = isset($arrData['formUseReadyToConfirm']) ? contrexx_input2int($arrData['formUseReadyToConfirm']) : 0;
+        $intEntriesPerPage = isset($arrData['formEntriesPerPage']) ? contrexx_input2int($arrData['formEntriesPerPage']) : 0;
 
         if(empty($intId)) {
             //insert new form
@@ -268,6 +270,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                     `use_category`='".$intUseCategory."',
                     `use_level`='".$intUseLevel."',
                     `use_ready_to_confirm`='".$intUseReadyToConfirm."',
+                    `entries_per_page`='".$intEntriesPerPage."',
                     `active`='0'
             ");
 
@@ -348,46 +351,49 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                     `cmd`='".$strCmd."',
                     `use_category`='".$intUseCategory."',
                     `use_level`='".$intUseLevel."',
-                    `use_ready_to_confirm`='".$intUseReadyToConfirm."'
+                    `use_ready_to_confirm`='".$intUseReadyToConfirm."',
+                    `entries_per_page`='".$intEntriesPerPage."'
                 WHERE
                     `id`='".$intId."'
             ");
-
-            $objDefaultLang = $objDatabase->Execute("
-                SELECT
-                    `form_name` AS `name`,
-                    `form_description` AS `description`
-                FROM
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names
-                WHERE
-                    lang_id=".$_LANGID."
-                    AND `form_id` = '".$intId."'
-                LIMIT
-                    1
-            ");
-
-            if ($objDefaultLang !== false) {
-                $strOldDefaultName = $objDefaultLang->fields['name'];
-                $strOldDefaultDescription = $objDefaultLang->fields['description'];
-            }
-
-            //permissions
-            $objDeletePerm = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms WHERE form_id='".$intId."'");
-
-            foreach ($arrData['settingsPermGroupForm'][$intId] as $intGroupId => $intGroupStatus) {
-                $objInsertPerm = $objDatabase->Execute("
-                    INSERT INTO
-                        ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms
-                    SET
-                        `group_id`='".intval($intGroupId)."',
-                        `form_id`='".intval($intId)."',
-                        `status_group`='".intval($intGroupStatus)."'
+            
+            if($objUpdateAttributes !== false) {
+                
+                $objDefaultLang = $objDatabase->Execute("
+                    SELECT
+                        `form_name` AS `name`,
+                        `form_description` AS `description`
+                    FROM
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names
+                    WHERE
+                        lang_id=".$_LANGID."
+                        AND `form_id` = '".$intId."'
+                    LIMIT
+                        1
                 ");
-            }
 
-            $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names WHERE form_id='".$intId."'");
+                if ($objDefaultLang !== false) {
+                    $strOldDefaultName = $objDefaultLang->fields['name'];
+                    $strOldDefaultDescription = $objDefaultLang->fields['description'];
+                }
 
-            if($objInsertNames !== false) {
+                //permissions
+                $objDeletePerm = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms WHERE form_id='".$intId."'");
+                $settingsPermissionGroupForm = isset($arrData['settingsPermGroupForm'][$intId]) ? $arrData['settingsPermGroupForm'][$intId] : array();
+                
+                foreach ($settingsPermissionGroupForm as $intGroupId => $intGroupStatus) {
+                    $objInsertPerm = $objDatabase->Execute("
+                        INSERT INTO
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms
+                        SET
+                            `group_id`='".intval($intGroupId)."',
+                            `form_id`='".intval($intId)."',
+                            `status_group`='".intval($intGroupStatus)."'
+                    ");
+                } 
+                
+                $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names WHERE form_id='".$intId."'");
+
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];

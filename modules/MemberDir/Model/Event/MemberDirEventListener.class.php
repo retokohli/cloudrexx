@@ -24,7 +24,7 @@ class MemberDirEventListener implements \Cx\Core\Event\Model\Entity\EventListene
     public function onEvent($eventName, array $eventArgs) {
         $this->$eventName(current($eventArgs));
     }
-   
+
     public static function SearchFindContent($search) {
         $term_db = $search->getTerm();
 

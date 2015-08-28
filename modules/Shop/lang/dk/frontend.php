@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  module_shop
  */
+global $_ARRAYLANG;
 $_ARRAYLANG['TXT_SHOP_BUTTON_REGISTRATION'] = "Register now";
 $_ARRAYLANG['TXT_SHOP_BUTTON_NO_REGISTRATION'] = "Order without registration";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_ADDED_TO_CART'] = "The item has been added to your cart.";
@@ -392,3 +393,10 @@ $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_ACCEPTED'] = "Die <a href=\"index.php?s
 $_ARRAYLANG['TXT_SHOP_CANCELLATION_TERMS_PLEASE_ACCEPT'] = "Bitte bestätigen Sie die Kenntnisnahme der Widerrufsbelehrung.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER'] = "Order without registration";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE'] = "Check this box if you want to order without registration.";
+// Headers for Product ordering in list view
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_ORD'] = "Standard";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_TITLE'] = "Product name";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_CODE'] = "Product code";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_PRICE'] = "Price";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_DATE'] = "Date added";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_BESTSELLER'] = "Popularity";

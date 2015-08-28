@@ -118,14 +118,47 @@ class SystemComponentController extends Controller {
      * Returns a controller instance if one already exists
      * @param $controllerClass Short or FQCN controller name
      * @return \Cx\Core\Core\Model\Entity\Controller Controller instance
+     * @throws \Exception if controller exists but cannot be loaded
      */
     public function getController($controllerClass) {
-        $this->getControllers(false);
-        $controllerClass = $this->getControllerClassName($controllerClass);
-        if (!isset($this->controllers[$controllerClass])) {
+        if (isset($this->controllers[$controllerClass])) {
+            return $this->controllers[$controllerClass];
+        }
+        
+        $classes = $this->getControllerClasses();
+        if (!in_array($controllerClass, $classes)) {
             return null;
         }
-        return $this->controllers[$controllerClass];
+        $class = '\\' . $this->getControllerClassName($controllerClass);
+        new $class($this, $this->cx);
+        
+        if (!isset($this->controllers[preg_replace('/^\\\\/', '', $class)])) {
+            throw new \Exception('Controller "' . $controllerClass . '" could not be loaded(' . preg_replace('/^\\\\/', '', $class) . ')');
+        }
+        
+        return $this->controllers[preg_replace('/^\\\\/', '', $class)];
+    }
+    
+    /**
+     * Get component controller object
+     * 
+     * @param string $name  component name  
+     * 
+     * @return \Cx\Core\Core\Model\Entity\SystemComponentController 
+     * The requested component controller or null if no such component exists
+     * 
+     */
+    public function getComponent($name)
+    {
+        if (empty($name)) {
+            return null;
+        }
+        $componentRepo = $this->cx->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $component     = $componentRepo->findOneBy(array('name' => $name));
+        if (!$component) {
+            return null;
+        }
+        return $component->getSystemComponentController();
     }
     
     /**
@@ -191,6 +224,40 @@ class SystemComponentController extends Controller {
     }
     
     /**
+     * Execute one of the commands listed in getCommandsForCommandMode()
+     * @see getCommandsForCommandMode()
+     * @param string $command Name of command to execute
+     * @param array $arguments List of arguments for the command
+     * @return void
+     */
+    public function executeCommand($command, $arguments) {}
+    
+    /**
+     * Check whether the command has access to execute or not.
+     *  
+     * @param string $command   name of the command to execute
+     * @param array  $arguments list of arguments for the command
+     * 
+     * @return boolean
+     */
+    public function hasAccessToExecuteCommand($command, $arguments)
+    {
+        $commands = $this->getCommandsForCommandMode();
+        $method = (php_sapi_name() === 'cli') ? array('cli') : null;
+        
+        $objPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, $method, false, null, null, null);
+        if (isset($commands[$command]) && $commands[$command] instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) {
+            $objPermission = $commands[$command];
+        }
+
+        if ($objPermission->hasAccess($arguments)) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
      * Do something before system initialization
      * 
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
@@ -200,6 +267,37 @@ class SystemComponentController extends Controller {
      * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
      */
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {}
+    
+    /**
+     * Do something after system initialization
+     * 
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * This event must be registered in the postInit-Hook definition
+     * file config/postInitHooks.yml.
+     * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
+     */
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx) {}
+    
+    /**
+     * Register your events here
+     * 
+     * Do not do anything else here than list statements like
+     * $this->cx->getEvents()->addEvent($eventName);
+     */
+    public function registerEvents() {}
+    
+    /**
+     * Register your event listeners here
+     * 
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
+     */
+    public function registerEventListeners() {}
     
     /**
      * Called for additional, component specific resolving

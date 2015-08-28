@@ -291,6 +291,33 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $objEventManager->showEventList($this->_objTpl);
     }
     
+    /**
+     * Display the MediaBrowser button
+     * 
+     * @global array $_ARRAYLANG
+     * 
+     * @param string $name callback function name
+     * @param string $type mediabrowser type
+     * 
+     * @return string
+     */
+    public static function showMediaBrowserButton($name, $type = 'filebrowser')
+    {
+        if (empty($name)) {
+            return;
+        }
+        
+        global $_ARRAYLANG;
+        
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+        $mediaBrowser->setOptions(array(
+                    'type'             => 'button',
+                    'data-cx-mb-views' => $type
+        ));
+        $mediaBrowser->setCallback('setSelected' . ucfirst($name));
+        
+        return $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CALENDAR_BROWSE']);
+    }
     
     /**
      * Add / Edit of the Event
@@ -507,6 +534,12 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_PLACE_DATA_FROM_MEDIADIR'         => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR'],
             'TXT_'.$this->moduleLangVar.'_PREV'                             => $_ARRAYLANG['TXT_CALENDAR_PREV'],
             'TXT_'.$this->moduleLangVar.'_NEXT'                             => $_ARRAYLANG['TXT_CALENDAR_NEXT'],
+            
+            //show media browser button
+            $this->moduleLangVar.'_EVENT_REDIRECT_BROWSE_BUTTON'            => self::showMediaBrowserButton('eventRedirect', 'sitestructure'),
+            $this->moduleLangVar.'_EVENT_PICTURE_BROWSE_BUTTON'             => self::showMediaBrowserButton('eventPicture'),
+            $this->moduleLangVar.'_EVENT_ATTACHMENT_BROWSE_BUTTON'          => self::showMediaBrowserButton('eventAttachment'),
+            $this->moduleLangVar.'_PLACE_MAP_SOURCE_BROWSE_BUTTON'          => self::showMediaBrowserButton('inputPlaceMap'),
             
             $this->moduleLangVar.'_EVENT_ID'                                => $eventId,
             $this->moduleLangVar.'_EVENT_DEFAULT_LANG_ID'                   => $_LANGID,
@@ -954,7 +987,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
                 'TXT_'.$this->moduleLangVar.'_EVENT_REDIRECT'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY'               => $arrLang['is_default'] == 'true' ? 'block' : 'none',
-                $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg('description['.$arrLang['id'].']', !empty($objEvent->arrData['description'][$arrLang['id']]) ? $objEvent->arrData['description'][$arrLang['id']] : $objEvent->description, 'full'),
+                $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg('description['.$arrLang['id'].']', !empty($objEvent->arrData['description'][$arrLang['id']]) ? contrexx_raw2xhtml($objEvent->arrData['description'][$arrLang['id']]) : contrexx_raw2xhtml($objEvent->description), 'full'),
                 $this->moduleLangVar.'_EVENT_REDIRECT'                  => !empty($objEvent->arrData['redirect'][$arrLang['id']]) ? $objEvent->arrData['redirect'][$arrLang['id']] : $objEvent->arrData['redirect'][$_LANGID],   
                 $this->moduleLangVar.'_EVENT_TYPE_EVENT_DISPLAY'        => $objEvent->type == 0 ? 'block' : 'none',   
                 $this->moduleLangVar.'_EVENT_TYPE_REDIRECT_DISPLAY'     => $objEvent->type == 1 ? 'block' : 'none',     

@@ -47,6 +47,7 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     protected $renewalDate = null;
     protected $externalSubscriptionId = null;
     protected $description = null;
+    protected $note = null;
     
     /**
      *
@@ -131,12 +132,14 @@ class Subscription extends \Cx\Model\Base\EntityBase {
      * 
      * @param \Cx\Modules\Order\Model\Entity\Order $order
      */
-    public function setOrder(Order $order) {
+    public function setOrder(Order $order, $updatePaymentAmount = false) {
         $this->order = $order;
         if (!$this->getProduct()) {
             return;
         }
-        $this->paymentAmount = $this->getProduct()->getPaymentAmount($this->getRenewalUnit(), $this->getRenewalQuantifier(), $order->getCurrency());
+        if ($updatePaymentAmount) {
+            $this->paymentAmount = $this->getProduct()->getPaymentAmount($this->getRenewalUnit(), $this->getRenewalQuantifier(), $order->getCurrency());
+        }
     }
     
     /**
@@ -257,6 +260,24 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     }
     
     /**
+     * Getter for $note
+     * 
+     * @return string $note
+     */
+    public function getNote() {
+        return $this->note;
+    }
+    
+    /**
+     * Setter for $note
+     * 
+     * @param string $note
+     */
+    public function setNote($note) {
+        $this->note = $note;
+    }
+    
+    /**
      * Get the externalSubscriptionId
      * 
      * @return integer
@@ -355,8 +376,8 @@ class Subscription extends \Cx\Model\Base\EntityBase {
         
         if ($this->externalSubscriptionId) {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-            $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount');
-            $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret');
+            $instanceName  = \Cx\Core\Setting\Controller\Setting::getValue('payrexxAccount','MultiSite');
+            $apiSecret     = \Cx\Core\Setting\Controller\Setting::getValue('payrexxApiSecret','MultiSite');
             if(empty($instanceName) || empty($apiSecret)) {
                 return;
             }

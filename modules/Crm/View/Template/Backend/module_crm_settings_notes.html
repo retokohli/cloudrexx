@@ -4,7 +4,7 @@
 <script language="JavaScript" type="text/javascript">
     $J(document).ready(function(){
         $J("#browse").click(function(){
-           $J("#contactFormFieldId_notesType").trigger('click');
+           $J("#notesUploader").trigger('click');
         });
     });
     function confirmSubmit()
@@ -88,12 +88,6 @@
         }
     }
 </script>
-<style type="text/css">
-    input.contactFormField {
-        position: absolute;
-        left: -5000px;
-    }
-</style>
 <div id="formerr"></div>
 <br />
 <ul id="tabmenu">
@@ -178,8 +172,6 @@
             <tr class="row1">
                 <td width="13%" nowrap>{TXT_CRM_ICON}</td>
                 <td width="10%">
-                    <div id="contactFormField_uploadWidget_notesType"></div>
-                    <input type="file" class="contactFormField" id="contactFormFieldId_notesType" name="contactFormFieldId_notesType" value="" />
                     <input type="text" name="icon" id="icon" value="" style="width: 190px;"/>&nbsp;&nbsp;
                     <input type="button" id="browse" value="{TXT_BROWSE}" style="width: 100px;"/>
                 </td>
@@ -189,20 +181,17 @@
         <input type="submit" name="save" value="{TXT_CRM_SAVE}" onClick="return checkValidations();" />
     </div>
 </form>
-{COMBO_UPLOADER_CODE_TASK_TYPE}
+{COMBO_UPLOADER_CODE_NOTES}
 <script type="text/javascript">
-	cx.ready(function() {
-		var uploader = cx.instances.get('exposed_combo_uploader_notesType','uploader');
-		uploader.dialog().bind('close', function(){
-                    $J.getJSON( '{REDIRECT_URL}', function( data ) {
-                        $J.each(data, function(key, val) {
-                            var file = val.fileName;
-                            if ($J.trim(file) != '') {
-                                $J('#icon').val(file);
-                            }
-                        });
-                    });
-		});
-	},true);
+    function notesCallbackJs(callback) {
+        $J.getJSON( '{REDIRECT_URL}', function( data ) {
+            $J.each(data, function(key, val) {
+                var file = val.fileName;
+                if ($J.trim(file) != '') {
+                    $J('#icon').val(file);
+                }
+            });
+        });
+    }
 </script>
 <!-- END module_partners_entries.html -->

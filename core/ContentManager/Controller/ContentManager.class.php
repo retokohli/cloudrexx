@@ -10,6 +10,7 @@
  */
 
 namespace Cx\Core\ContentManager\Controller;
+use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 /**
@@ -64,7 +65,7 @@ class ContentManager extends \Module
             $this->act = ''; //default action;
         }
 
-        $this->em             = \Env::em();
+        $this->em             = \Env::get('em');
         $this->db             = $db;
         $this->init           = $init;
         $this->pageRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -82,7 +83,7 @@ class ContentManager extends \Module
         \JS::activate('cx-form');
         \JS::activate('jstree');
         \JS::registerJS('lib/javascript/lock.js');
-        \JS::registerJS('lib/javascript/jquery/jquery.history.js');
+        \JS::registerJS('lib/javascript/jquery/jquery.history.max.js');
 
 // this can be used to debug the tree, just add &tree=verify or &tree=fix
         $tree = null;
@@ -130,6 +131,28 @@ class ContentManager extends \Module
             $alias_permission = "none !important";
             $alias_denial     = "block";
         }
+
+        $mediaBrowser = new MediaBrowser();
+        $mediaBrowser->setCallback('target_page_callback');
+        $mediaBrowser->setOptions(array(
+            'type' => 'button',
+            'data-cx-mb-views' => 'sitestructure',
+            'id' => 'page_target_browse'
+        ));
+
+        $mediaBrowserCkeditor = new MediaBrowser();
+        $mediaBrowserCkeditor->setCallback('ckeditor_image_callback');
+        $mediaBrowserCkeditor->setOptions(array(
+            'id' => 'ckeditor_image_button',
+            'type' => 'button',
+            'style' => 'display:none'
+        ));
+
+        $this->template->setVariable(array(
+            'MEDIABROWSER_BUTTON' => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE']),
+            'MEDIABROWSER_BUTTON_CKEDITOR' => $mediaBrowserCkeditor->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
+        ));
+
         $this->template->setVariable(array(
             'ALIAS_PERMISSION'  => $alias_permission,
             'ALIAS_DENIAL'      => $alias_denial,
@@ -210,6 +233,18 @@ class ContentManager extends \Module
                 $objCx->setVariable($name, $_CORELANG[$value], 'contentmanager/lang/' . $subscope);
             }
         }
+        
+        // Mediabrowser
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+        $mediaBrowser->setOptions(array('type' => 'button'));
+        $mediaBrowser->setCallback('setWebPageUrlCallback');
+        $mediaBrowser->setOptions(array(
+            'data-cx-mb-views' => 'sitestructure',
+            'id' => 'page_target_browse'
+        ));
+        $this->template->setVariable(array(
+            'CM_MEDIABROWSER_BUTTON' => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE'])
+        ));
 
         $toggleTitles      = !empty($_SESSION['contentManager']['toggleStatuses']['toggleTitles']) ? $_SESSION['contentManager']['toggleStatuses']['toggleTitles'] : 'block';
         $toggleType        = !empty($_SESSION['contentManager']['toggleStatuses']['toggleType']) ? $_SESSION['contentManager']['toggleStatuses']['toggleType'] : 'block';
@@ -347,11 +382,10 @@ class ContentManager extends \Module
             'TXT_EDITMODE_CODE'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_PAGE'],
             'TXT_EDITMODE_CONTENT' => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT'],
         ));
-        $pageId = isset($_GET['page']) ? $_GET['page'] : '';
         $cxjs->setVariable(array(
             'editmodetitle'      => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TITLE'],
             'editmodecontent'    => $editmodeTemplate->get(),
-            'ckeditorconfigpath' => substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH . '/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT) + 1) . '?pageId='.$pageId,
+            'ckeditorconfigpath' => substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH . '/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT) + 1),
             'regExpUriProtocol'  =>  \FWValidator::REGEX_URI_PROTO,
             'contrexxBaseUrl'    => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
             'contrexxPathOffset' => ASCMS_PATH_OFFSET,

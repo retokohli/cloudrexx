@@ -30,8 +30,8 @@ class MediaDirectoryInputfieldGoogleMap extends \Cx\Modules\MediaDir\Controller\
      */
     function __construct($name)
     {
-        $this->imagePath = constant('ASCMS_'.$this->moduleConstVar.'_IMAGES_PATH').'/';
-        $this->imageWebPath = constant('ASCMS_'.$this->moduleConstVar.'_IMAGES_WEB_PATH') .'/';
+        $this->imagePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesMediaDirPath() . '/';
+        $this->imageWebPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesMediaDirWebPath() . '/';
         parent::__construct('.', $name);
     }
 
@@ -44,8 +44,11 @@ class MediaDirectoryInputfieldGoogleMap extends \Cx\Modules\MediaDir\Controller\
             case 1:
                 //modify (add/edit) View
                 $intId = intval($arrInputfield['id']);
+                $strValueStreet = '';
+                $strValueCity = '';
+                $strValueZip = '';
                 parent::getSettings();
-
+                
                 if(isset($intEntryId) && $intEntryId != 0) {
                     $objInputfieldValue = $objDatabase->Execute("
                         SELECT
@@ -90,7 +93,7 @@ class MediaDirectoryInputfieldGoogleMap extends \Cx\Modules\MediaDir\Controller\
                 $strKey         = $_CONFIG['googleMapsAPIKey'];
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield .= '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleNameLC.'TableGoogleMap">';
+                    $strInputfield  = '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleNameLC.'TableGoogleMap">';
                     $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_STREET'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][street]" id="'.$strStreetId.'" value="'.$strValueStreet.'" onfocus="this.select();" /></td></tr>';
                     $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_CITY'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][place]" id="'.$strZipId.'"  value="'.$strValueZip.'" onfocus="this.select();" /></td></tr>';
                     $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZIP'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][zip]" id="'.$strCityId.'" value="'.$strValueCity.'" onfocus="this.select();" /></td></tr>';
@@ -211,7 +214,7 @@ EOF;
 
 
 
-    function saveInputfield($intInputfieldId, $arrValue)
+    function saveInputfield($intInputfieldId, $arrValue, $langId = 0)
     {
         global $objInit;
 
@@ -232,7 +235,7 @@ EOF;
 
         $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
-        if($objDeleteEntry !== false) {
+        if($objDeleteInputfield !== false) {
             return true;
         } else {
             return false;
@@ -270,10 +273,12 @@ EOF;
 
         if(!empty($strValue)) {
             $objGoogleMap = new \googleMap();
-            $objGoogleMap->setMapId($this->moduleNameLC.'Inputfield_'.$intId.'_map');
+            $objGoogleMap->setMapId($this->moduleNameLC.'Inputfield_'.$intId.'_'.$intEntryId.'_map');
             $objGoogleMap->setMapStyleClass('map');
             $objGoogleMap->setMapZoom($strValueZoom);
             $objGoogleMap->setMapCenter($strValueLon, $strValueLat);
+
+            $objGoogleMap->setMapIndex($intId.'_'.$intEntryId);
 
             $objGoogleMap->addMapMarker($intId, $strValueLon, $strValueLat, null, true);
 

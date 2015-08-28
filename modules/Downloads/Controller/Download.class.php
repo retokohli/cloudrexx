@@ -50,8 +50,21 @@ class Download {
      * @var array
      */
     private $source_names;
-
-    private $icon;
+    
+    /**
+     * Filetype in loaded interface language (LANG_ID)
+     * 
+     * @var string 
+     */
+    private $fileType;
+    
+    /**
+     * Filetypes of all languages
+     * 
+     * @var string 
+     */
+    private $fileTypes;
+    
     private $size;
     private $image;
     private $owner_id;
@@ -115,7 +128,6 @@ class Download {
             'id'                                => 'int',
             'type'                              => 'string',
             'mime_type'                         => 'string',
-            'icon'                              => 'string',
             'size'                              => 'int',
             'image'                             => 'string',
             'owner_id'                          => 'int',
@@ -139,40 +151,11 @@ class Download {
             'description'                       => 'string',
             'source'                            => 'string',
             'source_name'                       => 'string',
+            'file_type'                         => 'string',
          )
     );
     private $arrTypes = array('file', 'url');
     private $defaultType = 'file';
-    private $arrIcons = array(
-        'avi',
-        'bmp',
-        'css',
-        'doc',
-        'dot',
-        'exe',
-        'fla',
-        'gif',
-        'htm',
-        'html',
-        'inc',
-        'jpg',
-        'js',
-        'mp3',
-        'nfo',
-        'pdf',
-        'php',
-        'png',
-        'pps',
-        'ppt',
-        'rar',
-        'swf',
-        'txt',
-        'wma',
-        'xls',
-        'zip'
-    );
-    private $defaultIcon = '_blank';
-    private $urlIcon = 'htm';
     private $isFrontendMode;
 
     public static $arrMimeTypes = array(
@@ -293,7 +276,8 @@ class Download {
         $this->sources = array();
         $this->source_name = '';
         $this->source_names = array();
-        $this->icon = $this->defaultIcon;
+        $this->fileType = null;
+        $this->fileTypes = array();
         $this->size = 0;
         $this->image = '';
         $this->owner_id = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
@@ -402,7 +386,7 @@ class Download {
     public function send($langId = LANG_ID)
     {
         $objHTTPDownload = new \HTTP_Download();
-        $objHTTPDownload->setFile(ASCMS_PATH.$this->getSource($langId));
+        $objHTTPDownload->setFile(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$this->getSource($langId));
         $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, str_replace('"', '\"', $this->getSourceName($langId)));
         $objHTTPDownload->setContentType();
         $objHTTPDownload->send('application/force-download');
@@ -452,6 +436,26 @@ class Download {
         }
         return isset($this->metakeys[$langId]) ? $this->metakeys[$langId] : '';
     }
+    
+    /**
+     * Get the File type using interface language
+     * 
+     * @param  integer $langId The language ID
+     * 
+     * @return string          Filetype in loaded interface language (LANG_ID)
+     */
+    public function getFileType($langId = LANG_ID)
+    {
+        // filetype of interface language (-> LANG_ID) might be cached in $this->fileType
+        if ($langId == LANG_ID && isset($this->fileType)) {
+            return $this->fileType;
+        }
+
+        if (!isset($this->fileTypes)) {
+            $this->loadLocales();
+        }
+        return isset($this->fileTypes[$langId]) ? $this->fileTypes[$langId] : null;
+    }
 
     public function loadLocales()
     {
@@ -465,7 +469,8 @@ class Download {
                 `description`,
                 `metakeys`,
                 `source`,
-                `source_name`
+                `source_name`,
+                `file_type`
             FROM `'.DBPREFIX.'module_downloads_download_locale`
             WHERE `download_id` IN ('.implode(',', array_keys($this->arrLoadedDownloads)).')');
         if ($objResult) {
@@ -475,6 +480,7 @@ class Download {
                 $this->arrLoadedDownloads[$objResult->fields['download_id']]['metakeys'][$objResult->fields['lang_id']] = $objResult->fields['metakeys'];
                 $this->arrLoadedDownloads[$objResult->fields['download_id']]['sources'][$objResult->fields['lang_id']] = $objResult->fields['source'];
                 $this->arrLoadedDownloads[$objResult->fields['download_id']]['source_names'][$objResult->fields['lang_id']] = $objResult->fields['source_name'];
+                $this->arrLoadedDownloads[$objResult->fields['download_id']]['file_types'][$objResult->fields['lang_id']] = $objResult->fields['file_type'];
 
                 $objResult->MoveNext();
             }
@@ -484,6 +490,7 @@ class Download {
             $this->metakeys = isset($this->arrLoadedDownloads[$this->id]['metakeys']) ? $this->arrLoadedDownloads[$this->id]['metakeys'] : null;
             $this->sources = isset($this->arrLoadedDownloads[$this->id]['sources']) ? $this->arrLoadedDownloads[$this->id]['sources'] : null;
             $this->source_names = isset($this->arrLoadedDownloads[$this->id]['source_names']) ? $this->arrLoadedDownloads[$this->id]['source_names'] : null;
+            $this->fileTypes = isset($this->arrLoadedDownloads[$this->id]['file_types']) ? $this->arrLoadedDownloads[$this->id]['file_types'] : null;
         }
     }
 
@@ -545,7 +552,8 @@ class Download {
                 $this->sources = isset($this->arrLoadedDownloads[$id]['sources']) ? $this->arrLoadedDownloads[$id]['sources'] : '';
                 $this->source_name = isset($this->arrLoadedDownloads[$id]['source_name']) ? $this->arrLoadedDownloads[$id]['source_name'] : '';
                 $this->source_names = isset($this->arrLoadedDownloads[$id]['source_names']) ? $this->arrLoadedDownloads[$id]['source_names'] : '';
-                $this->icon = isset($this->arrLoadedDownloads[$id]['icon']) ? $this->arrLoadedDownloads[$id]['icon'] : $this->defaultIcon;
+                $this->fileType = isset($this->arrLoadedDownloads[$id]['file_type']) ? $this->arrLoadedDownloads[$id]['file_type'] : null;
+                $this->fileTypes = isset($this->arrLoadedDownloads[$id]['file_types']) ? $this->arrLoadedDownloads[$id]['file_types'] : null;
                 $this->size = isset($this->arrLoadedDownloads[$id]['size']) ? $this->arrLoadedDownloads[$id]['size'] : 0;
                 $this->image = isset($this->arrLoadedDownloads[$id]['image']) ? $this->arrLoadedDownloads[$id]['image'] : '';
                 $this->owner_id = isset($this->arrLoadedDownloads[$id]['owner_id']) ? $this->arrLoadedDownloads[$id]['owner_id'] : 0;
@@ -1127,7 +1135,6 @@ class Download {
                 SET
                     `type` = '".$this->type."',
                     `mime_type` = '".$this->mime_type."',
-                    `icon` = '".addslashes($this->icon)."',
                     `size` = ".intval($this->size).",
                     `image` = '".addslashes($this->image)."',
                     `owner_id` = ".intval($this->owner_id).",
@@ -1151,7 +1158,6 @@ class Download {
                 INSERT INTO `".DBPREFIX."module_downloads_download` (
                     `type`,
                     `mime_type`,
-                    `icon`,
                     `size`,
                     `image`,
                     `owner_id`,
@@ -1169,7 +1175,6 @@ class Download {
                 ) VALUES (
                     '".$this->type."',
                     '".$this->mime_type."',
-                    '".addslashes($this->icon)."',
                     ".intval($this->size).",
                     '".addslashes($this->image)."',
                     ".intval($this->owner_id).",
@@ -1231,7 +1236,7 @@ class Download {
         $arrOldLocales = array();
         $status = true;
 
-        $objOldLocales = $objDatabase->Execute('SELECT `lang_id`, `name`, `description`, `metakeys`, `source`, `source_name` FROM `'.DBPREFIX.'module_downloads_download_locale` WHERE `download_id` = '.$this->id);
+        $objOldLocales = $objDatabase->Execute('SELECT `lang_id`, `name`, `description`, `metakeys`, `source`, `source_name`, `file_type` FROM `'.DBPREFIX.'module_downloads_download_locale` WHERE `download_id` = '.$this->id);
         if ($objOldLocales !== false) {
             while (!$objOldLocales->EOF) {
                 $arrOldLocales[$objOldLocales->fields['lang_id']] = array(
@@ -1240,6 +1245,7 @@ class Download {
                     'metakeys'      => $objOldLocales->fields['metakeys'],
                     'source'        => $objOldLocales->fields['source'],
                     'source_name'   => $objOldLocales->fields['source_name'],
+                    'file_type'     => $objOldLocales->fields['file_type'],
                 );
                 $objOldLocales->MoveNext();
             }
@@ -1252,7 +1258,29 @@ class Download {
         $arrUpdatedLocales = array_intersect(array_keys($this->names), array_keys($arrOldLocales));
 
         foreach ($arrNewLocales as $langId) {
-            if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_download_locale` (`lang_id`, `download_id`, `name`, `description`, `metakeys`, `source`, `source_name`) VALUES (".$langId.", ".$this->id.", '".addslashes($this->names[$langId])."', '".addslashes($this->descriptions[$langId])."', '".addslashes($this->metakeys[$langId])."', '".addslashes($this->sources[$langId])."', '".addslashes($this->source_names[$langId])."')") === false) {
+            if ($objDatabase->Execute(
+                    "INSERT INTO `".DBPREFIX."module_downloads_download_locale` 
+                    (
+                        `lang_id`, 
+                        `download_id`, 
+                        `name`, 
+                        `description`, 
+                        `metakeys`, 
+                        `source`, 
+                        `source_name`, 
+                        `file_type`
+                    ) 
+                    VALUES (
+                        ".$langId.", 
+                        ".$this->id.", 
+                        '".addslashes($this->names[$langId])."',
+                        '".addslashes($this->descriptions[$langId])."', 
+                        '".addslashes($this->metakeys[$langId])."', 
+                        '".addslashes($this->sources[$langId])."', 
+                        '".addslashes($this->source_names[$langId])."',
+                        '".addslashes($this->fileTypes[$langId])."'
+                    )"
+            ) === false) {
                 $status = false;
             }
         }
@@ -1268,9 +1296,20 @@ class Download {
                 $this->descriptions[$langId] != $arrOldLocales[$langId]['description'] ||
                 $this->metakeys[$langId] != $arrOldLocales[$langId]['metakeys'] ||
                 $this->sources[$langId] != $arrOldLocales[$langId]['source'] ||
-                $this->source_names[$langId] != $arrOldLocales[$langId]['source_name']
+                $this->source_names[$langId] != $arrOldLocales[$langId]['source_name'] ||
+                $this->fileTypes[$langId] != $arrOldLocales[$langId]['file_type']
             ) {
-                if ($objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_download_locale` SET `name` = '".addslashes($this->names[$langId])."', `description` = '".addslashes($this->descriptions[$langId])."', `metakeys` = '".addslashes($this->metakeys[$langId])."', `source` = '".addslashes($this->sources[$langId])."', `source_name` = '".addslashes($this->source_names[$langId])."' WHERE `download_id` = ".$this->id." AND `lang_id` = ".$langId) === false) {
+                if ($objDatabase->Execute(
+                "UPDATE `".DBPREFIX."module_downloads_download_locale` 
+                    SET 
+                        `name`        = '".addslashes($this->names[$langId])."', 
+                        `description` = '".addslashes($this->descriptions[$langId])."',
+                        `metakeys`    = '".addslashes($this->metakeys[$langId])."',
+                        `source`      = '".addslashes($this->sources[$langId])."', 
+                        `source_name` = '".addslashes($this->source_names[$langId])."',
+                        `file_type`   = '".addslashes($this->fileTypes[$langId]).
+                        "' WHERE `download_id` = ".$this->id." AND `lang_id` = ".$langId
+                ) === false) {
                     $status = false;
                 }
             }
@@ -1501,9 +1540,18 @@ class Download {
         return ASCMS_MODULE_WEB_PATH.'/Downloads/View/Media/'.Download::$arrMimeTypes[$this->getMimeType()][($small ? 'icon_small' : 'icon')];
     }
 
+    /**
+     * Get the File Type Icon
+     * 
+     * @return string 
+     */
     public function getFileIcon()
     {
-        return ASCMS_MODULE_WEB_PATH.'/Downloads/View/Media/'.$this->icon.'.gif';
+        $source = ($this->type == 'url') 
+                    ? $this->getSource() 
+                    : \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath() . '/' . $this->getSource(); 
+        
+        return \Cx\Core_Modules\Media\Controller\MediaLibrary::getFileTypeIconWebPath($source, $this->getFileType());
     }
 
     public function getSize()
@@ -1675,15 +1723,14 @@ class Download {
         foreach ($sources as $langId => $source) {
             if ($this->type == 'url') {
                 $source = \FWValidator::getUrl($source);
-                $this->icon = $this->urlIcon;
                 if (preg_match('#^[a-z]+://([^/]+)#i', $source, $arrMatch)) {
                     $this->source_names[$langId] = $arrMatch[1];
                 } else {
                     $this->source_names[$langId] = $source;
                 }
+                $this->fileTypes[$langId] = (\FWValidator::isUri($source)) ? 'HTML' : null;
             } else {
-                $extension = strtolower(pathinfo($source, PATHINFO_EXTENSION));
-                $this->icon = in_array($extension, $this->arrIcons) ? $extension : $this->defaultIcon;
+                $this->fileTypes[$langId] = pathinfo($source, PATHINFO_EXTENSION);
                 $this->source_names[$langId] = isset($sourceNames[$langId]) ? $sourceNames[$langId] : basename($source);
             }
 
@@ -1691,6 +1738,7 @@ class Download {
             if ($langId == LANG_ID) {
                 $this->source = $source;
                 $this->source_name = $this->source_names[$langId];
+                $this->fileType    = $this->fileTypes[$langId];
             }
         }
 

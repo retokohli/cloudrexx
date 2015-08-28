@@ -10,37 +10,28 @@
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
+
 use Cx\Core\Core\Model\Entity\SystemComponentBackendController;
-use Cx\Core_Modules\MediaBrowser\Model\MediaBrowser;
-use Cx\Core_Modules\Uploader\Model\Uploader;
+use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
+use Cx\Core_Modules\Uploader\Model\Entity\Uploader;
 
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
- * @subpackage  coremodule_mediabrowser
+ *              Robin Glauser <robin.glauser@comvation.com>
  */
 class BackendController extends SystemComponentBackendController
 {
 
     /**
-     * Act param for the URL Reguest;
+     * Act param for the URL Request;
      *
      * @var string $act
      */
     protected $act = '';
 
-    /**
-     * @var \Cx\Core\Html\Sigma
-     */
-    protected $template;
-
-    /**
-     * @var String
-     */
-    protected $submenuName;
 
     /**
      * Returns a list of available commands (?act=XY)
@@ -49,9 +40,7 @@ class BackendController extends SystemComponentBackendController
      */
     public function getCommands()
     {
-        return array(
-
-        );
+        return array();
     }
 
     /**
@@ -66,13 +55,11 @@ class BackendController extends SystemComponentBackendController
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
     {
-        $this->template = $template;
-
         $uploader = new Uploader();
         $uploader->setFinishedCallback(
             '\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback'
         );
-        $uploader->setCallback('callback3');
+        $uploader->setCallback('gallery.uploader');
         $template->setVariable(
             'UPLOADER_CODE', $uploader->getXHtml('Open Uploader 1')
         );
@@ -81,13 +68,14 @@ class BackendController extends SystemComponentBackendController
         $uploader2->setFinishedCallback(
             '\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback'
         );
-        $uploader2->setOptions(array('data-on-file-uploaded' => 'callback2'));
+        $uploader2->setCallback('gallery.uploader2');
+        $uploader2->setType(Uploader::UPLOADER_TYPE_INLINE);
         $template->setVariable(
             'UPLOADER_CODE2', $uploader2->getXHtml('Open Uploader 2')
         );
 
         $mediaBrowser = new MediaBrowser();
-        $mediaBrowser->setCallback('fancyCallback');
+        $mediaBrowser->setCallback('gallery.fancyCallback');
         $template->setVariable(
             'MEDIABROWSER_CODE1', $mediaBrowser->getXHtml('MediaBrowser')
         );
@@ -95,5 +83,15 @@ class BackendController extends SystemComponentBackendController
             'MEDIABROWSER_CODE1_RAW',
             htmlspecialchars($mediaBrowser->getXHtml('MediaBrowser'))
         );
+        $template->setVariable(
+            'MEDIABROWSER_FOLDER_WIDGET',
+            new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($this->cx->getWebsiteImagesContentPath())
+        );
+        $template->setVariable(
+            'MEDIABROWSER_FOLDER_WIDGET_VIEW_MODE',
+            new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($this->cx->getWebsiteImagesContentPath(), true)
+        );
+
+        
     }
 }

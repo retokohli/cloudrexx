@@ -464,6 +464,7 @@ class MediaDirectoryLibrary
 
     function buildDropdownmenu($arrOptions, $intSelected=null)
     {
+        $strOptions = '';
         foreach ($arrOptions as $intValue => $strName) {
             $checked = $intValue==$intSelected ? 'selected="selected"' : '';
             $strOptions .= "<option value='".$intValue."' ".$checked.">".contrexx_raw2xhtml($strName)."</option>";
@@ -620,6 +621,11 @@ function selectAll(control){
     for (i = 0; i < control.length; ++i) {
         control.options[i].selected = true;
     }
+    if ( typeof(CKEDITOR) !== "undefined" ) {
+        \$J.each(instancesToManipulate, function(i, v) {
+            v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
+        });
+    }
 }
 
 function deselectAll(control){
@@ -631,33 +637,83 @@ var defaultLang = '$_LANGID';
 var activeLang = [$arrActiveLang];
 \$J(function(){
     \$J('.mediadirInputfieldDefault').each(function(){
-        id = \$J(this).data('id');
+        var id = \$J(this).data('id');
+        var relatedFieldPrefix = \$J(this).data('relatedFieldPrefix') ? \$J(this).data('relatedFieldPrefix') : 'mediadirInputfield';
         \$J(this).data('lastDefaultValue', \$J(this).val());
         
         \$J(this).keyup(function(){
             var that = \$J(this);
             var id = \$J(this).data('id');
             
+            var relatedFieldPrefix = \$J(this).data('relatedFieldPrefix') ? \$J(this).data('relatedFieldPrefix') : 'mediadirInputfield';
             \$J.each(activeLang, function(i, v) {
-                if (\$J('#mediadirInputfield_'+ id +'_'+ v).val() == that.data('lastDefaultValue')) {
-                    \$J('#mediadirInputfield_'+ id +'_'+ v).val(that.val());
+                if (\$J('#'+ relatedFieldPrefix + '_' + id +'_'+ v).val() == that.data('lastDefaultValue')) {
+                    \$J('#'+ relatedFieldPrefix + '_' + id +'_'+ v).val(that.val());
                 }
             });
             \$J(this).data('lastDefaultValue', \$J(this).val());
         });
         
-        \$J('#mediadirInputfield_'+ id +'_'+ defaultLang).keyup(function(){
+        \$J('#'+ relatedFieldPrefix + '_' + id +'_'+ defaultLang).keyup(function(){
             var id = \$J(this).data('id');
-            \$J('#mediadirInputfield_'+ id +'_0').val(\$J(this).val());
-            \$J('#mediadirInputfield_'+ id +'_0').data('lastDefaultValue', \$J(this).val());
+            var relatedFieldPrefix = \$J(this).data('relatedFieldPrefix') ? \$J(this).data('relatedFieldPrefix') : 'mediadirInputfield';            
+            \$J('#'+ relatedFieldPrefix + '_' + id +'_0').val(\$J(this).val());
+            \$J('#'+ relatedFieldPrefix + '_' + id +'_0').data('lastDefaultValue', \$J(this).val());
         });
     });
-                
+    \$J('.mediadirInputfieldDefaultDeleteFile').each(function(){
+        id = \$J(this).data('id');
+        \$J(this).data('isChecked', \$J(this).is( ":checked" ));
+        
+        \$J(this).click(function(){
+            var that = \$J(this);
+            var id = \$J(this).data('id');
+            
+            \$J.each(activeLang, function(i, v) {
+                if (\$J('#mediadirInputfield_delete_'+ id +'_'+ v).is( ":checked" ) == that.data('isChecked')) {                    
+                    \$J('#mediadirInputfield_delete_'+ id +'_'+ v).prop('checked', that.is( ":checked" ));
+                }
+            });
+            \$J(this).data('isChecked', \$J(this).is( ":checked" ));
+        });
+        
+        \$J('#mediadirInputfield_delete_'+ id +'_'+ defaultLang).click(function(){
+            var id = \$J(this).data('id');
+            \$J('#mediadirInputfield_delete_'+ id +'_0').prop('checked', \$J(this).is( ":checked" ));
+            \$J('#mediadirInputfield_delete_'+ id +'_0').data('isChecked', \$J(this).is( ":checked" ));
+        });
+    });                
 });
+
+function rememberWysiwygFields(ev) {
+    fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
+    wysiwygId     = fieldArr[1];                
+    \$minimized = \$J('#mediadirInputfield_' + wysiwygId + '_ELEMENT_Minimized');
+    instancesToManipulate = [];
+    if (\$minimized.is(":visible")) {                            
+        \$J.each(activeLang, function(i, v) {
+            if (CKEDITOR.instances['mediadirInputfield['+ wysiwygId +']['+ v +']'].getData() === lastCKeditorValues[wysiwygId]) {
+                instancesToManipulate.push(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +']['+ v +']']);
+            }
+        });
+    } 
+}
+
+function copyWysiwygFields(ev) {
+    fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
+    wysiwygId     = fieldArr[1];
+    \$J.each(instancesToManipulate, function(i, v) {
+        v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
+    });
+    instancesToManipulate = [];
+    lastCKeditorValues[wysiwygId] = CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData();
+}
 
 if ( typeof(CKEDITOR) !== "undefined" ) {
     var lastCKeditorValues = new Array();
     var processedCKeditorInstances = new Array();
+    var instancesToManipulate = new Array();
+    var wysiwygId = 0;
     CKEDITOR.on("instanceReady", function(event)
     {
         for ( instance in CKEDITOR.instances )
@@ -668,20 +724,17 @@ if ( typeof(CKEDITOR) !== "undefined" ) {
                 langId   = fieldArr[3];                
 
                 if (langId == '0') {
-                   lastCKeditorValues[id] = CKEDITOR.instances[instance].getData();
-                   CKEDITOR.instances[instance].on('change', function (ev) {                
-                        fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
-                        var id     = fieldArr[1];                
-                        \$minimized = \$J('#mediadirInputfield_' + id + '_ELEMENT_Minimized');
-
-                        if (\$minimized.is(":visible")) {                            
-                            \$J.each(activeLang, function(i, v) {                    
-                                if (CKEDITOR.instances['mediadirInputfield['+ id +']['+ v +']'].getData() == lastCKeditorValues[id]) {
-                                    CKEDITOR.instances['mediadirInputfield['+ id +']['+ v +']'].setData(CKEDITOR.instances['mediadirInputfield['+ id +'][0]'].getData());
-                                }
-                            });
-                            lastCKeditorValues[id] = CKEDITOR.instances[instance].getData();
-                        }                
+                    lastCKeditorValues[id] = CKEDITOR.instances[instance].getData();
+                    CKEDITOR.instances[instance].on('focus', function (ev) {
+                        rememberWysiwygFields(ev);
+                   });
+                   CKEDITOR.instances[instance].on('blur', function (ev) {
+                       copyWysiwygFields(ev);
+                   });
+                   CKEDITOR.instances[instance].on('mode', function (ev) {
+                        if ( this.mode == 'source' ) {
+                            rememberWysiwygFields(ev);
+                        }
                    });
                 }
                 if (langId == defaultLang) {           
@@ -689,7 +742,6 @@ if ( typeof(CKEDITOR) !== "undefined" ) {
                         fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
                         var id     = fieldArr[1];
                         \$expand    = \$J('#mediadirInputfield_' + id + '_ELEMENT_Expanded');
-
                         if (\$expand.is(":visible")) {
                             CKEDITOR.instances['mediadirInputfield['+ id +'][0]'].setData(ev.editor.getData());
                             lastCKeditorValues[id] = ev.editor.getData();
@@ -710,7 +762,13 @@ function ExpandMinimize(toggle){
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
 }                                                                          
 
-function ExpandMinimizeMultiple(toggleId, toggleKey){   
+function ExpandMinimizeMultiple(toggleId, toggleKey){
+    if ( typeof(CKEDITOR) !== "undefined" ) {
+        \$J.each(instancesToManipulate, function(i, v) {
+            v.setData(CKEDITOR.instances['mediadirInputfield['+ wysiwygId +'][0]'].getData());
+        });
+    }
+
     elm1 = document.getElementById('mediadirInputfield_' + toggleId +  '_' + toggleKey + '_Minimized');  
     elm2 = document.getElementById('mediadirInputfield_' + toggleId +  '_' + toggleKey + '_Expanded');
     
@@ -747,7 +805,6 @@ EOF;
 // TODO: do we need the shadowbox every time?
         \JS::activate('shadowbox');
 
-        $strLibPath = ASCMS_LIBRARY_WEB_PATH;    
         $strJavascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
 /* <![CDATA[ */
@@ -759,5 +816,25 @@ EOF;
 EOF;
         return $strJavascript;
     }
+    
+    /**
+     * Get mediabrowser button
+     * 
+     * @param string $buttonValue Value of the button
+     * @param string $options     Input button options 
+     * @param string $callback    Media browser callback function
+     * 
+     * @return string html element of browse button
+     */
+    public function getMediaBrowserButton($buttonValue, $options = array(), $callback = '')
+    {
+        // Mediabrowser
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+        $mediaBrowser->setOptions($options);
+        if ($callback) {
+            $mediaBrowser->setCallback($callback);
+        }
+        
+        return $mediaBrowser->getXHtml($buttonValue);        
+    }
 }
-?>

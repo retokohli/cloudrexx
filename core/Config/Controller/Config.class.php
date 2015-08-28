@@ -20,7 +20,7 @@ use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Csrf\Controller\Csrf;
 use Cx\Core\Html\Sigma;
 use Cx\Core\Setting\Controller\Setting;
-use Cx\Core_Modules\MediaBrowser\Model\ThumbnailGenerator;
+use Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator;
 use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 use Cx\Lib\FileSystem\FileSystem;
 
@@ -59,7 +59,19 @@ class Config
     private function setNavigation()
     {
         global $objTemplate, $_ARRAYLANG;
-        
+
+        $componentRepo = \Env::get('cx')->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $component     = $componentRepo->findOneBy(array('name' => 'multisite'));
+
+        $multisiteNavigation = '';
+        if ($component &&
+            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isWebsiteOwner() &&
+            \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser','MultiSite')
+        ) {
+            $multisiteNavigation = '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.
+                ($this->act == 'Ftp' ? 'active' : '').'">' . $_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>';
+        }
+
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
         $objTemplate->setVariable('CONTENT_NAVIGATION','
             <a href="?cmd=Config" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>'
@@ -68,7 +80,7 @@ class Config
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>'
             .(in_array('Wysiwyg', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=Config&amp;act=Wysiwyg" class="'.($this->act == 'Wysiwyg' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CORE_WYSIWYG'].'</a>' : '')
             .(in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=License">'.$_ARRAYLANG['TXT_LICENSE'].'</a>' : '')
-            . (\Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::isWebsiteOwner() && \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser') ? '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.($this->act == 'Ftp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>' : '')
+            . $multisiteNavigation
         );
     }
 
@@ -188,6 +200,9 @@ class Config
                 $this->generateThumbnail($_POST);
                 break;
 
+            case 'getThumbProgress':
+                $this->getThumbProgress();
+                break;
 
             default:
                 $this->showSettings();
@@ -207,67 +222,40 @@ class Config
     
     protected function  showWysiwyg() {
         global $_ARRAYLANG, $objTemplate, $objInit; 
-        $path = Cx::instanciate()->getCodeBaseDocumentRootPath() . Cx::instanciate()->getCoreFolderName() . '/Wysiwyg/View/Template/Backend';
-        $objTpl = new \Cx\Core\Html\Sigma($path);
-        $objTpl->loadTemplateFile('Default.html');
-
+        
+        $cx = Cx::instanciate();
+        $em = $cx->getDB()->getEntityManager();
+        $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $wysiwyg = $componentRepo->findOneBy(array('name'=>'Wysiwyg'));
+        $wysiwygBackendController = $wysiwyg->getController('Backend');
+        
+        $objTpl = new \Cx\Core\Html\Sigma($wysiwyg->getDirectory(true) . '/View/Template/Backend');
+        
+        //merge language
         $langData = $objInit->loadLanguageData('Wysiwyg');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
-
-        $em = \Env::get('cx')->getDb()->getEntityManager();
-        $repo = $em->getRepository('Cx\Core\Wysiwyg\Model\Entity\WysiwygTemplate');
-        $wysiwygs = $repo->findBy(array('inactive'=>'0'));
-
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($wysiwygs, array(
-            'entityName' => $_ARRAYLANG['TXT_CORE_WYSIWYG_TEMPLATE_ENTITY'],
-            'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TEMPLATE'] . ' <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TEMPLATE_TOOLTIP'] .'</span>',
-            'functions' => array(
-                'add'       => true,
-                'edit'      => false,
-                'delete'    => false,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-                'actions'   => function($rowData) {
-                        global $_CORELANG;
-
-                        $csrfParams = \Cx\Core\Csrf\Controller\Csrf::param();
-
-                        $actionIcons = '<a href="' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=Config&amp;act=Wysiwyg&amp;editid=' . $rowData['id'] .'" class="edit" title="Edit entry"></a>';
-                        $actionIcons .= '<a onclick=" if(confirm(\''.$_CORELANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))window.location.replace(\'' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=Config&amp;act=Wysiwyg&amp;deleteid=' . $rowData['id'] . '&amp;' . $csrfParams . '\');" href="javascript:void(0);" class="delete" title="Delete entry"></a>';
-
-                        return $actionIcons;
-                }
-            ),
-            'fields' => array(
-                'title' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_TITLE'],
-                ),
-                'description' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_DESCRIPTION'],
-                ),
-                'inactive' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_INACTIVE'],
-                ),
-                'imagePath' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_IMAGE_PATH'],
-                    'type' => 'uploader',
-                    'showOverview' => false,
-                ),
-                'htmlContent' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_WYSIWYG_HTML_CONTENT'],
-                    'showOverview' => false,
-                ),
-            ),
-        ));
-        $objTpl->setVariable('WYSIWYG_CONTENT', $view->render());
-
-        $objTpl->setVariable('ADD_STYLE_URL', Cx::instanciate()->getCodeBaseCoreWebPath() . Cx::instanciate()->getCoreFolderName() . '/Wysiwyg/View/Style/Backend.css');
-        $objTpl->parse('additional_style');
+        $objTpl->setGlobalVariable($_ARRAYLANG);
+        
+        $objTpl->loadTemplatefile('Subnavigation.html');
+        
+        $tbl = isset($_GET['tpl']) ? contrexx_input2raw($_GET['tpl']) : '';
+        
+        switch ($tbl) {
+            case 'Settings':
+                $wysiwygBackendController->parsePage($objTpl, array('Settings'));
+                break;
+            case '':
+            default:
+                $objTpl->addBlockfile('WYSIWYG_CONFIG_TEMPLATE', 'wysiwyg_template', 'Default.html');
+                $wysiwygBackendController->parsePage($objTpl, array('WysiwygTemplate'));
+                break;
+        }
+        
+        \JS::registerCSS(substr($wysiwyg->getDirectory(false, true) . '/View/Style/Backend.css', 1));
 
         $objTemplate->setVariable(array(
             'CONTENT_TITLE' => $_ARRAYLANG['TXT_CORE_WYSIWYG'],
-            'ADMIN_CONTENT' => $objTpl->get()
+            'ADMIN_CONTENT' => $objTpl->get(),
         ));
     }
 
@@ -307,10 +295,10 @@ class Config
             }
             $this->setDebuggingVariables($templateObj);
         }
-        \Cx\Core\Setting\Controller\Setting::init('Config', '','Yaml');
+        \Cx\Core\Setting\Controller\Setting::init('Config', null, 'Yaml', null, \Cx\Core\Setting\Controller\Setting::REPOPULATE);
         \Cx\Core\Setting\Controller\Setting::storeFromPost();
         
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'site', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'site');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
                 'index.php?cmd=Config',
@@ -319,7 +307,7 @@ class Config
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'contactInformation', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'contactInformation');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
                 'index.php?cmd=Config',
@@ -328,7 +316,7 @@ class Config
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'administrationArea');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
                 'index.php?cmd=Config',
@@ -337,7 +325,7 @@ class Config
                 'TXT_CORE_CONFIG_',
                 !$this->isWritable()
                 );
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'security', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'security');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
                 'index.php?cmd=Config',
@@ -353,7 +341,7 @@ class Config
                 $templateObj->get()
             );
         }
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations', 'Yaml');
+        \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'otherConfigurations');
         \Cx\Core\Setting\Controller\Setting::show(
                 $template,
                 'index.php?cmd=Config',
@@ -369,7 +357,7 @@ class Config
             && \Permission::hasAllAccess()
             && isset($_GET['all'])
         ) {
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'core', 'Yaml');
+            \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'core');
             \Cx\Core\Setting\Controller\Setting::show(
                     $template,
                     'index.php?cmd=Config',
@@ -378,7 +366,7 @@ class Config
                     'TXT_CORE_CONFIG_',
                     true
                     );
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'release', 'Yaml');
+            \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'release');
             \Cx\Core\Setting\Controller\Setting::show(
                     $template,
                     'index.php?cmd=Config',
@@ -387,7 +375,7 @@ class Config
                     'TXT_CORE_CONFIG_',
                     true
                     );
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'component', 'Yaml');
+            \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'component');
             \Cx\Core\Setting\Controller\Setting::show(
                     $template,
                     'index.php?cmd=Config',
@@ -396,7 +384,7 @@ class Config
                     'TXT_CORE_CONFIG_',
                     !$this->isWritable()
                     );
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'license', 'Yaml');
+            \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'license');
             \Cx\Core\Setting\Controller\Setting::show(
                     $template,
                     'index.php?cmd=Config',
@@ -405,7 +393,7 @@ class Config
                     'TXT_CORE_CONFIG_',
                     true
                     );
-            \Cx\Core\Setting\Controller\Setting::init('Config', 'cache', 'Yaml');
+            \Cx\Core\Setting\Controller\Setting::setEngineType('Config', 'Yaml', 'cache');
             \Cx\Core\Setting\Controller\Setting::show(
                     $template,
                     'index.php?cmd=Config',
@@ -439,6 +427,22 @@ class Config
         }
         return implode(',',$timezoneOptions);
     }
+    
+    /**
+     * Returns port options
+     * 
+     * @return string  port options as string
+     */
+    public static function getPortOptions() {
+        global $_ARRAYLANG;
+        $options = array(
+            'none:' .  $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_NONE'],
+            'http:' .  $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_HTTP'],            
+            'https:' .  $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_HTTPS'],
+        );
+        return implode(',', $options);
+    }
+    
 
     /**
      * Sets debugging related template variables according to session state.
@@ -619,6 +623,7 @@ class Config
         \Cx\Core\Setting\Controller\Setting::init('Config', NULL,'Yaml');
         $ymlArray = \Cx\Core\Setting\Controller\Setting::getArray('Config', null);
         $intMaxLen = 0;
+        $ymlArrayValues = array();
         foreach ($ymlArray as $key => $ymlValue){
             $_CONFIG[$key] = $ymlValue['value'];
             $ymlArrayValues[$ymlValue['group']][$key] = $ymlValue['value'];
@@ -633,6 +638,9 @@ class Config
                     $domainUrl = $_SERVER['SERVER_NAME'];
                 }
                 $ymlArrayValues[$ymlValue['group']]['domainUrl'] = $domainUrl;
+                if ($_CONFIG['xmlSitemapStatus'] == 'on') {
+                    \Cx\Core\PageTree\XmlSitemapPageTree::write();
+                }
             }
 
             $intMaxLen = (strlen($key) > $intMaxLen) ? strlen($key) : $intMaxLen;
@@ -1163,16 +1171,32 @@ class Config
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('forceProtocolFrontend')
                 && !\Cx\Core\Setting\Controller\Setting::add('forceProtocolFrontend','none', 9,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:dynamic,http:HTTP,https:HTTPS', 'site')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getPortOptions()}', 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use");
+            }            
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('portFrontendHTTP')
+                && !\Cx\Core\Setting\Controller\Setting::add('portFrontendHTTP',80, 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
+                    \DBG::log("Failed to add Setting entry for core HTTP Port (Frontend)");
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTP Port (Frontend)");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('portFrontendHTTPS')
+                && !\Cx\Core\Setting\Controller\Setting::add('portFrontendHTTPS',443, 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Frontend)");
             }
 
             //administrationArea group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml', $configPath);
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNews')
-                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNews','on', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNews','off', 1,
                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dashboard News");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNewsSrc')
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc','http://www.contrexx.com/feed/news_headlines_de.xml', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')){
+                throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardNewsSrc");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardStatistics')
                 && !\Cx\Core\Setting\Controller\Setting::add('dashboardStatistics','on', 2,
@@ -1209,8 +1233,18 @@ class Config
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('forceProtocolBackend')
                 && !\Cx\Core\Setting\Controller\Setting::add('forceProtocolBackend','none', 8,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:dynamic,http:HTTP,https:HTTPS', 'administrationArea')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getPortOptions()}', 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use Administrator");
+            }            
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('portBackendHTTP')
+                && !\Cx\Core\Setting\Controller\Setting::add('portBackendHTTP',80, 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTP Port (Backend)");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('portBackendHTTPS')
+                && !\Cx\Core\Setting\Controller\Setting::add('portBackendHTTPS',443, 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Backend)");
             }
             
             //security group
@@ -1419,11 +1453,7 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'component')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for useKnowledgePlaceholders");
             }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardNewsSrc')
-                && !\Cx\Core\Setting\Controller\Setting::add('dashboardNewsSrc','http://www.contrexx.com/feed/news_headlines_de.xml', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'component')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardNewsSrc");
-            }
+
 
             // release
             \Cx\Core\Setting\Controller\Setting::init('Config', 'release','Yaml', $configPath);
@@ -1617,7 +1647,7 @@ class Config
         $domains = $objMainDomain->findAll();
         $display = array();
         foreach ($domains As $domain) {
-            $display[] = $domain->getId() . ':' . $domain->getName();
+            $display[] = $domain->getId() . ':' . $domain->getNameWithPunycode();
         }
         return implode(',', $display);
     }
@@ -1633,7 +1663,7 @@ class Config
         $objDomain   = $domainRepo->findOneBy(array('id' => 0));
         //get the ftp user name
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
-        $ftpUserName = \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser');
+        $ftpUserName = \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser','MultiSite');
         
         if (empty($ftpUserName)) {
             throw new \Exception('FTP Failed to load: Website Ftp User is empty');
@@ -1662,9 +1692,18 @@ class Config
         return \Env::get('cx')->getWebsiteConfigPath() . '/settings.php';
     }
 
+    /**
+     * Regenerate the thumbnails
+     * 
+     * @param array $post $_POST values
+     */
     protected  function generateThumbnail($post)
     {
-        global $objDatabase, $objTemplate, $_ARRAYLANG;
+        // release the locks, session not needed
+        $session = \cmsSession::getInstance();
+        $session->releaseLocks();
+        session_write_close();
+        
         $cx = Cx::instanciate();
 
         $key = $_GET['key'];
@@ -1672,12 +1711,7 @@ class Config
             die;
         }
         
-        if (!\Cx\Lib\FileSystem\FileSystem::make_folder($cx->getWebsitePublicTempPath())) {
-            die;
-        }
-        
-        \Cx\Lib\FileSystem\FileSystem::makeWritable($cx->getWebsitePublicTempPath());
-        $processFile = $cx->getWebsitePublicTempPath().'/progress' . $key . '.txt';
+        $processFile = $session->getTempPath() .'/progress' . $key . '.txt';
         if (\Cx\Lib\FileSystem\FileSystem::exists($processFile)) {
             die;
         }
@@ -1795,21 +1829,41 @@ class Config
             if (!$allThumbnailsExists) {
                 if ($imageManager->_isImage($file->getRealPath())) {
                     ThumbnailGenerator::createThumbnail(
-                        $file->getPath() . '/', $fileNamePlain, $fileExtension, $imageManager
+                        $file->getPath(), $fileNamePlain, $fileExtension, $imageManager, true
                     );
                 }
             }
 
             $fileCounter++;
-            $objProcessFile->write($fileCounter / $imageFilesCount * 100);
+            $objProcessFile->write($fileCounter / $imageFilesCount * 100);            
         }
-            
-        session_write_close();
-        $objProcessFile->write(100);
-        sleep(3);
 
-        $objProcessFile->delete();
+        $objProcessFile->write(100);
         die;
     }
 
+    /**
+     * Get the thumbnail generation progress from the temp file
+     */
+    function getThumbProgress()
+    {
+        // release the locks, session not needed
+        $session = \cmsSession::getInstance();
+        $session->releaseLocks();
+        session_write_close();
+        
+        $key         = isset($_GET['key']) ?  $_GET['key'] : '';
+        $processFile = $session->getTempPath() .'/progress' . $key . '.txt';
+        
+        $process = 0;
+        if (file_exists($processFile)) {
+            $process = file_get_contents($processFile);
+            if ($process == 100) {
+                \Cx\Lib\FileSystem\FileSystem::delete_file($processFile);
+            }
+        }
+        
+        echo $process;
+        die;
+    }
 }

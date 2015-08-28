@@ -86,7 +86,8 @@ class Products
      *                                      by reference.  Set to the actual
      *                                      total matching number.
      * @param   integer     $offset         The Product offset
-     * @param   integer     $product_id     The Product ID
+     * @param   integer|array   $product_id     The optional Product ID,
+     *                                      or an array of such
      * @param   integer     $category_id    The ShopCategory ID
      * @param   integer     $manufacturer_id  The Manufacturer ID
      * @param   string      $pattern        A search pattern
@@ -124,7 +125,7 @@ class Products
     ) {
         global $objDatabase, $_CONFIG;
 
-//DBG::activate(DBG_ADODB_ERROR|DBG_LOG_FIREPHP);
+//\DBG::activate(DBG_ADODB_ERROR|DBG_LOG_FIREPHP);
 
         // Do not show any Products if no selection is made at all
         if (   empty($product_id)
@@ -162,11 +163,11 @@ class Products
             : (!empty($_CONFIG['corePagingLimit'])
                 ? $_CONFIG['corePagingLimit'] : 10));
         $count = 0;
-//DBG::activate(DBG_ADODB);
+//\DBG::activate(DBG_ADODB);
         $objResult = $objDatabase->SelectLimit(
             $querySelect.$queryTail.$queryOrder, $limit, $offset);
         if (!$objResult) return Product::errorHandler();
-//DBG::deactivate(DBG_ADODB);
+//\DBG::deactivate(DBG_ADODB);
         $arrProduct = array();
         while (!$objResult->EOF) {
             $product_id = $objResult->fields['id'];
@@ -178,11 +179,29 @@ class Products
         $objResult = $objDatabase->Execute($queryCount.$queryTail);
         if (!$objResult) return false;
         $count = $objResult->fields['numof_products'];
-//DBG::log("Products::getByShopParams(): Set count to $count");
+//\DBG::log("Products::getByShopParams(): Set count to $count");
         return $arrProduct;
     }
 
 
+    /**
+     * Builds and returns a database query for Products
+     * @param   integer|array   $product_id         The optional Product ID,
+     *                                              an array of such, or null
+     * @param   integer|string  $category_id        The optional Category ID,
+     *                                              or comma separated list
+     * @param   integer         $manufacturer_id    The optional manufacturer ID
+     * @param   string          $pattern            The optional search term
+     * @param   integer         $flagSpecialoffer   The optional special offer
+     *                                              flag
+     * @param   boolean         $flagLastFive       The optional "last five"
+     *                                              flag
+     * @param   integer|string  $orderSetting       The optional order setting,
+     *                                              or SQL string
+     * @param   boolean         $flagIsReseller     The optional reseller flag
+     * @param   boolean         $flagShowInactive   The optional inactive flag
+     * @return  string                              The SQL query
+     */
     public static function getQueryParts(
         $product_id=null, $category_id=null,
         $manufacturer_id=null, $pattern=null,
@@ -191,7 +210,6 @@ class Products
         $flagIsReseller=null,
         $flagShowInactive=false)
     {
-        if (empty($orderSetting)) $orderSetting = self::$arrProductOrder[1];
         // The name and code fields may be used for sorting.
         // Include them in the field list in order to introduce the alias
         $arrSql = \Text::getSqlSnippets(
@@ -215,7 +233,7 @@ class Products
                 ? ''
                 : ' AND `product`.`active`=1
                     AND (`product`.`stock_visible`=0 OR `product`.`stock`>0)
-                    '.($category_id ? '' : 'AND `category`.`active`=1' )/*only check if active when not in category view*/.' 
+                    '.($category_id ? '' : 'AND `category`.`active`=1' )/*only check if active when not in category view*/.'
                     AND (
                         `product`.`date_start` < CURRENT_DATE()
                      OR `product`.`date_start` = 0
@@ -230,12 +248,51 @@ class Products
               ? ' AND `b2b`=1'
               : ($flagIsReseller === false ? ' AND `b2c`=1' : ''));
 
+//\DBG::log("Products::getByShopParams(): Ordersetting in: $orderSetting");
+        // Legacy order presets: Use as default
         if (   is_numeric($orderSetting)
             && isset(self::$arrProductOrder[$orderSetting]))
             $orderSetting = self::$arrProductOrder[$orderSetting];
+//\DBG::log("Products::getByShopParams(): Ordersetting #1: $orderSetting");
         if (empty($orderSetting))
             $orderSetting = self::$arrProductOrder[1];
-        $queryOrder = ' ORDER BY '.$orderSetting;
+//\DBG::log("Products::getByShopParams(): Ordersetting #2: $orderSetting");
+        // Iff the order is specified as the nonexistent "price" field, substitute
+        // that by the correct price field:
+        //  - "discountprice" if "discount_active" != 0,
+        //  - "resellerprice" if $flagIsReseller != 0, or
+        //  - "normalprice" otherwise
+        $match = null;
+        // Note:  The regex /\\b<field name>(?:\\W+(asc|desc))?\\b/i handles
+        // optional backticks and/or whitespace around the field name (\W).
+        if (preg_match('/\\bprice(?i:\\W+(asc|desc))?\\b/',
+                $orderSetting, $match)) {
+            $orderField = ($flagIsReseller ? 'resellerprice' : 'normalprice');
+            $orderSetting =
+                'IF(`discount_active`=0,`'.$orderField.'`,`discountprice`)'.
+                (isset($match[1]) ? ' '.$match[1] : '');
+        }
+//\DBG::log("Products::getByShopParams(): Ordersetting #3: $orderSetting");
+        // The use of the Sorting class does not (yet) support ordering by
+        // multiple fields.  In order to keep the ordering stable for
+        // identical values, the unique criterion (id DESC) is added.
+        $queryOrder = ' ORDER BY '.$orderSetting. ', `id` DESC';
+//\DBG::log("Products::getByShopParams(): Ordersetting #4: $orderSetting");
+        // Apply ordering by "bestseller".
+        // Note that this overrides the previous order, and adds GROUP BY.
+        // The additional alias "bestseller" queries the number of units sold.
+        if (preg_match('/\\bbestseller\\b/',
+                $orderSetting, $match)) {
+            $querySelect .=
+                ', COUNT(`item`.`id`) AS `bestseller`';
+            $queryJoin .=
+                ' LEFT JOIN `'.DBPREFIX.'module_shop_order_items` AS `item`
+                    ON `product`.`id`=`item`.`product_id`';
+            $queryOrder = '
+                GROUP BY `product`.`id`
+                ORDER BY '.$orderSetting.', `id` DESC';
+        }
+//\DBG::log("Products::getByShopParams(): Ordersetting #5: $orderSetting");
 
         $querySpecialOffer = '';
         if (   $flagLastFive
@@ -254,9 +311,13 @@ class Products
                   : ($flagSpecialoffer === self::DEFAULT_VIEW_MARKED
                       ? " AND `product`.`flags` LIKE '%__SHOWONSTARTPAGE__%'" : '')
                 );
-            // Limit by Product ID (unused by getByShopParameters()!
-            if ($product_id > 0) {
-                $queryWhere .= ' AND `product`.`id`='.$product_id;
+            // Limit by Product ID (unused by getByShopParameters()!)
+            if (is_array($product_id)) {
+                $queryWhere .=
+                    ' AND `product`.`id` IN('.join(',', $product_id).')';
+            } elseif ($product_id > 0) {
+                $queryWhere .=
+                    ' AND `product`.`id`='.$product_id;
             }
             // Limit Products by Manufacturer ID, if any
             if ($manufacturer_id > 0) {
@@ -307,7 +368,7 @@ class Products
                          OR ".$arrSqlPattern['alias']['keys']." LIKE '%$pattern%')";
             }
         }
-//\DBG::log("querySelect $querySelect");\DBG::log("queryCount $queryCount");\DBG::log("queryJoin $queryJoin");\DBG::log("queryWhere $queryWhere");\DBG::log("querySpecialOffer $querySpecialOffer");\DBG::log("queryOrder $queryOrder");
+//\DBG::log("querySelect $querySelect");//\DBG::log("queryCount $queryCount");\DBG::log("queryJoin $queryJoin");\DBG::log("queryWhere $queryWhere");//\DBG::log("querySpecialOffer $querySpecialOffer");\DBG::log("queryOrder $queryOrder");
         $queryTail = $queryJoin.$queryWhere.$querySpecialOffer;
         return array($querySelect, $queryCount, $queryTail, $queryOrder);
     }
@@ -335,13 +396,13 @@ class Products
         // Verify that the Category still exists
         $objShopCategory = ShopCategory::getById($category_id);
         if (!$objShopCategory) {
-//DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Info: Category ID $category_id does not exist");
+//\DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Info: Category ID $category_id does not exist");
             return null;
         }
 
         $arrProductId = Products::getIdArrayByShopCategory($category_id);
         if (!is_array($arrProductId)) {
-//DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get Product IDs in that Category");
+//\DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get Product IDs in that Category");
             return false;
         }
         // Look whether this is within a virtual ShopCategory
@@ -350,7 +411,7 @@ class Products
         do {
             $objShopCategory = ShopCategory::getById($parent_id);
             if (!$objShopCategory) {
-//DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get parent Category");
+//\DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get parent Category");
                 return false;
             }
             if ($objShopCategory->virtual()) {
@@ -366,7 +427,7 @@ class Products
         foreach ($arrProductId as $product_id) {
             $objProduct = Product::getById($product_id);
             if (!$objProduct) {
-//DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get Product IDs $product_id");
+//\DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get Product IDs $product_id");
                 return false;
             }
             if ($virtualContainer != ''
@@ -379,7 +440,7 @@ class Products
                         $objProduct->code(),
                         $objProduct->flags()
                     )) {
-//DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to update Product flags for ID ".$objProduct->id());
+//\DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to update Product flags for ID ".$objProduct->id());
                         return false;
                     }
                 }
@@ -520,9 +581,10 @@ class Products
     /**
      * Returns the first matching picture name found in the Products
      * within the Shop Category given by its ID.
+     * @global  ADONewConnection  $objDatabase    Database connection object
+     * @param type $category_id
      * @return  string                      The image name, or the
      *                                      empty string.
-     * @global  ADONewConnection  $objDatabase    Database connection object
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
@@ -615,7 +677,7 @@ class Products
 
         if (!is_array($arrId)) return false;
         $error = false;
-        $objImageManager = new ImageManager();
+        $objImageManager = new \ImageManager();
         foreach ($arrId as $product_id) {
             if ($product_id <= 0) {
                 \Message::error(sprintf($_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'], $product_id));
@@ -629,7 +691,7 @@ class Products
                 continue;
             }
             $imageName = $objProduct->pictures();
-            $imagePath = ASCMS_SHOP_IMAGES_PATH.'/'.$imageName;
+            $imagePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath() . '/' . $imageName;
             // only try to create thumbs from entries that contain a
             // plain text file name (i.e. from an import)
             if (   $imageName == ''
@@ -666,12 +728,12 @@ class Products
                 // Deleting the old thumb beforehand is integrated into
                 // _createThumbWhq().
                 $thumbResult = $objImageManager->_createThumbWhq(
-                    ASCMS_SHOP_IMAGES_PATH.'/',
-                    ASCMS_SHOP_IMAGES_WEB_PATH.'/',
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath() . '/',
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/',
                     $imageName,
-                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width'),
-                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height'),
-                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_quality')
+                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width','Shop'),
+                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height','Shop'),
+                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_quality','Shop')
                 );
                 $width  = $objImageManager->orgImageWidth;
                 $height = $objImageManager->orgImageHeight;
@@ -714,7 +776,7 @@ class Products
      * same flags, as does the containing ShopCategory itself.
      * @param   integer     $productCode  The Product code (*NOT* the ID).
      *                                    This must be non-empty!
-     * @param   string      $strFlags     The new flags for the Product
+     * @param   string      $strNewFlags  The new flags for the Product
      * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
@@ -991,13 +1053,13 @@ class Products
             // Determine prices for various count discounts, if any
             $arrDiscountCountRate = Discount::getDiscountCountRateArray(
                 $objResult->fields['group_id']);
-//DBG::log("Products::getJavascriptArray($groupCustomerId, $isReseller): Discount rate array: ".var_export($arrDiscountCountRate, true));
+//\DBG::log("Products::getJavascriptArray($groupCustomerId, $isReseller): Discount rate array: ".var_export($arrDiscountCountRate, true));
             // Order the counts in reverse, from highest to lowest
             $strJsArrPrice = '';
             if (is_array($arrDiscountCountRate)) {
                 foreach ($arrDiscountCountRate as $count => $rate) {
                     // Deduct the customer type discount right away
-//DBG::log("Products::getJavascriptArray(): price $price, rate $rate");
+//\DBG::log("Products::getJavascriptArray(): price $price, rate $rate");
                     $discountPrice = $price - ($price * $rate * 0.01);
                     $strJsArrPrice .=
                         ($strJsArrPrice ? ',' : '').
@@ -1084,7 +1146,7 @@ class Products
             3 => $_ARRAYLANG['TXT_SHOP_PRODUCT_SORTING_PRODUCTCODE'],
         );
         return \Html::getOptions($arrAvailableOrder,
-            \Cx\Core\Setting\Controller\Setting::getValue('product_sorting'));
+            \Cx\Core\Setting\Controller\Setting::getValue('product_sorting','Shop'));
     }
 
 
@@ -1095,7 +1157,7 @@ class Products
      * and ID, ascending.
      * The names array is kept in this method statically between calls.
      * @static
-     * @param   boolean   $active       Optional.  Include active (true) or
+     * @param   boolean   $activeonly   Optional.  Include active (true) or
      *                                  inactive (false) Products only.
      *                                  Ignored if null.  Defaults to null
      * @param   string    $format       The optional sprintf() format
@@ -1133,7 +1195,7 @@ class Products
                 sprintf($format, $id, $strName);
             $objResult->MoveNext();
         }
-//DBG::log("Products::getNameArray(): Made ".var_export($arrName, true));
+//\DBG::log("Products::getNameArray(): Made ".var_export($arrName, true));
         return $arrName;
     }
 

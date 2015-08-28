@@ -148,26 +148,31 @@
         return string;
     };
 
-    var SetUrl = function(url, width, height, path) {
-        url = url.replace(cx.variables.get('contrexxPathOffset', 'alias'), '');
-        if (path == '') {
-            path = url;
-        }
-        if (path[0] == '/') {
-            path = path.substr(1);
-        }
-        $J('#alias_target_wrapper').hide();
-        $J('#alias_target_text').text(cx.variables.get('contrexxBaseUrl', 'alias') + "/" + path).attr('href', function() {return $J(this).text()});
-        $J('#alias_target_text_wrapper').show();
-        $J('#alias_target_protocol > option').removeAttr('selected');
-        $J('#alias_target_protocol > option[value=""]').attr("selected", "selected");
-        $J('#alias_target, #alias_target_backup').val(url);
-    }
+    var aliasSetUrl = function(data) {
+        if (data.type === 'page') {
+                if (data.data[0]) {
+                    url  = data.data[0].node;
+                    path = data.data[0].url;
 
-    var alias_get_fileBrowser = function() {
-        var aliasPopup = window.open('?cmd=FileBrowser&{CSRF_PARAM}&standalone=true&type=webpages&mode=alias', '', 'width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-        aliasPopup.focus();
-    }
+                    url = url.replace(cx.variables.get('contrexxPathOffset', 'alias'), '');
+                    if (path === '') {
+                        path = url;
+                    }
+                    if (path[0] === '/') {
+                        path = path.substr(1);
+                    }
+                    var lang = cx.variables.get('language', 'contrexx');
+                    $J('#alias_target_wrapper').hide();
+                    $J('#alias_target_text').text(cx.variables.get('contrexxBaseUrl', 'alias') + "/" + lang + "/" + path).attr('href', function () {
+                        return $J(this).text();
+                    });
+                    $J('#alias_target_text_wrapper').show();
+                    $J('#alias_target_protocol > option').removeAttr('selected');
+                    $J('#alias_target_protocol > option[value=""]').attr("selected", "selected");
+                    $J('#alias_target, #alias_target_backup').val(url);
+                }
+            }
+        }
     //]]>
 </script>
 
@@ -261,7 +266,7 @@
                     <a id="alias_target_edit" class="icon"></a>
                 </div>
                 <input type="hidden" id="alias_target_backup" />
-                <input type="button" value="{TXT_ALIAS_BROWSE}" onclick="alias_get_fileBrowser()"/>
+                {ALIAS_MEDIABROWSER_BUTTON}
             </td>
         </tr>
         <tr class="row2">

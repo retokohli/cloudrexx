@@ -105,7 +105,7 @@ class NavigationPageTree extends SigmaPageTree {
             $linkTarget = $page->getLinkTarget();
             $this->template->setCurrentBlock($blockName);
             $this->template->setVariable(array(
-                'URL' => ASCMS_INSTANCE_OFFSET.$this->virtualLanguageDirectory.$path,
+                'URL' => \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath().$this->virtualLanguageDirectory.$path,
                 'NAME' => $title,
                 'TARGET' => empty($linkTarget) ? '_self' : $linkTarget,
                 'LEVEL_INFO' => $hasChilds ? '' : 'down',

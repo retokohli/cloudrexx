@@ -695,8 +695,26 @@
         /*$J(".formRecipient").each(function(){
             $J(this).find('.recipientNameDiv:last').remove();
         });*/
-    });
+                
+        $J(".selectUserGroup").chosen({
+            width: "250px"
+        });
+        
+        showOrHideCrmCustomerGroups();
 
+        $J(".contactFormUseCrmModule").click(function () {
+                showOrHideCrmCustomerGroups();
+        });
+    });
+    
+    function showOrHideCrmCustomerGroups()
+    {
+        if ($J(".contactFormUseCrmModule:checked").val() == '1') {
+            $J('#crmCustomerGroups').show();
+        } else {
+            $J('#crmCustomerGroups').hide();
+        }
+    }
     /**
     Show the language input fields
 
@@ -1010,9 +1028,19 @@
             <tr class="row2">
                 <td>{TXT_CONTACT_SAVE_DATA_IN_CRM}</td>
                 <td>
-                    <input type="radio" name="contactFormUseCrmModule" value="1" id="contactFormUseCrmModule_1" {CONTACT_FORM_USE_CRMMODULE_YES} /><label for="contactFormUseCrmModule_1">{TXT_CONTACT_YES}</label>
-                    <input type="radio" name="contactFormUseCrmModule" value="0" id="contactFormUseCrmModule_0" {CONTACT_FORM_USE_CRMMODULE_NO} /><label for="contactFormUseCrmModule_0">{TXT_CONTACT_NO}</label>
+                    <input type="radio" name="contactFormUseCrmModule" value="1"  class="contactFormUseCrmModule" id="contactFormUseCrmModule_1" {CONTACT_FORM_USE_CRMMODULE_YES} /><label for="contactFormUseCrmModule_1">{TXT_CONTACT_YES}</label>
+                    <input type="radio" name="contactFormUseCrmModule" value="0" class="contactFormUseCrmModule" id="contactFormUseCrmModule_0" {CONTACT_FORM_USE_CRMMODULE_NO} /><label for="contactFormUseCrmModule_0">{TXT_CONTACT_NO}</label>
                 </td>
+            </tr>
+            <tr class="row2" id="crmCustomerGroups">                
+                <td>{TXT_CONTACT_ASSIGN_TO_CRM_CUSTOMER_GROUP}&nbsp;<span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CONTACT_ASSIGN_CRM_CUSTOMER_GROUP_DESCRIPTION}</span></td>                
+                <td>
+                    <select tabindex="7" data-placeholder="{TXT_CONTACT_CHOOSE_MEMBERSHIPS}" class="selectUserGroup" name="assigned_memberships[]" id="assigned_memberships" size="1" multiple>
+                        <!-- BEGIN contactMembership -->
+                        <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
+                        <!-- END contactMembership -->
+                    </select> 
+                </td>                
             </tr>
         </table>
     </div>

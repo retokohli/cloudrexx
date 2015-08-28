@@ -8,8 +8,20 @@
         });
     });
 </script>
-<div id="news-date">
+<div id="news-date" class="news-info">
+    <p>
     {NEWS_DATE}&nbsp;{NEWS_TIME} | {NEWS_AUTHOR}<!-- BEGIN news_comments_count --> | {NEWS_COUNT_COMMENTS}<!-- END news_comments_count -->
+    </p>
+    <!-- BEGIN tagsBlock --> 
+    <p class="newsTags">
+        | 
+        <span class="tagCont">
+            <!-- BEGIN newsTagList -->
+            {NEWS_TAG_LINK}
+            <!-- END newsTagList -->
+        </span>
+    </p>
+    <!-- END tagsBlock -->
 </div>
 <!-- BEGIN news_use_teaser_text -->
 <div id="news-teaser-text">
@@ -20,6 +32,51 @@
     <!-- BEGIN news_text -->{NEWS_TEXT}<!-- END news_text -->
     <!-- BEGIN news_redirect -->{TXT_NEWS_REDIRECT_INSTRUCTION} <a href="{NEWS_REDIRECT_URL}" target="_blank">{NEWS_REDIRECT_URL}</a><!-- END news_redirect -->
 </div>
+<!-- BEGIN related_news_block -->
+<div id="related-news">
+    <h3>{TXT_NEWS_RELATED_NEWS}</h3>
+    <!-- BEGIN related_news -->
+    <div class="rel-news-blocks">
+        <h6>{NEWS_RELATED_NEWS_TITLE_LINK}</h6>
+        <div class="news-info">
+            <p>{NEWS_RELATED_NEWS_DATE}&nbsp;{NEWS_RELATED_NEWS_TIME} </p>
+        </div>
+        {NEWS_RELATED_NEWS_TEXT_SHORT}&nbsp;{NEWS_RELATED_NEWS_LINK}
+    </div>
+    <!-- END related_news -->
+</div>
+<!-- END related_news_block -->
+
+<!-- BEGIN previousNextLink -->
+<div id="link-blocks-cont">
+    <!-- BEGIN previousNewsLink -->
+    <div id="previous-link-block">
+        <a href="{NEWS_PREVIOUS_LINK}" title="{NEWS_PREVIOUS_TITLE}">
+            <div class="link-label link-label-prev">
+                <small>&larr;</small>{TXT_NEWS_PREVIOUS_LINK}
+            </div>
+            <div class="title-label title-label-prev">
+                {NEWS_PREVIOUS_TITLE}
+            </div>
+        </a>
+    </div>
+    <!-- END previousNewsLink --> 
+    
+     <!-- BEGIN nextNewsLink -->
+    <div id="next-link-block" class="link-blocks">
+        <a href="{NEWS_NEXT_LINK}" title="{NEWS_NEXT_TITLE}">
+            <div class="link-label link-label-next">
+                {TXT_NEWS_NEXT_LINK}<small>&rarr;</small>
+            </div>
+            <div class="title-label title-label-next">
+                {NEWS_NEXT_TITLE}
+            </div>
+        </a>
+    </div>
+    <!-- END nextNewsLink --> 
+</div>
+<!-- END previousNextLink -->
+
 <div id="news-links">
     <ul class="horizontal-list">
         <li><a href="{PRINT_URL}">Version zum Drucken</a></li>

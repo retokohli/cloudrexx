@@ -317,13 +317,13 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         $objFWUser = \FWUser::getFWUserObject();
-        $intToday = mktime();
-
+        $intToday = time();
+        
+        $i = 0;
         switch ($intView) {
             case 1:
                 //Backend View
                 if(!empty($this->arrEntries)){
-					$i = 0;
                     foreach ($this->arrEntries as $key => $arrEntry) {
                         if(intval($arrEntry['entryAddedBy']) != 0) {
                             if ($objUser = $objFWUser->objUser->getUser(intval($arrEntry['entryAddedBy']))) {
@@ -460,15 +460,14 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             $objForm = new MediaDirectoryForm($arrEntry['entryFormId'], $this->moduleName);
 
 	                        $objTpl->setVariable(array(
-	                            $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
+                                    $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
 	                            $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
-	                            $this->moduleLangVar.'_ENTRY_STATUS' => $strStatus,
 	                            $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
 	                            $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
 	                            $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
 	                            $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
-                                $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
-                                $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
+                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
+                                    $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
 	                            $this->moduleLangVar.'_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
 	                            $this->moduleLangVar.'_ENTRY_DETAIL_URL' => $strDetailUrl,
 	                            $this->moduleLangVar.'_ENTRY_EDIT_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd=edit&amp;eid='.$arrEntry['entryId'],
@@ -562,7 +561,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                         $objTpl->touchBlock($this->moduleNameLC.'AlphaIndex');     
                                                                                                    
                         foreach ($arrAlphaIndexes as $key => $strIndex) {        
-                            if(is_array($arrAlphaGroups[$strIndex])) {    
+                            if(array_key_exists($strIndex, $arrAlphaGroups)) {    
                                 $strAlphaIndex = '<a href="#'.$strIndex.'">'.$strIndex.'</a>';   
                             } else {                             
                                 $strAlphaIndex = ''.$strIndex.'';  
@@ -592,7 +591,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
                                 $objInputfields = new MediaDirectoryInputfield(intval($arrEntry['entryFormId']),false,$arrEntry['entryTranslationStatus'], $this->moduleName);
                                 $objInputfields->listInputfields($objTpl, 3, intval($arrEntry['entryId']));
-
+                                $strStatus = ($arrEntry['entryActive'] == 1) ? 'active' : 'inactive';
+                                
                                 if(intval($arrEntry['entryAddedBy']) != 0) {
                                     if ($objUser = $objFWUser->objUser->getUser(intval($arrEntry['entryAddedBy']))) {
                                         $strAddedBy = $objUser->getUsername();
@@ -789,7 +789,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
 
         $objFWUser = \FWUser::getFWUserObject();
-
+        $translationStatus = isset($arrData['translationStatus']) ? $arrData['translationStatus'] : array();
+        
         //get data
         $intId = intval($intEntryId);
         $intFormId = intval($arrData['formId']);
@@ -797,7 +798,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $strUpdateDate = mktime();
         $intUserId = intval($objFWUser->objUser->getId());
         $strLastIp = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
-        $strTransStatus = contrexx_addslashes(join(",", $arrData['translationStatus']));
+        $strTransStatus = contrexx_addslashes(join(",", $translationStatus));
 
 
         //$arrCategories = explode(",",$arrData['selectedCategories']);
@@ -935,7 +936,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         foreach ($this->getInputfields() as $arrInputfield) {
             // store selected category (field = category)
             if ($arrInputfield['id'] == 1) {
-                foreach ($arrData['selectedCategories'] as $intCategoryId) {
+                $selectedCategories = isset($arrData['selectedCategories']) ? $arrData['selectedCategories'] : array();
+                foreach ($selectedCategories as $intCategoryId) {
                     $objResult = $objDatabase->Execute("
                     INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories
                        SET `entry_id`='".intval($intId)."',
@@ -952,7 +954,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             // store selected level (field = level)
             if ($arrInputfield['id'] == 2) {
                 if ($this->arrSettings['settingsShowLevels'] == 1) {
-                    foreach ($arrData['selectedLevels'] as $intLevelId) {
+                    $selectedLevels = isset($arrData['selectedLevels']) ? $arrData['selectedLevels'] : array();
+                    foreach ($selectedLevels as $intLevelId) {
                         $objResult = $objDatabase->Execute("
                         INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels
                            SET `entry_id`='".intval($intId)."',
@@ -1066,9 +1069,30 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             $strDefault = $arrDefault;
                         }
                         $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);
+                    } else if (
+                        // attribute's VALUE of certain frontend language ($intLangId) is empty
+                        empty($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
+                        // or the process is parsing the user's current interface language
+                        || $intLangId == $_LANGID
+                    ) {
+                            $strMaster =
+                                (isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0])
+                                  ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][0]
+                                  : null);
+                            $strNewDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID])
+                                                ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$_LANGID]
+                                                : '';
+                            if ($strNewDefault != $strMaster) {
+                                $strDefault = $strMaster;
+                            } else {
+                                $strDefault = isset($arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId])
+                                                ? $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId]
+                                                : '';
+                            }                            
+                            $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);        
                     } else {
                         // regular attribute get parsed
-                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId]);
+                        $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleNameLC.'Inputfield'][$arrInputfield['id']][$intLangId], $intLangId);
                     }
 
                     $objResult = $objDatabase->Execute("

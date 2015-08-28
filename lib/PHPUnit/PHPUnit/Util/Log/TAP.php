@@ -1,49 +1,12 @@
 <?php
-/**
- * PHPUnit
+/*
+ * This file is part of PHPUnit.
  *
- * Copyright (c) 2002-2011, Sebastian Bergmann <sebastian@phpunit.de>.
- * All rights reserved.
+ * (c) Sebastian Bergmann <sebastian@phpunit.de>
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *
- *   * Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
- *
- *   * Neither the name of Sebastian Bergmann nor the names of his
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * @package    PHPUnit
- * @subpackage Util_Log
- * @author     Sebastian Bergmann <sebastian@phpunit.de>
- * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @link       http://www.phpunit.de/
- * @since      File available since Release 3.0.0
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
-
-require_once 'SymfonyComponents/YAML/sfYamlDumper.php';
 
 /**
  * A TestListener that generates a logfile of the
@@ -52,9 +15,8 @@ require_once 'SymfonyComponents/YAML/sfYamlDumper.php';
  * @package    PHPUnit
  * @subpackage Util_Log
  * @author     Sebastian Bergmann <sebastian@phpunit.de>
- * @copyright  2002-2011 Sebastian Bergmann <sebastian@phpunit.de>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @copyright  Sebastian Bergmann <sebastian@phpunit.de>
+ * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.0.0
  */
@@ -73,16 +35,16 @@ class PHPUnit_Util_Log_TAP extends PHPUnit_Util_Printer implements PHPUnit_Frame
     /**
      * @var    boolean
      */
-    protected $testSuccessful = TRUE;
+    protected $testSuccessful = true;
 
     /**
      * Constructor.
      *
-     * @param  mixed $out
-     * @throws InvalidArgumentException
+     * @param  mixed                       $out
+     * @throws PHPUnit_Framework_Exception
      * @since  Method available since Release 3.3.4
      */
-    public function __construct($out = NULL)
+    public function __construct($out = null)
     {
         parent::__construct($out);
         $this->write("TAP version 13\n");
@@ -91,9 +53,9 @@ class PHPUnit_Util_Log_TAP extends PHPUnit_Util_Printer implements PHPUnit_Frame
     /**
      * An error occurred.
      *
-     * @param  PHPUnit_Framework_Test $test
-     * @param  Exception              $e
-     * @param  float                  $time
+     * @param PHPUnit_Framework_Test $test
+     * @param Exception              $e
+     * @param float                  $time
      */
     public function addError(PHPUnit_Framework_Test $test, Exception $e, $time)
     {
@@ -103,16 +65,17 @@ class PHPUnit_Util_Log_TAP extends PHPUnit_Util_Printer implements PHPUnit_Frame
     /**
      * A failure occurred.
      *
-     * @param  PHPUnit_Framework_Test                 $test
-     * @param  PHPUnit_Framework_AssertionFailedError $e
-     * @param  float                                  $time
+     * @param PHPUnit_Framework_Test                 $test
+     * @param PHPUnit_Framework_AssertionFailedError $e
+     * @param float                                  $time
      */
     public function addFailure(PHPUnit_Framework_Test $test, PHPUnit_Framework_AssertionFailedError $e, $time)
     {
         $this->writeNotOk($test, 'Failure');
 
         $message = explode(
-          "\n", PHPUnit_Framework_TestFailure::exceptionToString($e)
+            "\n",
+            PHPUnit_Framework_TestFailure::exceptionToString($e)
         );
 
         $diagnostic = array(
@@ -123,7 +86,7 @@ class PHPUnit_Util_Log_TAP extends PHPUnit_Util_Printer implements PHPUnit_Frame
         if ($e instanceof PHPUnit_Framework_ExpectationFailedException) {
             $cf = $e->getComparisonFailure();
 
-            if ($cf !== NULL) {
+            if ($cf !== null) {
                 $diagnostic['data'] = array(
                   'got'      => $cf->getActual(),
                   'expected' => $cf->getExpected()
@@ -131,22 +94,22 @@ class PHPUnit_Util_Log_TAP extends PHPUnit_Util_Printer implements PHPUnit_Frame
             }
         }
 
-        $yaml = new sfYamlDumper();
+        $yaml = new Symfony\Component\Yaml\Dumper;
 
         $this->write(
-          sprintf(
-            "  ---\n%s  ...\n",
-            $yaml->dump($diagnostic, 2, 2)
-          )
+            sprintf(
+                "  ---\n%s  ...\n",
+                $yaml->dump($diagnostic, 2, 2)
+            )
         );
     }
 
     /**
      * Incomplete test.
      *
-     * @param  PHPUnit_Framework_Test $test
-     * @param  Exception              $e
-     * @param  float                  $time
+     * @param PHPUnit_Framework_Test $test
+     * @param Exception              $e
+     * @param float                  $time
      */
     public function addIncompleteTest(PHPUnit_Framework_Test $test, Exception $e, $time)
     {
@@ -154,31 +117,51 @@ class PHPUnit_Util_Log_TAP extends PHPUnit_Util_Printer implements PHPUnit_Frame
     }
 
     /**
+     * Risky test.
+     *
+     * @param PHPUnit_Framework_Test $test
+     * @param Exception              $e
+     * @param float                  $time
+     * @since  Method available since Release 4.0.0
+     */
+    public function addRiskyTest(PHPUnit_Framework_Test $test, Exception $e, $time)
+    {
+        $this->write(
+            sprintf(
+                "ok %d - # RISKY%s\n",
+                $this->testNumber,
+                $e->getMessage() != '' ? ' ' . $e->getMessage() : ''
+            )
+        );
+
+        $this->testSuccessful = false;
+    }
+
+    /**
      * Skipped test.
      *
-     * @param  PHPUnit_Framework_Test $test
-     * @param  Exception              $e
-     * @param  float                  $time
+     * @param PHPUnit_Framework_Test $test
+     * @param Exception              $e
+     * @param float                  $time
      * @since  Method available since Release 3.0.0
      */
     public function addSkippedTest(PHPUnit_Framework_Test $test, Exception $e, $time)
     {
         $this->write(
-          sprintf(
-            "ok %d - # SKIP%s\n",
-
-            $this->testNumber,
-            $e->getMessage() != '' ? ' ' . $e->getMessage() : ''
-          )
+            sprintf(
+                "ok %d - # SKIP%s\n",
+                $this->testNumber,
+                $e->getMessage() != '' ? ' ' . $e->getMessage() : ''
+            )
         );
 
-        $this->testSuccessful = FALSE;
+        $this->testSuccessful = false;
     }
 
     /**
      * A testsuite started.
      *
-     * @param  PHPUnit_Framework_TestSuite $suite
+     * @param PHPUnit_Framework_TestSuite $suite
      */
     public function startTestSuite(PHPUnit_Framework_TestSuite $suite)
     {
@@ -188,7 +171,7 @@ class PHPUnit_Util_Log_TAP extends PHPUnit_Util_Printer implements PHPUnit_Frame
     /**
      * A testsuite ended.
      *
-     * @param  PHPUnit_Framework_TestSuite $suite
+     * @param PHPUnit_Framework_TestSuite $suite
      */
     public function endTestSuite(PHPUnit_Framework_TestSuite $suite)
     {
@@ -202,52 +185,50 @@ class PHPUnit_Util_Log_TAP extends PHPUnit_Util_Printer implements PHPUnit_Frame
     /**
      * A test started.
      *
-     * @param  PHPUnit_Framework_Test $test
+     * @param PHPUnit_Framework_Test $test
      */
     public function startTest(PHPUnit_Framework_Test $test)
     {
         $this->testNumber++;
-        $this->testSuccessful = TRUE;
+        $this->testSuccessful = true;
     }
 
     /**
      * A test ended.
      *
-     * @param  PHPUnit_Framework_Test $test
-     * @param  float                  $time
+     * @param PHPUnit_Framework_Test $test
+     * @param float                  $time
      */
     public function endTest(PHPUnit_Framework_Test $test, $time)
     {
-        if ($this->testSuccessful === TRUE) {
+        if ($this->testSuccessful === true) {
             $this->write(
-              sprintf(
-                "ok %d - %s\n",
-
-                $this->testNumber,
-                PHPUnit_Util_Test::describe($test)
-              )
+                sprintf(
+                    "ok %d - %s\n",
+                    $this->testNumber,
+                    PHPUnit_Util_Test::describe($test)
+                )
             );
         }
     }
 
     /**
-     * @param  PHPUnit_Framework_Test $test
-     * @param  string                 $prefix
-     * @param  string                 $directive
+     * @param PHPUnit_Framework_Test $test
+     * @param string                 $prefix
+     * @param string                 $directive
      */
     protected function writeNotOk(PHPUnit_Framework_Test $test, $prefix = '', $directive = '')
     {
         $this->write(
-          sprintf(
-            "not ok %d - %s%s%s\n",
-
-            $this->testNumber,
-            $prefix != '' ? $prefix . ': ' : '',
-            PHPUnit_Util_Test::describe($test),
-            $directive != '' ? ' # ' . $directive : ''
-          )
+            sprintf(
+                "not ok %d - %s%s%s\n",
+                $this->testNumber,
+                $prefix != '' ? $prefix . ': ' : '',
+                PHPUnit_Util_Test::describe($test),
+                $directive != '' ? ' # ' . $directive : ''
+            )
         );
 
-        $this->testSuccessful = FALSE;
+        $this->testSuccessful = false;
     }
 }

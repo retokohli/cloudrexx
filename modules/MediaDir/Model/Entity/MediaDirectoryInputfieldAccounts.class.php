@@ -346,7 +346,7 @@ EOF;
         $strValue = join(',', array_map('intval', explode(',', $strValue)));
         return $strValue;
     }*/
-    function saveInputfield($intInputfieldId, $arrValue)
+    function saveInputfield($intInputfieldId, $arrValue, $langId = 0)
     {
         $strValue = contrexx_strip_tags(contrexx_input2raw(join(",", $arrValue)));
         return $strValue;

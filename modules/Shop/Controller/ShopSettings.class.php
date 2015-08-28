@@ -71,7 +71,7 @@ class ShopSettings
             self::$changed = true;
             if (\Cx\Core\Setting\Controller\Setting::updateAll() === false) {
                 return false;
-        }
+            }
         }
         if (self::$changed) {
             return (self::$success
@@ -125,9 +125,17 @@ class ShopSettings
             empty($_POST['product_sorting'])
               ? 1 : intval($_POST['product_sorting']));
         // Order amount lower limit (new in 3.1.0)
-        \Cx\Core\Setting\Controller\Setting::set('orderitems_amount_min',
-            empty($_POST['orderitems_amount_min'])
-                ? 0 : floatval($_POST['orderitems_amount_min']));
+        $orderItemsAmountMin = empty($_POST['orderitems_amount_min'])
+            ? 0 : floatval($_POST['orderitems_amount_min']);
+
+        if (!\Cx\Core\Setting\Controller\Setting::isDefined('orderitems_amount_min')){
+            \Cx\Core\Setting\Controller\Setting::add('orderitems_amount_min', $orderItemsAmountMin, false,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        }
+        else {
+            \Cx\Core\Setting\Controller\Setting::set('orderitems_amount_min',$orderItemsAmountMin);
+        }
+
         // Order amount upper limit (applicable when using Saferpay)
         \Cx\Core\Setting\Controller\Setting::set('orderitems_amount_max',
             empty($_POST['orderitems_amount_max'])
@@ -170,6 +178,12 @@ class ShopSettings
             intval($_POST['numof_coupon_per_page_backend']))) {
             \Cx\Core\Setting\Controller\Setting::add('numof_coupon_per_page_backend',
                 intval($_POST['numof_coupon_per_page_backend']), 58,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        }
+        if (!\Cx\Core\Setting\Controller\Setting::set('numof_products_per_page_frontend',
+            intval($_POST['numof_products_per_page_frontend']))) {
+            \Cx\Core\Setting\Controller\Setting::add('numof_products_per_page_frontend',
+                intval($_POST['numof_products_per_page_frontend']), null,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         }
     }
@@ -245,6 +259,13 @@ class ShopSettings
         Payment::reset();
         if (empty ($_POST['bpayment'])) return;
 // NOTE: All the following could be handled by Payment::settings()
+        \Cx\Core\Setting\Controller\Setting::set('payrexx_instance_name',
+            trim(strip_tags(contrexx_input2raw($_POST['payrexx_instance_name']))));
+        \Cx\Core\Setting\Controller\Setting::set('payrexx_api_secret',
+            trim(strip_tags(contrexx_input2raw($_POST['payrexx_api_secret']))));
+        \Cx\Core\Setting\Controller\Setting::set('payrexx_active',
+            !empty($_POST['payrexx_active']));
+
         \Cx\Core\Setting\Controller\Setting::set('postfinance_shop_id',
             trim(strip_tags(contrexx_input2raw($_POST['postfinance_shop_id']))));
         \Cx\Core\Setting\Controller\Setting::set('postfinance_active',
@@ -669,14 +690,14 @@ class ShopSettings
                     break;
                 }
                 if ($name) {
-                    if (   \Cx\Core\Setting\Controller\Setting::getValue($name) === NULL
+                    if (   \Cx\Core\Setting\Controller\Setting::getValue($name,'Shop') === NULL
                         && !\Cx\Core\Setting\Controller\Setting::add($name, $value, ++$i)) {
                         throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to add \Cx\Core\Setting entry for '$name'");
                     }
                 }
                 if ($name_status) {
-                    if (   \Cx\Core\Setting\Controller\Setting::getValue($name_status) === NULL
+                    if (   \Cx\Core\Setting\Controller\Setting::getValue($name_status,'Shop') === NULL
                         && !\Cx\Core\Setting\Controller\Setting::add($name_status, $status, ++$i)) {
                         throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to add \Cx\Core\Setting entry for status '$name_status'");
@@ -756,6 +777,12 @@ class ShopSettings
         \Cx\Core\Setting\Controller\Setting::add('paypal_default_currency', 'CHF', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         // Also see Yellowpay.class
+        \Cx\Core\Setting\Controller\Setting::add('payrexx_instance_name', 'Instanz Name', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT);
+        \Cx\Core\Setting\Controller\Setting::add('payrexx_api_secret', 'API Secret', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT);
+        \Cx\Core\Setting\Controller\Setting::add('payrexx_active', '0', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1');
         \Cx\Core\Setting\Controller\Setting::add('postfinance_shop_id', 'Ihr Kontoname', ++$i,
             \Cx\Core\Setting\Controller\Setting::TYPE_TEXT);
         \Cx\Core\Setting\Controller\Setting::add('postfinance_active', '0', ++$i,

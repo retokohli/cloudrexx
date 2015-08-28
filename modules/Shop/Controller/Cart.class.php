@@ -67,7 +67,7 @@ class Cart
             || empty($_REQUEST['quantity'])) {
             return;
         }
-        if (!include_once(ASCMS_LIBRARY_PATH.'/PEAR/Services/JSON.php')) {
+        if (!include_once(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseLibraryPath() . '/PEAR/Services/JSON.php')) {
             return;
         }
         $cart_id = null;
@@ -96,7 +96,7 @@ class Cart
     static function send_json()
     {
         /** @ignore */
-        if (!include_once(ASCMS_LIBRARY_PATH.'/PEAR/Services/JSON.php')) {
+        if (!include_once(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseLibraryPath() . '/PEAR/Services/JSON.php')) {
             die('Could not load JSON library');
         }
         $arrCart = array(
@@ -389,7 +389,7 @@ class Cart
     static function update($objCustomer)
     {
         global $_ARRAYLANG;
-        
+
 //DBG::log("Cart::update(): Cart: ".var_export($_SESSION['shop']['cart'], true));
         if (empty($_SESSION['shop']['cart'])) {
             self::init();
@@ -410,7 +410,7 @@ class Cart
         $total_price = 0;
         $total_vat_amount = 0;
         $total_weight = 0;
-        $total_discount_amount = 0;        
+        $total_discount_amount = 0;
 //DBG::log("Cart::update(): Products: ".var_export($products, true));
         // Loop 1: Collect necessary Product data
         $products = $_SESSION['shop']['cart']['items']->toArray();
@@ -420,7 +420,7 @@ class Cart
                 unset($products[$cart_id]);
                 continue;
             }
-            // Check minimum order quanity, when set
+            // Check minimum order quantity, when set
             // Do not add error message if it's an AJAX request
             if (
                 (
@@ -540,6 +540,7 @@ class Cart
         $discount_amount = 0;
         foreach (self::$products as $cart_id => &$product) {
             $discount_amount = 0;
+            $product['discount_amount'] = 0;
             // Coupon:  Either the payment ID or the code are needed
             if ($payment_id || $coupon_code) {
                 $objCoupon = Coupon::available(
@@ -824,7 +825,7 @@ die("Cart::view(): ERROR: No template");
                     'SHOP_PRODUCT_ROW' => 'row'.(++$i % 2 + 1),
                     'SHOP_PRODUCT_ID' => $arrProduct['id'],
                     'SHOP_PRODUCT_CODE' => $arrProduct['product_id'],
-                    'SHOP_PRODUCT_THUMBNAIL' => $thumbnailPath, 
+                    'SHOP_PRODUCT_THUMBNAIL' => $thumbnailPath,
                     'SHOP_PRODUCT_CART_ID' => $arrProduct['cart_id'],
                     'SHOP_PRODUCT_TITLE' => str_replace('"', '&quot;', contrexx_raw2xhtml($arrProduct['title'])),
                     'SHOP_PRODUCT_PRICE' => $arrProduct['price'],  // items * qty
@@ -840,7 +841,7 @@ die("Cart::view(): ERROR: No template");
                     $objTemplate->setVariable(
                         'SHOP_PRODUCT_OPTIONS', $arrProduct['options_long']);
                 }
-                if (\Cx\Core\Setting\Controller\Setting::getValue('weight_enable')) {
+                if (\Cx\Core\Setting\Controller\Setting::getValue('weight_enable','Shop')) {
                     $objTemplate->setVariable(array(
                         'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($arrProduct['weight']),
                         'TXT_WEIGHT' => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
@@ -870,6 +871,10 @@ die("Cart::view(): ERROR: No template");
             if ($objTemplate->blockExists('shopCartEmpty')) {
                 $objTemplate->touchBlock('shopCartEmpty');
                 $objTemplate->parse('shopCartEmpty');
+            }
+            if ($_SESSION['shop']['previous_product_ids']) {
+                $ids = $_SESSION['shop']['previous_product_ids']->toArray();
+                Shop::view_product_overview($ids);
             }
         }
 
@@ -934,7 +939,7 @@ die("Cart::view(): ERROR: No template");
                 ));
             }
         }
-        if (self::needs_shipment()) {
+        if (self::needs_shipment()) { 
             $objTemplate->setVariable(array(
                 'TXT_SHIP_COUNTRY' => $_ARRAYLANG['TXT_SHIP_COUNTRY'],
                 // Old, obsolete
@@ -946,26 +951,26 @@ die("Cart::view(): ERROR: No template");
                     $_SESSION['shop']['countryId2']),
             ));
         }
-        if (   \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min') > 0
-            && \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min') > self::get_price()
+        if (   \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min','Shop') > 0
+            && \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min','Shop') > self::get_price()
         ) {
             $objTemplate->setVariable(
                 'MESSAGE_TEXT',
                     sprintf(
                         $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN'],
                         Currency::formatPrice(
-                            \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min')),
+                            \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_min','Shop')),
                         Currency::getActiveCurrencySymbol()));
         } elseif (
-               \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max') > 0
-            && \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max') < self::get_price()
+               \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max','Shop') > 0
+            && \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max','Shop') < self::get_price()
         ) {
             $objTemplate->setVariable(
                 'MESSAGE_TEXT',
                     sprintf(
                         $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MAX'],
                         Currency::formatPrice(
-                            \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max')),
+                            \Cx\Core\Setting\Controller\Setting::getValue('orderitems_amount_max','Shop')),
                         Currency::getActiveCurrencySymbol()));
         } else {
             $objTemplate->setVariable(

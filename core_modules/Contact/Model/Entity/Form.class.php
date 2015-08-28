@@ -67,6 +67,11 @@ class Form {
     protected $htmlMail;
     
     /**
+     * array $crmCustomerGroups
+     */
+    protected $crmCustomerGroups;
+    
+    /**
      * @var bool
      */
     protected $sendAttachment;
@@ -87,6 +92,7 @@ class Form {
         $this->useEmailOfSender = false;
         $this->htmlMail = true;
         $this->sendAttachment = false;
+        $this->crmCustomerGroups = array();
     }
 
     /**
@@ -268,6 +274,22 @@ class Form {
     public function getSendAttachment() {
         return $this->sendAttachment;
     }
-}    
-
     
+    /**
+     * Get crmCustomerGroups
+     *
+     * @return array $crmCustomerGroups
+     */
+    public function getCrmCustomerGroups() {
+        return $this->crmCustomerGroups;
+    }
+    
+    /**
+     * Set crmCustomerGroups
+     *
+     * @param array $crmCustomerGroups
+     */
+    public function setCrmCustomerGroups($crmCustomerGroups) {
+        $this->crmCustomerGroups = $crmCustomerGroups;
+    }
+}    

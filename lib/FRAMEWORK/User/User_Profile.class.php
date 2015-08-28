@@ -58,7 +58,7 @@ class User_Profile
     }
 
 
-    public function setProfile($arrProfile)
+    public function setProfile($arrProfile, $ignoreAccessPermissions = false)
     {
         $arrDate = array();
         $arrDateFormat = array();
@@ -118,6 +118,7 @@ class User_Profile
 
                     if ($objAttribute->getId() &&
                         (
+                            $ignoreAccessPermissions ||
                             !$objAttribute->isProtected() ||
                             (
                                 Permission::checkAccess($objAttribute->getAccessId(), 'dynamic', true) ||
@@ -183,8 +184,12 @@ class User_Profile
         return true;
     }
 
-
-    protected function storeProfile()
+    /**
+     * @param  mixed    $profileUpdated	If $profileUpdated is provided, then in case any profile
+     *                                  changes are being flushed to the database, $profileUpdated
+     *                                  will be set to TRUE, otherwise it'll be left untouched.
+     */
+    protected function storeProfile(&$profileUpdated = null)
     {
         global $objDatabase, $_CORELANG;
 
@@ -206,6 +211,9 @@ class User_Profile
                         $objAttribute = $this->objAttribute->getById($attributeId);
                         $error = true;
                         $this->error_msg[] = sprintf($_CORELANG['TXT_ACCESS_UNABLE_STORE_PROFILE_ATTIRBUTE'], htmlentities($objAttribute->getName(), ENT_QUOTES, CONTREXX_CHARSET));
+                    } elseif ($objDatabase->Affected_Rows()) {
+                        // track flushed db change
+                        $profileUpdated = true;
                     }
                 }
             }
@@ -216,6 +224,9 @@ class User_Profile
                         $objAttribute = $this->objAttribute->getById($attributeId);
                         $error = true;
                         $this->error_msg[] = sprintf($_CORELANG['TXT_ACCESS_UNABLE_STORE_PROFILE_ATTIRBUTE'], htmlentities($objAttribute->getName(), ENT_QUOTES, CONTREXX_CHARSET));
+                    } elseif ($objDatabase->Affected_Rows()) {
+                        // track flushed db change
+                        $profileUpdated = true;
                     }
                 }
             }

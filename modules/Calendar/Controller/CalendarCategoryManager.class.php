@@ -149,7 +149,7 @@ class CalendarCategoryManager extends \Cx\Modules\Calendar\Controller\CalendarLi
     	
     	foreach ($this->categoryList as $key => $objCategory) {
             if($this->arrSettings['countCategoryEntries'] == 1) {
-                $count = ' ('.$objCategory->countEntries().')';
+                $count = ' ('.$objCategory->countEntries(false, true).')';
             } else {
                 $count = '';
             }   

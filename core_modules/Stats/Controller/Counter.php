@@ -17,28 +17,27 @@ require_once dirname(dirname(dirname(dirname(__FILE__)))).'/core/Core/init.php';
 
 $cx = init('minimal');
 
-global $objDatabase, $objDb;
+// those variables get defined in Data/spiders.inc.php, Data/referers.inc.php, Data/banned.inc.php
+global $objDatabase, $objDb, $arrBannedWords, $arrRobots;
 $objDatabase = $cx->getDb()->getAdoDb();
 $objDb = $objDatabase;
-
-// those variables get defined in Data/spiders.inc.php, Data/referers.inc.php, Data/banned.inc.php
-$arrBannedWords = array();
-$arrRobots = array();
 
 // the following includes are required, because they only contain a array definition
 // that can't be loaded automatically by the classloader
 /**
  * @ignore
  */
-\Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Stats/Data/spiders.inc.php');
+$cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/spiders.inc.php');
+
 /**
  * @ignore
  */
-\Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Stats/Data/referers.inc.php');
+$cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/referers.inc.php');
+
 /**
  * @ignore
  */
-\Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Stats/Data/banned.inc.php');
+$cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/banned.inc.php');
 
 
 $counter = new \Cx\Core_Modules\Stats\Controller\Counter($arrRobots, $arrBannedWords);
@@ -555,11 +554,15 @@ class Counter
     */
     function _getBrowser()
     {
+        global $arrBrowserRegExps, $arrBrowserNames;
+        
         $userAgent = $this->arrClient['useragent'];
-		$arrBrowserRegExps = array();
-		$arrBrowserNames = array();
-		$arrBrowser = array();
-        \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Stats/Data/useragents.inc.php');        
+        $arrBrowserRegExps = array();
+        $arrBrowserNames = array();
+        $arrBrowser = array();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/useragents.inc.php');        
+        
         if (!empty($arrBrowserRegExps)) {
             foreach ($arrBrowserRegExps as $browserRegExp) {
                 if (preg_match($browserRegExp, $userAgent, $arrBrowser)) {
@@ -602,10 +605,14 @@ class Counter
     */
     function _getOperatingSystem()
     {
+        global $arrOperatingSystems;
+        
         $operationgSystem = '';
-        $userAgent = $this->arrClient['useragent'];
+        $userAgent = $this->arrClient['useragent'];        
         $arrOperatingSystems = array();
-        \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Stats/Data/operatingsystems.inc.php');
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/operatingsystems.inc.php');
+        
         if (!empty($arrOperatingSystems)) {
             foreach ($arrOperatingSystems as $arrOperatingSystem) {
                 if (preg_match($arrOperatingSystem['regExp'], $userAgent)) {

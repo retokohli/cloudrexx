@@ -130,12 +130,80 @@
             <td>{TXT_NEWS_IMAGE_LINK_DESCRIPTION}</td>
         </tr>
         <tr class="row1">
+            <td>[[NEWS_IMAGE_DETAIL]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_DETAIL_ALT]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_DETAIL_LINK]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_DETAIL_SRC]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_THUMBNAIL]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_THUMBNAIL_ALT]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_THUMBNAIL_LINK]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_THUMBNAIL_SRC]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
             <td>&lt;-- news_image --&gt;</td>
             <td>{TXT_NEWS_IMAGE_ROW_DESCRIPTION}</td>
         </tr>
         <tr class="row2">
+            <td>&lt;-- news_image_detail --&gt;</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>&lt;-- news_image_thumbnail --&gt;</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
             <td>&lt;!-- newsrow --&gt;</td>
             <td>{TXT_NEWSROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row3">
+            <td colspan="2"><b>{TXT_NEWS_PREVIOUS_NEXT_LINKS}</b></td>
+        </tr>
+        
+        <tr class="row1">
+            <td><b>[[NEWS_PREVIOUS_LINK]]</b></td>
+            <td>{TXT_NEWS_PREVIOUS_LINK_DESCRITION}</td>
+        </tr>
+        
+        <tr class="row2">
+            <td><b>[[NEWS_PREVIOUS_TITLE]]</b></td>
+            <td>{TXT_NEWS_PREVIOUS_TITLE_DESCRITION}</td>
+        </tr>
+        
+        <tr class="row1">
+            <td><b>[[NEWS_NEXT_LINK]]</b></td>
+            <td>{TXT_NEWS_NEXT_LINK_DESCRITION}</td>
+        </tr>
+        
+        <tr class="row2">
+            <td><b>[[NEWS_NEXT_TITLE]]</b></td>
+            <td>{TXT_NEWS_NEXT_TITLE_DESCRITION}</td>
+        </tr>
+        
+        <tr class="row1">
+            <td>&lt;!-- previousNextLink --&gt;</td>
+            <td>{TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION}</td>
         </tr>
     </table>
     <br />
@@ -171,6 +239,16 @@
                 &lt;br&nbsp;/&gt;<br />
                 <b>[[NEWS_PAGING]]</b>&lt;br&nbsp;/&gt;<br />
                 &lt;br&nbsp;/&gt;
+                <br />
+                <b>&lt;!-- BEGIN previousNextLink --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN previousNewsLink --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[[NEWS_PREVIOUS_LINK]]" title="[[NEWS_PREVIOUS_TITLE]]">[[NEWS_PREVIOUS_TITLE]]&lt;/a&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END previousNewsLink --&gt;</b><br />
+
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN nextNewsLink --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[[NEWS_NEXT_LINK]]" title="[[NEWS_NEXT_TITLE]]">[[NEWS_NEXT_TITLE]]&lt;/a&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END nextNewsLink --&gt;</b><br />
+                <b>&lt;!-- END previousNextLink --&gt;</b><br />
             </td>
         </tr>
     </table>
@@ -235,6 +313,20 @@
             <td>{TXT_NEWS_COUNT_COMMENTS_DESCRIPTION}</td>
         </tr>
         <tr class="row2">
+            <td colspan="2">&lt;-- BEGIN news_category --&gt;</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_CATEGORY_TITLE]]</td>
+            <td>{TXT_NEWS_CATEGORY_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_CATEGORY_ID]]</td>
+            <td>{TXT_NEWS_CATEGORY_ID_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td colspan="2">&lt;-- END news_category --&gt;</td>
+        </tr>
+        <tr class="row2">
             <td>[[NEWS_IMAGE]]</td>
             <td>{TXT_NEWS_IMAGE_DESCRIPTION}</td>
         </tr>
@@ -247,8 +339,48 @@
             <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
         </tr>
         <tr class="row1">
+            <td>[[NEWS_IMAGE_DETAIL]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_DETAIL_ALT]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_DETAIL_LINK]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_DETAIL_SRC]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_THUMBNAIL]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_THUMBNAIL_ALT]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_THUMBNAIL_LINK]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_THUMBNAIL_SRC]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
             <td>&lt;-- news_image --&gt;</td>
             <td>{TXT_NEWS_IMAGE_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>&lt;-- news_image_detail --&gt;</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>&lt;-- news_image_thumbnail --&gt;</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_ROW_DESCRIPTION}</td>
         </tr>
         <tr class="row3">
             <td colspan="2">{TXT_NEWS_COMMENTS}</td>
@@ -475,9 +607,55 @@
         <tr class="row1">
             <td>[[HEADLINE_THUMBNAIL_PATH]]</td>
             <td>{TXT_NEWS_THUMBNAIL_PATH_DESCRIPTION}</td>
-        </tr>        
         </tr>
-        
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_DETAIL]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_DETAIL_ALT]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_DETAIL_LINK]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_DETAIL_SRC]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_THUMBNAIL]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_THUMBNAIL_ALT]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_THUMBNAIL_LINK]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_THUMBNAIL_SRC]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>&lt;-- news_image --&gt;</td>
+            <td>{TXT_NEWS_IMAGE_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>&lt;-- news_image_detail --&gt;</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>&lt;-- news_image_thumbnail --&gt;</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>&lt;-- headlines_row --&gt;</td>
+            <td>{TXT_NEWS_HEADLINES_ROW_DESCRIPTION}</td>
+        </tr>
     </table>
     <br />
     <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
@@ -577,8 +755,48 @@
             <td>{TXT_NEWS_IMAGE_LINK_DESCRIPTION}</td>
         </tr>
         <tr class="row1">
+            <td>[[NEWS_IMAGE_DETAIL]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_DETAIL_ALT]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_DETAIL_LINK]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_DETAIL_SRC]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_THUMBNAIL]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_THUMBNAIL_ALT]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_THUMBNAIL_LINK]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_THUMBNAIL_SRC]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
             <td>&lt;-- news_image --&gt;</td>
             <td>{TXT_NEWS_IMAGE_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>&lt;-- news_image_detail --&gt;</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>&lt;-- news_image_thumbnail --&gt;</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_ROW_DESCRIPTION}</td>
         </tr>
         <tr class="row2">
             <td>&lt;!-- newsrow --&gt;</td>
@@ -638,6 +856,179 @@
         <tr class="row1">
             <td colspan="2">                
                 {TXT_NEWS_ARCHIVE_LIST_PLACEHOLDERS_USAGE}
+            </td>
+        </tr>
+    </table>
+  <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+        <tr>
+            <th colspan="2">{TXT_PLACEHOLDER_LIST}</th>
+        </tr>
+        <tr class="row1">
+            <td width="15%">[[NEWS_ARCHIVE_MONTH_KEY]]</td>
+            <td width="85%">{TXT_NEWS_ARCHIVE_MONTH_KEY_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_MONTH_NAME]]</td>
+            <td>{TXT_NEWS_ARCHIVE_MONTH_NAME_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_MONTH_COUNT]]</td>
+            <td>{TXT_NEWS_ARCHIVE_MONTH_COUNT_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_ID]]</td>
+            <td>{TXT_NEWS_ID_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_CSS]]</td>
+            <td>{TXT_NEWS_CSS_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_TEASER]]</td>
+            <td>{TXT_NEWS_TEASER_TEXT_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_TITLE]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_LONG_DATE]]</td>
+            <td>{TXT_NEWS_LONG_DATE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_DATE]]</td>
+            <td>{TXT_NEWS_DATE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_TIME]]</td>
+            <td>{TXT_NEWS_TIME_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_LINK_TITLE]]</td>
+            <td>{TXT_NEWS_LINK_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_LINK]]</td>
+            <td>{TXT_NEWS_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_LINK_URL]]</td>
+            <td>{TXT_NEWS_LINK_URL_DESCRIPTION}</td>
+        </tr>       
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_AUTHOR]]</td>
+            <td>{TXT_NEWS_AUTHOR_DESCRIPTION}</td>
+        </tr>        
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_PUBLISHER]]</td>
+            <td>{TXT_NEWS_PUBLISHER_DESCRIPTION}</td>
+        </tr>                                
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_IMAGE]]</td>
+            <td>{TXT_NEWS_IMAGE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_IMAGE_SRC]]</td>
+            <td>{TXT_NEWS_IMAGE_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_IMAGE_ALT]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_IMAGE_LINK]]</td>
+            <td>{TXT_NEWS_IMAGE_LINK_DESCRIPTION}</td>
+        </tr>
+        
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_IMAGE_DETAIL]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_IMAGE_DETAIL_ALT]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_IMAGE_DETAIL_LINK]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_IMAGE_DETAIL_SRC]]</td>
+            <td>{TXT_NEWS_IMAGE_DETAIL_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_IMAGE_THUMBNAIL]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_IMAGE_THUMBNAIL_ALT]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_ARCHIVE_IMAGE_THUMBNAIL_LINK]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_ARCHIVE_IMAGE_THUMBNAIL_SRC]]</td>
+            <td>{TXT_NEWS_IMAGE_THUMBNAIL_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>&lt;-- news_archive_image --&gt;</td>
+            <td>{TXT_NEWS_ARCHIVE_IMAGE_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>&lt;-- news_archive_image_detail --&gt;</td>
+            <td>{TXT_NEWS_ARCHIVE_IMAGE_DETAIL_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>&lt;-- news_archive_image_thumbnail --&gt;</td>
+            <td>{TXT_NEWS_ARCHIVE_IMAGE_THUMBNAIL_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>&lt;!-- news_archive_link --&gt;</td>
+            <td>{TXT_NEWS_ARCHIVE_ROW_DESCRIPTION}</td>
+        </tr>
+    </table>
+    <br />
+    <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+        <tr>
+            <th>{TXT_EXAMPLE}</th>
+        </tr>
+        <tr class="row1">
+          <td><b>&lt;!-- BEGIN news_archive_status_message --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;<b>[[TXT_NEWS_NO_NEWS_FOUND]]</b><br />
+                <b>&lt;!-- END news_archive_status_message --&gt;</b><br />
+                <br />
+                
+                &lt;ul&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN news_archive_months_list --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;
+                &lt;a href = &quot;#<b>[[NEWS_ARCHIVE_MONTH_KEY]]</b>&quot;&gt;<b>[[NEWS_ARCHIVE_MONTH_NAME]]</b>&lt;/a&gt;
+                &LeftAngleBracket;<b>[[NEWS_ARCHIVE_MONTH_COUNT]]</b>&RightAngleBracket;&lt;/li&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END news_archive_months_list --&gt;</b><br />
+                &lt;/ul&gt;<br />
+                <br />
+                
+                <b>&lt;!-- BEGIN news_archive_months_list --&gt;</b><br/>
+                &nbsp;&nbsp;&nbsp;&lt;ul&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN news_archive_month_list_item --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a name = &quot;#<b>[[NEWS_ARCHIVE_MONTH_KEY]]</b>&quot;&gt;<b>[[NEWS_ARCHIVE_MONTH_NAME]]</b>&lt;/a&gt;<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN news_archive_link --&gt;</b><br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href=&quot;<b>[[NEWS_ARCHIVE_LINK_URL]]</b>&quot;&nbsp;title=&quot;<b>[[NEWS_ARCHIVE_LINK_TITLE]]</b>&quot;&gt;<b>[[NEWS_ARCHIVE_LINK_TITLE]]</b>&lt;/a&gt;<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN news_archive_image --&gt;</b><br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;span&gt;<b>[[NEWS_ARCHIVE_IMAGE]]</b>&lt;/span&gt;<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END news_archive_image --&gt;</b><br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt;<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END news_archive_link --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END news_archive_month_list_item --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&lt;/ul&gt;<br />
+                <b>&lt;!-- END news_archive_months_list --&gt;</b><br />
+                <br />
             </td>
         </tr>
     </table>

@@ -71,10 +71,29 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         global $_ARRAYLANG;
         
-        $subscriptions = $this->subscriptionRepo->findAll();
-        if (empty($subscriptions)) {
-            $subscriptions = new \Cx\Modules\Order\Model\Entity\Subscription();
+        $term          = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
+        $filterProduct = isset($_GET['filter_product']) 
+                         ? contrexx_input2raw($_GET['filter_product']) : array();
+        $filterState   = isset($_GET['filter_state']) 
+                         ? contrexx_input2raw($_GET['filter_state']) : array();
+        
+        if (!empty($term) || !empty($filterProduct) || !empty($filterState)) {
+            $filter    = array('term' => $term, 'filterProduct' => $filterProduct, 'filterState' => $filterState);
+            $subscriptions = $this->subscriptionRepo->findSubscriptionsBySearchTerm($filter);
+        } else {
+            $subscriptions = $this->subscriptionRepo->getSubscriptionsByCriteria(null, array('s.id' => 'DESC'));
         }
+        
+        $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll();
+        $this->getSearchFilterDropDown($products, $filterProduct, 'product');
+        
+        $subscriptionStates = array(\Cx\Modules\Order\Model\Entity\Subscription::STATE_ACTIVE, 
+                                    \Cx\Modules\Order\Model\Entity\Subscription::STATE_INACTIVE, 
+                                    \Cx\Modules\Order\Model\Entity\Subscription::STATE_TERMINATED, 
+                                    \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED
+                              );
+        $this->getSearchFilterDropDown($subscriptionStates, $filterState, 'state');
+        
         $view = new \Cx\Core\Html\Controller\ViewGenerator($subscriptions, array(
             'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_SUBSCRIPTION'],
             'functions' => array(
@@ -86,7 +105,17 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                 'filtering' => false,
                 ),
             'fields' => array(
+                'id' => array(
+                  'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_ID']  
+                ),
+                'subscriptionDate' => array(
+                  'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_DATE']  
+                ),
+                'expirationDate' => array(
+                  'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_EXPIRATION_DATE']  
+                ),
                 'productEntityId' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PRODUCT_ENTITY'],
                     'table' => array(
                         'parse' => function($value, $rowData) {
                             $subscription  = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
@@ -94,11 +123,72 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                             if(!$productEntity) {
                                 return;
                             }
-                            return $productEntity;
+                            $productEditLink = $productEntity;
+                            if (method_exists($productEntity, 'getEditLink')) {
+                                $productEditLink = $productEntity->getEditLink();
+                            }
+                            
+                            return $productEditLink;
                         }
                     )
                 ),
+                'paymentAmount' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PAYMENT_AMOUNT'],
+                    'table' => array(
+                        'parse' => function($value, $rowData) {
+                            if (\FWValidator::isEmpty(floatval($value))) {
+                                return null;
+                            }
+                            $subscription    = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
+                            $currency = '';
+                            $order = $subscription->getOrder();
+                            if ($order) {
+                                $currency  = !\FWValidator::isEmpty($order->getCurrency()) ? $order->getCurrency() : '';
+                            }
+                            $paymentInterval = $subscription->getRenewalUnit();
+                            return $value . ' ' . $currency . ' / ' . $paymentInterval;
+                        }
+                    )
+                ),
+                'renewalUnit' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_RENEWAL_UNIT'],
+                    'table' => array(
+                        'parse' => function($value, $rowData) {
+                            if (empty($value)) {
+                                return null;
+                            }
+                            $subscription    = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
+                            $renewalDate     = '';
+                            if ($subscription->getRenewalDate()) {
+                                $renewalDate  = $subscription->getRenewalDate();
+                                $quantifier   = $subscription->getRenewalQuantifier();
+                                $renewalDate->modify("-$quantifier $value");
+                                return $renewalDate->format('d.M.Y H:i:s');
+                            }
+                            return $renewalDate;
+                        }
+                    )
+                ),
+                'renewalQuantifier' => array(
+                    'showOverview' => false
+                ),
+                'renewalDate' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_RENEWAL_DATE']
+                ),
+                'description' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_DESCRIPTION']
+                ),
+                'state' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_STATE']
+                ),
+                'terminationDate' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_TERMI_DATE']
+                ),
+                'note' => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_NOTE']
+                ),
                 'product'  => array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PRODUCT'],
                     'table' => array(
                         'parse' => function($value, $rowData) {
                             $subscription  = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
@@ -110,9 +200,54 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                         }
                     )
                 ),
+                'paymentState' => array(
+                    'showOverview' => false
+                ),
+                'externalSubscriptionId' => array(
+                    'showOverview' => false
+                ),
+                'order' => array(
+                    'showOverview' => false
+                ),
                 
             ),
-            ));
+        ));
+
+        $this->template->setVariable(array(
+            'TXT_ORDER_SUBSCRIPTIONS_FILTER'       => $_ARRAYLANG['TXT_MODULE_ORDER_FILTER'],
+            'TXT_ORDER_SUBSCRIPTIONS_SEARCH'       => $_ARRAYLANG['TXT_MODULE_ORDER_SEARCH'],
+            'TXT_ORDER_SUBSCRIPTIONS_SEARCH_TERM'  => $_ARRAYLANG['TXT_MODULE_ORDER_SEARCH_TERM'],
+            'ORDER_SUBSCRIPTIONS_SEARCH_VALUE'     => contrexx_raw2xhtml($term)
+        ));
+        if (isset($_GET['editid']) && !empty($_GET['editid']) || isset($_GET['add']) && !empty($_GET['add'])) {
+            $this->template->hideBlock("subscription_filter");
+        }
         $this->template->setVariable('SUBSCRIPTIONS_CONTENT', $view->render());
+    }
+    
+    /**
+     * Get search filter dropdown
+     * 
+     * @param mixed   $filterDropDownValues
+     * @param mixed   $selected
+     * @param string  $block       
+     */
+    public function getSearchFilterDropDown($filterDropDownValues, $selected, $block) {
+
+        foreach ($filterDropDownValues as $filterDropDownValue) {
+            $filterDropDownName = $filterDropDownValue;
+            if (is_object($filterDropDownValue)) {
+                $filterDropDownName  = $filterDropDownValue->getName();
+                $filterDropDownValue = $filterDropDownValue->getId();
+            }
+            
+            $selectedVal = in_array($filterDropDownValue, $selected) ? 'selected' : '';
+            $this->template->setVariable(array(
+                'ORDER_SUBSCRIPTION_'.strtoupper($block).'_NAME'         => contrexx_raw2xhtml($filterDropDownName),
+                'ORDER_SUBSCRIPTION_'.strtoupper($block).'_VALUE'        => contrexx_raw2xhtml($filterDropDownValue),
+                'ORDER_SUBSCRIPTION_'.strtoupper($block).'_SELECTED'     => $selectedVal,
+            ));
+            $this->template->parse('subscription_' . $block . '_filter');
+        }
     }
 }

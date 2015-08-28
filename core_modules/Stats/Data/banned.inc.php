@@ -1,4 +1,5 @@
 <?php
+global $arrBannedWords, $arrBannedReferers;
 
 /**
  * Defines banned words and referrers
@@ -15,5 +16,3 @@ $arrBannedWords = array("sex","porn","xxx","gay","girls","fuck","anal","viagra",
 
 // define banned referers
 $arrBannedReferers = array("sex.com");
-
-?>

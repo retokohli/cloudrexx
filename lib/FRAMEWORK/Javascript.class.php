@@ -418,12 +418,15 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'lib/javascript/angularjs/angular-animate.js',
                 'lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js',
                 'lib/javascript/angularjs/ui-bootstrap-tpls-0.11.2.min.js',
-                'lib/javascript/bootbox.min.js',
-                'core_modules/MediaBrowser/View/Script/mediabrowser.js',
-                'core_modules/MediaBrowser/View/Script/standalone-directives.js'
+                'lib/javascript/bootbox.min.js'
+            ),
+            'cssfiles' => array(
+                'core_modules/MediaBrowser/View/Style/mediabrowser.css'
             ),
             'dependencies' => array('twitter-bootstrap' => '3.2.0', 'cx'),
-            'specialcode' => ''
+            'specialcode' => 'if (typeof cx.variables.get(\'jquery\', \'mediabrowser\') == \'undefined\'){
+    cx.variables.set({"jquery": jQuery.noConflict(true)},\'mediabrowser\');
+}'
         ),
     );
 
@@ -928,14 +931,14 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     public static function findCSS(&$content)
     {
         JS::grabComments($content);
-        /*
-         * $content = preg_replace_callback('/<link .*?href=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:\/>)?/i', array('CSS', 'registerFromRegex'), $content);
-         */
+        //deactivate error handling for not well formed html
+        libxml_use_internal_errors(true);
         $css = array();
         $dom = new domDocument;
         $dom->loadHTML($content);
+        libxml_clear_errors();
         foreach($dom->getElementsByTagName('link') as $element) {
-            if(strpos($element->getAttribute('href'), '.css', strlen($element->getAttribute('href')) - strlen('.css')) !== FALSE) {
+            if(preg_match('/\.css(\?.*)?$/', $element->getAttribute('href'))) {
                 $css[] = $element->getAttribute('href');
                 JS::registerCSS($element->getAttribute('href'));
             }

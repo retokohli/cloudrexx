@@ -15,50 +15,44 @@ namespace Cx\Core_Modules\Uploader\Controller;
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
-use Cx\Core_Modules\Uploader\Model\Uploader;
+use Cx\Core_Modules\Uploader\Model\Entity\Uploader;
 
 class ComponentController extends SystemComponentController
 {
 
     protected $uploaderInstances = array();
 
-    public function __construct(SystemComponent $systemComponent, Cx $cx)
-    {
-        parent::__construct($systemComponent, $cx);
-    }
-
-    public function addUploader(Uploader $uploader)
-    {
+    public function addUploader(Uploader $uploader) {
         $this->uploaderInstances[] = $uploader;
     }
 
-    public function getControllersAccessableByJson()
-    {
+    public function getControllerClasses() {
+        return array();
+    }
+
+    public function getControllersAccessableByJson() {
         return array(
             'JsonUploader',
         );
     }
 
-    public function preFinalize(\Cx\Core\Html\Sigma $template)
-    {
-        if (count($this->uploaderInstances) > 0) {
+    public function preFinalize(\Cx\Core\Html\Sigma $template) {
+        if (count($this->uploaderInstances) == 0) {
+            return;
+        } else {
             global $_ARRAYLANG;
 
             \Env::get('init')->loadLanguageData('Uploader');
             foreach ($_ARRAYLANG as $key => $value) {
                 if (preg_match("/UPLOADER(_[A-Za-z0-9]+)?/", $key)) {
-                    \ContrexxJavascript::getInstance()->setVariable($key, $value, 'mediabrowser');
+                    \ContrexxJavascript::getInstance()->setVariable(
+                        $key, $value, 'mediabrowser'
+                    );
                 }
             }
 
             \JS::activate('mediabrowser');
-            \JS::registerCSS(
-                substr(
-                    $this->cx->getCoreModuleFolderName()
-                    . '/MediaBrowser/View/Style/mediabrowser.css', 1
-                )
-            );
-
+            \JS::registerJS('core_modules/Uploader/View/Script/uploader.js');
         }
     }
 

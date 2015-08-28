@@ -18,6 +18,9 @@ class TablePrefixListener
         $classMetadata->setTableName($this->prefix . $classMetadata->getTableName());
         foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping) {
             if ($mapping['type'] == \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_MANY) {
+                if (!isset($classMetadata->associationMappings[$fieldName]['joinTable'])) {
+                    continue;
+                }
                 $mappedTableName = $classMetadata->associationMappings[$fieldName]['joinTable']['name'];
                 $classMetadata->associationMappings[$fieldName]['joinTable']['name'] = $this->prefix . $mappedTableName;
             }

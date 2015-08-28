@@ -74,7 +74,7 @@ class MediaDirectoryInputfieldClassification extends \Cx\Modules\MediaDir\Contro
                 }
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = '<select name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldDropdown" style="width: 302px">';
+                    $strInputfield = '<select name="'.$this->moduleNameLC.'Inputfield['.$intId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" class="'.$this->moduleNameLC.'InputfieldDropdown" style="width: 302px">';
 
                     for ($i=1;$i<=$this->arrSettings['settingsClassificationPoints'];$i++){
                         if($strValue == $i) {
@@ -88,7 +88,7 @@ class MediaDirectoryInputfieldClassification extends \Cx\Modules\MediaDir\Contro
 
                     $strInputfield .= '</select>';
                 } else {
-                    $strInputfield = '<select name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldDropdown '.$strInfoClass.'" '.$strInfoValue.'>';
+                    $strInputfield = '<select name="'.$this->moduleNameLC.'Inputfield['.$intId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" class="'.$this->moduleNameLC.'InputfieldDropdown '.$strInfoClass.'" '.$strInfoValue.'>';
 
                     for ($i=1;$i<=$this->arrSettings['settingsClassificationPoints'];$i++){
                         if($strValue == $i) {
@@ -109,7 +109,7 @@ class MediaDirectoryInputfieldClassification extends \Cx\Modules\MediaDir\Contro
             case 2:
                 //search View
                 $strValue = $_GET[$intId];
-                $strImagePath = ASCMS_PATH_OFFSET.ASCMS_MODULE_FOLDER.'/'.$this->moduleName.'/View/Media/';
+                $strImagePath = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath().'/'.$this->moduleName.'/View/Media/';
                 $intNumPoints = $this->arrSettings['settingsClassificationPoints'];
                 $strFieldName = $this->moduleName."Classification_";
                 $strImageName = $this->moduleName."rClassificationImage_";
@@ -165,7 +165,7 @@ EOF;
 
 
 
-    function saveInputfield($intInputfieldId, $strValue)
+    function saveInputfield($intInputfieldId, $strValue, $langId = 0)
     {
         $strValue = contrexx_strip_tags(contrexx_input2raw($strValue));
         return $strValue;
@@ -178,7 +178,7 @@ EOF;
 
         $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
-        if($objDeleteEntry !== false) {
+        if($objDeleteInputfield !== false) {
             return true;
         } else {
             return false;
@@ -214,7 +214,7 @@ EOF;
                 $strImage = 'classification_off.png';
             }
 
-            $strValue .= '<img src="'.ASCMS_MODULE_WEB_PATH.'/'.$this->moduleName.'/View/Media/'.$strImage.'" title="'.$arrInputfield['name'][0].' - '.$intValue.'" alt="'.$arrInputfield['name'][0].' - '.$intValue.'" />';
+            $strValue .= '<img src="'.\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath().'/'.$this->moduleName.'/View/Media/'.$strImage.'" title="'.$arrInputfield['name'][0].' - '.$intValue.'" alt="'.$arrInputfield['name'][0].' - '.$intValue.'" />';
         }
 
         if(!empty($strValue)) {

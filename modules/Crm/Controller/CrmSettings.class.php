@@ -16,6 +16,20 @@
 namespace Cx\Modules\Crm\Controller;
 
 /**
+ * CrmSettingsException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Adrian Berger <ab@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_crm
+ * @version     1.0.0
+ */
+class CrmSettingsException extends \Exception
+{
+}
+
+
+/**
  * This is the settings class file for handling the all functionalities under settings menu.
  *
  * @category   Settings
@@ -592,7 +606,8 @@ class CrmSettings extends CrmLibrary
 
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
         if (empty($id)) {
-            \Cx\Core\Csrf\Controller\Csrf::header(ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=settings&tpl=currency");
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            \Cx\Core\Csrf\Controller\Csrf::header($cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName()."/index.php?cmd=".$this->moduleName."&act=settings&tpl=currency");
             exit();
         }
 
@@ -750,7 +765,12 @@ class CrmSettings extends CrmLibrary
         global $objDatabase,$_ARRAYLANG;
 
         //For task type Upload
-        $uploaderCodeTaskType = $this->initUploader('taskType', true, 'taskUploadFinished', '', 'task_type_files_');
+        $options = array(
+            'id' => 'taskUploader',
+            'style' => 'display:none;',
+            'upload-limit' => 1
+        );
+        $uploaderCodeTaskType = $this->initUploader('taskUploadFinished', 'taskCallbackJs', '', $_ARRAYLANG['TXT_BROWSE'], $options);
         $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
         $this->_objTpl->setVariable(array(
             'COMBO_UPLOADER_CODE_TASK_TYPE' => $uploaderCodeTaskType,
@@ -828,7 +848,7 @@ class CrmSettings extends CrmLibrary
 
         $objTpl->setVariable(array(
                 'TXT_CRM_ICON'                 => $_ARRAYLANG['TXT_CRM_ICON'],
-                'TXT_CRM_ICON_PATH'            => CRM_ACCESS_OTHER_IMG_WEB_PATH.'/',
+                'TXT_CRM_ICON_PATH'            => \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/',
                 'TXT_CRM_TASK_TYPES'           => $_ARRAYLANG['TXT_CRM_TASK_TYPES'],
                 'TXT_CRM_ADD_TASK_TYPE'        => $_ARRAYLANG['TXT_CRM_ADD_TASK_TYPE'],
                 'TXT_CRM_TASK_TYPE_STATUS'     => $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS'],
@@ -1019,29 +1039,38 @@ class CrmSettings extends CrmLibrary
      */
     public function showGeneralSettings()
     {
-        global $objDatabase,$_ARRAYLANG;
+        global $objDatabase,$_ARRAYLANG, $_CORELANG;
         $this->_objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleNameLC.'_settings_general.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
         $objTpl = $this->_objTpl;
-        $objFWUser = \FWUser::getFWUserObject();
         $objTpl->hideBlock('insufficient-warning');
         if (isset($_POST['save'])) {
                                     
             $settings = array(
-                    'allow_pm'                           => (!$this->isPmInstalled ? 0 : (isset($_POST['allowPm']) ? 1 : 0)),
-                    'create_user_account'                => isset($_POST['create_user_account']) ? 1 : 0,
-                    'customer_default_language_backend'  => isset($_POST['default_language_backend']) ? (int) $_POST['default_language_backend'] : 0,
-                    'customer_default_language_frontend' => isset($_POST['default_language_frontend']) ? (int) $_POST['default_language_frontend'] : 0,
-                    'default_user_group'                 => isset($_POST['default_user_group']) ? (int) $_POST['default_user_group'] : 0,
-                    'user_account_mantatory'             => isset($_POST['user_account_mantatory']) ? 1 : 0,
-                    'emp_default_user_group'             => isset($_POST['emp_default_user_group']) ? (int) $_POST['emp_default_user_group'] : 0,
-                    'default_country_value'              => isset ($_POST['default_country_value']) ? (int) $_POST['default_country_value'] : 0
+                    'allow_pm'                             => (!$this->isPmInstalled ? 0 : (isset($_POST['allowPm']) ? 1 : 0)),
+                    'create_user_account'                  => isset($_POST['create_user_account']) ? 1 : 0,
+                    'customer_default_language_backend'    => isset($_POST['default_language_backend']) ? (int) $_POST['default_language_backend'] : 0,
+                    'customer_default_language_frontend'   => isset($_POST['default_language_frontend']) ? (int) $_POST['default_language_frontend'] : 0,
+                    'default_user_group'                   => isset($_POST['default_user_group']) ? (int) $_POST['default_user_group'] : 0,
+                    'user_account_mantatory'               => isset($_POST['user_account_mantatory']) ? 1 : 0,
+                    'emp_default_user_group'               => isset($_POST['emp_default_user_group']) ? (int) $_POST['emp_default_user_group'] : 0,
+                    'default_country_value'                => isset($_POST['default_country_value']) ? (int) $_POST['default_country_value'] : 0,
+                    'user_profile_attribute_industry_type' => isset($_POST['user_profile_attribute_industry_type']) ? $_POST['user_profile_attribute_industry_type'] : 0,
+                    'user_profile_attribute_company_size'  => isset($_POST['user_profile_attribute_company_size']) ? $_POST['user_profile_attribute_company_size'] : 0,
+                    'user_profile_attribute_customer_type' => isset($_POST['user_profile_attribute_customer_type']) ? $_POST['user_profile_attribute_customer_type'] : 0,
             );
+            \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
+            // save industry_typ and company_size user profil attribut id
+            \Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_industry_type', $settings['user_profile_attribute_industry_type']);
+            \Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_company_size', $settings['user_profile_attribute_company_size']);
+            \Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_customer_type', $settings['user_profile_attribute_customer_type']);
+            \Cx\Core\Setting\Controller\Setting::updateAll();
+
 
             foreach ($settings as $settings_var => $settings_val) {
                 $updateAllowPm = 'UPDATE '.DBPREFIX.'module_'.$this->moduleNameLC.'_settings
-                                          SET `setvalue` = "'.contrexx_input2db($settings_val).'"
-                                    WHERE setname = "'.$settings_var.'"';
+                                    SET `setvalue` = "'.contrexx_input2db($settings_val).'"
+                                        WHERE setname = "'.$settings_var.'"';
                 $objDatabase->Execute($updateAllowPm);
             }
 
@@ -1064,7 +1093,9 @@ class CrmSettings extends CrmLibrary
                 $objTpl->touchBlock('insufficient-warning');
             }
         }
-
+        if($settings['create_user_account'] == 1){
+            $this->createProfilAttributes();
+        }
         $objLanguages = $objDatabase->Execute("SELECT `id`, `name`, `frontend`, `backend` FROM ".DBPREFIX."languages WHERE frontend = 1 OR backend =1");
 
         if ($objLanguages) {
@@ -1167,6 +1198,9 @@ class CrmSettings extends CrmLibrary
                 'TXT_CRM_DEFAULT_USER_GROUP'     => $_ARRAYLANG['TXT_CRM_DEFAULT_USER_GROUP'],
                 'TXT_CRM_CREATE_ACCOUNT_USER'    => $_ARRAYLANG['TXT_CRM_CREATE_ACCOUNT_USER'],
                 'TXT_CRM_CREATE_ACCOUNT_USER_TIP'=> $_ARRAYLANG['TXT_CRM_CREATE_ACCOUNT_USER_TIP'],
+                'TXT_CRM_PROFILE_ATTRIBUT_INDUSTRY_TYPE'=> $_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_INDUSTRY_TYPE'],
+                'TXT_CRM_PROFILE_ATTRIBUT_COMPANY_SIZE'=> $_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_COMPANY_SIZE'],
+                'TXT_CRM_PROFILE_ATTRIBUT_CUSTOMER_TYPE'=> $_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_CUSTOMER_TYPE'],
 
                 'MODULE_NAME'                    => $this->moduleName,
                 'TXT_CRM_NOTES'                  => $_ARRAYLANG['TXT_CRM_NOTES'],
@@ -1176,11 +1210,99 @@ class CrmSettings extends CrmLibrary
                 'TXT_CRM_EMPLOYEE'               => $_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE'],
                 'TXT_CRM_EMP_DEFAULT_USER_GROUP' => $_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP'],
                 'TXT_CRM_SETTINGS_EMP_TOOLTIP'   => $_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_TOOLTIP'],
-                'TXT_CRM_ACCOUNT_ARE_MANTATORY'  => $_ARRAYLANG['TXT_CRM_ACCOUNT_ARE_MANTATORY']
+                'TXT_CRM_ACCOUNT_ARE_MANTATORY'  => $_ARRAYLANG['TXT_CRM_ACCOUNT_ARE_MANTATORY'],
+                'CRM_PROFILE_ATTRIBUT_INDUSTRY_TYPE_DROPDOWN' =>\Html::getSelect(
+                                                                'user_profile_attribute_industry_type',
+                                                                \User_Profile_Attribute::getCustomAttributeNameArray(),
+                                                                \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_type', 'Crm'),
+                                                                '', '', 'tabindex="0" style="width: 270px;"'),
+                'CRM_PROFILE_ATTRIBUT_COMPANY_SIZE_DROPDOWN' => \Html::getSelect(
+                                                                'user_profile_attribute_company_size',
+                                                                \User_Profile_Attribute::getCustomAttributeNameArray(),
+                                                                \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size', 'Crm'),
+                                                                '', '', 'tabindex="0" style="width: 270px;"'),
+                'CRM_PROFILE_ATTRIBUT_CUSTOMER_TYPE_DROPDOWN' => \Html::getSelect(
+                                                                'user_profile_attribute_customer_type',
+                                                                \User_Profile_Attribute::getCustomAttributeNameArray(),
+                                                                \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_type', 'Crm'),
+                                                                '', '', 'tabindex="0" style="width: 270px;"'),
         ));
         
         if (!$this->isPmInstalled)
             $objTpl->hideBlock('allowPmModule');
+    }
+
+    /**
+     *
+     * This code creates the crm setting for company size, customerType and industryType if the do not exist and
+     * also creates the profile attributes and links them with the new settings in the crm
+     *
+     * @global <type> $_CORELANG
+     * @global <type> $_ARRAYLANG
+     * @autor Adrian Berger <ab@comvation.com>
+     * @return void
+     */
+    function createProfilAttributes()
+    {
+        global $_CORELANG, $_ARRAYLANG;
+        $objFWUser = \FWUser::getFWUserObject();
+        $objUser = $objFWUser->objUser;
+
+        $objInit = \Env::get('init');
+
+        // save lang id and arrayLangs, because they will be replaced temporary with another language and after that
+        // we need the arrays in this language, because otherwise the user gets the site in a wrong language
+        $backendLangId = $objInit->backendLangId;
+        $_tempCORELANG = $_CORELANG;
+        $_tempARRAYLANG = $_ARRAYLANG;
+
+        // get all languages, so we can load the placeholder for all languages
+        $FWLanguages = new \FWLanguage();
+        $languages = $FWLanguages->getLanguageArray();
+        $attributNameAfterLang = Array(
+            'TXT_CRM_COMPANY_SIZE' => 'user_profile_attribute_company_size',
+            'TXT_CRM_INDUSTRY_TYPE' => 'user_profile_attribute_industry_type',
+            'TXT_CRM_CUSTOMER_TYPE' => 'user_profile_attribute_customer_type',
+        );
+        \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
+        foreach($attributNameAfterLang as $key => $attributName){
+
+            if(!\Cx\Core\Setting\Controller\Setting::isDefined($attributName)){
+                if(!$objUser->objAttribute->getAttributeIdByName($_ARRAYLANG[$key]) !== null){
+                    $attribut = $objUser->objAttribute->getById(0);
+                    $attribut->init();
+
+                    $placeholderArr = Array();
+                    foreach($languages as $language){
+                        $objInit->backendLangId = $language["id"];
+                        $langArr = $objInit->loadLanguageData();
+                        $placeholderArr[$language["id"]] = $langArr[$key];
+                    }
+
+                    $attribut->setNames($placeholderArr);
+                    $attribut->setType('text');
+                    $attribut->setParent(0);
+
+                    if(!$attribut->store()){
+                        throw new \Cx\Modules\Crm\Controller\CrmSettingsException('Failed to create User_Profile_Attribute for '.$key);
+                    }
+                }
+                \CX\Core\Setting\Controller\Setting::add(
+                    $attributName,
+                    $objUser->objAttribute->getAttributeIdByName($_ARRAYLANG[$key]),
+                    false,
+                    'dropdown_user_custom_attribute',
+                    '',
+                    'config'
+                );
+            }
+
+        }
+
+        // restore the original language settings, so the page loads in the correct language
+        $objInit->backendLangId = $backendLangId;
+        $_CORELANG = $_tempCORELANG;
+        $_ARRAYLANG = $_tempARRAYLANG;
     }
 
     /**
@@ -1211,7 +1333,7 @@ class CrmSettings extends CrmLibrary
             $objTemplate,
             $_CORELANG['TXT_CORE_MAILTEMPLATES'],
             \Cx\Core\MailTemplate\Controller\MailTemplate::overview('Crm', 'config',
-                \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend')
+                \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend', 'Crm')
             )->get()
         );
         
@@ -1243,7 +1365,7 @@ class CrmSettings extends CrmLibrary
     {
         global $_ARRAYLANG;
 
-        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/View/Template/Backend');
+        $objTemplate = new \Cx\Core\Html\Sigma(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath().'/'.$this->moduleName.'/View/Template/Backend');
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         if (!$objTemplate->loadTemplateFile('module_'.$this->moduleNameLC.'_settings_placeholders.html'))
             die("Failed to load template 'module_'.$this->moduleNameLC.'_settings_placeholders.html'");

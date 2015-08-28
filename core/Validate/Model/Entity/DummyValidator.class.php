@@ -22,9 +22,7 @@ class DummyValidator extends Validator {
     
     public function getJavaScriptCode() {
         return '
-            function(data) {
                 return true;
-            }
         ';
     }
 }

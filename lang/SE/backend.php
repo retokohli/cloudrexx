@@ -471,6 +471,7 @@ $_ARRAYLANG['TXT_THEME_IMPORT_EXPORT'] = "Import/Export";
 $_ARRAYLANG['TXT_LOGOUT_WARNING'] = "We recommend to clear your browser cache for security reason.  Do you really want to logout the administration console?  ";
 $_ARRAYLANG['TXT_EXPORT'] = "Export";
 $_ARRAYLANG['TXT_THEME_PRINT'] = "Print preview";
+$_ARRAYLANG['TXT_THEME_PREVIEW'] = 'Preview';
 $_ARRAYLANG['TXT_PODCAST'] = "Podcast";
 $_ARRAYLANG['TXT_PODCAST_MODULE_DESCRIPTION'] = "Provide Audio or Video Files";
 $_ARRAYLANG['TXT_SETTINGS_LANG_DEBUG'] = "Debug mode settings";
@@ -855,6 +856,7 @@ $_ARRAYLANG['TXT_CORE_SAVED_AS_DRAFT'] = "Saved as draft";
 $_ARRAYLANG['TXT_CORE_SAVED'] = "Saved";
 $_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Draft submitted for publishing";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH_DRAFT'] = "Publish draft";
+$_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH'] = 'Publish';
 
 $_ARRAYLANG['TXT_ACCESS_GROUP_NAME_INVALID'] = "Der gewählte Gruppenname ist nicht gültig! Wählen Sie bitte einen anderen Namen für die Gruppe.";
 $_ARRAYLANG['TXT_ACCESS_MENU_MULTI'] = "Menu mit Mehrfachauswahl";
@@ -1202,6 +1204,8 @@ $_ARRAYLANG['TXT_CORE_CM_CREATION_DENIED'] = "You don't have enough rights to cr
 $_ARRAYLANG['TXT_CORE_CM_DELETE_DENIED'] = "You don't have enough rights to delete pages";
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'] = "You don't have enough rights to change the access premissions.";
 $_ARRAYLANG['TXT_CORE_CM_PUBLISH_DENIED'] = "You don't have enough rights to publish pages.";
+$_ARRAYLANG['TXT_CORE_CM_SLUG'] = 'URI-Slug';
+$_ARRAYLANG['TXT_CORE_NONE'] = 'None';
 
 // upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Upload more";

@@ -76,29 +76,14 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
                     $strInfoClass = '';
                 }
 
-                $objInputfieldValue = $objDatabase->Execute("
-                        SELECT
-                            `id`, `name`
-                        FROM
-                            ".DBPREFIX."lib_country
-                        ORDER BY
-                        	`name`
-                    ");
-                
                 if($objInit->mode == 'backend') {
-                	$strInputfield = '<select name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldDropdown" style="width: 302px">';
+                	$strInputfield = '<select name="'.$this->moduleNameLC.'Inputfield['.$intId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" class="'.$this->moduleNameLC.'InputfieldDropdown" style="width: 302px">';
                 } else {
-                	$strInputfield = '<select name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldDropdown '.$strInfoClass.'" '.$strInfoValue.'>';
+                	$strInputfield = '<select name="'.$this->moduleNameLC.'Inputfield['.$intId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'" class="'.$this->moduleNameLC.'InputfieldDropdown '.$strInfoClass.'" '.$strInfoValue.'>';
                 }
 
-                $strInputfieldOptions = '';
-                while(!$objInputfieldValue->EOF) {
-					$strOptionSelected = ($strValue == $objInputfieldValue->fields['id']) ? 'selected="selected"' : '';
-
-                	$strInputfieldOptions .= '<option value="'.$objInputfieldValue->fields['id'].'" '.$strOptionSelected.'>'.$objInputfieldValue->fields['name'].'</option>';
-                	$objInputfieldValue->MoveNext();
-                }
-
+                $strInputfieldOptions = \Cx\Core\Country\Controller\Country::getMenuoptions($strValue);
+                
                 $strInputfield .= $strInputfieldOptions.'</select>';
 
                 return $strInputfield;
@@ -106,18 +91,9 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
                 break;
             case 2:
                 //search View
-                $objInputfieldValue = $objDatabase->Execute("
-                        SELECT
-                            `id`, `name`
-                        FROM
-                            ".DBPREFIX."lib_country
-                        ORDER BY
-                        	`name`
-                    ");
-
-                while(!$objInputfieldValue->EOF) {
-                	$strInputfieldOptions .= '<option value="'.$objInputfieldValue->fields['id'].'">'.$objInputfieldValue->fields['name'].'</option>';
-                	$objInputfieldValue->MoveNext();
+                $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $_LANGID);
+                foreach ($country as $id => $name) {
+                	$strInputfieldOptions .= '<option value="'.$id.'">'.$name.'</option>';
                 }
 
                 $strInputfield = '<select name="'.$intId.'" class="'.$this->moduleName.'InputfieldSearch">';
@@ -133,7 +109,7 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
 
 
 
-    function saveInputfield($intInputfieldId, $intValue)
+    function saveInputfield($intInputfieldId, $intValue, $langId = 0)
     {
         $intValue = intval($intValue);
         return $intValue;
@@ -146,7 +122,7 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
 
         $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
-        if($objDeleteEntry !== false) {
+        if($objDeleteInputfield !== false) {
             return true;
         } else {
             return false;
@@ -157,27 +133,34 @@ class MediaDirectoryInputfieldCountry extends \Cx\Modules\MediaDir\Controller\Me
 
     function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-		$intId = intval($arrInputfield['id']);
+        $intId = intval($arrInputfield['id']);
+
         $objInputfieldValue = $objDatabase->Execute("
             SELECT
-                `name`
+                ".DBPREFIX."core_text.`text`
             FROM
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             LEFT JOIN
-            	".DBPREFIX."lib_country
+            ".DBPREFIX."core_text
             ON
-            	".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.value = ".DBPREFIX."lib_country.id
+                ".DBPREFIX."core_text.id = ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields.value
+            AND
+                ".DBPREFIX."core_text.key = 'core_country_name'
             WHERE
                 field_id=".$intId."
             AND
                 entry_id=".$intEntryId."
+            ORDER BY
+                CASE ".DBPREFIX."core_text.lang_id
+                    WHEN ".$_LANGID." THEN 1
+                    ELSE 2
+                END
             LIMIT 1
         ");
 
-
-        $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['name'], ENT_QUOTES, CONTREXX_CHARSET));
+        $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['text'], ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue)) {
             $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = $_ARRAYLANG['TXT_'.$this->moduleLangVar.'_INPUTFIELD_TYPE_COUNTRY'];

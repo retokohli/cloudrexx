@@ -103,12 +103,20 @@ class Sorting
      *                                  header texts
      * @param   boolean $flagDefaultAsc The flag indicating the default order
      *                                  direction. Defaults to true (ascending).
+     * @param   string  $orderUriParameter  The optional name for the URL
+     *                                  parameter.
+     *                                  Defaults to self::DEFAULT_PARAMETER_NAME
+     * @param   string  $defaultOrder   The optional default order.
+     *                                  Applies only when none is set in the
+     *                                  session already, and if it's a valid
+     *                                  field index.
      * @return  Sorting
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct(
         &$baseUri, $arrField, $flagDefaultAsc=true,
-        $orderUriParameter=self::DEFAULT_PARAMETER_NAME
+        $orderUriParameter=self::DEFAULT_PARAMETER_NAME,
+        $defaultOrder=null
     ) {
         $this->flagDefaultAsc = $flagDefaultAsc;
         // Default order parameter name.  Change if needed.
@@ -116,34 +124,47 @@ class Sorting
         $this->setUri($baseUri);
         $this->arrField = array();
         foreach ($arrField as $key => $name) {
-            // Skip fields with invalid indices
+            // Skip empty string names
+            if ($name === '') continue;
             $index = self::getFieldindex($key);
+            // Skip fields with invalid indices
             if ($index) {
                 $this->arrField[$index] = $name;
-            }
-            else {
-DBG::log("Sorting::__construct(): WARNING: index $key does not match ".self::REGEX_ORDER_FIELD);
+            } else {
+\DBG::log("Sorting::__construct(): WARNING: index $key does not match ".self::REGEX_ORDER_FIELD);
             }
         }
 //echo("Sorting::__construct(baseUri=$baseUri, arrField=$arrField, flagDefaultAsc=$flagDefaultAsc, orderUriParameter=$orderUriParameter):<br />"."Field names: ".var_export($this->arrField, true)."<br />"."<hr />");
 
-        // By default, the table will be sorted by the first field,
-        // according to the direction flag.
+        // The table will be sorted by the first field, according to the
+        // direction flag, unless a default order is specified.
         // The default is overridden by the order stored in the session, if any.
         // If the order parameter is present in the $_REQUEST array,
         // however, it is used instead.
+        // Note that $_REQUEST is the empty array when we're called by the
+        // ComponentController, e.g. in preFinalize()!
+        $orderRequested =
+            (isset($_REQUEST[$this->orderUriParameter])
+                ? $_REQUEST[$this->orderUriParameter]
+                : (isset($_GET[$this->orderUriParameter])
+                    ? $_GET[$this->orderUriParameter]
+                    : (isset($_POST[$this->orderUriParameter])
+                        ? $_POST[$this->orderUriParameter]
+                        : null)));
         $this->setOrder(
-            (empty($_REQUEST[$this->orderUriParameter])
-              ? (empty($_SESSION['sorting'][$this->orderUriParameter])
-                  ? current($this->arrField)
-                  : $_SESSION['sorting'][$this->orderUriParameter])
-              : $_REQUEST[$this->orderUriParameter]
+            (empty($orderRequested)
+                ? (empty($_SESSION['sorting'][$this->orderUriParameter])
+                    ? (empty($defaultOrder)
+                        ? current($this->arrField)
+                        : $defaultOrder)
+                    : $_SESSION['sorting'][$this->orderUriParameter])
+                : $orderRequested
             )
         );
-//DBG::log("Sorting::__construct(): baseUri=$baseUri");
-//DBG::log("Sorting::__construct(): arrField=".var_export($arrField, true));
-//DBG::log("Sorting::__construct(): flagDefaultAsc=$flagDefaultAsc");
-//DBG::log("Sorting::__construct(): Made order: ".$this->getOrder());
+//\DBG::log("Sorting::__construct(): baseUri=$baseUri");
+//\DBG::log("Sorting::__construct(): arrField=".var_export($this->arrField, true));
+//\DBG::log("Sorting::__construct(): flagDefaultAsc=$flagDefaultAsc");
+//\DBG::log("Sorting::__construct(): Made order: ".$this->getOrder());
     }
 
 
@@ -181,7 +202,7 @@ DBG::log("Sorting::__construct(): WARNING: index $key does not match ".self::REG
     {
         if (empty($field)) $field = $this->orderField;
         if (empty($this->arrField[$field])) {
-DBG::log("Sorting::getUri_entities($field): ERROR: unknown field name");
+\DBG::log("Sorting::getUri_entities($field): ERROR: unknown field name");
             return '';
         }
         $uri = $this->baseUri;
@@ -225,33 +246,56 @@ DBG::log("Sorting::getUri_entities($field): ERROR: unknown field name");
     /**
      * Returns a string to display the table header for the given field name.
      *
-     * Uses the order currently stored in the object, as set by
-     * setOrder().
-     * @return  string      The string for a clickable table header field.
+     * Uses the order currently stored in the object, as set by setOrder().
+     * The optional $direction overrides the current state of the
+     * order direction.
+     * @param   string  $field      The field name
+     * @param   string  $direction  The optional direction
+     * @return  string              The string for a clickable table
+     *                              header field.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getHeaderForField($field)
+    function getHeaderForField($field, $direction=null)
     {
-//DBG::log("Sorting::getHeaderForField(field=$field): field names: ".var_export($this->arrField, true));
+        global $_CORELANG;
+//\DBG::log("Sorting::getHeaderForField(field=$field): field names: ".var_export($this->arrField, true));
 
         // The field may consist of the database field name
         // enclosed in backticks, plus optional direction
         $index = self::getFieldindex($field);
-//DBG::log("Sorting::getHeaderForField($field): Fixed");
+//\DBG::log("Sorting::getHeaderForField($field): Fixed");
         if (empty($index)) {
-DBG::log("Sorting::getHeaderForField($field): WARNING: Cannot make index for $field");
+\DBG::log("Sorting::getHeaderForField($field): WARNING: Cannot make index for $field");
             return '';
         }
+        $direction_orig = null;
+        if ($direction) {
+            $direction_orig = $this->orderDirection;
+            $this->setOrderDirection($direction);
+            $direction = $this->getOrderDirection(); // Fixed case!
+        }
+//\DBG::log("Sorting::getHeaderForField($field): direction $direction, direction_orig $direction_orig, orderDirection $this->orderDirection");
         $uri = $this->baseUri;
         Html::replaceUriParameter($uri,
-            $this->getOrderReverseUriEncoded($field));
-//DBG::log("Sorting::getHeaderForField($field): URI $uri");
+            ($direction
+                ? $this->getOrderUriEncoded($field)
+                : $this->getOrderReverseUriEncoded($field)));
+//\DBG::log("Sorting::getHeaderForField($field): URI $uri");
         $strHeader = Html::getLink(
             $uri,
-            $this->arrField[$index].
+            ($direction
+                ? sprintf(
+                    $_CORELANG['TXT_CORE_SORTING_FORMAT_'.$this->orderDirection],
+                    $this->arrField[$index])
+                : $this->arrField[$index]
+            ).
             ($this->orderField == $index
+            && ($direction === null || $direction === $direction_orig)
               ? '&nbsp;'.$this->getOrderDirectionImage() : ''));
 //echo("Sorting::getHeaderForField(fieldName=$field): made header: ".htmlentities($strHeader)."<br />");
+        if ($direction_orig) {
+            $this->orderDirection = $direction_orig;
+        }
         return $strHeader;
     }
 
@@ -273,13 +317,95 @@ DBG::log("Sorting::getHeaderForField($field): WARNING: Cannot make index for $fi
                 ? $_CORELANG['TXT_CORE_SORTING_ASCENDING']
                 : $_CORELANG['TXT_CORE_SORTING_DESCENDING']
             );
-        return 
+        return
             '<img src="'.\Env::get('cx')->getCodeBaseOffsetPath().'/core/Core/View/Media/icons/'.
                 strtolower($this->orderDirection).
             '.png" border="0" alt="'.$orderDirectionString.
             '" title="'.$orderDirectionString.'" />';
     }
 
+    /**
+     * Parses all available ordering options into the blocks available
+     *
+     * Lower case $blockBase is the base for all template block names.
+     * The UPPERCASE version of $blockBase is the name of the (only)
+     * placeholder.
+     *
+     * Examples for $blockBase = 'shop_product_order':
+     *
+     * Standard sorting headers, alternating between ascending and descending.
+     * Includes all available criteria.
+     * The block name is shop_product_order, the placeholder SHOP_PRODUCT_ORDER.
+     *
+     * <div class="product_orders">
+     *   <!-- BEGIN shop_product_order -->
+     *   <div class="product_order">{SHOP_PRODUCT_ORDER}</div>
+     *   <!-- END shop_product_order -->
+     * </div>
+     *
+     * Custom sorting headers, fixed or alternating
+     * Column and functionality are determined by the block name:
+     *   "shop_product_order_" + field name [ + "_" + optional fixed direction ]
+     * Note that non-letter characters in the field name (index) are replaced
+     * by underscores, e.g. an order field declaration of "`product`.`ord`"
+     * is stripped of the backticks by getFieldIndex(), resulting in
+     * "product.ord" stored in the field array, then substituted by
+     * "product_ord" in this method.
+     *
+     * <div class="product_orders">
+     *   <!-- BEGIN shop_product_order_product_ord -->
+     *   <div class="product_order">{SHOP_PRODUCT_ORDER}</div>
+     *   <!-- END shop_product_order_product_ord -->
+     *   <!-- BEGIN shop_product_order_name_asc -->
+     *   <div class="product_order">{SHOP_PRODUCT_ORDER}</div>
+     *   <!-- END shop_product_order_name_asc -->
+     *   <!-- BEGIN shop_product_order_name_desc -->
+     *   <div class="product_order">{SHOP_PRODUCT_ORDER}</div>
+     *   <!-- END shop_product_order_name_desc -->
+     *   <!-- BEGIN shop_product_order_bestseller_desc -->
+     *   <div class="product_order">{SHOP_PRODUCT_ORDER}</div>
+     *   <!-- END shop_product_order_bestseller_desc -->
+     * </div>
+     *
+     * Note that invalid field names (not matching REGEX_ORDER_FIELD),
+     * as well as empty string names (labels) are skipped.
+     * @param   Cx\Core\Html\Sigma  $template   The Template
+     * @param   string              $blockBase  The block base name
+     */
+    public function parseHeaders(Cx\Core\Html\Sigma $template, $blockBase)
+    {
+        $blockBase = strtolower($blockBase);
+        $placeholder = strtoupper($blockBase);
+        foreach ($this->getHeaderArray() as $header) {
+            if ($template->blockExists($blockBase)) {
+                $template->setVariable($placeholder, $header);
+                $template->parse($blockBase);
+            }
+        }
+        foreach (array_keys($this->arrField) as $field) {
+            $index = $this->getFieldindex($field);
+            $block = $blockBase . '_' .
+                preg_replace('/\W/', '_', $index);
+            if ($template->blockExists($block)) {
+//\DBG::log("Sorting index $index, block $block FOUND");
+                $template->setVariable(
+                    $placeholder,
+                    $this->getHeaderForField($field));
+                $template->parse($block);
+            }
+            foreach (array('asc', 'desc') as $direction) {
+                $block_directed = $block . '_' . $direction;
+//\DBG::log("Sorting index $index, block $block_directed");
+                if ($template->blockExists($block_directed)) {
+//\DBG::log("Sorting index $index, block $block_directed FOUND");
+                    $template->setVariable(
+                        $placeholder,
+                        $this->getHeaderForField($field, $direction));
+                    $template->parse($block_directed);
+                }
+            }
+        }
+    }
 
     /**
      * Returns the current order string (SQL-ish syntax)
@@ -294,8 +420,6 @@ DBG::log("Sorting::getHeaderForField($field): WARNING: Cannot make index for $fi
      */
     function getOrder()
     {
-        static $field; // dummy
-
         list($field, $direction) = self::getFieldDirection($this->orderField);
         if (empty($direction)) $direction = $this->orderDirection;
         return "$field $direction";
@@ -309,10 +433,9 @@ DBG::log("Sorting::getHeaderForField($field): WARNING: Cannot make index for $fi
      */
     function setOrder($order)
     {
-        static $field; // dummy
-
         $index = self::getFieldindex($order);
-        list($field, $direction) = self::getFieldDirection($order);
+        list(, $direction) = self::getFieldDirection($order);
+//\DBG::log("Sorting::setOrder($order): Index /$index/, Direction /$direction/");
         if (empty($direction)) $direction = $this->orderDirection;
         // If the order field is invalid or isn't in the list of field names,
         // fall back to default
@@ -320,20 +443,25 @@ DBG::log("Sorting::getHeaderForField($field): WARNING: Cannot make index for $fi
             || (   empty($this->arrField[$index])
                 && empty($this->arrField["$index $direction"]))) {
             $index = key($this->arrField);
+//\DBG::log("Sorting::setOrder($order): arrField: ".var_export($this->arrField, true));
+//\DBG::log("Sorting::setOrder($order): Fallback to default Index /$index/, Direction /$direction/");
         }
         switch ($direction) {
           case 'ASC':
           case 'DESC':
-//DBG::log("Sorting::setOrder($order): Direction $direction OK");
+//\DBG::log("Sorting::setOrder($order): Direction $direction OK");
             break;
           default:
-//DBG::log("Sorting::setOrder($order): Direction $direction NOK");
+//\DBG::log("Sorting::setOrder($order): Direction $direction NOK");
             $direction =
                 ($this->flagDefaultAsc ? 'ASC' : 'DESC');
         }
         $this->orderField     = $index;
         $this->orderDirection = $direction;
-//DBG::log("Sorting::setOrder($order): setting $table.$field $direction");
+//\DBG::log("Sorting::setOrder($order): setting order to /$index $direction/");
+        if (!isset($_SESSION['sorting'])) {
+            $_SESSION['sorting'] = array();
+        }
         $_SESSION['sorting'][$this->orderUriParameter] = $order;
     }
 
@@ -349,10 +477,10 @@ DBG::log("Sorting::getHeaderForField($field): WARNING: Cannot make index for $fi
      */
     function getOrderUriEncoded($field='')
     {
-//DBG::log("Sorting::getOrderUriEncoded($field): Entered");
+//\DBG::log("Sorting::getOrderUriEncoded($field): Entered");
         $index = self::getFieldindex($field);
         list($field, $direction) = self::getFieldDirection($field);
-//DBG::log("Sorting::getOrderUriEncoded(): index $index, field $field, direction $direction");
+//\DBG::log("Sorting::getOrderUriEncoded(): index $index, field $field, direction $direction");
         if (!$index) {
             $index = $this->orderField;
         }

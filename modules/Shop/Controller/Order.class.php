@@ -1689,7 +1689,7 @@ class Order
               ? 'module_shop_order_edit.html'
               : 'module_shop_order_details.html');
             $objTemplate = new \Cx\Core\Html\Sigma(
-                ASCMS_MODULE_PATH.'/Shop/View/Template/Backend');
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/Shop/View/Template/Backend');
 //DBG::log("Orders::view_list(): new Template: ".$objTemplate->get());
             $objTemplate->loadTemplateFile($template_name);
 //DBG::log("Orders::view_list(): loaded Template: ".$objTemplate->get());
@@ -1736,7 +1736,7 @@ class Order
         }
         Vat::is_reseller($objCustomer->is_reseller());
         Vat::is_home_country(
-            \Cx\Core\Setting\Controller\Setting::getValue('country_id') == $objOrder->country_id());
+            \Cx\Core\Setting\Controller\Setting::getValue('country_id','Shop') == $objOrder->country_id());
         $objTemplate->setGlobalVariable($_ARRAYLANG
           + array(
             'SHOP_CURRENCY' =>
@@ -1948,7 +1948,7 @@ class Order
      * @return  float                               The net item sum on success,
      *                                              false otherwise
      */
-    function view_items($objTemplate, $edit, $total_weight=0, $i=0)
+    function view_items($objTemplate, $edit, &$total_weight=0, $i=0)
     {
         global $objDatabase, $_ARRAYLANG;
 

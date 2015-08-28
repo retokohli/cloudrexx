@@ -50,7 +50,7 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
      * @param   string  $name   Domain name of new domain
      */
     public function __construct($name) {
-        $this->name = $name;
+        $this->setName($name);
     }
 
     /**
@@ -74,7 +74,7 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
      * @param   string $name    Domain name to set the domain to
      */
     public function setName($name) {
-        $this->name = $name;
+        $this->name = \Cx\Core\Net\Controller\ComponentController::convertIdnToAsciiFormat($name);
     }
 
     /**
@@ -101,6 +101,19 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
     public function getParts() {
         $parts = array_reverse(explode('.', $this->getName()));
         return $parts;
+    }
+    
+    /**
+     * Return the domain name with the following schema <idn notation> (<punycode notation>)
+     * Attention. Returns the punycode notation only when needed
+     * @return  string Domain name of domain
+     */
+    public function getNameWithPunycode() {
+        $domainName = \Cx\Core\Net\Controller\ComponentController::convertIdnToUtf8Format($this->name);
+        if($domainName!=$this->name) {
+            $domainName.= ' (' . $this->name . ')';
+        }
+        return $domainName;
     }
 
 }

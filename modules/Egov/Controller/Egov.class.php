@@ -521,7 +521,7 @@ $yellowpayForm
         $order_id = \Yellowpay::getOrderId();
         if ($result < 0) {
             \Cx\Core\Setting\Controller\Setting::init('Egov', 'config');
-            if (\Yellowpay::checkIn(\Cx\Core\Setting\Controller\Setting::getValue('postfinance_hash_signature_out'))) {
+            if (\Yellowpay::checkIn(\Cx\Core\Setting\Controller\Setting::getValue('postfinance_hash_signature_out', 'Egov'))) {
                 // Silently process yellowpay notifications and die().
                 if (abs($_REQUEST['result']) == 1) {
                     $this->updateOrder($order_id);

@@ -126,6 +126,13 @@ class CalendarLibrary
     const PICTURE_FIELD_KEY = 'picture_id';
     
     /**
+     * Attachment field key
+     * 
+     * @var string
+     */
+    const ATTACHMENT_FIELD_KEY = 'attachment_id';
+    
+    /**
      * Assign the template path
      * Sets the Global variable for the calendar module
      * 
@@ -326,6 +333,7 @@ class CalendarLibrary
      */
     function buildDropdownmenu($arrOptions, $intSelected=null)
     {
+        $strOptions = '';
         foreach ($arrOptions as $intValue => $strName) {
             $checked = $intValue==$intSelected ? 'selected="selected"' : '';
             $strOptions .= "<option value='".$intValue."' ".$checked.">".htmlspecialchars($strName, ENT_QUOTES, CONTREXX_CHARSET)."</option>";

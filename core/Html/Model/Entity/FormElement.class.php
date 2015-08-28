@@ -12,9 +12,11 @@ namespace Cx\Core\Html\Model\Entity;
 class FormElement extends HtmlElement {
     const ENCTYPE_MULTIPART_FORMDATA = 'multipart/formdata';
     public $cancelUrl = null;
+    protected $addButtons;
     
-    public function __construct($action, $method = 'post', $enctype = self::ENCTYPE_MULTIPART_FORMDATA) {
+    public function __construct($action, $method = 'post', $enctype = self::ENCTYPE_MULTIPART_FORMDATA, $addButtons = true) {
         parent::__construct('form');
+        $this->addButtons = $addButtons;
         $this->setAttributes(array(
             'action' => $action,
             'method' => $method,
@@ -96,8 +98,8 @@ class FormElement extends HtmlElement {
                 break;
             }
         }
-        if (!$hasSubmit) {
-            $submitDiv = new HtmlElement('div');
+        if (!$hasSubmit && $this->addButtons) {
+            $submitDiv = new FieldsetElement();
             $submitDiv->setAttribute('class', 'actions');
             $submit = new HtmlElement('input');
             $submit->setAttribute('type', 'submit');
@@ -107,7 +109,7 @@ class FormElement extends HtmlElement {
                 $cancel = new HtmlElement('input');
                 $cancel->setAttribute('type', 'button');
                 $cancel->setAttribute('value', $_CORELANG['TXT_CANCEL']);
-                $cancel->setAttribute('onclick', "location.href='".$this->cancelUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'");
+                $cancel->setAttribute('onclick', 'location.href="' . $this->cancelUrl . '&csrf=' . \Cx\Core\Csrf\Controller\Csrf::code() . '"');
                 $submitDiv->addChild($cancel);
             }
             $this->addChild($submitDiv);

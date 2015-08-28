@@ -1,8 +1,12 @@
 <!-- start module_podcast_settings.html -->
 <script type="text/javascript">
 // <[![CDATA
-function SetUrl(url, width, height, alt) {
-	document.getElementById('podcast_settings_feed_image').value = url;
+function mediaBrowserCallback(data)
+{
+  if (data.type=="file") {
+    var url = data.data[0].datainfo.filepath;
+    document.getElementById('podcast_settings_feed_image').value = url;
+  }
 }
 
 var mySelectTab = function(divId){
@@ -58,7 +62,10 @@ var mySelectTab = function(divId){
 				</tr>
 				<tr class="row1">
 					<td>{TXT_PODCAST_FEED_IMAGE}</td>
-					<td><input type="text" name="podcast_settings_feed_image" id="podcast_settings_feed_image" value="{PODCAST_SETTINGS_FEED_IMAGE}" style="width:287px;" /> <input type="button" value="{TXT_PODCAST_BROWSE}" onclick="fileBrowserPopup = window.open('?cmd=FileBrowser&amp;{CSRF_PARAM}&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');fileBrowserPopup.focus()" style="width:110px;" /></td>
+					<td>
+                                          <input type="text" name="podcast_settings_feed_image" id="podcast_settings_feed_image" value="{PODCAST_SETTINGS_FEED_IMAGE}" style="width:287px;" />
+                                          {PODCAST_BROWSE}
+                                        </td>
 				</tr>
 				<tr class="row2">
 					<td>{TXT_PODCAST_FEED_LINK}</td>

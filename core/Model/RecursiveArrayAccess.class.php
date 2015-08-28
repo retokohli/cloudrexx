@@ -65,6 +65,13 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      * @var callable
      */
     protected $callableOnValidateKey;
+
+    /**
+     * Callable function on callableOnSanitizeKey
+     *
+     * @var callable
+     */
+    protected $callableOnSanitizeKey;
     
     /**
      * 
@@ -75,16 +82,27 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
     
     /**
      *
-     * @var type 
+     * @var int
      */
     protected $parentId;
-    
+
+    /**
+     * @var array
+     */
+    protected $dirt = array();
+
     /**
      * Default object constructor.
      *
-     * @param array $data
+     * @param array  $data
+     * @param string $offset
+     * @param int    $parentId
+     * @param callable   $callableOnSet
+     * @param callable   $callableOnGet
+     * @param callable   $callableOnUnset
+     * @param callable   $callableOnValidateKey
      */
-    protected function __construct($data, $offset = '', $parentId = 0, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null, $callableOnValidateKey = null)
+    public function __construct($data, $offset = '', $parentId = 0, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null, $callableOnValidateKey = null)
     {
         $this->offset   = $offset;
         $this->parentId = intval($parentId);
@@ -154,15 +172,16 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
     /**
      * Offset to set
      *
-     * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     * @link     http://php.net/manual/en/arrayaccess.offsetset.php
      *
      * @param mixed $offset The offset to assign the value to.
-     * @param mixed $value  The value to set.
-     *
-     * @return null
+     * @param mixed $data The value to set.
+     * @param null  $callableOnSet
+     * @param null  $callableOnGet
+     * @param null  $callableOnUnset
+     * @param null  $callableOnValidateKey
      */
     public function offsetSet($offset, $data, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null, $callableOnValidateKey = null) {
-        
         if ($callableOnValidateKey) {
             $this->callableOnValidateKey = $callableOnValidateKey;
         }
@@ -184,22 +203,50 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
         if ($callableOnUnset) {
             $this->callableOnUnset = $callableOnUnset;
         }
-        
-        if ( is_array( $data ) ) {
+
+        if (is_array($data)) {
             $data = new self(
-                            $data,
-                            $offset,
-                            $this->id,
-                            isset($this->callableOnSet) ? $this->callableOnSet : null,
-                            isset($this->callableOnGet) ? $this->callableOnGet : null,
-                            isset($this->callableOnUnset) ? $this->callableOnUnset : null,
-                            isset($this->callableOnValidateKey) ? $this->callableOnValidateKey : null
-                    );
-        } else if (isset($this->data[$offset]) && is_object($this->data[$offset]) && is_a($this->data[$offset], __CLASS__)) {
-            $this->offsetUnset($offset);
+                $data,
+                $offset,
+                $this->id,
+                isset($this->callableOnSet) ? $this->callableOnSet : null,
+                isset($this->callableOnGet) ? $this->callableOnGet : null,
+                isset($this->callableOnUnset) ? $this->callableOnUnset
+                    : null,
+                isset($this->callableOnValidateKey)
+                    ? $this->callableOnValidateKey : null
+            );
         }
-        
+        else {
+            if (isset($this->data[$offset])
+                && is_object(
+                    $this->data[$offset]
+                )
+                && is_a($this->data[$offset], __CLASS__)
+            ) {
+                $this->offsetUnset($offset);
+            }
+        }
+        if ($this->offsetExists($offset)) {
+            $savedData = $this->data[$offset];
+            /**
+             * @var $savedData \Cx\Core\Model\RecursiveArrayAccess
+             */
+            if (is_a($savedData, '\Cx\Core\Model\RecursiveArrayAccess')) {
+                $savedData = $savedData->toArray();
+            }
+        } else {
+            $savedData = null;
+        }
+        $compareData = $data;
+        if (is_a($data, '\Cx\Core\Model\RecursiveArrayAccess')) {
+            $compareData = $data->toArray();
+        }
+
         $this->data[$offset] = $data;
+        if ($compareData !== $savedData) {
+            $this->pollute($offset);
+        }
 
         if ($this->callableOnSet) {
             call_user_func($this->callableOnSet, $this);
@@ -215,7 +262,7 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      *
      * @return null
      */
-    public function offsetUnset($offset) {        
+    public function offsetUnset($offset) {
         if ($this->callableOnUnset)
             call_user_func($this->callableOnUnset, $offset, $this->id);
         
@@ -297,5 +344,34 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      */
     public function count() {
         return count($this->data);
+    }
+
+    /**
+     * Checks if a value is dirty.
+     *
+     * @param $offset
+     *
+     * @return bool
+     */
+    public function isDirty($offset){
+        return isset($this->dirt[$offset]);
+    }
+
+    /**
+     * Pollutes a value.
+     *
+     * @param $offset
+     */
+    public function pollute($offset) {
+        $this->dirt[$offset] = 1;
+    }
+
+    /**
+     * Empties the offset with values which were changed.
+     *
+     * @param $offset
+     */
+    public function clean($offset){
+        unset($this->dirt[$offset]);
     }
 }

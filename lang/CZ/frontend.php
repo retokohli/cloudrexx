@@ -221,3 +221,9 @@ $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Settings';
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Enter the letters below.";
 $_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Remember me";
+
+// core Sorting
+$_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "aufsteigend";
+$_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "absteigend";
+$_ARRAYLANG['TXT_CORE_SORTING_FORMAT_ASC'] = "%1\$s aufsteigend";
+$_ARRAYLANG['TXT_CORE_SORTING_FORMAT_DESC'] = "%1\$s absteigend";

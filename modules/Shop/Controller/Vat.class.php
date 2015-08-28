@@ -169,37 +169,37 @@ class Vat
             // Foreign countries
             0 => array(
                 // Customer
-                0 => \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_foreign_customer'),
+                0 => \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_foreign_customer','Shop'),
                 // Reseller
-                1 => \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_foreign_reseller'),
+                1 => \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_foreign_reseller','Shop'),
             ),
             // Home country
             1 => array(
                 // Customer
-                0 => \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_home_customer'),
+                0 => \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_home_customer','Shop'),
                 // Reseller
-                1 => \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_home_reseller'),
+                1 => \Cx\Core\Setting\Controller\Setting::getValue('vat_enabled_home_reseller','Shop'),
             ),
         );
         self::$arrVatIncluded = array(
             // Foreign country
             0 => array(
                 // Customer
-                0 => \Cx\Core\Setting\Controller\Setting::getValue('vat_included_foreign_customer'),
+                0 => \Cx\Core\Setting\Controller\Setting::getValue('vat_included_foreign_customer','Shop'),
                 // Reseller
-                1 => \Cx\Core\Setting\Controller\Setting::getValue('vat_included_foreign_reseller'),
+                1 => \Cx\Core\Setting\Controller\Setting::getValue('vat_included_foreign_reseller','Shop'),
             ),
             // Home country
             1 => array(
                 // Customer
-                0 => \Cx\Core\Setting\Controller\Setting::getValue('vat_included_home_customer'),
+                0 => \Cx\Core\Setting\Controller\Setting::getValue('vat_included_home_customer','Shop'),
                 // Reseller
-                1 => \Cx\Core\Setting\Controller\Setting::getValue('vat_included_home_reseller'),
+                1 => \Cx\Core\Setting\Controller\Setting::getValue('vat_included_home_reseller','Shop'),
             ),
         );
-        self::$vatDefaultId = \Cx\Core\Setting\Controller\Setting::getValue('vat_default_id');
+        self::$vatDefaultId = \Cx\Core\Setting\Controller\Setting::getValue('vat_default_id','Shop');
         self::$vatDefaultRate = self::getRate(self::$vatDefaultId);
-        self::$vatOtherId = \Cx\Core\Setting\Controller\Setting::getValue('vat_other_id');
+        self::$vatOtherId = \Cx\Core\Setting\Controller\Setting::getValue('vat_other_id','Shop');
         return true;
     }
 

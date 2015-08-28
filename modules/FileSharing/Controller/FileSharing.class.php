@@ -89,13 +89,16 @@ class FileSharing extends FileSharingLib
      */
     public function getPage()
     {
-        $hash = contrexx_input2raw($this->uriParams["hash"]);
-        $check = contrexx_input2raw($this->uriParams["check"]);
+        $hash     = isset($this->uriParams["hash"])     ? contrexx_input2raw($this->uriParams["hash"])     : '';
+        $check    = isset($this->uriParams["check"])    ? contrexx_input2raw($this->uriParams["check"])    : '';
+        $uploadId = isset($this->uriParams["uploadId"]) ? contrexx_input2raw($this->uriParams["uploadId"]) : 0;
+        
+        if (!empty($uploadId)) {
+            $this->files = $this->getSharedFiles($uploadId);
+        }
 
-        if ($this->uriParams["uploadId"])
-            $this->files = $this->getSharedFiles($this->uriParams["uploadId"]);
-
-        switch ($this->uriParams["act"]) {
+        $act = isset($this->uriParams["act"]) ? $this->uriParams["act"] : '';
+        switch ($act) {
             case "image":
                 $this->loadImage($hash);
                 break;
@@ -150,7 +153,7 @@ class FileSharing extends FileSharingLib
         $objResult = $objDatabase->SelectLimit("SELECT `file`, `source` FROM " . DBPREFIX . "module_filesharing WHERE `hash` = '" . contrexx_raw2db($hash) . "'", 1, 0);
         if ($objResult !== false && $objResult->RecordCount() > 0) {
             $fileName = $objResult->fields["file"];
-            $filePath = ASCMS_PATH . ASCMS_PATH_OFFSET . $objResult->fields["source"];
+            $filePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . $objResult->fields["source"];
             if (!file_exists($filePath))
                 throw new FileSharingException('file_not_found');
 
@@ -187,7 +190,7 @@ class FileSharing extends FileSharingLib
         }
         if ($objResult->fields["check"] == $check) {
             // check whether the check code is the same as in the database
-            \Cx\Lib\FileSystem\FileSystem::delete_file(ASCMS_PATH . ASCMS_PATH_OFFSET . $objResult->fields["source"]);
+            \Cx\Lib\FileSystem\FileSystem::delete_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . $objResult->fields["source"]);
             $objDatabase->Execute("DELETE FROM " . DBPREFIX . "module_filesharing WHERE `id` = " . intval($objResult->fields["id"]));
         }
         return true;
@@ -235,20 +238,21 @@ class FileSharing extends FileSharingLib
         global $objDatabase;
         $objResult = $objDatabase->SelectLimit("SELECT `source` FROM " . DBPREFIX . "module_filesharing WHERE `hash` = '" . contrexx_raw2db($hash) . "'", 1, 0);
         if ($objResult !== false && $objResult->RecordCount() > 0) {
-            $path = ASCMS_PATH_OFFSET . $objResult->fields["source"];
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $path = $cx->getWebsiteOffsetPath() . $objResult->fields["source"];
             $info = pathinfo($path);
             $extension = strtolower($info["extension"]);
 
             // check which extension it is and show the image
             if ($extension == "jpeg" || $extension == "jpg") {
                 header("Content-Type: image/jpeg");
-                readfile(ASCMS_PATH . $path);
+                readfile($cx->getWebsitePath() . $path);
             } elseif ($extension == "png") {
                 header("Content-Type: image/png");
-                readfile(ASCMS_PATH . $path);
+                readfile($cx->getWebsitePath() . $path);
             } elseif ($extension == "gif") {
                 header("Content-Type: image/gif");
-                readfile(ASCMS_PATH . $path);
+                readfile($cx->getWebsitePath() . $path);
             }
             die();
         }
@@ -274,11 +278,11 @@ class FileSharing extends FileSharingLib
 
             // send the mail to the reciever
             if (\FWValidator::isEmail($_POST["email"])) {
-                parent::sendMail($params["uploadId"], $_POST["subject"], $_POST["email"], $_POST["message"]);
+                parent::sendMail($params["uploadId"], $_POST["subject"], array($_POST["email"]), $_POST["message"]);
             }
 
             // send the mail to the administrator
-            parent::sendMail($params["uploadId"], null, $_CONFIG['coreAdminEmail'], $_POST["message"]);
+            parent::sendMail($params["uploadId"], null, array($_CONFIG['coreAdminEmail']), $_POST["message"]);
 
             // reset the upload id so the uploads are invisible now
             $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing SET `upload_id` = NULL WHERE `upload_id` = " . intval($params["uploadId"]));
@@ -303,10 +307,10 @@ class FileSharing extends FileSharingLib
         global $_ARRAYLANG;
 
         \Cx\Core\Setting\Controller\Setting::init('FileSharing', 'config');
-        $permissionNeeded = \Cx\Core\Setting\Controller\Setting::getValue('permission');
+        $permissionNeeded = \Cx\Core\Setting\Controller\Setting::getValue('permission','FileSharing');
         if (!$permissionNeeded) {
             \Cx\Core\Setting\Controller\Setting::add('permission', 'off');
-            $permissionNeeded = \Cx\Core\Setting\Controller\Setting::getValue('permission');
+            $permissionNeeded = \Cx\Core\Setting\Controller\Setting::getValue('permission','FileSharing');
         }
 
         if ($permissionNeeded == 'off' || (is_numeric($permissionNeeded) && !\Permission::checkAccess($permissionNeeded, 'dynamic'))) {
@@ -440,6 +444,7 @@ class FileSharing extends FileSharingLib
         // loop through the uploaded files
         $objResult = $objDatabase->Execute("SELECT `id`, `file`, `source`, `hash`, `check` FROM " . DBPREFIX . "module_filesharing WHERE `upload_id` = " . intval($uploadId));
         if ($objResult !== false && $objResult->RecordCount() > 0) {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             while (!$objResult->EOF) {
                 $filePath = explode("/", $objResult->fields["source"]);
                 $fileNameSource = end($filePath);
@@ -447,9 +452,9 @@ class FileSharing extends FileSharingLib
                 $fileSystem = new \Cx\Lib\FileSystem\FileSystem();
                 $directory = \Env::get('Resolver')->getCmd();
                 if ($directory != 'Downloads') {
-                    $newPath = ASCMS_FILESHARING_PATH . '/' . $directory . '/';
+                    $newPath = $cx->getWebsiteMediaFileSharingPath() . '/' . $directory . '/';
                 } else {
-                    $newPath = ASCMS_DOWNLOADS_IMAGES_PATH . '/';
+                    $newPath = $cx->getWebsiteImagesDownloadsPath() . '/';
                 }
                 $fileSystem->copyFile($tup[0] . '/' . $tup[2] . '/', $fileNameSource, $newPath, $fileNameSource, false);
 
@@ -461,7 +466,7 @@ class FileSharing extends FileSharingLib
                 $imageUrl->setParam("act", "image");
                 $imageUrl->setParam("hash", $objResult->fields["hash"]);
 
-                $info = pathinfo(ASCMS_PATH_OFFSET . $objResult->fields["source"]);
+                $info = pathinfo($cx->getWebsiteOffsetPath() . $objResult->fields["source"]);
                 // if the file is an image show a thumbnail of the image
                 if (!in_array(strtolower($info["extension"]), array("jpeg", "jpg", "png", "gif"))) {
                     $imageUrl = false;

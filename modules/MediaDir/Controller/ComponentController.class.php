@@ -115,7 +115,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $mediadirCheck, $objTemplate, $_CORELANG;
+        global $mediadirCheck, $objTemplate, $_CORELANG, $objInit;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $mediadirCheck = array();
@@ -125,6 +125,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     }
                 }
                 if ($mediadirCheck || $objTemplate->blockExists('mediadirLatest')) {
+                    $objInit->loadLanguageData('MediaDir');
+                    
                     $objMediadir = new MediaDirectory('', $this->getName());
                     $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
                 }
@@ -132,7 +134,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $objMediadir->getHeadlines($mediadirCheck);
                 }
                 if ($objTemplate->blockExists('mediadirLatest')){
-                    $objMediadir->getLatestEntries();
+                    $objMediadirForms = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, 'MediaDir');
+                    $foundOne = false;
+                    foreach ($objMediadirForms->getForms() as $key => $arrForm) {
+                        if ($objTemplate->blockExists('mediadirLatest_form_'.$arrForm['formCmd'])) {
+                            $objMediadir->getLatestEntries($key, 'mediadirLatest_form_'.$arrForm['formCmd']);
+                            $foundOne = true;
+                        }
+                    }
+                    //for the backward compatibility
+                    if(!$foundOne) {
+                        $objMediadir->getLatestEntries();
+                    }
                 }
                 break;
             default:
@@ -142,6 +155,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $eventListener = new MediaDirEventListener($this->cx);
-        $this->cx->getEvents()->addEventListener('LoadMediaTypes', $eventListener);
+        $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
     }
 }

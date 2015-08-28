@@ -462,6 +462,110 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
     public $cancellationCount = 0;
     
     /**
+     * Event street
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_street;
+    
+    /**
+     * Event zip
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_zip;
+    
+    /**
+     * Event city
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_city;
+    
+    /**
+     * Event country
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_country;
+    
+    /**
+     * Event map
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_map;
+    
+    /**
+     * Event link
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_link;
+    
+    /**
+     * Event organizer name
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_name;
+    
+    /**
+     * Event organizer street
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_street;
+    
+    /**
+     * Event organizer zip
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_zip;
+    
+    /**
+     * Event organizer city
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_city;
+    
+    /**
+     * Event organizer country
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_country;
+    
+    /**
+     * Event organizer link
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_link;
+    
+    /**
+     * Event organizer email
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_email;
+    
+    /**
      * Constructor
      * 
      * Loads the event object of given id
@@ -474,8 +578,8 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             self::get($id);
         }
         
-        $this->uploadImgPath    = ASCMS_PATH.ASCMS_IMAGE_PATH.'/'.$this->moduleName.'/';
-        $this->uploadImgWebPath = ASCMS_IMAGE_PATH.'/'.$this->moduleName.'/';
+        $this->uploadImgPath    = \Env::get('cx')->getWebsiteImagesPath().'/'.$this->moduleName.'/';
+        $this->uploadImgWebPath = \Env::get('cx')->getWebsiteImagesWebPath().'/'.$this->moduleName.'/';
         
         parent::getSettings();
     }
@@ -685,7 +789,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 $this->emailTemplate = json_decode($objResult->fields['email_template'], true);
                 $this->ticketSales = intval($objResult->fields['ticket_sales']);
                 $this->arrNumSeating = json_decode($objResult->fields['num_seating']);
-                $this->numSeating = implode(',', $this->arrNumSeating);
+                $this->numSeating = !empty($this->arrNumSeating) ? implode(',', $this->arrNumSeating) : '';
                 
                 $queryCountRegistration = "SELECT 
                                                 COUNT(1) AS numSubscriber, 
@@ -956,14 +1060,15 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         }
         
         // create thumb if not exists
-        if (!file_exists(ASCMS_PATH."$placeMap.thumb")) {                    
+        if (!file_exists(\Env::get('cx')->getWebsitePath()."$placeMap.thumb")) {                    
             $objImage = new \ImageManager();
-            $objImage->_createThumb(dirname(ASCMS_PATH."$placeMap")."/", '', basename($placeMap), 180);
+            $objImage->_createThumb(dirname(\Env::get('cx')->getWebsitePath()."$placeMap")."/", '', basename($placeMap), 180);
         }
 
         //frontend picture upload & thumbnail creation
         if($objInit->mode == 'frontend') {
             $unique_id = intval($_REQUEST[self::PICTURE_FIELD_KEY]);
+            $attachmentUniqueId = intval($_REQUEST[self::ATTACHMENT_FIELD_KEY]);
             
             if (!empty($unique_id)) {
                 $picture = $this->_handleUpload('pictureUpload', $unique_id);
@@ -982,11 +1087,23 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     $pic = $picture;
                 }
             }
+            
+            if (!empty($attachmentUniqueId)) {
+                $attachment = $this->_handleUpload('attachmentUpload', $attachmentUniqueId);
+                if ($attachment) {
+                    //delete file
+                    if (file_exists("{$this->uploadImgPath}$attach")) {
+                        \Cx\Lib\FileSystem\FileSystem::delete_file($this->uploadImgPath."/.$attach");
+                    }
+                    $attach = $attachment;
+                }
+            }
+            
         } else {
             // create thumb if not exists
-            if (!file_exists(ASCMS_PATH."$pic.thumb")) {
+            if (!file_exists(\Env::get('cx')->getWebsitePath()."$pic.thumb")) {
                 $objImage = new \ImageManager();
-                $objImage->_createThumb(dirname(ASCMS_PATH."$pic")."/", '', basename($pic), 180);
+                $objImage->_createThumb(dirname(\Env::get('cx')->getWebsitePath()."$pic")."/", '', basename($pic), 180);
             }
         }
         
@@ -1201,7 +1318,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             $formData['status']    = $status;
             $formData['confirmed'] = $confirmed;
             $formData['author']    = $author;
-                                  
+            
             $query = \SQL::insert("module_{$this->moduleTablePrefix}_event", $formData);
             
             $objResult = $objDatabase->Execute($query); 
@@ -1578,7 +1695,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
     function _handleUpload($fieldName, $id)
     {
         $tup              = self::getTemporaryUploadPath($fieldName, $id);
-        $tmpUploadDir     = ASCMS_PATH.$tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here                       
+        $tmpUploadDir     = \Env::get('cx')->getWebsitePath().$tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here  
         $depositionTarget = $this->uploadImgPath; //target folder
         $pic              = '';
 
@@ -1589,29 +1706,38 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $h = opendir($tmpUploadDir);
         if ($h) {
             while(false !== ($f = readdir($h))) {
-                if($f != '..' && $f != '.') {
-                    //do not overwrite existing files.
-                    $prefix = '';
-                    while (file_exists($depositionTarget.$prefix.$f)) {
-                        if (empty($prefix)) {
-                            $prefix = 0;
-                        }
-                        $prefix ++;
-                    }
+                // skip folders and thumbnails
+                if($f == '..' || $f == '.' || preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $f)) {
+                    continue;
+                }
 
-                    // move file
-                    try {
-                        $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
-                        $objFile->move($depositionTarget.$prefix.$f, false);
-                        
-                        $imageName = $prefix.$f;
+                //do not overwrite existing files.
+                $prefix = '';
+                while (file_exists($depositionTarget.$prefix.$f)) {
+                    if (empty($prefix)) {
+                        $prefix = 0;
+                    }
+                    $prefix ++;
+                }
+
+                // move file
+                try {
+                    $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
+                    $fileInfo = pathinfo($tmpUploadDir.$f);
+                    $objFile->move($depositionTarget.$prefix.$f, false);
+                    
+                    $imageName = $prefix.$f;
+                    if (in_array($fileInfo['extension'], array('gif', 'jpg', 'jpeg', 'png'))) {
                         $objImage = new \ImageManager();
                         $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
+                    }
+                    $pic = contrexx_input2raw($this->uploadImgWebPath.$imageName);
 
-                        $pic = contrexx_input2raw($this->uploadImgWebPath.$imageName);
-                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                        \DBG::msg($e->getMessage());                        
-                    }                    
+                    // abort after one file has been fetched, as all event upload
+                    // fields do allow a single file only anyway
+                    break;
+                } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                    \DBG::msg($e->getMessage());                        
                 }
             }    
         }
@@ -1747,7 +1873,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             $objMediadirEntry = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry('MediaDir');
             $objMediadirEntry->getEntries(intval($intMediaDirId)); 
 
-            $pageRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $pages = $pageRepo->findBy(array(
                 'cmd'    => contrexx_addslashes('detail'.intval($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId'])),
                 'lang'   => $_LANGID,
@@ -1761,7 +1887,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 $strDetailCmd = 'detail';
             }
 
-            $pages = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->getFromModuleCmdByLang('MediaDir', $strDetailCmd);
+            $pages = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->getFromModuleCmdByLang('MediaDir', $strDetailCmd);
 
             $arrActiveFrontendLanguages = \FWLanguage::getActiveFrontendLanguages();
             if (isset($arrActiveFrontendLanguages[FRONTEND_LANG_ID]) && isset($pages[FRONTEND_LANG_ID])) {

@@ -119,6 +119,9 @@ $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-Klasse: row1 eller row2";
 $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Blok til definitionen af en nyhed.<br />
 Starttag: &lt!-- BEGIN newsrow --&gt;<br />
 Endtag: &lt!-- END newsrow --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_ROW_DESCRIPTION'] = "Blok til definitionen af en nyhed.<br />
+Starttag: &lt!-- BEGIN news_archive_link --&gt;<br />
+Endtag: &lt!-- END news_archive_link --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Følgende pladsholdere kan anvendes ved siderne, som tilhører <b>section</b> news og som har <b>cmd</b> som detalje.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Nyhedens overskrift";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Nyhedens tekst";
@@ -215,6 +218,9 @@ $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Picture source/path ";
 $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
 Starttag: &lt!-- BEGIN news_image --&gt;<br />
 Endtag: &lt!-- END news_image --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
+Starttag: &lt!-- BEGIN news_archive_image --&gt;<br />
+Endtag: &lt!-- END news_archive_image --&gt;";
 $_ARRAYLANG['TXT_NEWS_COMMENT_LIST'] = "Comments list";
 $_ARRAYLANG['TXT_NEWS_COMMENT'] = "Comment";
 $_ARRAYLANG['TXT_NEWS_COMMENT_DATE'] = "Date &amp; time";

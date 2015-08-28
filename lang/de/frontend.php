@@ -238,8 +238,10 @@ $_ARRAYLANG['TXT_CORE_FAX'] = "Telefax";
 $_ARRAYLANG['TXT_CORE_SEARCH'] = "Suchen";
 
 // core Sorting
-$_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "aufsteigend sortieren";
-$_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "absteigend sortieren";
+$_ARRAYLANG['TXT_CORE_SORTING_ASCENDING'] = "aufsteigend";
+$_ARRAYLANG['TXT_CORE_SORTING_DESCENDING'] = "absteigend";
+$_ARRAYLANG['TXT_CORE_SORTING_FORMAT_ASC'] = "%1\$s aufsteigend";
+$_ARRAYLANG['TXT_CORE_SORTING_FORMAT_DESC'] = "%1\$s absteigend";
 
 // core general (dates)
 $_ARRAYLANG['TXT_CORE_DAY'] = "Tag";
@@ -288,3 +290,5 @@ $_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Hochladen beenden";
 $_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Datei(en) heraufgeladen";
 $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Einige Datei(en) konnte(n) nicht heraufgeladen werden:";
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "Die Dateiendung ist nicht erlaubt.";
+
+$_ARRAYLANG['TXT_LOGIN_WELCOME_PAGE'] = 'Weiter zur <a href="%s" title="Website">Website</a>';

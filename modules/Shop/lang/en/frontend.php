@@ -1,4 +1,11 @@
 <?php
+/**
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @package     contrexx
+ * @subpackage  module_shop
+ */
 global $_ARRAYLANG;
 $_ARRAYLANG['TXT_SHOP_BUTTON_REGISTRATION'] = "Register now";
 $_ARRAYLANG['TXT_SHOP_BUTTON_NO_REGISTRATION'] = "Order without registration";
@@ -266,6 +273,7 @@ $_ARRAYLANG['TXT_SHOP_OPTION_LONG_FORMAT'] = "%1\$s&nbsp;(%2\$01.2f&nbsp;%4\$s)"
 $_ARRAYLANG['TXT_SHOP_OPTION_LONG_FORMAT_JOINER'] = ", ";
 $_ARRAYLANG['TXT_SHOP_ORDER_BY'] = "Order by";
 $_ARRAYLANG['TXT_SHOP_ORDER_CANCELLED'] = "Your order has been cancelled.";
+$_ARRAYLANG['TXT_SHOP_ORDER_ERROR_STORING'] = "Failed to insert the order";
 $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INSERTING'] = "Failed to insert the product in the order";
 $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_ITEM_ID'] = "Invalid item ID";
 $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_PRODUCT_ID'] = "Invalid product ID";
@@ -405,19 +413,82 @@ $_ARRAYLANG['TXT_SHOP_CARD_HOLDER'] = "Card holder";
 $_ARRAYLANG['TXT_SHOP_CARD_EXPIRY'] = "Expiry date";
 $_ARRAYLANG['TXT_SHOP_BUY_NOW'] = "Buy now";
 $_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_HOLDER'] = "Invalid Card holder name";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_CVC']    = "Invalid CVC number";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_CVC'] = "Invalid CVC number";
 $_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_NUMBER'] = "Invalid Card number";
 $_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_EXPIRY_DATE'] = "Invalid expiry date";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_ACC_NUMBER']  = "Invalid Account Number";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BANK_CODE']   = "Invalid Bank code";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_IBAN']        = "Please enter a valid IBAN.";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BIC']         = "Please enter a valid BIC.";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_ELV_ACCOUNT_NUMBER']  = "Account Number";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_ELV_BANK_CODE']       = "Bank code";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_IBAN']                = "IBAN";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_BIC']                 = "BIC";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_ACCOUNT_HOLDER']      = "Account holder";
-$_ARRAYLANG['TXT_SHOP_CVC_TOOLTIP']                 = "What is a CVV/CVC number? Prospective credit cards will have a 3 to 4-digit number, usually on the back of the card. It ascertains that the payment is carried out by the credit card holder and the card account is legitimate. On Visa the CVV (Card Verification Value) appears after and to the right of your card number. Same goes for Mastercard's CVC (Card Verfication Code), which also appears after and to the right of  your card number, and has 3-digits. Diners Club, Discover, and JCB credit and debit cards have a three-digit card security code which also appears after and to the right of your card number. The American Express CID (Card Identification Number) is a 4-digit number printed on the front of your card. It appears above and to the right of your card number. On Maestro the CVV appears after and to the right of your number. If you don’t have a CVV for your Maestro card you can use 000.";
-$_ARRAYLANG['TXT_SHOP_ORDER_QUANTITY']                    = "Quantity";
-$_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANTITY']            = "Minimum order quantity";
-$_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANTITY_ERROR']      = "Die Bestellmenge entspricht nicht der Mindestbestellmenge.";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_ACC_NUMBER'] = "Invalid Account Number";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BANK_CODE'] = "Invalid Bank code";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_IBAN'] = "Please enter a valid IBAN.";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BIC'] = "Please enter a valid BIC.";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_ELV_ACCOUNT_NUMBER'] = "Account Number";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_ELV_BANK_CODE'] = "Bank code";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_IBAN'] = "IBAN";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_BIC'] = "BIC";
+$_ARRAYLANG['TXT_SHOP_PAYMILL_ACCOUNT_HOLDER'] = "Account holder";
+$_ARRAYLANG['TXT_SHOP_CVC_TOOLTIP'] = "What is a CVV/CVC number? Prospective credit cards will have a 3 to 4-digit number, usually on the back of the card. It ascertains that the payment is carried out by the credit card holder and the card account is legitimate. On Visa the CVV (Card Verification Value) appears after and to the right of your card number. Same goes for Mastercard's CVC (Card Verfication Code), which also appears after and to the right of  your card number, and has 3-digits. Diners Club, Discover, and JCB credit and debit cards have a three-digit card security code which also appears after and to the right of your card number. The American Express CID (Card Identification Number) is a 4-digit number printed on the front of your card. It appears above and to the right of your card number. On Maestro the CVV appears after and to the right of your number. If you don’t have a CVV for your Maestro card you can use 000.";
+$_ARRAYLANG['TXT_SHOP_ORDER_QUANTITY'] = "Quantity";
+$_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANTITY'] = "Minimum order quantity";
+$_ARRAYLANG['TXT_SHOP_MINIMUM_ORDER_QUANTITY_ERROR'] = "Die Bestellmenge entspricht nicht der Mindestbestellmenge.";
+$_ARRAYLANG['TXT_SHOP_MANUFACTURER'] = "Hersteller";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_REGISTER_NOW'] = "Jetzt registrieren";
+$_ARRAYLANG['TXT_SHOP_PRICE_ONLY'] = "nur";
+// Mengenrabatte: ab 1 rez: 1.00%, ab 2 rez: 2.00%, ab 3 rez: 3.00%, ab 4 rez: 4.00%
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_LIST_FORMAT'] = "
+<h3 class=\"discount_count_title\">Mengenrabatte</h3>
+<div class=\"discount_count_list\">%1\$s</div>";
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_ENTRY_FORMAT'] = "
+<div class=\"discount_count_count\">ab %1\$s %2\$s:</div>
+<div class=\"discount_count_rate\">%4\$s&nbsp;%3\$.2f</div>";
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_SEPARATOR'] = "";
+$_ARRAYLANG['TXT_SHOP_ORDER_DATE'] = "Datum";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER'] = "Kunde";
+$_ARRAYLANG['TXT_SHOP_ORDER_SUM'] = "Total";
+$_ARRAYLANG['TXT_SHOP_ORDER_STATUS'] = "Status";
+$_ARRAYLANG['TXT_ORDER_COMPLETE'] = "TXT_ORDER_COMPLETE";
+$_ARRAYLANG['TXT_CUSTOMER_TYP'] = "TXT_CUSTOMER_TYP";
+$_ARRAYLANG['TXT_CUSTOMER'] = "TXT_CUSTOMER";
+$_ARRAYLANG['TXT_RESELLER'] = "TXT_RESELLER";
+$_ARRAYLANG['TXT_LAST_NAME'] = "TXT_LAST_NAME";
+$_ARRAYLANG['TXT_FIRST_NAME'] = "TXT_FIRST_NAME";
+$_ARRAYLANG['TXT_ORDERS'] = "Bestellungen";
+$_ARRAYLANG['TXT_SHOP_ORDER'] = "Ihre Bestellung";
+$_ARRAYLANG['TXT_SHOP_ORDER_NOTES'] = "TXT_SHOP_ORDER_NOTES";
+$_ARRAYLANG['TXT_SHOP_ALL'] = "TXT_SHOP_ALL";
+$_ARRAYLANG['TXT_SHOP_ORDER_DETAILS_VIEW'] = "Details anzeigen";
+$_ARRAYLANG['TXT_SHOP_ORDER_DETAILS'] = "Details";
+$_ARRAYLANG['TXT_SHOP_ORDER_REPEAT'] = "Bestellung wiederholen";
+$_ARRAYLANG['TXT_SHOP_ORDER_RESTORE'] = "Bestellung bearbeiten";
+$_ARRAYLANG['TXT_SHOW_DETAILS'] = "TXT_SHOW_DETAILS";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_NOT_FOUND'] = "TXT_SHOP_PRODUCT_NOT_FOUND";
+$_ARRAYLANG['TXT_SHOP_VALIDITY'] = "TXT_SHOP_VALIDITY";
+$_ARRAYLANG['TXT_SHOP_ORDER_ID'] = "Bestellnummer";
+$_ARRAYLANG['TXT_SHOP_ITEM_PRICE'] = "Stückpreis";
+$_ARRAYLANG['TXT_SHOP_ITEM_SUM'] = "TXT_SHOP_ITEM_SUM";
+$_ARRAYLANG['TXT_SHOP_ORDER_REMARKS'] = "Bemerkungen";
+$_ARRAYLANG['TXT_SHOP_ORDER_LOGIN_TO_REPEAT'] = "Sie müssen sich anmelden, um Ihre frühere Bestellung wiederholen zu können.";
+$_ARRAYLANG['TXT_SHOP_ORDER_INVALID_ID'] = "Ungültige Bestellung. Bitte wählen Sie eine aus der Liste.";
+$_ARRAYLANG['TXT_SHOP_ORDER_RESTORED'] = "Ihre frühere Bestellung wurde dem Warenkorb hinzugefügt. Klicken Sie auf einen Artikel, um die Details sehen und diese verändern zu können.";
+$_ARRAYLANG['TXT_SHOP_ACTIONS'] = "Funktionen";
+$_ARRAYLANG['TXT_SHOP_ORDER_WARNING_NO_ITEM'] = "In der Bestellung sind keine Artikel vorhanden";
+$_ARRAYLANG['TXT_SHOP_ORDER_WARNING_PRODUCT_INVALID'] = "Ungültiges Produkt in der Bestellung";
+$_ARRAYLANG['TXT_SHOP_YES'] = "Ja";
+$_ARRAYLANG['TXT_SHOP_NO'] = "Nein";
+$_ARRAYLANG['TXT_SHOP_ADDITIONAL_FEES_INCLUDED'] = "<br />(Einschliesslich Zusatzkosten)";
+$_ARRAYLANG['TXT_SHOP_DISCOUNT_RATE_DISCOUNT'] = "Zusätzlicher Rabatt:";
+$_ARRAYLANG['TXT_SHOP_EDIT_ITEM'] = "Artikel bearbeiten";
+$_ARRAYLANG['TXT_SHOP_GOTO_SENDPASS'] = "<a href=\"%1\$s\">Passwort vergessen?</a>";
+$_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_PRODUCT'] = "Wollen Sie diesen Artikel wirklich aus dem Warenkorb entfernen?";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PRODUCT'] = "Der eingegebene Gutscheincode ist für diese Produkte nicht gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PAYMENT'] = "Der eingegebene Gutscheincode ist für diese Bezahlmethode nicht gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_YET'] = "Der eingegebene Gutscheincode ist noch nicht gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_ALREADY'] = "Der eingegebene Gutscheincode ist nicht mehr gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP'] = "Der eingegebene Gutscheincode wurde bereits verwendet und ist nicht mehr gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_AMOUNT'] = "Der eingegebene Gutscheincode ist erst ab einer Bestellsumme von %2\$s %1\$.2f gültig";
+$_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN'] = "Achtung!<br />Der Gesamtbetrag Ihrer Bestellung erreicht nicht den Mindestbestellwert von %2\$s %1\$0.2f.";
+// Headers for Product ordering in list view
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_ORD'] = "Standard";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_TITLE'] = "Product name";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_CODE'] = "Product code";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_PRICE'] = "Price";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_DATE'] = "Date added";
+$_ARRAYLANG['TXT_SHOP_ORDER_PRODUCT_BESTSELLER'] = "Popularity";

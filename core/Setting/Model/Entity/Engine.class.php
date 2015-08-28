@@ -41,39 +41,39 @@ abstract class Engine implements EngineInterface {
      *    ... more ...
      *  );
      * @var     array
-     * @static
+     * 
      * @access  protected
      */
-    protected static $arrSettings = null;
+    protected $arrSettings = null;
 
     /**
      * The group last used to {@see init()} the settings.
      * Defaults to null (ignored).
      * @var     string
-     * @static
+     * 
      * @access  protected
      */
 
-    protected static $group = null;
+    protected $group = null;
     /**
      * The section last used to {@see init()} the settings.
      * Defaults to null (which will cause an error in most methods).
      * @var     string
-     * @static
+     * 
      * @access  protected
      */
 
-    protected static $section = null;
+    protected $section = null;
     /**
      * Changed flag
      *
      * This flag is set to true as soon as any change to the settings is detected.
      * It is cleared whenever {@see updateAll()} is called.
      * @var     boolean
-     * @static
+     * 
      * @access  protected
      */
-    protected static $changed = false;
+    protected $changed = false;
     /**
      * Returns the current value of the changed flag.
      *
@@ -81,9 +81,9 @@ abstract class Engine implements EngineInterface {
      * @return  boolean           True if values have been changed in memory,
      *                            false otherwise
      */
-    public static function changed()
+    public  function changed()
     {
-        return self::$changed;
+        return $this->changed;
     }
 
     /**
@@ -91,19 +91,19 @@ abstract class Engine implements EngineInterface {
      * @var     integer
      * @access  public
      */
-    public static $tab_index = 1;
+    public $tab_index = 1;
 
     /**
      * Optionally sets and returns the value of the tab index
      * @param   integer $tab_index  The optional new tab index
      * @return  integer             The current tab index
      */
-    public static function tab_index($tab_index=null)
+    public  function tab_index($tab_index=null)
     {
         if (isset($tab_index)) {
-            self::$tab_index = intval($tab_index);
+            $this->tab_index = intval($tab_index);
         }
-        return self::$tab_index;
+        return $this->tab_index;
     }
 
     /**
@@ -113,12 +113,12 @@ abstract class Engine implements EngineInterface {
      * Does *NOT* clear the section, however.
      * @return  void
      */
-    public static function flush()
+    public  function flush()
     {
-        self::$arrSettings = null;
-        self::$section = null;
-        self::$group = null;
-        self::$changed = null;
+        $this->arrSettings = null;
+        $this->section = null;
+        $this->group = null;
+        $this->changed = null;
     }
 
     /** 
@@ -133,13 +133,13 @@ abstract class Engine implements EngineInterface {
      * @return  array                 The settings array on success,
      *                                false otherwise
      */
-    public static function getArray($section, $group=null)
+    public function getArray($section, $group=null)
     {
-        if (self::$section !== $section
-         || self::$group !== $group) {
+        if ($this->section !== $section
+         || $this->group !== $group) {
             if (!parent::init($section, $group)) return false;
         }
-        return self::$arrSettings;
+        return $this->arrSettings;
     }
 
     /**
@@ -152,14 +152,14 @@ abstract class Engine implements EngineInterface {
      * @return  mixed                 The settings value, if present,
      *                                null otherwise
      */
-    public static function getValue($name)
+    public function getValue($name)
     {
-        if (is_null(self::$arrSettings)) {
+        if (is_null($this->arrSettings)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\Engine::getValue($name): ERROR: no settings loaded");
             return null;
         }
-        if (isset(self::$arrSettings[$name]['value'])) {
-            return self::$arrSettings[$name]['value'];
+        if (isset($this->arrSettings[$name]['value'])) {
+            return $this->arrSettings[$name]['value'];
         };
         return null;
     }
@@ -174,9 +174,9 @@ abstract class Engine implements EngineInterface {
      * @return  boolean               The if setting name is exist returned true,
      *                                false otherwise
      */
-    public static function isDefined($name)
+    public  function isDefined($name)
     { 
-        if (isset(self::$arrSettings[$name]['name'])) {
+        if (isset($this->arrSettings[$name]['name'])) {
             return true;   
         }
         return false;
@@ -195,19 +195,56 @@ abstract class Engine implements EngineInterface {
      * @return  boolean               True if the value has been changed,
      *                                false otherwise, null on noop
      */
-    public static function set($name, $value)
+    public function set($name, $value)
     {
-        if (!isset(self::$arrSettings[$name])) {
-        // \DBG::log("\Cx\Core\Setting\Model\Entity\Engine::set($name, $value): Unknown, changed: ".self::$changed);
+        if (!isset($this->arrSettings[$name])) {
+            \DBG::log("\Cx\Core\Setting\Model\Entity\Engine::set($name, $value): Unknown, changed: ".$this->changed);
             return false;
         }
-        if (self::$arrSettings[$name]['value'] == $value) {
-        // \DBG::log("\Cx\Core\Setting\Model\Entity\Engine::set($name, $value): Identical, changed: ".self::$changed);
+        if ($this->arrSettings[$name]['value'] == $value) {
+            \DBG::log("\Cx\Core\Setting\Model\Entity\Engine::set($name, $value): Identical, changed: ".$this->changed);
             return null;
         }
-        self::$changed = true;
-        self::$arrSettings[$name]['value'] = $value;
-        // \DBG::log("\Cx\Core\Setting\Model\Entity\Engine::set($name, $value): Added/updated, changed: ".self::$changed);
+        $this->changed = true;
+        $this->arrSettings[$name]['value'] = $value;
+        \DBG::log("\Cx\Core\Setting\Model\Entity\Engine::set($name, $value): Added/updated, changed: ".$this->changed);
         return true;
     }
+    
+    /**
+     * Adds element to array
+     * @param   string  $name
+     * @param   string  $item
+     */
+    public function addToArray($name, $item)
+    {
+        $this->arrSettings[$name] = $item;        
+    }
+    
+    /**
+     * Get group 
+     * @return  group
+     */
+    public function getGroup()
+    {
+        return $this->group;        
+    }
+    
+    /**
+     * Get section
+     * @return  string
+     */
+    public function getSection()
+    {
+        return $this->section;  
+    }
+    
+    /**
+     * Get array
+     * @return type
+     */
+    public function getArraySetting() {
+        return $this->arrSettings;
+    }
+    
 }

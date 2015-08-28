@@ -141,9 +141,9 @@ class MediaManager extends MediaLibrary
 
         // get variables
         $this->getAct      = isset($_POST['deleteMedia']) && $_POST['deleteMedia'] ? 'delete' : (!empty($_GET['act']) ? trim($_GET['act']) : '');
-        $this->getPath     = \Cx\Lib\FileSystem\FileSystem::sanitizePath($_GET['path']);
+        $this->getPath     = isset($_GET['path']) ? \Cx\Lib\FileSystem\FileSystem::sanitizePath($_GET['path']) : false;
         if ($this->getPath === false) $this->getPath = $this->arrWebPaths[$this->archive];
-        $this->getFile     = \Cx\Lib\FileSystem\FileSystem::sanitizeFile($_REQUEST['file']);
+        $this->getFile     = isset($_REQUEST['file']) ? \Cx\Lib\FileSystem\FileSystem::sanitizeFile($_REQUEST['file']) : false;
         if ($this->getFile === false) $this->getFile = '';
         $this->getData     = !empty($_GET['data']) ? $_GET['data']       : '';
         $this->sortBy      = !empty($_GET['sort']) ? trim($_GET['sort']) : 'name';
@@ -359,7 +359,7 @@ class MediaManager extends MediaLibrary
             case 'getImage':
                 try {
                     $this->getImage($_GET);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     \DBG::msg('Could not get image preview: '.$e->getMessage());
                 }
                 die();
@@ -367,7 +367,7 @@ class MediaManager extends MediaLibrary
             case 'editImage':
                 try {
                     $data = $this->editImage($_POST);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     \DBG::msg('Could not edit image: '.$e->getMessage());
                 }
                 die($data);
@@ -541,15 +541,24 @@ class MediaManager extends MediaLibrary
             'path' => $this->path,
             'webPath' => $this->webPath
         );
-
-        $comboUp = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
-        $comboUp->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/Media/Controller/MediaLibrary.class.php', '\Cx\Core_modules\Media\Controller\MediaLibrary', 'uploadFinished'));
-        $comboUp->setData($data);
-        //set instance name to combo_uploader so we are able to catch the instance with js
-        $comboUp->setJsInstanceName('exposed_combo_uploader');
-        $this->_objTpl->setVariable(array(
-              'COMBO_UPLOADER_CODE'               => $comboUp->getXHtml(true)
+        
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $uploader->setCallback('mediaCallbackJs');
+        $uploader->setFinishedCallback(array(
+            ASCMS_CORE_MODULE_PATH.'/Media/Controller/MediaLibrary.class.php',
+            '\Cx\Core_modules\Media\Controller\MediaLibrary',
+            'uploadFinished'
         ));
+        $uploader->setOptions( //Set html attributes for styling or javascript.
+            array(
+            'id' => 'media_browse_button',
+            'type' => 'button'
+            )
+        );
+        $uploader->setData($data);
+        $this->_objTpl->setVariable(
+            'MEDIA_UPLOADER_BUTTON', $uploader->getXHtml($_ARRAYLANG['TXT_MEDIA_UPLOAD_FILES'])
+        );
         //end of uploader button handling
 
         //check if a finished upload caused reloading of the page.
@@ -611,7 +620,7 @@ class MediaManager extends MediaLibrary
 
                     $this->_objTpl->setVariable(array(  // file
                         'MEDIA_DIR_TREE_ROW'  => $class,
-                        'MEDIA_FILE_ICON'     => self::_getIconWebPath().$dirTree[$key]['icon'][$x].'.png',
+                        'MEDIA_FILE_ICON'     => $dirTree[$key]['icon'][$x],
                         'MEDIA_FILE_NAME'     => $fileName,
                         'MEDIA_FILE_SIZE'     => $this->_formatSize($dirTree[$key]['size'][$x]),
                         'MEDIA_FILE_TYPE'     => $this->_formatType($dirTree[$key]['type'][$x]),
@@ -652,6 +661,15 @@ class MediaManager extends MediaLibrary
                         } else{
                             $thbSize = @getimagesize($this->path . $fileName);
                             $thumb   = $this->webPath . $fileName;
+                        }
+
+                        if (in_array(
+                            $fileName, $this->highlightName
+                        ))
+                        {
+                            $thumb .= '?lastAccess=' . fileatime(
+                                    $this->path . $fileName
+                                );
                         }
 
                         $this->_objTpl->setVariable(array(  // thumbnail
@@ -879,7 +897,7 @@ class MediaManager extends MediaLibrary
         try {
             // Get quality options from the settings
             $arrImageSettings = $this->getImageSettings();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             \DBG::msg('Could not query image settings: '.$e->getMessage());
         }
         

@@ -3,23 +3,24 @@
 /**
  * @copyright   CONTREXX CMS - Comvation AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
+ *              Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
  * @subpackage  coremodule_uploader
  */
 
 namespace Cx\Core_Modules\Uploader\Controller;
+
 use Cx\Core\Core\Controller\Cx;
+use Cx\Lib\FileSystem\FileSystem;
 
 /**
  * UploaderExceptions thrown by uploader
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  coremodule_uploader
  */
 class UploaderException extends \Exception {
-    
+
 }
 
 define('PLUPLOAD_MOVE_ERR', 103);
@@ -30,10 +31,34 @@ define('PLUPLOAD_TYPE_ERR', 104);
 define('PLUPLOAD_UNKNOWN_ERR', 111);
 define('PLUPLOAD_SECURITY_ERR', 105);
 
+/**
+ * Class UploaderController
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
+ *              Robin Glauser <robin.glauser@comvation.com>
+ */
 class UploaderController {
 
+    /**
+     * Configuration array
+     *
+     * @var array
+     */
     public static $conf;
+
+    /**
+     * Error id
+     *
+     * @var int
+     */
     private static $_error = null;
+
+    /**
+     * List of errors
+     *
+     * @var array
+     */
     private static $_errors = array(
         PLUPLOAD_MOVE_ERR => "Failed to move uploaded file.",
         PLUPLOAD_INPUT_ERR => "Failed to open input stream.",
@@ -74,7 +99,11 @@ class UploaderController {
     }
 
     /**
-     * 
+     * Handles the upload request.
+     *
+     * @param array $conf
+     *
+     * @return array|bool
      */
     static function handleRequest($conf = array()) {
 
@@ -161,16 +190,24 @@ class UploaderController {
                 $new_path = $conf['target_dir'] . $fileName;
                 \Cx\Lib\FileSystem\FileSystem::move($tmp_path, $new_path, true);
 
-                $rootPath = $cx->getCodeBaseDocumentRootPath() . $conf['target_dir'];
-                $rootPathFull = $cx->getCodeBaseDocumentRootPath() . $new_path;
-                $filePathinfo = pathinfo($rootPathFull);
+                $rootPath      = $cx->getWebsitePath() . $conf['target_dir'];
+                $rootPathFull  = $cx->getWebsitePath() . $new_path;
+                $filePathinfo  = pathinfo($rootPathFull);
                 $fileExtension = $filePathinfo['extension'];
                 $fileNamePlain = $filePathinfo['filename'];
 
                 $im = new \ImageManager();
                 if ($im->_isImage($rootPathFull)) {
-                    foreach (UploaderConfiguration::getInstance()->getThumbnails() as $thumbnail) {
-                        $im->_createThumb($rootPath, $conf['target_dir'], $fileName, $thumbnail['size'], $thumbnail['quality'], $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension);
+                    foreach (
+                        UploaderConfiguration::getInstance()->getThumbnails() as
+                        $thumbnail
+                    ) {
+                        $im->_createThumb(
+                            $rootPath, $conf['target_dir'], $fileName,
+                            $thumbnail['size'], $thumbnail['quality'],
+                            $fileNamePlain . $thumbnail['value'] . '.'
+                            . $fileExtension
+                        );
                     }
                 }
 
@@ -190,7 +227,7 @@ class UploaderController {
     }
 
     /**
-     * Writes either a multipart/form-data message or a binary stream 
+     * Writes either a multipart/form-data message or a binary stream
      * to the specified file.
      *
      * @throws UploaderException In case of error generates exception with the corresponding code
@@ -269,6 +306,9 @@ class UploaderController {
         self::rrmdir($chunk_dir);
     }
 
+    /**
+     * Send static no caching header
+     */
     static function noCacheHeaders() {
         // Make sure this file is not cached (as it might happen on iOS devices, for example)
         header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
@@ -278,6 +318,12 @@ class UploaderController {
         header("Pragma: no-cache");
     }
 
+    /**
+     * Send cors headers
+     *
+     * @param array  $headers
+     * @param string $origin
+     */
     static function corsHeaders($headers = array(), $origin = '*') {
         $allow_origin_present = false;
 
@@ -300,11 +346,15 @@ class UploaderController {
         }
     }
 
+    /**
+     * Cleanup method
+     */
     private static function cleanup() {
         // Remove old temp files	
         if (file_exists(self::$conf['tmp_dir'])) {
             foreach (glob(self::$conf['tmp_dir'] . '/*.part') as $tmpFile) {
-                if (time() - filemtime($tmpFile) < self::$conf['max_file_age']) {
+                if (time() - filemtime($tmpFile) < self::$conf['max_file_age']
+                ) {
                     continue;
                 }
                 if (is_dir($tmpFile)) {
@@ -328,31 +378,27 @@ class UploaderController {
      * @author WordPress
      *
      * @param string $filename The filename to be sanitized
+     *
      * @return string The sanitized filename
      */
     public static function sanitizeFileName($filename) {
-        $special_chars = array("?", "[", "]", "/", "\\", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}");
-        $filename = str_replace($special_chars, '', $filename);
-        $filename = preg_replace('/[\s-]+/', '-', $filename);
-        $filename = trim($filename, '.-_ ');
-        if ((boolean) preg_match("/^[a-z]+$/", $filename) || empty($filename)) {
-            $filename = 'File_'.date('U').'.'.$filename;
-        }
+        FileSystem::replaceCharacters($filename);
         return $filename;
     }
 
     /**
-     * Concise way to recursively remove a directory 
+     * Concise way to recursively remove a directory
      * http://www.php.net/manual/en/function.rmdir.php#108113
      *
      * @param string $dir Directory to remove
      */
     private static function rrmdir($dir) {
         foreach (glob($dir . '/*') as $file) {
-            if (is_dir($file))
+            if (is_dir($file)) {
                 self::rrmdir($file);
-            else
+            } else {
                 unlink($file);
+            }
         }
         rmdir($dir);
     }

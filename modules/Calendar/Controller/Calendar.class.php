@@ -149,7 +149,7 @@ class Calendar extends CalendarLibrary
     function getCalendarPage()
     {
         self::loadEventManager();
-        
+        $id = !empty($_GET['id']) ? $_GET['id'] : 0 ;
 
         if(isset($_GET['export'])) {
             $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($_GET['export']));
@@ -158,10 +158,10 @@ class Calendar extends CalendarLibrary
 
         switch ($_REQUEST['cmd']) {
             case 'detail':
-                if($_GET['id'] != null && $_GET['date'] != null) {
+                if( $id!= null && $_GET['date'] != null) {
                     self::showEvent();
                 } else {
-                    \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
+                    \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName));
                     exit();
                 }
                 break;
@@ -185,7 +185,7 @@ class Calendar extends CalendarLibrary
                 break;
             case 'edit':
                 parent::checkAccess('edit_event');
-                self::modifyEvent(intval($_GET['id']));
+                self::modifyEvent(intval($id));
                 break;
             case 'my_events':
                 parent::checkAccess('my_events');
@@ -212,29 +212,35 @@ class Calendar extends CalendarLibrary
      */
     function loadEventManager()
     {
+        $term   = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
+        $from   = isset($_GET['from']) ? contrexx_input2raw($_GET['from']) : '';
+        $till   = isset($_GET['till']) ? contrexx_input2raw($_GET['till']) : '';
+        $catid  = isset($_GET['catid']) ? contrexx_input2raw($_GET['catid']) : '';        
+        $cmd    = isset($_GET['cmd']) ? contrexx_input2raw($_GET['cmd']) : '';
+        
         // get startdate
-        if (!empty($_GET['from'])) {
-            $this->startDate = parent::getDateTimestamp($_GET['from']);
-        } else if ($_GET['cmd'] == 'archive') {
+        if (!empty($from)) {
+            $this->startDate = parent::getDateTimestamp($from);
+        } else if ($cmd == 'archive') {
             $this->startDate = null;
             $this->sortDirection = 'DESC';
         } else {
-            $startDay   = isset($_GET['day']) ? $_GET['day'] : date("d", mktime());
-            $startMonth = isset($_GET['month']) ? $_GET['month'] : date("m", mktime());
-            $startYear  = isset($_GET['year']) ? $_GET['year'] : date("Y", mktime());
+            $startDay   = isset($_GET['day']) ? $_GET['day'] : date("d", time());
+            $startMonth = isset($_GET['month']) ? $_GET['month'] : date("m", time());
+            $startYear  = isset($_GET['year']) ? $_GET['year'] : date("Y", time());
 
             $this->startDate = mktime(0, 0, 0, $startMonth, $startDay, $startYear);
         }
 
         // get enddate
-        if (!empty($_GET['till'])) {
-            $this->endDate = parent::getDateTimestamp($_GET['till']);
-        } else if ($_GET['cmd'] == 'archive') {
-            $this->endDate = mktime();
+        if (!empty($till)) {
+            $this->endDate = parent::getDateTimestamp($till);
+        } else if ($cmd == 'archive') {
+            $this->endDate = time();
         } else {
-            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : date("d", mktime());
-            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : date("m", mktime());
-            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : date("Y", mktime());
+            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : date("d", time());
+            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : date("m", time());
+            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : date("Y", time());
 
             $endYear = empty($_GET['endYear']) && empty($_GET['endMonth']) ? $endYear+10: $endYear;
 
@@ -243,7 +249,7 @@ class Calendar extends CalendarLibrary
 
 
         // get datepicker-time
-         if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $_GET['cmd'] != 'boxes') {
+         if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $cmd != 'boxes') {
             $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : date('Y');
             $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : date('m');
             $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : date('d');
@@ -264,27 +270,27 @@ class Calendar extends CalendarLibrary
             $this->endDate = $dateObj->getTimestamp();
             
 
-         } elseif ($_GET["yearID"] && $_GET["monthID"] && $_GET["dayID"]) {
+         } elseif (isset ($_GET["yearID"]) && isset ($_GET["monthID"]) && isset ($_GET["dayID"])) {
 
-            $year = $_REQUEST["yearID"] ? $_REQUEST["yearID"] : date('Y', mktime());
-            $month = $_REQUEST["monthID"] ? $_REQUEST["monthID"] : date('m', mktime());
-            $day = $_REQUEST["dayID"] ? $_REQUEST["dayID"] : date('d', mktime());
+            $year = isset($_REQUEST["yearID"]) ? intval($_REQUEST["yearID"]) : date('Y', time());
+            $month = isset($_REQUEST["monthID"]) ? intval($_REQUEST["monthID"]) : date('m', time());
+            $day = isset($_REQUEST["dayID"]) ? intval($_REQUEST["dayID"]) : date('d', time());
 
             $this->startDate = mktime(0, 0, 0, $month, $day, $year);
             $this->endDate = mktime(23, 59, 59, $month, $day, $year);
         }
         
         
-        $this->searchTerm = !empty($_GET['term']) ? contrexx_addslashes($_GET['term']) : null;
-        $this->categoryId = !empty($_GET['catid']) ? intval($_GET['catid']) : null;
+        $this->searchTerm = !empty($term) ? contrexx_raw2db($term) : null;
+        $this->categoryId = !empty($catid) ? intval($catid) : null;
 
 
 
 
-        if ($_GET['cmd'] == 'boxes' || $_GET['cmd'] == 'category') {
+        if ($cmd == 'boxes' || $cmd == 'category') {
             $this->startPos = 0;
             $this->numEvents = 'n';
-        } else if(!isset($_GET['search']) && ($_GET['cmd'] != 'list' && $_GET['cmd'] != 'eventlist' && $_GET['cmd'] != 'archive')) {
+        } else if(!isset($_GET['search']) && ($cmd != 'list' && $cmd != 'eventlist' && $cmd != 'archive')) {
             $this->startPos = 0;
             $this->numEvents = $this->arrSettings['numEntrance'];
         } else {
@@ -292,12 +298,12 @@ class Calendar extends CalendarLibrary
             $this->numEvents = $this->arrSettings['numPaging'];
         }
 
-        if ($_GET['cmd'] == 'detail') {
+        if ($cmd == 'detail') {
             $this->startDate = null;
             $this->numEvents = 'n';
         }
 
-        if ($_GET['cmd'] == 'my_events') {
+        if ($cmd == 'my_events') {
             $objFWUser = \FWUser::getFWUserObject();
             $objUser = $objFWUser->objUser;
             $this->author = intval($objUser->getId());
@@ -306,13 +312,15 @@ class Calendar extends CalendarLibrary
         }
         $this->objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents,$this->sortDirection,true,$this->author);
         
-        if($_GET['cmd'] != 'detail') {
+        if($cmd != 'detail') {
             $this->objEventManager->getEventList();  
         } else { 
             /* if($_GET['external'] == 1 && $this->arrSettings['publicationStatus'] == 1) {
                 $this->objEventManager->getExternalEvent(intval($_GET['id']), intval($_GET['date'])); 
             } else { */
-                $this->objEventManager->getEvent(intval($_GET['id']), intval($_GET['date'])); 
+                $eventId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+                $date    = isset($_GET['date']) ? intval($_GET['date']) : 0;
+                $this->objEventManager->getEvent($eventId, $date);
             /* } */
         }
     }
@@ -349,6 +357,12 @@ EOF;
         $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
 
+        $term   = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
+        $from   = isset($_GET['from']) ? contrexx_input2raw($_GET['from']) : '';
+        $till   = isset($_GET['till']) ? contrexx_input2raw($_GET['till']) : '';
+        $catid  = isset($_GET['catid']) ? contrexx_input2raw($_GET['catid']) : '';
+        $search = isset($_GET['search']) ? contrexx_input2raw($_GET['search']) : '';
+        $cmd    = isset($_GET['cmd']) ? contrexx_input2raw($_GET['cmd']) : '';
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_SEARCH_TERM' =>  $_ARRAYLANG['TXT_CALENDAR_KEYWORD'],
             'TXT_'.$this->moduleLangVar.'_FROM' =>  $_ARRAYLANG['TXT_CALENDAR_FROM'],
@@ -357,21 +371,21 @@ EOF;
             'TXT_'.$this->moduleLangVar.'_SEARCH' =>  $_ARRAYLANG['TXT_CALENDAR_SEARCH'],
             'TXT_'.$this->moduleLangVar.'_OCLOCK' =>  $_ARRAYLANG['TXT_CALENDAR_OCLOCK'],
             'TXT_'.$this->moduleLangVar.'_DATE' =>  $_CORELANG['TXT_DATE'],
-            $this->moduleLangVar.'_SEARCH_TERM' =>  $_GET['term'],
-            $this->moduleLangVar.'_SEARCH_FROM' =>  $_GET['from'],
-            $this->moduleLangVar.'_SEARCH_TILL' =>  $_GET['till'],
-            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown(intval($_GET['catid']), 1),
+            $this->moduleLangVar.'_SEARCH_TERM' => contrexx_raw2xhtml($term),
+            $this->moduleLangVar.'_SEARCH_FROM' =>  contrexx_raw2xhtml($from),
+            $this->moduleLangVar.'_SEARCH_TILL' => contrexx_raw2xhtml($till),
+            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown(intval($catid), 1),
             $this->moduleLangVar.'_JAVASCRIPT'  => $javascript
         ));
          self::showThreeBoxes();
          
         if($this->objEventManager->countEvents > $this->arrSettings['numPaging'] && (isset($_GET['search']) || $_GET['cmd'] == 'list' || $_GET['cmd'] == 'eventlist' || $_GET['cmd'] == 'archive')) {
-            $pagingCmd = !empty($_GET['cmd']) ? '&amp;cmd='.$_GET['cmd'] : '';
-            $pagingCategory = !empty($_GET['catid']) ? '&amp;catid='.intval($_GET['catid']) : '';
-            $pagingTerm = !empty($_GET['term']) ? '&amp;term='.$_GET['term'] : '';
-            $pagingSearch = !empty($_GET['search']) ? '&amp;search='.$_GET['search'] : '';
-            $pagingFrom = !empty($_GET['from']) ? '&amp;from='.$_GET['from'] : '';
-            $pagingTill = !empty($_GET['till']) ? '&amp;till='.$_GET['till'] : '';
+            $pagingCmd = !empty($cmd) ? '&amp;cmd='.  contrexx_raw2xhtml($cmd) : '';
+            $pagingCategory = !empty($catid) ? '&amp;catid='.intval($catid) : '';
+            $pagingTerm = !empty($term) ? '&amp;term='.  contrexx_raw2xhtml($term) : '';
+            $pagingSearch = !empty($search) ? '&amp;search='.  contrexx_raw2xhtml($search) : '';
+            $pagingFrom = !empty($from) ? '&amp;from='.  contrexx_raw2xhtml($from) : '';
+            $pagingTill = !empty($till) ? '&amp;till='.  contrexx_raw2xhtml($till) : '';
 
 
             $this->_objTpl->setVariable(array(
@@ -431,9 +445,10 @@ EOF;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
         $showFrom = true;
-        if(isset($_POST['submitFormModifyEvent'])) {
-            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
-
+        
+        $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
+        
+        if (isset($_POST['submitFormModifyEvent'])) {
             $arrData = array();
             $arrData = $_POST;
             
@@ -452,8 +467,8 @@ EOF;
             }
         }
         
-        if($eventId != null) {
-            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
+        if ($eventId) {
+            $objEvent->get($eventId);
             $objEvent->getData();
         }
 
@@ -495,6 +510,7 @@ EOF;
                 $javascript .= <<< UPLOADER
                 {$this->getUploaderCode($this->handleUniqueId(self::PICTURE_FIELD_KEY), 'pictureUpload')}
                 {$this->getUploaderCode($this->handleUniqueId(self::MAP_FIELD_KEY), 'mapUpload')}
+                {$this->getUploaderCode($this->handleUniqueId(self::ATTACHMENT_FIELD_KEY), 'attachmentUpload', 'uploadFinished', false)}
 UPLOADER;
             } catch(Exception $e) {
                 \DBG::msg("Error in initializing uploader");
@@ -528,6 +544,7 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_EVENT_LINK'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_LINK'],
             'TXT_'.$this->moduleLangVar.'_EVENT_EMAIL'              => $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL'],
             'TXT_'.$this->moduleLangVar.'_EVENT_PICTURE'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_PICTURE'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_ATTACHMENT'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_ATTACHMENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_CATEGORY'           => $_ARRAYLANG['TXT_CALENDAR_CAT'] ,
             'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_PLEASE_CHECK_INPUT'       => $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHECK_INPUT'],
@@ -551,6 +568,7 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->endDate) : date(parent::getDateFormat()." H:i"),
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
             $this->moduleLangVar.'_EVENT_PICTURE_THUMB'             => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
+            $this->moduleLangVar.'_EVENT_ATTACHMENT'                => $objEvent->attach,
             $this->moduleLangVar.'_EVENT_CATEGORIES'                => $objCategoryManager->getCategoryDropdown(intval($objEvent->catId), 2),            
             $this->moduleLangVar.'_EVENT_LINK'                      => $objEvent->link,            
             $this->moduleLangVar.'_EVENT_PLACE'                     => $objEvent->place,
@@ -605,11 +623,22 @@ UPLOADER;
             $this->_objTpl->parse('eventTabMenuDescTab');
             
             //parse eventDescTab
+            $eventTitle       = !empty($objEvent->arrData['title'][$arrLang['id']]) 
+                                ? $objEvent->arrData['title'][$arrLang['id']] 
+                                : (!empty($objEvent->arrData['redirect'][$_LANGID]) ? $objEvent->arrData['redirect'][$_LANGID] : '');
+            $eventDescription = !empty($objEvent->arrData['description'][$arrLang['id']]) 
+                                ? $objEvent->arrData['description'][$arrLang['id']] 
+                                : '';
+            $eventRedirect    = !empty($objEvent->arrData['redirect'][$arrLang['id']]) 
+                                ? $objEvent->arrData['redirect'][$arrLang['id']] 
+                                : (!empty($objEvent->arrData['redirect'][$_LANGID]) ? $objEvent->arrData['redirect'][$_LANGID] : '');
             $this->_objTpl->setVariable(array(           
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY'               => $langChecked ? 'block' : 'none',
-                $this->moduleLangVar.'_EVENT_TITLE'                     => !empty($objEvent->arrData['title'][$arrLang['id']]) ? $objEvent->arrData['title'][$arrLang['id']] : $objEvent->arrData['redirect'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[{$arrLang['id']}]", contrexx_raw2xhtml($objEvent->arrData['description'][$arrLang['id']]), $eventId != 0 ? 'small' : 'bbcode'),
-                $this->moduleLangVar.'_EVENT_REDIRECT'                  => !empty($objEvent->arrData['redirect'][$arrLang['id']]) ? $objEvent->arrData['redirect'][$arrLang['id']] : $objEvent->arrData['redirect'][$_LANGID],
+                $this->moduleLangVar.'_EVENT_TITLE'                     => contrexx_raw2xhtml($eventTitle),
+                $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[{$arrLang['id']}]", 
+                                                                                                        contrexx_raw2xhtml($eventDescription), 
+                                                                                                        $eventId != 0 ? 'small' : 'bbcode'),
+                $this->moduleLangVar.'_EVENT_REDIRECT'                  => contrexx_raw2xhtml($eventRedirect),
                 $this->moduleLangVar.'_EVENT_TYPE_EVENT_DISPLAY'        => $objEvent->type == 0 ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_TYPE_REDIRECT_DISPLAY'     => $objEvent->type == 1 ? 'block' : 'none',
             ));
@@ -696,6 +725,10 @@ UPLOADER;
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
+        if (empty($this->objEventManager->eventList)) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName));
+            exit;
+        }
         
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
@@ -767,7 +800,7 @@ UPLOADER;
         
         $this->pageTitle = date("d.m.Y", (isset($_GET['date']) ? $_GET['date'] : $objEvent->startDate)).": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
-        if(mktime() <= intval($_REQUEST['date'])) {
+        if(time() <= intval($_REQUEST['date'])) {
             if($numRegistrations < $objEvent->numSubscriber) {
                 $this->_objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_ID'                   =>  intval($_REQUEST['id']),
@@ -802,7 +835,7 @@ UPLOADER;
                 if(!$userLogin) {
                     
                     $this->_objTpl->setVariable(array(
-                        'TXT_'.$this->moduleLangVar.'_CAPTCHA' => $_CORELANG['TXT_CAPTCHA'],
+                        'TXT_'.$this->moduleLangVar.'_CAPTCHA' => $_CORELANG['TXT_CORE_CAPTCHA'],
                         $this->moduleLangVar.'_CAPTCHA_CODE'   => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(),
                     ));
                     $this->_objTpl->parse('calendarRegistrationCaptcha');
@@ -888,10 +921,10 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_CATEGORY' =>  $_ARRAYLANG['TXT_CALENDAR_CAT'],
             'TXT_'.$this->moduleLangVar.'_SEARCH' =>  $_ARRAYLANG['TXT_CALENDAR_SEARCH'],
             'TXT_'.$this->moduleLangVar.'_OCLOCK' =>  $_ARRAYLANG['TXT_CALENDAR_OCLOCK'],
-            $this->moduleLangVar.'_SEARCH_TERM' =>  $_GET['term'],
-            $this->moduleLangVar.'_SEARCH_FROM' =>  $_GET['from'],
-            $this->moduleLangVar.'_SEARCH_TILL' =>  $_GET['till'],
-            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown(intval($_GET['catid']), 1)
+            $this->moduleLangVar.'_SEARCH_TERM' => isset($_GET['term']) ? contrexx_input2xhtml($_GET['term']) : '',
+            $this->moduleLangVar.'_SEARCH_FROM' => isset($_GET['from']) ? contrexx_input2xhtml($_GET['from']) : '',
+            $this->moduleLangVar.'_SEARCH_TILL' => isset($_GET['till']) ? contrexx_input2xhtml($_GET['till']) : '',
+            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown((isset($_GET['catid']) ? intval($_GET['catid']) : 0), 1)
         ));
 
         if(isset($this->categoryId)) {
@@ -964,7 +997,7 @@ UPLOADER;
         }
     }
         
-    protected function getUploaderCode($submissionId, $fieldName, $uploadCallBack = "uploadFinished")
+    protected function getUploaderCode($submissionId, $fieldName, $uploadCallBack = "uploadFinished", $allowImageOnly = true)
     {
         try {                        
             //init the uploader
@@ -1002,7 +1035,7 @@ UPLOADER;
             $uploader = $f->newUploader('exposedCombo', $submissionId, true);
             $uploader->setJsInstanceName($uploaderInstanceName);
             $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Calendar/Controller/Calendar.class.php','\Cx\Modules\Calendar\Controller\Calendar', $uploadCallBack));
-            $uploader->setData(array('submission_id' => $submissionId, 'field_name' => $fieldName));
+            $uploader->setData(array('submission_id' => $submissionId, 'field_name' => $fieldName, 'allowImageOnly' => $allowImageOnly));
             
             $strJs  = $uploader->getXHtml();
         $strJs .= $folderWidget->getXHtml("#{$fieldName}_uploadWidget", "uploadWidget".$submissionId);
@@ -1062,10 +1095,10 @@ JAVASCRIPT;
                 if($file == '.' || $file == '..') { continue; }
                 
                 //delete unwanted files
-                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {                                     
+                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes) && $data['allowImageOnly']) {
                     $response->addMessage(
                         \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-                        $lang["TXT_{$this->moduleLangVar}_IMAGE_UPLOAD_ERROR"],
+                        $lang["TXT_CALENDAR_IMAGE_UPLOAD_ERROR"],
                         $file
                     );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);

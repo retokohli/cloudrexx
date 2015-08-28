@@ -60,7 +60,16 @@ class LoginManager {
         }
 
         $this->objTemplate->setVariable('CONTREXX_CHARSET', CONTREXX_CHARSET);
-        $this->objTemplate->show();
+        
+        $endcode = $this->objTemplate->get();
+        
+        // replace links from before contrexx 3
+        $ls = new \LinkSanitizer(
+            ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
+            $endcode);
+        $endcode = $ls->replace();
+        
+        echo $endcode;
         exit();
     }
 

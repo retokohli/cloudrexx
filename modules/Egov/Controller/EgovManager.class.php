@@ -218,7 +218,7 @@ class EgovManager extends EgovLibrary
         \Cx\Core\Setting\Controller\Setting::init('Egov', 'config');
 // TODO: Temporary fix for the upgrade to \Cx\Core\Setting\Controller\Setting.
 // Remove when the whole module is migrated.
-        $postfinance_shop_id = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_shop_id');
+        $postfinance_shop_id = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_shop_id', 'Egov');
         if (empty ($postfinance_shop_id)) {
             self::errorHandler();
         }

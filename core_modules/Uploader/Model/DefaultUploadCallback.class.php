@@ -39,7 +39,7 @@ class DefaultUploadCallback implements UploadCallbackInterface
      *               When returning null, all left files are deleted.
      */
     function uploadFinished(
-        $tempPath, $tempWebPath, $data, $uploadId, $fileInfos
+        $tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response
     )
     {
         return array(

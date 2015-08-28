@@ -94,7 +94,7 @@ class CrmInterface extends CrmLibrary
     function __construct($objTpl, $name)
     {
         $this->_objTpl = $objTpl;
-        $this->_mediaPath = ASCMS_MEDIA_PATH.'/Crm';
+        $this->_mediaPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteMediaCrmPath();
         parent::__construct($name);
     }
 
@@ -135,11 +135,12 @@ class CrmInterface extends CrmLibrary
             ));
             $objTpl->parse('crm_enclosure');
         }
-        $uploaderCode = $this->initUploader(1, true, 'uploadFinished','' , 'import_files_');
+        $options = array('upload-limit' => 1, 'id' => 'importUploader', 'style' => 'display:none;', 'allowed-extensions' => array('csv'));
+        $uploaderCode = $this->initUploader('uploadFinished', 'importCallbackJs', '', '', $options);
         $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
         $this->_objTpl->setVariable(array(
-              'COMBO_UPLOADER_CODE' => $uploaderCode,
-	      'REDIRECT_URL'	    => $redirectUrl
+            'COMBO_UPLOADER_CODE' => $uploaderCode,
+	    'REDIRECT_URL'        => $redirectUrl
         ));
         
         $objTpl->setVariable(array(

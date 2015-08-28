@@ -6,6 +6,7 @@
  * @author      Sebastian Brand <sebastian.brand@comvation.com>
  * @package     contrexx
  * @subpackage  core_wysiwyg
+ * @version     1.0.0
  */
 
 namespace Cx\Core\Wysiwyg\Controller;
@@ -17,6 +18,7 @@ namespace Cx\Core\Wysiwyg\Controller;
  * @author      Sebastian Brand <sebastian.brand@comvation.com>
  * @package     contrexx
  * @subpackage  core_wysiwyg
+ * @version     1.0.0
  */
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
     /**
@@ -39,6 +41,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     * To show messages, use \Message class
     * @param \Cx\Core\Html\Sigma $template Template for current CMD
     * @param array $cmd CMD separated by slashes
+    * @global array $_ARRAYLANG Language data
     */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
         global $_ARRAYLANG;
@@ -52,6 +55,39 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         
         // Not an entity, parse overview or settings
         switch (current($cmd)) {
+            case 'Settings':
+                \Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
+                
+                if(isset($_POST) && isset($_POST['bsubmit'])) {
+                    \Cx\Core\Setting\Controller\Setting::set('specificStylesheet', isset($_POST['specificStylesheet'])?1:0);
+                    \Cx\Core\Setting\Controller\Setting::set('replaceActualContents', isset($_POST['replaceActualContents'])?1:0);
+                    
+                    \Cx\Core\Setting\Controller\Setting::storeFromPost();
+                }
+                
+                $i = 0;
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('specificStylesheet')
+                    && !\Cx\Core\Setting\Controller\Setting::add('specificStylesheet', '0', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'config')
+                ){
+                    throw new \Exception("Failed to add new configuration option");
+                }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('replaceActualContents')
+                    && !\Cx\Core\Setting\Controller\Setting::add('replaceActualContents', '0', ++$i, \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1', 'config')
+                ){
+                    throw new \Exception("Failed to add new configuration option");
+                }
+                
+                $tmpl = new \Cx\Core\Html\Sigma();
+                \Cx\Core\Setting\Controller\Setting::show(
+                    $tmpl,
+                    'index.php?cmd=Config&act=Wysiwyg&tpl=Settings',
+                    $_ARRAYLANG['TXT_CORE_WYSIWYG'],
+                    $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS'],
+                    'TXT_CORE_WYSIWYG_'
+                );
+                
+                $template->setVariable('WYSIWYG_CONFIG_TEMPLATE', $tmpl->get());
+                break;
             case '':
             default:
                 if ($template->blockExists('overview')) {
@@ -67,6 +103,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * This loads a template named after current $act and calls parsePage($actTemplate)
      * @todo $this->cx->getTemplate()->setVariable() should not be called here but in Cx class
      * @global array $_ARRAYLANG Language data
+     * @global $subMenuTitle
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
      */
     public function getPage(\Cx\Core\ContentManager\Model\Entity\Page $page) {
@@ -192,12 +229,27 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         ));
     }
     
-    
+    /**
+     * This method defines the option to generate the backend view (list and form)
+     * 
+     * @global array $_ARRAYLANG Language data
+     * @param string $entityClassName class name of the used entity
+     * @param string $classIdentifier class identifier
+     * @return array formed as needed for the view generator
+     */
     protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
         global $_ARRAYLANG;
         
         return array(
             'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier)],
+            'entityName' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_ENTITY'],
+            'order' => array(
+                'overview' => array(
+                    'active',
+                    'title',
+                    'description',
+                ),
+            ),
             'functions' => array(
                 'add'       => true,
                 'edit'      => true,
@@ -207,26 +259,51 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'filtering' => false,
             ),
             'fields' => array(
+                'id' => array(
+                    'showOverview' => false,
+                ),
                 'title' => array(
                     'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_TITLE'],
+                    'table' => array(
+                        'parse' => function($data, $rows, $options) {
+                            $editUrl = clone \Env::get('cx')->getRequest()->getUrl();
+                            $editUrl->setParam('editid', '{' . $options['functions']['vg_increment_number'] . ',' . $rows['id'] . '}');
+                            $data = '<a href="' . $editUrl . '" title="'.$data.'">'.$data.'</a>';
+                            return $data;
+                        },
+                    ),
                 ),
                 'description' => array(
                     'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_DESCRIPTION'],
                 ),
-                'inactive' => array(
-                    'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_INACTIVE'],
+                'active' => array(
+                    'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_STATE'],
+                    'formtext' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_ACTIVE'],
+                    'sorting' => false,
+                    'table' => array(
+                        'parse' => function($data, $rows) {
+                            $img = 'led_red.gif';
+                            if ($data) {
+                                $img = 'led_green.gif';
+                            }
+                            $data = '<img src="core/Core/View/Media/icons/'.$img.'" />';
+                            return $data;
+                        },
+                    ),
                 ),
                 'imagePath' => array(
                     'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_IMAGE_PATH'],
-                    'type' => 'uploader',
+                    'type' => 'image',
                     'showOverview' => false,
+                    'options' => array('data-cx-mb-startmediatype' => 'wysiwyg'),
                 ),
                 'htmlContent' => array(
                     'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_HTML_CONTENT'],
                     'showOverview' => false,
+                    'type' => 'sourcecode',
+                    'options' => array('mode' => 'html'),
                 ),
             ),
         );
     }
-    
 }

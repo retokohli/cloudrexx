@@ -165,9 +165,8 @@
         <td>
           <!-- Note: Do not modify the content of the link below!
                This may corrupt the image selection and update process. -->
-          <a href="javascript:void(0);" name="image_link"
-              title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
-              onclick="openBrowser('index.php?cmd=FileBrowser&amp;{CSRF_PARAM}&amp;standalone=true&amp;type=Shop{MODULE_INDEX}','img','width=800,height=640,resizable=yes,status=no,scrollbars=yes');">
+          {MEDIABROWSER_BUTTON}
+          <a href="javascript:void(0);" name="image_link" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" onclick="openBrowser()">
             {TXT_SHOP_EDIT_OR_ADD_IMAGE}
             <br />
             <img id="img_img" style="border: none;" src="{SHOP_THUMB_IMG_HREF}"
@@ -238,40 +237,46 @@ function shopCatDoAction(strForm, strCheckbox, objSelect, strAct) {
   objSelect.value = 0;
 }
 var browserPopup = { "closed": true };
-function openBrowser(url, id, attrs) {
-  try {
-    if (!browserPopup.closed) {
-      return browserPopup.focus();
-    }
-  } catch(e) {}
-  if (!window.focus) {
-    return true;
-  }
-  browserPopup = window.open(url, "", attrs);
-  browserPopup.focus();
+var openBrowser = function openBrowser() {
+  cx.jQuery('#media_browser_shop').trigger('click');
   return false;
 }
 var imageMaxWidth = {SHOP_IMAGE_WIDTH};
 var imageMaxHeight = {SHOP_IMAGE_HEIGHT};
-function SetUrl(url, width, height, alt) {
-  // Compute width/height ratio in order to set the correct size.
-  // i.e.  2 =       200/100
-  var imgRatioWidth = width/imageMaxWidth;
-  // i.e.  3 =       240/80
-  var imgRatioHeight = height/imageMaxHeight;
-  // Now the higher ratio determines the scale factor
-  var factor = imgRatioHeight;
-  if (imgRatioWidth > imgRatioHeight) {
-    factor = imgRatioWidth;
+function setSelectedImage(data) {
+  if (data.type == 'file') {
+    var extension = data.data[0].datainfo.extension.toLowerCase();
+    if(jQuery.inArray(extension, ['gif','png','jpg','jpeg']) == -1) {
+      return;
+    }
+    var url = data.data[0].datainfo.filepath;
+    // Compute width/height ratio in order to set the correct size.
+    // i.e.  2 =       200/100
+    var newImg = new Image()
+    newImg.onload = function() {      
+      var height = newImg.height;
+      var width  = newImg.width;
+
+      var imgRatioWidth = width/imageMaxWidth;
+      // i.e.  3 =       240/80
+      var imgRatioHeight = height/imageMaxHeight;
+      // Now the higher ratio determines the scale factor
+      var factor = imgRatioHeight;
+      if (imgRatioWidth > imgRatioHeight) {
+        factor = imgRatioWidth;
+      }
+      var file_name = /.*\/(.*?)$/.exec(url)[1];
+      cx.jQuery("#img").attr('value', url);
+      cx.jQuery("#img_name").html(file_name);
+      cx.jQuery("#img_remove").show();
+      cx.jQuery("#img_img")
+        .attr("src", url)
+        .css("width", (width/factor)+"px")
+        .css("height", (height/factor)+"px");
+    }
+    newImg.src = url;
   }
-  var file_name = /.*\/(.*?)$/.exec(url)[1];
-  cx.jQuery("#img").attr('value', url);
-  cx.jQuery("#img_name").html(file_name);
-  cx.jQuery("#img_remove").show();
-  cx.jQuery("#img_img")
-    .attr("src", url)
-    .css("width", (width/factor)+"px")
-    .css("height", (height/factor)+"px");
+    
 }
 function cancelEdit() {
   window.location.replace("index.php?{CSRF_PARAM}&cmd=Shop{MODULE_INDEX}&act=categories");

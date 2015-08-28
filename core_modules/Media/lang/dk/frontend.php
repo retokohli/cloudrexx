@@ -45,4 +45,5 @@ $_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "A file with the name %s already 
 $_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'] = "Specified File %s not found";
 $_ARRAYLANG['TXT_MEDIA_FILE_EMPTY_NAME'] = "Filnavn kan ikke være tom!";
 $_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'] = "Mappe slettet med succes!";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'] = "Vil du virkeligt slette filerne? OBS: ændringen kan ikke fortrydes!";
 ?>

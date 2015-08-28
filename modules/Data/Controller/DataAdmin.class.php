@@ -227,7 +227,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
             'TXT_BOX_WIDTH'                     =>  $_ARRAYLANG['TXT_DATA_OVERLAY_WIDTH'],
             'TXT_BOX_HEIGHT'                    =>  $_ARRAYLANG['TXT_DATA_OVERLAY_HEIGHT'],
             'TXT_TEMPLATE'                      =>  $_ARRAYLANG['TXT_TEMPLATE'],
-            'CAT_TEMPLATE'                      =>  $this->_arrSettings['data_template_category'],
+            'CAT_TEMPLATE'                      =>  contrexx_raw2xhtml( $this->_arrSettings['data_template_category']),
             'TXT_DISPLAY_MODE'                  =>  $_ARRAYLANG['TXT_DISPLAY_MODE']
         ));
 
@@ -302,15 +302,15 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
             'lang' => $this->_intLanguageId,
             'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
         ));
-        $pages = array();
+        $pagesArr = array();
         foreach ($pages as $page) {
-            $pages[] = array(
+            $pagesArr[] = array(
                 'id'    => $page->getId(),
                 'name'  => $page->getTitle(),
                 'cmd'   => $page->getCmd(),
             );
         }
-        return $pages;
+        return $pagesArr;
     }
 
     /**
@@ -636,7 +636,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
                'PAGE_BOX_HEIGHT_DISPLAY' => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? (($ie) ? "block" : "table-row") : "none",
                'BOX_WIDTH'               => $arrCategories[$intCategoryId]['box_width'],
                'BOX_HEIGHT'              => $arrCategories[$intCategoryId]['box_height'],
-               'CAT_TEMPLATE'            => $arrCategories[$intCategoryId]['template']
+               'CAT_TEMPLATE'            => contrexx_raw2xhtml($arrCategories[$intCategoryId]['template'])
            ));
         } else {
             //Wrong category-id
@@ -1083,7 +1083,26 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
         return $amount;
     }
 
-
+    /**
+     * Get the MediaBrowser button
+     * 
+     * @global array $_ARRAYLANG
+     * @return string
+     */
+    public static function getMediaBrowserButton() {
+        global $_ARRAYLANG;
+        
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+        $mediaBrowser->setCallback('mbCallback');
+        $mediaBrowser->setOptions(array(
+                                    'type'             => 'button',
+                                    'id'               => 'mediabrowser_button',
+                                    'style'            => 'display: none;'
+                                ));
+        
+        return $mediaBrowser->getXHtml($_ARRAYLANG['TXT_CORE_CM_BROWSE']);
+    }
+    
     /**
      * Shows the "Add Entry" page.
      *
@@ -1098,7 +1117,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
 
         $this->_strPageTitle = $_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'];
         $this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
-
+        
         $this->_objTpl->setVariable(array(
             'TXT_EDIT_LANGUAGES'    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
             'TXT_ADD_ENTRY'         =>  $_ARRAYLANG['TXT_DATA_ENTRY_ADD_TITLE'],
@@ -1123,9 +1142,10 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
             'RELEASE_MINUTES_OPTIONS_END'   => $this->getTimeOptions(23, 0),
             'ENDLESS_CHECKED'               => "checked=\"checked\"",
             'RELEASE_DISPLAY'               => "disabled=\"disabled\"",
-            'RELEASE_COLOR'                 => "gray"
-        ));
-
+            'RELEASE_COLOR'                 => "gray",
+            'MEDIABROWSER_BUTTON'           => self::getMediaBrowserButton()
+));
+        
         $arrCategories = $this->createCategoryArray();
 
         $catTree = $this->buildCatTree($arrCategories);
@@ -1417,7 +1437,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
 
         $this->_strPageTitle = $copy ? $_ARRAYLANG['TXT_DATA_ENTRY_COPY_TITLE'] : $_ARRAYLANG['TXT_DATA_ENTRY_EDIT_TITLE'];
         $this->_objTpl->loadTemplateFile('module_data_entries_edit.html',true,true);
-
+        
         $this->_objTpl->setVariable(array(
             'TXT_EDIT_LANGUAGES'    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
             'TXT_EDIT_SUBMIT'        =>    $_ARRAYLANG['TXT_SAVE'],
@@ -1427,7 +1447,8 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
             'TXT_DIV_MODE_FORWARD'  =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE_FORWARD'],
             'TXT_DIV_ACTIVATE_RELEASE_TIME' =>  $_ARRAYLANG['TXT_ACTIVATE_RELEASE_TIME'],
             'TXT_DIV_RELEASE_TIME'  =>  $_ARRAYLANG['TXT_RELEASE_TIME'],
-            'TXT_ENDDATE_ENDLESS'   =>  $_ARRAYLANG['TXT_ENDLESS']
+            'TXT_ENDDATE_ENDLESS'   =>  $_ARRAYLANG['TXT_ENDLESS'],
+            'MEDIABROWSER_BUTTON'   =>  self::getMediaBrowserButton()
         ));
 
         $arrCategories = $this->createCategoryArray();
@@ -1803,18 +1824,14 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
         $this->_strPageTitle = $_ARRAYLANG['TXT_DATA_SETTINGS_TITLE'];
         $this->_objTpl->loadTemplateFile('module_data_settings.html',true,true);
 
-        $objRs = $objDatabase->Execute( "SELECT setvalue FROM ".DBPREFIX."settings
-                                WHERE setname = 'dataUseModule'");
-        if ($objRs) {
-            if ($objRs->fields['setvalue'] == 1) {
-                $useDatalist = 1;
-            } else {
-                $useDatalist = 0;
-            }
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        
+        if (\Cx\Core\Setting\Controller\Setting::getValue('dataUseModule')) {
+            $useDatalist = 1;
         } else {
             $useDatalist = 0;
         }
-
+        
         $ie = (preg_match("/MSIE (6|7)/", $_SERVER['HTTP_USER_AGENT'])) ? true : false;
 
         $this->_objTpl->setVariable(array(
@@ -1960,16 +1977,10 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
                 }
 
         }
-
-        if (isset($_POST['frmSettings_useDatalist'])) {
-            $objDatabase->Execute("  UPDATE ".DBPREFIX."settings
-                                             SET `setvalue` = 1
-                                             WHERE `setname` = 'dataUseModule'");
-        } else {
-            $objDatabase->Execute("  UPDATE ".DBPREFIX."settings
-                                             SET `setvalue` = 0
-                                             WHERE `setname` = 'dataUseModule'");
-        }
+        
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        \Cx\Core\Setting\Controller\Setting::set('dataUseModule', isset($_POST['frmSettings_useDatalist'])?1:0);
+        \Cx\Core\Setting\Controller\Setting::storeFromPost();
 
         $this->_arrSettings = $this->createSettingsArray();
 

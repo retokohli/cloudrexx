@@ -57,7 +57,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @param string $command
      */
-    public function executeCommand($command) {
+    public function executeCommand($command, $arguments)
+    {
         switch ($command) {
             case 'Cron':
                 $executedJobs = 0;
@@ -86,7 +87,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $em = $this->cx->getDb()->getEntityManager();
         $cronJobs = $em->getRepository('Cx\Core_Modules\Cron\Model\Entity\Job')->findBy(array('active'=>1));
         if (!$cronJobs) {
-            break;
+            return;
         }
         $details = array();
         foreach ($cronJobs as $cron) {

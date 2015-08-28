@@ -79,9 +79,9 @@ class CrmManager extends CrmLibrary
         global $objTemplate, $_ARRAYLANG, $objJs;
         parent::__construct($name);
         $objJs = new CrmJavascript();
-
-        $this->_mediaPath = ASCMS_MEDIA_PATH.'/Crm';
-        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/View/Template/Backend');
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->_mediaPath = $cx->getWebsiteMediaCrmPath();
+        $this->_objTpl = new \Cx\Core\Html\Sigma($cx->getCodeBaseModulePath().'/'.$this->moduleName.'/View/Template/Backend');
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
 
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -410,7 +410,7 @@ class CrmManager extends CrmLibrary
             $row = 'row2';
             while (!$objComment->EOF) {
                 if (!empty ($objComment->fields['icon'])) {
-                    $iconPath = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objComment->fields['icon'])."_16X16.thumb";
+                    $iconPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objComment->fields['icon'])."_16X16.thumb";
                 } else {
                     $iconPath  = '../modules/Crm/View/Media/customer_note.png';
                 }
@@ -499,7 +499,7 @@ class CrmManager extends CrmLibrary
         \JS::registerCSS("modules/Crm/View/Style/main.css");
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_customer_overview.html');
-
+        
         $settings = $this->getSettings();
 
         $delValue         = isset($_GET['delId']) ? intval($_GET['delId']) : 0;
@@ -690,7 +690,7 @@ class CrmManager extends CrmLibrary
                 'CRM_SEARCH_CITY'               =>  contrexx_input2xhtml($searchFields['s_city']),
                 'CRM_SEARCH_ZIP'                =>  contrexx_input2xhtml($searchFields['s_postal_code']),
                 'CRM_SEARCH_NOTES'              =>  contrexx_input2xhtml($searchFields['s_notes']),
-                'CRM_ACCESS_PROFILE_IMG_WEB_PATH'=> CRM_ACCESS_PROFILE_IMG_WEB_PATH,
+                'CRM_ACCESS_PROFILE_IMG_WEB_PATH'=> \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmProfileWebPath(),
                 'TXT_CRM_ENTER_SEARCH_TERM'     =>  $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM'],
                 'CRM_REDIRECT_LINK'             =>  '&redirect='.base64_encode($searchLink.$sortLink.$pageLink),
         ));
@@ -878,7 +878,12 @@ class CrmManager extends CrmLibrary
 
         if ($contactId) {
             //For Profile Photo Upload
-                $uploaderCode2 = $this->initUploader(2, true, 'proPhotoUploadFinished', $contactId, 'profile_files_');
+            $options = array(
+                'id' => 'proPhotoUploader',
+                'upload-limit' => 1,
+                'style' => 'display:none;'
+            );
+            $uploaderCode2 = $this->initUploader('proPhotoUploadFinished', 'proPhotoCallbackJs', array($contactId), '', $options);
             $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename&custId='.$contactId);
             $this->_objTpl->setVariable(array(
                 'COMBO_UPLOADER_CODE2' => $uploaderCode2,
@@ -886,7 +891,7 @@ class CrmManager extends CrmLibrary
             ));
 
             //For document Upload
-            $uploaderCode3 = $this->initUploader(3, false, 'docUploadFinished', $contactId, 'document_files_');
+            $uploaderCode3 = $this->initUploader('docUploadFinished', 'docUploadCallbackJs', array($contactId), '', array('id' => 'documentUploader', 'style' => 'display:none;'));
             $this->_objTpl->setVariable(array(
                 'COMBO_UPLOADER_CODE3' => $uploaderCode3
             ));
@@ -1258,7 +1263,7 @@ class CrmManager extends CrmLibrary
                 'TXT_CRM_ADD_DOCUMENTS'       => $_ARRAYLANG['TXT_CRM_ADD_DOCUMENTS'],
                 'CRM_REDIRECT_LINK'           => '&redirect='.base64_encode("&act=customers&tpl=showcustdetail&id=$contactId"),
                 'CRM_REDIRECT_LINK_PROJECT'   => "&redirect=".base64_encode("&cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id={$contactId}"),
-                'CRM_ACCESS_PROFILE_IMG_WEB_PATH'   => CRM_ACCESS_PROFILE_IMG_WEB_PATH,
+                'CRM_ACCESS_PROFILE_IMG_WEB_PATH'   => \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmProfileWebPath(),
                 'CRM_CUSTOMER_MEMBERSHIP'     => implode(' , ', $membershipLink),
                 'TXT_CRM_CUSTOMER_DETAILS'    =>  ($custDetails['contact_type'] == 1) ? $_ARRAYLANG['TXT_CRM_CUSTOMER_DETAILS'] : $_ARRAYLANG['TXT_CRM_CONTACT_DETAILS'],
                 'CRM_ADD_CONTACT_REDIRECT'    => "&redirect=".base64_encode("&act=customers&tpl=showcustdetail&id=$contactId"),
@@ -1271,6 +1276,28 @@ class CrmManager extends CrmLibrary
         $this->_pageTitle = $custDetails['contact_type'] == 1 ? $_ARRAYLANG['TXT_CRM_CUSTOMER_DETAILS'] : $_ARRAYLANG['TXT_CRM_CONTACT_DETAILS'];
     }
 
+    /**
+     * parse required blocks for multisite contact modal
+     *
+     * @param int $crmContactId
+     * @param object $objTpl
+     * @param int $selectedIdCustomerType
+     * @param int $selectedIdCompanySize
+     * @return empty
+     */
+    function parseCrmForMultiSite($crmContactId, $objTpl, $selectedIdCustomerType = 0, $selectedIdCompanySize = 0){
+        $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+        $crmContact->load($crmContactId);
+        $customerTypeId = $crmContact->__get("customerType");
+
+        $objTpl->setGlobalVariable(array(
+            'CRM_INDUSTRY_DROPDOWN'     => $this->listIndustryTypes($this->_objTpl, 2, $selectedIdCustomerType),//$this->contact->industryType
+            'TXT_CRM_PLEASE_SELECT'     => $_ARRAYLANG['TXT_CRM_COMMENT_DESCRIPTION'],
+        ));
+        $this->getCompanySizeDropDown($objTpl, $selectedIdCompanySize);
+        $this->getCustomerTypeDropDown($objTpl, $customerTypeId);
+
+    }
     /**
      * remove the styles sheet on shadow box page
      *
@@ -1340,8 +1367,8 @@ END;
             exit();
         $message = base64_encode("deleted");
         $redirect = isset($_GET['redirect']) ? base64_decode($_GET['redirect']) : '';
-
-        \Cx\Core\Csrf\Controller\Csrf::header("location:".ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=customers$redirect&mes=$message");
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        \Cx\Core\Csrf\Controller\Csrf::header("location:".$cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName()."/index.php?cmd=".$this->moduleName."&act=customers$redirect&mes=$message");
         exit();
     }
 
@@ -1974,6 +2001,7 @@ END;
         $this->contact->contactType      = $contactType;
         $this->contact->companySize      = isset($_POST['companySize']) ? contrexx_input2raw($_POST['companySize']) : 0;      
         $this->contact->contact_gender   = isset($_POST['contact_gender']) ? (int) $_POST['contact_gender'] : 0;
+        $this->contact->emailDelivery    = empty($_POST) || isset($_POST['emailDelivery']) ? 1 : 0;
 
         $accountUserID                   = (isset($_POST['contactId'])) ? intVal($_POST['contactId']) : 0;
         $accountUserEmail                = (isset($_POST['contact_email'])) ? contrexx_input2raw($_POST['contact_email']) : '';
@@ -2432,6 +2460,7 @@ END;
                 'CRM_CONTACT_TYPE'          => ($contactType == 1) ? 'company' : 'contact',
                 'CRM_ACCOUNT_MANTORY'       => ($settings['create_user_account'] && $settings['user_account_mantatory']) ? '<font color="red">*</font>' : '',
                 'CRM_ACCOUNT_MANTORY_CLASS' => ($settings['create_user_account'] && $settings['user_account_mantatory']) ? 'mantatory' : '',
+                'CRM_EMAIL_DELIVERY'        => $this->contact->emailDelivery ? 'checked="checked"' : '',
 
                 'TXT_CRM_EMPLOYEE'          => $_ARRAYLANG['TXT_CRM_EMPLOYEE'],
                 'TXT_CRM_CITY'              => $_ARRAYLANG['TXT_CRM_TITLE_CITY'],
@@ -2489,6 +2518,7 @@ END;
                 'TXT_CRM_ACCOUNT_PASSWORD'    => $_ARRAYLANG['TXT_CRM_ACCOUNT_PASSWORD'],
                 'TXT_CRM_SEND_LOGIN_DETAILS'  => $_ARRAYLANG['TXT_CRM_SEND_LOGIN_DETAILS'],
                 'TXT_CRM_CHOOSE_MEMBERSHIPS'  => $_ARRAYLANG['TXT_CRM_CHOOSE_MEMBERSHIPS'],
+                'TXT_CRM_EMAIL_DELIVERY'      => $_ARRAYLANG['TXT_CRM_EMAIL_DELIVERY'],
 
                 'TXT_CRM_COMPANY_NAME'        =>    $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
                 'TXT_CRM_CUSTOMERTYPE'        =>    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
@@ -2676,7 +2706,7 @@ END;
             if ($objResult) {
                 while (!$objResult->EOF) {
                     if (!empty ($objResult->fields['icon'])) {
-                        $iconPath = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_16X16.thumb";
+                        $iconPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_16X16.thumb";
                     } else {
                         $iconPath  = '../modules/Crm/View/Media/customer_note.png';
                     }
@@ -2826,10 +2856,15 @@ END;
         global $_CORELANG, $_ARRAYLANG, $objDatabase, $objJs;
 
         //For notes type Upload
-        $uploaderCodeTaskType = $this->initUploader('notesType', true, 'notesUploadFinished', '', 'notes_type_files_');
+        $options = array(
+            'id' => 'notesUploader',
+            'upload-limit' => 1,
+            'style' => 'display:none;'
+        );
+        $uploaderCodeTaskType = $this->initUploader('notesUploadFinished', 'notesCallbackJs', '', $_ARRAYLANG['TXT_BROWSE'], $options);
         $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
         $this->_objTpl->setVariable(array(
-            'COMBO_UPLOADER_CODE_TASK_TYPE' => $uploaderCodeTaskType,
+            'COMBO_UPLOADER_CODE_NOTES'     => $uploaderCodeTaskType,
             'REDIRECT_URL'                  => $redirectUrl
         ));
         
@@ -2949,7 +2984,7 @@ END;
             }
 
             if (!empty ($objResult->fields['icon'])) {
-                $iconPath = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_16X16.thumb";
+                $iconPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_16X16.thumb";
             } else {
                 $iconPath  = '../modules/Crm/View/Media/customer_note.png';
             }
@@ -3033,7 +3068,8 @@ END;
                                                                                                   pos     = '$position'
                                                                                             WHERE id      = '$id'");
                 $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_NOTES_UPDATED'];
-                \Cx\Core\Csrf\Controller\Csrf::header("Location:".ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=settings&tpl=notes");
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                \Cx\Core\Csrf\Controller\Csrf::header("Location:".$cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName()."/index.php?cmd=".$this->moduleName."&act=settings&tpl=notes");
                 exit();
             } else {
                 $this->_strErrMessage = $_ARRAYLANG['TXT_CRM_ERROR'];
@@ -3768,7 +3804,7 @@ END;
                     $objTpl->setVariable(array(
                             'CRM_TASK_ID'           => (int) $objResult->fields['id'],
                             'CRM_TASKTITLE'         => contrexx_raw2xhtml($objResult->fields['task_title']),
-                            'CRM_TASKICON'          => !empty ($objResult->fields['icon']) ? CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb" : '../modules/Crm/View/Media/task_default.png',
+                            'CRM_TASKICON'          => !empty ($objResult->fields['icon']) ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb" : '../modules/Crm/View/Media/task_default.png',
                             'CRM_TASKTYPE'          => contrexx_raw2xhtml($objResult->fields['task_type_id']),
                             'CRM_CUSTOMERNAME'      => contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']),
                             'CRM_DUEDATE'           => contrexx_raw2xhtml(date('h:i A Y-m-d', strtotime($objResult->fields['due_date']))),
@@ -4110,7 +4146,7 @@ END;
             $objResult->RecordCount() > 0 ? $objTpl->hideBlock("noRecords") : $objTpl->touchBlock("noRecords");
 
             while (!$objResult->EOF) {
-                $ext = pathinfo(CRM_MEDIA_PATH.$objResult->fields['document_name'], PATHINFO_EXTENSION);
+                $ext = pathinfo(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteMediaCrmPath().'/'.$objResult->fields['document_name'], PATHINFO_EXTENSION);
                 $fileTypeClass = '';
                 switch ($ext) {
                 case 'jpg':case 'jpeg':case 'png':case 'gif':case 'bmp':
@@ -4182,7 +4218,7 @@ END;
     public function download($file)
     {
         $objHTTPDownload = new \HTTP_Download();
-        $objHTTPDownload->setFile(ASCMS_MEDIA_PATH.'/Crm/'.$file);
+        $objHTTPDownload->setFile(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteMediaCrmPath().'/'.$file);
         $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, str_replace('"', '\"', $file));
         $objHTTPDownload->setContentType();
         $objHTTPDownload->send('application/force-download');
@@ -4205,7 +4241,7 @@ END;
         $json = array();
         if (!empty($customerId) && !empty($documentId)) {
             $fileName = $this->getContactFileNameById($documentId, $customerId);
-            unlink(CRM_MEDIA_PATH.$fileName);
+            unlink(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteMediaCrmPath().'/'.$fileName);
             $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_documents` WHERE `id` = $documentId");
             $json['success'] = $_ARRAYLANG['TXT_CRM_DOCUMNET_DELETE_SUCCESS'];
         } else {
@@ -5696,7 +5732,7 @@ END;
         //get allowed file types
         $arrAllowedFileTypes = array();
         $arrAllowedFileTypes[] = 'csv';
-        $depositionTarget = ASCMS_MEDIA_PATH.'/Crm/'; //target folder
+        $depositionTarget = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteMediaCrmPath().'/'; //target folder
         $fileName = $_POST['name'];
         $h = opendir($tempPath);
         if ($h) {
@@ -5716,8 +5752,7 @@ END;
                 if ($size > $sizeLimit) {
                     $response->addMessage(
                         \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-                        "Server error. Increase post_max_size and upload_max_filesize to $size.",
-                        $file
+                        "Server error. Increase post_max_size and upload_max_filesize to $size."
                     );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
                     continue;
@@ -5726,8 +5761,7 @@ END;
                 if (!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
                     $response->addMessage(
                         \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-                        'Please choose a csv to upload',
-                        $file
+                        'Please choose a csv to upload'
                     );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
                     continue;
@@ -5777,17 +5811,17 @@ END;
      * @param string     $tempWebPath the temporary file path which is accessable by web browser
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
-     * @param array      $fileInfos   the file infos  
-     * @param String     $response    the respose
+     * @param array      $fileInfos   the file infos 
      * 
      * @return array the target paths
      */
     public static function docUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
     {
 
-        global $objDatabase, $objFWUser;
-
-        $depositionTarget = ASCMS_MEDIA_PATH.'/Crm/'; //target folder
+        global $objDatabase;
+        
+        $objFWUser = \FWUser::getFWUserObject();
+        $depositionTarget = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteMediaCrmPath().'/'; //target folder
         $h = opendir($tempPath);
         if ($h) {
 
@@ -5819,7 +5853,7 @@ END;
                             'document_name' => trim($prefix.$file),
                             'added_by'      => $objFWUser->objUser->getId(),
                             'uploaded_date' => date('Y-m-d H:i:s'),
-                            'contact_id'    => $data
+                            'contact_id'    => $data[0]
                         );
                         $sql = \SQL::insert("module_crm_customer_documents", $fields, array('escape' => true));
                         $objDatabase->Execute($sql);
@@ -5847,7 +5881,6 @@ END;
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
      * @param array      $fileInfos   the file infos  
-     * @param String     $response    the respose
      * 
      * @return array the target paths
      */
@@ -5855,8 +5888,8 @@ END;
     {
 
         global $objDatabase, $objFWUser;
-
-        $depositionTarget = CRM_ACCESS_PROFILE_IMG_PATH.'/'; //target folder
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $depositionTarget = $cx->getWebsiteImagesCrmProfilePath().'/'; //target folder
         $h = opendir($tempPath);
         if ($h) {
 
@@ -5890,8 +5923,8 @@ END;
                         }
                         $imageName = trim($prefix.$file);
                         $objImage->_createThumbWhq(
-                            CRM_ACCESS_PROFILE_IMG_PATH.'/',
-                            CRM_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                            $cx->getWebsiteImagesCrmProfilePath().'/',
+                            $cx->getWebsiteImagesCrmProfileWebPath().'/',
                             $imageName,
                             40,
                             40,
@@ -5900,8 +5933,8 @@ END;
                         );
 
                         $objImage->_createThumbWhq(
-                            CRM_ACCESS_PROFILE_IMG_PATH.'/',
-                            CRM_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                            $cx->getWebsiteImagesCrmProfilePath().'/',
+                            $cx->getWebsiteImagesCrmProfileWebPath().'/',
                             $imageName,
                             121,
                             160,
@@ -5912,19 +5945,19 @@ END;
                         $fields = array(
                             'profile_picture' => $imageName
                         );
-                        $sql = \SQL::update("module_crm_contacts", $fields, array('escape' => true))." WHERE `id` = {$data}";
+                        $sql = \SQL::update("module_crm_contacts", $fields, array('escape' => true))." WHERE `id` = {$data[0]}";
                         $objDatabase->Execute($sql);
-                        $accountId = $objDatabase->getOne("SELECT user_account FROM `".DBPREFIX."module_crm_contacts` WHERE id = {$data}");
+                        $accountId = $objDatabase->getOne("SELECT user_account FROM `".DBPREFIX."module_crm_contacts` WHERE id = {$data[0]}");
                         if (!empty ($accountId) && !empty ($imageName)) {
                             $objUser  = $objFWUser->objUser->getUser($accountId);
-                            if (!file_exists(ASCMS_ACCESS_PROFILE_IMG_PATH.'/'.$imageName)) {
-                                $file = CRM_ACCESS_PROFILE_IMG_PATH.'/';
+                            if (!file_exists($cx->getWebsiteImagesAccessProfilePath().'/'.$imageName)) {
+                                $file = $cx->getWebsiteImagesCrmProfilePath().'/';
                                 if (($imageName = self::moveUploadedImageInToPlace($objUser, $file.$imageName, $imageName, true)) == true) {
                                     // create thumbnail
                                     $objImage = new \ImageManager();
                                     $objImage->_createThumbWhq(
-                                        ASCMS_ACCESS_PROFILE_IMG_PATH.'/',
-                                        ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                                        $cx->getWebsiteImagesAccessProfilePath().'/',
+                                        $cx->getWebsiteImagesAccessProfileWebPath().'/',
                                         $imageName,
                                         80,
                                         60,
@@ -5959,7 +5992,6 @@ END;
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
      * @param array      $fileInfos   the file infos  
-     * @param String     $response    the respose
      * 
      * @return array the target paths
      */
@@ -5967,8 +5999,8 @@ END;
     {
 
         global $objDatabase, $objFWUser;
-
-        $depositionTarget = CRM_ACCESS_OTHER_IMG_PATH.'/'; //target folder
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $depositionTarget = $cx->getWebsiteImagesCrmPath() . '/'; //target folder
         $h = opendir($tempPath);
         if ($h) {
 
@@ -6002,8 +6034,8 @@ END;
                         }
                         $imageName = trim($prefix.$file);
                         $objImage->_createThumbWhq(
-                            CRM_ACCESS_OTHER_IMG_PATH.'/',
-                            CRM_ACCESS_OTHER_IMG_WEB_PATH.'/',
+                            $cx->getWebsiteImagesCrmPath().'/',
+                            $cx->getWebsiteImagesCrmWebPath().'/',
                             $imageName,
                             24,
                             24,
@@ -6020,7 +6052,7 @@ END;
             }
             closedir($h);
         }
-
+        
         // return web- and filesystem path. files will be moved there.
         return array($tempPath, $tempWebPath);
     }
@@ -6034,8 +6066,7 @@ END;
      * @param string     $tempWebPath the temporary file path which is accessable by web browser
      * @param array      $data        the data which are attached by uploader init method
      * @param integer    $uploadId    the upload id
-     * @param array      $fileInfos   the file infos  
-     * @param String     $response    the respose
+     * @param array      $fileInfos   the file infos 
      * 
      * @return array the target paths
      */
@@ -6043,8 +6074,8 @@ END;
     {
 
         global $objDatabase, $objFWUser;
-
-        $depositionTarget = CRM_ACCESS_OTHER_IMG_PATH.'/'; //target folder
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $depositionTarget = $cx->getWebsiteImagesCrmPath().'/'; //target folder
         $h = opendir($tempPath);
         if ($h) {
 
@@ -6078,8 +6109,8 @@ END;
                         }
                         $imageName = trim($prefix.$file);
                         $objImage->_createThumbWhq(
-                            CRM_ACCESS_OTHER_IMG_PATH.'/',
-                            CRM_ACCESS_OTHER_IMG_WEB_PATH.'/',
+                            $cx->getWebsiteImagesCrmPath().'/',
+                            $cx->getWebsiteImagesCrmWebPath().'/',
                             $imageName,
                             16,
                             16,
@@ -6179,3 +6210,4 @@ END;
         exit();
     }
 }
+

@@ -6,12 +6,55 @@
         <div><label for="newsTitle">{TXT_TITLE}</label><input id="newsTitle" name="newsTitle" value="{NEWS_TITLE}" type="text" /></div>
         <div>
             <label for="newsCat">{TXT_CATEGORY}</label>
-            <select class="form-control" id="newsCat" name="newsCat">
+            <select id="newsCat" data-placeholder="{TXT_CATEGORY_SELECT}" multiple name="newsCat[]">
                 <!-- BEGIN news_category_menu -->
                 <option value="{NEWS_CATEGORY_ID}">{NEWS_CATEGORY_TITLE}</option>
                 <!-- END news_category_menu -->
             </select>
         </div>
+        <!-- BEGIN newsTagsBlock -->
+        <div class="news-frm-full-width">
+            <label class="news-frm-full-width" for="newsCat">{TXT_NEWS_TAGS}</label>
+            <div id="newsFormTags" class="news-frm-full-width">
+                <input type="hidden" name="enableTags" id="enableTags" value="1">
+                <ul id="{NEWS_TAG_ID}" class="news-frm-full-width">
+                    <!-- BEGIN newsTags -->
+                    <li>{NEWS_TAGS}</li>
+                    <!-- END newsTags -->
+                </ul>
+            </div>
+        </div>
+        <!-- END newsTagsBlock -->
+        
+        <!-- BEGIN relatedNewsBlock -->
+        <!--Live search-->
+        <div id='live-search-news-block' class="live-search-news news-frm-full-width">
+            <label class="news-frm-full-width" for="related-news">
+                {TXT_NEWS_INCLUDE_NEWS}
+                <span class="tooltip-trigger icon-info"></span>
+                <span class="tooltip-message">{TXT_NEWS_INCLUDE_RELATED_NEWS_DESC}</span>
+                <span class="live-search-user-info">
+                    {TXT_NEWS_SEARCH_INFO}
+                </span>
+            </label>
+            <div id="related-news" class="rel-news-field news-frm-full-width">
+                <input type=hidden class="enableRelatedNews" name="enableRelatedNews" value='1'>
+                <input class="live-search-news-input news-frm-12" placeholder="{TXT_NEWS_SEARCH_PLACEHOLDER}" />
+            </div>
+        </div>
+        <!--Selected News-->
+        <div id='related-news-list' class='news-frm-full-width' style="display: none;">
+            <ul class='news-frm-12'>
+                <!-- BEGIN related_news -->
+                <li>
+                    <label>{NEWS_RELATED_NEWS_TITLE}</label>
+                    <span class="news_list_close">✕</span>
+                    <input type=hidden class="relationNewsId" name="relatedNews[]" value='{NEWS_RELATED_NEWS_ID}'>
+                </li>
+                <!-- END related_news -->
+            </ul>
+        </div>
+        <!-- END relatedNewsBlock -->
         <div><label for="newsTeaserText">{TXT_NEWS_TEASER_TEXT}</label><textarea id="newsTeaserText" name="newsTeaserText">{NEWS_TEASER_TEXT}</textarea></div>
         <div>
             <label>{TXT_TYPE}</label>

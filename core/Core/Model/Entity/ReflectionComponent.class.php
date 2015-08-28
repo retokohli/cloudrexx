@@ -619,11 +619,12 @@ class ReflectionComponent {
         global $_DBCONFIG;
         
         // load tables
-        $objResult = $this->db->query('SHOW TABLES LIKE "'. DBPREFIX .'module_'. strtolower($this->componentName) .'_%"');
+        $tblSyntax = DBPREFIX . $this->componentType . '_' . strtolower($this->componentName);
+        $objResult = $this->db->query('SHOW TABLES LIKE "'. $tblSyntax .'_%"');
         
         $componentTables = array();
         while (!$objResult->EOF) {
-            $componentTables[] = $objResult->fields['Tables_in_'. $_DBCONFIG['database'] .' ('. DBPREFIX .'module_'. strtolower($this->componentName) .'_%)'];
+            $componentTables[] = $objResult->fields['Tables_in_'. $_DBCONFIG['database'] .' ('. $tblSyntax .'_%)'];
             $objResult->MoveNext();
         } 
         
@@ -1804,19 +1805,23 @@ class ReflectionComponent {
         $em = \Env::get('cx')->getDb()->getEntityManager();
         $pageRepo = $em->getRepository('Cx\\Core\\ContentManager\\Model\\Entity\\Page');
         $pages = $pageRepo->findBy(array(
-            'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
             'module' => $this->componentName,
         ));
+        $migratedNodes = array();
         foreach ($pages as $page) {
             if ($copy) {
-                // copy the node and persist changes
-                $newNode = $page->getNode()->copy();
-                $em->flush();
-                
-                // update module name of the page
-                foreach ($newNode->getPages() as $newPage) {
-                    $newPage->setModule($newName);
-                    $em->persist($newPage);
+                $node =  $page->getNode();
+                if (!in_array($node->getId(), $migratedNodes)) {
+                   // copy the node and persist changes
+                    $newNode = $node->copy();
+                    $em->flush();
+
+                    // update module name of the page
+                    foreach ($newNode->getPages() as $newPage) {
+                        $newPage->setModule($newName);
+                        $em->persist($newPage);
+                    }
+                    $migratedNodes[] = $node->getId();
                 }
             } else {
                 $page->setModule($newName);
@@ -1829,7 +1834,7 @@ class ReflectionComponent {
         
         // remove old component from db (component, modules, backend_areas)
         if (!$copy) {
-            $this->removeFromDb();
+             $this->removeFromDb();
         }
         
         // copy/move in filesystem (name, type and customizing)
@@ -1865,17 +1870,14 @@ class ReflectionComponent {
             return;
         }
         
-        // move to correct type and name directory
-        try {
-            $objFile = new \Cx\Lib\FileSystem\File($this->getDirectory());
-            if ($copy) {
-                $objFile->copy($destination);
-            } else {
-                $objFile->move($destination);
-            }
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            \DBG::msg($e->getMessage());
+        $status = false;
+        if ($copy) {
+            $status = \Cx\Lib\FileSystem\FileSystem::copy_folder($this->getDirectory(), $destination);
+        } else {
+            $status = \Cx\Lib\FileSystem\FileSystem::move($this->getDirectory(), $destination);
         }
+        
+        return $status;
     }
     
     /**
@@ -1988,9 +1990,9 @@ class ReflectionComponent {
         $replacements = array('section' => $newComponent->getName());
         $this->copyDataFromQuery($table, $replacements, $query);
         
-        $componentTables = $this->getComponentTables();                
+        $componentTables = $this->getComponentTables();
         foreach ($componentTables as $table) {
-            $newTable = preg_replace('/(\w)module_'. strtolower($this->componentName) .'_(\w)/', '$1module_'. strtolower($newComponent->getName()) .'_$2', $table);
+            $newTable = preg_replace('/(\w)'. $this->componentType .'_'. strtolower($this->componentName) .'_(\w)/', '$1'. $newComponent->getType() .'_'. strtolower($newComponent->getName()) .'_$2', $table);
             $query = 'CREATE TABLE '. $newTable .' LIKE '. $table ;
             $this->db->query($query);
             $query = 'INSERT '. $newTable .' SELECT * FROM '. $table;

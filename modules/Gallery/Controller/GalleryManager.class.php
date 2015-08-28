@@ -10,7 +10,7 @@
  * @todo        Edit PHP DocBlocks!
  */
 namespace Cx\Modules\Gallery\Controller;
-use Cx\Core_Modules\Uploader\Model\Uploader;
+use Cx\Core_Modules\Uploader\Model\Entity\Uploader;
 use Cx\Lib\FileSystem\FileSystem;
 
 /**
@@ -1726,7 +1726,7 @@ class GalleryManager extends GalleryLibrary
                                             ');
         $boolComment     = $objResult->fields['comment'];
         $boolVoting        = $objResult->fields['voting'];
-
+        
         if ($this->arrSettings['show_comments'] == 'off' || $boolComment == 0) {
             $this->_objTpl->hideBlock('tabComment');
             if ($_GET['active'] == 'comment') {
@@ -1783,6 +1783,11 @@ class GalleryManager extends GalleryLibrary
                                                         lang_id='.$objFWUser->objUser->getFrontendLanguage().'
                                                 LIMIT    1');
 
+        // Hide "Show image size" checbox when the settings option "Show image size" is not set
+        if ($this->arrSettings['show_image_size'] != 'on') {
+            $this->_objTpl->hideBlock('showImageSize');
+        }
+        
         $boolSizeShow = ($objResult->fields['size_show'] == '1') ? 'checked' : '';
 
         $this->_objTpl->setVariable(array(
@@ -2011,6 +2016,7 @@ class GalleryManager extends GalleryLibrary
             'TXT_GALLERY_SLIDE_SHOW_SECONDS'        =>    $_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW_SECONDS'],
             'TXT_GALLERY_SINGLE_IMAGE_VIEW'         =>    $_ARRAYLANG['TXT_GALLERY_SINGLE_IMAGE_VIEW'] ,
             'TXT_GALLERY_SHOW_FILE_NAME'            =>    $_ARRAYLANG['TXT_GALLERY_SHOW_FILE_NAME'],
+            'TXT_IMAGE_SIZE_SHOW'                   =>    $_ARRAYLANG['TXT_IMAGE_SIZE_SHOW']
 
             ));
 
@@ -2028,6 +2034,7 @@ class GalleryManager extends GalleryLibrary
                 case 'show_latest':
                 case 'show_random':
                 case 'show_ext':
+                case 'show_image_size':
                     if ($objResult->fields['value'] == 'on') {
                         $strValue = 'checked';
                     }
@@ -2176,7 +2183,11 @@ class GalleryManager extends GalleryLibrary
         if (empty($_POST['show_file_name']) || $_POST['show_file_name'] != 'on') {
             $_POST['show_file_name'] = "off";
         }
-
+        
+        if ($_POST['show_image_size'] != 'on') {
+            // the value is not allowed, reset to off
+            $_POST['show_image_size'] = 'off';
+        }
 
         foreach ($_POST as $strKey => $strValue) {
             $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_settings
@@ -2210,9 +2221,7 @@ class GalleryManager extends GalleryLibrary
 //        $comboUp = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
         $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Gallery/Controller/GalleryManager.class.php', '\Cx\Modules\Gallery\Controller\GalleryManager', 'uploadFinished'));
         $uploader->setData($paths);
-        $uploader->setOptions(array(
-               'class' => 'uploadbutton'
-            ));
+        $uploader->addClass('uploadbutton');
 
         $uploader->setCallback('finishedGalleryUpload');
         //set instance name to combo_uploader so we are able to catch the instance with js
@@ -2307,7 +2316,7 @@ class GalleryManager extends GalleryLibrary
 
         //check if file needs to be renamed
         $newName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($file);
-        if (file_exists($path.'/'.$newName)) {
+        if (self::fileExists($path.'/'.$newName, false)) {
             $info     = pathinfo($newName);
             $exte     = $info['extension'];
             $exte     = (!empty($exte)) ? '.'.$exte : '';
@@ -2336,7 +2345,7 @@ class GalleryManager extends GalleryLibrary
         /* unwanted files have been deleted, unallowed filenames corrected.
            we can now simply return the desired target path, as only valid
            files are present in $tempPath */
-		return array($path, $webPath);
+		return array($path, $webPath, $newName);
     }
 
 
@@ -3441,14 +3450,21 @@ $strFileNew = '';
 
         //check if file exists
         $boolChecker = false;
+
+        $strImportedImageName = $strFile;
         while ($boolChecker == false) {
-            if (file_exists($this->strImagePath.$strFile)) {
-                $strImportedImageName = time().'_'.$strFile;
+            if (self::fileExists($this->strImagePath.$strImportedImageName, false)) {
+                $info     = pathinfo($strImportedImageName);
+                $exte     = $info['extension'];
+                $exte     = (!empty($exte)) ? '.'.$exte : '';
+                $part1    = $info['filename'];
+                $strImportedImageName = $part1.'_'.time().$exte;
             } else {
-                $strImportedImageName = $strFile;
+                $boolChecker = true;
             }
-            $boolChecker = true;
         }
+
+
 
         // gets the quality
         $objResult = $objDatabase->Execute('SELECT     value
@@ -3874,12 +3890,34 @@ $strFileNew = '';
      */
     private function updateAccessId($id)
     {
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml');
         if (isset($id)) {
-            \Cx\Core\Setting\Controller\Setting::set('lastAccessId', $id);
-            \Cx\Core\Setting\Controller\Setting::update('lastAccessId');
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('lastAccessId')) {
+                \Cx\Core\Setting\Controller\Setting::add('lastAccessId', $id, 1, \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'core');
+            } else {
+                \Cx\Core\Setting\Controller\Setting::set('lastAccessId', $id);
+                \Cx\Core\Setting\Controller\Setting::update('lastAccessId');
+            }
         }
     }
-}
 
-?>
+    public static function fileExists($fileName, $caseSensitive = true) {
+        if (file_exists($fileName)) {
+            return $fileName;
+        }
+        if ($caseSensitive) {
+            return false;
+        }
+
+        // Handle case insensitive requests
+        $directoryName     = dirname($fileName);
+        $fileArray         = glob($directoryName . '/*', GLOB_NOSORT);
+        $fileNameLowerCase = strtolower($fileName);
+        foreach ($fileArray as $file) {
+            if (strtolower($file) == $fileNameLowerCase) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

@@ -98,7 +98,7 @@ class SettingsController extends \Cx\Core\Core\Model\Entity\Controller {
         
         //get the settings values from DB
         $this->template->setVariable(array(
-            $this->moduleNameLang.'_ENTRIES_PER_PAGE'   => \Cx\Core\Setting\Controller\Setting::getValue('entriesPerPage')
+            $this->moduleNameLang.'_ENTRIES_PER_PAGE'   => \Cx\Core\Setting\Controller\Setting::getValue('entriesPerPage', 'LinkManager')
         ));
     }        
 }

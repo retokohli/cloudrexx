@@ -72,7 +72,7 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
             $objResult=false;
         } else {//fetch news
             $objResult = $objDatabase->SelectLimit("
-                SELECT tblN.id AS id,
+                SELECT DISTINCT(tblN.id) AS id,
                        tblN.`date`, 
                        tblN.teaser_image_path,
                        tblN.teaser_image_thumbnail_path,
@@ -81,14 +81,14 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                        tblN.publisher_id,
                        tblN.author,
                        tblN.author_id,
-                       tblN.catid,
                        tblL.text NOT REGEXP '^(<br type=\"_moz\" />)?\$' AS newscontent,
                        tblL.title AS title, 
                        tblL.teaser_text
                   FROM ".DBPREFIX."module_news AS tblN
             INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
+            INNER JOIN ".DBPREFIX."module_news_rel_categories AS tblC ON tblC.news_id=tblL.news_id
                   WHERE tblN.status=1".
-                   ($catId > 0 ? " AND tblN.catid=$catId" : '')."
+                   ($catId > 0 ? " AND tblC.category_id=$catId" : '')."
                    AND tblN.teaser_only='0'
                    AND tblL.lang_id=".$_LANGID."
                    AND tblL.is_active=1
@@ -108,10 +108,11 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
             while (!$objResult->EOF) {
                 $newsid    = $objResult->fields['id'];
                 $newstitle = $objResult->fields['title'];
-                $newsUrl    = empty($objResult->fields['redirect'])
+                $newsCategories = $this->getCategoriesByNewsId($newsid);
+                $newsUrl   = empty($objResult->fields['redirect'])
                                 ? (empty($objResult->fields['newscontent'])
                                     ? ''
-                                    : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $objResult->fields['catid']), FRONTEND_LANG_ID, array('newsid' => $newsid)))
+                                    : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), array($catId))), FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                 : $objResult->fields['redirect'];
                 $htmlLink   = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), 'headlineLink');
                 $htmlLinkTitle  = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
@@ -170,7 +171,10 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                         $this->_objTemplate->hideBlock('news_image');
                     }
                 }
-
+                
+                self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'image_thumbnail');
+                self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'image_detail');
+                
                 $this->_objTemplate->parse('headlines_row');
                 $i++;
                 $objResult->MoveNext();

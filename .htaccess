@@ -8,12 +8,18 @@
     RewriteBase /
 
     # Strip virtual language directory for MEDIA RESSOURCES, CONTENT DATA and THEME
+    # IMPORTANT: When running Contrexx in a subdirectory (relativ to the webserver's DocumentRoot)
+    #            then you'll have to comment-out the following ruleset
     RewriteCond %{REQUEST_URI} ^/\w+/(core|core_modules|lib|modules|feed|media|images|themes)/
     RewriteRule ^\w+\/(.*)$ /$1 [L]
 
     # Deny direct access to directories containing sensitive data
     RewriteCond %{ENV:REDIRECT_END} !1
     RewriteCond %{REQUEST_URI} ^/(config|tmp(?!/public)|websites|core\/.*/Data|core_modules\/.*\/Data|modules\/.*\/Data)/
+    RewriteRule . - [F]
+
+    # Deny access to debug log
+    RewriteCond %{REQUEST_URI} ^/dbg\.log
     RewriteRule . - [F]
 
     # MultiSite: Map requests to MEDIA RESOURCES of the Code Base of a Website
@@ -23,7 +29,7 @@
 
     # MultiSite: Map requests to CONTENT DATA of a Website
     RewriteCond %{ENV:REDIRECT_END} !1
-    RewriteCond %{REQUEST_URI} ^/(feed|media|images|tmp\/public)/
+    RewriteCond %{REQUEST_URI} ^/(feed\/|media\/|images\/|tmp\/public\/|robots\.txt|sitemap_\w+\.xml)
     RewriteRule (.*) ${websiteDomainContentMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
 
     # MultiSite: Try to map the request of a webdesign template file to the
@@ -45,14 +51,17 @@
     RewriteRule (.*) ${websiteDomainCodeBaseMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
 
     # Resolve language specific sitemap.xml
-    RewriteRule ^(\w+)\/sitemap.xml$ sitemap_$1.xml [L,NC]
+    RewriteCond %{ENV:REDIRECT_END} !1
+    RewriteRule ^(\w+)\/sitemap.xml$ ${websiteDomainContentMap:%{HTTP_HOST}|}/sitemap_$1.xml [L,NC,E=END:1]
 
     # Allow directory index files
     RewriteCond %{REQUEST_FILENAME}/index.php -f
     RewriteRule   .  %{REQUEST_URI}/index.php [L,QSA]
 
-    # Redirect all requests to non-existing files to Contrexx
+    # Redirect all requests to non-existing files to Contrexx,
+    # except for media resources
     RewriteCond   %{REQUEST_FILENAME}  !-f
+    RewriteCond   %{REQUEST_URI} !.*\.(gif|jpg|png|bmp|js|css|woff|ttf|svg)$
     RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
 
     # Add captured request to index files

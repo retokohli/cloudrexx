@@ -247,7 +247,7 @@ class Orders
         $backend = ($objInit->mode == 'backend');
         if (!$objTemplate) {
             $objTemplate = new \Cx\Core\Html\Sigma(
-                ASCMS_MODULE_PATH.'/Shop/View/Template/Backend');
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/Shop/View/Template/Backend');
 //DBG::log("Orders::view_list(): new Template: ".$objTemplate->get());
             $objTemplate->loadTemplateFile('module_shop_orders.html');
 //DBG::log("Orders::view_list(): loaded Template: ".$objTemplate->get());
@@ -285,10 +285,10 @@ class Orders
             $customer_type = intval($_REQUEST['customer_type']);
             \Html::replaceUriParameter($uri, 'customer_type='.$customer_type);
             if ($customer_type == 0) {
-                $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer');
+                $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer','Shop');
             }
             if ($customer_type == 1) {
-                $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller');
+                $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_reseller','Shop');
             }
             $objFWUser = \FWUser::getFWUserObject();
             $objGroup  = $objFWUser->objGroup->getGroup($usergroup_id);
@@ -378,7 +378,7 @@ class Orders
             'SHOP_CURRENCY', Currency::getDefaultCurrencySymbol()
         ));
         $count = 0;
-        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_orders_per_page_backend');
+        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_orders_per_page_backend','Shop');
 // TODO: Obsolete ASAP
 if (!$limit) {
     ShopSettings::errorHandler();
@@ -520,7 +520,7 @@ if (!$limit) {
 
         if (!$objTemplate || !$objTemplate->blockExists('no_order')) {
             $objTemplate = new \Cx\Core\Html\Sigma(
-                ASCMS_MODULE_PATH.'/Shop/View/Template/Backend');
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/Shop/View/Template/Backend');
             $objTemplate->loadTemplateFile('module_shop_statistic.html');
         }
         $objTemplate->setGlobalVariable($_ARRAYLANG);

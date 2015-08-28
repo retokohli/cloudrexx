@@ -41,9 +41,13 @@ class CopyCommand extends Command {
      * @param array $arguments Array of commandline arguments
      */
     public function execute(array $arguments) {
-        $oldComponent = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[3], $arguments[2]);
-        $newComponent = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[5], $arguments[4]);
-        
+        try {
+            $oldComponent = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[3], $arguments[2]);
+            $newComponent = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[5], $arguments[4]);
+        } catch (\Exception $ex) {
+            throw new CommandException('Invalid arguments passed. Please check the parameters or run help command to see the options');
+        }
+                
         if ($oldComponent == $newComponent) {
             $this->interface->show('Nothing to do');
             return;

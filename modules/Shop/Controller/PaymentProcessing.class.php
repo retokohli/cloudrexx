@@ -17,11 +17,6 @@ namespace Cx\Modules\Shop\Controller;
 define('_PAYMENT_DEBUG', 0);
 
 /**
- * Payment logo folder (e.g. /modules/shop/images/payments/)
- */
-define('SHOP_PAYMENT_LOGO_PATH', '/modules/Shop/View/Media/payments/');
-
-/**
  * Payment Service Provider manager
  *
  * These are the requirements of the current specification
@@ -270,6 +265,9 @@ class PaymentProcessing
             case 'yellowpay': // was: 'PostFinance_DebitDirect'
                 $return = self::_YellowpayProcessor();
                 break;
+            case 'payrexx':
+                $return = self::_PayrexxProcessor();
+                break;
             // Added 20100222 -- Reto Kohli
             case 'mobilesolutions':
                 $return = \PostfinanceMobile::getForm(
@@ -292,7 +290,7 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
                 break;
             case 'paypal':
                 $order_id = $_SESSION['shop']['order_id'];
-                $account_email = \Cx\Core\Setting\Controller\Setting::getValue('paypal_account_email');
+                $account_email = \Cx\Core\Setting\Controller\Setting::getValue('paypal_account_email','Shop');
                 $item_name = $_ARRAYLANG['TXT_SHOP_PAYPAL_ITEM_NAME'];
                 $currency_code = Currency::getCodeById(
                     $_SESSION['shop']['currencyId']);
@@ -335,9 +333,9 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
         return
             '<br /><br /><img src="'.
             // Is there a language dependent version?
-            (\File::exists(SHOP_PAYMENT_LOGO_PATH.$imageName_lang)
-              ? ASCMS_PATH_OFFSET.SHOP_PAYMENT_LOGO_PATH.$imageName_lang
-              : ASCMS_PATH_OFFSET.SHOP_PAYMENT_LOGO_PATH.$imageName).
+            (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/Shop/View/Media/payments/' .$imageName_lang)
+              ? \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath() . '/Shop/View/Media/payments/' . $imageName_lang 
+              : \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModuleWebPath() . '/Shop/View/Media/payments/' . $imageName) .
             '" alt="" title="" /><br /><br />';
     }
 
@@ -352,12 +350,12 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
     {
         global $_ARRAYLANG;
 
-        $serverBase = $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET.'/';
+        $serverBase = $_SERVER['SERVER_NAME'] . \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . '/';
         $arrShopOrder = array(
             'AMOUNT' => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
             'CURRENCY' => Currency::getActiveCurrencyCode(),
             'ORDERID' => $_SESSION['shop']['order_id'],
-            'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id'),
+            'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id','Shop'),
             'SUCCESSLINK' =>
                 'http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.
                 '&cmd=success&result=1&handler=saferpay',
@@ -378,7 +376,7 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
             'DELIVERY' => 'no',
         );
         $payInitUrl = \Saferpay::payInit($arrShopOrder,
-            \Cx\Core\Setting\Controller\Setting::getValue('saferpay_use_test_account'));
+            \Cx\Core\Setting\Controller\Setting::getValue('saferpay_use_test_account','Shop'));
 //DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
         // Fixed: Added check for empty return string,
         // i.e. on connection problems
@@ -390,7 +388,7 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
                 "<br />".\Saferpay::getErrors();
         }
         $return = "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_window_option')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_window_option','Shop')) {
             case 0: // iframe
                 return
                     $return.
@@ -531,6 +529,26 @@ if (empty ($return)) {
         return $return;
     }
 
+    /**
+     * Returns the HTML code for the Payrexx payment method.
+     * @return  string  HTML code
+     */
+    static function _PayrexxProcessor()
+    {
+        global $_ARRAYLANG, $_CONFIG;
+
+        $return = \PayrexxProcessor::getModalCode();
+        if (!$return) {
+            $strError =
+                '<font color="red"><b>'.
+                $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_PAYREXX'].
+                '<br /></b>';
+            $strError .= join('<br />', \PayrexxProcessor::$arrError); //.'<br />';
+            return $strError.'</font>';
+        }
+        return $return;
+    }
+
 
     /**
      * Returns the complete HTML code for the Datatrans payment form
@@ -546,7 +564,7 @@ if (empty ($return)) {
         global $_ARRAYLANG;
 
         \Datatrans::initialize(
-            \Cx\Core\Setting\Controller\Setting::getValue('datatrans_merchant_id'),
+            \Cx\Core\Setting\Controller\Setting::getValue('datatrans_merchant_id','Shop'),
             $_SESSION['shop']['order_id'],
             $_SESSION['shop']['grand_total_price'],
             Currency::getActiveCurrencyCode()
@@ -604,9 +622,9 @@ if (empty ($return)) {
                 
             case 'saferpay':
                 $arrShopOrder = array(
-                    'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id'));
+                    'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id','Shop'));
                 $id = \Saferpay::payConfirm();
-                if (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_finalize_payment')) {
+                if (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_finalize_payment','Shop')) {
                     $arrShopOrder['ID'] = $id;
                     $id = \Saferpay::payComplete($arrShopOrder);
                 }
@@ -639,9 +657,9 @@ if (empty ($return)) {
                 $currency_code = Currency::getCodeById($currency_id);
                 return \PayPal::ipnCheck($amount, $currency_code,
                     $order_id, $customer_email,
-                    \Cx\Core\Setting\Controller\Setting::getValue('paypal_account_email'));
+                    \Cx\Core\Setting\Controller\Setting::getValue('paypal_account_email','Shop'));
             case 'yellowpay':
-                $passphrase = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_hash_signature_out');
+                $passphrase = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_hash_signature_out','Shop');
                 return \Yellowpay::checkIn($passphrase);
 //                    if (\Yellowpay::$arrError || \Yellowpay::$arrWarning) {
 //                        global $_ARRAYLANG;
@@ -654,6 +672,8 @@ if (empty ($return)) {
 //                        join('<br />', \Yellowpay::$arrWarning).
 //                        '</font>');
 //                    }
+            case 'payrexx':
+                return \PayrexxProcessor::checkIn();
             // Added 20100222 -- Reto Kohli
             case 'mobilesolutions':
                 // A return value of null means:  Do not change the order status
@@ -713,6 +733,8 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
                 return \PayPal::getOrderId();
             case 'yellowpay':
                 return \Yellowpay::getOrderId();
+            case 'payrexx':
+                return \PayrexxProcessor::getOrderId();
             // Added 20100222 -- Reto Kohli
             case 'mobilesolutions':
 //DBG::log("getOrderId(): mobilesolutions");

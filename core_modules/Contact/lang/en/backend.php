@@ -135,7 +135,7 @@ $_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "The file was not uploaded because i
 $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "The file %s was not completely uploaded!";
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "A File has not been uploaded!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA protection";
-$_ARRAYLANG['TXT_CONTACT_SAVE_DATA_IN_CRM']   = "Save Data in CRM Module";
+$_ARRAYLANG['TXT_CONTACT_SAVE_DATA_IN_CRM']   = "Create CRM contact from submitted data";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Please type in the characters from the picture into the textfield. This is required for the system to know that you are not a spambot.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Activating this option makes sure that a carbon copy of the data from the form will be sent to the sender.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Carbon copy to sender";
@@ -200,4 +200,7 @@ $_ARRAYLANG['TXT_CONTACT_CSV_TOOLTIP'] = "CSV export in unicode<br /><i>(optimiz
 $_ARRAYLANG['TXT_CONTACT_XLS_TOOLTIP'] = "CSV export in ISO-8859-1<br /><i>(optimized for microsoft excel)</i>";
 $_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM'] = "The requests to this form are automatically transferd to the CRM as a new Contact.";
 $_ARRAYLANG['TXT_CONTACT_DATETIME'] = "Date & Time";
+$_ARRAYLANG['TXT_CONTACT_CHOOSE_MEMBERSHIPS']  = "Choose customer groups";
+$_ARRAYLANG['TXT_CONTACT_ASSIGN_TO_CRM_CUSTOMER_GROUP']  = "Assign to CRM customer group";
+$_ARRAYLANG['TXT_CONTACT_ASSIGN_CRM_CUSTOMER_GROUP_DESCRIPTION'] = "Set the customer groups to which the new CRM contact shall be assigned to.";
 ?>

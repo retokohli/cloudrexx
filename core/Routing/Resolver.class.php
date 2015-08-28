@@ -135,7 +135,7 @@ class Resolver {
         $this->fallbackLanguages = $fallbackLanguages;
         $this->pagePreview = !empty($_GET['pagePreview']) && ($_GET['pagePreview'] == 1) ? 1 : 0;
         $this->historyId = !empty($_GET['history']) ? $_GET['history'] : 0;
-        $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page'] : array();
+        $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page']->toArray() : array();
     }
     
     public function resolve() {
@@ -202,7 +202,7 @@ class Resolver {
                             if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($sessionObj)) {
                                 $sessionObj = \cmsSession::getInstance();
                             }
-                            $this->init($url, $this->lang, \Env::em(), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
+                            $this->init($url, $this->lang, \Env::get('em'), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
                             try {
                                 $this->resolvePage();
                                 $page = $this->getPage();
@@ -254,7 +254,7 @@ class Resolver {
                             if($history) {
                                 //access: backend access id for history requests
                                 $pageAccessId = $page->getBackendAccessId();
-                                $logRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
+                                $logRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
                                 try {
                                     $logRepo->revert($page, $history);
                                 }
@@ -385,7 +385,8 @@ class Resolver {
         }
         
         $langDir = $this->url->getLangDir();
-        if (!empty($langDir) && $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, FRONTEND_LANG_ID, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)) {
+        $frontendLang = defined('FRONTEND_LANG_ID') ? FRONTEND_LANG_ID : null;
+        if (!empty($langDir) && $this->pageRepo->getPagesAtPath($langDir.'/'.$path, null, $frontendLang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY)) {
             return null;
         }
 
@@ -438,7 +439,7 @@ class Resolver {
 
         if (!$this->page || $internal) {
             if ($this->pagePreview) {
-                if (!empty($this->sessionPage)) {
+                if (!empty($this->sessionPage) && !empty($this->sessionPage['pageId'])) {
                     $this->getPreviewPage();
                 }
             }
@@ -652,7 +653,7 @@ class Resolver {
                 }
             }
 
-            $pageRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $this->page = $pageRepo->findOneByModuleCmdLang($section, $command, FRONTEND_LANG_ID);
 
             //fallback content

@@ -102,7 +102,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $eventListener = new DownloadsEventListener($this->cx);
-        $this->cx->getEvents()->addEventListener('LoadMediaTypes', $eventListener);
+        $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
     }
 
 }

@@ -1,9 +1,19 @@
 <!-- START module_mediadir_modify_category.html -->
-<script language="JavaScript" type="text/javascript">      
-function SetUrl(url, width, height, alt) {
-	document.getElementById(insertBox).value = url;
+<script language="JavaScript" type="text/javascript">
+var mediaBrowseInputBox;
+var mediaBrowserCallback = function(data) {
+    if (data.type=="file") {
+        var path = data.data[0].datainfo.filepath;
+        mediaBrowseInputBox.val(path);
+        mediaBrowseInputBox.trigger('keyup');
+    }
 }
 
+function SetUrl(url, width, height, alt) {
+    document.getElementById(insertBox).value = url;
+    $J('#'+insertBox).trigger('keyup');
+}
+    
 function getFileBrowser(name, type, path)
 {
     insertBox = name;
@@ -41,6 +51,12 @@ cx.ready(function() {
     $J('input[name=durationStart]').datepicker();
     $J('input[name=durationEnd]').datepicker();
 });
+$J(function(){
+   $J('.mediabrowser-button').click(function(){
+       var inputId = $J(this).data('inputId');
+       mediaBrowseInputBox = $J('#' + inputId);
+   });
+});
 </script>
 
 {MEDIADIR_JAVASCRIPT}
@@ -68,6 +84,21 @@ cx.ready(function() {
     
     .ui-autocomplete-loading {
         background: #FFFFFF url('../lib/javascript/jquery/ui/images/ui-anim_basic_16x16.gif') 448px center no-repeat !important;
+    }
+    .mediadirInputfieldDefault {
+        width: 300px;
+    }
+    .mediadirLangInputfield {
+        width: 282px;
+        margin-bottom: 2px;
+        padding-left: 21px !important;
+    }
+    .mediadirInputfieldFileDisplayName {
+        width: 300px;        
+        padding-left: 3px !important;
+    }
+    .mediaBrowserScope {
+        display: none;
     }
 </style>
 

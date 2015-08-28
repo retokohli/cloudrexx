@@ -118,9 +118,12 @@
 				if (data.sentComplete) {
 					newsletterSendStatus = false;
 				}
-
-				$J('#newsletter_sent_count').html(data.count);
-				$J('#newsletter_statusbar').progressbar({value:data.progressbarStatus});
+                                
+                //check to prevent bug that progressbar gets to 0 when we finish and wait for result
+                if(data.count > 0 && data.progressbarStatus > 0) {
+                    $J('#newsletter_sent_count').html(data.count);
+                    $J('#newsletter_statusbar').progressbar({value:data.progressbarStatus});
+                }
 				if (newsletterSendStatus) {
 					newsletterCycleAmount = data.count - newsletterSentCountBeforeCycle;
 					newsletterSentCountBeforeCycle = parseInt(data.count, 10);
@@ -150,8 +153,8 @@
 
 	function newsletterAnimateCycle()
 	{
-		if (!newsletterSendRunning) return;
-
+		if (!newsletterSendRunning || newsletterTotalEmailAmount <= newsletterSentCountGuess) return;
+                
 		newsletterSentCountGuess += newsletterCycleIncrement;
 		$J('#newsletter_sent_count').html(Math.floor(newsletterSentCountGuess));
 		$J('#newsletter_statusbar').progressbar({value:Math.round(100/newsletterTotalEmailAmount*newsletterSentCountGuess)});

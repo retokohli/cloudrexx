@@ -49,9 +49,6 @@ class LinkSanitizer {
 
             # but only those who's values don't start with a slash..
             (?=[^\/])
-            
-            # ..and neither start with ..\/ (references to files outside the Contrexx directory are ignored)
-            (?!\.\.\/)
 
             # ..and neither start with a protocol (http:, ftp:, javascript:, mailto:, etc)
             (?![a-zA-Z]+:)
@@ -93,7 +90,36 @@ class LinkSanitizer {
         // For this reason, we replace escaped slashes by slashes.
         $matches[\LinkSanitizer::FILE_PATH] = str_replace('\\/', '/', $matches[\LinkSanitizer::FILE_PATH]);
 
-        if ($this->fileExists(ASCMS_DOCUMENT_ROOT . '/' . $matches[\LinkSanitizer::FILE_PATH])) {
+        $testPath = explode('?', $matches[\LinkSanitizer::FILE_PATH], 2);
+        if ($testPath[0] == 'index.php' || $testPath[0] == '' || $testPath[0] == './') {
+            $ret = ASCMS_INSTANCE_OFFSET;
+            if (\Env::get('cx')->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+                $ret .= \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName();
+            }
+            $ret .= '/';
+            if (isset($testPath[1])) {
+                $args = preg_split('/&(amp;)?/', $testPath[1]);
+                $params = array();
+                foreach ($args as $arg) {
+                    $split = explode('=', $arg, 2);
+                    $params[$split[0]] = $split[1];
+                }
+                if (isset($params['cmd'])) {
+                    $ret .= $params['cmd'];
+                    unset($params['cmd']);
+                    if (isset($params['act'])) {
+                        $ret .= '/' . $params['act'];
+                        unset($params['act']);
+                    }
+                }
+                if (count($params)) {
+                    $ret .= '?' . http_build_query($params);
+                }
+            }
+            return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
+            $ret .
+            $matches[\LinkSanitizer::CLOSE_QUOTE];
+        } else if ($this->fileExists(ASCMS_DOCUMENT_ROOT . '/' . $matches[\LinkSanitizer::FILE_PATH])) {
             // this is an existing file, do not add virtual language dir
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
             ASCMS_INSTANCE_OFFSET .

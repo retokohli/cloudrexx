@@ -15,4 +15,5 @@ $_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'] = "Este directorio est&aacute; vac&iacute;o";
 $_ARRAYLANG['TXT_MEDIA_FILE_TYPE'] = "Tipo";
 $_ARRAYLANG['TXT_MEDIA_FILE_DIRECTORY'] = "Directorio";
 $_ARRAYLANG['TXT_MEDIA_FILE'] = "Fichero";
+$_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'] = "\¿Realmente desea eliminar este fichero(s)? \¡IMPORTANTE! \¡Este cambio es irreversible!";
 ?>

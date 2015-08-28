@@ -25,36 +25,29 @@ $defaultBrowser   = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTOR
 $linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
                    .'?cmd=FileBrowser&standalone=true&langId='.$langId.'&type=webpages'.$CSRF;
 
-//$defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ckeditor/plugins/templates/templates/default.js'), strlen(ASCMS_PATH));
-//\DBG::activate();
+//get the main domain
+$domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+$mainDomain = $domainRepository->getMainDomain()->getName();
 
 //find the right css files and put it into the wysiwyg
 $em = $cx->getDb()->getEntityManager();
 $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
 $wysiwyg = $componentRepo->findOneBy(array('name'=>'Wysiwyg'));
-$themeRepo   = new \Cx\Core\View\Model\Repository\ThemeRepository();
 $pageRepo   = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+\Cx\Core\Setting\Controller\Setting::init('Wysiwyg', 'config', 'Yaml');
 
-$skin = $themeRepo->getDefaultTheme()->getFoldername();
-if(isset($_GET['pageId']) && !empty($_GET['pageId']) && $pageRepo->find($_GET['pageId'])->getSkin()>0){
-    $skin = $themeRepo->findById($pageRepo->find($_GET['pageId'])->getSkin())->getFoldername();
-}
-//getThemeFileContent
-$filePath = $skin.'/index.html';
-$content = '';
-
-if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath)) {
-    $content = file_get_contents(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath);
-} elseif (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath)) {
-    $content = file_get_contents(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath);
+$skinId = 0;
+if (!empty($pageId) && $pageId != 'new') {
+    $skinId = $pageRepo->find($pageId)->getSkin();
 }
 
-$cssArr = \JS::findCSS($content);
-
+$ymlOption = $wysiwyg->getCustomCSSVariables($skinId);
 ?>
-//if the wysiwyg css not defined in the session, then load the css files and put it into the session
-if(!cx.variables.get('wysiwygCss', 'wysiwyg')) {
-    cx.variables.set('wysiwygCss', [<?php echo '\'' . implode($cssArr, '\',\'') . '\'' ?>], 'wysiwyg')
+//if the wysiwyg css not defined in the session, then load the css variables and put it into the session
+if(!cx.variables.get('css', 'wysiwyg')) {
+    cx.variables.set('css', [<?php echo '\'' . implode($ymlOption['css'], '\',\'') . '\'' ?>], 'wysiwyg');
+    cx.variables.set('bodyClass', <?php echo '\'' . $ymlOption['bodyClass'] . '\'' ?>, 'wysiwyg');
+    cx.variables.set('bodyId', <?php echo '\'' . $ymlOption['bodyId'] . '\'' ?>, 'wysiwyg');
 }
 
 CKEDITOR.scriptLoader.load( '<?php echo $cx->getCodeBaseCoreModuleWebPath().'/MediaBrowser/View/Script/ckeditor-mediabrowser.js'   ?>' );
@@ -82,9 +75,11 @@ CKEDITOR.editorConfig = function( config )
     config.protectedSource.push(/<a[^>]*><\/a>/g);
 
     config.tabSpaces = 4;
-    config.baseHref = 'http://<?php echo $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET; ?>/';
+    config.baseHref = '<?php echo $cx->getRequest()->getUrl()->getProtocol() . '://' . $mainDomain . $cx->getWebsiteOffsetPath(); ?>/';
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
+    
+    config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','Wysiwyg')? 'true' : 'false' ?>;
 
     config.toolbar_Full = config.toolbar_Small = [
         ['Source','-','NewPage','Templates'],
@@ -109,7 +104,7 @@ CKEDITOR.editorConfig = function( config )
     ];
 
     config.toolbar_FrontendEditingContent = [
-        ['Publish','Save'],
+        ['Publish','Save','Templates'],
         ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
         ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
         ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
@@ -130,8 +125,10 @@ CKEDITOR.editorConfig = function( config )
     ];
     config.extraPlugins = 'codemirror';
     
-    //Set the CSS
-    config.contentsCss = cx.variables.get('wysiwygCss', 'wysiwyg');
+    //Set the CSS Stuff
+    config.contentsCss = cx.variables.get('css', 'wysiwyg');
+    config.bodyClass = cx.variables.get('bodyClass', 'wysiwyg');
+    config.bodyId = cx.variables.get('bodyId', 'wysiwyg');
 };
 
 //loading the templates
@@ -163,11 +160,11 @@ CKEDITOR.on('instanceReady',function(){
                 this.button.setState(CKEDITOR.TRISTATE_ENABLE) // Enable "Template"-Button
             }
         }).bind(loadingTemplates)();
-    
-    
     }
 });
 
+// hide 'browse'-buttons in case the user is a sole frontend-user
+// and is not permitted to access the MediaBrowser or Uploader
 if (<?php
         if (\FWUser::getFWUserObject()->objUser->login()) {
             if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
@@ -216,16 +213,18 @@ if (<?php
 cx.bind("loadingEnd", function(myArgs) {
     if(myArgs.hasOwnProperty('data')) {
         var data = myArgs['data'];
-        if(data.hasOwnProperty('wysiwygCssReload') && (data.wysiwygCssReload).hasOwnProperty('wysiwygCss')) {
+        if(data.hasOwnProperty('wysiwygCssReload') && (data.wysiwygCssReload).hasOwnProperty('css')) {
             for(var instanceName in CKEDITOR.instances) {
-                //CKEDITOR.instances[instanceName].config.contentsCss =  data.wysiwygCssReload.wysiwygCss;
-                var is_same = cx.variables.get('wysiwygCss', 'wysiwyg').length == (data.wysiwygCssReload.wysiwygCss).length && cx.variables.get('wysiwygCss', 'wysiwyg').every(function(element, index) {
-                    return element === data.wysiwygCssReload.wysiwygCss[index]; 
+                //CKEDITOR.instances[instanceName].config.contentsCss =  data.wysiwygCssReload.css;
+                var is_same = (data.wysiwygCssReload.css).equals(cx.variables.get('css', 'wysiwyg')) && cx.variables.get('css', 'wysiwyg').every(function(element, index) {
+                    return element === data.wysiwygCssReload.css[index]; 
                 });
                 if(!is_same){
                     //cant set the css on the run, so you must destroy the wysiwyg and recreate it
                     CKEDITOR.instances[instanceName].destroy();
-                    cx.variables.set('wysiwygCss', data.wysiwygCssReload.wysiwygCss, 'wysiwyg')
+                    cx.variables.set('css', data.wysiwygCssReload.css, 'wysiwyg')
+                    cx.variables.set('bodyClass', data.wysiwygCssReload.bodyClass, 'wysiwyg')
+                    cx.variables.set('bodyId', data.wysiwygCssReload.bodyId, 'wysiwyg')
                     var config = {
                         customConfig: cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'),
                         toolbar: 'Full',
@@ -237,3 +236,30 @@ cx.bind("loadingEnd", function(myArgs) {
         }
     }
 }, "contentmanager");
+
+// attach the .equals method to Array's prototype to call it on any array
+Array.prototype.equals = function (array) {
+    // if the other array is a falsy value, return
+    if (!array) {
+        return false;
+    }
+    
+    // compare lengths - can save a lot of time 
+    if (this.length != array.length) {
+        return false;
+    }
+
+    for (var i = 0, l=this.length; i < l; i++) {
+        // Check if we have nested arrays
+        if (this[i] instanceof Array && array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!this[i].equals(array[i])) {
+                return false;
+            }
+        } else if (this[i] != array[i]) {
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;
+        }
+    }
+    return true;
+}

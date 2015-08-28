@@ -183,8 +183,8 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
      */
     static function scaleImageSizeToThumbnail(&$arrSize)
     {
-        $thumbWidthMax = \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width');
-        $thumbHeightMax = \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height');
+        $thumbWidthMax = \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width','Shop');
+        $thumbHeightMax = \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height','Shop');
         $ratioWidth = $thumbWidthMax/$arrSize[0];
         $ratioHeight = $thumbHeightMax/$arrSize[1];
         if ($ratioWidth > $ratioHeight) {
@@ -242,14 +242,14 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
         global $_ARRAYLANG;
 
         $arrMatch = array();
-        $shopImageFolderRe = '/^'.preg_quote(ASCMS_SHOP_IMAGES_WEB_PATH.'/', '/').'/';
+        $shopImageFolderRe = '/^'.preg_quote(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/', '/').'/';
         $imageFileTarget = $imageFileSource;
         if (!preg_match($shopImageFolderRe, $imageFileSource))
-            $imageFileTarget = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.basename($imageFileSource);
+            $imageFileTarget = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . basename($imageFileSource);
         // If the image is situated in or below the shop image folder,
         // don't bother to copy it.
         if (!preg_match($shopImageFolderRe, $imageFileSource)) {
-            if (file_exists(ASCMS_PATH.$imageFileTarget)
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $imageFileTarget) 
              && preg_match('/(\.\w+)$/', $imageFileSource, $arrMatch)) {
                 $imageFileTarget = preg_replace('/\.\w+$/', uniqid().$arrMatch[1], $imageFileTarget);
                 \Message::information(sprintf(
@@ -257,7 +257,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
                     basename($imageFileSource), basename($imageFileTarget)
                 ));
             }
-            if (!copy(ASCMS_PATH.$imageFileSource, ASCMS_PATH.$imageFileTarget)) {
+            if (!copy(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $imageFileSource, \Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $imageFileTarget)) {
                 //the function addError() declaration is missing, but defined so those lines are commented
 //                self::addError(
 //                    $imageFileSource.': '.
@@ -316,7 +316,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
             'lang_id' => $arrSubstitution['LANG_ID'],
             'to' =>
                 $arrSubstitution['CUSTOMER_EMAIL'].','.
-                \Cx\Core\Setting\Controller\Setting::getValue('email_confirmation'),
+                \Cx\Core\Setting\Controller\Setting::getValue('email_confirmation','Shop'),
             'substitution' => &$arrSubstitution,
         );
 //DBG::log("sendConfirmationMail($order_id, $create_accounts): Template: ".var_export($arrMailTemplate, true));
@@ -382,7 +382,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
     static function getSubstitutionArray()
     {
         return array(
-            'SHOP_COMPANY' => \Cx\Core\Setting\Controller\Setting::getValue('company'),
+            'SHOP_COMPANY' => \Cx\Core\Setting\Controller\Setting::getValue('company','Shop'),
             'SHOP_HOMEPAGE' => \Cx\Core\Routing\Url::fromModuleAndCmd(
                 'Shop', '', FRONTEND_LANG_ID)->toString(),
         );

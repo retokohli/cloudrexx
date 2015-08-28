@@ -316,7 +316,7 @@ class CalendarCategory extends \Cx\Modules\Calendar\Controller\CalendarLibrary
      *      
      * @return integer Entry count of the category
      */
-    function countEntries($getAll = false){
+    function countEntries($getAll = false, $onlyActive = false){
         global $objDatabase;  
         
         // get startdate
@@ -352,7 +352,7 @@ class CalendarCategory extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             $startDate = null;
         }
         
-        $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($startDate,$endDate,$this->id,$searchTerm);
+        $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($startDate,$endDate,$this->id,$searchTerm, true, false, $onlyActive);
         $objEventManager->getEventList();            
         $count = count($objEventManager->eventList);
         

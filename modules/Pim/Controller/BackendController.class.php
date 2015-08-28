@@ -63,17 +63,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function connectToController($act)
     {
         $act = ucfirst($act);
-        if (!empty($act)) {
-            $controllerName = __NAMESPACE__.'\\'.$act.'Controller';
-            if (!$controllerName && !class_exists($controllerName)) {
-                return;
-            }
-            //  instantiate the view specific controller
-            $objController = new $controllerName($this->getSystemComponentController(), $this->cx);            
-        } else { 
-            // instantiate the default View Controller
-            $objController = new DefaultController($this->getSystemComponentController(), $this->cx);
+        
+        $controller = $this->getSystemComponentController()->getController($act);
+        if (!$controller) {
+            $act = 'Default';
+            $controller = $this->getSystemComponentController()->getController($act);
         }
-        $objController->parsePage($this->template);
+        
+        $controller->parsePage($this->template);
     }
 }

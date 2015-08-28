@@ -139,11 +139,6 @@ class InitCMS
         if (!empty($_REQUEST['setLang'])) {
             $backendLangId = intval($_REQUEST['setLang']);
             $setUserLanguage = true;
-        } elseif (!empty($_COOKIE['backendLangId'])) {
-            // the language already has changed for the backend, but he hasn't been logged in at this time
-            // (perhaps on login page)
-            $setUserLanguage = true;
-            $backendLangId = intval($_COOKIE['backendLangId']);
         }
 
         // the language is activated for the backend
@@ -152,7 +147,7 @@ class InitCMS
         }
 
         // set the users default backend language and store it into the db if he has changed the language manually
-        if ($setUserLanguage === true && $objFWUser->objUser->login(true)) {
+        if ($setUserLanguage && $objFWUser->objUser->login(true) && $objFWUser->objUser->getBackendLanguage() != $backendLangId) {
             $objFWUser->objUser->setBackendLanguage($backendLangId);
             $objFWUser->objUser->store();
         }
@@ -160,7 +155,6 @@ class InitCMS
         $this->backendLangId = $this->arrLang[$backendLangId]['id'];
         $this->currentThemesId = $this->arrLang[$backendLangId]['themesid'];
         $this->backendLangCharset = $this->arrLang[$backendLangId]['charset'];
-        setcookie('backendLangId', $backendLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
     }
 
 
@@ -306,7 +300,7 @@ class InitCMS
      */
     function _getClientAcceptedLanguages()
     {
-        $arrLanguages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        $arrLanguages = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) : array();
         $arrAcceptedLanguages = array();
         $q = 1;
         foreach ($arrLanguages as $languageString) {
@@ -480,7 +474,7 @@ class InitCMS
             foreach ($theme->getDependencies() as $libraryName => $libraryVersions) {
                 if (!isset($libraries[$libraryName])) continue;
                 $version = $libraryVersions[0];
-                $libraryData = $libraries[$libraryName]['versions'][$version];
+                $libraryData = isset($libraries[$libraryName]['versions'][$version]) ? $libraries[$libraryName]['versions'][$version] : array();
                 if (isset($libraryData['jsfiles'])) {
                     foreach ($libraryData['jsfiles'] as $file) {
                         \JS::registerJS($file, true);
@@ -680,6 +674,7 @@ class InitCMS
                         case 'SystemLog':
                         case 'NetManager':
                         case 'Wysiwyg':
+                        case 'Routing':
                             $this->arrModulePath[$objResult->fields['name']] = ASCMS_CORE_PATH.'/'. $objResult->fields['name'] . '/lang/';
                             break;
                         default:

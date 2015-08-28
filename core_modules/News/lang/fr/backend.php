@@ -120,6 +120,9 @@ $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "Classe CSS: row1 oder row2";
 $_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Brique pour la définition d'un article.<br />
 Tag de début: &lt;!-- BEGIN newsrow --&gt;<br />
 Tag de fin: &lt;!-- END newsrow --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_ROW_DESCRIPTION'] = "Brique pour la définition d'un article.<br />
+Tag de début: &lt;!-- BEGIN news_archive_link --&gt;<br />
+Tag de fin: &lt;!-- END news_archive_link --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Ces variables peuvent être utilisées dans les pages de contenu de la <b>section</b> \"news\" qui comportent la <b>cmd</b> \"details\" (index.php?section=News&cmd=details).";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Titre de l'article";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Texte de l'article";
@@ -216,6 +219,9 @@ $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Source / chemin de l'image";
 $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
 Starttag: &lt!-- BEGIN news_image --&gt;<br />
 Endtag: &lt!-- END news_image --&gt;";
+$_ARRAYLANG['TXT_NEWS_ARCHIVE_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
+Starttag: &lt!-- BEGIN news_archive_image --&gt;<br />
+Endtag: &lt!-- END news_archive_image --&gt;";
 $_ARRAYLANG['TXT_NEWS_COMMENT_LIST'] = "Comments list";
 $_ARRAYLANG['TXT_NEWS_COMMENT'] = "Comment";
 $_ARRAYLANG['TXT_NEWS_COMMENT_DATE'] = "Date &amp; time";

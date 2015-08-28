@@ -27,13 +27,14 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
     private $intRowCount;
     private $arrExpandedLevelIds = array();
 
-    private $arrSelectedList = array();
-    private $arrNotSelectedList = array();
     private $arrSelectedLevels;
     private $strNavigationPlaceholder;
 
     public $arrLevels = array();
 
+    private $strNotSelectedOptions = '';
+    private $strSelectedOptions = '';
+    
     /**
      * Constructor
      */
@@ -223,6 +224,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
         switch ($intView) {
             case 1:
                 //Backend View
+                $expandLevel = isset($_GET['exp_level']) ? $_GET['exp_level'] : null;
                 foreach ($arrLevels as $key => $arrLevel) {
                     //generate space
                     $spacer = null;
@@ -231,15 +233,15 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     $spacer .= '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
 
                     //check expanded categories
-                    if($_GET['exp_level'] == 'all') {
+                    if($expandLevel == 'all') {
                         $bolExpandLevel = true;
                     } else {
                         $this->arrExpandedLevelIds = array();
-                        $bolExpandLevel = $this->getExpandedLevels($_GET['exp_level'], array($arrLevel));
+                        $bolExpandLevel = $this->getExpandedLevels($expandLevel, array($arrLevel));
                     }
 
                     if(!empty($arrLevel['levelChildren'])) {
-                        if((in_array($arrLevel['levelId'], $this->arrExpandedLevelIds) && $bolExpandLevel) || $_GET['exp_level'] == 'all'){
+                        if((in_array($arrLevel['levelId'], $this->arrExpandedLevelIds) && $bolExpandLevel) || $expandLevel == 'all'){
                             $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='.$arrLevel['levelParentId'].'"><img src="../core/Core/View/Media/icons/minuslink.gif" border="0" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" /></a>';
                         } else {
                             $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='.$arrLevel['levelId'].'"><img src="../core/Core/View/Media/icons/pluslink.gif" border="0" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" /></a>';
@@ -280,7 +282,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 //Frontend View
                 $intNumBlocks = count($arrExistingBlocks);
                 $i = $intNumBlocks-1;
-
+                $strIndexHeader = '';
+                
                 //set first index header
                 if($this->arrSettings['settingsLevelOrder'] == 2) {
                     $strFirstIndexHeader = null;
@@ -322,9 +325,9 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevel['levelName'][0]),
                         $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$arrLevel['levelId'].'">'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</a>',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevel[$intLevelId]['levelPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrLevel[$intLevelId]['levelName'][0]).'" />',
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel[$intLevelId]['levelPicture'],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevel['levelNumEntries'],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevel['levelPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'" />',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel['levelPicture'],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => isset($arrLevel['levelNumEntries']) ? $arrLevel['levelNumEntries'] : '',
                     ));
 
                     $intBlockId = $arrExistingBlocks[$i];
@@ -395,7 +398,6 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 	
                     $spacer = null;
                     $intSpacerSize = null;
-                    $strOptionId = $arrCategory['catId'];
 
                      //generate space
                     $intSpacerSize = (count($arrParentIds));
@@ -408,9 +410,9 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     }
 
                     if(in_array($arrLevel['levelId'], $this->arrSelectedLevels)) {
-                      $this->strSelectedOptions .= '<option name="'.$strOptionId.'" value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
+                        $this->strSelectedOptions .= '<option value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
                     } else {
-                      $this->strNotSelectedOptions .= '<option name="'.$strOptionId.'" value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
+                        $this->strNotSelectedOptions .= '<option value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
                     }
 
                     if(!empty($arrLevel['levelChildren'])) {
@@ -530,7 +532,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
         $intId = intval($intLevelId);
         $intParentId = intval($arrData['levelPosition']);
         $intShowEntries = intval($arrData['levelShowEntries']);
-        $intShowSublevels = intval($arrData['levelShowSublevels']);
+        $intShowSublevels = isset($arrData['levelShowSublevels']) ? contrexx_input2int($arrData['levelShowSublevels']) : 0;
         $intShowCategories = intval($arrData['levelShowCategories']);
         $intActive = intval($arrData['levelActive']);
         $strPicture = contrexx_addslashes(contrexx_strip_tags($arrData['levelImage']));
@@ -558,6 +560,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                     if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
+                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
 
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
@@ -610,32 +613,29 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names WHERE level_id='".$intId."'");
 
+                foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                    if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
+                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
+
+                    $strName = $arrName[$arrLang['id']];
+                    $strDescription = $arrDescription[$arrLang['id']];
+
+                    if(empty($strName)) $strName = $arrName[0];
+                    if(empty($strDescription)) $strDescription = $arrDescription[0];
+
+                    $objInsertNames = $objDatabase->Execute("
+                        INSERT INTO
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
+                        SET
+                            `lang_id`='".intval($arrLang['id'])."',
+                            `level_id`='".intval($intId)."',
+                            `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
+                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
+                    ");
+                }
+
                 if($objInsertNames !== false) {
-                    foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                        if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                        
-                        $strName = $arrName[$arrLang['id']];
-                        $strDescription = $arrDescription[$arrLang['id']];
-
-                        if(empty($strName)) $strName = $arrName[0];
-                        if(empty($strDescription)) $strDescription = $arrDescription[0];
-
-                        $objInsertNames = $objDatabase->Execute("
-                            INSERT INTO
-                                ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
-                            SET
-                                `lang_id`='".intval($arrLang['id'])."',
-                                `level_id`='".intval($intId)."',
-                                `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
-                                `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
-                        ");
-                    }
-
-                    if($objInsertNames !== false) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    return true;
                 } else {
                     return false;
                 }

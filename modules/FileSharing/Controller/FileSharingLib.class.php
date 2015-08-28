@@ -27,7 +27,8 @@ abstract class FileSharingLib
     protected function initUploader()
     {
         \JS::activate('cx'); // the uploader needs the framework
-        \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH . '/Upload/Controller/UploadFactory.class.php');
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        \Env::get('ClassLoader')->loadFile($cx->getCodeBaseCoreModulePath() . '/Upload/Controller/UploadFactory.class.php');
 
         /**
          * Name of the upload instance
@@ -47,7 +48,7 @@ abstract class FileSharingLib
         $uploader->setJsInstanceName($uploaderInstanceName);
 
         // specifies the function to call when upload is finished. must be a static function
-        $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH . '/FileSharing/Controller/FileSharing.class.php', '\Cx\Modules\FileSharing\Controller\FileSharing', 'uploadFinished'));
+        $uploader->setFinishedCallback(array($cx->getCodeBaseModulePath() . '/FileSharing/Controller/FileSharing.class.php', '\Cx\Modules\FileSharing\Controller\FileSharing', 'uploadFinished'));
 
         //insert the uploader into the HTML-template
         $this->objTemplate->setVariable(array(
@@ -133,14 +134,15 @@ CODE
         if (!$directory) {
             $directory = '';
         }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         // get target path
         // if the cmd is "downloads" add these files to the digital asset management module directory
         if ($directory == 'Downloads') {
-            $targetPath = ASCMS_DOWNLOADS_IMAGES_PATH;
-            $targetPathWeb = ASCMS_DOWNLOADS_IMAGES_WEB_PATH;
+            $targetPath = $cx->getWebsiteImagesDownloadsPath();
+            $targetPathWeb = $cx->getWebsiteImagesDownloadsWebPath();
         } else {
-            $targetPath = ASCMS_FILESHARING_PATH . (!empty($directory) ? '/' . $directory : '');
-            $targetPathWeb = ASCMS_FILESHARING_WEB_PATH . (!empty($directory) ? '/' . $directory : '');
+            $targetPath = $cx->getWebsiteMediaFileSharingPath() . (!empty($directory) ? '/' . $directory : '');
+            $targetPathWeb = $cx->getWebsiteMediaFileSharingWebPath() . (!empty($directory) ? '/' . $directory : '');
         }
 
         // create target folder if the directory does not exist
@@ -150,7 +152,7 @@ CODE
         }
 
         // write the uploaded files into database
-        $path = str_replace(ASCMS_PATH_OFFSET, '', $targetPathWeb);
+        $path = str_replace($cx->getWebsiteOffsetPath(), '', $targetPathWeb);
         foreach ($fileInfos["originalFileNames"] as $rawName => $cleanedName) {
             $file = $cleanedName;
             $source = $path . '/' . $rawName;
@@ -263,7 +265,7 @@ CODE
     public static function isShared($fileId = null, $fileSource = null)
     {
         global $objDatabase;
-        $fileSource = str_replace(ASCMS_PATH_OFFSET, '', $fileSource);
+        $fileSource = str_replace(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath(), '', $fileSource);
         if ($fileSource != NULL) {
             $objResult = $objDatabase->SelectLimit("SELECT `id` FROM " . DBPREFIX . "module_filesharing WHERE `source` = '" . contrexx_raw2db($fileSource) . "'", 1, -1);
             if ($objResult !== false && $objResult->RecordCount() > 0) {
@@ -288,16 +290,17 @@ CODE
         // get all files from database
         $objFiles = $objDatabase->Execute("SELECT `id`, `source`, `expiration_date` FROM " . DBPREFIX . "module_filesharing");
         if ($objFiles !== false) {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             while (!$objFiles->EOF) {
                 // if the file is expired or does not exist
                 if (($objFiles->fields["expiration_date"] < date('Y-m-d H:i:s')
                         && $objFiles->fields["expiration_date"] != NULL)
-                        || !file_exists(ASCMS_PATH . ASCMS_PATH_OFFSET . $objFiles->fields["source"])
+                        || !file_exists($cx->getWebsitePath() . $cx->getWebsiteOffsetPath() . $objFiles->fields["source"])
                 ) {
-                    $fileExists = file_exists(ASCMS_PATH . ASCMS_PATH_OFFSET . $objFiles->fields["source"]);
+                    $fileExists = file_exists($cx->getWebsitePath() . $cx->getWebsiteOffsetPath() . $objFiles->fields["source"]);
                     // if the file is only expired delete the file from directory
                     if ($fileExists) {
-                        \Cx\Lib\FileSystem\FileSystem::delete_file(ASCMS_PATH . ASCMS_PATH_OFFSET . $objFiles->fields["source"]);
+                        \Cx\Lib\FileSystem\FileSystem::delete_file($cx->getWebsitePath() . $cx->getWebsiteOffsetPath() . $objFiles->fields["source"]);
                     }
                     $arrToDelete[] = $objFiles->fields["id"];
                 }
@@ -347,7 +350,8 @@ CODE
         if (empty($subject))
             $subject = $objMail->fields["subject"];
 
-        if (\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php')) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (\Env::get('ClassLoader')->loadFile($cx->getCodeBaseLibraryPath() . '/phpmailer/class.phpmailer.php')) {
             $objMail = new \phpmailer();
 
             /**
@@ -371,7 +375,7 @@ CODE
                 }
             }
 
-            if ($_CONFIG['coreSmtpServer'] > 0 && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH . '/SmtpSettings.class.php')) {
+            if ($_CONFIG['coreSmtpServer'] > 0 && \Env::get('ClassLoader')->loadFile($cx->getCodeBaseCorePath() . '/SmtpSettings.class.php')) {
                 if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
                     $objMail->IsSMTP();
                     $objMail->Host = $arrSmtp['hostname'];

@@ -785,12 +785,14 @@ class NewsletterManager extends NewsletterLib
             'NEWSLETTER_MAIL_EDIT_TITLE' => $mailId > 0 ? ($copy ? $_ARRAYLANG['TXT_NEWSLETTER_COPY_EMAIL'] : $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_EMAIL']) : $_ARRAYLANG['TXT_NEWSLETTER_CREATE_NEW_EMAIL']
         ));
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        
         if (isset($_POST['newsletter_mail_save'])) {
             $objAttachment = $objDatabase->Execute("SELECT file_name FROM ".DBPREFIX."module_newsletter_attachment WHERE newsletter=".$mailId);
             if ($objAttachment !== false) {
                 $arrCurrentAttachments = array();
                 while (!$objAttachment->EOF) {
-                    array_push($arrCurrentAttachments, ASCMS_NEWSLETTER_ATTACH_WEB_PATH.'/'.$objAttachment->fields['file_name']);
+                    array_push($arrCurrentAttachments, $cx->getWebsiteImagesAttachPath() . '/' . $objAttachment->fields['file_name']);
                     $objAttachment->MoveNext();
                 }
 
@@ -872,7 +874,7 @@ class NewsletterManager extends NewsletterLib
                         $objAttachment = $objDatabase->Execute("SELECT file_name FROM ".DBPREFIX."module_newsletter_attachment WHERE newsletter=".$mailId);
                         if ($objAttachment !== false) {
                             while (!$objAttachment->EOF) {
-                                array_push($arrAttachment, ASCMS_NEWSLETTER_ATTACH_WEB_PATH.'/'.$objAttachment->fields['file_name']);
+                                array_push($arrAttachment, $cx->getWebsiteImagesAttachWebPath() . '/' . $objAttachment->fields['file_name']);
                                 $objAttachment->MoveNext();
                             }
                         }
@@ -958,6 +960,17 @@ class NewsletterManager extends NewsletterLib
             $this->_objTpl->touchBlock('associatedGroupToolTipBeforeSend');
         }
 
+        // Mediabrowser
+        $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
+        $mediaBrowser->setOptions(array(
+            'data-cx-mb-views' => 'filebrowser',
+            'type' => 'button'
+        ));
+        $mediaBrowser->setCallback('mediaBrowserCallback');
+        $this->_objTpl->setVariable(array(
+            'NEWSLETTER_ATTACH_FILE' => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_NEWSLETTER_ATTACH_FILE'])
+        ));
+        
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_EMAIL_ACCOUNT' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ACCOUNT'],
             'TXT_NEWSLETTER_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
@@ -972,8 +985,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_PRIORITY' => $_ARRAYLANG['TXT_NEWSLETTER_PRIORITY'],
             'TXT_NEWSLETTER_ATTACH' => $_ARRAYLANG['TXT_NEWSLETTER_ATTACH'],
             'TXT_NEWSLETTER_DISPLAY_FILE' => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_FILE'],
-            'TXT_NEWSLETTER_REMOVE_FILE' => $_ARRAYLANG['TXT_NEWSLETTER_REMOVE_FILE'],
-            'TXT_NEWSLETTER_ATTACH_FILE' => $_ARRAYLANG['TXT_NEWSLETTER_ATTACH_FILE'],
+            'TXT_NEWSLETTER_REMOVE_FILE' => $_ARRAYLANG['TXT_NEWSLETTER_REMOVE_FILE'],            
             'TXT_NEWSLETTER_HTML_CONTENT' => $_ARRAYLANG['TXT_NEWSLETTER_HTML_CONTENT'],
             'TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY'],
             'TXT_NEWSLETTER_USER_DATA' => $_ARRAYLANG['TXT_NEWSLETTER_USER_DATA'],
@@ -1239,7 +1251,7 @@ class NewsletterManager extends NewsletterLib
             tblMail.date_sent
             FROM ".DBPREFIX."module_newsletter AS tblMail
             ORDER BY date_create DESC, status, id DESC", $_CONFIG['corePagingLimit'], $pos);
-        if ($objResult !== false) {
+        if ($objResult !== false) {            
             $arrMailRecipientCount = $this->_getMailRecipientCount(NULL, $_CONFIG['corePagingLimit'], $pos);
             while (!$objResult->EOF) {
                 $feedbackCount = isset($arrFeedback[$objResult->fields['id']]) ? $arrFeedback[$objResult->fields['id']] : 0;
@@ -1361,14 +1373,15 @@ class NewsletterManager extends NewsletterLib
     function _addMailAttachment($attachment, $mailId = 0)
     {
         global $objDatabase;
-
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        
         $fileName = substr($attachment, strrpos($attachment, '/')+1);
 
         $objAttachment = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_attachment WHERE file_name='".$fileName."'", 1);
         if ($objAttachment !== false) {
             if ($objAttachment->RecordCount() == 1) {
-                $md5Current = @md5_file(ASCMS_NEWSLETTER_ATTACH_PATH.'/'.$fileName);
-                $md5New = @md5_file(ASCMS_PATH.$attachment);
+                $md5Current = @md5_file($cx->getWebsiteImagesAttachPath() . '/' . $fileName);
+                $md5New = @md5_file($cx->getWebsiteDocumentRootPath() . $attachment);
 
                 if ($md5Current !== false && $md5Current === $md5New) {
                     if ($objDatabase->Execute("    INSERT INTO ".DBPREFIX."module_newsletter_attachment (`newsletter`, `file_name`)
@@ -1380,9 +1393,9 @@ class NewsletterManager extends NewsletterLib
 
             $nr = 0;
             $fileNameTmp = $fileName;
-            while (file_exists(ASCMS_NEWSLETTER_ATTACH_PATH.'/'.$fileNameTmp)) {
-                $md5Current = @md5_file(ASCMS_NEWSLETTER_ATTACH_PATH.'/'.$fileNameTmp);
-                $md5New = @md5_file(ASCMS_PATH.$attachment);
+            while (file_exists($cx->getWebsiteImagesAttachPath().'/'.$fileNameTmp)) {
+                $md5Current = @md5_file($cx->getWebsiteImagesAttachPath() . '/' . $fileNameTmp);
+                $md5New = @md5_file($cx->getWebsiteDocumentRootPath() . $attachment);
 
                 if ($md5Current !== false && $md5Current === $md5New) {
                     if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_attachment (`newsletter`, `file_name`) VALUES (".$mailId.", '".$fileNameTmp."')") !== false) {
@@ -1393,8 +1406,8 @@ class NewsletterManager extends NewsletterLib
                 $PathInfo = pathinfo($fileName);
                 $fileNameTmp = substr($PathInfo['basename'],0,strrpos($PathInfo['basename'],'.')).$nr.'.'.$PathInfo['extension'];
             }
-
-            if (copy(ASCMS_PATH.$attachment, ASCMS_NEWSLETTER_ATTACH_PATH.'/'.$fileNameTmp)) {
+            
+            if (copy($cx->getWebsiteDocumentRootPath() . $attachment, $cx->getWebsiteImagesAttachPath().'/'.$fileNameTmp)) {
                 if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_attachment (`newsletter`, `file_name`) VALUES (".$mailId.", '".$fileNameTmp."')") !== false) {
                     return true;
                 }
@@ -1412,7 +1425,7 @@ class NewsletterManager extends NewsletterLib
         $objAttachment = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_attachment WHERE file_name='".$fileName."'", 2);
         if ($objAttachment !== false) {
             if ($objAttachment->RecordCount() < 2) {
-                @unlink(ASCMS_NEWSLETTER_ATTACH_PATH.'/'.$fileName);
+                @unlink(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesAttachPath().'/'.$fileName);
             }
 
             if ($objDatabase->SelectLimit("DELETE FROM ".DBPREFIX."module_newsletter_attachment WHERE file_name='".$fileName."' AND newsletter=".$mailId, 1) !== false) {
@@ -2513,9 +2526,8 @@ class NewsletterManager extends NewsletterLib
                     $count = $this->getCurrentMailRecipientCount($mailId);
                 }
             }
-
+            
         }
-
 
         return $count;
     }
@@ -2617,7 +2629,11 @@ class NewsletterManager extends NewsletterLib
 
         $mailRecipientCount = $this->_getMailRecipientCount($mailId);
         if ($mailRecipientCount == 0) {
-            die($_ARRAYLANG['TXT_CATEGORY_ERROR']);
+            $arrJsonData = array(
+                'sentComplete' => true,
+                'message' => $_ARRAYLANG['TXT_CATEGORY_ERROR']
+            );
+            die(json_encode($arrJsonData));
         }
 
         //Get some newsletter data
@@ -2637,7 +2653,7 @@ class NewsletterManager extends NewsletterLib
             'NEWSLETTER_MAIL_SUBJECT'       => contrexx_raw2xhtml($newsletterData['subject']),
             'NEWSLETTER_PROGRESSBAR_STATUS' => $progressbarStatus
         ));
-
+        
         // the newsletter was not sent
         if ($newsletterData['status'] == 0) {
             if (!empty($_POST['send'])) {
@@ -2681,7 +2697,7 @@ class NewsletterManager extends NewsletterLib
                     }
                 }
 
-				die(json_encode($arrJsonData));
+		die(json_encode($arrJsonData));
             } else {
                 // request was sent through regular POST
                 $this->_objTpl->setVariable(array(
@@ -2805,8 +2821,11 @@ class NewsletterManager extends NewsletterLib
     function _setTmpSending($mailId)
     {
         $mailAddresses = $this->getAllRecipientEmails($mailId);
-        foreach ($mailAddresses as $mail) {
+        $mailAddresses->rewind();
+        while ($mailAddresses->valid()) {
+            $mail = $mailAddresses->current();
             $this->insertTmpEmail($mailId, $mail['email'], $mail['type']);
+            $mailAddresses->next();
         }
         $this->updateNewsletterRecipientCount($mailId);
     }
@@ -3012,7 +3031,7 @@ class NewsletterManager extends NewsletterLib
         $objResultATT = $objDatabase->Execute($queryATT);
         if ($objResultATT !== false) {
             while (!$objResultATT->EOF) {
-                $mail->AddAttachment(ASCMS_NEWSLETTER_ATTACH_PATH."/".$objResultATT->fields['file_name'], $objResultATT->fields['file_name']);
+                $mail->AddAttachment(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesAttachPath() . "/" . $objResultATT->fields['file_name'], $objResultATT->fields['file_name']);
                 $objResultATT->MoveNext();
             }
         }
@@ -3059,24 +3078,32 @@ class NewsletterManager extends NewsletterLib
                 }
             } */
         } else {
+            $performRejectedMailOperation = false;
             if (strstr($mail->ErrorInfo, 'authenticate')) {
+                // -> smtp error
                 self::$strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_MAIL_AUTH_FAILED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
             } elseif (strstr($mail->ErrorInfo, 'from_failed')) {
+                // -> mail error
                 self::$strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_FROM_ADDR_REJECTED'], htmlentities($sender_email, ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
             } elseif (strstr($mail->ErrorInfo, 'recipients_failed')) {
+                // -> recipient error
+                $performRejectedMailOperation = true;
                 self::$strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_FAILED'], htmlentities($TargetEmail, ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
             } elseif (strstr($mail->ErrorInfo, 'instantiate')) {
+                // -> php error
                 self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_LOCAL_SMTP_FAILED'].'<br />';
             } elseif (strstr($mail->ErrorInfo, 'connect_host')) {
+                // -> smtp error
                 self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_CONNECT_SMTP_FAILED'].'<br />';
             } else {
+                // -> mail error
                 self::$strErrMessage .= $mail->ErrorInfo.'<br />';
             }
             $ReturnVar = false;
 
             if ($TmpEntry == 1) {
                 $arrSettings = $this->_getSettings();
-                if ($arrSettings['rejected_mail_operation']['setvalue'] != 'ignore') {
+                if ($performRejectedMailOperation && $arrSettings['rejected_mail_operation']['setvalue'] != 'ignore') {
                     switch ($arrSettings['rejected_mail_operation']['setvalue']) {
                         case 'deactivate':
                             // Remove temporary data from the module
@@ -5846,7 +5873,7 @@ function MultiAction() {
                     'NEWSLETTER_LINK_ROW_CLASS' => $rowNr % 2 == 1 ? 'row1' : 'row2',
                     'NEWSLETTER_LINK_TITLE'     => $objResult->fields['title'],
                     'NEWSLETTER_LINK_URL'       => $objResult->fields['url'],
-                    'NEWSLETTER_MAIL_USERS'     => $objResult->fields['feedback_count'], // number of users, who have clicked the link
+                    'NEWSLETTER_MAIL_USERS'     => (int) $objResult->fields['feedback_count'], // number of users, who have clicked the link
                     'NEWSLETTER_LINK_FEEDBACK'  => $objResult->fields['count'] > 0 ? round(100 /  $objResult->fields['count'] * $objResult->fields['feedback_count']) : 0
                 ));
 
@@ -6262,7 +6289,7 @@ function MultiAction() {
 }
 
 
-if (!class_exists('DBIterator')) {
+if (!class_exists('DBIterator', false)) {
 
     /**
      * Iterator wrapper for adodb result objects
@@ -6299,7 +6326,7 @@ if (!class_exists('DBIterator')) {
          * @param       object (adodb result object)
          */
         public function __construct($obj) {
-            $this->empty = !($obj instanceof ADORecordSet);
+            $this->empty = (!($obj instanceof \ADORecordSet_pdo) && empty($obj->fields));
 
             $this->obj = $obj;
         }

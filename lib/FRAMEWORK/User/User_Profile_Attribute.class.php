@@ -465,7 +465,7 @@ class User_Profile_Attribute
         global $_LANGID, $objInit;
 
         // this is a crapy solution! but the problem is, that this class gets initialized before the backend language ID is loaded.
-        $this->langId = $_LANGID ? $_LANGID : (!empty($_COOKIE['backendLangId']) ? intval($_COOKIE['backendLangId']) : (isset($objInit) ? ($objInit->mode == 'frontend' ? $objInit->defaultFrontendLangId : $objInit->defaultBackendLangId) : 1));
+        $this->langId = $_LANGID ? $_LANGID : (isset($objInit) ? ($objInit->mode == 'frontend' ? $objInit->defaultFrontendLangId : $objInit->defaultBackendLangId) : 1);
 
         $this->init();
         $this->first();
@@ -546,22 +546,19 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     {
         global $objDatabase;
 
-        $objResult = $objDatabase->Execute('SELECT `id`, `name` FROM '.DBPREFIX.'lib_country');
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $this->arrAttributes['country_'.$objResult->fields['id']] = array(
-                    'type' => 'menu_option',
-                    'multiline' => false,
-                    'mandatory' => false,
-                    'sort_type' => 'asc',
-                    'parent_id' => 'country',
-                    'desc' => $objResult->fields['name'],
-                    'names' => array($this->langId => $objResult->fields['name']),
-                    'value' => $objResult->fields['id'],
-                    'order_id' => 0,
-                );
-                $objResult->MoveNext();
-            }
+        $countries = \Cx\Core\Country\Controller\Country::getArray($count, $this->langId);
+        foreach($countries as $country) {
+            $this->arrAttributes['country_'.$country['id']] = array(
+                'type' => 'menu_option',
+                'multiline' => false,
+                'mandatory' => false,
+                'sort_type' => 'asc',
+                'parent_id' => 'country',
+                'desc' => $country['name'],
+                'names' => array($this->langId => $country['name']),
+                'value' => $country['id'],
+                'order_id' => 0,
+            );
         }
     }
 

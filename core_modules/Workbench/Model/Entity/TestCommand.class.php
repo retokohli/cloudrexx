@@ -40,6 +40,8 @@ class TestCommand extends Command {
      * Array of testing folders
      */
     protected $testingFolders = array();
+    
+    protected $phpUnitPath;
 
     /**
      * Execute this command
@@ -68,26 +70,26 @@ class TestCommand extends Command {
         $arrComponentTypes = array('core', 'core_module', 'module');                
         
         // check for the component type
-        if (isset($arguments[2]) && in_array($arguments[2], $arrComponentTypes)) {
-            if (isset($arguments[3])) {
-                $componentFolder        = $this->getModuleFolder($arguments[3], $arguments[2], $useCustomizing);
-                if (!$this->addTestingFolderToArray($arguments[3], $componentFolder)) {
-                    $this->interface->show(ASCMS_TESTING_FOLDER . " not exists in the component ". $arguments[3] .'!');
-                    return;
-                }
-            } else {
-                $this->getTestingFoldersByType($arguments[2], $useCustomizing);
-            }
-        } elseif (!empty ($arguments[2])) {
-            // check whether it a valid component
-            $componentName = $arguments[2];
-            
-            foreach ($arrComponentTypes as $cType) {
-                $componentFolder        = $this->getModuleFolder($componentName, $cType, $useCustomizing);
-                if ($this->addTestingFolderToArray($componentName, $componentFolder)) {
-                    break;
-                }                                
-            }
+        $componentType = (isset($arguments[2]) && in_array($arguments[2], $arrComponentTypes)) ? $arguments[2] : null;
+        $componentName = null;
+        if (!$componentType) {
+            $componentName = !empty($arguments[2]) && $this->isComponent($arguments[2]) ? $arguments[2] : null;
+        }
+        
+        if ($componentType || $componentName) {
+            unset($arguments[2]);
+        }
+        
+        // check the third parameter it might be component name
+        if (!empty($arguments[3]) && $this->isComponent($arguments[3])) {
+            $componentName = $arguments[3];
+            unset($arguments[3]);
+        }
+        
+        if ($componentType && !$componentName) {
+            $this->getTestingFoldersByType($componentType, $useCustomizing);
+        } elseif ($componentName) {
+            $this->getTestingFoldersByName($componentName, $useCustomizing);
         }
         
         // get all testing folder when component type or name not specificed
@@ -97,9 +99,9 @@ class TestCommand extends Command {
             }
         }
                 
-        $phpUnitTestPath = ASCMS_LIBRARY_PATH.'/PHPUnit';
-        if(!file_exists($phpUnitTestPath)) {
-            $this->interface->show("PhpUnit is not found in ". $phpUnitTestPath);
+        $this->phpUnitPath = ASCMS_LIBRARY_PATH.'/PHPUnit';
+        if(!file_exists($this->phpUnitPath)) {
+            $this->interface->show("PhpUnit is not found in ". $this->phpUnitPath);
             return;
         }
 
@@ -112,35 +114,56 @@ class TestCommand extends Command {
         asort($this->testingFolders);
         
         // Needs to change the dir because files might be loaded by its relative path inside PHPUnit
-        chdir($phpUnitTestPath);
-        require_once $phpUnitTestPath.'/PHP/CodeCoverage/Filter.php';
-        \PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
-
+        chdir($this->phpUnitPath);        
+        
         if (extension_loaded('xdebug')) {
             xdebug_disable();
         }
 
-        if (strpos('@php_bin@', '@php_bin') === 0) {            
-            set_include_path($phpUnitTestPath . PATH_SEPARATOR . get_include_path());
+        if (strpos('@php_bin@', '@php_bin') === 0) {
+            set_include_path($this->phpUnitPath . PATH_SEPARATOR . get_include_path());
         }
+                
+        spl_autoload_register(array($this, 'phpunitAutoload'));
 
-        require_once $phpUnitTestPath.'/PHPUnit/Autoload.php';
-
-        define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
-                    
-        $command = new \Cx\Core\Model\Controller\PHPUnitTextUICommand();        
-        foreach ($this->testingFolders as $testingFolder) {
-            $_SERVER['argv'] = $argv = array(
-                $phpUnitTestPath,
-                '--testdox',
-                $testingFolder,
-            );
-            $_SERVER['argc'] = count($argv);
-
-            $command->run($_SERVER['argv'], false);
+        unset($arguments[0]);
+        unset($arguments[1]); // unset the arguments
+        $command = new \Cx\Core\Model\Controller\PHPUnitTextUICommand();
+        $options = array(
+            $this->phpUnitPath,
+            '--testdox'
+        );
+        foreach ($arguments as $arg) {
+            $options[] = $arg;
         }
+        $options[] = $this->testingFolders;
+
+        $_SERVER['argv'] = $argv = $options;
+        $_SERVER['argc'] = count($argv);
+
+        $command->run($_SERVER['argv'], false);
         
         $this->interface->show('Done');
+    }
+    
+    /**
+     * Get the testing folder by given component name
+     * 
+     * @param string $componentName  Component name     
+     * @param string $useCustomizing use customizing
+     * 
+     * @return null
+     */
+    private function getTestingFoldersByName($componentName, $useCustomizing)
+    {
+        $arrComponentTypes = array('core', 'core_module', 'module');
+        
+        foreach ($arrComponentTypes as $cType) {
+            $componentFolder = $this->getModuleFolder($componentName, $cType, $useCustomizing);
+            if ($this->addTestingFolderToArray($componentName, $componentFolder)) {
+                break;
+            }
+        }
     }
     
     /**
@@ -263,5 +286,45 @@ class TestCommand extends Command {
         }
         
         return false;
+    }
+    
+    /*
+     * Autoload function to load the PHPUnit class files.
+     */
+    function phpunitAutoload($class)
+    {
+        require_once $this->phpUnitPath . '/PHPUnit/Util/Filesystem.php';
+        
+        if (
+               strpos($class, 'PHPUnit_') === 0
+            || strpos($class, 'PHP_') === 0
+            || strpos($class, 'Text_') === 0
+            || strpos($class, 'File_') === 0
+            || strpos($class, 'Doctrine') === 0
+            || strpos($class, 'SebastianBergmann') === 0
+           ) {
+           $file = \PHPUnit_Util_Filesystem::classNameToFilename($class);
+           if (file_exists($this->phpUnitPath . '/'. $file)) {
+               require_once $file;
+           }
+        }
+    }
+
+    /**
+     * Check whether component exists or not
+     * 
+     * @param type $componentName
+     * 
+     * @return mixed component object or null
+     */
+    function isComponent($componentName)
+    {
+        $cx = \Env::get('cx');
+        $em = $cx->getDb()->getEntityManager();
+        
+        $componentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
+        $component     = $componentRepo->findOneBy(array('name' => $componentName));
+        
+        return $component;
     }
 }

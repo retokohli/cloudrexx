@@ -10,11 +10,12 @@
  */
 
 namespace Cx\Modules\Podcast\Model\Event;
-use Cx\Core\Core\Controller\Cx;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core_Modules\MediaBrowser\Model\MediaType;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
+use Cx\Core\Event\Model\Entity\DefaultEventListener;
 
 /**
+ * Class PodcastEventListener
  * EventListener for Podcast
  * 
  * @copyright   Comvation AG
@@ -22,23 +23,9 @@ use Cx\Core_Modules\MediaBrowser\Model\MediaType;
  * @package     contrexx
  * @subpackage  module_podcast
  */
-class PodcastEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
-
-    /**
-     * @var Cx
-     */
-    protected $cx;
-
-    function __construct(Cx $cx)
-    {
-        $this->cx = $cx;
-    }
-
-    public function onEvent($eventName, array $eventArgs) {
-        $this->$eventName(current($eventArgs));
-    }
+class PodcastEventListener extends DefaultEventListener {
    
-    public static function SearchFindContent($search) {
+    public function SearchFindContent($search) {
         $term_db = $search->getTerm();
 
         //For Podcast
@@ -65,19 +52,13 @@ class PodcastEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
         $search->appendResult($podcastCategoryResult);
     }
 
-
-
-    public function LoadMediaTypes(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaSourceManager $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
-        $mediaType = new MediaType();
-        $mediaType->setName('podcast');
-        $mediaType->setHumanName($_ARRAYLANG['TXT_FILEBROWSER_PODCAST']);
-        $mediaType->setDirectory(array(
+        $mediaType = new MediaSource('podcast',$_ARRAYLANG['TXT_FILEBROWSER_PODCAST'],array(
             $this->cx->getWebsiteImagesPodcastPath(),
             $this->cx->getWebsiteImagesPodcastWebPath(),
-        ));
-        $mediaType->getAccessIds(array(87));
+        ),array(87));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 }

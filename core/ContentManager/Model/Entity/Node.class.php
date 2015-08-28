@@ -196,7 +196,7 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
      */
     public function getChildren($lang = null)
     {
-        $repo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+        $repo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
         foreach ($this->children as $i => $child) {
             if (!is_int($child)) continue;
             $this->children[$i] = $repo->find($child);
@@ -222,7 +222,7 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
      */
     public function getPages($inactive_langs = false, $aliases = false)
     {
-        $repo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $repo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         foreach ($this->pages as $i => $page) {
             if (!is_int($page)) continue;
             $this->pages[$i] = $repo->find($page);
@@ -290,7 +290,7 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     public function getParent()
     {
         if (is_int($this->parent)) {
-            $repo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+            $repo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
             $this->parent = $repo->find($this->parent);
         }
         return $this->parent;

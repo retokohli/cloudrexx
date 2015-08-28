@@ -168,6 +168,14 @@ class Paging
     static function getPosition($parameter_name=null)
     {
         $parameter_name = self::getParametername($parameter_name);//'pos';
+        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            if (!isset($_REQUEST[$parameter_name])) {
+                return 0;
+            }
+
+            return intval($_REQUEST[$parameter_name]);
+        }
+            
         if (!isset($_SESSION['paging'])) {
             $_SESSION['paging'] = array();
         }        

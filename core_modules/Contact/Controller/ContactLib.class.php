@@ -84,6 +84,7 @@ class ContactLib
                          `f`.`use_email_of_sender`,
                          `f`.`html_mail`,
                          `f`.`send_attachment`,
+                         `f`.`crm_customer_groups`,
                          (SELECT COUNT(`id`) FROM `'.DBPREFIX.'module_contact_form_data` AS `d` WHERE `d`.`id_form` = `f`.`id`)  AS `numberOfEntries`,
                          (SELECT MAX(`time`) FROM `'.DBPREFIX.'module_contact_form_data` AS `d` WHERE `d`.`id_form` = `f`.`id`) AS `latestEntry`
                     FROM `'.DBPREFIX.'module_contact_form` AS `f`
@@ -105,8 +106,9 @@ class ContactLib
                     'sendAttachment'    => $objResult->fields['send_attachment'],
                     'recipients'        => $this->getRecipients($objResult->fields['id'], true),
                     'number'            => 0,
-                    'last'              => 0
-                );
+                    'last'              => 0,
+                    'crmCustomerGroups' => $objResult->fields['crm_customer_groups'] ? unserialize($objResult->fields['crm_customer_groups']) : array()
+                );                
                 $objResult->MoveNext();
             }
         }
@@ -212,12 +214,13 @@ class ContactLib
         return $this->_arrSettings;
     }
 
-    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$mailTemplate, &$showForm, &$useCaptcha, &$sendCopy, &$useEmailOfSender, &$htmlMail, &$sendAttachment)
+    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$mailTemplate, &$showForm, &$useCaptcha, &$sendCopy, &$useEmailOfSender, &$htmlMail, &$sendAttachment, &$saveDataInCRM, &$crmCustomerGroups)
     {
         global $objDatabase, $_CONFIG, $_ARRAYLANG, $_LANGID;
 
         $objContactForm = $objDatabase->SelectLimit("SELECT f.mails, l.subject, l.feedback, l.mailTemplate, f.showForm,
-                                                            f.use_captcha, f.send_copy, f.use_email_of_sender, f.html_mail, f.send_attachment
+                                                            f.use_captcha, f.send_copy, f.use_email_of_sender, f.html_mail, f.send_attachment,
+                                                            f.save_data_in_crm, f.crm_customer_groups
                                                      FROM ".DBPREFIX."module_contact_form AS f
                                                      LEFT JOIN ".DBPREFIX."module_contact_form_lang AS l
                                                      ON ( f.id = l.formID )
@@ -237,6 +240,8 @@ class ContactLib
             $useEmailOfSender    = $objContactForm->fields['use_email_of_sender'];
             $htmlMail            = $objContactForm->fields['html_mail'];
             $sendAttachment      = $objContactForm->fields['send_attachment'];
+            $saveDataInCRM       = $objContactForm->fields['save_data_in_crm'];
+            $crmCustomerGroups   = $objContactForm->fields['crm_customer_groups'] ? unserialize($objContactForm->fields['crm_customer_groups']) : array();
             return true;
         } else {
             return false;
@@ -606,7 +611,8 @@ class ContactLib
         $useEmailOfSender,
         $sendHtmlMail,
         $sendAttachment,
-        $saveDataInCrm
+        $saveDataInCrm,
+        $crmCustomerGroups
     )
     {
         global $objDatabase;
@@ -620,7 +626,8 @@ class ContactLib
                         $useEmailOfSender,
                         $sendHtmlMail,
                         $sendAttachment,
-                        $saveDataInCrm
+                        $saveDataInCrm,
+                        $crmCustomerGroups
         );
         \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($formEntity, \Env::get('em'))));
         $objDatabase->Execute("
@@ -635,7 +642,8 @@ class ContactLib
                 use_email_of_sender = ".$useEmailOfSender.",
                 html_mail           = ".$sendHtmlMail.",
                 send_attachment     = ".$sendAttachment.",
-                `save_data_in_crm`  = ".$saveDataInCrm."
+                `save_data_in_crm`  = ".$saveDataInCrm.",
+                `crm_customer_groups`  = \"" . contrexx_input2db(serialize($crmCustomerGroups)) . "\"
             WHERE
                 id = ".$formID
         );
@@ -663,7 +671,8 @@ class ContactLib
         $useEmailOfSender,
         $sendHtmlMail,
         $sendAttachment,
-        $saveDataInCrm
+        $saveDataInCrm,
+        $crmCustomerGroups
     )
     {
         global $objDatabase, $_FRONTEND_LANGID;
@@ -676,7 +685,8 @@ class ContactLib
                     $useEmailOfSender,
                     $sendHtmlMail,
                     $sendAttachment,
-                    $saveDataInCrm
+                    $saveDataInCrm,
+                    $crmCustomerGroups
         );
         \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
         $query = "
@@ -691,7 +701,8 @@ class ContactLib
                 `use_email_of_sender`,
                 `html_mail`,
                 `send_attachment`,
-                `save_data_in_crm`
+                `save_data_in_crm`,
+                `crm_customer_groups`
             )
             VALUES
             (
@@ -703,7 +714,8 @@ class ContactLib
                 ".$useEmailOfSender.",
                 ".$sendHtmlMail.",
                 ".$sendAttachment.",
-                ".$saveDataInCrm."
+                ".$saveDataInCrm.",
+                \"". contrexx_input2db(serialize($crmCustomerGroups)) . "\"
             )";
 
         if ($objDatabase->Execute($query) !== false) {
@@ -742,7 +754,8 @@ class ContactLib
         $useEmailOfSender,
         $sendHtmlMail,
         $sendAttachment,
-        $saveDataInCrm
+        $saveDataInCrm,
+        $crmCustomerGroups
     ) {
         if($id) {
             $entity = \Env::get('em')->getRepository('Cx\Core_Modules\Contact\Model\Entity\Form')->findOneBy(array('id' => $id));
@@ -758,6 +771,7 @@ class ContactLib
         $entity->setHtmlMail($sendHtmlMail);
         $entity->setSendAttachment($sendAttachment);
         $entity->setSaveDataInCrm($saveDataInCrm);
+        $entity->setCrmCustomerGroups($crmCustomerGroups);
         return $entity;
     }
 
@@ -1191,43 +1205,53 @@ class ContactLib
                                             `".DBPREFIX."module_contact_form_submit_data` AS `sd`
                                         ON
                                             `d`.`id` = `sd`.`id_entry`
+                                        INNER JOIN
+                                             `".DBPREFIX."module_contact_form_field` AS `f`
+                                        ON
+                                            `f`.`id` = `sd`.`id_field`
+                                        AND 
+                                            `f`.`type` IN ('multi_file', 'file')
                                         WHERE `d`.`id`=".$id);
-        if(!$rs->EOF) {
-            $data = $rs->fields['formvalue'];
-            $formId = $rs->fields['id_form'];
+        if ($rs) {
+            while (!$rs->EOF) {
+                $data = $rs->fields['formvalue'];
+                $formId = $rs->fields['id_form'];
 
-            //get all form data into arrData
-            $arrData = array();
-            foreach (explode(';', $data) as $keyValue) {
-                $arrTmp = explode(',', $keyValue);
-                $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
-            }
-          
-            //load contact form fields - we need to know which ones have the type 'file'
-            $this->initContactForms();
-            $arrFormFields = $this->getFormFields($formId);
-            
-            foreach($arrFormFields as $arrField) {
-                //see if it's a file field...
-                if($arrField['type'] == 'file') {
-                    //...and delete the files if yes:
-                    $val = $arrData[$arrField['name']];
-                    if(substr($val,0,1) == '*') {
-                        //new style entry, multiple files
-                        $arrFiles = explode('*',substr($val,1));
-                    }
-                    else {
-                        //old style entry, single file
-                        $arrFiles = array($val);
-                    }
-                  
-                    //nice, we have all the files. delete them.
-                    foreach($arrFiles as $file) {
-                        \Cx\Lib\FileSystem\FileSystem::delete_file(ASCMS_DOCUMENT_ROOT.$file);
+                //get all form data into arrData
+                $arrData = array();
+                foreach (explode(';', $data) as $keyValue) {
+                    $arrTmp = explode(',', $keyValue);
+                        $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
+                }
+
+                //load contact form fields - we need to know which ones have the type 'file'
+                $this->initContactForms();
+                $arrFormFields = $this->getFormFields($formId);
+
+                foreach($arrFormFields as $arrField) {
+                    //see if it's a file field...
+                    if($arrField['type'] == 'file') {
+                        //...and delete the files if yes:
+                        $val = isset($arrData[$arrField['name']]) ? $arrData[$arrField['name']] : $data;
+                        if(strpos($val,'*')) {
+                            //new style entry, multiple files
+                            $arrFiles = explode('*', $val);
+                        }
+                        else {
+                            //old style entry, single file
+                            $arrFiles = array($val);
+                        }
+
+                        //nice, we have all the files. delete them.
+                        foreach($arrFiles as $file) {
+                            \Cx\Lib\FileSystem\FileSystem::delete_file(\Env::get('cx')->getWebsiteDocumentRootPath().$file);
+                        }
                     }
                 }
+                $rs->MoveNext();
             }
         }
+        
         $objDatabase->Execute("DELETE `d`, `sd` FROM
                                 `".DBPREFIX."module_contact_form_data` AS `d`
                                LEFT JOIN
@@ -1644,7 +1668,6 @@ JS_misc;
 
                 case 'country':
                 case 'access_country':
-                    $objResult    = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
                     $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
                     if ($arrField['is_required'] == 1) {
                         $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."</option>";
@@ -1652,9 +1675,11 @@ JS_misc;
                         $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."</option>";
                     }
                     if ($preview) {
-                        while (!$objResult->EOF) {
-                            $sourcecode[] = "<option value=\"".$objResult->fields['name']."\" >".$objResult->fields['name']."</option>";
-                            $objResult->MoveNext();
+                        $lang = $arrField['lang'][$lang]['name'];
+                        $country = \Cx\Core\Country\Controller\Country::getNameArray(true, $lang);
+        
+                        foreach ($country as $id => $name) {
+                            $sourcecode[] = "<option value=\"" . $name . "\" >" . $name . "</option>";
                         }
                     } else {
                         $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";

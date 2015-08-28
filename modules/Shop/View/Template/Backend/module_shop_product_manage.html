@@ -20,76 +20,84 @@ function reloadPage() {
 function openWindow(theURL, winName, features) {
   window.open(theURL, winName, features);
 }
-var openBrowser = function openBrowser(url, id, attrs) {
+var openBrowser = function openBrowser(id) {
   fieldID = id;
-  try {
-    if (!browserPopup.closed) {
-      return browserPopup.focus();
-    }
-  } catch(e) {}
-  if (!window.focus) {
-    return true;
-  }
-  browserPopup = window.open(url, "", attrs);
-  browserPopup.focus();
+  cx.jQuery('#media_browser_shop').trigger('click');
   return false;
 }
-var SetUrl = function(url, width, height, alt) {
-  notDefined[fieldID] = true;
-  var elInput = document.getElementById("hi_"+fieldID);
-  elInput.setAttribute('name', 'productImage'+fieldID);
-  elInput.setAttribute('id', 'hi_'+fieldID);
-  elInput.setAttribute('value', decodeURIComponent(url));
-  if (document.getElementById('lnk_'+fieldID) == null) {
+
+var setSelectedImage = function(data) {
+  if (data.type == 'file') {
+    var extension = data.data[0].datainfo.extension.toLowerCase();
+    if(jQuery.inArray(extension, ['gif','png','jpg','jpeg']) == -1) {
+      return;
+    }
+    var url = data.data[0].datainfo.filepath;
+    
     notDefined[fieldID] = true;
-  } else {
-    notDefined[fieldID] = false;
-  }
-  url = url.substring(1);
-  var fileRegExp = /.+\/(.+)$/;
-  fileRegExp.exec(url);
-  var elTxt = document.createTextNode(decodeURIComponent(RegExp.$1));
-  var img = document.getElementById("img"+fieldID);
-  img.src = '/'+url;
-  var fact = 1;
-  if (width > height) {
-    fact = 80 / width;
-  } else {
-    fact = 80 / height;
-  }
-  img.style.width  = width*fact+'px';
-  img.style.height = height*fact+'px';
-  // set resized width and height in hidden fields
-  elInput_w = document.getElementById('hi_'+fieldID+'_w');
-  elInput_w.setAttribute('name', 'productImage'+fieldID+'_width');
-  elInput_w.setAttribute('value', width);
-  elInput_h = document.getElementById('hi_'+fieldID+'_h');
-  elInput_h.setAttribute('name', 'productImage'+fieldID+'_height');
-  elInput_h.setAttribute('value', height);
-  if (notDefined[fieldID]) {
-    var elALink = document.createElement('a');
-  } else {
-    var elALink = document.getElementById("lnk_"+fieldID);
-  }
-  elALink.setAttribute('href', decodeURIComponent(url));
-  elALink.setAttribute('target', '_blank');
-  elALink.setAttribute('id', 'lnk_'+fieldID);
-  elALink.setAttribute('title', 'product Image');
-  if (notDefined[fieldID]) {
-    elALink.appendChild(elTxt);
-    img.parentNode.appendChild(elALink);
-//  img.parentNode.appendChild(elInput);
-    img.parentNode.insertBefore(document.createElement('br'), elALink);
-  } else {
-    elALink = document.getElementById("lnk_"+fieldID);
-    elALink.removeChild(elALink.childNodes[0]);
-    fileRegExp = /.+\/(.+)$/;
-    fileRegExp.exec(decodeURIComponent(url));
-    elTxt = document.createTextNode(RegExp.$1);
-    elALink.appendChild(elTxt);
-    img.parentNode.appendChild(elALink);
-//  img.parentNode.appendChild(elInput);
-  }
+    var elInput = document.getElementById("hi_"+fieldID);
+    elInput.setAttribute('name', 'productImage'+fieldID);
+    elInput.setAttribute('id', 'hi_'+fieldID);
+    elInput.setAttribute('value', decodeURIComponent(url));
+    if (document.getElementById('lnk_'+fieldID) == null) {
+      notDefined[fieldID] = true;
+    } else {
+      notDefined[fieldID] = false;
+    }
+    url = url.substring(1);
+    var fileRegExp = /.+\/(.+)$/;
+    fileRegExp.exec(url);
+    var elTxt = document.createTextNode(decodeURIComponent(RegExp.$1));
+    var img = document.getElementById("img"+fieldID);
+    img.src = '/'+url;
+    var fact = 1;
+    
+    var newImg = new Image()
+    newImg.onload = function() {      
+      var height = newImg.height;
+      var width  = newImg.width;
+      
+      if (width > height) {
+        fact = 80 / width;
+      } else {
+        fact = 80 / height;
+      }
+      img.style.width  = width*fact+'px';
+      img.style.height = height*fact+'px';
+      // set resized width and height in hidden fields
+      elInput_w = document.getElementById('hi_'+fieldID+'_w');
+      elInput_w.setAttribute('name', 'productImage'+fieldID+'_width');
+      elInput_w.setAttribute('value', width);
+      elInput_h = document.getElementById('hi_'+fieldID+'_h');
+      elInput_h.setAttribute('name', 'productImage'+fieldID+'_height');
+      elInput_h.setAttribute('value', height);
+      if (notDefined[fieldID]) {
+        var elALink = document.createElement('a');
+      } else {
+        var elALink = document.getElementById("lnk_"+fieldID);
+      }
+      elALink.setAttribute('href', decodeURIComponent(url));
+      elALink.setAttribute('target', '_blank');
+      elALink.setAttribute('id', 'lnk_'+fieldID);
+      elALink.setAttribute('title', 'product Image');
+      if (notDefined[fieldID]) {
+        elALink.appendChild(elTxt);
+        img.parentNode.appendChild(elALink);
+    //  img.parentNode.appendChild(elInput);
+        img.parentNode.insertBefore(document.createElement('br'), elALink);
+      } else {
+        elALink = document.getElementById("lnk_"+fieldID);
+        elALink.removeChild(elALink.childNodes[0]);
+        fileRegExp = /.+\/(.+)$/;
+        fileRegExp.exec(decodeURIComponent(url));
+        elTxt = document.createTextNode(RegExp.$1);
+        elALink.appendChild(elTxt);
+        img.parentNode.appendChild(elALink);
+    //  img.parentNode.appendChild(elInput);
+      }
+    }
+    newImg.src = url;
+  }  
 }
 function toggleOptions(checkboxId) {
   if (document.getElementById('productOptions'+checkboxId).checked) {
@@ -507,10 +515,11 @@ END shopFlags -->
         </th>
       </tr>
       <tr  class="row1">
+          {MEDIABROWSER_BUTTON}
         <td width="25%"> {TXT_SHOP_EDIT_OR_ADD_IMAGE}</td>
         <td width="25%">
           <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
-              onclick="openBrowser('index.php?cmd=FileBrowser&amp;standalone=true&amp;type=Shop','1','width=800,height=640,resizable=yes,status=no,scrollbars=yes','img','');">
+              onclick="openBrowser('1');">
             {TXT_SHOP_EDIT_OR_ADD_IMAGE}<br />
             <span id="img_1">
               <img id="img1" style="width: {SHOP_IMG1_WIDTH}px; height: {SHOP_IMG1_HEIGHT}px; border: none;"
@@ -532,7 +541,7 @@ END shopFlags -->
         </td>
         <td width="25%">
           <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
-              onclick="openBrowser('index.php?cmd=FileBrowser&amp;standalone=true&amp;type=Shop','2','width=800,height=640,resizable=yes,status=no,scrollbars=yes','img','');" >
+              onclick="openBrowser('2');">
             {TXT_SHOP_EDIT_OR_ADD_IMAGE}<br />
             <span id="img_2">
               <img id="img2" style="width: {SHOP_IMG2_WIDTH}px; height: {SHOP_IMG2_HEIGHT}px; border: none;"
@@ -554,7 +563,7 @@ END shopFlags -->
         </td>
         <td width="25%">
           <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
-              onclick="openBrowser('index.php?cmd=FileBrowser&amp;standalone=true&amp;type=Shop','3','width=800,height=640,resizable=yes,status=no,scrollbars=yes','img','');">
+              onclick="openBrowser('3');">
             {TXT_SHOP_EDIT_OR_ADD_IMAGE}<br />
             <span id="img_3">
               <img id="img3" style="width: {SHOP_IMG3_WIDTH}px; height: {SHOP_IMG3_HEIGHT}px; border: none;"
@@ -627,6 +636,10 @@ END shopFlags -->
 <script type="text/javascript">
 /* <![CDATA[ */
 distributionChanged();
+jQuery( ".chooseImage" ).click(function() {
+    jQuery('#media_browser_shop').trigger("click");
+});
+
 /* ]]> */
 </script>
 <!-- END shop_product_manage.html-->

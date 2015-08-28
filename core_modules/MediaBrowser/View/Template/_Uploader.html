@@ -9,6 +9,7 @@
     <div class="tabMediaBrowserContent">
         <div class="mediaUploaderListCtrl">
             <div class="uploadPlatform uploadStart">
+                <div class="error"></div>
                 <i class="icon-dropzone"></i>
 
                 <div class="dropzoneText1">
@@ -16,7 +17,7 @@
                 </div>
                 <div class="dropzoneText2">-
                     {{ 'TXT_FILEBROWSER_DRAG_TO_UPLOADER_OR' | translate }} -</div>
-                <button type="submit" id="selectFileFromComputer" class="btn btn-default">{{ 'TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK' | translate }}
+                <button type="submit" disabled id="selectFileFromComputer" class="btn btn-default">{{ 'TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK' | translate }}
                 </button>
             </div>
             <div class="uploadlist">
@@ -37,7 +38,7 @@
                         </td>
                         <td class="text-right table-action">
                             <a href="#" data-ng-click="removeFile(file)" data-ng-show="file.percent != 100">
-
+                               {{ 'TXT_FILEBROWSER_FILE_REMOVE' | translate }}
                             </a>
                         </td>
                     </tr>

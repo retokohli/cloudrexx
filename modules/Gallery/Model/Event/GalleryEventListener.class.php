@@ -10,11 +10,12 @@
  */
 
 namespace Cx\Modules\Gallery\Model\Event;
-use Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration;
-use Cx\Core_Modules\MediaBrowser\Model\MediaType;
-use Cx\Core\Core\Controller\Cx;
+use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
+use Cx\Core\MediaSource\Model\Entity\MediaSource;
+use Cx\Core\Event\Model\Entity\DefaultEventListener;
 
 /**
+ * Class GalleryEventListener
  * EventListener for Gallery
  * 
  * @copyright   Comvation AG
@@ -22,22 +23,8 @@ use Cx\Core\Core\Controller\Cx;
  * @package     contrexx
  * @subpackage  module_gallery
  */
-class GalleryEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+class GalleryEventListener extends DefaultEventListener {
 
-    /**
-     * @var Cx
-     */
-    protected $cx;
-
-    function __construct(Cx $cx)
-    {
-        $this->cx = $cx;
-    }
-
-    public function onEvent($eventName, array $eventArgs) {
-        $this->$eventName(current($eventArgs));
-    }
-   
     public static function SearchFindContent($search) {
         $term_db = $search->getTerm();
 
@@ -70,18 +57,14 @@ class GalleryEventListener implements \Cx\Core\Event\Model\Entity\EventListener 
     }
 
 
-    public function LoadMediaTypes(MediaBrowserConfiguration $mediaBrowserConfiguration)
+    public function mediasourceLoad(MediaSourceManager $mediaBrowserConfiguration)
     {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('Gallery');
-        $mediaType = new MediaType();
-        $mediaType->setName('gallery');
-        $mediaType->setHumanName($_ARRAYLANG['TXT_THUMBNAIL_GALLERY']);
-        $mediaType->setDirectory(array(
+        $mediaType = new MediaSource('gallery',$_ARRAYLANG['TXT_THUMBNAIL_GALLERY'],array(
             $this->cx->getWebsiteImagesGalleryPath(),
-            $this->cx->getWebsiteImagesGalleryWebPath(),
+            $this->cx->getWebsiteImagesGalleryWebPath(),array(12,67)
         ));
-        $mediaType->getAccessIds(array(12,67));
         $mediaBrowserConfiguration->addMediaType($mediaType);
     }
 

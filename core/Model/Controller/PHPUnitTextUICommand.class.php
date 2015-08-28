@@ -47,91 +47,47 @@ class PHPUnitTextUICommand extends \PHPUnit_TextUI_Command {
     /**
      * {@inheritdoc}
      */
-    public function run(array $argv, $exit = TRUE)
+    public function run(array $argv, $exit = true)
     {
         // Customizing
         // Reset the arguments to the default arguments
         $this->arguments = self::$defaultArguments;
-        
+
         $this->handleArguments($argv);
-                
+
         $this->runner->setLoader($this->arguments['loader']);
         
-        // Customizing
-        // Print the version string        
-        $this->runner->printVersionString();
-        // Reset the Printer object.This will be again loaded from self::arguments otherwise it will hold the previous results.
-        $this->runner->resetPrinter();
-
-        if (is_object($this->arguments['test']) &&
-            $this->arguments['test'] instanceof \PHPUnit_Framework_Test) {
-            $suite = $this->arguments['test'];
-        } else {
-            $suite = $this->runner->getTest(
-              $this->arguments['test'],
-              $this->arguments['testFile'],
-              $this->arguments['syntaxCheck']
-            );
+        $suite = new \PHPUnit_Framework_TestSuite();
+        
+        $testFiles = array();
+        foreach ($this->arguments['test'] as $testFodler) {
+            $testFiles = array_merge($testFiles, self::collectTests($testFodler));
         }
         
-        $testFiles = self::collectTests($this->arguments['test']);
         asort($testFiles);
-        
         $suite->addTestFiles($testFiles);
-        
-        if (count($suite) == 0) {
-            $skeleton = new \PHPUnit_Util_Skeleton_Test(
-              $suite->getName(),
-              $this->arguments['testFile']
-            );
-
-            $result = $skeleton->generate(TRUE);
-
-            if (!$result['incomplete']) {
-                eval(str_replace(array('<?php', '?>'), '', $result['code']));
-                $suite = new \PHPUnit_Framework_TestSuite(
-                  $this->arguments['test'] . 'Test'
-                );
-            }
-        }
-
-        if ($this->arguments['listGroups']) {            
-
-            print "Available test group(s):\n";
-
-            $groups = $suite->getGroups();
-            sort($groups);
-
-            foreach ($groups as $group) {
-                print " - $group\n";
-            }
-
-            exit(\PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
-        }
         
         unset($this->arguments['test']);
         unset($this->arguments['testFile']);
 
         try {
             $result = $this->runner->doRun($suite, $this->arguments);
-        }
-        
-        catch (\PHPUnit_Framework_Exception $e) {
+        } catch (\PHPUnit_Framework_Exception $e) {
             print $e->getMessage() . "\n";
         }
 
+        $ret = \PHPUnit_TextUI_TestRunner::FAILURE_EXIT;
+
+        if (isset($result) && $result->wasSuccessful()) {
+            $ret = \PHPUnit_TextUI_TestRunner::SUCCESS_EXIT;
+        } elseif (!isset($result) || $result->errorCount() > 0) {
+            $ret = \PHPUnit_TextUI_TestRunner::EXCEPTION_EXIT;
+        }
+
         if ($exit) {
-            if (isset($result) && $result->wasSuccessful()) {
-                exit(\PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
-            }
-
-            else if (!isset($result) || $result->errorCount() > 0) {
-                exit(\PHPUnit_TextUI_TestRunner::EXCEPTION_EXIT);
-            }
-
-            else {
-                exit(\PHPUnit_TextUI_TestRunner::FAILURE_EXIT);
-            }
+            exit($ret);
+        } else {
+            return $ret;
         }
     }
     

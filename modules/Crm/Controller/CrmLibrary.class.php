@@ -14,12 +14,6 @@
 
 namespace Cx\Modules\Crm\Controller;
 
-define('CRM_ACCESS_PROFILE_IMG_WEB_PATH', ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/Crm/profile');
-define('CRM_ACCESS_PROFILE_IMG_PATH',     ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/Crm/profile');
-define('CRM_ACCESS_OTHER_IMG_WEB_PATH', ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/Crm');
-define('CRM_ACCESS_OTHER_IMG_PATH',     ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/Crm');
-define('CRM_MEDIA_PATH', ASCMS_MEDIA_PATH.'/Crm/');
-
 define('CRM_EVENT_ON_USER_ACCOUNT_CREATED', 'crm_user_account_created');
 define('CRM_EVENT_ON_TASK_CREATED', 'crm_task_assigned');
 define('CRM_EVENT_ON_ACCOUNT_UPDATED', 'crm_notify_staff_on_contact_added');
@@ -472,7 +466,7 @@ class CrmLibrary
                     $objTpl->touchBlock('delete_icon_block');
                 }
                 if (!empty ($objResult->fields['icon'])) {
-                    $iconPath = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb";
+                    $iconPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb";
                 } else {
                     $iconPath  = '../modules/Crm/View/Media/task_default.png';
                 }
@@ -572,7 +566,7 @@ class CrmLibrary
                 $first = false;
             }
             if (!empty ($objResult->fields['icon'])) {
-                $icons  = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb";
+                $icons  = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesCrmWebPath().'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb";
             } else {
                 $icons  = '../modules/Crm/View/Media/task_default.png';
             }
@@ -836,12 +830,10 @@ class CrmLibrary
         if (!empty($this->countries)) return $this->countries;
 
         // Selecting the Country Name from the Database
-        $objResult =   $objDatabase->Execute('SELECT  iso_code_2,id,name FROM '.DBPREFIX.'lib_country ORDER BY id' );
+        $countries = \Cx\Core\Country\Controller\Country::getArray($count);
 
-        while (!$objResult->EOF) {
-            $this->countries[$objResult->fields['id']] = array("id" => $objResult->fields['id'], "name" => $objResult->fields['name'], "iso_code_2" => $objResult->fields['iso_code_2']);
-
-            $objResult->MoveNext();
+        foreach($countries as $country) {
+            $this->countries[$country['id']] = array("id" => $country['id'], "name" => $country['name'], "iso_code_2" => $country['alpha2']);
         }
         return $this->countries;
     }
@@ -1393,7 +1385,7 @@ class CrmLibrary
                             OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_social_network` WHERE c.id = contact_id AND MATCH (url) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
                             OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_phone` WHERE c.id = contact_id AND MATCH (phone) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
                             OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_comment` WHERE c.id = customer_id AND MATCH (comment) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR MATCH (cur.name) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) OR MATCH (t.label) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
+                            OR MATCH (t.label) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
                             OR (select 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_membership` as m JOIN `".DBPREFIX."module_{$this->moduleNameLC}_membership_local` As ml ON (ml.entry_id=m.membership_id AND ml.lang_id = '".$_LANGID."') WHERE c.id = m.contact_id AND MATCH (ml.value) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
                             OR MATCH (Inloc.value) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
                             OR MATCH (lang.name) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
@@ -1824,7 +1816,8 @@ class CrmLibrary
 
         }
         $message = base64_encode("dealsdeleted");
-        \Cx\Core\Csrf\Controller\Csrf::header("location:".ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=deals&mes=$message");
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        \Cx\Core\Csrf\Controller\Csrf::header("location:".$cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName()."/index.php?cmd=".$this->moduleName."&act=deals&mes=$message");
     }
 
     /**
@@ -2281,7 +2274,7 @@ class CrmLibrary
                 $address = contrexx_input2db($value['address']);
                 $city    = contrexx_input2db($value['city']);
                 $zip     = contrexx_input2db($value['zip']);
-                $country = $objDatabase->getOne("SELECT id FROM `".DBPREFIX."lib_country` WHERE name = '".$value['country']."'");
+                $country = \Cx\Core\Country\Controller\Country::getByName($value['country']);
             }
         }
         $gender = ($this->contact->contact_gender == 1) ? 'gender_female' : ($this->contact->contact_gender == 2 ? 'gender_male' : 'gender_undefined');
@@ -2295,14 +2288,15 @@ class CrmLibrary
             'address'      => array(0 => $address),
             'city'         => array(0 => $city),
             'zip'          => array(0 => $zip),
-            'country'      => array(0 => $country)
+            'country'      => array(0 => $country['id'])
         );
         
         //set profile picture
         $picture = $objDatabase->getOne("SELECT profile_picture FROM `".DBPREFIX."module_{$this->moduleNameLC}_contacts` WHERE id = '".$this->contact->id."'");
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if ($picture && !empty($picture)) {
-            if (!file_exists(ASCMS_ACCESS_PROFILE_IMG_PATH.'/'.$picture)) {
-                $file = CRM_ACCESS_PROFILE_IMG_PATH.'/';
+            if (!file_exists($cx->getWebsiteImagesAccessProfilePath().'/'.$picture)) {
+                $file = $cx->getWebsiteImagesCrmProfilePath().'/';
                 if (($picture = self::moveUploadedImageInToPlace($objUser, $file.$picture, $picture, true)) == true) {
                     // create thumbnail
                     if (self::createThumbnailOfImage($picture, true) !== false) {
@@ -2312,10 +2306,16 @@ class CrmLibrary
                 }
             }
         }
-        $objUser->setUsername($email);
+        //set group ids
+        $defaultUserGroup = $settings['default_user_group'];        
+        $groups           = $objUser->getAssociatedGroupIds();
+        if (!empty($defaultUserGroup) && !in_array($defaultUserGroup, $groups)) {
+            array_push($groups, $defaultUserGroup);
+        }
+        $objUser->setGroups($groups);
         
+        $objUser->setUsername($email);
         $objUser->setEmail($email);
-        $objUser->setGroups((array) $settings['default_user_group']);
         $objUser->setFrontendLanguage($result['contact_language']);
         $objUser->setBackendLanguage($settings['customer_default_language_backend']);
         $objUser->setActiveStatus(true);
@@ -2337,7 +2337,7 @@ class CrmLibrary
                         'CRM_CONTACT_SALUTATION'         => contrexx_raw2xhtml($saluation),
                         'CRM_ASSIGNED_USER_NAME'         => contrexx_raw2xhtml(\FWUser::getParsedUserTitle($objUser->getId())),
                         'CRM_CUSTOMER_COMPANY'           => $this->contact->customerName." ".$this->contact->family_name,
-                        'CRM_DOMAIN'                     => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}".ASCMS_PATH_OFFSET,
+                        'CRM_DOMAIN'                     => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}".$cx->getCodeBaseOffsetPath(),
                         'CRM_CONTACT_EMAIL'              => $email,
                         'CRM_CONTACT_USERNAME'           => $email,
                         'CRM_CONTACT_PASSWORD'           => $password,
@@ -2579,14 +2579,20 @@ class CrmLibrary
                 }
 
                 //insert address
-                if (!empty ($fieldValues['access_address']) || !empty ($fieldValues['access_city']) || !empty ($fieldValues['access_zip']) || !empty ($fieldValues['access_country'])) {
+                $accessAddress = !empty ($fieldValues['access_address']) ? contrexx_input2db($fieldValues['access_address']) : '';
+                $accessCity    = !empty ($fieldValues['access_city']) ? contrexx_input2db($fieldValues['access_city']) : '';
+                $accessZip     = !empty ($fieldValues['access_zip']) ? contrexx_input2db($fieldValues['access_zip']) : '';
+                $accessCountry = !empty ($fieldValues['access_country']) ? contrexx_input2db($fieldValues['access_country']) : '';
+                $accessState   = !empty ($fieldValues['access_state']) ? contrexx_input2db($fieldValues['access_state']) : '';
+                
+                if ($accessAddress || $accessCity || $accessZip || $accessCountry) {
 
                     $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` SET
-                                    address      = '". contrexx_input2db($fieldValues['access_address']) ."',
-                                    city         = '". contrexx_input2db($fieldValues['access_city']) ."',
-                                    state        = '". contrexx_input2db($fieldValues['access_state']) ."',
-                                    zip          = '". contrexx_input2db($fieldValues['access_zip']) ."',
-                                    country      = '". contrexx_input2db($fieldValues['access_country']) ."',
+                                    address      = '". $accessAddress ."',
+                                    city         = '". $accessCity ."',
+                                    state        = '". $accessState ."',
+                                    zip          = '". $accessZip ."',
+                                    country      = '". $accessCountry ."',
                                     Address_Type = '2',
                                     is_primary   = '1',
                                     contact_id   = '{$this->contact->id}'";
@@ -2633,6 +2639,9 @@ class CrmLibrary
                     $query .= implode(",", $values);
                     $objDatabase->Execute($query);
                 }
+                if (!empty($arrFormData['crmCustomerGroups'])) {
+                    $this->updateCustomerMemberships($arrFormData['crmCustomerGroups'], $this->contact->id);
+                }
                 // notify the staff's
                 $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName, $this->contact->family_name, $this->contact->contact_gender);
                 
@@ -2663,11 +2672,14 @@ class CrmLibrary
     }
 
     /**
-     * Adding Crm Contact
+     * Adding Crm Contact and link it with crm company if possible
      *
      * @param Array $arrFormData form data's
+     * @param int $userAccountId
+     * @param int $frontendLanguage
+     * @global <object> $objDatabase
+     * @global int $_LANGID
      *
-     * @return null
      */
     function setContactPersonProfile($arrFormData = array(), $userAccountId = 0, $frontendLanguage)
     {
@@ -2692,9 +2704,10 @@ class CrmLibrary
                 //set profile picture
                 if (!empty ($arrFormData['picture'][0])) {
                     $picture = $arrFormData['picture'][0];
-                    if (!file_exists(CRM_ACCESS_PROFILE_IMG_PATH.'/'.$picture)) {
-                        $file    = ASCMS_ACCESS_PROFILE_IMG_PATH.'/';
-                        $newFile = CRM_ACCESS_PROFILE_IMG_PATH.'/';
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    if (!file_exists($cx->getWebsiteImagesCrmProfilePath().'/'.$picture)) {
+                        $file    = $cx->getWebsiteImagesAccessProfilePath().'/';
+                        $newFile = $cx->getWebsiteImagesCrmProfilePath().'/';
                         if (copy($file.$picture, $newFile.$picture)) {
                             if ($this->createThumbnailOfPicture($picture)) {
                                 $this->contact->profile_picture = $picture;
@@ -2703,6 +2716,54 @@ class CrmLibrary
                     }
                 } else {
                     $this->contact->profile_picture = 'profile_person_big.png';
+                }
+                // save current setting values, so we can switch back to them after we got our used settings out of database
+                $prevSection = \Cx\Core\Setting\Controller\Setting::getCurrentSection();
+                $prevGroup   = \Cx\Core\Setting\Controller\Setting::getCurrentGroup();
+                $prevEngine  = \Cx\Core\Setting\Controller\Setting::getCurrentEngine();
+
+                \Cx\Core\Setting\Controller\Setting::init('Crm', 'config');
+                if($arrFormData["company"][0] != "") {
+                    $crmCompany = new \Cx\Modules\Crm\Model\Entity\CrmContact();
+                    if($this->contact->contact_customer != 0){
+                        $crmCompany->load($this->contact->contact_customer);
+                    }
+                    $crmCompany->customerName = $arrFormData["company"][0];
+                    $crmCompany->contactType = 1;
+
+                    $customerType = $arrFormData[
+                                        \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_type','Crm')
+                                    ]
+                                    [0];
+                    if ($customerType !== false) {
+                        $crmCompany->customerType = $customerType;
+                    }
+
+                    $companySize = $arrFormData[
+                                        \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_company_size','Crm')
+                                    ]
+                                    [0];
+                    if($companySize !== false){
+                        $crmCompany->companySize = $companySize;
+                    }
+
+                    $industryType = $arrFormData[
+                                        \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_type','Crm')
+                                    ]
+                                    [0];
+                    if($industryType !== false){
+                        $crmCompany->industryType = $industryType;
+                    }
+
+                    if(isset($arrFormData["phone_office"])){
+                        $crmCompany->phone = $arrFormData["phone_office"];
+                    }
+                    if($this->contact->email != $crmCompany->email){
+                        $crmCompany->email = $this->contact->email;
+                        $crmCompany->storeEMail();
+                    }
+                    $crmCompany->save();
+                    $this->contact->contact_customer = $crmCompany->id;
                 }
 
                 if ($this->contact->save()) {
@@ -2726,13 +2787,14 @@ class CrmLibrary
 
                     //insert address
                     if (!empty ($arrFormData['address'][0]) || !empty ($arrFormData['city'][0]) || !empty ($arrFormData['zip'][0]) || !empty ($arrFormData['country'][0])) {
-                        $addressExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` WHERE is_primary = 1 AND contact_id = '{$this->contact->id}'");
-                        if ($addressExists) {
+                        $addressExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` WHERE is_primary = '1' AND contact_id = '{$this->contact->id}'");
+                        $country = \Cx\Core\Country\Controller\Country::getById($arrFormData['country'][0]);
+                        if ($addressExists && $addressExists->RecordCount()) {
                             $query = "UPDATE `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` SET
                                     address      = '". contrexx_input2db($arrFormData['address'][0]) ."',
                                     city         = '". contrexx_input2db($arrFormData['city'][0]) ."',
                                     zip          = '". contrexx_input2db($arrFormData['zip'][0]) ."',
-                                    country      = '". $objDatabase->getOne("SELECT name FROM `".DBPREFIX."lib_country` WHERE id = '".$arrFormData['country'][0]."'") ."',
+                                    country      = '". $country['name'] ."',
                                     Address_Type = '2'
                                  WHERE is_primary   = '1' AND contact_id   = '{$this->contact->id}'";
                         } else {
@@ -2741,7 +2803,7 @@ class CrmLibrary
                                     city         = '". contrexx_input2db($arrFormData['city'][0]) ."',
                                     state        = '". contrexx_input2db($arrFormData['city'][0]) ."',
                                     zip          = '". contrexx_input2db($arrFormData['zip'][0]) ."',
-                                    country      = '". $objDatabase->getOne("SELECT name FROM `".DBPREFIX."lib_country` WHERE id = '".$arrFormData['country'][0]."'") ."',
+                                    country      = '". $country['name'] ."',
                                     Address_Type = '2',
                                     is_primary   = '1',
                                     contact_id   = '{$this->contact->id}'";
@@ -2759,7 +2821,7 @@ class CrmLibrary
                             'is_primary'    => '1',
                             'contact_id'    => $this->contact->id
                         );
-                        if ($phoneExists) {
+                        if ($phoneExists && $phoneExists->RecordCount()) {
                             $query  = \SQL::update("module_{$this->moduleNameLC}_customer_contact_phone", $fields, array('escape' => true))." WHERE is_primary = '1' AND `contact_id` = {$this->contact->id}";
                         } else {
                             $query  = \SQL::insert("module_{$this->moduleNameLC}_customer_contact_phone", $fields, array('escape' => true));
@@ -2767,6 +2829,7 @@ class CrmLibrary
                         $objDatabase->Execute($query);
                     }
                 }
+                \Cx\Core\Setting\Controller\Setting::init($prevSection, $prevGroup, $prevEngine);
             }
         }
     }
@@ -2784,10 +2847,10 @@ class CrmLibrary
         if (empty($objImage)) {
             $objImage = new \ImageManager();
         }
-
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         return $objImage->_createThumbWhq(
-                ASCMS_ACCESS_PROFILE_IMG_PATH.'/',
-                ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                $cx->getWebsiteImagesAccessProfilePath().'/',
+                $cx->getWebsiteImagesAccessProfileWebPath().'/',
                 $imageName,
                 80,
                 60,
@@ -2821,8 +2884,8 @@ class CrmLibrary
             $arrSettings['max_profile_pic_width']['value'] = 160;
             $arrSettings['max_profile_pic_height']['value'] = 160;
         }
-
-        $imageRepo = $profilePic ? ASCMS_ACCESS_PROFILE_IMG_PATH : ASCMS_ACCESS_PHOTO_IMG_PATH;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $imageRepo = $profilePic ? $cx->getWebsiteImagesAccessProfilePath() : $cx->getWebsiteImagesAccessPhotoPath();
         $index = 0;
         $imageName = $objUser->getId().'_'.$name;
         while (file_exists($imageRepo.'/'.$imageName)) {
@@ -2880,10 +2943,10 @@ class CrmLibrary
         if (empty($objImage)) {
             $objImage = new \ImageManager();
         }
-
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $objImage->_createThumbWhq(
-                CRM_ACCESS_PROFILE_IMG_PATH.'/',
-                CRM_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                $cx->getWebsiteImagesCrmProfilePath().'/',
+                $cx->getWebsiteImagesCrmProfileWebPath().'/',
                 $imageName,
                 40,
                 40,
@@ -2892,8 +2955,8 @@ class CrmLibrary
             );
 
         return $objImage->_createThumbWhq(
-                CRM_ACCESS_PROFILE_IMG_PATH.'/',
-                CRM_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                $cx->getWebsiteImagesCrmProfilePath().'/',
+                $cx->getWebsiteImagesCrmProfileWebPath().'/',
                 $imageName,
                 121,
                 160,
@@ -2905,90 +2968,40 @@ class CrmLibrary
     /**
      * Inits the uploader when displaying a contact form.
      *
-     * @param Integer $fieldId
-     * @param Boolean $restrictUpload2SingleFile
-     * @param String  $callBackFun
-     * @param Integer $data
-     * @param String  $dir
+     * @param string  $callBackFun
+     * @param string  $callBackJs
+     * @param array   $data
+     * @param string  $buttonText
+     * @param array   $options
      *
      * @return null
      */
-    function initUploader($fieldId, $restrictUpload2SingleFile = true, $callBackFun = 'uploadFinished', $data, $dir) {
+    function initUploader($callBackFun, $callBackJs, $data, $buttonText, $options = array()) {
         global $_ARRAYLANG;
         
         try {
             //init the uploader
-            \JS::activate('cx'); //the uploader needs the framework
-            $f = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance();
-
-            /**
-            * Name of the upload instance
-            */
-            $uploaderInstanceName = 'exposed_combo_uploader_'.$fieldId;
-
-            /**
-            * jQuery selector of the HTML-element where the upload folder-widget shall be put in
-            */
-            $uploaderFolderWidgetContainer = '#contactFormField_uploadWidget_'.$fieldId;
-            $uploaderWidgetName = 'uploadWidget'.$fieldId;
-
-            $uploader = $f->newUploader('exposedCombo', 0, $restrictUpload2SingleFile);
-            $uploadId = $uploader->getUploadId();
-
-            //set instance name so we are able to catch the instance with js
-            $uploader->setJsInstanceName($uploaderInstanceName);
-
-            // specifies the function to call when upload is finished. must be a static function
-            $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Crm/Controller/CrmManager.class.php', '\Cx\Modules\Crm\Controller\CrmManager', $callBackFun));
-            $uploadId = $uploader->getUploadId();
+            $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+            
+            if (!empty($callBackJs)) {
+                $uploader->setCallback($callBackJs);
+            }
+            
+            if (!empty($callBackFun)) {
+                $uploader->setFinishedCallback(array(
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath().'/Crm/Controller/CrmManager.class.php',
+                    '\Cx\Modules\Crm\Controller\CrmManager',
+                    $callBackFun
+                ));
+            }
+            $uploader->setOptions($options);
             $uploader->setData($data);
-
-            try {
-                //retrieve temporary location for uploaded files
-                $tup = self::getTemporaryUploadPath($uploadId, $fieldId, $dir);
-            } catch (\Exception $e) {
-                \DBG::log($e->getMessage());
-                \Message::warning(sprintf($_ARRAYLANG['TXT_CRM_TEMP_FOLDER_WRITE_ACCESS_ERROR'], \Env::get('cx')->getWebsiteTempPath()));
+            
+            if (empty($buttonText)) {
+                $buttonText = $_ARRAYLANG['TXT_MEDIA_UPLOAD_FILES'];
             }
-            //create the folder
-            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tup[1].'/'.$tup[2])) {
-                throw new \Cx\Core_Modules\Contact\Controller\ContactException("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
-            }
-
-            if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
-                //some hosters have problems with ftp and file system sync.
-                //this is a workaround that seems to somehow show php that
-                //the directory was created. clearstatcache() sadly doesn't
-                //work in those cases.
-                @closedir(@opendir($tup[0]));
-
-                if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
-                    throw new \Cx\Core_Modules\Contact\Controller\ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
-                }
-            }
-
-            //initialize the widget displaying the folder contents
-            $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2], $uploaderInstanceName);
-
-            $strInputfield = $folderWidget->getXHtml($uploaderFolderWidgetContainer, $uploaderWidgetName);
-            $strInputfield .= $uploader->getXHtml();
-
-            \JS::registerJS('core_modules/Upload/js/uploaders/exposedCombo/extendedFileInput.js');
-
-            $strInputfield .= <<<CODE
-            <script type="text/javascript">
-            cx.ready(function() {
-                    var ef = new ExtendedFileInput({
-                            field:  cx.jQuery('#contactFormFieldId_$fieldId'),
-                            instance: '$uploaderInstanceName',
-                            widget: '$uploaderWidgetName'
-                    });
-            });
-            </script>
-CODE;
-            return $strInputfield;
-        }
-        catch (Exception $e) {
+            return $uploader->getXHtml($buttonText); 
+        } catch (Exception $e) {
             return '<!-- failed initializing uploader, exception '.get_class($e).' with message "'.$e->getMessage().'" -->';
         }
     }
@@ -3046,7 +3059,7 @@ CODE;
         foreach ($resources as $key => $value) {
             $emailIds[]    = $value['email'];
         }
-        
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         foreach ($emailIds As $emails) {
             if (!empty ($emails)) {
                 $objUsers = $objFWUser->objUser->getUsers($filter = array('email' => addslashes($emails)));
@@ -3056,9 +3069,9 @@ CODE;
                     'CRM_CONTACT_FIRSTNAME'             => contrexx_raw2xhtml($first_name),
                     'CRM_CONTACT_LASTNAME'              => contrexx_raw2xhtml($last_name),
                     'CRM_CONTACT_GENDER'                => contrexx_raw2xhtml($contact_gender),
-                    'CRM_DOMAIN'                        => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}".ASCMS_PATH_OFFSET,
-                    'CRM_CONTACT_DETAILS_URL'           => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id=$customerId",
-                    'CRM_CONTACT_DETAILS_LINK'          => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id=$customerId'>".$customer_name."</a>"
+                    'CRM_DOMAIN'                        => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". $cx->getCodeBaseOffsetPath(),
+                    'CRM_CONTACT_DETAILS_URL'           => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". $cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName() ."/index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id=$customerId",
+                    'CRM_CONTACT_DETAILS_LINK'          => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". $cx->getCodeBaseOffsetPath(). $cx->getBackendFolderName() ."/index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id=$customerId'>".$customer_name."</a>"
                 );
                 //setting email template lang id
                 $availableMailTempLangAry = $this->getActiveEmailTemLangId('Crm', CRM_EVENT_ON_ACCOUNT_UPDATED);
@@ -3223,6 +3236,27 @@ CODE;
         return $result->fields['user_account'];
     }
 
+    /**
+     * Get the crm user id by user id
+     * 
+     * @param integer $userId
+     * 
+     * @return boolean|integer
+     */
+    public function getCrmUserIdByUserId($userId) {
+        global $objDatabase;
+        
+        if (empty($userId)) {
+            return false;
+        }
+        
+        $result = $objDatabase->SelectLimit("SELECT `id` FROM `" . DBPREFIX . "module_crm_contacts` WHERE `user_account` = " . intval($userId));
+        if ($result->RecordCount() == 0) {
+            return null;
+        }
+        return $result->fields['id'];
+    }
+    
     /**
      * Get username
      *

@@ -81,10 +81,19 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         global $_ARRAYLANG;
         
-        $orders = $this->orderRepository->findAll();
-        if (empty($orders)) {
-            $orders = new \Cx\Modules\Order\Model\Entity\Order();
+        $term          = isset($_GET['filter-term']) ? contrexx_input2raw($_GET['filter-term']) : '';
+        $filterUserId  = isset($_GET['filter-user-id']) ? contrexx_input2raw($_GET['filter-user-id']) : 0;
+        $objFilterUser = null;
+        
+        if (!empty($term) || !empty($filterUserId)) {
+            if ($filterUserId) {
+                $objFilterUser = \FWUser::getFWUserObject()->objUser->getUser($filterUserId);
+            }
+            $orders = $this->orderRepository->findOrdersBySearchTerm($term, $objFilterUser);
+        } else {
+            $orders = $this->orderRepository->getAllByDesc();
         }
+        
         $view = new \Cx\Core\Html\Controller\ViewGenerator($orders, array(
             'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_DEFAULT'],
             'functions' => array(
@@ -100,9 +109,23 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                     'header' => 'contactId',
                     'table' => array(
                         'parse' => function($value) {
+                            global $_ARRAYLANG;
                             $userId   = \Cx\Modules\Crm\Controller\CrmLibrary::getUserIdByCrmUserId($value);
                             $userName = \FWUser::getParsedUserTitle($userId);
-                            $url = '<a href=​index.php?cmd=Access&act=user&tpl=modify&id='. $userId .'>' . $userName . '</a>';
+                            $crmDetailLink = "<a href='index.php?cmd=Crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={$value}' 
+                                                    title='{$_ARRAYLANG['TXT_MODULE_ORDER_CRM_CONTACT']}'>
+                                                    <img 
+                                                        src='".\Env::get('cx')->getCodeBaseCoreWebPath()."/Core/View/Media/navigation_level_1_189.png' 
+                                                        width='16' height='16' 
+                                                        alt='{$_ARRAYLANG['TXT_MODULE_ORDER_CRM_CONTACT']}'
+                                                    />
+                                                </a>";
+                                                        
+                            $url = "<a href='index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id={$userId}'
+                                       title='{$_ARRAYLANG['TXT_MODULE_ORDER_MODIY_USER_ACCOUNT']}'>" .
+                                       $userName .
+                                    "</a>" . 
+                                    $crmDetailLink;
                             return $url;
                         },
                     ),
@@ -110,22 +133,49 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
                 'subscriptions' => array(
                     'header' => 'subscriptions',
                     'table'  => array(
-                        'parse' => function ($value, $arrayData) {
-                            $subscription  = \Env::get('em')->getRepository('\Cx\Modules\Order\Model\Entity\Subscription')->findOneBy(array('id' => $arrayData['id']));
-                            if (!$subscription) {
-                                return;
+                        'parse' => function ($subscriptions) {
+                            $result = array();
+                            foreach ($subscriptions as $subscription) {
+                                $productEntity     = $subscription->getProductEntity();
+                                $productEntityName = $subscription->getProduct()->getName();
+                                if(!$productEntity) {
+                                    continue;
+                                }
+                                $productEditLink = $productEntity;
+                                if (method_exists($productEntity, 'getEditLink')) {
+                                    $productEditLink = $productEntity->getEditLink();
+                                }
+                                $subscriptionEditUrl = '<a href=​index.php?cmd=Order&act=subscription&editid='. $subscription->getId() .'>' . $productEntityName . '</a>';
+                                
+                                $result[] = $subscriptionEditUrl . ' (' . $productEditLink . ')';
                             }
-                            $productEntity = $subscription->getProductEntity();
-                            $productEntityName = $subscription->getProduct()->getName();
-                            if(!$productEntity) {
-                                return;
-                            }
-                            return $productEntityName . ' (' . $productEntity . ')';
+                            
+                            return implode(', ', $result);
                         }
                     )
                 ),
             ),
         ));
+
+        if ((isset($_GET['editid']) && !empty($_GET['editid'])) || (isset($_GET['add']) && !empty($_GET['add']))) {
+            $this->template->hideBlock("order_filter");
+        } else {
+            \FWUser::getUserLiveSearch(array(
+                'minLength' => 1,
+                'canCancel' => true,
+                'canClear'  => true
+            ));
+                        
+            $this->template->setVariable(array(
+                'TXT_MODULE_ORDER_SEARCH'       => $_ARRAYLANG['TXT_MODULE_ORDER_SEARCH'],
+                'TXT_MODULE_ORDER_FILTER'       => $_ARRAYLANG['TXT_MODULE_ORDER_FILTER'],
+                'TXT_MODULE_ORDER_SEARCH_TERM'  => $_ARRAYLANG['TXT_MODULE_ORDER_SEARCH_TERM'],                
+                'ORDER_SEARCH_VALUE'            => isset($_GET['filter-term']) ? contrexx_input2xhtml($_GET['filter-term']) : '',
+                'ORDER_USER_ID'                 => contrexx_raw2xhtml($filterUserId),
+                'ORDER_USER_NAME'               => $objFilterUser ? contrexx_raw2xhtml(\FWUser::getParsedUserTitle($objFilterUser)) : '',
+            ));
+        }
+        
         $this->template->setVariable('ORDERS_CONTENT', $view->render());
     }
 }

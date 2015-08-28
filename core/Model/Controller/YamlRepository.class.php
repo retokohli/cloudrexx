@@ -101,9 +101,9 @@ class YamlRepository {
     public function __construct($repositoryPath) {
         if (empty($repositoryPath)) {
             throw new YamlRepositoryException('No repository specified!');
-        }
+       }
 
-        $this->repositoryPath = $repositoryPath;
+        $this->repositoryPath = $repositoryPath; 
         $this->load();
     }
 
@@ -123,7 +123,9 @@ class YamlRepository {
      */
     protected function load() {
         $this->reset();
-
+        
+        if(!$this->fileExistsAndNotEmpty($this->repositoryPath)) return false;
+        
         list($meta, $entities) = $this->loadData();
 
         $this->entityAutoIncrement = $meta['auto_increment'];
@@ -177,7 +179,7 @@ class YamlRepository {
         if (isset($this->entities[$id])) {
             return $this->entities[$id];
         }
-
+        
         throw new YamlRepositoryException("No entity found by $this->entityIdentifier = $id!");
     }
 
@@ -230,6 +232,7 @@ class YamlRepository {
         }
         $this->validate($entity);
         $this->entities[$this->getIdentifierOfEntity($entity)] = $entity;
+        
         if (!$entity->isVirtual()) {
             $this->addedEntities[] = $entity;
             \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
@@ -261,7 +264,9 @@ class YamlRepository {
             // As even virtual entities must comply with the unique-key restrictions.
             $this->validate($entity);
             if ($entity->isVirtual()) {
-                continue;
+                if(!isset($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)])) {
+                    continue;
+                }
             }
             if (isset($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)])) {
                 if ($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)] != $entity) {
@@ -270,11 +275,12 @@ class YamlRepository {
             }
             $entitiesToPersist[$this->getIdentifierOfEntity($entity)] = $entity;
         }
-
+        
         foreach ($this->updatedEntities as $entity) {
             \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
         }
-
+        
+        $this->prepareFile($this->repositoryPath, $this->entityUniqueKeys, $this->entityIdentifier);
         $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet();
         $dataSet->add('data', $entitiesToPersist);
         $dataSet->add('meta', $this->getMetaDefinition());
@@ -357,6 +363,54 @@ class YamlRepository {
             $identifierKey = $this->entityIdentifier;
         }
         return call_user_func(array($entity, "get".ucfirst($identifierKey)));
+    }
+        
+    /**
+     * Checks if file exists, if not - creates new one with metadata
+     * 
+     * @param string $filename
+     * @param array $unique_keys
+     * @param string $identifier
+     * @return boolean
+     * @throws \Cx\Core\Setting\Controller\SettingException
+     */
+    protected function prepareFile($filename, $unique_keys = array(), $identifier) {
+        
+        if($this->fileExistsAndNotEmpty($filename)) return true;
+        \DBG::log('Creating new file');
+        try {
+            $file = new \Cx\Lib\FileSystem\File($filename);
+            $file->touch();
+            $data = trim($file->getData());
+            if(empty($data)) {
+                $inidata = 
+                    "meta:\n" .
+                    "   auto_increment: 1\n";
+                if(!empty($identifier)) {
+                    $inidata .= "   identifier: $identifier\n";
+                }
+                if(!empty($unique_keys)) {
+                    $inidata .= "   unique_keys:\n";
+                    foreach($unique_keys as $key) {        
+                        $inidata .= "        - $key";
+                    }
+                }    
+                $file->write($inidata);
+            }
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::log('EX ' . $e->getMessage());
+            throw new \Cx\Core\Setting\Controller\YamlRepositoryException($e->getMessage());
+        }  
+    }
+    
+    /**
+     * Checks if file exists and is not empty
+     * 
+     * @param string $filename
+     * @return bool
+     */
+    protected function fileExistsAndNotEmpty($filename) {
+        return (file_exists($filename) && filesize($filename) > 0);
     }
 }
 

@@ -66,6 +66,18 @@ class DataSet implements \Iterator {
              throw new DataSetException('Supplied argument could not be converted to DataSet');
         }
     }
+    
+    /**
+     * Try to remove the declared key from the dataset
+     * @param string $key
+     * @throws DataSetException
+     */
+    public function remove($key) {
+        if (!isset($this->data[$key])) {
+            throw new DataSetException('Could not remove the declared key because the key does not exist in the DataSet');
+        }
+        unset($this->data[$key]);
+    }
 
     /**
      * Appends the data of passed $dataSet to the current object and rewinds it
@@ -123,7 +135,7 @@ class DataSet implements \Iterator {
             $data['virtual'] = $object->isVirtual();
             return $data;
         }
-       foreach ($object as $attribute => $property) {
+        foreach ($object as $attribute => $property) {
             if (is_object($property)) {
                 $data[$attribute] = $this->convertObject($property, $key);
             } else {
@@ -296,26 +308,24 @@ class DataSet implements \Iterator {
      *     [{fieldname2} => SORT_ASC|SORT_DESC,
      *     [...]]
      * )
-     * @todo Cleanup and efficiency
-     * @todo Allow sorting by multiple fields (not possible yet)
      * @param array $order Fields and order to sort
      * @return DataSet Sorted DataSet (new instance)
      */
     public function sort($order) {
-        $sortField = key($order);
-        $sortOrder = current($order);
-        //echo 'Sorting ' . $sortField . ' by ' . $sortOrder;
+        $data = $this->data;
         
-        $data = $this->toArray();
-        
-        // Obtain a list of columns (this could be done more efficient)
-        $colData = $this->flip($data);
-        if (!isset($colData[$sortField])) {
-            return clone $this;
-        }
-        // Sort the data with volume descending, edition ascending
-        // Add $data as the last parameter, to sort by the common key
-        array_multisort($colData[$sortField], $sortOrder, $data);
+        uasort($data, function($a, $b) use($order) {
+            $diff = 1;
+            $orderMultiplier = 1;
+            foreach ($order as $sortField=>$sortOrder) {
+                $orderMultiplier = $sortOrder == SORT_ASC ? 1 : -1;
+                $diff = $a[$sortField] < $b[$sortField];
+                if ($a[$sortField] !== $b[$sortField]) {
+                    return ($diff ? -1 : 1) * $orderMultiplier;
+                }
+            }
+            return ($diff ? -1 : 1) * $orderMultiplier;
+        });
         
         return new static($data);
     }
@@ -331,24 +341,43 @@ class DataSet implements \Iterator {
     }
     
     /**
-     * Flips an 2 dimensional array
-     * @todo Rethink this method, may return a new DataSet instance and remove param
-     * @todo Does not work with only one entry
+     * Returns a flipped version of this DataSet
      * @param array $arr Array to flip
-     * @return array Flipped array
+     * @return DataSet Flipped DataSet (new instance)
      */
-    private function flip($arr) {
-        $out = array();
-        foreach ($arr as $key => $subarr) {
-        if (!$this->is_iterable($subarr)) {
-            $out[0][$key] = $subarr;
-            continue;
-        }
+    public function flip() {
+        $result = array();
+        
+        foreach ($this as $key => $subarr) {
+            if (!$this->is_iterable($subarr)) {
+                $result[0][$key] = $subarr;
+                continue;
+            }
             foreach ($subarr as $subkey => $subvalue) {
-                 $out[$subkey][$key] = $subvalue;
+                 $result[$subkey][$key] = $subvalue;
             }
         }
 
-        return $out;
+        return new static($result);
+    }
+    
+    /**
+     * Sort the columns after the given array.
+     * Not defined columns are sorted after the default
+     * @param type $orderArr Array with the new order
+     */
+    public function sortColumns($orderArr) {
+        foreach ($this->data as $key => $val) {
+            $sortedData = array();
+            foreach ($orderArr as $orderKey => $orderVal) {
+                if(array_key_exists($orderVal, $val)){
+                    $sortedData[$orderVal] = $val[$orderVal];
+                } else {
+                    unset($orderArr[$orderKey]);
+                }
+            }
+            $this->data[$key] = array_merge($sortedData, $val);
+        }
     }
 }
+

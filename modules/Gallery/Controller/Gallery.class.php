@@ -161,7 +161,9 @@ class Gallery
             $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
             $imageName = $objSubResult->fields['name'];
             $imageDesc = $objSubResult->fields['desc'];
-            $imageSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
+            //show image size based on the settings of "Show image size"
+            $showImageSize   = $this->arrSettings['show_image_size'] == 'on' && $objResult->fields['size_show'];
+            $imageSize       = ($showImageSize) ? round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2) : '';
             $strImageWebPath = ASCMS_PROTOCOL .'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
             $objResult->MoveNext();
         }
@@ -215,7 +217,7 @@ class Gallery
         if ($this->arrSettings['show_ext'] == 'off') {
             $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
         }
-
+        
         if ($this->arrSettings['show_file_name'] == 'off') {
             $strImageTitle = "";
             $imageSize="";
@@ -243,7 +245,7 @@ class Gallery
             'GALLERY_IMAGE_LINK'        => $strImageWebPath,
             'GALLERY_IMAGE_NAME'        => $imageName,
             'GALLERY_IMAGE_DESCRIPTION' => $imageDesc,
-            'GALLERY_IMAGE_FILESIZE'    => $openBracket.$imageSize.$kB.$closeBracket,
+            'GALLERY_IMAGE_FILESIZE'    => ($showImageSize) ? $openBracket.$imageSize.$kB.$closeBracket : '',
         ));
 
         if ($this->arrSettings['header_type'] == 'hierarchy') {
@@ -419,15 +421,22 @@ class Gallery
             "SELECT value FROM ".DBPREFIX."module_gallery_language ".
             "WHERE gallery_id=$intCatId AND lang_id=$this->langId ".
             "AND name='desc' LIMIT 1");
-        $strCategoryComment = $objResult->fields['value'];
+        $strCategoryComment = '';
+        if ($objResult && $objResult->RecordCount()) {
+            $strCategoryComment = $objResult->fields['value'];
+        }
 
         $objResult = $objDatabase->Execute(
             "SELECT comment, voting ".
             "FROM ".DBPREFIX."module_gallery_categories ".
             "WHERE id=$intCatId");
-        $boolComment = $objResult->fields['comment'];
-        $boolVoting = $objResult->fields['voting'];
-
+        $boolComment = '';
+        $boolVoting = '';
+        if ($objResult && $objResult->RecordCount()) {
+            $boolComment = $objResult->fields['comment'];
+            $boolVoting = $objResult->fields['voting'];
+        }
+        
         // get picture informations
         $objResult = $objDatabase->Execute(
             "SELECT id, path, link, size_show ".
@@ -441,21 +450,25 @@ class Gallery
             $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
             $imageName = $objSubResult->fields['name'];
             $imageDesc = $objSubResult->fields['desc'];
-            $imageSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
+            //show image size based on the settings of "Show image size"
+            $showImageSize = $this->arrSettings['show_image_size'] == 'on' && $objResult->fields['size_show'];
+            $imageSize = ($showImageSize) ? round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2) : '';
             $strImageWebPath = ASCMS_PROTOCOL .'://'.$_SERVER['SERVER_NAME'].CONTREXX_SCRIPT_PATH.'?section=Gallery'.$this->strCmd.'&amp;cid='.$intCatId.'&amp;pId='.$intPicId;
             $objResult->MoveNext();
         }
-
+        
         // get pictures of the current category
         $objResult = $objDatabase->Execute(
             "SELECT id FROM ".DBPREFIX."module_gallery_pictures ".
             "WHERE status='1' AND validated='1' AND catid=$intCatId ".
             "ORDER BY sorting, id");
-        while (!$objResult->EOF) {
-            array_push($arrPictures,$objResult->fields['id']);
-            $objResult->MoveNext();
+        if ($objResult && $objResult->RecordCount()) {
+            while (!$objResult->EOF) {
+                array_push($arrPictures,$objResult->fields['id']);
+                $objResult->MoveNext();
+            }
         }
-
+        
         // get next picture id
         if (array_key_exists(array_search($intPicId,$arrPictures)+1,$arrPictures)) {
             $intPicIdNext = $arrPictures[array_search($intPicId,$arrPictures)+1];
@@ -487,6 +500,8 @@ class Gallery
             'TXT_NEXT_IMAGE'      => $_ARRAYLANG['TXT_NEXT_IMAGE'],
             'TXT_USER_DEFINED'    => $_ARRAYLANG['TXT_USER_DEFINED']
         ));
+        
+        $imageSize     = ($showImageSize) ? $_ARRAYLANG['TXT_FILESIZE'].': '.$imageSize.' kB<br />' : '';
         // set variables
         $objTpl->setVariable(array(
             'CONTREXX_CHARSET'        => CONTREXX_CHARSET,
@@ -502,10 +517,12 @@ class Gallery
             'IMAGE_HEIGHT'          => $imageReso[1],
             'IMAGE_LINK'            => $strImageWebPath,
             'IMAGE_NAME'            => $strImageTitle, //$imageName,
-            'IMAGE_DESCRIPTION'     => $_ARRAYLANG['TXT_IMAGE_NAME'].': '.$imageName.'<br />'.$_ARRAYLANG['TXT_FILESIZE'].': '.$imageSize.' kB<br />'.$_ARRAYLANG['TXT_RESOLUTION'].': '.$imageReso[0].'x'.$imageReso[1].' Pixel',
+            'IMAGE_DESCRIPTION'     => $_ARRAYLANG['TXT_IMAGE_NAME'].': '.$imageName.'<br />'
+                                       . $imageSize
+                                       . $_ARRAYLANG['TXT_RESOLUTION'].': '.$imageReso[0].'x'.$imageReso[1].' Pixel',
             'IMAGE_DESC'            => (!empty($imageDesc)) ? $imageDesc.'<br /><br />' : '',
         ));
-
+        
         $objTpl->setGlobalVariable('CONTREXX_DIRECTORY_INDEX', CONTREXX_DIRECTORY_INDEX);
 
         //voting
@@ -786,8 +803,10 @@ class Gallery
         $objResult = $objDatabase->Execute(
             "SELECT id, catid, path FROM ".DBPREFIX."module_gallery_pictures ".
             "ORDER BY catimg ASC, sorting ASC, id ASC");
+        
+        $showImageSizeOverview   = $this->arrSettings['show_image_size'] == 'on';
         while (!$objResult->EOF) {
-            $arrImageSizes[$objResult->fields['catid']][$objResult->fields['id']] = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
+            $arrImageSizes[$objResult->fields['catid']][$objResult->fields['id']] = ($showImageSizeOverview) ? round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2) : '';
             $arrstrImagePaths[$objResult->fields['catid']][$objResult->fields['id']] = $this->strThumbnailWebPath.$objResult->fields['path'];
             $objResult->MoveNext();
         }
@@ -849,7 +868,7 @@ class Gallery
                     $arrCategoryLang[$objSubResult->fields['name']] = $objSubResult->fields['value'];
                     $objSubResult->MoveNext();
                 }
-
+                
                 if (empty($arrCategoryImages[$objResult->fields['id']])) {
                     // no pictures in this gallery, show the empty-image
                     $strName     = $arrCategoryLang['name'];
@@ -857,14 +876,14 @@ class Gallery
                     $strImage     = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
                     $strImage     .= '<img border="0" alt="'.$arrCategoryLang['name'].'" src="modules/Gallery/View/Media/no_images.gif" /></a>';
                     $strInfo     = $_ARRAYLANG['TXT_IMAGE_COUNT'].': 0';
-                    $strInfo     .= '<br />'.$_CORELANG['TXT_SIZE'].': 0kB';
+                    $strInfo    .= $showImageSizeOverview ? '<br />'.$_CORELANG['TXT_SIZE'].': 0kB' : '';
                 } else {
                     $strName    = $arrCategoryLang['name'];
                     $strDesc    = $arrCategoryLang['desc'];
                     $strImage     = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=Gallery&amp;cid='.$objResult->fields['id'].$this->strCmd.'" target="_self">';
                     $strImage     .= '<img border="0" alt="'.$arrCategoryLang['name'].'" src="'.$arrCategoryImages[$objResult->fields['id']].'" /></a>';
                     $strInfo     = $_ARRAYLANG['TXT_IMAGE_COUNT'].': '.$arrCategoryImageCounter[$objResult->fields['id']];
-                    $strInfo     .= '<br />'.$_CORELANG['TXT_SIZE'].': '.$arrCategorySizes[$objResult->fields['id']].'kB';
+                    $strInfo    .= $showImageSizeOverview ? '<br />'.$_CORELANG['TXT_SIZE'].': '.$arrCategorySizes[$objResult->fields['id']].'kB' : '';
                 }
 
                 $this->_objTpl->setVariable(array(
@@ -924,11 +943,12 @@ class Gallery
             $this->_objTpl->setVariable(array('GALLERY_CATEGORY_COMMENT' =>    $strCategoryComment));
             $intFillLastRow = 1;
             while (!$objResult->EOF) {
+                $imageVotingOutput = '';
+                $imageCommentOutput = '';
                 $objSubResult = $objDatabase->Execute(
                     "SELECT p.name, p.desc FROM ".DBPREFIX."module_gallery_language_pics p ".
                     "WHERE picture_id=".$objResult->fields['id']." AND lang_id=$this->langId LIMIT 1");
-
-                $imageFileSize = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
+                
 // Never used
 //                $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
                 $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
@@ -938,7 +958,8 @@ class Gallery
                 $imageTitle = $this->arrSettings['show_names'] == 'on' ? $objSubResult->fields['name'] : ($this->arrSettings['show_file_name'] == 'on' ? $objResult->fields['path'] : '');
                 $imageLinkName = $objSubResult->fields['desc'];
                 $imageLink = $objResult->fields['link'];
-                $imageSizeShow = $objResult->fields['size_show'];
+                $showImageSize = $this->arrSettings['show_image_size'] == 'on' && $objResult->fields['size_show'];
+                $imageFileSize = ($showImageSize) ? round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2) : '';
                 $imageLinkOutput = '';
                 $imageSizeOutput = '';
                 $imageTitleTag = '';
@@ -973,7 +994,7 @@ class Gallery
                 if ($this->arrSettings['show_names'] == 'on' || $this->arrSettings['show_file_name'] == 'on') {
                     $imageSizeOutput = $imageName;
                     $imageTitleTag   = $imageName;
-                    if ($this->arrSettings['show_file_name'] == 'on' || $imageSizeShow) {
+                    if ($this->arrSettings['show_file_name'] == 'on' || $showImageSize) {
                         $imageData = array();
                         if ($this->arrSettings['show_file_name'] == 'on') {
                             if ($this->arrSettings['show_names'] == 'off') {
@@ -987,7 +1008,7 @@ class Gallery
                         if (!empty($imageData)) {
                             $imageTitleTag .= ' ('.join(' ', $imageData).')';
                         }
-                        if ($imageSizeShow == '1') {
+                        if ($showImageSize) {
                             // the size of the file has to be shown
                             $imageData[] = $imageFileSize.' kB';
                         }
@@ -1030,8 +1051,6 @@ class Gallery
                         } else {
                             $imageCommentOutput = $objSubResult->RecordCount().' '.$_ARRAYLANG['TXT_COMMENTS_ADD_COMMENTS'].'<br />';
                         }
-                    } else {
-                        $imageCommentOutput = '';
                     }
                 }
 
@@ -1046,8 +1065,6 @@ class Gallery
                             $objSubResult->MoveNext();
                         }
                         $imageVotingOutput = $_ARRAYLANG['TXT_VOTING_SCORE'].'&nbsp;&Oslash;'.number_format(round($intMark / $objSubResult->RecordCount(),1),1,'.','\'').'<br />';
-                    } else {
-                        $imageVotingOutput = '';
                     }
                 }
 
@@ -1233,7 +1250,7 @@ END;
     */
     function countVoting($intPicId,$intMark)
     {
-        global $objDatabase, $objCache;
+        global $objDatabase;
 
         $intPicId = intval($intPicId);
         $categoryId = $this->getCategoryId($intPicId);
@@ -1274,8 +1291,9 @@ END;
                 "SET picid=$intPicId, date=".time().", ip='".$_SERVER['REMOTE_ADDR']."', ".
                 "md5='".$strMd5."', mark=$intMark");
             setcookie('Gallery_Voting_'.$intPicId,$intMark,$intCookieTime, ASCMS_PATH_OFFSET.'/');
-
-            $objCache->deleteAllFiles();
+            $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
+            $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
+            $cacheManager->deleteSingleFile($pageId);
         }
     }
 

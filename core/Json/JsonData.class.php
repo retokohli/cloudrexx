@@ -63,13 +63,16 @@ class JsonData {
      * @author Michael Ritter <michael.ritter@comvation.com>
      */
     public function __construct() {
-        foreach (self::$adapter_classes as $ns=>$adapters) {
+            foreach (self::$adapter_classes as $ns=>$adapters) {
             foreach ($adapters as $adapter) {
                 $this->loadAdapter($adapter, $ns);
             }
         }
     }
     
+    /**
+     * @deprecated Use component framework instead (SystemComponentController->getControllersAccessableByJson())
+     */
     public static function addAdapter($className, $namespace = '\\') {
         if (!$className) {
             return;
@@ -88,8 +91,10 @@ class JsonData {
      * 
      * Either specify a fully qualified classname, or a classname and the containing
      * namespace separatly
+     * @todo Adapter loading could be optimized
      * @param string $className Fully qualified or class name located in $namespace
      * @param string $namespace (optional) Namespace for non fully qualified class name
+     * @throws \Exception if JsonAdapter interface is not implemented or controller can not be found
      */
     public function loadAdapter($className, $namespace = '') {
         if (substr($className, 0, 1) == '\\') {
@@ -97,22 +102,55 @@ class JsonData {
         } else {
             $adapter = $namespace . '\\' . $className;
         }
-        // check if its an adapter!
         
-        // find proper systemcomponent instead of empty one
-        $nsParts = explode('\\', $namespace);
-        $possibleComponentName = $nsParts[2];
+        // check if its an adapter!
+        if (!is_a($adapter, '\Cx\Core\Json\JsonAdapter', true)) {
+            throw new \Exception('Tried to load class as JsonAdapter, but interface is not implemented: "' . $adapter . '"');
+        }
+        
+        // load specified controller
+        $matches = array();
+        preg_match('/\\\\?Cx\\\\(?:Core|Core_Modules|Modules|modules)\\\\([^\\\\]*)/', $adapter, $matches);
+        $possibleComponentName = '';
+        if (isset($matches[1])) {
+            $possibleComponentName = $matches[1];
+        }
+        $nsParts = explode('\\', $adapter);
+        $controllerClass = end($nsParts);
+        
+        // legacy adapter
+        if (in_array($possibleComponentName, array('Json', 'Survey', 'Crm'))) {
+            $this->loadLegacyAdapter($adapter);
+            return;
+        }
+        
         $em = \Env::get('cx')->getDb()->getEntityManager();
         $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $component = $componentRepo->findOneBy(array('name'=>$possibleComponentName));
         if (!$component) {
-            // legacy adapter
-            $object = new $adapter();
-            $this->adapters[$object->getName()] = $object;
+            $this->loadLegacyAdapter($adapter);
             return;
+            //throw new \Exception('JsonAdapter component could not be found: "' . $adapter . '"');
         }
-        // new adapter
-        $object = new $adapter($component->getSystemComponent(), \Env::get('cx'));
+        $object = $component->getController(preg_replace('/Controller$/', '', $controllerClass));
+        if (!$object) {
+            $this->loadLegacyAdapter($adapter, $component);
+            return;
+            //throw new \Exception('JsonAdapter controller could not be found: "' . $adapter . '"');
+        }
+        $this->adapters[$object->getName()] = $object;
+    }
+    
+    /**
+     * @deprecated: This load adapter in a way they shouldn't be loaded
+     */
+    protected function loadLegacyAdapter($adapter, $component = null) {
+        \DBG::msg('Loading legacy JsonAdapter: ' . $adapter);
+        if ($component) {
+            $object = new $adapter($component->getSystemComponent(), \Env::get('cx'));
+        } else {
+            $object = new $adapter();
+        }
         $this->adapters[$object->getName()] = $object;
     }
 
@@ -172,15 +210,29 @@ class JsonData {
         $adapter = $this->adapters[$adapter];
         $methods = $adapter->getAccessableMethods();
         $realMethod = '';
-        if (in_array($method, $methods) || array_key_exists($method, $methods)) {
-            $realMethod = $method;
+        
+        /*
+         * $adapter->getAccessableMethods() might return two type of arrays
+         * Format 1: array('method1', 'method2')
+         * Format 2: array('method1' => new \Cx\Core_Modules\Access\Model\Entity\Permission())
+         */
+        foreach ($methods as $methodName => $methodValue) {
+            if ($methodValue instanceof \Cx\Core_Modules\Access\Model\Entity\Permission) {
+                $realMethod = ($methodName == $method) ? $method : '';
+            } elseif ($methodValue == $method) {
+                $realMethod = $method;
+            }
+            
+            if (!empty($realMethod)) {
+                break;
+            }
         }
         
         if ($realMethod == '') {
             return $this->getErrorData('No such method: ' . $method);
         }
         //permission checks
-        $objPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null);
+        $objPermission = new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, null, null);
         $defaultPermission = $adapter->getDefaultPermissions();
         if (!empty($methods[$method]) && ($methods[$method] instanceof \Cx\Core_Modules\Access\Model\Entity\Permission)) {
             $objPermission = $methods[$method];
@@ -238,7 +290,7 @@ class JsonData {
      * </pre>
      * @return mixed Decoded JSON on success, false otherwise
      */
-    public function getJson($url, $data = array(), $secure = false, $certificateFile = '', $httpAuth=array()) {
+    public function getJson($url, $data = array(), $secure = false, $certificateFile = '', $httpAuth=array(), $files = array()) {
         $request = new \HTTP_Request2($url, \HTTP_Request2::METHOD_POST);
 
         if (!empty($httpAuth)) {
@@ -258,12 +310,24 @@ class JsonData {
         foreach ($data as $name=>$value) {
             $request->addPostParameter($name, $value);
         }
+        
+        if (!empty($files)) {
+            foreach ($files as $fieldId => $file) {
+                $request->addUpload($fieldId, $file);
+            }
+        }
+        
         if ($this->sessionId !== null) {
             $request->addCookie(session_name(), $this->sessionId);
         }
         $request->setConfig(array(
+            // disable ssl peer verification
             'ssl_verify_host' => false,
             'ssl_verify_peer' => false,
+            // follow HTTP redirect
+            'follow_redirects' => true,
+            // resend original request to new location
+            'strict_redirects' => true,
         ));
         $response = $request->send();
         //echo '<pre>';var_dump($response->getBody());echo '<br /><br />';

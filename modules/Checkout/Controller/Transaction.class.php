@@ -151,6 +151,8 @@ class Transaction {
         } else if (empty($offset) && !empty($limit)) {
             $SQLLimit = ' LIMIT '.intval($limit);
         }
+        
+        $countries = \Cx\Core\Country\Controller\Country::getNameArray();
 
         $arrTransactions = array();
         $objResult = $this->objDatabase->Execute('
@@ -171,7 +173,7 @@ class Transaction {
                 `countries`.`name` as `contact_country`,
                 `transactions`.`contact_phone`,
                 `transactions`.`contact_email`
-            FROM `'.DBPREFIX.'module_checkout_transactions` as `transactions` LEFT JOIN `'.DBPREFIX.'lib_country` as `countries` ON `countries`.`id`=`transactions`.`contact_country`
+            FROM `'.DBPREFIX.'module_checkout_transactions` as `transactions`
             '.$SQLWhere.'
             ORDER BY `transactions`.`id` DESC'
             .$SQLLimit);
@@ -193,7 +195,7 @@ class Transaction {
                 $arrTransactions[$i]['contact_street'] = $objResult->fields['contact_street'];
                 $arrTransactions[$i]['contact_postcode'] = $objResult->fields['contact_postcode'];
                 $arrTransactions[$i]['contact_place'] = $objResult->fields['contact_place'];
-                $arrTransactions[$i]['contact_country'] = $objResult->fields['contact_country'];
+                $arrTransactions[$i]['contact_country'] = $countries[$objResult->fields['contact_country']];
                 $arrTransactions[$i]['contact_phone'] = $objResult->fields['contact_phone'];
                 $arrTransactions[$i]['contact_email'] = $objResult->fields['contact_email'];
                 $objResult->MoveNext();

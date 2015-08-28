@@ -16,18 +16,12 @@
             }
         });
         $J("#browse").click(function(){
-           $J("#contactFormFieldId_taskType").trigger('click');
+           $J("#taskUploader").trigger('click');
         });
     });
 </script>
-<style type="text/css">
-    input.contactFormField {
-        position: absolute;
-        left: -5000px;
-    }
-</style>
 <div id="formerr" style="display: none;"></div>
-<form action="" method="post" id="addTasktype">
+<form method="post" id="addTasktype">
     <table class="adminlist" width="100%" cellspacing="0" cellpadding="3">
         <tr>
             <th colspan="2">{TXT_CRM_ADD_TASK_TYPE}</th>
@@ -49,8 +43,6 @@
         <tr class="row2">
             <td width="10%">{TXT_CRM_ICON}</td>
             <td width="90%">
-                <div id="contactFormField_uploadWidget_taskType"></div>
-                <input type="file" class="contactFormField" id="contactFormFieldId_taskType" name="contactFormFieldId_taskType" value="" />
                 <input type="text" name="icon" id="icon" value="{CRM_TASK_TYPE_ICON}" style="width: 198px;"/>&nbsp;<input type="button" name="browse" id="browse" value="{TXT_BROWSE}" style="width: 100px;"/>
             </td>
         </tr>
@@ -63,17 +55,14 @@
 </form>
 {COMBO_UPLOADER_CODE_TASK_TYPE}
 <script type="text/javascript">
-	cx.ready(function() {
-		var uploader = cx.instances.get('exposed_combo_uploader_taskType','uploader');
-		uploader.dialog().bind('close', function(){
-                    $J.getJSON( '{REDIRECT_URL}', function( data ) {
-                        $J.each(data, function(key, val) {
-                            var file = val.fileName;
-                            if ($J.trim(file) != '') {
-                                $J('#icon').val(file);
-                            }
-                        });
-                    });
-		});
-	},true);
+    function taskCallbackJs(callback) {
+        $J.getJSON( '{REDIRECT_URL}', function( data ) {
+            $J.each(data, function(key, val) {
+                var file = val.fileName;
+                if ($J.trim(file) != '') {
+                    $J('#icon').val(file);
+                }
+            });
+        });
+    }
 </script>

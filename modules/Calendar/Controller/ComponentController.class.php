@@ -37,9 +37,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
                 define('CALENDAR_MANDATE', MODULE_INDEX);
                 
-                $objCalendar = new \Cx\Modules\Calendar\Controller\Calendar(\Env::get('cx')->getPage()->getContent(), MODULE_INDEX);
-                \Env::get('cx')->getPage()->setContent($objCalendar->getCalendarPage());
-               
+                $objCalendar = new \Cx\Modules\Calendar\Controller\Calendar($page->getContent(), MODULE_INDEX);
+                $page->setContent($objCalendar->getCalendarPage());
+                if ($objCalendar->pageTitle) {
+                    $page->setTitle($objCalendar->pageTitle);
+                    $page->setContentTitle($objCalendar->pageTitle);
+                    $page->setMetaTitle($objCalendar->pageTitle);
+                }
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
@@ -99,6 +103,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $eventListener = new \Cx\Modules\Calendar\Model\Event\CalendarEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('SearchFindContent', $eventListener);
-        $this->cx->getEvents()->addEventListener('LoadMediaTypes', $eventListener);
+        $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
    }    
 }
