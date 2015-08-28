@@ -139,11 +139,6 @@ class InitCMS
         if (!empty($_REQUEST['setLang'])) {
             $backendLangId = intval($_REQUEST['setLang']);
             $setUserLanguage = true;
-        } elseif (!empty($_COOKIE['backendLangId'])) {
-            // the language already has changed for the backend, but he hasn't been logged in at this time
-            // (perhaps on login page)
-            $setUserLanguage = true;
-            $backendLangId = intval($_COOKIE['backendLangId']);
         }
 
         // the language is activated for the backend
@@ -155,21 +150,11 @@ class InitCMS
         if ($setUserLanguage && $objFWUser->objUser->login(true) && $objFWUser->objUser->getBackendLanguage() != $backendLangId) {
             $objFWUser->objUser->setBackendLanguage($backendLangId);
             $objFWUser->objUser->store();
-
-            // delete cookie for authenticated users
-            setcookie('backendLangId', '', time() - 3600, ASCMS_PATH_OFFSET.'/');
         }
 
         $this->backendLangId = $this->arrLang[$backendLangId]['id'];
         $this->currentThemesId = $this->arrLang[$backendLangId]['themesid'];
         $this->backendLangCharset = $this->arrLang[$backendLangId]['charset'];
-
-        // Set a COOKIE to remember the selected backend language.
-        // But do this only for non-authenticated users, as authenticated
-        // users have the selected backend language being stored in their profile.
-        if (!$objFWUser->objUser->login(true)) {
-            setcookie('backendLangId', $backendLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
-        }
     }
 
 
@@ -689,6 +674,7 @@ class InitCMS
                         case 'SystemLog':
                         case 'NetManager':
                         case 'Wysiwyg':
+                        case 'Routing':
                             $this->arrModulePath[$objResult->fields['name']] = ASCMS_CORE_PATH.'/'. $objResult->fields['name'] . '/lang/';
                             break;
                         default:

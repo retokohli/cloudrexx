@@ -41,6 +41,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function postInit(\Cx\Core\Core\Controller\Cx $cx)
     {
+        $componentController = $this->getComponent('MultiSite');
+        if (!$componentController) {
+            return;
+        }
+        
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config', 'FileSystem');
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite') != \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE) {
             return;
@@ -51,10 +56,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
-        $componentController = $this->getComponent('MultiSite');
-        if (!$componentController) {
-            return;
-        }
         $componentController->setCustomerPanelDomainAsMainDomain();
 
         $updateController = $this->getController('Update');

@@ -235,6 +235,7 @@ class Data extends \Cx\Modules\Data\Controller\DataLibrary
                        "ENTRY_TITLE"   => $value['translation'][$this->_intLanguageId]['subject'],
                        "ENTRY_CONTENT" => $this->getIntroductionText($value['translation'][$this->_intLanguageId]['content']),
                        "ENTRY_ID"      => $key,
+                       "ENTRY_HREF"    => \Cx\Core\Routing\Url::fromModuleAndCmd('Data', $this->curCmd, '', array('id' => $key)), 
                        "TXT_MORE"      => $_ARRAYLANG['TXT_DATA_MORE'],
                        "CMD"           => $this->curCmd,
                     ));
@@ -296,7 +297,7 @@ class Data extends \Cx\Modules\Data\Controller\DataLibrary
     function showDetails($intMessageId)
     {
         global $_ARRAYLANG;
-
+        
         $arrEntries = $this->createEntryArray();
         $entry = $arrEntries[$intMessageId];
 

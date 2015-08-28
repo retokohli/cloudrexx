@@ -332,12 +332,12 @@ EOF;
 
             if ($arrData['type'] == 'exp') {
                 //build expanded search query
-                $arrExternals = array('__cap', 'section', 'type', 'cmd', 'term', 'lid', 'cid', 'search', 'pos','scid','langId');
+                $arrExternals = array('__cap', 'section', 'type', 'cmd', 'term', 'lid', 'cid', 'search', 'pos','scid','langId', 'csrf');
                 foreach ($arrData as $intInputfieldId => $strExpTerm) {
                     if (!in_array($intInputfieldId, $arrExternals) && $strExpTerm != null) {
                         $objInputfields = new MediaDirectoryInputfield(null, true, null, $this->moduleName);
                         $intInputfieldType = $objInputfields->arrInputfields[$intInputfieldId]['type'];
-                        $strExpTerm = contrexx_addslashes(trim($strExpTerm));
+                        $strExpTerm = is_array($strExpTerm) ? contrexx_input2db(array_map('trim', $strExpTerm)) : contrexx_addslashes(trim($strExpTerm));
                         $strTableName = 'rel_inputfield_'.intval($intInputfieldId);
                         $arrExpJoin[]  = 'INNER JOIN '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS '.$strTableName.' ON rel_inputfield_final.`entry_id` = '.$strTableName.'.`entry_id`';
                         
@@ -357,6 +357,12 @@ EOF;
                             $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND '.$strTableName.'.`value` '.$strSearchOperator.' "'.$strExpTerm.'")';
                         } else if ($intInputfieldType == '3' || $intInputfieldType == '25') {
                             $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.$intInputfieldId.' AND '.$strTableName.'.`value` = "'.$strExpTerm.'")';
+                        } elseif ($intInputfieldType == '5') {
+                            $checkboxSearch = array();
+                            foreach ($strExpTerm as $value) {
+                                $checkboxSearch[] = ' FIND_IN_SET("'. $value .'",' . $strTableName . '.`value`) <> 0';
+                            }
+                            $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND ('. implode(' AND ', $checkboxSearch) .'))';                        
                         } else {
                             $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND '.$strTableName.'.`value` LIKE "%'.$strExpTerm.'%")';
                         }

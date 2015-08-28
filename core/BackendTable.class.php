@@ -133,7 +133,7 @@ class BackendTable extends HTML_Table {
                     }
                     
                     $this->updateColAttributes($col, array('style' => 'text-align:right;'));
-                    if (!isset($options['functions']['baseUrl'])) {
+                    if (empty($options['functions']['baseUrl'])) {
                         $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
                     }
                     $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $rows, $options['functions'], $virtual), 'TD', 0);

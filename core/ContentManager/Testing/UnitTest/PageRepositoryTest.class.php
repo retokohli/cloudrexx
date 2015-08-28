@@ -296,7 +296,7 @@ class PageRepositoryTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase
         
         $pageId = $p2->getId();
         
-        \Env::em()->refresh($n1);
+        \Env::get('em')->refresh($n1);
 
         //make sure we re-fetch a correct state
         self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->verify();

@@ -562,7 +562,7 @@ class Forum extends ForumLibrary {
                             NULL, '.    $intForumId.', '.    $intLastThreadId.', 0,
                             '.$userId.', '.time().',         0,                    0,
                             0,             0, '.                $icon.", '".        addslashes($subject)."',
-                            '".addslashes($keywords)."' ,'".addslashes($content)."' , '".$fileInfo['name']."'
+                            '".addslashes($keywords)."' ,'".contrexx_raw2db($content)."' , '".$fileInfo['name']."'
                         )";
             if($objDatabase->Execute($insertQuery) !== false){
                 $lastInsertId = $objDatabase->Insert_ID();
@@ -657,7 +657,7 @@ class Forum extends ForumLibrary {
             $pos = $this->_getEditPos($intPostId, $intThreadId);
             $arrPosts = $this->createPostArray($intThreadId, $pos);
             $arrPosts[$intPostId]['subject'] = !empty($_REQUEST['subject']) ? contrexx_strip_tags($_REQUEST['subject']) : $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'];
-            $arrPosts[$intPostId]['content'] = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForDb($_REQUEST['message']);
+            $arrPosts[$intPostId]['content'] = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForOutput(contrexx_input2raw($_REQUEST['message']));
         }
 
         $userId  = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
@@ -668,7 +668,7 @@ class Forum extends ForumLibrary {
             //submit is an edit
             $arrEditedPost = $this->_getPostingData($intPostId);
             $subject = addcslashes(htmlentities($arrEditedPost['subject'], ENT_QUOTES, CONTREXX_CHARSET), '\\');
-            $content =  $arrEditedPost['content'];
+            $content = $arrEditedPost['content'];
             $keywords =  addcslashes(htmlentities($arrEditedPost['keywords'], ENT_QUOTES, CONTREXX_CHARSET), '\\');
             $attachment = $arrEditedPost['attachment'];
             $this->_objTpl->setVariable('FORUM_POST_EDIT_USERID', $arrPosts[$intPostId]['user_id']);
@@ -685,7 +685,7 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->hideBlock('delAttachment');
             }
             $subject = !empty($_REQUEST['subject']) ? contrexx_strip_tags($_REQUEST['subject']) : '';
-            $content = !empty($_REQUEST['message']) ? contrexx_strip_tags($_REQUEST['message']) : '';
+            $content = !empty($_REQUEST['message']) ? contrexx_input2raw(strip_tags($_REQUEST['message'])) : '';
             $keywords = !empty($_REQUEST['keywords']) ? contrexx_strip_tags($_REQUEST['keywords']) : '';
             $attachment = !empty($_REQUEST['attachment']) ? contrexx_strip_tags($_REQUEST['attachment']) : '';
             $this->_objTpl->touchBlock('createPost');
@@ -693,7 +693,7 @@ class Forum extends ForumLibrary {
             $this->_objTpl->touchBlock('previewNewPost');
             $this->_objTpl->hideBlock('previewEditPost');
         }
-
+        
         if($_REQUEST['act'] == 'quote'){
             $quoteContent = $this->_getPostingData($intPostId);
             $subject = 'RE: '.addcslashes(htmlentities($quoteContent['subject'], ENT_QUOTES, CONTREXX_CHARSET), '\\');
@@ -705,7 +705,7 @@ class Forum extends ForumLibrary {
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
             $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('message', $content, 'bbcode');
         }else{ //plain textarea
-            $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'.$content.'</textarea>';
+            $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'. contrexx_raw2xhtml($content) .'</textarea>';
         }
         $this->_objTpl->setGlobalVariable(array(
             'FORUM_JAVASCRIPT_GOTO'                 =>    $this->getJavascript('goto'),
@@ -916,7 +916,7 @@ class Forum extends ForumLibrary {
                             NULL, '.        $intCatId.', '.    $intThreadId.', '.$intPrevPostId.',
                             '.$userId.', '.    time().',         0,                     0,
                             0,                   0,        0, '.            $icon.",
-                            '$keywords' ,'".$subject."',    '".$content."', '".$fileInfo['name']."'
+                            '$keywords' ,'".$subject."',    '".contrexx_raw2db($content)."', '".$fileInfo['name']."'
                         )";
 
             if($objDatabase->Execute($insertQuery) !== false){
@@ -1018,7 +1018,7 @@ class Forum extends ForumLibrary {
                             icon = '.$icon.',
                             subject = \''.$subject.'\',
                             keywords = \''.$keywords.'\',
-                            content = \''.$content.'\',
+                            content = \''.contrexx_raw2db($content).'\',
                             attachment = \''.$fileInfo['name'].'\'
                             WHERE id = '.$intPostId;
 

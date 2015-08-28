@@ -40,8 +40,10 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite');
                     if (empty($websiteUserId)) {
                         //set user's id to websiteUserId
-                        \Cx\Core\Setting\Controller\Setting::set('websiteUserId', $objUser->getId());
-                        \Cx\Core\Setting\Controller\Setting::update('websiteUserId');
+                        $componentRepo    = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                        $component        = $componentRepo->findOneBy(array('name' => 'MultiSite'));
+                        $objJsonMultiSite = $component->getController('JsonMultiSite');
+                        $objJsonMultiSite->updateWebsiteOwnerId($objUser->getId());
                         //set the user as Administrator
                         $objUser->setAdminStatus(1);
                         $objUser->store();
@@ -91,7 +93,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     break;
                 case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                     //Check Admin Users quota
-                    self::checkAdminUsersQuota($objUser);
+                    $this->checkQuota($objUser);
                     break;
                 default:
                     break;
@@ -114,7 +116,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                     //Check Admin Users quota
                     $adminUsersList = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
                     if (!array_key_exists($objUser->getId(), $adminUsersList)) {
-                        self::checkAdminUsersQuota($objUser);
+                        $this->checkQuota($objUser);
                     }
                     
                     $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite');
@@ -313,7 +315,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
      * @param \User $objUser
      * @throws \Cx\Core\Error\Model\Entity\ShinyException
      */
-    public static function checkAdminUsersQuota(\User $objUser) {
+    public function checkQuota(\User $objUser) {
         global $objInit, $_ARRAYLANG;
         
         $langData = $objInit->loadLanguageData('MultiSite');
@@ -323,24 +325,36 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
         $backendGroupIds  = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getBackendGroupIds();
         $backendGroupUser = count(array_intersect($backendGroupIds, $userGroupIds));
         if ($objUser->getAdminStatus() || $backendGroupUser)  {
-            $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Access');
-            if (!empty($options['AdminUser']) && $options['AdminUser'] > 0) {
-                $adminUsers = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
-                $adminUsersCount = count($adminUsers);
-                if ($adminUsersCount >= $options['AdminUser']) {
-                    $errMsg = sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_ADMINS_REACHED'], $options['AdminUser']);
-                    if(!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isIscRequest()) {
-                        throw new \Cx\Core\Error\Model\Entity\ShinyException($errMsg.' <a href="index.php?cmd=Access">'.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GO_TO_OVERVIEW'].'</a>');
-                    }
-                    throw new \Cx\Core\Error\Model\Entity\ShinyException($errMsg);
-                
+            if (!$this->checkAdminUsersQuota()) {
+                $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Access');
+                $errMsg = sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_MAXIMUM_ADMINS_REACHED'], $options['AdminUser']);
+                if (!\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isIscRequest()) {
+                    throw new \Cx\Core\Error\Model\Entity\ShinyException($errMsg . ' <a href="index.php?cmd=Access">' . $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GO_TO_OVERVIEW'] . '</a>');
                 }
+                throw new \Cx\Core\Error\Model\Entity\ShinyException($errMsg);
             }
         }
         
         return true;
     }
 
+    /**
+     * Check the Admin Users Quota
+     * 
+     * @return boolean true | false
+     */
+    public function checkAdminUsersQuota() {
+        $options = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getModuleAdditionalDataByType('Access');
+        if (!empty($options['AdminUser']) && $options['AdminUser'] > 0) {
+            $adminUsers = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getAllAdminUsers();
+            $adminUsersCount = count($adminUsers);
+            if ($adminUsersCount >= $options['AdminUser']) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     public function onEvent($eventName, array $eventArgs) {        
         $this->$eventName(current($eventArgs));
     }
