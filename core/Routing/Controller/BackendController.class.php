@@ -53,12 +53,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             'fields' => array(
                 'orderNo' => array(
                     'header' => $_ARRAYLANG['orderNo'],
-                    'order' => [
-                        'callback' => [
-                            'object' => 'Routing',
-                            'act' => 'updateOrder'
-                        ]
-                    ]
                 ),
                 'id' => array(
                     'showOverview' => false,
@@ -80,6 +74,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'sorting'   => true,
                 'paging'    => true,
                 'filtering' => false,
+                'sortBy' => [
+                    'field' => 'orderNo',
+                    'callback' => [
+                        'object' => 'Routing',
+                        'act' => 'updateOrder'
+                    ]
+                ]
             ),
         );
     }
