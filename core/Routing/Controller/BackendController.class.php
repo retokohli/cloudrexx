@@ -76,7 +76,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'filtering' => false,
                 'sortBy' => [
                     'field' => 'orderNo',
-                    'callback' => [
+                    'jsonadapter' => [
                         'object' => 'Routing',
                         'act' => 'updateOrder'
                     ]
