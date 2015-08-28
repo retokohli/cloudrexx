@@ -263,7 +263,11 @@ function contrexx_raw2db($raw)
     }
     
     $cx = \Env::get('cx');
-    $pdo = $cx->getDb()->getPdoConnection();
+    $db = $cx->getDb(); 
+    if (!isset($db)) {
+        throw new \Cx\Core\Model\DbException('Database not yet initialized!');
+    } 
+    $pdo = $db->getPdoConnection();
     $rawQuoted = $pdo->quote($raw);
     if (preg_match('/^\'.*\'$/', $rawQuoted)) {
         $rawQuoted = substr($rawQuoted, 1, -1);
