@@ -92,7 +92,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'] = "Anniversaire";
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE'] = "S'abonner";
 $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'] = "Soci&eacute;t&eacute;";
 $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY'] = "Janvier,Février,Mars,Avril,Mai,Juin,Juillet,Août,Septembre,Octobre,Novembre,Décembre";
-$_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST'] = "Veuillez sélectionner au moins une liste!";
 $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED'] = "Vos données ont été mises à jour.";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "Erreur lors de la mise à jour de vos données!";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "Erreur lors du processus d'abonnement à la Newsletter!";
