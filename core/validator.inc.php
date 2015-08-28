@@ -262,13 +262,15 @@ function contrexx_raw2db($raw)
         return $arr;
     }
     
-    $cx = \Env::get('cx');
+    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
     $db = $cx->getDb(); 
     if (!isset($db)) {
         throw new \Cx\Core\Model\DbException('Database not yet initialized!');
     } 
     $pdo = $db->getPdoConnection();
     $rawQuoted = $pdo->quote($raw);
+    //addslashes did not add quotes, but pdo:quote does
+    //we remove the quotes so we do not have to change all the queries
     if (preg_match('/^\'.*\'$/', $rawQuoted)) {
         $rawQuoted = substr($rawQuoted, 1, -1);
     }
