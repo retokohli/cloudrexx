@@ -1435,9 +1435,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         return $this->parseJsonMessage($successMsg, true);
                     } else {
                         $message = $response->message;
-                        if (is_object($response->message) && isEmpty($message)) {
+                        if (is_object($response->message) && \FWValidator::isEmpty($message)) {
                             $message = $response->message->message;
-                        } else if(is_object($response->data) && isEmpty($message)) {
+                        } else if(is_object($response->data) && \FWValidator::isEmpty($message)) {
                             $message = $response->data->message;
                         }
                         return $this->parseJsonMessage($message, false);
