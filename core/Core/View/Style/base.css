@@ -7,7 +7,6 @@
 */
 
 @import url(navbar.css);  /* CSS for navigation menu. */
-@import url(font-awesome.min.css); /* FontAwesome for ModuleManager -- seems reasonable */
 
 html, body {
     width: 100%;
