@@ -262,17 +262,13 @@ function contrexx_raw2db($raw)
         return $arr;
     }
     
-    try {
-        $cx = \Env::get('cx');
-        $pdo = $cx->getDb()->getPdoConnection();
-        $rawQuoted = $pdo->quote($raw);
-        if (preg_match('/^\'.*\'$/', $rawQuoted)) {
-            $rawQuoted = substr($rawQuoted, 1, -1);
-        }
-        return $rawQuoted;
-    } catch (Exception $e) {
-        throw new \Exception("Failed to quote the query: " . $raw);
+    $cx = \Env::get('cx');
+    $pdo = $cx->getDb()->getPdoConnection();
+    $rawQuoted = $pdo->quote($raw);
+    if (preg_match('/^\'.*\'$/', $rawQuoted)) {
+        $rawQuoted = substr($rawQuoted, 1, -1);
     }
+    return $rawQuoted;
 }
 
 /**
