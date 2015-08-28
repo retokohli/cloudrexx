@@ -38,8 +38,8 @@ class ComponentController extends SystemComponentController
             $themeOptionRepository = new ThemeOptionsRepository($fileStorage);
             $themeRepository       = new ThemeRepository();
             $themeID               = isset($_GET['preview']) ? $_GET['preview']
-                : 1;
-            $theme                 = $themeRepository->findById((int)$themeID);
+                : null;
+            $theme                 = $themeID ? $themeRepository->findById((int)$themeID) : $themeRepository->getDefaultTheme();
             $themeOptions          = $themeOptionRepository->get(
                 $theme
             );
