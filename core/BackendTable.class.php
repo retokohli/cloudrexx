@@ -21,7 +21,7 @@ class BackendTable extends HTML_Table {
 
     public function __construct($attrs = array(), $options = array()) {
         global $_ARRAYLANG;
-        
+
         if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $hasMasterTableHeader = !empty($options['header']);
             // add master table-header-row
@@ -30,6 +30,9 @@ class BackendTable extends HTML_Table {
             }
             $first = true;
             $row = 1 + $hasMasterTableHeader;
+            $sortingKey = isset($options['functions']['sortBy']['sortingKey'])
+                          ? $options['functions']['sortBy']['sortingKey']
+                          : '';
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
                 $virtual = $rows['virtual'];
@@ -39,6 +42,10 @@ class BackendTable extends HTML_Table {
                     $col++;
                 }
                 foreach ($rows as $header=>$data) {
+                    if (!empty($sortingKey) && $header === $sortingKey) {
+                        // Add the additional attribute id for getting the updated sort order after the sorting
+                        $this->updateRowAttributes($row, array('id' => 'sortOrder_' . $data), true);
+                    }
                     $encode = true;
                     if (
                         isset($options['fields']) &&

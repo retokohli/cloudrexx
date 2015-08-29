@@ -34,10 +34,17 @@ class ViewGenerator {
         try {
             $this->options = $options;
             $entityNS=null;
+            
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            $em = $cx->getDb()->getEntityManager();
+            
+            //initialize the row sorting
+            $this->getSortingOption($object);
+            
             if (is_array($object)) {
                 $object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($object);
             }
-            \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
+            \JS::registerCSS($cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
             if ($object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
                 // render table if no parameter is set
                 $this->object = $object;
@@ -45,7 +52,7 @@ class ViewGenerator {
             } else {
                 if (!is_object($object)) {
                     $entityClassName = $object;
-                    $entityRepository = \Env::get('em')->getRepository($entityClassName);
+                    $entityRepository = $em->getRepository($entityClassName);
                     $entities = $entityRepository->findAll();
                     if (empty($entities)) {
                         $this->object = new $entityClassName();
@@ -116,7 +123,7 @@ class ViewGenerator {
                         \Message::add('Cannot save, You should fill any one field!', \Message::CLASS_ERROR);
                         return;
                     }
-                    $entityObject = \Env::get('em')->getClassMetadata($entityNS);
+                    $entityObject = $em->getClassMetadata($entityNS);
                     $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name
                     $entityColumnNames = $entityObject->getColumnNames(); //get all field names
 
@@ -156,32 +163,32 @@ class ViewGenerator {
                     }
 
                     // store single-valued-associations
-                    $associationMappings = \Env::get('em')->getClassMetadata($entityNS)->getAssociationMappings();
+                    $associationMappings = $em->getClassMetadata($entityNS)->getAssociationMappings();
                     $classMethods = get_class_methods($entityObj);
                     foreach ($associationMappings as $field => $associationMapping) {
                         if (   !empty($_POST[$field])
-                            && \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($field)
+                            && $em->getClassMetadata($entityNS)->isSingleValuedAssociation($field)
                             && in_array('set'.ucfirst($field), $classMethods)
                         ) {
                             $col = $associationMapping['joinColumns'][0]['referencedColumnName'];
-                            $association = \Env::get('em')->getRepository($associationMapping['targetEntity'])->findOneBy(array($col => $_POST[$field]));
+                            $association = $em->getRepository($associationMapping['targetEntity'])->findOneBy(array($col => $_POST[$field]));
                             $entityObj->{'set'.ucfirst($field)}($association);
                         }
                     }
 
                     if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                        $entityRepository = \Env::get('em')->getRepository($entityNS);
+                        $entityRepository = $em->getRepository($entityNS);
                         $entityRepository->add($entityObj);
                         $entityRepository->flush();
                     } else {
                         if (!($entityObj instanceof \Cx\Model\Base\EntityBase)) {
                             \DBG::msg('Unkown entity model '.get_class($entityObj).'! Trying to persist using entity manager...');
                         }
-                        \Env::get('em')->persist($entityObj);
-                        \Env::get('em')->flush();
+                        $em->persist($entityObj);
+                        $em->flush();
                     }
                     \Message::add($_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL']);   
-                    $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+                    $actionUrl = clone $cx->getRequest()->getUrl();
                     $actionUrl->setParam('add', null);
                     \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
                 }
@@ -225,21 +232,21 @@ class ViewGenerator {
                     return;
                 }
                 $updateArray=array();
-                $entityObj = \Env::get('em')->getClassMetadata($entityNS);
+                $entityObj = $em->getClassMetadata($entityNS);
                 $primaryKeyName =$entityObj->getSingleIdentifierFieldName(); //get primary key name  
-                $associationMappings = \Env::get('em')->getClassMetadata($entityNS)->getAssociationMappings();
+                $associationMappings = $em->getClassMetadata($entityNS)->getAssociationMappings();
                 $classMethods = get_class_methods($entityObj->newInstance());
                 foreach ($entityObject as $name=>$value) {
                     if (!isset ($_POST[$name])) {
                         continue;
                     }
                     $methodName = 'set'.str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
-                    if (   \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($name)
+                    if (   $em->getClassMetadata($entityNS)->isSingleValuedAssociation($name)
                         && in_array($methodName, $classMethods)
                     ) {
                         // store single-valued-associations
                         $col = $associationMappings[$name]['joinColumns'][0]['referencedColumnName'];
-                        $association = \Env::get('em')->getRepository($associationMappings[$name]['targetEntity'])->findOneBy(array($col => $_POST[$name]));
+                        $association = $em->getRepository($associationMappings[$name]['targetEntity'])->findOneBy(array($col => $_POST[$name]));
                         $updateArray[$methodName] = $association;
                     } elseif (   $_POST[$name] != $value
                               && in_array($methodName, $classMethods)
@@ -273,22 +280,22 @@ class ViewGenerator {
                 }
                 $id = $entityObject[$primaryKeyName]; //get primary key value  
                 if (!empty($updateArray) && !empty($id)) {
-                    $entityObj = \Env::get('em')->getRepository($entityNS)->find($id);
+                    $entityObj = $em->getRepository($entityNS)->find($id);
                     if (!empty($entityObj)) {
                         foreach($updateArray as $key=>$value) {
                             $entityObj->$key($value);
                         }
                         if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                            \Env::get('em')->getRepository($entityNS)->flush();
+                            $em->getRepository($entityNS)->flush();
                         } else {
-                            \Env::get('em')->flush();    
+                            $em->flush();
                         }
                         \Message::add($_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL']);   
                     } else {
                         \Message::add('Cannot save, Invalid argument!', \Message::CLASS_ERROR);
                     }
                 } 
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+                $actionUrl = clone $cx->getRequest()->getUrl();
                 $actionUrl->setParam('editid', null);
                 \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
             }
@@ -314,30 +321,90 @@ class ViewGenerator {
                     \Message::add('Cannot save, Invalid entry', \Message::CLASS_ERROR);
                     return;
                 }
-                $entityObj = \Env::get('em')->getClassMetadata($entityNS);  
+                $entityObj = $em->getClassMetadata($entityNS);
                 $primaryKeyName =$entityObj->getSingleIdentifierFieldName(); //get primary key name  
                 $id=$entityObject[$primaryKeyName]; //get primary key value  
                 if (!empty($id)) {
-                    $entityObj=\Env::get('em')->getRepository($entityNS)->find($id);
+                    $entityObj=$em->getRepository($entityNS)->find($id);
                     if (!empty($entityObj)) {
                         if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                            $ymlRepo = \Env::get('em')->getRepository($entityNS);
+                            $ymlRepo = $em->getRepository($entityNS);
                             $ymlRepo->remove($entityObj);;
                             $ymlRepo->flush();
                         } else {
-                            \Env::get('em')->remove($entityObj);
-                            \Env::get('em')->flush();
+                            $em->remove($entityObj);
+                            $em->flush();
                         }
                         \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);   
                     }
                 }
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+                $actionUrl = clone $cx->getRequest()->getUrl();
                 $actionUrl->setParam('deleteid', null);
                 \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
             }
         } catch (\Exception $e) {
             \Message::add($e->getMessage());
             return;
+        }
+    }
+    
+    /**
+     * Initialize the row sorting functionality
+     * 
+     * @param mixed $object Array, instance of DataSet, instance of EntityBase, object
+     */
+    protected function getSortingOption($object) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        
+        //For sorting the rows, we need to get the primary key name 
+        //for updating the sorted order value into database
+        $sortBy = isset($this->options['functions']['sortBy']) 
+                    ? $this->options['functions']['sortBy']
+                    : '';
+        if (!empty($sortBy)) {
+            //Register the CX variables
+            $jsonObject = isset($sortBy['jsonadapter']) && !empty($sortBy['jsonadapter']['object']) 
+                          ? $sortBy['jsonadapter']['object'] 
+                          : '';
+            $jsonAct    = isset($sortBy['jsonadapter']) && !empty($sortBy['jsonadapter']['act']) 
+                          ? $sortBy['jsonadapter']['act'] 
+                          : '';
+            $objJs = \ContrexxJavascript::getInstance();
+            $objJs->setVariable(array(
+                'isSortByActive'=> 1,
+                'jsonObject'    => $jsonObject,
+                'jsonAct'       => $jsonAct
+            ), 'ViewGenerator/sortBy');
+
+            //Register the script Backend.js and activate the jqueryui and cx for the row sorting
+            \JS::activate('cx');
+            \JS::activate('jqueryui');
+            \JS::registerJS($cx->getCoreFolderName() . '/Html/View/Script/Backend.js');
+
+            $entityNameSpace = '';
+            switch (true) {
+                case is_array($object):
+                    foreach($object as $entity) {
+                        if (is_object($entity)) {
+                            $entityNameSpace = get_class($entity);
+                            break;
+                        }
+                    }
+                    break;
+                case is_object($object):
+                    $entityNameSpace = get_class($object);
+                    break;
+                default :
+                    $entityNameSpace = $object;
+                    break;
+            }
+
+            if ($entityNameSpace) {
+                $entityObject   = $em->getClassMetadata($entityNameSpace);
+                $primaryKeyName = $entityObject->getSingleIdentifierFieldName(); //get primary key name
+                $this->options['functions']['sortBy']['sortingKey'] = $primaryKeyName;
+            }
         }
     }
     
@@ -388,7 +455,7 @@ class ViewGenerator {
             $isSingle = true;
             return $this->renderFormForEntry(null);
         }
-        $renderObject = $this->object;
+       $renderObject = $this->object;
         $entityClass = get_class($this->object);
         $entityId = '';
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet
@@ -419,7 +486,7 @@ class ViewGenerator {
             $renderObject = $listingController->getData();
             $this->options['functions']['vg_increment_number'] = $this->number;
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
-
+            
             return $backendTable.$addBtn;
         } else {
             $isSingle = true;
