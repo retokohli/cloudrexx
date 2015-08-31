@@ -381,7 +381,7 @@
             $scope.showUploadedHint = false;
 
             $scope.template = {
-                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/_Uploader.html'
+                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/Uploader.html'
             };
 
             $scope.loadedTemplate = function () {
@@ -484,7 +484,7 @@
             };
 
             $scope.template = {
-                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/_FileBrowser.html'
+                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/FileBrowser.html'
             };
             // __construct
 
@@ -731,7 +731,7 @@
             $scope.activeLanguages = cx.variables.get('languages','mediabrowser');
 
             $scope.template = {
-                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/_Sitestructure.html'
+                url: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/Sitestructure.html'
             };
 
             $scope.clickPage = function (site) {
