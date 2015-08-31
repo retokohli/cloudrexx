@@ -288,7 +288,7 @@ function contrexx_raw2db($raw)
         return $arr;
     }
     
-    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+    $cx = \Env::get('cx');
     $db = $cx->getDb(); 
     if (!isset($db)) {
         throw new \Cx\Core\Model\DbException('Database not yet initialized!');
