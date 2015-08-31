@@ -372,15 +372,16 @@ class LocalFileSystem implements FileSystem
      * @return array
      */
     public function removeThumbnails(File $file) {
-        if ($this->isImage($file->getExtension())) {
-            $thumbnails = glob(
-                $this->getFullPath($file) . $file->getName() . '.thumb*'
+        if (!$this->isImage($file->getExtension())) {
+            return;
+        }
+        $thumbnails = glob(
+            $this->getFullPath($file) . $file->getName() . '.thumb*'
+        );
+        foreach ($thumbnails as $thumbnail){
+            \Cx\Lib\FileSystem\FileSystem::delete_file(
+                $thumbnail
             );
-            foreach ($thumbnails as $thumbnail){
-                \Cx\Lib\FileSystem\FileSystem::delete_file(
-                    $thumbnail
-                );
-            }
         }
     }
 }
