@@ -7,12 +7,9 @@
 
 namespace Cx\Core_Modules\MediaBrowser\Model\Event;
 
-use Cx\Core\MediaSource\Model\Entity\FileSystem;
 use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
 use Cx\Core\MediaSource\Model\Entity\MediaSource;
 use Cx\Core\Event\Model\Entity\DefaultEventListener;
-use Cx\Modules\Shop\Controller\Products;
-use Cx\Modules\Shop\Controller\ShopCategories;
 
 /**
  * Class MediaBrowserEventListener
