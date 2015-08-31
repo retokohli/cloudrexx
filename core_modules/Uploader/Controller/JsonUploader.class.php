@@ -187,7 +187,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 $result = $response->getResponse();
                 return array(
                     'OK' => 0,
-                    'file' => $fileLocation,
+                    'file' => $fileLocation[1],
                     'response' => $result['messages']
                 );
         }
@@ -196,7 +196,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         } else {
             return array(
                 'OK' => 1,
-                'file' => $fileLocation
+                'file' => $fileLocation[1]
             );
         }
     }

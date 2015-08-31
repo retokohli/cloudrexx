@@ -294,7 +294,7 @@
                         if ((response.data.status == 'error')) {
                             parseStatusMessage(this, file, 'danger', response.data.message, true, 200);
                         } else {
-                            files.push(response.data.file[1]);
+                            files.push(response.data.file);
                         }
                         if (typeof response.data.response != 'undefined') {
                             var displayStatus = 'success';
