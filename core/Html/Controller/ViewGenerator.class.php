@@ -276,31 +276,7 @@ class ViewGenerator {
                     )
                 )
             ) {
-                $entityObject = $this->object->getEntry($deleteId);
-                if (empty($entityObject)) {
-                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
-                    return;
-                }
-                $entityObj = \Env::get('em')->getClassMetadata($entityWithNS);  
-                $primaryKeyName =$entityObj->getSingleIdentifierFieldName(); //get primary key name  
-                $id=$entityObject[$primaryKeyName]; //get primary key value  
-                if (!empty($id)) {
-                    $entityObj=\Env::get('em')->getRepository($entityWithNS)->find($id);
-                    if (!empty($entityObj)) {
-                        if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                            $ymlRepo = \Env::get('em')->getRepository($entityWithNS);
-                            $ymlRepo->remove($entityObj);;
-                            $ymlRepo->flush();
-                        } else {
-                            \Env::get('em')->remove($entityObj);
-                            \Env::get('em')->flush();
-                        }
-                        \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);   
-                    }
-                }
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-                $actionUrl->setParam('deleteid', null);
-                \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
+                $this->removeEntry($entityWithNS);
             }
         } catch (\Exception $e) {
             \Message::add($e->getMessage());
@@ -634,6 +610,42 @@ class ViewGenerator {
         return $this->object;
     }
     
+    /**
+     * @param $entityWithNS
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws \Exception
+     */
+    protected function removeEntry($entityWithNS) {
+        global $_ARRAYLANG;
+
+        $entityObject = $this->object->getEntry($deleteId);
+        if (empty($entityObject)) {
+            \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
+            return;
+        }
+       $entityObj = \Env::get('em')->getClassMetadata($entityWithNS);
+       $primaryKeyName = $entityObj->getSingleIdentifierFieldName(); //get primary key name  
+       $id = $entityObject[$primaryKeyName]; //get primary key value  
+       if (!empty($id)) {
+            $entityObj = \Env::get('em')->getRepository($entityWithNS)->find($id);
+            if (!empty($entityObj)) {
+                if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
+                    $ymlRepo = \Env::get('em')->getRepository($entityWithNS);
+                    $ymlRepo->remove($entityObj);;
+                    $ymlRepo->flush();
+                } else {
+                    \Env::get('em')->remove($entityObj);
+                    \Env::get('em')->flush();
+                }
+                \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);
+            }
+        }
+        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+        $actionUrl->setParam('deleteid', null);
+        \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
+    }
+
     /**
      * @access public
      * @return string
