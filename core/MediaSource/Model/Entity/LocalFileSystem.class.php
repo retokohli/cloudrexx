@@ -7,8 +7,6 @@
 
 namespace Cx\Core\MediaSource\Model\Entity;
 
-
-use Cx\Core\MediaSource\Model\Entity\MediaSourceManager;
 use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 
 class LocalFileSystem implements FileSystem
