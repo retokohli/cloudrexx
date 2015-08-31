@@ -53,7 +53,7 @@ class ViewGenerator {
         $this->viewId = static::$increment++;
         try {
             $this->options = $options;
-            $entityNS=null;
+            $entityWithNS = null;
             if (is_array($object)) {
                 $object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($object);
             }
@@ -61,7 +61,7 @@ class ViewGenerator {
             if ($object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
                 // render table if no parameter is set
                 $this->object = $object;
-                $entityNS = $this->object->getDataType();
+                $entityWithNS = $this->object->getDataType();
             } else {
                 if (!is_object($object)) {
                     $entityClassName = $object;
@@ -69,15 +69,15 @@ class ViewGenerator {
                     $entities = $entityRepository->findAll();
                     if (empty($entities)) {
                         $this->object = new $entityClassName();
-                        $entityNS = $entityClassName;
+                        $entityWithNS = $entityClassName;
                     } else {
                         $this->object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
-                        $entityNS = $this->object->getDataType();
+                        $entityWithNS = $this->object->getDataType();
                     }
                 } else {
                     // render form
                     $this->object = $object;
-                    $entityNS = get_class($this->object);
+                    $entityWithNS = get_class($this->object);
                 }
             }
             
@@ -136,7 +136,7 @@ class ViewGenerator {
                         \Message::add('Cannot save, You should fill any one field!', \Message::CLASS_ERROR);
                         return;
                     }
-                    $entityObject = \Env::get('em')->getClassMetadata($entityNS);
+                    $entityObject = \Env::get('em')->getClassMetadata($entityWithNS);
                     $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name
                     $entityColumnNames = $entityObject->getColumnNames(); //get all field names
 
@@ -176,11 +176,11 @@ class ViewGenerator {
                     }
 
                     // store single-valued-associations
-                    $associationMappings = \Env::get('em')->getClassMetadata($entityNS)->getAssociationMappings();
+                    $associationMappings = \Env::get('em')->getClassMetadata($entityWithNS)->getAssociationMappings();
                     $classMethods = get_class_methods($entityObj);
                     foreach ($associationMappings as $field => $associationMapping) {
                         if (   !empty($_POST[$field])
-                            && \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($field)
+                            && \Env::get('em')->getClassMetadata($entityWithNS)->isSingleValuedAssociation($field)
                             && in_array('set'.ucfirst($field), $classMethods)
                         ) {
                             $col = $associationMapping['joinColumns'][0]['referencedColumnName'];
@@ -190,7 +190,7 @@ class ViewGenerator {
                     }
 
                     if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                        $entityRepository = \Env::get('em')->getRepository($entityNS);
+                        $entityRepository = \Env::get('em')->getRepository($entityWithNS);
                         $entityRepository->add($entityObj);
                         $entityRepository->flush();
                     } else {
@@ -247,16 +247,16 @@ class ViewGenerator {
                     return;
                 }
                 $updateArray=array();
-                $entityObj = \Env::get('em')->getClassMetadata($entityNS);
+                $entityObj = \Env::get('em')->getClassMetadata($entityWithNS);
                 $primaryKeyName =$entityObj->getSingleIdentifierFieldName(); //get primary key name  
-                $associationMappings = \Env::get('em')->getClassMetadata($entityNS)->getAssociationMappings();
+                $associationMappings = \Env::get('em')->getClassMetadata($entityWithNS)->getAssociationMappings();
                 $classMethods = get_class_methods($entityObj->newInstance());
                 foreach ($entityObject as $name=>$value) {
                     if (!isset ($_POST[$name])) {
                         continue;
                     }
                     $methodName = 'set'.str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
-                    if (   \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($name)
+                    if (   \Env::get('em')->getClassMetadata($entityWithNS)->isSingleValuedAssociation($name)
                         && in_array($methodName, $classMethods)
                     ) {
                         // store single-valued-associations
@@ -295,13 +295,13 @@ class ViewGenerator {
                 }
                 $id = $entityObject[$primaryKeyName]; //get primary key value  
                 if (!empty($updateArray) && !empty($id)) {
-                    $entityObj = \Env::get('em')->getRepository($entityNS)->find($id);
+                    $entityObj = \Env::get('em')->getRepository($entityWithNS)->find($id);
                     if (!empty($entityObj)) {
                         foreach($updateArray as $key=>$value) {
                             $entityObj->$key($value);
                         }
                         if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                            \Env::get('em')->getRepository($entityNS)->flush();
+                            \Env::get('em')->getRepository($entityWithNS)->flush();
                         } else {
                             \Env::get('em')->flush();    
                         }
@@ -336,14 +336,14 @@ class ViewGenerator {
                     \Message::add('Cannot save, Invalid entry', \Message::CLASS_ERROR);
                     return;
                 }
-                $entityObj = \Env::get('em')->getClassMetadata($entityNS);  
+                $entityObj = \Env::get('em')->getClassMetadata($entityWithNS);  
                 $primaryKeyName =$entityObj->getSingleIdentifierFieldName(); //get primary key name  
                 $id=$entityObject[$primaryKeyName]; //get primary key value  
                 if (!empty($id)) {
-                    $entityObj=\Env::get('em')->getRepository($entityNS)->find($id);
+                    $entityObj=\Env::get('em')->getRepository($entityWithNS)->find($id);
                     if (!empty($entityObj)) {
                         if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                            $ymlRepo = \Env::get('em')->getRepository($entityNS);
+                            $ymlRepo = \Env::get('em')->getRepository($entityWithNS);
                             $ymlRepo->remove($entityObj);;
                             $ymlRepo->flush();
                         } else {
