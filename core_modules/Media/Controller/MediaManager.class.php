@@ -564,9 +564,9 @@ class MediaManager extends MediaLibrary
         //check if a finished upload caused reloading of the page.
         //if yes, we know the added files and want to highlight them
         if (!empty($_GET['highlightUploadId'])) {
-            $key = 'media_upload_files_'.intval($_GET['highlightUploadId']);
+            $key = 'media_upload_files_'.($_GET['highlightUploadId']);
             if (isset($_SESSION[$key])) {
-                $sessionHighlightCandidates = $_SESSION[$key]; //an array with the filenames, set in mediaLib::uploadFinished
+                $sessionHighlightCandidates = $_SESSION[$key]->toArray(); //an array with the filenames, set in mediaLib::uploadFinished
             }
             //clean up session; we do only highlight once
             unset($_SESSION[$key]);
@@ -578,7 +578,9 @@ class MediaManager extends MediaLibrary
         // Check if an image has been edited.
         // If yes, we know the edited file and want to highlight them.
         if (!empty($_GET['editedImage'])) {
-            \Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator::createThumbnailFromPath(
+            \Cx\Core\Core\Controller\Cx::instanciate()->getMediaSourceManager()
+                ->getThumbnailGenerator()
+                ->createThumbnailFromPath(
                 $this->path . $_GET['editedImage'], true
             );
             $this->highlightName[] = $_GET['editedImage'];
@@ -588,8 +590,6 @@ class MediaManager extends MediaLibrary
         $i       = 0;
         $dirTree = $this->_dirTree($this->path);
         $dirTree = $this->_sortDirTree($dirTree);
-        $thumbnails =
-            \Cx\Core_Modules\Uploader\Controller\UploaderConfiguration::getInstance()->getThumbnails();
         
         foreach(array_keys($dirTree) as $key)
         {
@@ -652,9 +652,12 @@ class MediaManager extends MediaLibrary
                     {
                         // make thumbnail if it doesn't exist
                         $tmpSize = @getimagesize($this->path . $fileName);
-                        $thumbnails = \Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator::createThumbnailFromPath(
+                        $thumbnails = \Cx\Core\Core\Controller\Cx::instanciate()
+                            ->getMediaSourceManager()
+                            ->getThumbnailGenerator()
+                            ->createThumbnailFromPath(
                             $this->path . $fileName
-                        );
+                            );
                         $thumb      = $this->webPath . $thumbnails[0];
                         if (in_array(
                             $fileName, $this->highlightName

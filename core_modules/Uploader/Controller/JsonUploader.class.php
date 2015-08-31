@@ -168,18 +168,21 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                     ), $data, $id, $uploader, $response
                 );
             }
+            $files = glob($filePath.'/*');
+            $file = $files[0];
             \Cx\Lib\FileSystem\FileSystem::move(
-                $uploader['path'], $fileLocation[0] . '/' . $uploader['name'],
+                $file, $fileLocation[0] . pathinfo( $file, PATHINFO_BASENAME),
                 true
             );
-            \Cx\Lib\FileSystem\FileSystem::delete_file($uploader['path']);
+
+            \Cx\Lib\FileSystem\FileSystem::delete_file($file);
 
             if (isset($fileLocation[2])){
                 $uploader['name'] = $fileLocation[2];
             }
             $fileLocation = array(
-                $fileLocation[0] . '/' . $uploader['name'],
-                $fileLocation[1] . '/' . $uploader['name']
+                $fileLocation[0] . pathinfo( $file, PATHINFO_BASENAME),
+                $fileLocation[1] . pathinfo( $file, PATHINFO_BASENAME)
             );
         }
 

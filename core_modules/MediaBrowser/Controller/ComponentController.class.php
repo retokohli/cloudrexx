@@ -16,9 +16,9 @@ namespace Cx\Core_Modules\MediaBrowser\Controller;
 use Cx\Core\ContentManager\Model\Entity\Page;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\Html\Sigma;
+use Cx\Core\MediaSource\Model\Entity\ThumbnailGenerator;
 use Cx\Core_Modules\MediaBrowser\Model\Event\MediaBrowserEventListener;
 use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
-use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 use Cx\Lib\FileSystem\FileSystemException;
 
 /**
@@ -107,7 +107,9 @@ class ComponentController extends
             )
         );
         foreach (
-            UploaderConfiguration::getInstance()->getThumbnails() as
+            $this->cx->getMediaSourceManager()
+                ->getThumbnailGenerator()
+                ->getThumbnails() as
             $thumbnail
         ) {
             $thumbnailsTemplate->setVariable(

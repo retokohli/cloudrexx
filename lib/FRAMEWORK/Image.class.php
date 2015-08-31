@@ -10,6 +10,7 @@
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
+use Cx\Core\Core\Controller\Cx;
 
 /**
  * Image manager
@@ -802,7 +803,10 @@ class ImageManager
      */
     static function getThumbnailFilename($file_name)
     {
-        $thumbs = \Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator::createThumbnailFromPath($file_name);
+        $thumbs = Cx::instanciate()
+            ->getMediaSourceManager()
+            ->getThumbnailGenerator()
+            ->createThumbnailFromPath($file_name);
         if (preg_match('/\.thumb$/', $file_name)) return $file_name;
         // Compatibility with versions up to 2.2 that create thumbnails
         // in JPG format

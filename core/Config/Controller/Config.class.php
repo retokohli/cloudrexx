@@ -18,10 +18,6 @@ namespace Cx\Core\Config\Controller;
  */
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Csrf\Controller\Csrf;
-use Cx\Core\Html\Sigma;
-use Cx\Core\Setting\Controller\Setting;
-use Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator;
-use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 use Cx\Lib\FileSystem\FileSystem;
 
 isset($objInit) && $objInit->mode == 'backend' ? \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Cache/Controller/CacheManager.class.php') : null;
@@ -1727,7 +1723,9 @@ class Config
             = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($cx->getWebsiteImagesPath().'/'), \RecursiveIteratorIterator::SELF_FIRST);
         $jsonFileArray = array();
 
-        $thumbnailList = UploaderConfiguration::getInstance()->getThumbnails();
+        $thumbnailList = Cx::instanciate()->getMediaSourceManager()
+            ->getThumbnailGenerator()
+            ->getThumbnails();
 
         $imageManager = new \ImageManager();
 
@@ -1828,9 +1826,11 @@ class Config
 
             if (!$allThumbnailsExists) {
                 if ($imageManager->_isImage($file->getRealPath())) {
-                    ThumbnailGenerator::createThumbnail(
+                    $cx->getMediaSourceManager()
+                        ->getThumbnailGenerator()
+                        ->createThumbnail(
                         $file->getPath(), $fileNamePlain, $fileExtension, $imageManager, true
-                    );
+                        );
                 }
             }
 

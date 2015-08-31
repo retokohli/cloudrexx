@@ -195,7 +195,9 @@ class UploaderController {
                 $im = new \ImageManager();
                 if ($im->_isImage($rootPathFull)) {
                     foreach (
-                        UploaderConfiguration::getInstance()->getThumbnails() as
+                        $cx->getMediaSourceManager()
+                            ->getThumbnailGenerator()
+                            ->getThumbnails() as
                         $thumbnail
                     ) {
                         $im->_createThumb(

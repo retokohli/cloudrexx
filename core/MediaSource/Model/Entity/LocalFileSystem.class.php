@@ -7,7 +7,6 @@
 
 namespace Cx\Core\MediaSource\Model\Entity;
 
-use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 
 class LocalFileSystem implements FileSystem
 {
@@ -47,7 +46,9 @@ class LocalFileSystem implements FileSystem
 
         $jsonFileArray = array();
 
-        $thumbnailList = UploaderConfiguration::getInstance()->getThumbnails();
+        $thumbnailList = $this->cx->getMediaSourceManager()
+            ->getThumbnailGenerator()
+            ->getThumbnails();
 
         foreach ($recursiveIteratorIterator as $file) {
             /**

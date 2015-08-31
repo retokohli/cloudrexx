@@ -16,7 +16,7 @@ use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\Json\JsonAdapter;
 use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowserPageTree;
-use Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator;
+use Cx\Core\MediaSource\Model\Entity\ThumbnailGenerator;
 
 /**
  * JSON Adapter for Uploader
@@ -147,7 +147,9 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      */
     public function createThumbnails($params) {
         if (isset($params['get']['file'])) {
-            ThumbnailGenerator::createThumbnailFromPath($params['get']['file']);
+            $this->cx->getMediaSourceManager()
+                ->getThumbnailGenerator()
+                ->createThumbnailFromPath($params['get']['file']);
             return true;
         }
         return false;
