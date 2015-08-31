@@ -269,7 +269,8 @@ class LocalFileSystem implements FileSystem
             }
             $destinationFolder = realpath(pathinfo($this->getFullPath($file) . $destination, PATHINFO_DIRNAME));
             if (!MediaSourceManager::isSubdirectory($this->rootPath,
-                $destinationFolder)){
+                $destinationFolder))
+            {
                 return sprintf(
                     $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULLY_RENAMED'],
                     $file->getName()
