@@ -211,8 +211,10 @@ class ViewGenerator {
              *  postEdit event
              *  execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
              */
+            
+            $editId = $this->getEntryId();
             if (
-                $this->isInEditMode() && (
+                !empty($editId) && (
                     (
                         !empty($this->options['functions']['edit']) &&
                         $this->options['functions']['edit'] != false
@@ -222,7 +224,7 @@ class ViewGenerator {
                     )
                 )
             ) {
-                $entityId = contrexx_input2raw($this->isInEditMode());
+                $entityId = contrexx_input2raw($this->getEntryId());
                 // render form for editid
                 $this->renderFormForEntry($entityId);
                 $form = $this->formGenerator;
@@ -366,9 +368,9 @@ class ViewGenerator {
      * {<vg_incr_no>,<id_to_edit>}[,{<vg_incr_no>,<id_to_edit>}[,...]
      * <id_to_edit> can be a number, string or set of both, separated by comma
      */
-    protected function isInEditMode() {
+    protected function getEntryId() {
         if (!isset($_GET['editid']) && !isset($_POST['editid'])) {
-            return false;
+            return null;
         }
         if (isset($_GET['editid'])) {
             $edits = explode('},{', substr($_GET['editid'], 1, -1));
@@ -398,9 +400,15 @@ class ViewGenerator {
                 return $edit;
             }
         }
-        return false;
     }
-    
+
+    /**
+     * This function finds out what we want to render and then renders the form
+     *
+     * @param $isSingle
+     * @access public
+     * @return string
+     * */
     public function render(&$isSingle = false) {
         global $_ARRAYLANG;
         if (!empty($_GET['add']) 
@@ -410,11 +418,10 @@ class ViewGenerator {
         }
         $renderObject = $this->object;
         $entityClass = get_class($this->object);
-        $entityId = '';
+        $entityId = $this->getEntryId();
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet
-            && $this->isInEditMode()) {
+            && $entityId) {
             $entityClass = $this->object->getDataType();
-            $entityId = contrexx_input2raw($this->isInEditMode());
             if ($this->object->entryExists($entityId)) {
                 $renderObject = $this->object->getEntry($entityId);
             }
@@ -446,7 +453,14 @@ class ViewGenerator {
             return $this->renderFormForEntry($entityId);
         }
     }
-    
+
+    /**
+     * This function will render the form for a given entry by id. If id is null, an empty form will be loaded
+     *
+     * @access protected
+     * @param $entityId
+     * @return string
+     * */
     protected function renderFormForEntry($entityId) {
         global $_CORELANG;
 
@@ -564,11 +578,19 @@ class ViewGenerator {
         }
         return $this->formGenerator . $additionalContent;
     }
-    
+
+    /**
+     * @access public
+     * @return object
+     */
     public function getObject() {
         return $this->object;
     }
     
+    /**
+     * @access public
+     * @return string
+     */
     public function __toString() {
         try {
             return (string) $this->render();
