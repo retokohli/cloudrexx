@@ -424,7 +424,6 @@
                             $scope.$digest();
                         },
                         UploadComplete: function () {
-                            console.log('UpladComplete');
                             $scope.finishedUpload = true;
                             $scope.uploadPending = false;
                             $scope.showUploadedHint = true;
