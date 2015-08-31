@@ -177,57 +177,63 @@ class LocalFileSystem implements FileSystem
         global $_ARRAYLANG;
         $filename = $file->getFullName();
         $strPath = $file->getPath();
-        if (!empty($filename)
+        if (
+            !empty($filename)
             && !empty($strPath)
         ) {
-            if (is_dir(
-                $this->getFullPath($file)
-                . $filename
-            )) {
-                if (\Cx\Lib\FileSystem\FileSystem::delete_folder(
-                    $this->getFullPath($file) . $filename, true
+            if (
+                is_dir(
+                    $this->getFullPath($file)
+                    . $filename
                 )
+            ) {
+                if (
+                    \Cx\Lib\FileSystem\FileSystem::delete_folder(
+                        $this->getFullPath($file) . $filename, true
+                    )
                 ) {
                     return (
-                    sprintf(
-                        $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULLY_REMOVED'],
-                        $filename
-                    )
+                        sprintf(
+                            $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULLY_REMOVED'],
+                            $filename
+                        )
                     );
                 } else {
                     return (
-                    sprintf(
-                        $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_UNSUCCESSFULLY_REMOVED'],
-                        $filename
-                    )
+                        sprintf(
+                            $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_UNSUCCESSFULLY_REMOVED'],
+                            $filename
+                        )
                     );
                 }
             } else {
-                if (\Cx\Lib\FileSystem\FileSystem::delete_file(
-                    $this->getFullPath($file)  . $filename
-                )
+                if (
+                    \Cx\Lib\FileSystem\FileSystem::delete_file(
+                        $this->getFullPath($file)  . $filename
+                    )
                 ) {
                     $this->removeThumbnails($file);
                     return (
-                    sprintf(
-                        $_ARRAYLANG['TXT_FILEBROWSER_FILE_SUCCESSFULLY_REMOVED'],
-                        $filename
-                    )
+                        sprintf(
+                            $_ARRAYLANG['TXT_FILEBROWSER_FILE_SUCCESSFULLY_REMOVED'],
+                            $filename
+                        )
                     );
                 } else {
                     return (
-                    sprintf(
-                        $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULLY_REMOVED'],
-                        $filename
-                    ));
+                        sprintf(
+                            $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULLY_REMOVED'],
+                            $filename
+                        )
+                    );
                 }
             }
         }
         return (
-        sprintf(
-            $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULLY_REMOVED'],
-            $filename
-        )
+            sprintf(
+                $_ARRAYLANG['TXT_FILEBROWSER_FILE_UNSUCCESSFULLY_REMOVED'],
+                $filename
+            )
         );
     }
 
