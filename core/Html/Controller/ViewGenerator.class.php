@@ -112,30 +112,9 @@ class ViewGenerator {
             ) {
                 
                 $this->renderFormForEntry(null);
-                $form = $this->formGenerator;
-                if ($form === false) {
-                    // cannot save, no such entry
-                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
-                    return;
-                }
-                if (!$form->isValid() || (isset($this->options['validate']) && !$this->options['validate']($form))) {
-                    // data validation failed, stay in add view
-                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
-                    return;
-                }
+                $this->validateForm();
                 if (!empty($_POST)) {
-                    $post=$_POST;
-                    unset($post['csrf']);
-                    $blankPost=true;
-                    if (!empty($post)) {
-                        foreach($post as $value) {
-                            if ($value) $blankPost=false;
-                        }
-                    }
-                    if ($blankPost) {
-                        \Message::add($_ARRAYLANG['TXT_CORE_RECORD_FILL_OUT_AT_LEAST_ONE_FILED'], \Message::CLASS_ERROR);
-                        return;
-                    }
+                    $this->checkBlankPostRequest();
                     $entityObject = \Env::get('em')->getClassMetadata($entityWithNS);
                     $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name
                     $entityColumnNames = $entityObject->getColumnNames(); //get all field names
@@ -367,6 +346,9 @@ class ViewGenerator {
      * $_GET['editid'] has the following format:
      * {<vg_incr_no>,<id_to_edit>}[,{<vg_incr_no>,<id_to_edit>}[,...]
      * <id_to_edit> can be a number, string or set of both, separated by comma
+     *
+     * @access protected
+     * @return int|null
      */
     protected function getEntryId() {
         if (!isset($_GET['editid']) && !isset($_POST['editid'])) {
@@ -597,5 +579,50 @@ class ViewGenerator {
         } catch (\Exception $e) {
             echo $e->getMessage();die();
         }
+    }
+
+    /**
+     * This function checks if a post request contains any data
+     * @access protected
+     * @return bool
+     */
+    protected function checkBlankPostRequest() {
+        global $_ARRAYLANG;
+
+        $post=$_POST;
+        unset($post['csrf']);
+        $blankPost=true;
+        if (!empty($post)) {
+            foreach($post as $value) {
+                if ($value) $blankPost=false;
+            }
+        }
+        if ($blankPost) {
+            \Message::add($_ARRAYLANG['TXT_CORE_RECORD_FILL_OUT_AT_LEAST_ONE_FILED'], \Message::CLASS_ERROR);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * This function checks if a form is valid
+     *
+     * @access protected
+     * @return boolean
+     */
+    protected function validateForm() {
+        global $_ARRAYLANG;
+
+        if ($this->formGenerator === false) {
+            // cannot save, no such entry
+            \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
+            return false;
+        }
+        if (!$this->formGenerator->isValid() || (isset($this->options['validate']) && !$this->options['validate']($this->formGenerator))) {
+            // data validation failed, stay in this view
+            \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
+            return false;
+        }
+        return true;
     }
 }
