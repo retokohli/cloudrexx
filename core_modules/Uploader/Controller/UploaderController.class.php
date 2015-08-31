@@ -52,14 +52,14 @@ class UploaderController {
      *
      * @var int
      */
-    private static $_error = null;
+    protected static $_error = null;
 
     /**
      * List of errors
      *
      * @var array
      */
-    private static $_errors = array(
+    protected static $_errors = array(
         PLUPLOAD_MOVE_ERR => "Failed to move uploaded file.",
         PLUPLOAD_INPUT_ERR => "Failed to open input stream.",
         PLUPLOAD_OUTPUT_ERR => "Failed to open output stream.",
@@ -345,7 +345,7 @@ class UploaderController {
     /**
      * Cleanup method
      */
-    private static function cleanup() {
+    protected static function cleanup() {
         // Remove old temp files	
         if (file_exists(self::$conf['tmp_dir'])) {
             foreach (glob(self::$conf['tmp_dir'] . '/*.part') as $tmpFile) {
@@ -394,7 +394,7 @@ class UploaderController {
      *
      * @param string $dir Directory to remove
      */
-    private static function rrmdir($dir) {
+    protected static function rrmdir($dir) {
         foreach (glob($dir . '/*') as $file) {
             if (is_dir($file)) {
                 self::rrmdir($file);

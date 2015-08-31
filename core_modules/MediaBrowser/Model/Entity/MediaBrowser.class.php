@@ -21,7 +21,7 @@ use Cx\Model\Base\EntityBase;
  */
 class MediaBrowser extends EntityBase
 {
-    private static $optionValues = [
+    protected static $optionValues = [
         'views',
         'startview',
         'startmediatype',
