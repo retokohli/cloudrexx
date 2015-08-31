@@ -372,7 +372,6 @@ class UploaderController {
      */
     public static function sanitizeFileName($filename) {
         $filename = FileSystem::replaceCharacters(filter_var($filename,FILTER_SANITIZE_URL));
-        $filename = \FWValidator::getCleanFileName($filename);
         $fileInfo = pathinfo($filename);
         if (empty($filename)){
             $filename = 'file'.date('Y-m-d H:i:s');
