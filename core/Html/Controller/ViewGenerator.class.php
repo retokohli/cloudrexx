@@ -96,13 +96,10 @@ class ViewGenerator {
                 return;
             }
 
-            /** 
-             *  postSave event
-             *  execute save if entry is a doctrine entity (or execute callback if specified in configuration)
-             */
-            $add=(!empty($_GET['add'])? contrexx_input2raw($_GET['add']):null);
+            // execute add if entry is a doctrine entity (or execute callback if specified in configuration)
+            // post add
             if (
-                !empty($add) && (
+                !empty($_GET['add']) && (
                     !empty($this->options['functions']['add']) &&
                     $this->options['functions']['add'] != false
                 ) || (
@@ -186,11 +183,8 @@ class ViewGenerator {
                 }
             }
 
-            /** 
-             *  postEdit event
-             *  execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
-             */
-            
+            // execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
+            // post edit
             $editId = $this->getEntryId();
             if (
                 !empty($editId) && (
@@ -294,10 +288,8 @@ class ViewGenerator {
                 \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
             }
 
-            /**
-             * trigger pre- and postRemove event
-             * execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
-             */
+            // execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
+            // post remove
             $deleteId = !empty($_GET['deleteid']) ? contrexx_input2raw($_GET['deleteid']) : '';
             if (
                 $deleteId!='' && (
@@ -393,21 +385,25 @@ class ViewGenerator {
      * */
     public function render(&$isSingle = false) {
         global $_ARRAYLANG;
+
+        // this case is used to generate the add entry form, where we can create an new entry
         if (!empty($_GET['add']) 
             && !empty($this->options['functions']['add'])) {
             $isSingle = true;
             return $this->renderFormForEntry(null);
         }
         $renderObject = $this->object;
-        $entityClass = get_class($this->object);
         $entityId = $this->getEntryId();
+
+        // this case is used to get the right entry if we edit a existing one
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet
-            && $entityId) {
-            $entityClass = $this->object->getDataType();
+            && !empty($entityId)) {
             if ($this->object->entryExists($entityId)) {
                 $renderObject = $this->object->getEntry($entityId);
             }
         }
+
+        // this case is used for the overview off all entities
         if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             if(!empty($this->options['order']['overview'])) {
                 $renderObject->sortColumns($this->options['order']['overview']);
@@ -430,10 +426,11 @@ class ViewGenerator {
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
 
             return $backendTable.$addBtn;
-        } else {
-            $isSingle = true;
-            return $this->renderFormForEntry($entityId);
         }
+
+        // render form for single entry view like editEntry
+        $isSingle = true;
+        return $this->renderFormForEntry($entityId);
     }
 
     /**
@@ -451,23 +448,26 @@ class ViewGenerator {
             $this->options['fields'] = array();
         }
         $this->options['fields']['vg_increment_number'] = array('type' => 'hidden');
+        // the title is used for the heading. For example the heading in edit mode will be "edit [$entityTitle]"
         $entityTitle = isset($this->options['entityName']) ? $this->options['entityName'] : $_CORELANG['TXT_CORE_ENTITY'];
+
+        // get the class name including the whole namspace of the class
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $entityClass = $this->object->getDataType();
         } else {
             $entityClass = get_class($this->object);
         }
         $entityObject = \Env::get('em')->getClassMetadata($entityClass);
-        $primaryKeyNames = $entityObject->getIdentifierFieldNames();
-        if (!$entityId && !empty($this->options['functions']['add'])) {
+        $primaryKeyNames = $entityObject->getIdentifierFieldNames(); // get the name of primary key in database table
+        if (!$entityId && !empty($this->options['functions']['add'])) { // load add entry form
             if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Url')) {
                 $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
             }
             $this->options['cancelUrl']->setParam('add', null);
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-            $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
             $actionUrl->setParam('add', 1);
-            $entityColumnNames = $entityObject->getColumnNames(); //get all field names  
+            $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
+            $entityColumnNames = $entityObject->getColumnNames(); // get all database field names
             if (empty($entityColumnNames)) return false;
             foreach($entityColumnNames as $column) {
                 $field = $entityObject->getFieldName($column);
@@ -502,10 +502,14 @@ class ViewGenerator {
             }
             $this->options['cancelUrl']->setParam('editid', null);
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-            $title = sprintf($_CORELANG['TXT_CORE_EDIT_ENTITY'], $entityTitle);
             $actionUrl->setParam('editid', null);
+            $title = sprintf($_CORELANG['TXT_CORE_EDIT_ENTITY'], $entityTitle);
+
+            // get data of all fields of the entry, except associated fields
             $renderObject = $this->object->getEntry($entityId);
             if (empty($renderObject)) return false;
+
+            // get doctrine field name, database field name and type for each field
             foreach($renderObject as $name => $value) {
                 if ($name == 'virtual') {
                     continue;
