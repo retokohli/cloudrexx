@@ -130,7 +130,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      */
     public function getSites() {
         $pageTree = new MediaBrowserPageTree(
-            \Env::get('em'), $this->cx->getLicense(), 0, null, FRONTEND_LANG_ID
+            $this->cx->getDb()->getEntityManager(), $this->cx->getLicense(), 0, null, FRONTEND_LANG_ID
             , null, false, false
         );
         $pageTree->render();
