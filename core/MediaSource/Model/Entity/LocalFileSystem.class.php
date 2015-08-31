@@ -375,13 +375,12 @@ class LocalFileSystem implements FileSystem
         if (!$this->isImage($file->getExtension())) {
             return;
         }
-        $thumbnails = glob(
-            $this->getFullPath($file) . $file->getName() . '.thumb*'
-        );
-        foreach ($thumbnails as $thumbnail){
+        $iterator = new \RegexIterator(new \DirectoryIterator($this->getFullPath($file)), '/'.preg_quote( $file->getName(),'/').'.thumb_[a-z]+/');
+        foreach ($iterator as $thumbnail){
             \Cx\Lib\FileSystem\FileSystem::delete_file(
                 $thumbnail
             );
         }
+        die;
     }
 }
