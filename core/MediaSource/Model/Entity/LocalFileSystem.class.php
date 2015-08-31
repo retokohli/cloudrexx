@@ -386,6 +386,5 @@ class LocalFileSystem implements FileSystem
                 $thumbnail
             );
         }
-        die;
     }
 }
