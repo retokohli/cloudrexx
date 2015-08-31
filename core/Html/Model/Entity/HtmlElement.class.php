@@ -54,7 +54,7 @@ class HtmlElement {
             unset($attributes['class']);
         }
         $this->output = null;
-        $this->attributes += $attributes;
+        $this->attributes = array_merge($this->attributes, $attributes);
     }
     
     public function getAttribute($name) {
