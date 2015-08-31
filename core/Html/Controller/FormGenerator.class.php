@@ -63,7 +63,6 @@ class FormGenerator {
         );
         $this->form->setAttribute('id', 'form-' . $this->formId);
         $this->form->setAttribute('class', 'cx-ui');
-        $em = \Env::get('em');
         $titleElement = new \Cx\Core\Html\Model\Entity\HtmlElement('legend');
         $titleElement->addChild(new \Cx\Core\Html\Model\Entity\TextElement($title));
         $this->form->addChild($titleElement);
@@ -74,9 +73,6 @@ class FormGenerator {
             $this->form->addChild($editIdField);   
         }
         // foreach entity field
-        /*$metadata = $em->getClassMetadata(get_class($entity));
-        foreach ($metadata->getColumnNames() as $field) {
-            $type = $metadata->fieldMappings[$field]['type'];//*/
         foreach ($entity as $field=>$value) {
             $type = null;
             
@@ -92,21 +88,9 @@ class FormGenerator {
                 } else {
                     $type = get_class($value);
                 }
-            }//*/
+            }
             $length = 0;
-            /*if (isset($metadata->fieldMappings[$field]['length'])) {
-                $length = $metadata->fieldMappings[$field]['length'];
-            }*/
-            //if (is_array($entity) && isset($entity[$field])) {
-                $value = $entity[$field];
-            /*} else {
-                $value = $metadata->getFieldValue($entity, $field);
-            }*/
-            //$this->addFieldsForMetadata($metadata->fieldMappings[$field], $value);
-            /*$label = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
-            $label->setAttribute('for', 'formX_' . $field);
-            $label->addChild(new \Cx\Core\Html\Model\Entity\TextElement($field));
-            $this->form->addChild($label);*/
+            $value = $entity[$field];
             $fieldOptions = array();
             if (isset($options['fields']) && isset($options['fields'][$field])) {
                 $fieldOptions = $options['fields'][$field];
@@ -114,8 +98,6 @@ class FormGenerator {
             if (!empty($fieldOptions['type'])) {
                 $type = $fieldOptions['type'];
             }
-            /*$element = $this->getDataElement($field, $type, $length, $value, $fieldOptions);
-            $element->setAttribute('id', 'form-X-' . $field);*/
             $dataElement = $this->getDataElement($field, $type, $length, $value, $fieldOptions);
             if (empty($dataElement)) {
                 continue;
@@ -132,9 +114,14 @@ class FormGenerator {
             $this->form->cancelUrl = $options['cancelUrl'];
         }
     }
-    
+
+    /**
+     * @param $field
+     * @param $dataElement
+     * @param array $fieldOptions
+     * @return \Cx\Core\Html\Model\Entity\HtmlElement
+     */
     public function getDataElementGroup($field, $dataElement, $fieldOptions = array()) {
-        global $_ARRAYLANG;
 
         $group = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
         $group->setAttribute('class', 'group');
@@ -165,6 +152,16 @@ class FormGenerator {
         return $group;
     }
     
+    /**
+     * @param $name
+     * @param $type
+     * @param $length
+     * @param $value
+     * @param $options
+     * @param $parentEntityClass
+     * @param $entityId
+     * @return \Cx\Core\Html\Model\Entity\DataElement
+     */
     public function getDataElement($name, $type, $length, $value, $options) {
         global $_ARRAYLANG;
         if (isset($options['formfield']) && is_callable($options['formfield'])) {
