@@ -1915,11 +1915,11 @@ a.cke_dialog_ui_button_ok:hover {
     min-height: 22px;
     height: 0;
     overflow: hidden;
-    -webkit-transition: height .7s linear 0s;
-    -moz-transition: height .7s linear 0s;
-    -ms-transition: height .7s linear 0s;
-    -o-transition: height .7s linear 0s;
-    transition: height .7s linear 0s;
+    -webkit-transition: height .2s linear 0s;
+    -moz-transition: height .2s linear 0s;
+    -ms-transition: height .2s linear 0s;
+    -o-transition: height .2s linear 0s;
+    transition: height .2s linear 0s;
 }
 .description:hover {
     cursor: pointer;
@@ -1929,11 +1929,11 @@ a.cke_dialog_ui_button_ok:hover {
     font-size: 20px;
     vertical-align: middle;
     margin-left: 5px;
-    -webkit-transition: transform .8s linear 0s;
-    -moz-transition: transform .8s linear 0s;
-    -ms-transition: transform .8s linear 0s;
-    -o-transition: transform .8s linear 0s;
-    transition: transform .8s linear 0s;
+    -webkit-transition: transform .2s linear 0s;
+    -moz-transition: transform .2s linear 0s;
+    -ms-transition: transform .2s linear 0s;
+    -o-transition: transform .2s linear 0s;
+    transition: transform .2s linear 0s;
 }
 
 .description > .showText > img {
@@ -1947,11 +1947,11 @@ a.cke_dialog_ui_button_ok:hover {
 .desc-extended {
     display: block;
     opacity: 0;
-    -webkit-transition: opacity 1s linear 0s;
-    -moz-transition: opacity 1s linear 0s;
-    -ms-transition: opacity 1s linear 0s;
-    -o-transition: opacity 1s linear 0s;
-    transition: opacity 1s linear 0s;
+    -webkit-transition: opacity .1s linear 0s;
+    -moz-transition: opacity .1s linear 0s;
+    -ms-transition: opacity .1s linear 0s;
+    -o-transition: opacity .1s linear 0s;
+    transition: opacity .1s linear 0s;
 }
 
 .showText > span {
