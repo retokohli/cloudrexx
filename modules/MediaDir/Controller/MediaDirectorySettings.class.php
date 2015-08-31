@@ -1617,6 +1617,7 @@ EOF;
     }
 
     /**
+     * This function is called after the activation of new language
      * update existing forms, inputfields and entries values for activated new language
      *
      * @return null
@@ -1625,7 +1626,7 @@ EOF;
     {
         global $objDatabase;
 
-        foreach ($this->arrFrontendLanguages as $lang){
+        foreach ($this->arrFrontendLanguages as $lang) {
             $activeLang[] = $lang['id'];
         }
         $objForms = new MediaDirectoryForm(null, $this->moduleName);
@@ -1633,11 +1634,12 @@ EOF;
             $formId          = $objForm['formId'];
             $formName        = $objForm['formName'];
             $formDescription = $objForm['formDescription'];
-            $objForms->updateFormLocale($formName, $formDescription, $formId); //update form
+            //update form values
+            $objForms->updateFormLocale($formName, $formDescription, $formId); 
 
             $objInputField = new MediaDirectoryInputfield($formId, false, null, $this->moduleName);
             $inputFields   = $objInputField->getInputfields();
-
+            //Before updating the form InputFields names, remove the corresponding InputFields names from db.
             $objDatabase->Execute('DELETE FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_inputfield_names WHERE form_id="'.$formId.'" AND lang_id IN("'.  implode('","', $activeLang).'")');
 
             foreach ($inputFields as $inputField) {
@@ -1649,7 +1651,7 @@ EOF;
                 $arrFieldNames         = $inputField['name'];
                 $arrFieldDefaultValues = $inputField['default_value'];
                 $arrFieldInfos         = $inputField['info'];
-                //update inputfields
+                //update form inputfields
                 $objInputField->updateInputFields($intFieldId, $arrFieldNames, $arrFieldDefaultValues, $arrFieldInfos);
             }
         }

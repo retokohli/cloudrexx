@@ -556,10 +556,13 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
     /**
      * Update form inputfields
      *
-     * @param integer $intFieldId
-     * @param array   $arrFieldNames
-     * @param array   $arrFieldDefaultValues
-     * @param array   $arrFieldInfos
+     * Before calling this method Remove the existing form inputfield entries from db 
+     * for avoiding the duplicate entries in db.
+     *
+     * @param integer $intFieldId            Form InputField id
+     * @param array   $arrFieldNames         Form inputField Names array, the key is refered as the language id    
+     * @param array   $arrFieldDefaultValues Form inputField Default values array, the key is refered as the language id
+     * @param array   $arrFieldInfos         Form inputField Information values  array the key is refered as the language id
      *
      * @return boolean true | false
      */
@@ -568,9 +571,9 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
         global $_LANGID, $objDatabase;
 
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-            if (empty($arrFieldNames[0]))
-                $arrFieldNames[0] = "";
-
+            if (empty($arrFieldNames[0])){
+                $arrFieldNames[0] = '';
+            }
             $strFieldName = $arrFieldNames[$arrLang['id']];
             $strFieldDefaultValue = $arrFieldDefaultValues[$arrLang['id']];
             $strFieldInfo = $arrFieldInfos[$arrLang['id']];
@@ -606,26 +609,29 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 }
             }
 
-            if (empty($strFieldName))
+            if (empty($strFieldName)) {
                 $strFieldName = $arrFieldNames[0];
+            }
 
-            if (empty($strFieldDefaultValue))
+            if (empty($strFieldDefaultValue)) {
                 $strFieldDefaultValue = $arrFieldDefaultValues[0];
+            }
 
-            if (empty($strFieldInfo))
+            if (empty($strFieldInfo)) {
                 $strFieldInfo = $arrFieldInfos[0];
+            }
 
-            $objSaveInputfieldName = $objDatabase->Execute("
+            $objSaveInputfieldName = $objDatabase->Execute('
                     INSERT INTO
-                        " . DBPREFIX . "module_" . $this->moduleTablePrefix . "_inputfield_names
+                        ' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_inputfield_names
                     SET
-                        `lang_id` = '" . contrexx_raw2db($arrLang['id']) . "',
-                        `form_id` = '" . contrexx_raw2db($this->intFormId) . "',
-                        `field_id` = '" . contrexx_raw2db($intFieldId) . "',
-                        `field_name` = '" . contrexx_raw2db($strFieldName) . "',
-                        `field_default_value` = '" . contrexx_raw2db($strFieldDefaultValue) . "',
-                        `field_info` = '" . contrexx_addslashes(htmlentities($strFieldInfo, ENT_QUOTES, CONTREXX_CHARSET)) . "'
-                ");
+                        `lang_id` = "' . contrexx_raw2db($arrLang['id']) . '",
+                        `form_id` = "' . contrexx_raw2db($this->intFormId) . '",
+                        `field_id` = "' . contrexx_raw2db($intFieldId) . '",
+                        `field_name` = "' . contrexx_raw2db($strFieldName) . '",
+                        `field_default_value` = "' . contrexx_raw2db($strFieldDefaultValue) . '",
+                        `field_info` = "' . contrexx_addslashes(htmlentities($strFieldInfo, ENT_QUOTES, CONTREXX_CHARSET)) . '"
+                ');
 
             if (!$objSaveInputfieldName) {
                 return false;
