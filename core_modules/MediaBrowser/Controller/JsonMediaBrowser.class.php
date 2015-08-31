@@ -235,14 +235,10 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      * @param $params
      */
     public function createDir($params) {
-        $mediaBrowserConfiguration = $this->cx->getMediaSourceManager();
         $pathArray                 = explode('/', $params['get']['path']);
         // Shift off the first element of the array to get the media type.
         $mediaType = array_shift($pathArray);
-        $strPath   = $mediaBrowserConfiguration->getMediaTypePathsbyNameAndOffset(
-            $mediaType, 0
-        );
-        $strPath .= '/' . join('/', $pathArray);
+        $strPath = '/' . join('/', $pathArray);
         $dir        = $params['post']['dir'] . '/';
         $this->setMessage(
             $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->createDirectory(

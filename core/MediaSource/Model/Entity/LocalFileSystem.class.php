@@ -341,33 +341,22 @@ class LocalFileSystem implements FileSystem
     ) {
         global $_ARRAYLANG;
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        if (preg_match('#^[0-9a-zA-Z_\-\/\.]+$#', $directory)) {
-            if (!\Cx\Lib\FileSystem\FileSystem::make_folder(
-                $path . '/' . $directory
+        if (
+            !\Cx\Lib\FileSystem\FileSystem::make_folder(
+                $this->rootPath . $path . '/' . $directory
             )
-            ) {
-                return sprintf(
-                    $_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'],
+        ) {
+            return sprintf(
+                $_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'],
+                $directory
+            );
+        } else {
+            return
+                sprintf(
+                    $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULLY_CREATED'],
                     $directory
                 );
-            } else {
-                return
-                    sprintf(
-                        $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULLY_CREATED'],
-                        $directory
-                    );
-            }
-        } else {
-            if (!empty($directory)) {
-                return (
-                $_ARRAYLANG['TXT_FILEBROWSER_INVALID_CHARACTERS']
-                );
-
-            }
         }
-        return sprintf(
-            $_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'], $directory
-        );
     }
 
     /**

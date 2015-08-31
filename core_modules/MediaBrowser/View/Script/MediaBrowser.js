@@ -701,7 +701,6 @@
                             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                         }).success(function (jsonadapter) {
                             $scope.updateSource();
-                            bootbox.alert(jsonadapter.message);
                         }).error(function () {
                             bootbox.alert(cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser'));
                         });
