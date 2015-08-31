@@ -15,10 +15,30 @@ class ViewGeneratorException extends \Exception {}
  * @todo    Refactor
  */
 class ViewGenerator {
+
+    /**
+     * @var int $increment This ID is used to store the next free $viewId
+     */
     protected static $increment = 0;
+
+    /**
+     * @var int $viewId This ID is used as html id for the view so we can load more than one view
+     */
+    protected $viewId;
+
+    /**
+     * @var object $object
+     */
     protected $object;
+
+    /**
+     * @var array $options form options
+     */
     protected $options;
-    protected $number;
+
+    /**
+     * @var FormGenerator $formGenerator
+     */
     protected $formGenerator = null;
     
     /**
@@ -30,7 +50,7 @@ class ViewGenerator {
     public function __construct($object, $options = array()) {
         global $_ARRAYLANG;
         
-        $this->number = static::$increment++;
+        $this->viewId = static::$increment++;
         try {
             $this->options = $options;
             $entityNS=null;
@@ -62,8 +82,8 @@ class ViewGenerator {
             }
             
             if (
-                (!isset($_POST['vg_increment_number']) || $_POST['vg_increment_number'] != $this->number) &&
-                (!isset($_GET['vg_increment_number']) || $_GET['vg_increment_number'] != $this->number)
+                (!isset($_POST['vg_increment_number']) || $_POST['vg_increment_number'] != $this->viewId) &&
+                (!isset($_GET['vg_increment_number']) || $_GET['vg_increment_number'] != $this->viewId)
             ) {
                 $vgIncrementNo = 'empty';
                 if (isset($_POST['vg_increment_number'])) {
@@ -72,7 +92,7 @@ class ViewGenerator {
                     $vgIncrementNo = '#' . $_GET['vg_increment_number'];
                 }
                 // do not make any changes to entities of other view generator instances!
-                \DBG::msg('Omitting changes, my ID is #' . $this->number . ', supplied number was ' . $vgIncrementNo);
+                \DBG::msg('Omitting changes, my ID is #' . $this->viewId . ', supplied viewId was ' . $vgIncrementNo);
                 return;
             }
 
@@ -354,7 +374,7 @@ class ViewGenerator {
             $edits = explode('},{', substr($_GET['editid'], 1, -1));
             foreach ($edits as $edit) {
                 $edit = explode(',', $edit);
-                if ($edit[0] != $this->number) {
+                if ($edit[0] != $this->viewId) {
                     continue;
                 }
                 unset($edit[0]);
@@ -368,7 +388,7 @@ class ViewGenerator {
             $edits = explode('},{', substr($_POST['editid'], 1, -1));
             foreach ($edits as $edit) {
                 $edit = explode(',', $edit);
-                if ($edit[0] != $this->number) {
+                if ($edit[0] != $this->viewId) {
                     continue;
                 }
                 unset($edit[0]);
@@ -417,7 +437,7 @@ class ViewGenerator {
             }
             $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController($renderObject, array(), $this->options['functions']);
             $renderObject = $listingController->getData();
-            $this->options['functions']['vg_increment_number'] = $this->number;
+            $this->options['functions']['vg_increment_number'] = $this->viewId;
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
 
             return $backendTable.$addBtn;
@@ -430,7 +450,7 @@ class ViewGenerator {
     protected function renderFormForEntry($entityId) {
         global $_CORELANG;
 
-        $renderArray=array('vg_increment_number' => $this->number);
+        $renderArray=array('vg_increment_number' => $this->viewId);
         if (!isset($this->options['fields'])) {
             $this->options['fields'] = array();
         }

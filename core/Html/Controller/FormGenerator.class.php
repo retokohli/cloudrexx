@@ -10,10 +10,30 @@ namespace Cx\Core\Html\Controller;
  * 
  */
 class FormGenerator {
+
+    /**
+     * @var int $formIncrement This ID is used to store the next free $formId
+     */
     public static $formIncrement = 0;
+
+    /**
+     * @var int $formId This ID is used as html id for the form so we can load more than one form
+     */
     protected $formId;
+
+    /**
+     * @var \Cx\Core\Html\Model\Entity\FormElement $form used to store the form data
+     */
     protected $form = null;
+
+    /**
+     * @var array $options form options
+     */
     protected $options;
+
+    /**
+     * @var string $entityClass class to create form for
+     */
     protected $entityClass;
     
     public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array()) {
