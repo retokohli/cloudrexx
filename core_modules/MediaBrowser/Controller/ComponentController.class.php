@@ -136,17 +136,10 @@ class ComponentController extends
         \ContrexxJavascript::getInstance()->setVariable(
             'languages', \FWLanguage::getActiveFrontendLanguages(), 'mediabrowser'
         );
-        foreach (\FWLanguage::getActiveFrontendLanguages() as $language){
-            if ($language['is_default'] == 'true'){
-                \ContrexxJavascript::getInstance()->setVariable(
-                    'language', $language['lang'], 'mediabrowser'
-                );
-            }
 
-        }
-
-
-
+        \ContrexxJavascript::getInstance()->setVariable(
+            'language', \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId()), 'mediabrowser'
+        );
 
         \JS::activate('mediabrowser');
         \JS::registerJS('core_modules/MediaBrowser/View/Script/MediaBrowser.js');
