@@ -1616,23 +1616,25 @@ JSaccessValidatePrimaryGroupAssociation
                 $arrUploadedImages = array();
                 if ($historyId === 'new') {
                     foreach (array_keys($data) as $historyIndex) {
-                        $arrUploadedImages[] = array(
-// TODO: What is contrexx_stripslashes good for here?
-                            'name'            => contrexx_stripslashes($arrImages['name'][$attribute][$historyId][$historyIndex]),
-                            'tmp_name'        => $arrImages['tmp_name'][$attribute][$historyId][$historyIndex],
-                            'error'            => $arrImages['error'][$attribute][$historyId][$historyIndex],
-                            'size'            => $arrImages['size'][$attribute][$historyId][$historyIndex],
-                            'history_index'    => $historyIndex
-                        );
+                        if (\FWValidator::is_file_ending_harmless($arrImages['name'][$attribute][$historyId][$historyIndex])) {
+                            $arrUploadedImages[] = array(
+                                'name'            => \FWValidator::getCleanFileName($arrImages['name'][$attribute][$historyId][$historyIndex]),
+                                'tmp_name'        => $arrImages['tmp_name'][$attribute][$historyId][$historyIndex],
+                                'error'            => $arrImages['error'][$attribute][$historyId][$historyIndex],
+                                'size'            => $arrImages['size'][$attribute][$historyId][$historyIndex],
+                                'history_index'    => $historyIndex
+                            );
+                        }
                     }
                 } else {
-                    $arrUploadedImages[] = array(
-// TODO: What is contrexx_stripslashes good for here?
-                        'name'        => contrexx_stripslashes($arrImages['name'][$attribute][$historyId]),
-                        'tmp_name'    => $arrImages['tmp_name'][$attribute][$historyId],
-                        'error'        => $arrImages['error'][$attribute][$historyId],
-                        'size'        => $arrImages['size'][$attribute][$historyId]
-                    );
+                    if (\FWValidator::is_file_ending_harmless($arrImages['name'][$attribute][$historyId])) {
+                        $arrUploadedImages[] = array(
+                            'name'        => \FWValidator::getCleanFileName($arrImages['name'][$attribute][$historyId]),
+                            'tmp_name'    => $arrImages['tmp_name'][$attribute][$historyId],
+                            'error'        => $arrImages['error'][$attribute][$historyId],
+                            'size'        => $arrImages['size'][$attribute][$historyId]
+                        );
+                    }
                 }
 
                 foreach ($arrUploadedImages as $arrImage) {
