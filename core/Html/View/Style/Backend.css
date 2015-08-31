@@ -156,36 +156,3 @@ form.cx-ui img.previewImage {
     margin-bottom: 5px;
     height: 85px;
 }
-
-/*Changes for Row sorting functionality in ViewGenerator*/
-
-table.adminlist.sortable tr.row2,
-table.adminlist.sortable tr.row1 {
-    background: none;
-    cursor: move;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-table.adminlist.sortable tr.row2 td:first-child,
-table.adminlist.sortable tr.row1 td:first-child {
-    padding-left: 60px;
-    background: url(../../../../core/ContentManager/View/Media/Move.png) no-repeat 10px center;
-    background-size: 18px;
-}
-
-body.loading {
-    cursor: wait !important;
-}
-
-.loading table.adminlist.sortable tr.row2,
-.loading table.adminlist.sortable tr.row1 {
-    cursor: not-allowed;
-}
-
-.loading table.adminlist.sortable tr.row2,
-.loading table.adminlist.sortable tr.row1 {
-    opacity: 0.6;
-}

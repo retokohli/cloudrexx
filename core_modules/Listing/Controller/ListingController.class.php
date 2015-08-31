@@ -117,8 +117,8 @@ class ListingController {
         if (isset($options['paging'])) {
             $this->paging = $options['paging'];
         }
-        if (isset($options['sortBy']['field'])) {
-            $this->order = $options['sortBy']['field'];
+        if (isset($options['order'])) {
+            $this->order = $options['order'];
         }
         // init handlers (filtering, paging and sorting)
         $this->handlers[] = new FilteringController();
