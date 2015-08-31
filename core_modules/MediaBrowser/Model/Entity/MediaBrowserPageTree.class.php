@@ -31,7 +31,7 @@ class MediaBrowserPageTree extends \Cx\Core\PageTree\PageTree
     protected function renderElement(
         $title, $level, $hasChilds, $lang, $path, $current, $page
     ) {
-        $url = \Cx\Core\Routing\NodePlaceholder::fromNode($page->getNode(), null, array())->__toString();
+        $url = (string) \Cx\Core\Routing\NodePlaceholder::fromNode($page->getNode(), null, array());
         $pages = $page->getNode()->getPages();
         $titles = array();
         foreach ($pages as $page){
