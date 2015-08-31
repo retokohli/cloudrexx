@@ -115,12 +115,12 @@ class ViewGenerator {
                 $form = $this->formGenerator;
                 if ($form === false) {
                     // cannot save, no such entry
-                    \Message::add('Cannot save, no such entry', \Message::CLASS_ERROR);
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
                     return;
                 }
                 if (!$form->isValid() || (isset($this->options['validate']) && !$this->options['validate']($form))) {
                     // data validation failed, stay in add view
-                    \Message::add('Cannot save, validation failed', \Message::CLASS_ERROR);
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
                     return;
                 }
                 if (!empty($_POST)) {
@@ -133,7 +133,7 @@ class ViewGenerator {
                         }
                     }
                     if ($blankPost) {
-                        \Message::add('Cannot save, You should fill any one field!', \Message::CLASS_ERROR);
+                        \Message::add($_ARRAYLANG['TXT_CORE_RECORD_FILL_OUT_AT_LEAST_ONE_FILED'], \Message::CLASS_ERROR);
                         return;
                     }
                     $entityObject = \Env::get('em')->getClassMetadata($entityWithNS);
@@ -230,12 +230,12 @@ class ViewGenerator {
                 $form = $this->formGenerator;
                 if ($form === false) {
                     // cannot save, no such entry
-                    \Message::add('Cannot save, no such entry', \Message::CLASS_ERROR);
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
                     return;
                 }
                 if (!$form->isValid() || (isset($this->options['validate']) && !$this->options['validate']($form))) {
                     // data validation failed, stay in edit view
-                    \Message::add('Cannot save, validation failed', \Message::CLASS_ERROR);
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
                     return;
                 }
                 $entityObject=array();
@@ -243,7 +243,7 @@ class ViewGenerator {
                     $entityObject = $this->object->getEntry($entityId);
                 }
                 if (empty($entityObject)) {
-                    \Message::add('Cannot save, Invalid entry', \Message::CLASS_ERROR);
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
                     return;
                 }
                 $updateArray=array();
@@ -307,7 +307,7 @@ class ViewGenerator {
                         }
                         \Message::add($_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL']);   
                     } else {
-                        \Message::add('Cannot save, Invalid argument!', \Message::CLASS_ERROR);
+                        \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
                     }
                 } 
                 $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
@@ -333,7 +333,7 @@ class ViewGenerator {
             ) {
                 $entityObject = $this->object->getEntry($deleteId);
                 if (empty($entityObject)) {
-                    \Message::add('Cannot save, Invalid entry', \Message::CLASS_ERROR);
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
                     return;
                 }
                 $entityObj = \Env::get('em')->getClassMetadata($entityWithNS);  
