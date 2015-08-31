@@ -53,34 +53,8 @@ class ViewGenerator {
         $this->viewId = static::$increment++;
         try {
             $this->options = $options;
-            $entityWithNS = null;
-            if (is_array($object)) {
-                $object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($object);
-            }
-            \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
-            if ($object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
-                // render table if no parameter is set
-                $this->object = $object;
-                $entityWithNS = $this->object->getDataType();
-            } else {
-                if (!is_object($object)) {
-                    $entityClassName = $object;
-                    $entityRepository = \Env::get('em')->getRepository($entityClassName);
-                    $entities = $entityRepository->findAll();
-                    if (empty($entities)) {
-                        $this->object = new $entityClassName();
-                        $entityWithNS = $entityClassName;
-                    } else {
-                        $this->object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
-                        $entityWithNS = $this->object->getDataType();
-                    }
-                } else {
-                    // render form
-                    $this->object = $object;
-                    $entityWithNS = get_class($this->object);
-                }
-            }
-            
+            $entityWithNS = $this->findEntityClass($object);
+
             if (
                 (!isset($_POST['vg_increment_number']) || $_POST['vg_increment_number'] != $this->viewId) &&
                 (!isset($_GET['vg_increment_number']) || $_GET['vg_increment_number'] != $this->viewId)
@@ -333,7 +307,100 @@ class ViewGenerator {
             return;
         }
     }
-    
+
+    /**
+     * This function is used to find the namespace of a passed object
+     *
+     * @param $object object of which the namespace is needed
+     * @return String with Namespace
+     * @access protected
+     */
+    protected function findEntityClass($object)
+    {
+        if (is_array($object)) {
+            $object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($object);
+        }
+        \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
+        if ($object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+            // render table if no parameter is set
+            $this->object = $object;
+            return $this->object->getDataType();
+        } else {
+            if (!is_object($object)) {
+                $entityClassName = $object;
+                $entityRepository = \Env::get('em')->getRepository($entityClassName);
+                $entities = $entityRepository->findAll();
+                if (empty($entities)) {
+                    $this->object = new $entityClassName();
+                    return $entityClassName;
+                } else {
+                    $this->object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
+                    return $this->object->getDataType();
+                }
+            } else {
+                // render form
+                $this->object = $object;
+                return get_class($this->object);
+            }
+        }
+    }
+
+    /**
+     * This function saves the data of an entity to its class.
+     * This only prepares the database store, but does not stores it in database
+     * To store them in database use persist and flush from doctrine
+     *
+     * @param $entity object of the class we want to save
+     * @param $entityClassMetadata Doctrine\ORM\Mapping\ClassMetadata
+     * @param $entityData array with data to save to class
+     * @access protected
+     */
+    protected function savePropertiesToClass($entity, $entityClassMetadata, $entityData = array())
+    {
+
+        // if entityData is not set, we use $_POST as default, because the data are normally submitted over post
+        if (empty($entityData)) {
+            $entityData = $_POST;
+        }
+        $primaryKeyName = $entityClassMetadata->getSingleIdentifierFieldName(); //get primary key name
+        $entityColumnNames = $entityClassMetadata->getColumnNames(); //get the names of all fields
+
+        // Foreach possible attribute in the database we try to find the matching entry in the $entityData array and add it
+        // as property to the object
+        foreach($entityColumnNames as $column) {
+            $name = $entityClassMetadata->getFieldName($column);
+            if (
+                isset($this->options['fields']) &&
+                isset($this->options['fields'][$name]) &&
+                isset($this->options['fields'][$name]['storecallback']) &&
+                is_callable($this->options['fields'][$name]['storecallback'])
+            ) {
+                $storecallback = $this->options['fields'][$name]['storecallback'];
+                $postedValue = null;
+                if (isset($entityData['field'])) {
+                    $postedValue = contrexx_input2raw($entityData[$name]);
+                }
+                $entityData[$name] = $storecallback($postedValue);
+            }
+            if (isset($entityData[$name]) && $name != $primaryKeyName) {
+                $fieldDefinition = $entityClassMetadata->getFieldMapping($name);
+                if ($fieldDefinition['type'] == 'datetime') {
+                    $newValue = new \DateTime($entityData[$name]);
+                } elseif ($fieldDefinition['type'] == 'array') {
+                    $newValue = unserialize($entityData[$name]);
+                    // verify that the value is actually an array -> prevent to store other php data
+                    if (!is_array($newValue)) {
+                        $newValue = array();
+                    }
+                } else {
+                    $newValue = contrexx_input2raw($entityData[$name]);
+                }
+                // set the value as property of the current object, so it is ready to be stored in the database
+                $entity->{'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name))}($newValue);
+            }
+        }
+    }
+
     /**
      * $_GET['editid'] has the following format:
      * {<vg_incr_no>,<id_to_edit>}[,{<vg_incr_no>,<id_to_edit>}[,...]
@@ -453,17 +520,14 @@ class ViewGenerator {
 
         // get the class name including the whole namspace of the class
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
-            $entityClass = $this->object->getDataType();
+            $entityClassWithNS = $this->object->getDataType();
         } else {
-            $entityClass = get_class($this->object);
+            $entityClassWithNS = get_class($this->object);
         }
-        $entityObject = \Env::get('em')->getClassMetadata($entityClass);
+        $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
         $primaryKeyNames = $entityObject->getIdentifierFieldNames(); // get the name of primary key in database table
         if (!$entityId && !empty($this->options['functions']['add'])) { // load add entry form
-            if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Url')) {
-                $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
-            }
-            $this->options['cancelUrl']->setParam('add', null);
+            $this->setProperCancelUrl('add');
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $actionUrl->setParam('add', 1);
             $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
@@ -483,10 +547,10 @@ class ViewGenerator {
                 $renderArray[$field] = '';
             }
             // load single-valued-associations
-            $associationMappings = \Env::get('em')->getClassMetadata($entityClass)->getAssociationMappings();
+            $associationMappings = \Env::get('em')->getClassMetadata($entityClassWithNS)->getAssociationMappings();
             $classMethods = get_class_methods($entityObject->newInstance());
             foreach ($associationMappings as $field => $associationMapping) {
-                if (   \Env::get('em')->getClassMetadata($entityClass)->isSingleValuedAssociation($field)
+                if (   \Env::get('em')->getClassMetadata($entityClassWithNS)->isSingleValuedAssociation($field)
                     && in_array('set'.ucfirst($field), $classMethods)
                 ) {
                     if ($entityObject->getFieldValue($this->object, $field)) {
@@ -496,11 +560,8 @@ class ViewGenerator {
                     $renderArray[$field]= new $associationMapping['targetEntity']();
                 }
             }
-        } elseif ($entityId && $this->object->entryExists($entityId)) {
-            if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Url')) {
-                $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
-            }
-            $this->options['cancelUrl']->setParam('editid', null);
+        } elseif ($entityId && $this->object->entryExists($entityId)) { // load edit entry form
+            $this->setProperCancelUrl('editid');
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $actionUrl->setParam('editid', null);
             $title = sprintf($_CORELANG['TXT_CORE_EDIT_ENTITY'], $entityTitle);
@@ -519,7 +580,7 @@ class ViewGenerator {
                 }
 
                 $fieldDefinition['type'] = null;
-                if (!\Env::get('em')->getClassMetadata($entityClass)->hasAssociation($name)) {
+                if (!\Env::get('em')->getClassMetadata($entityClassWithNS)->hasAssociation($name)) {
                     $fieldDefinition = $entityObject->getFieldMapping($name);
                 }
                 $this->options[$name]['type'] = $fieldDefinition['type'];
@@ -528,7 +589,7 @@ class ViewGenerator {
 
             // load single-valued-associations
             // this is used for those object fields that are associations, but no object has been assigned to yet
-            $associationMappings = \Env::get('em')->getClassMetadata($entityClass)->getAssociationMappings();
+            $associationMappings = \Env::get('em')->getClassMetadata($entityClassWithNS)->getAssociationMappings();
             $classMethods = get_class_methods($entityObject->newInstance());
             foreach ($associationMappings as $field => $associationMapping) {
                 if (!empty($renderArray[$field])) {
@@ -554,7 +615,7 @@ class ViewGenerator {
             }
             $renderArray = array_merge($sortedData,$renderArray);
         }
-        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClass, $title, $this->options);
+        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options);
         // This should be moved to FormGenerator as soon as FormGenerator
         // gets the real entity instead of $renderArray
         $additionalContent = '';
@@ -628,5 +689,17 @@ class ViewGenerator {
             return false;
         }
         return true;
+
+    }
+
+    /**
+     * @param $parameterName
+     * @access protected
+     * */
+    protected function setProperCancelUrl($parameterName){
+        if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Url')) {
+            $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
+        }
+        $this->options['cancelUrl']->setParam($parameterName, null);
     }
 }
