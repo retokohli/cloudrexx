@@ -615,13 +615,12 @@
                                         }
 
                                     }).success(function (jsonadapter) {
-                                        if (jsonadapter.message) {
-                                            bootbox.alert(jsonadapter.message);
-                                        }
-                                        else {
-                                            bootbox.alert('Ein Fehler ist aufgetreten');
+                                        if (!jsonadapter.message) {
+                                            bootbox.alert(cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser'));
                                         }
                                         $scope.updateSource();
+                                    }).error(function () {
+                                        bootbox.alert(cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser'));
                                     });
                                 }
                             }
@@ -668,6 +667,8 @@
                                     }
                                 }).success(function (jsonadapter) {
                                     $scope.updateSource();
+                                }).error(function () {
+                                    bootbox.alert(cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser'));
                                 });
 
                                 $scope.refreshBrowser();
@@ -701,6 +702,8 @@
                         }).success(function (jsonadapter) {
                             $scope.updateSource();
                             bootbox.alert(jsonadapter.message);
+                        }).error(function () {
+                            bootbox.alert(cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser'));
                         });
                     }
                 });

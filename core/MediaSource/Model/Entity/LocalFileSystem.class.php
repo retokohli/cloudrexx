@@ -175,15 +175,7 @@ class LocalFileSystem implements FileSystem
 
     public function removeFile(File $file) {
         global $_ARRAYLANG;
-        if (is_dir(
-            $this->rootPath . ltrim($file->getPath(), '.') . '/'
-            . $file->getName() . ($file->getExtension() == '' ? '' : '.'. $file->getExtension())
-        )
-        ) {
-            $filename = $file->getName() . ($file->getExtension() == '' ? '' : '.'. $file->getExtension());
-        } else {
-            $filename = $file->getName() . '.' . $file->getExtension();
-        }
+        $filename = $file->getFullName();
         $strPath = $file->getPath();
         if (!empty($filename)
             && !empty($strPath)
@@ -244,23 +236,21 @@ class LocalFileSystem implements FileSystem
     ) {
         global $_ARRAYLANG;
         if (!empty($destination) || !\FWValidator::is_file_ending_harmless($destination)) {
-            if ($file->getExtension() == ''
-                && is_dir(
+            if (is_dir(
                     $this->getFullPath($file)
-                    . $file->getName()
+                    . $file->getFullName()
                 )
             ) {
                 $fileName            =
                     $this->getFullPath($file)
-                    . $file->getName();
+                    . $file->getFullName();
                 $destinationFileName =
                     $this->getFullPath($file)
                     . $destination;
             } else {
                 $fileName            =
                     $this->getFullPath($file)
-                    . $file->getName()
-                    . '.' . $file->getExtension();
+                    . $file->getFullName();
                 $destinationFileName =
                     $this->getFullPath($file)
                     . $destination
