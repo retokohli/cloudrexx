@@ -116,7 +116,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
 
 
         $response = new UploadResponse();
-        if (isset($_SESSION['uploader']['handlers'][$id]['callback'])) {
+        if (isset($_SESSION['uploader']['handlers'][$id]['callback']) && $uploader !== true) {
 
             /**
              * @var $callback RecursiveArrayAccess
@@ -168,8 +168,22 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                     ), $data, $id, $uploader, $response
                 );
             }
-            $files = glob($filePath.'/*');
-            $file = $files[0];
+
+            $files = new \RegexIterator(
+                new \DirectoryIterator(
+                    $filePath.'/'
+                ), '/.*/'
+            );
+            $file = false;
+            foreach($files as $fileInfo){
+                if ($fileInfo->isFile()) {
+                    $file = $fileInfo->getRealPath();
+                    break;
+                }
+            }
+            if (!$file){
+                throw new UploaderException(PLUPLOAD_TMPDIR_ERR);
+            }
             \Cx\Lib\FileSystem\FileSystem::move(
                 $file, $fileLocation[0] . pathinfo( $file, PATHINFO_BASENAME),
                 true
