@@ -340,7 +340,7 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         }
 
         return !empty($image) && file_exists($websitePath. '/' . $image)
-                ? '<img src="'.$image.'" alt= "" style="float: left" />'
+                ? '<img src="'.$image.'" alt= "" />'
                 : '';
     }
 
