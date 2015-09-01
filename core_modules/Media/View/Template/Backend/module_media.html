@@ -100,7 +100,9 @@ function openWindow(theURL,winName,features)
        });
     });
     function mediaCallbackJs(callback) {
-        window.location = window.location+'&highlightUploadId='+$J('#media_browse_button').data('uploaderId');
+        if (callback.length > 0){
+            window.location = window.location+'&highlightUploadId='+$J('#media_browse_button').data('uploaderId');
+        }
     }
 </script>
 {MEDIA_JAVA_SCRIPT_PREVIEW}

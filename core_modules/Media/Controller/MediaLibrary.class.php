@@ -1243,8 +1243,8 @@ END;
         }
 
         //remeber the uploaded files
-        $_SESSION["media_upload_files_$uploadId"] = $arrFiles;
-
+        $files = $_SESSION["media_upload_files_$uploadId"];
+        $_SESSION["media_upload_files_$uploadId"] = array_merge($arrFiles, ($files ? $files->toArray() : []));
         /* unwanted files have been deleted, unallowed filenames corrected.
            we can now simply return the desired target path, as only valid
            files are present in $tempPath                                   */
