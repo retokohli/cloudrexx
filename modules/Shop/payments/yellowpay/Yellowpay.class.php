@@ -27,21 +27,21 @@
 
 /**
  * PostFinance online payment
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
 /**
  * PostFinance online payment
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @internal    Yellowpay must be configured to return with the follwing requests:
  * POST after payment was made:
@@ -715,7 +715,7 @@ class Yellowpay
                     || $value == 'BYPSP') return $value;
                 break;
 
-            // Contrexx does not yet supply nor support the following:
+            // Cloudrexx does not yet supply nor support the following:
             // payment methods/page specifics: see chapter 9.1
             case 'PM':
             case 'BRAND':

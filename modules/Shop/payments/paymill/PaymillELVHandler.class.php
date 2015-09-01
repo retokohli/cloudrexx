@@ -27,21 +27,21 @@
 
 /**
  * Paymill online payment
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     3.1.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
 /**
  * PostFinance online payment
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     3.1.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop  
  */
 class PaymillELVHandler extends PaymillHandler {

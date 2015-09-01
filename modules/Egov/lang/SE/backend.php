@@ -26,7 +26,7 @@
  */
 
 /**
-* Contrexx CMS
+* Cloudrexx CMS
 * generated date Tue, 23 Jan 2007 15:25:36 +0100
 **/
 

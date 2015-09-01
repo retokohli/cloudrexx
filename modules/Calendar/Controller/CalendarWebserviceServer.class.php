@@ -28,10 +28,10 @@
 /**
  * Calendar 
  * 
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_calendar
- * @author     Comvation <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
 namespace Cx\Modules\Calendar\Controller;
@@ -52,10 +52,10 @@ $SOAPServer->handle();
 /**
  * Calendar Class CalendarWebserviceServer
  * 
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_calendar
- * @author     Comvation <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
 class CalendarWebserviceServer
@@ -218,10 +218,10 @@ class CalendarWebserviceServer
 /**
  * Calendar Class CalendarWebserviceEvent
  * 
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_calendar
- * @author     Comvation <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
 class CalendarWebserviceEvent

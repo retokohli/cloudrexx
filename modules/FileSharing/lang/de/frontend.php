@@ -26,10 +26,10 @@
  */
 
 /**
- * Contrexx CMS
+ * Cloudrexx CMS
  * generated date Tue, 30 Aug 2005 14:11:18 +0200
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_filesharing
  */
 $_ARRAYLANG["TXT_FILESHARING_SEND"] = "Absenden";

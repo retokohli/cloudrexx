@@ -31,9 +31,9 @@
  * Note that this partial class is left over for updating to the new
  * MailTemplate.  We use it to migrate the existing templates ONLY.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -42,9 +42,9 @@ namespace Cx\Modules\Shop\Controller;
 /**
  * OBSOLETE -- See {@see core/MailTemplate.class.php}
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 class ShopMail
@@ -180,7 +180,7 @@ class ShopMail
             $arrKey =  array(
                 // DE: Bestellungsbestätigung (includes account data, obsoletes #4)
                 // EN:
-                // FR: Confirmation de commande Contrexx
+                // FR: Confirmation de commande Cloudrexx
                 // IT:
                 1 => 'order_confirmation',
                 // DE: Auftrag abgeschlossen

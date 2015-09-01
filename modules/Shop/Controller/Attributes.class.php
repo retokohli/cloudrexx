@@ -29,10 +29,10 @@
  * Shop Product Attributes
  *
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Test!
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
 
@@ -45,9 +45,9 @@ namespace Cx\Modules\Shop\Controller;
  * related to the Product Attribute class.
  * See {@link Attribute} for details.
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @todo        Test!
  */

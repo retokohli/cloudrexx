@@ -28,9 +28,9 @@
 /**
  * SubscriptionController
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_order
  */
 
@@ -40,9 +40,9 @@ namespace Cx\Modules\Order\Controller;
  * 
  * SubscriptionController for displaying all the subscriptions.
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_order
  */
 class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {

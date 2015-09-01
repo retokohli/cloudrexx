@@ -27,8 +27,8 @@
 
 /**
  * Currency class
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
@@ -39,8 +39,8 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * Currency related static methods
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0

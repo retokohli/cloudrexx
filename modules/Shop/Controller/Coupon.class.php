@@ -29,12 +29,12 @@
  * Coupon
  *
  * Manages and processes coupon codes for various kinds of discounts
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.ch>
  * @access      public
  * @version     3.0.0
  * @since       3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -44,12 +44,12 @@ namespace Cx\Modules\Shop\Controller;
  * Coupon
  *
  * Manages and processes coupon codes for various kinds of discounts
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.ch>
  * @access      public
  * @version     3.0.0
  * @since       3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 class Coupon

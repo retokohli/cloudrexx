@@ -28,9 +28,9 @@
 /**
  * Main controller for U2u
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_u2u
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\U2u\Controller;
 /**
  * Main controller for U2u
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_u2u
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

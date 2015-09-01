@@ -28,9 +28,9 @@
 /**
  * Media Directory Inputfield Responsibles Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
@@ -39,9 +39,9 @@ namespace Cx\Modules\MediaDir\Model\Entity;
 /**
  * Media Directory Inputfield Responsibles Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 class MediaDirectoryInputfieldResponsibles extends \Cx\Modules\MediaDir\Controller\MediaDirectoryLibrary

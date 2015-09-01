@@ -28,9 +28,9 @@
 /**
  * Class BlogEventListener
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  */
 
 namespace Cx\Modules\Blog\Model\Event;
@@ -43,9 +43,9 @@ use Cx\Core\Event\Model\Entity\DefaultEventListener;
 /**
  * Class BlogEventListener
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  */
 class BlogEventListener extends DefaultEventListener {
 

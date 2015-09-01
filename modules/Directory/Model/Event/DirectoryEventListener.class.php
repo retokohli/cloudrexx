@@ -28,9 +28,9 @@
 /**
  * EventListener for Directory
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_directory
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\Directory\Model\Event;
 /**
  * EventListener for Directory
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_directory
  */
 class DirectoryEventListener implements \Cx\Core\Event\Model\Entity\EventListener {

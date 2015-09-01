@@ -27,7 +27,7 @@
 
 /**
  * Read and write CSV files
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  * @author      Reto Kohli <reto.kohli@comvation.com> (PHP5 and fixes)
@@ -37,7 +37,7 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * CSV class for importing and exporting CSV files
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  * @author      Reto Kohli <reto.kohli@comvation.com> (PHP5 and fixes)

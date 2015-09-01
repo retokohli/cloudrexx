@@ -27,9 +27,9 @@
 
 /**
  * Payment Service Provider class
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @version     3.0.0
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  */
@@ -79,10 +79,10 @@ define('_PAYMENT_DEBUG', 0);
  *     Other PSP send the notification even for failed or cancelled
  *     transactions, e.g. Datatrans.  Consult your local PSP for further
  *     information.
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @version     3.0.0
  */
 class PaymentProcessing

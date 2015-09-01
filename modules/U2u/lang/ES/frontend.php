@@ -26,10 +26,10 @@
  */
 
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_u2u
  */
 $_ARRAYLANG['TXT_SEND_PRIVATE_MESSAGE'] = "Enviar un mensaje privado mediante U2U";

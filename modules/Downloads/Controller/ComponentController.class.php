@@ -28,9 +28,9 @@
 /**
  * Main controller for Downloads
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_downloads
  */
 
@@ -40,9 +40,9 @@ use Cx\Modules\Downloads\Model\Event\DownloadsEventListener;
 /**
  * Main controller for Downloads
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_downloads
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

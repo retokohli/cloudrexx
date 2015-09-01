@@ -28,9 +28,9 @@
 /**
  * u2u
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Raveendran.L
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_u2u
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\U2u\Controller;
 /**
  * u2u
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Raveendran.L
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_u2u
  */
 class U2u extends U2uLibrary

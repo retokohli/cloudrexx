@@ -29,10 +29,10 @@
  * Gallery
  *
  * This class is used to publish the pictures of the gallery on the frontend.
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.2
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_gallery
  * @todo        Edit PHP DocBlocks!
  */
@@ -41,10 +41,10 @@ namespace Cx\Modules\Gallery\Controller;
  * Gallery
  *
  * This class is used to publish the pictures of the gallery on the frontend.
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.2
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_gallery
  * @todo        Edit PHP DocBlocks!
  */

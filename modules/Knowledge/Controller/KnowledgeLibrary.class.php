@@ -28,9 +28,9 @@
 /**
  * knowledgeLib
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_knowledge
  */
 
@@ -40,9 +40,9 @@ namespace Cx\Modules\Knowledge\Controller;
 /**
  * Some basic operations for the knowledge module.
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @package contrexx
+ * @package cloudrexx
  * @subpackage  module_knowledge
  */
 class KnowledgeLibrary {

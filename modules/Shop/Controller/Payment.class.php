@@ -27,8 +27,8 @@
 
 /**
  * Payment service manager
- * @package     contrexx
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     cloudrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @subpackage  module_shop
  * @version     3.0.0
  */
@@ -37,8 +37,8 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * Payment service manager
- * @package     contrexx
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     cloudrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @subpackage  module_shop
  * @version     3.0.0
  */

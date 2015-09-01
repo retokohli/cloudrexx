@@ -27,10 +27,10 @@
  
 /**
  * Calendar Class Catagory Manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx <info@cloudrexx.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_calendar
  */
 namespace Cx\Modules\Calendar\Controller;
@@ -38,10 +38,10 @@ namespace Cx\Modules\Calendar\Controller;
 
 /**
  * CalendarCategoryManager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx <info@cloudrexx.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_calendar
  */
 class CalendarCategoryManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary

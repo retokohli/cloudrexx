@@ -29,11 +29,11 @@
  * Shop Manager
  *
  * Administration of the Shop
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -41,11 +41,11 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * Administration of the Shop
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */

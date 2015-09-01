@@ -28,9 +28,9 @@
 /**
  * EventListener for Calendar
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_calendar
  */
 
@@ -42,9 +42,9 @@ use Cx\Core\Event\Model\Entity\DefaultEventListener;
 /**
  * EventListener for Calendar
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_calendar
  */
 class CalendarEventListener extends DefaultEventListener {

@@ -30,11 +30,11 @@
  *
  * Functions for the Voting
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Leandro Nery <nery@astalavista.net>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version	   $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_voting
  * @todo        Edit PHP DocBlocks!
  */

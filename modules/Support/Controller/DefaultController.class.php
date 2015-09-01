@@ -28,9 +28,9 @@
 /**
  * DefaultController
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_support
  */
 
@@ -40,9 +40,9 @@ namespace Cx\Modules\Support\Controller;
  * 
  * DefaultController for support.
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_support
  */
 class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {

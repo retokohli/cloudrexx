@@ -29,12 +29,12 @@
  * CrmDefaultEventHandler Class CRM
  *
  * @category   CrmDefaultEventHandler
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
- * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @copyright  2012 and CLOUDREXX CMS - CLOUDREXX AG
  * @license    trial license
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 namespace Cx\Modules\Crm\Model\Events;
@@ -43,12 +43,12 @@ namespace Cx\Modules\Crm\Model\Events;
  * CrmDefaultEventHandler Class CRM
  *
  * @category   CrmDefaultEventHandler
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
- * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @copyright  2012 and CLOUDREXX CMS - CLOUDREXX AG
  * @license    trial license
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 class CrmDefaultEventHandler implements \Cx\Modules\Crm\Model\Events\CrmEventHandler
 {

@@ -27,8 +27,8 @@
 
 /**
  * Online Desk
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */

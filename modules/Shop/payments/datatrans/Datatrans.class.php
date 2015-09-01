@@ -28,8 +28,8 @@
 /**
  * Datatrans PSP Interface
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */
@@ -121,8 +121,8 @@ which is dedicated to the merchant for 3 months.
 /**
  * Datatrans PSP Interface
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */

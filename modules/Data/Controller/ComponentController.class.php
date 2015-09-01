@@ -28,9 +28,9 @@
 /**
  * Main controller for Data
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package contrexx
+ * @copyright  cloudrexx
+ * @author     Project Team SS4U <info@cloudrexx.com>
+ * @package    cloudrexx
  * @subpackage module_data
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\Data\Controller;
 /**
  * Main controller for Data
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package contrexx
+ * @copyright  cloudrexx
+ * @author     Project Team SS4U <info@cloudrexx.com>
+ * @package    cloudrexx
  * @subpackage module_data
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

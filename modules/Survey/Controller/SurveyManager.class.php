@@ -27,10 +27,10 @@
 
 /**
  * SurveyManager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_survey
  * @todo        Edit PHP DocBlocks!
  */
@@ -39,11 +39,11 @@ namespace Cx\Modules\Survey\Controller;
 /**
  * SurveyManager
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_survey
  */
 class SurveyManager extends SurveyLibrary {

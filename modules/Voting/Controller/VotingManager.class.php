@@ -30,10 +30,10 @@
  *
  * Class for the voting system
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Contrexx Dev Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Dev Team <info@cloudrexx.com>
  * @version       1.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_voting
  * @todo        Edit PHP DocBlocks!
  */
@@ -43,10 +43,10 @@ namespace Cx\Modules\Voting\Controller;
  *
  * Class for the voting system
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Contrexx Dev Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Dev Team <info@cloudrexx.com>
  * @version       1.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_voting
  * @todo        Edit PHP DocBlocks!
  */

@@ -28,9 +28,9 @@
 /**
  * Contains the class for category operations
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_knowledge
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\Knowledge\Controller;
 /**
  * Category abstract layer for database operations
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_knowledge
  */
 class KnowledgeCategory

@@ -28,10 +28,10 @@
 /**
  * Calendar Language variables
  * 
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_calendar
- * @author     Comvation <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Datum";

@@ -26,7 +26,7 @@
  */
 
 /**
-* Contrexx CMS
+* Cloudrexx CMS
 * generated date Fri, 8 jan 2010
 **/
 $_ARRAYLANG['TXT_ANALYSE_SURVEY_OVERVIEW']="Analyse Übersicht";

@@ -29,10 +29,10 @@
  * Pricelist
  *
  * Creates a PDF document with product price information
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <gwanun@astalavista.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -42,10 +42,10 @@ namespace Cx\Modules\Shop\Controller;
  * Pricelist
  *
  * Creates a PDF document with product price information
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <gwanun@astalavista.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Font, color and basic layout should be configurable in the backend
  */

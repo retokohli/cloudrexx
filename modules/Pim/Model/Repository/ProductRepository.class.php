@@ -28,9 +28,9 @@
 /**
  * Class ProductRepository
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_pim
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\Pim\Model\Repository;
 /**
  * Class ProductRepository
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_pim
  */
 class ProductRepository extends \Doctrine\ORM\EntityRepository {}

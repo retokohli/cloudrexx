@@ -27,11 +27,11 @@
 
 /**
  * Newsletter
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  * @todo        make total mailrecipient count static in newsletter list (act=mails)
@@ -46,11 +46,11 @@ namespace Cx\Modules\Newsletter\Controller;
  *
  * Newsletter module class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  */
 class NewsletterManager extends NewsletterLib
@@ -3289,7 +3289,7 @@ class NewsletterManager extends NewsletterLib
 
     /**
      * Parse the newsletter
-     * @author      Comvation AG
+     * @author      Cloudrexx AG
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       string $userType Which type the user has (newsletter or access)
      */
@@ -6319,9 +6319,9 @@ if (!class_exists('DBIterator', false)) {
     /**
      * Iterator wrapper for adodb result objects
      *
-     * @copyright   CONTREXX CMS - COMVATION AG
+     * @copyright   CLOUDREXX CMS - CLOUDREXX AG
      * @author      Stefan Heinemann <sh@adfinis.com>
-     * @package     contrexx
+     * @package     cloudrexx
      * @subpackage  module_newsletter
      */
     class DBIterator implements \Iterator {

@@ -28,9 +28,9 @@
 /**
  * Class DownloadsEventListener
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  */
 
 namespace Cx\Modules\Downloads\Model\Event;
@@ -42,9 +42,9 @@ use Cx\Core\Event\Model\Entity\DefaultEventListener;
 /**
  * Class DownloadsEventListener
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  */
 class DownloadsEventListener extends DefaultEventListener
 {

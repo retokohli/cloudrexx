@@ -26,9 +26,9 @@
  */
 
 /**
- * Contrexx CMS
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * Cloudrexx CMS
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_filesharing
  */
 

@@ -28,9 +28,9 @@
 /**
  * PriceController
  *
- * @copyright   Comvation AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_pim
  */
 
@@ -40,9 +40,9 @@ namespace Cx\Modules\Pim\Controller;
  *
  * PriceController for displaying all the prices.
  *
- * @copyright   Comvation AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_pim
  */
 class PriceController extends \Cx\Core\Core\Model\Entity\Controller

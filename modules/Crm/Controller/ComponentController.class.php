@@ -28,9 +28,9 @@
 /**
  * Main controller for Crm
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_crm
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\Crm\Controller;
 /**
  * Main controller for Crm
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_crm
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

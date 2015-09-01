@@ -27,11 +27,11 @@
 
 /**
  * Docsys RSS XML Feed
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_docsys
  * @todo        Edit PHP DocBlocks!
  */
@@ -40,11 +40,11 @@ namespace Cx\Modules\DocSys\Controller;
  * Docsys RSS XML Feed
  *
  * Produces the RSS XML Feedfile of the latest docsys entries
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_docsys
  */
 class RssFeed

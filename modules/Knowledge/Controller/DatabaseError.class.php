@@ -28,9 +28,9 @@
 /**
  * Contains database error class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_knowledge
  */
 
@@ -43,9 +43,9 @@ namespace Cx\Modules\Knowledge\Controller;
  * adodb error message and some kind of stacktrace that can be
  * return either plainly or formatted for the red alertbox.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_knowledge
  */
 class DatabaseError extends \Exception

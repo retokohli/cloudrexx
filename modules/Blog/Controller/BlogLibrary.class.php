@@ -27,10 +27,10 @@
  
 /**
  * Blog library
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version     $Id: index.inc.php,v 1.01 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_blog
  */
 
@@ -43,10 +43,10 @@ namespace Cx\Modules\Blog\Controller;
 
 /**
  * Blog library
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_blog
  */
 class BlogLibrary {

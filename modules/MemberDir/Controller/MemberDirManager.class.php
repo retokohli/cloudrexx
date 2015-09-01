@@ -27,11 +27,11 @@
 
 /**
  * Member directory manager
- * @copyright   CONTREXX CMS - 2005 COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - 2005 CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     v1.0.0
  * @uses        ImportExport
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_memberdir
  * @todo        Edit PHP DocBlocks!
  */
@@ -45,11 +45,11 @@ $_ARRAYLANG['TXT_ALL_LANGUAGES'] = "Alle Sprachen";
  * Member directory manager
  *
  * For managing the member directory
- * @copyright   CONTREXX CMS - 2005 COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - 2005 CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     v1.0.0
  * @uses        ImportExport
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_memberdir
  */
 class MemberDirManager extends MemberDirLibrary

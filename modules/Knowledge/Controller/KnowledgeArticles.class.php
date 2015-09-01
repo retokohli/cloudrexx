@@ -28,9 +28,9 @@
 /**
  * Contains the class for article operations
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_knowledge
  */
 
@@ -43,9 +43,9 @@ namespace Cx\Modules\Knowledge\Controller;
  * reading, editing, adding and deleting articles. Also provide some special
  * functions to return the most read or the most popular articles.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage	module_knowledge
  */
 class KnowledgeArticles

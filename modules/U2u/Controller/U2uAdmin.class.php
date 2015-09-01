@@ -28,9 +28,9 @@
 /**
  * u2uAdmin
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_u2u
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\U2u\Controller;
 /**
  * u2uAdmin
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Raveendran.L
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_u2u
  */
 class U2uAdmin extends U2uLibrary {

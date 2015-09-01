@@ -28,9 +28,9 @@
 /**
  * Products helper class
  *
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
  */
@@ -42,9 +42,9 @@ namespace Cx\Modules\Shop\Controller;
  *
  * Provides methods for accessing sets of Products, displaying menus
  * and the like.
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
  */

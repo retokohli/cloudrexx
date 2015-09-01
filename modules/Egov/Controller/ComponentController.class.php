@@ -28,9 +28,9 @@
 /**
  * Main controller for Egov
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package contrexx
+ * @copyright  cloudrexx
+ * @author     Project Team SS4U <info@cloudrexx.com>
+ * @package    cloudrexx
  * @subpackage module_egov
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\Egov\Controller;
 /**
  * Main controller for Egov
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package contrexx
+ * @copyright  cloudrexx
+ * @author     Project Team SS4U <info@cloudrexx.com>
+ * @package    cloudrexx
  * @subpackage module_egov
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

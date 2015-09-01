@@ -27,8 +27,8 @@
 
 /**
  * User account notification
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
@@ -37,7 +37,7 @@
  * Pull generated user accounts from the access_users database table
  * and send notification emails to those customers whose expiration date
  * is only a week or less away.
- * Put this script in a folder within the root directory of the contrexx
+ * Put this script in a folder within the root directory of the cloudrexx
  * installation, i.e. "/<contrexx_webroot>/scripts" (the folder must be
  * in the same directory as, for example, the "cadmin", "modules" and "themes"
  * folders).

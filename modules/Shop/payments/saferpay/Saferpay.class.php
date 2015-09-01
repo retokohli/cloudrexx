@@ -27,18 +27,18 @@
 
 /**
  * Interface to Saferpay
- * @author Comvation Development Team <info@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */
 
 /**
  * Interface to Saferpay
- * @author Comvation Development Team <info@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */

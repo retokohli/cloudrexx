@@ -27,9 +27,9 @@
 
 /**
  * Shop library
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */
@@ -38,10 +38,10 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * All the helping hands needed to run the shop
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Add a proper constructor that initializes the class with its
  *              various variables, and/or move the appropriate parts to

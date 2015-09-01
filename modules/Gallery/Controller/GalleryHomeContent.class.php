@@ -27,10 +27,10 @@
 
 /**
  * Gallery home content
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_gallery
  * @todo        Edit PHP DocBlocks!
  */
@@ -39,11 +39,11 @@ namespace Cx\Modules\Gallery\Controller;
  * Gallery home content
  *
  * Show Gallery Block Content (Random, Last)
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_gallery
  */
 class GalleryHomeContent extends GalleryLibrary

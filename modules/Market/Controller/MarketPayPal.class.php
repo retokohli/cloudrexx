@@ -30,8 +30,8 @@
  * @link        https://www.paypal.com/ch/cgi-bin/webscr?cmd=_pdn_howto_checkout_outside
  * @link        https://www.paypal.com/ipn
  * @author      Stefan Heinemannn <janik.tschanz@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_market
  * @todo        Edit PHP DocBlocks!
  * @todo        The description 'interface' is ambiguous. Find a better way.
@@ -46,8 +46,8 @@ namespace Cx\Modules\Market\Controller;
  * It requires a html form to send the date to
  * PayPal. This class generates it.
  * @author      Stefan Heinemannn <janik.tschanz@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_market
  */
 class MarketPayPal

@@ -26,10 +26,10 @@
  */
 
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  modules_support
  */
 global $_ARRAYLANG;

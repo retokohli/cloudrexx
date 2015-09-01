@@ -33,7 +33,7 @@
  *
  * Order history for Shop Customers
  * @author Reto Kohli <reto.kohli@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -44,7 +44,7 @@ namespace Cx\Modules\Shop\Controller;
  *
  * Order history for Shop Customers
  * @author Reto Kohli <reto.kohli@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 class History {

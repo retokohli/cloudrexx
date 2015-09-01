@@ -28,9 +28,9 @@
 /**
  * Class Invoice
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_order
  */
 
@@ -41,9 +41,9 @@ class InvoiceException extends \Exception {}
 /**
  * Class Invoice
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_order
  */
 class Invoice extends \Cx\Model\Base\EntityBase {

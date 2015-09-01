@@ -29,9 +29,9 @@
  * Search script
  *
  * This script is standalone because otherwise it would be too slow.
- * @author      Stefan Heinemann <info@comvation.com>
- * @copyright   COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @author      Stefan Heinemann <info@cloudrexx.com>
+ * @copyright   CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_knowledge
  */
 
@@ -39,9 +39,9 @@
  * Search script
  *
  * This script is standalone because otherwise it would be too slow.
- * @author      Stefan Heinemann <info@comvation.com>
- * @copyright   COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @author      Stefan Heinemann <info@cloudrexx.com>
+ * @copyright   CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_knowledge
  */
 

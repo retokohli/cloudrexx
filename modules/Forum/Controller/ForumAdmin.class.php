@@ -27,10 +27,10 @@
 
 /**
  * Forum
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_forum
  * @todo        Edit PHP DocBlocks!
  */
@@ -39,10 +39,10 @@ namespace Cx\Modules\Forum\Controller;
 
 /**
  * Forum
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_forum
  */
 class ForumAdmin extends ForumLibrary {

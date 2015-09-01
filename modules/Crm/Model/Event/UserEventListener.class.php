@@ -28,9 +28,9 @@
 /**
  * UserEventListener
 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_multisite
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\Crm\Model\Event;
 /**
  * UserEventListenerException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_crm
  */
 class UserEventListenerException extends \Exception {}
@@ -49,10 +49,10 @@ class UserEventListenerException extends \Exception {}
 /**
  * UserEventListener
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_crm
  */
 class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {

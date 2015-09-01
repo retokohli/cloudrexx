@@ -30,11 +30,11 @@
  *
  * Optional calculation of discounts in the Shop.
  * Note: This is to be customized for individual online shops.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.ch>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -45,11 +45,11 @@ namespace Cx\Modules\Shop\Controller;
  *
  * Processes many kinds of discounts - as long as you can express the
  * rules in the terms used here.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.ch>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 class Discount

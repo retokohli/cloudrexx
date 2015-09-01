@@ -28,9 +28,9 @@
 /**
  * Knowledge backend stuff
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Stefan Heinemann <sh@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_knowledge
  */
 
@@ -46,9 +46,9 @@ define("ACCESS_ID_SETTINGS", 134);
 /**
  * All the backend stuff of the Knowledgemodul
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Stefan Heinemann <sh@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_knowledge
  */
 class KnowledgeAdmin extends KnowledgeLibrary

@@ -31,12 +31,12 @@
  * PHP version 5.3 or >
  *
  * @category   Sorter
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
  * @version    1.0.0
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 namespace Cx\Modules\Crm\Controller;
@@ -47,12 +47,12 @@ namespace Cx\Modules\Crm\Controller;
  * PHP version 5.3 or >
  *
  * @category   Sorter
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
  * @version    1.0.0
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 class Sorter

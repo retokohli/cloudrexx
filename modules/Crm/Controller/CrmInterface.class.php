@@ -31,12 +31,12 @@
  * PHP version 5.3 or >
  *
  * @category   CrmInterface
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
  * @version    1.0.0
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 namespace Cx\Modules\Crm\Controller;
@@ -45,12 +45,12 @@ namespace Cx\Modules\Crm\Controller;
  * This is the crmInterface class file for handling the all functionalities under interface menu.
  *
  * @category   CrmInterface
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
  * @version    1.0.0
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 class CrmInterface extends CrmLibrary

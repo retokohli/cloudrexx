@@ -27,10 +27,10 @@
 
 /**
  * Shop Customer
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Test!
  */
@@ -43,10 +43,10 @@ namespace Cx\Modules\Shop\Controller;
  * Includes access methods and data layer.
  * Do not, I repeat, do not access private fields, or even try
  * to access the database directly!
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 class Customers

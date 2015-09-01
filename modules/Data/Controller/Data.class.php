@@ -27,10 +27,10 @@
 
 /**
  * Data
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_data
  */
 namespace Cx\Modules\Data\Controller;
@@ -39,10 +39,10 @@ $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT'] = "Anhang herunterladen";
 
 /**
  * DataAdmin
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_data
  */
 class Data extends \Cx\Modules\Data\Controller\DataLibrary

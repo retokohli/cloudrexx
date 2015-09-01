@@ -28,9 +28,9 @@
 /**
  * Main controller for Market
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_market
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\Market\Controller;
 /**
  * Main controller for Market
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_market
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

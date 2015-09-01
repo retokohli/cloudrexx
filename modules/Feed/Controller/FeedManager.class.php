@@ -27,9 +27,9 @@
 
 /**
  * Feed
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_feed
  * @todo        Edit PHP DocBlocks!
  */
@@ -45,9 +45,9 @@ namespace Cx\Modules\Feed\Controller;
  * Feed
  *
  * Manage CMS news feed
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author        Paulo M. Santos <pmsantos@astalavista.net>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_feed
  */
 class FeedManager extends FeedLibrary

@@ -28,9 +28,9 @@
 /**
  * Main controller for Checkout
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_checkout
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\Checkout\Controller;
 /**
  * Main controller for Checkout
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_checkout
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

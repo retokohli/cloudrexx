@@ -27,10 +27,10 @@
 
 /**
  * Feed
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_feed
  * @todo        Edit PHP DocBlocks!
  */
@@ -46,10 +46,10 @@ namespace Cx\Modules\Feed\Controller;
  * Feed
  *
  * News Syndication Class to manage XML feeds
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_feed
  */
 class Feed extends FeedLibrary

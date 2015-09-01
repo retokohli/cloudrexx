@@ -29,9 +29,9 @@
  * Dummy class for simulating an external payment provider.
  *
  * Creates a dummy form for testing the payment process in the shop.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Reto Kohli <reto.kohli@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  * @todo        Edit PHP DocBlocks!
@@ -44,9 +44,9 @@
  * This also demonstrates the requirements of the current specification
  * for any external payment service provider class.
  * See {@link PaymentProcessing.class} for details.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  * @todo        Edit PHP DocBlocks!

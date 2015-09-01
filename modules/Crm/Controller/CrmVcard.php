@@ -30,12 +30,12 @@
  * A class to generate vCards for contact data.
  *
  * @category   CrmVcard
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
- * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @copyright  2012 and CLOUDREXX CMS - CLOUDREXX AG
  * @license    trial license
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 namespace Cx\Modules\Crm\Controller;
@@ -45,12 +45,12 @@ namespace Cx\Modules\Crm\Controller;
  * A class to generate vCards for contact data.
  *
  * @category   CrmVcard
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
- * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @copyright  2012 and CLOUDREXX CMS - CLOUDREXX AG
  * @license    trial license
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 class CrmVcard
 {

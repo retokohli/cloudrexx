@@ -28,9 +28,9 @@
 /**
  * This file holds the settings object for the knowledge module
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @package contrexx
+ * @package cloudrexx
  * @subpackage  module_knowledge
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\Knowledge\Controller;
 /**
  * The settings of the knowledge module
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Stefan Heinemann <sh@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_knowledge
  */
 class KnowledgeSettings 

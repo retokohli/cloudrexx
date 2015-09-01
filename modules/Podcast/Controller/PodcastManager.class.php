@@ -27,11 +27,11 @@
 
 /**
  * Class Podcast Manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_podcast
  * @todo        Edit PHP DocBlocks!
  */
@@ -39,11 +39,11 @@
 namespace Cx\Modules\Podcast\Controller;
 /**
  * Backend for the Podcast module
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version        1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_podcast
  * @todo        Edit PHP DocBlocks!
  */

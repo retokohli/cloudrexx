@@ -30,12 +30,12 @@
  * CrmLibrary class
  *
  * @category   CrmLibrary
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
- * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @copyright  2012 and CLOUDREXX CMS - CLOUDREXX AG
  * @license    trial license
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 namespace Cx\Modules\Crm\Controller;
@@ -49,12 +49,12 @@ define('CRM_EVENT_ON_ACCOUNT_UPDATED', 'crm_notify_staff_on_contact_added');
  * CrmLibrary class
  *
  * @category   CrmLibrary
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
- * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @copyright  2012 and CLOUDREXX CMS - CLOUDREXX AG
  * @license    trial license
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 class CrmLibrary
 {
@@ -1880,7 +1880,7 @@ class CrmLibrary
     }
 
     /**
-     * Populates the Contrexx user Filter Drop Down
+     * Populates the Cloudrexx user Filter Drop Down
      *
      * @param String  $block      The name of the template block to parse
      * @param Integer $selectedId The ID of the selected user
@@ -2509,8 +2509,8 @@ class CrmLibrary
     }
     /**
      * Make the url string's into clickable link's.
-     * Example: <p> http://www.contrexx.com </p> will be
-     * <p> <a href="http://www.contrexx.com" rel="nofollow"> http://www.contrexx.com </a> </p>
+     * Example: <p> http://www.cloudrexx.com </p> will be
+     * <p> <a href="http://www.cloudrexx.com" rel="nofollow"> http://www.cloudrexx.com </a> </p>
      *
      * @param String $html
      *

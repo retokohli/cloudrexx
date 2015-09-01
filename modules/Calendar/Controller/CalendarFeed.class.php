@@ -27,20 +27,20 @@
  
 /**
  * Calendar Class RSS Feed
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx <info@cloudrexx.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_calendar
  */
 namespace Cx\Modules\Calendar\Controller;
 
 /**
  * CalendarFeed
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx <info@cloudrexx.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_calendar
  */
 class CalendarFeed extends \Cx\Modules\Calendar\Controller\CalendarLibrary {

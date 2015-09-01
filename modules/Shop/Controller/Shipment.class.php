@@ -27,8 +27,8 @@
 
 /**
  * Shipment class
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */
@@ -37,8 +37,8 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * Useful methods to handle everything related to shipments
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */

@@ -28,9 +28,9 @@
 /**
  * EventListener for MemberDir
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_memberdir
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\MemberDir\Model\Event;
 /**
  * EventListener for MemberDir
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_memberdir
  */
 class MemberDirEventListener implements \Cx\Core\Event\Model\Entity\EventListener {

@@ -27,9 +27,9 @@
 
 /**
  * Market library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_market
  * @todo        Edit PHP DocBlocks!
  */
@@ -40,9 +40,9 @@ namespace Cx\Modules\Market\Controller;
  * Market library
  *
  * External functions for the market
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_market
  * @todo        Edit PHP DocBlocks!
  */

@@ -27,9 +27,9 @@
 
 /**
  * Directory
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Janik Tschanz <janik.tschanz@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_directory
  * @todo        Edit PHP DocBlocks!
  */
@@ -45,9 +45,9 @@ namespace Cx\Modules\Directory\Controller;
  * Directory
  *
  * Class to manage CMS RSS news feeds
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Janik Tschanz <janik.tschanz@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_directory
  */
 class DirectoryManager extends DirectoryLibrary

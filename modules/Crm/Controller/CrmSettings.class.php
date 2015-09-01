@@ -31,12 +31,12 @@
  * PHP version 5.3 or >
  *
  * @category   Settings
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
  * @version    1.0.0
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 namespace Cx\Modules\Crm\Controller;
@@ -44,9 +44,9 @@ namespace Cx\Modules\Crm\Controller;
 /**
  * CrmSettingsException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Adrian Berger <ab@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_crm
  * @version     1.0.0
  */
@@ -59,12 +59,12 @@ class CrmSettingsException extends \Exception
  * This is the settings class file for handling the all functionalities under settings menu.
  *
  * @category   Settings
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
  * @version    1.0.0
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 class CrmSettings extends CrmLibrary

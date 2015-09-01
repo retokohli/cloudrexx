@@ -30,8 +30,8 @@
  * @link https://www.paypal.com/ch/cgi-bin/webscr?cmd=_pdn_howto_checkout_outside
  * @link https://www.paypal.com/ipn
  * @author Stefan Heinemannn <stefan.heinemann@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -50,8 +50,8 @@ define('_PAYPAL_DEBUG', 0);
  * @link https://www.paypal.com/ch/cgi-bin/webscr?cmd=_pdn_howto_checkout_outside
  * @link https://www.paypal.com/ipn
  * @author Stefan Heinemannn <stefan.heinemann@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 class PayPal

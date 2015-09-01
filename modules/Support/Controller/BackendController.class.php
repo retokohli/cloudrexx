@@ -28,9 +28,9 @@
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_support
  */
 
@@ -44,9 +44,9 @@ class SupportException extends \Exception {}
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_support
  */
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {

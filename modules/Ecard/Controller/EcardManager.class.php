@@ -29,11 +29,11 @@
  * E-Card
  *
  * Send electronic postcards to your friends
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     2.1.0
  * @since       2.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_ecard
  * @todo        Edit PHP DocBlocks!
  */
@@ -44,11 +44,11 @@ namespace Cx\Modules\Ecard\Controller;
  * E-Card
  *
  * Send electronic postcards to your friends
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     2.1.0
  * @since       2.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_ecard
  * @todo        Edit PHP DocBlocks!
  */

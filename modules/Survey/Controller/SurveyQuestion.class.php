@@ -28,10 +28,10 @@
 /**
  * Class SurveyQuestion
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version	   $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_survey
  * @todo        Edit PHP DocBlocks!
  */
@@ -39,10 +39,10 @@ namespace Cx\Modules\Survey\Controller;
 /**
  * Class SurveyQuestion
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version	   $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_survey
  * @todo        Edit PHP DocBlocks!
  */

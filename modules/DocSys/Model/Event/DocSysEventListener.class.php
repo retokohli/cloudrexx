@@ -28,9 +28,9 @@
 /**
  * EventListener for DocSys
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_docsys
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\DocSys\Model\Event;
 /**
  * EventListener for DocSys
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_docsys
  */
 class DocSysEventListener implements \Cx\Core\Event\Model\Entity\EventListener {

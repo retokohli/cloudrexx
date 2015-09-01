@@ -32,9 +32,9 @@
  * Shop Country class
  * @version     3.0.0
  * @since       2.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @todo        Test!
  * @todo        To be unified with the core Country class
@@ -46,9 +46,9 @@ namespace Cx\Modules\Shop\Controller;
  * Country helper methods
  * @version     3.0.0
  * @since       2.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @todo        Test!
  * @todo        To be unified with the core Country class

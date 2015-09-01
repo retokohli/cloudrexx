@@ -29,11 +29,11 @@
  * Shop Product Categories
  *
  * Various helper methods for displaying stuff
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CLOUDREXX CMS - ASTALAVISTA IT AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -47,11 +47,11 @@ define('SHOP_CATEGORY_IMAGE_WEB_PATH',  \Cx\Core\Core\Controller\Cx::instanciate
  * Shop Categories
  *
  * Helper class
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CLOUDREXX CMS - ASTALAVISTA IT AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 class ShopCategories

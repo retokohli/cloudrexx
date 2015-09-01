@@ -27,10 +27,10 @@
 
 /**
  * Podcast home content
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_podcast
  * @todo        Edit PHP DocBlocks!
  */
@@ -40,11 +40,11 @@ namespace Cx\Modules\Podcast\Controller;
  * Podcast Home Content
  *
  * Show Forum Block Content
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_podcast
  */
 class PodcastHomeContent extends PodcastLib

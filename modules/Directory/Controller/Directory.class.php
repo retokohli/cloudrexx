@@ -27,10 +27,10 @@
 
 /**
  * RSS Directory
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_directory
  * @todo        Edit PHP DocBlocks!
  */
@@ -47,11 +47,11 @@ namespace Cx\Modules\Directory\Controller;
  * RSS Directory
  *
  * functions for the directory
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_directory
  */
 class Directory extends DirectoryLibrary

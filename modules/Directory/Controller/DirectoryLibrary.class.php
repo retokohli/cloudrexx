@@ -27,9 +27,9 @@
 
 /**
  * Directory library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_directory
  * @todo        Edit PHP DocBlocks!
  */
@@ -40,9 +40,9 @@ namespace Cx\Modules\Directory\Controller;
  * Directory library
  *
  * External functions for the directory
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_directory
  */
 class DirectoryLibrary

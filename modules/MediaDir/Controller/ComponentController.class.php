@@ -28,9 +28,9 @@
 /**
  * Main controller for MediaDir
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 
@@ -40,9 +40,9 @@ use Cx\Modules\MediaDir\Model\Event\MediaDirEventListener;
 /**
  * Main controller for MediaDir
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

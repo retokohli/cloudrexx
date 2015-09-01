@@ -28,9 +28,9 @@
 /**
  * Main controller for Podcast
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   cloudrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_podcast
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\Podcast\Controller;
 /**
  * Main controller for Podcast
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   cloudrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_podcast
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

@@ -30,11 +30,11 @@
  *
  * Newsletter module class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
@@ -46,11 +46,11 @@ namespace Cx\Modules\Newsletter\Controller;
  *
  * Newsletter module class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */

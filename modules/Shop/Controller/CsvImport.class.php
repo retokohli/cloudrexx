@@ -27,9 +27,9 @@
 
 /**
  * CSV Import
- * @author Comvation Development Team <info@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
@@ -38,9 +38,9 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * CSV Import
- * @author Comvation Development Team <info@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
@@ -224,7 +224,7 @@ class CsvImport
      *                                  or null to ignore it (default)
      * @return  integer                 The ID of the ShopCategory,
      *                                  or 0 on failure.
-     * @author  Unknown <info@comvation.com> (Original author)
+     * @author  Unknown <info@cloudrexx.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
     static function getCategoryId($catName, $catParent=null)
@@ -244,7 +244,7 @@ class CsvImport
      * is inserted and its ID returned instead.
      * @static
      * @return  integer     The ShopCategory, or 0 on failure
-     * @author  Unknown <info@comvation.com> (Original author)
+     * @author  Unknown <info@cloudrexx.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Added creation of default ShopCategory, made static)
      */
     static function GetFirstCat()
@@ -263,7 +263,7 @@ class CsvImport
      * @param   integer     $catParent  The parent ShopCategory ID
      * @return  integer                 The ID of the new ShopCategory,
      *                                  or 0 on failure.
-     * @author  Unknown <info@comvation.com> (Original author)
+     * @author  Unknown <info@cloudrexx.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
     static function InsertNewCat($catName, $catParent)

@@ -27,10 +27,10 @@
 
 /**
  * RSS Feed
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     $Id:     Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_directory
  * @todo        Edit PHP DocBlocks!
  */
@@ -41,10 +41,10 @@ namespace Cx\Modules\Directory\Controller;
  * RSS Feed
  *
  * Creates and deletes rss feeds
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     $Id:     Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_directory
  */
 class RssFeed

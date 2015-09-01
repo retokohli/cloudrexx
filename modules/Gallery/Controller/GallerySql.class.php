@@ -30,9 +30,9 @@
  *
  * Contains methods to read and save date from and to the
  * database.
- * @author Comvation Development Team <info@comvation.com>
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @author Stefan Heinemann
- * @package contrexx
+ * @package cloudrexx
  * @subpackage module_gallery
  */
 namespace Cx\Modules\Gallery\Controller;
@@ -41,9 +41,9 @@ namespace Cx\Modules\Gallery\Controller;
  *
  * Contains methods to read and save date from and to the
  * database.
- * @author Comvation Development Team <info@comvation.com>
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @author Stefan Heinemann
- * @package contrexx
+ * @package cloudrexx
  * @subpackage module_gallery
  */
 class GallerySql
@@ -323,9 +323,9 @@ if (!class_exists("DatabaseError", false)) {
 
 /**
  * Database Error
- * @author Comvation Development Team <info@comvation.com>
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @author Stefan Heinemann
- * @package contrexx
+ * @package cloudrexx
  * @subpackage module_gallery
  */
 class DatabaseError extends \Exception

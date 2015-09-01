@@ -27,10 +27,10 @@
 
 /**
  * Data
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Stefan Heinemann <sh@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_data
  */
 
@@ -40,10 +40,10 @@ namespace Cx\Modules\Data\Controller;
  *
  * This class parses the Placeholder for Data in the content and layout
  * pages.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Stefan Heinemann <sh@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_data
  *
  */

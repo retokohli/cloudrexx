@@ -27,10 +27,10 @@
 
 /**
  * Data
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_data
  *
  * THIS FILE HAS TO BE OPENED WITH UTF-8 ENCODING
@@ -41,10 +41,10 @@ namespace Cx\Modules\Data\Controller;
 $_ARRAYLANG['TXT_DIV_THUMBNAIL_TYPE'] = "Thumbnail des Bildes verwenden";
 /**
  * DataAdmin
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_data
  */
 class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
