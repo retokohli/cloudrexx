@@ -309,6 +309,7 @@ class AccessLib
                 $arrPlaceholders['_MAX_FILE_SIZE'] = \FWSystem::getLiteralSizeFormat($arrSettings['max_'.($attributeId == 'picture' ? 'profile_' : '').'pic_size']['value']);
                 $arrPlaceholders['_MAX_WIDTH'] = $arrSettings['max_'.($attributeId == 'picture' ? 'profile_' : '').'pic_width']['value'];
                 $arrPlaceholders['_MAX_HEIGHT'] = $arrSettings['max_'.($attributeId == 'picture' ? 'profile_' : '').'pic_height']['value'];
+                $arrPlaceholders['_CHOOSE_FILE'] = $_CORELANG['TXT_ACCESS_USER_CHOOSE_FILE'];
 //                if ($attributeId == 'picture') {
 //                    $arrPlaceholders['_DESC'] = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 //                }
@@ -826,17 +827,18 @@ class AccessLib
     {
         global $_CORELANG;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if ($attributeId == 'picture') {
-            $imageRepo = ASCMS_ACCESS_PROFILE_IMG_PATH.'/';
-            $imageRepoWeb = ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/';
-            $arrNoImage = \User_Profile::$arrNoAvatar;
+            $imageRepo    = $cx->getWebsiteImagesAccessProfilePath().'/';
+            $imageRepoWeb = $cx->getWebsiteImagesAccessProfileWebPath().'/';
+            $arrNoImage   = \User_Profile::$arrNoAvatar;
         } else {
             if ($edit) {
                 $thumbnail = true;
             }
-            $imageRepo = ASCMS_ACCESS_PHOTO_IMG_PATH.'/';
+            $imageRepo    = $cx->getWebsiteImagesAccessPhotoPath().'/';
             $imageRepoWeb = ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.'/';
-            $arrNoImage = \User_Profile::$arrNoPicture;
+            $arrNoImage   = \User_Profile::$arrNoPicture;
         }
 
         if ($value !== false && $value !== '' && (!$edit || file_exists($imageRepo.$value))) {
@@ -855,25 +857,27 @@ class AccessLib
             $image['path'] = '';
         }
 
-        return $edit ?
+        if ($edit) {
+            return 
+            '<div class="access_image_uploader_container" id="'. $attributeHtmlId .'" >'
             // Input field containing the image source
-            '<input type="hidden" name="'.$name.'" id="'.$attributeHtmlId.'" value="'.$image['path'].'" />'
-
+            .'<input type="hidden" name="'.$name.'" class="image_uploader_source" value="'.$image['path'].'" />'
             // The image, if defined
-            .'<img src="'.$image['src'].'" id="'.$attributeHtmlId.'_image" alt="'.$image['path'].'" border="0" />'
+            .'<img src="'.$image['src'].'" class="image_uploader_source_image" alt="'.$image['path'].'" border="0" />'
 
             // Image Link to remove the image
             .($imageSet ? '<a
                 href="javascript:void(0)"
                 onclick="
-                    document.getElementById(\''.$attributeHtmlId.'_image\').src=\''.$imageRepoWeb.'/'.$arrNoImage['src'].'\';
-                    document.getElementById(\''.$attributeHtmlId.'_image\').style.width=\''.$arrNoImage['width'].'px\';
-                    document.getElementById(\''.$attributeHtmlId.'_image\').style.height=\''.$arrNoImage['height'].'px\';
-                    document.getElementById(\''.$attributeHtmlId.'\').value = \'\';
-                    this.style.display=\'none\'"
+                    var imageContainer = $J(this).closest(\'.access_image_uploader_container\');
+                    imageContainer.find(\'.image_uploader_source_image\')
+                        .attr(\'src\', \''.$imageRepoWeb.'/'.$arrNoImage['src'].'\')
+                        .css({width : \''.$arrNoImage['width'].'px\', height: \''.$arrNoImage['height'].'px\'});
+                    imageContainer.find(\'.image_uploader_source\').val(\'\');
+                    $J(this).hide()"
                 title="'.$_CORELANG['TXT_ACCESS_DELETE_IMAGE'].'">
                 <img
-                    src="'.ASCMS_CORE_MODULE_WEB_PATH.'/Access/View/Media/delete.gif"
+                    src="'. $cx->getCodeBaseCoreModuleWebPath() .'/Access/View/Media/delete.gif"
                     alt="'.$_CORELANG['TXT_ACCESS_DELETE_IMAGE'].'"
                     border="0"
                     width="17"
@@ -881,24 +885,33 @@ class AccessLib
                 />
             </a>' : '').'
             <br />'
-
-            // File Upload field to set a new image
             .'<input
-                type="file"
+                type="hidden"
                 name="'.$this->attributeNamePrefix.'_images['.$attributeId.']['.$historyId.']"
-                onchange="this.nextSibling.style.display = this.value.length ? \'\' : \'none\';"
+                class="uploader_rel_field_source"
+            /> &nbsp;&nbsp;'
+            .'<input
+                type="text"
+                class="uploader_rel_field"
+            /> &nbsp;&nbsp;'
+            .'<input
+                type="button"
+                value="'. $_CORELANG['TXT_ACCESS_USER_CHOOSE_FILE'] .'"
+                onClick="getImageUploader($J(this).closest(\'.access_image_uploader_container\'));"
             />'
 
             // Image Link to reset the file upload field
             .'<a
                 href="javascript:void(0)"
                 style="display:none;"
-                onclick="
-                    this.previousSibling.value=\'\';
-                    this.style.display=\'none\'"
+                class="uploader_rel_field_remove_icon"
+                onClick="var imageContainer = $J(this).closest(\'.access_image_uploader_container\');
+                         imageContainer.find(\'.uploader_rel_field\').val(\'\');
+                         imageContainer.find(\'.uploader_rel_field_source\').val(\'\');
+                         $J(this).hide()"
                 title="'.$_CORELANG['TXT_ACCESS_DELETE_IMAGE'].'">
                 <img
-                    src="'.ASCMS_CORE_MODULE_WEB_PATH.'/Access/View/Media/delete.gif"
+                    src="'. $cx->getCodeBaseCoreModuleWebPath() .'/Access/View/Media/delete.gif"
                     alt="'.$_CORELANG['TXT_ACCESS_DELETE_IMAGE'].'"
                     border="0"
                     width="17"
@@ -906,7 +919,10 @@ class AccessLib
                     style="vertical-align:bottom;"
                 />
             </a>'
-            : '<img src="'.$image['src'].'" alt="'.($attributeId == 'picture' ? htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET) : $image['path']).'" border="0" />';
+            .'</div>';
+        } else {
+            return '<img src="'.$image['src'].'" alt="'.($attributeId == 'picture' ? htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET) : $image['path']).'" border="0" />';
+        }
     }
 
 
@@ -1134,21 +1150,7 @@ class AccessLib
                         <input
                             type="button"
                             value="'.$_CORELANG['TXT_ACCESS_ADD_NEW_ENTRY'].'"
-                            onclick="
-                                newEntry=document.getElementById(\''.$this->attributeNamePrefix.'_'.$attributeId.'_history_new\').cloneNode(true);
-                                newEntry.removeAttribute(\'id\');
-                                regex=/([a-z_]+)\[([0-9]+)]\[(?:[0-9]+)\](?:\[([a-z]+)\])?/;
-                                elTypes=[\'a\',\'input\',\'select\',\'radio\',\'checkbox\'];
-                                for (y=0;y<elTypes.length;y++) {
-                                    for (i=0;i<newEntry.getElementsByTagName(elTypes[y]).length;i++) {
-                                        if (typeof(newEntry.getElementsByTagName(elTypes[y])[i].name) != \'undefined\' && newEntry.getElementsByTagName(elTypes[y])[i].name.length) {
-                                            arrName=regex.exec(newEntry.getElementsByTagName(elTypes[y])[i].name);
-                                            newEntry.getElementsByTagName(elTypes[y])[i].setAttribute(\'name\',arrName[1]+\'[\'+arrName[2]+\'][new][\'+(typeof(arrName[3]) != \'undefined\' ? arrName[3] : \'\')+\']\');
-                                        }
-                                    }
-                                }
-                                newEntry.style.display=\'\';
-                                document.getElementById(\''.$this->attributeNamePrefix.'_'.$attributeId.'\').getElementsByTagName(\'tbody\')[0].appendChild(newEntry)"
+                            onclick="addNewHistroyField(\''.$this->attributeNamePrefix.'_'.$attributeId.'\');"
                         />';
                 }
 
@@ -1509,9 +1511,57 @@ accessRemoveGroupFromList = function(from, dest){
 // ]]>
 </script>
 JSaccessValidatePrimaryGroupAssociation
+               ,
+               'imageUploaderCode' => <<<JSimageUploaderCode
+<script type="text/javascript">
+// <![CDATA[
+    var lastAccessImageUploaderContainer = null;
+    function getImageUploader(sourceElm) {
+        lastAccessImageUploaderContainer = sourceElm;
+        cx.variables.get('jquery','mediabrowser')('#accessImageUploader').trigger('click');
+    }
+    function accessImageUploaderCallback(callback) {
+        if (typeof callback[0] !== 'undefined') {
+            var uploaderField = lastAccessImageUploaderContainer,
+                data       = callback[0].split('/'),
+                fileName   = data.pop();
+            uploaderField.find('.uploader_rel_field_source').val(callback[0]);
+            uploaderField.find('.uploader_rel_field').val(fileName);
+            uploaderField.find('.uploader_rel_field_remove_icon').show();            
+        }
+    }
+
+// ]]>
+</script>
+JSimageUploaderCode
+                ,
+                'addHistoryField' => <<<JS
+<script type="text/javascript">
+// <![CDATA[
+
+function addNewHistroyField(fieldId) {
+    \$clone = \$J('#'+ fieldId + '_history_new').clone();
+    \$clone.removeAttr('id');
+    regex=/([a-z_]+)\[([0-9]+)]\[(?:[0-9]+)\](?:\[([a-z]+)\])?/;
+    elTypes=['a','input','select','radio','checkbox'];
+    for (y=0;y<elTypes.length;y++) {
+        \$clone.find(elTypes[y]).each(function() {
+            if (\$J(this).attr('name')) {
+                var arrName = regex.exec(\$J(this).attr('name'));
+                var newName = arrName[1]+'['+arrName[2]+'][new]['+(typeof(arrName[3]) != 'undefined' ? arrName[3] : '')+']';
+                \$J(this).attr('name', newName);
+            }
+        });
+    }
+    \$clone
+        .show()
+        .appendTo('#' + fieldId +' > tbody');
+}
+// ]]>
+</script>
+JS
             );
         }
-
         $javaScriptCode = '';
         foreach ($this->arrAttachedJSFunctions as $function) {
             if (isset($arrFunctions[$function])) {
@@ -1603,65 +1653,66 @@ JSaccessValidatePrimaryGroupAssociation
         }
     }
 
-
-    protected function addUploadedImagesToProfile($objUser, &$arrProfile, $arrImages)
+    /**
+     * Move the uploaded images into place and link to the user
+     *      
+     * @param \User  $objUser    \User object
+     * @param array  $arrProfile Array profile data
+     * @param array  $arrImages  Uploaded images array
+     * @param string $uploaderId Uploader id
+     * 
+     * @return boolean TRUE on success false otherwise
+     */
+    protected function addUploadedImagesToProfile($objUser, &$arrProfile, $arrImages, $uploaderId)
     {
         global $_CORELANG;
-
+        $objSession = \cmsSession::getInstance();
         $arrErrorMsg = array();
 
-        foreach ($arrImages['name'] as $attribute => $arrHistories) {
+        foreach ($arrImages as $attribute => $arrHistories) {
             foreach ($arrHistories as $historyId => $data) {
                 $arrUploadedImages = array();
                 if ($historyId === 'new') {
-                    foreach (array_keys($data) as $historyIndex) {
+                    foreach ($data as $historyIndex => $filePath) {
                         $arrUploadedImages[] = array(
-// TODO: What is contrexx_stripslashes good for here?
-                            'name'            => contrexx_stripslashes($arrImages['name'][$attribute][$historyId][$historyIndex]),
-                            'tmp_name'        => $arrImages['tmp_name'][$attribute][$historyId][$historyIndex],
-                            'error'            => $arrImages['error'][$attribute][$historyId][$historyIndex],
-                            'size'            => $arrImages['size'][$attribute][$historyId][$historyIndex],
-                            'history_index'    => $historyIndex
+                            'path'            => contrexx_input2raw($filePath),
+                            'history_index'   => $historyIndex,
                         );
                     }
                 } else {
                     $arrUploadedImages[] = array(
-// TODO: What is contrexx_stripslashes good for here?
-                        'name'        => contrexx_stripslashes($arrImages['name'][$attribute][$historyId]),
-                        'tmp_name'    => $arrImages['tmp_name'][$attribute][$historyId],
-                        'error'        => $arrImages['error'][$attribute][$historyId],
-                        'size'        => $arrImages['size'][$attribute][$historyId]
+                        'path'            => contrexx_input2raw($data),
                     );
                 }
 
                 foreach ($arrUploadedImages as $arrImage) {
-                    if ($arrImage['error'] === UPLOAD_ERR_OK) {
-                        if (!$this->isImageWithinAllowedSize($arrImage['size'], $attribute == 'picture')) {
-                            $objAttribute = $objUser->objAttribute->getById($attribute);
-                            $arrErrorMsg[] = sprintf($_CORELANG['TXT_ACCESS_PIC_TOO_BIG'], htmlentities($objAttribute->getName(), ENT_QUOTES, CONTREXX_CHARSET));
-                            continue;
-                        }
-                        // move uploaded image to ASCMS_TEMP_PATH
-                        /*if (($tmpImageName = $this->loadUploadedImage($arrImage['tmp_name'], $arrImage['name'])) === false) {
-                            continue;
-                        }*/
+                    $fileName = basename($arrImage['path']);
+                    $path     = $objSession->getTempPath() .'/' . contrexx_input2raw($uploaderId) . '/' . $fileName;
 
-                        // resize image and put it into place (ASCMS_ACCESS_PHOTO_IMG_PATH / ASCMS_ACCESS_PROFILE_IMG_PATH)
-                        if (($imageName = $this->moveUploadedImageInToPlace($objUser, $arrImage['tmp_name'], $arrImage['name'], $attribute == 'picture')) === false) {
-                            /*$this->unloadUploadedImage($tmpImageName);*/
-                            continue;
-                        }
+                    if (   !\Cx\Lib\FileSystem\FileSystem::exists($path)
+                        || !\FWValidator::is_file_ending_harmless($path)    
+                    ) {
+                        continue;
+                    }
+                    $fileSize = filesize($path);
+                    if (!$this->isImageWithinAllowedSize($fileSize, $attribute == 'picture')) {
+                        $objAttribute = $objUser->objAttribute->getById($attribute);
+                        $arrErrorMsg[] = sprintf($_CORELANG['TXT_ACCESS_PIC_TOO_BIG'], htmlentities($objAttribute->getName(), ENT_QUOTES, CONTREXX_CHARSET));
+                        continue;
+                    }
 
-                        // create thumbnail
-                        if ($this->createThumbnailOfImage($imageName, $attribute == 'picture') !== false) {
-                            if ($historyId === 'new') {
-                                $arrProfile[$attribute][$historyId][$arrImage['history_index']] = $imageName;
-                            } else {
-                                $arrProfile[$attribute][$historyId] = $imageName;
-                            }
-                        }
+                    // resize image and put it into place (ASCMS_ACCESS_PHOTO_IMG_PATH / ASCMS_ACCESS_PROFILE_IMG_PATH)
+                    if (($imageName = $this->moveUploadedImageInToPlace($objUser, $path, $fileName, $attribute == 'picture')) === false) {
+                        continue;
+                    }
 
-                        /*$this->unloadUploadedImage($tmpImageName);*/
+                    // create thumbnail
+                    if ($this->createThumbnailOfImage($imageName, $attribute == 'picture') !== false) {
+                        if ($historyId === 'new') {
+                            $arrProfile[$attribute][$historyId][$arrImage['history_index']] = $imageName;
+                        } else {
+                            $arrProfile[$attribute][$historyId] = $imageName;
+                        }
                     }
                 }
             }
@@ -1682,10 +1733,24 @@ JSaccessValidatePrimaryGroupAssociation
     }
 
 
-    private function moveUploadedImageInToPlace($objUser, $tmpImageName, $name, $profilePic = false)
+    /**
+     * Copy the uploaded images from temp folder to images folder
+     * 
+     * @staticvar \ImageManager $objImage    Image object
+     * @staticvar type          $arrSettings User settings
+     * 
+     * @param \User   $objUser      User object
+     * @param string  $tmpImagePath Temporary Image path
+     * @param string  $name         Image file name
+     * @param boolean $profilePic   True when processing profile picture
+     * 
+     * @return boolean|string False when copying file or file name on success
+     */
+    private function moveUploadedImageInToPlace($objUser, $tmpImagePath, $name, $profilePic = false)
     {
         static $objImage, $arrSettings;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if (empty($objImage)) {
             $objImage = new \ImageManager();
         }
@@ -1693,17 +1758,16 @@ JSaccessValidatePrimaryGroupAssociation
             $arrSettings = \User_Setting::getSettings();
         }
 
-        $imageRepo = $profilePic ? ASCMS_ACCESS_PROFILE_IMG_PATH : ASCMS_ACCESS_PHOTO_IMG_PATH;
+        $imageRepo = $profilePic ? $cx->getWebsiteImagesAccessProfilePath() : ASCMS_ACCESS_PHOTO_IMG_PATH;
         $index = 0;
         $imageName = $objUser->getId().'_'.$name;
         while (file_exists($imageRepo.'/'.$imageName)) {
             $imageName = $objUser->getId().'_'.++$index.'_'.$name;
         }
 
-        if (!$objImage->loadImage($tmpImageName)) {
+        if (!$objImage->loadImage($tmpImagePath)) {
             return false;
         }
-
         // resize image if its dimensions are greater than allowed
         if ($objImage->orgImageWidth > $arrSettings['max_'.($profilePic ? 'profile_' : '').'pic_width']['value'] ||
             $objImage->orgImageHeight > $arrSettings['max_'.($profilePic ? 'profile_' : '').'pic_height']['value']
@@ -1731,7 +1795,7 @@ JSaccessValidatePrimaryGroupAssociation
                 return false;
             }
         } else {
-            if (!copy($tmpImageName, $imageRepo.'/'.$imageName)) {
+            if (!copy($tmpImagePath, $imageRepo.'/'.$imageName)) {
                 return false;
             }
         }

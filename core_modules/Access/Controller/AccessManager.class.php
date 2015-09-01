@@ -1227,9 +1227,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             if (isset($_POST['access_profile_attribute']) && is_array($_POST['access_profile_attribute'])) {
                 $arrProfile = $_POST['access_profile_attribute'];
-
-                if (isset($_FILES['access_profile_attribute_images']) && is_array($_FILES['access_profile_attribute_images'])) {
-                    $upload_res = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_FILES['access_profile_attribute_images']);
+                if (   !empty($_POST['access_image_uploader_id']) 
+                    && isset($_POST['access_profile_attribute_images']) 
+                    && is_array($_POST['access_profile_attribute_images'])
+                ) {
+                    $upload_res = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_POST['access_profile_attribute_images'], $_POST['access_image_uploader_id']);
                     if (is_array($upload_res)) {
                         self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $upload_res);
                     }
@@ -1390,6 +1392,19 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 break;
         }
 
+        $this->attachJavaScriptFunction('addHistoryField');
+        
+        // init uploader to upload images
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $uploader->setCallback('accessImageUploaderCallback');
+        $uploader->setOptions(array(
+            'id'                 => 'accessImageUploader',
+            'allowed-extensions' => array('jpg', 'jpeg', 'png', 'gif'),
+            'style'              => 'display:none',
+            'data-upload-limit'  => 1,
+        ));
+        $this->attachJavaScriptFunction('imageUploaderCode');
+        
         $this->_objTpl->setVariable(array(
             'ACCESS_USER_ID'                       => $objUser->getId(),
             'ACCESS_USER_IS_ADMIN'                 => $objUser->getAdminStatus() ? 'checked="checked"' : '',
@@ -1406,6 +1421,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'SOURCE'                               => $source, //if source was newletter for ex.
             'CANCEL_URL'                           => $cancelUrl,
             'URL_PARAMS'                           => $urlParams,
+            'ACCESS_IMAGE_UPLOADER_ID'             => $uploader->getId(),
+            'ACCESS_IMAGE_UPLOADER_CODE'           => $uploader->getXHtml(),
         ));
 
         $rowNr = 0;
