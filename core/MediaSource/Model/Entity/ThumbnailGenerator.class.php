@@ -70,9 +70,9 @@ class ThumbnailGenerator extends EntityBase
      * </code>
      *
      * @param bool          $generateThumbnailByRatio
-     * @param bool          $force
+     * @param bool          $force Force creation of new Thumbnails. This overwrites any existing thumbnail.
      *
-     * @return array With an array of the generated thumbnails
+     * @return array Array with the relative paths to the thumbnails.
      */
     public function createThumbnail(
         $path, $fileNamePlain, $fileExtension, \ImageManager $imageManager,
