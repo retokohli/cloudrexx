@@ -37,7 +37,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
         global $_ARRAYLANG;
-        
+
         $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
         $header = '';
         if (isset($_ARRAYLANG[$langVarName])) {
@@ -46,14 +46,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return array(
             'header' => $header,
             'fields' => array(
+                'orderNo' => array(
+                    'header' => $_ARRAYLANG['orderNo'],
+                ),
                 'id' => array(
                     'showOverview' => false,
                 ),
                 'regularExpression' => array(
                     'header' => $_ARRAYLANG['regularExpression'],
-                ),
-                'orderNo' => array(
-                    'header' => $_ARRAYLANG['orderNo'],
                 ),
                 'rewriteStatusCode' => array(
                     'header' => $_ARRAYLANG['rewriteStatusCode'],
@@ -69,6 +69,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'sorting'   => true,
                 'paging'    => true,
                 'filtering' => false,
+                'sortBy' => [
+                    'field' => ['orderNo' => SORT_ASC]
+                ]
             ),
         );
     }

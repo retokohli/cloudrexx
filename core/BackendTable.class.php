@@ -21,7 +21,7 @@ class BackendTable extends HTML_Table {
 
     public function __construct($attrs = array(), $options = array()) {
         global $_ARRAYLANG;
-        
+
         if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $hasMasterTableHeader = !empty($options['header']);
             // add master table-header-row
@@ -30,6 +30,15 @@ class BackendTable extends HTML_Table {
             }
             $first = true;
             $row = 1 + $hasMasterTableHeader;
+            $sortBy     = isset($options['functions']['sortBy'])
+                          ? $options['functions']['sortBy']
+                          : '';
+            $sortingKey = !empty($sortBy) && isset($sortBy['sortingKey'])
+                          ? $sortBy['sortingKey']
+                          : '';
+            $sortField  = !empty($sortBy) && isset($sortBy['field'])
+                          ? key($sortBy['field'])
+                          : '';
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
                 $virtual = $rows['virtual'];
@@ -39,6 +48,14 @@ class BackendTable extends HTML_Table {
                     $col++;
                 }
                 foreach ($rows as $header=>$data) {
+                    if (!empty($sortingKey) && $header === $sortingKey) {
+                        //Add the additional attribute id, for getting the updated sort order after the row sorting
+                        $this->updateRowAttributes($row, array('id' => 'sortOrder_' . $data), true);
+                    }
+                    if (!empty($sortField) && $header === $sortField) {
+                        //Add the additional attribute class, to display the updated sort order after the row sorting
+                        $this->updateColAttributes($col, array('class' => 'sortBy'));
+                    }
                     $encode = true;
                     if (
                         isset($options['fields']) &&
