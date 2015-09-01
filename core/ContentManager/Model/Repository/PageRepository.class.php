@@ -847,7 +847,9 @@ class PageRepository extends EntityRepository {
         if (!$page) {
             $nodeRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
             $node = $nodeRepository->find($nodeId);
-            $page = $node->getPage($langId);
+            if(!\FWValidator::isEmpty($node)) {
+                $page = $node->getPage($langId);
+            }
         }
         
         return $page;
