@@ -1543,7 +1543,7 @@ function addNewHistroyField(fieldId) {
     \$clone = \$J('#'+ fieldId + '_history_new').clone();
     \$clone.removeAttr('id');
     regex=/([a-z_]+)\[([0-9]+)]\[(?:[0-9]+)\](?:\[([a-z]+)\])?/;
-    elTypes=['a','input','select','radio','checkbox'];
+    elTypes=['a','input','select','radio','checkbox', 'textarea'];
     for (y=0;y<elTypes.length;y++) {
         \$clone.find(elTypes[y]).each(function() {
             if (\$J(this).attr('name')) {
