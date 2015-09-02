@@ -43,9 +43,18 @@ class ComponentController extends
      * {@inheritdoc }
      */
     public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
-        return array('Backend');
+        if (in_array(
+            'Workbench',
+            \Cx\Core\ModuleChecker::getInstance(
+                $this->cx->getDb()->getEntityManager(),
+                $this->cx->getDb()->getAdoDb(),
+                $this->cx->getClassLoader()
+            )->getCoreModules()
+            )
+        ) {
+            return array('Backend');
+        }
+        return array();
     }
 
     /**
