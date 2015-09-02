@@ -1963,6 +1963,10 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     background-color: #E4E4E4;
 }
 
+.media-browser-modal-window tr.data-row.files td.col_2 a {
+    display: block !important; /* Fix for conflict with prototype */
+}
+
 .media-browser-modal-window .uploadlist .fileName {
     max-width: 200px;
 }
