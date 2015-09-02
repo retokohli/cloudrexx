@@ -11,3 +11,5 @@
  */
 
 global $_ARRAYLANG;
+
+$_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED'] = 'Das System konnte die Sortierung nicht speichern.';

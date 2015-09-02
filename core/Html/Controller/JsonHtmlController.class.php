@@ -75,7 +75,7 @@ class JsonHtmlController extends    \Cx\Core\Core\Model\Entity\Controller
             ||  empty($post['component'])
             ||  empty($post['entity'])
         ) {
-            throw new \Exception($_ARRAYLANG['TXT_CORE_ROUTING_UPDATE_SORT_ORDER_FAILED']);
+            throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
         }
         
         //Get all the 'POST' values
@@ -98,7 +98,7 @@ class JsonHtmlController extends    \Cx\Core\Core\Model\Entity\Controller
         $entityNameSpace = $objComponent->getNamespace() . '\\Model\\Entity\\' . $entity;
         //check whether the entity namespace is a valid one or not
         if (!in_array($entityNameSpace, $objComponent->getEntityClasses())) {
-            throw new \Exception($_ARRAYLANG['TXT_CORE_ROUTING_UPDATE_SORT_ORDER_FAILED']);
+            throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
         }
         
         //Get the Repository object of the corresponding Entity
@@ -109,7 +109,7 @@ class JsonHtmlController extends    \Cx\Core\Core\Model\Entity\Controller
         $classMethods   = get_class_methods($entityObject->newInstance());
         //check whether the updating entity set method is a valid one or not
         if (!in_array('set'.ucfirst($sortField), $classMethods)) {
-            throw new \Exception($_ARRAYLANG['TXT_CORE_ROUTING_UPDATE_SORT_ORDER_FAILED']);
+            throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
         }
         
         //update the order field

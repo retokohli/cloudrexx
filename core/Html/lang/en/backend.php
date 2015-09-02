@@ -12,4 +12,4 @@
 
 global $_ARRAYLANG;
 
-$_ARRAYLANG['TXT_CORE_ROUTING_UPDATE_SORT_ORDER_FAILED'] = 'Failed to store the sort order.';
+$_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED'] = 'Failed to store the sort order.';
