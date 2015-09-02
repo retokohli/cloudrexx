@@ -1329,6 +1329,7 @@ class NewsLibrary
                                 n.publisher_id   AS publisher_id,
                                 n.author         AS author,
                                 n.author_id      AS author_id,
+                                n.startdate      As startDate,
                                 n.allow_comments AS commentactive,
                                 nl.title         AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
@@ -1353,7 +1354,8 @@ class NewsLibrary
         if ($objResult !== false) {
             $arrMonthTxt = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
             while (!$objResult->EOF) {
-                $filterDate = $objResult->fields['date'];
+                // If 'Scheduled publication' is active consider Scheduled publication 'startDate' as the option for date  filter else use 'Created' on date
+                $filterDate = ($objResult->fields['startDate'] !== '0000-00-00 00:00:00') ? strtotime($objResult->fields['startDate']) : $objResult->fields['date'];
                 $newsYear = date('Y', $filterDate);
                 $newsMonth = date('m', $filterDate);
                 if (!isset($monthlyStats[$newsYear.'_'.$newsMonth])) {
