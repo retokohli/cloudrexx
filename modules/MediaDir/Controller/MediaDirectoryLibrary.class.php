@@ -851,7 +851,10 @@ EOF;
         if (empty($path)) {
             return '';
         }
-        $thumbnails = \Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator::getThumbnails(dirname($path), $path, true);
+        $thumbnails = \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getMediaSourceManager()
+                        ->getThumbnailGenerator()
+                        ->getThumbnailsFromFile(dirname($path), $path, true);
         
         return current($thumbnails);
     }
