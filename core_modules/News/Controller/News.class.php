@@ -66,9 +66,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if (!isset($_REQUEST['cmd'])) {
             $_REQUEST['cmd'] = '';
         }
-        
-        \JS::activate('jquery');
-        \JS::activate('cx');
 
         switch ($_REQUEST['cmd']) {
         case 'details':
@@ -507,6 +504,9 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if (!$newsCommentActive) {
             return;
         }
+        
+        \JS::activate('jquery');
+        \JS::activate('cx');
 
         // abort if request is unauthorized
         if (   $this->arrSettings['news_comments_anonymous'] == '0'
