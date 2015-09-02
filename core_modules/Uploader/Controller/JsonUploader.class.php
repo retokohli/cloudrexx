@@ -185,7 +185,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 throw new UploaderException(PLUPLOAD_TMPDIR_ERR);
             }
             \Cx\Lib\FileSystem\FileSystem::move(
-                $file, $fileLocation[0] . pathinfo( $file, PATHINFO_BASENAME),
+                $file,  rtrim($fileLocation[0], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME),
                 true
             );
 
@@ -195,8 +195,8 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 $uploader['name'] = $fileLocation[2];
             }
             $fileLocation = array(
-                $fileLocation[0] . pathinfo( $file, PATHINFO_BASENAME),
-                $fileLocation[1] . pathinfo( $file, PATHINFO_BASENAME)
+                rtrim($fileLocation[0], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME),
+                rtrim($fileLocation[1], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME)
             );
         }
 
