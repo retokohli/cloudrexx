@@ -28,18 +28,18 @@
 /**
  * ContrexxJavascriptI18n
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_cxjs
  */
 
 /**
  * ContrexxJavascriptI18nException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_cxjs
  */
 class ContrexxJavascriptI18nException extends ContrexxJavascriptException {}
@@ -52,9 +52,9 @@ require_once ASCMS_FRAMEWORK_PATH.'/cxjs/ContrexxJavascriptI18nProvider.interfac
 /**
  * This handles i18n for Javascript.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_cxjs
  */
 class ContrexxJavascriptI18n {

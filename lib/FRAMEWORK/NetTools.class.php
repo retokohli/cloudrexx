@@ -28,11 +28,11 @@
 /**
  * Net Tools Library
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     1.0
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -40,11 +40,11 @@ namespace Cx\Lib;
 /**
  * Net Tools Library
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     1.0
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class NetTools {

@@ -28,10 +28,10 @@
 /**
  * Framework language
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     2.3.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -39,10 +39,10 @@
 /**
  * Framework language
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     2.3.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class FWLanguage

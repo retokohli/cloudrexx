@@ -29,11 +29,11 @@
  * Date and time helper functions
  *
  * Add more methods and formats as needed.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @since       3.0.0
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 
@@ -41,11 +41,11 @@
  * Date and time helper functions
  *
  * Add more methods and formats as needed.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @since       3.0.0
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class DateTimeTools

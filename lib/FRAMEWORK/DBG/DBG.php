@@ -28,11 +28,11 @@
 /**
  * Debugging
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      David Vogt <david.vogt@comvation.com>
  * @version     3.0.0
  * @since       2.1.3
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_dbg
  */
 
@@ -72,11 +72,11 @@ DBG::deactivate();
 /**
  * Debugging
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      David Vogt <david.vogt@comvation.com>
  * @version     3.0.0
  * @since       2.1.3
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage	lib_dbg
  */
 class DBG

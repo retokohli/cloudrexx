@@ -28,13 +28,13 @@
 /**
  * File System Framework
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Janik Tschanz <janik.tschanz@comvation.com>
  * @author      Reto Kohli <reto.kohli@comvation.com>
  *              (new static methods, error system)
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
 
@@ -47,11 +47,11 @@
  * former name <File> (Cx < 3.0)
  * I.e.: $objLegacyFile = new File();
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
  * @deprecated  deprecated since 3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
 class File extends Cx\Lib\FileSystem\FileSystem{}

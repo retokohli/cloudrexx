@@ -28,10 +28,10 @@
 /**
  * Class FWHtAccess
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     2.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -44,11 +44,11 @@ require_once ASCMS_LIBRARY_PATH.'/PEAR/File/HtAccess.php';
 /**
  * Class FWHtAccess
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     2.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class FWHtAccess
@@ -68,7 +68,7 @@ class FWHtAccess
     private $rewriteEngine = false;
 
     /**
-     * Contrexx directive sections
+     * Cloudrexx directive sections
      *
      * This list is used to sort the sections within a HtAccess file.
      * @var array
@@ -81,14 +81,14 @@ class FWHtAccess
 
     /**
      * An array containing all directives of the loaded HtAccess file.
-     * The directives of Contrexx sections are represented as a whole by one entry which uses the section name as value.
+     * The directives of Cloudrexx sections are represented as a whole by one entry which uses the section name as value.
      * @var array
      * @access private
      */
     private $arrDirectives = array();
 
     /**
-     * A multi-dimensional array containing all directives of the Contrexx sections.
+     * A multi-dimensional array containing all directives of the Cloudrexx sections.
      * @var array
      * @access private
      */
@@ -123,7 +123,7 @@ class FWHtAccess
      * Load HtAccess file
      *
      * Loads the content of the HtAccess file specified by $filename.
-     * The content gets seperated into Contrexx related directives and other directives.
+     * The content gets seperated into Cloudrexx related directives and other directives.
      * If the param $prepareFileAccess is set to TRUE, the HtAccess file will be created if it doesn't exist.
      * As well will any write-protection mode on the file be removed.
      *
@@ -154,11 +154,11 @@ class FWHtAccess
 
             foreach ($arrAddition as $directive) {
                 if (!$withinContrexxDirectives && preg_match('@^\s*#\s*<contrexx>@i', $directive)) {
-                    // begin of contrexx directives reached
+                    // begin of cloudrexx directives reached
                     // start reading
                     $withinContrexxDirectives = true;
                 } elseif ($withinContrexxDirectives && preg_match('@^\s*#\s*</contrexx>@i', $directive)) {
-                    // end of contrexx directives reached
+                    // end of cloudrexx directives reached
                     // stop reading
                     $withinContrexxDirectives = false;
                 } elseif ($withinContrexxDirectives) {
@@ -290,7 +290,7 @@ class FWHtAccess
         $this->arrContrexxDirectives[$section] = $arrDirectives;
 
 
-        // sort contrexx directive sections
+        // sort cloudrexx directive sections
         $arrContrexxDirectives = preg_grep('@^('.implode('|', $this->arrSectionOrder).')$@i', $this->arrDirectives);
         $arrContrexxDirectivesKeys = array_keys($arrContrexxDirectives);
 

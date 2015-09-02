@@ -28,9 +28,9 @@
 /**
  * Twitter
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_oauth
  */
 
@@ -43,10 +43,10 @@ $cl->loadFile(ASCMS_LIBRARY_PATH . '/services/Twitter/tmhUtilities.php');
 /**
  * OAuth class for twitter authentication
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @version     1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_oauth
  */
 class Twitter extends OAuth
@@ -64,7 +64,7 @@ class Twitter extends OAuth
     const OAUTH_PROVIDER = 'twitter';
 
     /**
-     * Login to facebook and get the associated contrexx user.
+     * Login to facebook and get the associated cloudrexx user.
      */
     public function login()
     {

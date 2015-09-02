@@ -28,10 +28,10 @@
 /**
  * Framework Validator
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -50,7 +50,7 @@ define('VALIDATOR_REGEX_EMAIL',
 
 /**
  * Regular Expression in javascript for e-mail addresses
- * @author  Michael Räss <info@comvation.com>
+ * @author  Michael Räss <info@cloudrexx.com>
  * @since  2.2.6
  * @deprecated 3.1.1
  */
@@ -84,7 +84,7 @@ define('VALIDATOR_REGEX_URI',
 
 /**
  * Regular Expression in javascript for URIs
- * @author  Michael Räss <info@comvation.com>
+ * @author  Michael Räss <info@cloudrexx.com>
  * @since   2.2.6
  * @deprecated 3.1.1
  */
@@ -95,11 +95,11 @@ define('VALIDATOR_REGEX_URI_JS',
 /**
  * Framework Validator
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @version     1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
- * @author      Comvation Development Team <info@comvation.com>
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @todo        Edit PHP DocBlocks!
  * @todo        Most, if not all, should be static
@@ -415,9 +415,9 @@ class FWValidator
 /**
  * An abstract base for ZendValidator-Style instantiable Validators
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 abstract class CxValidate {
@@ -442,9 +442,9 @@ abstract class CxValidate {
 /**
  * Validates Strings to a set of constraints
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class CxValidateString extends CxValidate {
@@ -476,9 +476,9 @@ class CxValidateString extends CxValidate {
 /**
  * CxValidateRegexp
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class CxValidateRegexp extends CxValidate {
@@ -505,9 +505,9 @@ class CxValidateRegexp extends CxValidate {
 /**
  * CxValidateInteger
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class CxValidateInteger extends CxValidate {

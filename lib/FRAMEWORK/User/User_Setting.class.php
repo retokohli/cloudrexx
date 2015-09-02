@@ -27,19 +27,19 @@
 
 /**
  * User Settings Object
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 
 /**
  * User Settings Object
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class User_Setting

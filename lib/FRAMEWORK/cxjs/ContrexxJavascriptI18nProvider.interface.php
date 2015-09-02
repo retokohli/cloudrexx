@@ -28,18 +28,18 @@
 /**
  * ContrexxJavascriptI18nProvider
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_cxjs
  */
 
 /**
  * An interface describing an i18n provider.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_cxjs
  */
 interface ContrexxJavascriptI18nProvider {

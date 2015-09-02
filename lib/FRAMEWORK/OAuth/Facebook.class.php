@@ -28,9 +28,9 @@
 /**
  * Facebook
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_oauth
  */
 
@@ -42,16 +42,16 @@ $cl->loadFile(ASCMS_LIBRARY_PATH . '/services/Facebook/facebook.php');
 /**
  * OAuth class for facebook authentication
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_oauth
  */
 class Facebook extends OAuth
 {
     /**
-     * Per Contrexx default: The permission to get the primary email address (email)
+     * Per Cloudrexx default: The permission to get the primary email address (email)
      *
      * @var array the permissions to ask for
      */
@@ -72,7 +72,7 @@ class Facebook extends OAuth
     const OAUTH_PROVIDER = 'facebook';
 
     /**
-     * Login to facebook and get the associated contrexx user.
+     * Login to facebook and get the associated cloudrexx user.
      */
     public function login()
     {

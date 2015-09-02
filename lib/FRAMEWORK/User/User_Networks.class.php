@@ -32,10 +32,10 @@ namespace Cx\Lib\User;
  * User Networks
  *
  * The user object which contains the handling of other services the user is connected with.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class User_Networks

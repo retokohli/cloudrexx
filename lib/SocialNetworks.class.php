@@ -28,19 +28,19 @@
 /**
  * SocialNetworks
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 
 /**
  * Creates Buttons etc. to integrate Social Networks.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Severin Räz <severin.raez@comvation.com>
  * @version     $Id:  Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class SocialNetworks

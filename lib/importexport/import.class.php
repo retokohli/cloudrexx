@@ -29,9 +29,9 @@
  * Import Class
  * Class which handles the main import operations
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_importexport
  */
 
@@ -44,9 +44,9 @@ require_once ASCMS_LIBRARY_PATH."/importexport/lib/importexport.class.php";
  * Import Class
  * Class which handles the main import operations
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_importexport
  */
 class Import extends ImportExport

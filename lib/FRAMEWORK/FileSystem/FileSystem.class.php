@@ -28,9 +28,9 @@
 /**
  * FileSystem
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
 
@@ -39,10 +39,10 @@ namespace Cx\Lib\FileSystem;
 /**
  * FileSystemException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
 
@@ -52,10 +52,10 @@ class FileSystemException extends \Exception {};
  * File System
  * Collection of file system (direct or through FTP) manipulation tools
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Janik Tschanz <janik.tschanz@comvation.com>
  * @author      Reto Kohli <reto.kohli@comvation.com> (new static methods, error system)
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
 class FileSystem
@@ -377,7 +377,7 @@ class FileSystem
 
     // replaces some characters
     public static function replaceCharacters($string) {
-        // contrexx file name policies
+        // cloudrexx file name policies
         $string = \FWValidator::getCleanFileName($string);
 
         // media library special changes; code depends on those

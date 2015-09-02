@@ -28,10 +28,10 @@
 /**
  * Image manager
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @version     1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -39,11 +39,11 @@
 /**
  * Image manager
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @version     1.0
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class ImageManager
@@ -495,7 +495,7 @@ class ImageManager
                 \DBG::msg($e->getMessage());
             }
         }
-// TODO: Unfortunately, the functions imagegif(), imagejpeg() and imagepng() can't use the Contrexx FileSystem wrapper,
+// TODO: Unfortunately, the functions imagegif(), imagejpeg() and imagepng() can't use the Cloudrexx FileSystem wrapper,
 //       therefore we need to set the global write access image files.
 //       This issue might be solved by using the output-buffer and write the image manually afterwards.
 //

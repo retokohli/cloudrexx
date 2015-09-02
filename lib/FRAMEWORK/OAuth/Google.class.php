@@ -34,10 +34,10 @@ $cl->loadFile(ASCMS_LIBRARY_PATH . '/services/Google/Google_Client.php');
 /**
  * OAuth class for google authentication
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_oauth
  */
 
@@ -71,7 +71,7 @@ class Google extends OAuth
     const OAUTH_PROVIDER = 'google';
 
     /**
-     * Login to facebook and get the associated contrexx user.
+     * Login to facebook and get the associated cloudrexx user.
      */
     public function login()
     {

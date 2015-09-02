@@ -28,9 +28,9 @@
 /**
  * SocialLogin
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 
@@ -40,10 +40,10 @@ namespace Cx\Lib;
  * Social Login
  * This class is used to provide a support for social media login.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class SocialLogin
@@ -132,7 +132,7 @@ class SocialLogin
     }
 
     /**
-     * Generates the contrexx login link to log in with the given provider.
+     * Generates the cloudrexx login link to log in with the given provider.
      * This can be used to generate the redirect url.
      *
      * @static

@@ -28,9 +28,9 @@
 /**
  * File System File
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Lib\FileSystem;
 /**
  * FileSystemFileException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
 class FileSystemFileException extends \Exception {};
@@ -52,10 +52,10 @@ class FileSystemFileException extends \Exception {};
  * This class provides an object based interface to a file that resides 
  * on the local file system.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
 class FileSystemFile implements FileInterface
@@ -216,11 +216,11 @@ class FileSystemFile implements FileInterface
         $parentDirectory = dirname($this->filePath);
         if (!is_writable($parentDirectory)) {
             if (strpos($parentDirectory, \Env::get('cx')->getWebsiteDocumentRootPath()) === 0) {
-                // parent directory lies within the Contrexx installation directory,
+                // parent directory lies within the Cloudrexx installation directory,
                 // therefore, we shall try to make it writable
                 \Cx\Lib\FileSystem\FileSystem::makeWritable($parentDirectory);
             } else {
-                throw new FileSystemFileException('Parent directory '.$parentDirectory.' lies outside of Contrexx installation and can therefore not be made writable!');
+                throw new FileSystemFileException('Parent directory '.$parentDirectory.' lies outside of Cloudrexx installation and can therefore not be made writable!');
             }
         }
 

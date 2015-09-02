@@ -28,10 +28,10 @@
 /**
  * RSSWriter
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CLOUDREXX CMS - ASTALAVISTA IT AG
  * @author Astalavista Development Team <thun@astalavista.ch>
  * @version 2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -40,10 +40,10 @@
  * RSSWriter
  * Creates RSS files
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CLOUDREXX CMS - ASTALAVISTA IT AG
  * @author Astalavista Development Team <thun@astalavista.ch>
  * @version 2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class RSSWriter {
@@ -58,8 +58,8 @@ class RSSWriter {
     var $arrErrorMsg = array();
     var $arrWarningMsg = array();
 
-    var $channelTitle = ''; //'Contrexx.com Neuste Videos';
-    var $channelLink = ''; //'http://www.contrexx.com/podcast';
+    var $channelTitle = ''; //'Cloudrexx.com Neuste Videos';
+    var $channelLink = ''; //'http://www.cloudrexx.com/podcast';
     var $channelDescription = ''; //'Neuste Videos';
 
     var $channelLanguage = '';

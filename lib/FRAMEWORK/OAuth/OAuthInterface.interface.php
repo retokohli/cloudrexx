@@ -28,9 +28,9 @@
 /**
  * OAuth
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_oauth
  */
 
@@ -39,10 +39,10 @@ namespace Cx\Lib\OAuth;
 /**
  * OAuth superclass
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_oauth
  */
 interface OAuthInterface
