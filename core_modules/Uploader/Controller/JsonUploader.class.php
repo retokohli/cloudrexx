@@ -189,8 +189,6 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 true
             );
 
-            \Cx\Lib\FileSystem\FileSystem::delete_file($file);
-
             if (isset($fileLocation[2])){
                 $uploader['name'] = $fileLocation[2];
             }
