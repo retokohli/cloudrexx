@@ -837,4 +837,22 @@ EOF;
         
         return $mediaBrowser->getXHtml($buttonValue);        
     }
+    
+    /**
+     * Get the Thumbnail image path from given file
+     * Thumbnail will be created it is not exists
+     * 
+     * @param string $path Relative path to the file
+     * 
+     * @return string Thumbnail path
+     */
+    public function getThumbImage($path)
+    {
+        if (empty($path)) {
+            return '';
+        }
+        $thumbnails = \Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator::getThumbnails(dirname($path), $path, true);
+        
+        return current($thumbnails);
+    }
 }

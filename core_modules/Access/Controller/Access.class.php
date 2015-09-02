@@ -274,9 +274,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             if (isset($_POST['access_profile_attribute']) && is_array($_POST['access_profile_attribute'])) {
                 $arrProfile = $_POST['access_profile_attribute'];
 
-                if (isset($_FILES['access_profile_attribute_images'])
-                    && is_array($_FILES['access_profile_attribute_images'])
-                    && ($result = $this->addUploadedImagesToProfile($objFWUser->objUser, $arrProfile, $_FILES['access_profile_attribute_images'])) !== true
+                if (   !empty($_POST['access_image_uploader_id'])
+                    && isset($_POST['access_profile_attribute_images'])
+                    && is_array($_POST['access_profile_attribute_images'])
+                    && ($result = $this->addUploadedImagesToProfile($objFWUser->objUser, $arrProfile, $_POST['access_profile_attribute_images'], $_POST['access_image_uploader_id'])) !== true
                 ) {
                     $status = false;
                 }
@@ -311,6 +312,17 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             exit;
         }
 
+        // init uploader to upload images
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $uploader->setCallback('accessImageUploaderCallback');
+        $uploader->setOptions(array(
+            'id'                 => 'accessImageUploader',
+            'allowed-extensions' => array('jpg', 'jpeg', 'png', 'gif'),
+            'style'              => 'display:none',
+            'data-upload-limit'  => 1,
+        ));
+        $this->attachJavaScriptFunction('imageUploaderCode');
+        
         $this->parseAccountAttributes($objFWUser->objUser, true);
         $this->parseNewsletterLists($objFWUser->objUser);
 
@@ -335,6 +347,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_STORE_BUTTON'           => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
             'ACCESS_CHANGE_PASSWORD_BUTTON' => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
+            'ACCESS_IMAGE_UPLOADER_ID'      => $uploader->getId(),
+            'ACCESS_IMAGE_UPLOADER_CODE'    => $uploader->getXHtml(),
         ));
 
         $arrSettings = \User_Setting::getSettings();

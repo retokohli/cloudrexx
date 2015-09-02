@@ -792,7 +792,7 @@ class NewsletterManager extends NewsletterLib
             if ($objAttachment !== false) {
                 $arrCurrentAttachments = array();
                 while (!$objAttachment->EOF) {
-                    array_push($arrCurrentAttachments, $cx->getWebsiteImagesAttachPath() . '/' . $objAttachment->fields['file_name']);
+                    array_push($arrCurrentAttachments, $cx->getWebsiteImagesAttachWebPath() . '/' . $objAttachment->fields['file_name']);
                     $objAttachment->MoveNext();
                 }
 

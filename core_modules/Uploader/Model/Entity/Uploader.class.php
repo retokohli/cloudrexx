@@ -277,4 +277,13 @@ class Uploader extends EntityBase
         return $randstring;
     }
 
+    /**
+     * Return's the uploader id
+     * 
+     * @return string Uploader id
+     */    
+    public function getId()
+    {
+        return $this->id;
+    }
 } 
