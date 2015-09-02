@@ -2340,8 +2340,6 @@ class GalleryManager extends GalleryLibrary
             rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);
         }
 
-        FileSystem::move($tempPath.'/'.$newName, $path.'/'.$newName, true);
-
         /* unwanted files have been deleted, unallowed filenames corrected.
            we can now simply return the desired target path, as only valid
            files are present in $tempPath */
