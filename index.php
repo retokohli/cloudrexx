@@ -26,7 +26,7 @@
  */
 
 /**
- * This loads Contrexx in auto (/normal) mode.
+ * This loads Cloudrexx in auto (/normal) mode.
  * 
  * @version 3.1.0
  * @author Michael Ritter <michael.ritter@comvation.com>

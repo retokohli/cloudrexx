@@ -26,8 +26,8 @@
  */
 
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  config
  * @todo        Edit PHP DocBlocks!
  */

@@ -28,9 +28,9 @@
 /**
  * EntityBase
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  model_base
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Model\Base;
 /**
  * Thrown by @link EntityBase::validate() if validation errors occur.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  model_base
  */
 class ValidationException extends \Exception {
@@ -73,9 +73,9 @@ class ValidationException extends \Exception {
  * This class provides the magic of being validatable.
  * See EntityBase::$validators if you want to subclass it.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  model_base
  */
 class EntityBase {

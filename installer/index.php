@@ -29,10 +29,10 @@
  * Install Wizard Controller
  *
  * The Install Wizard
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       $Id:     Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  installer
  * @todo        Edit PHP DocBlocks!
  */
