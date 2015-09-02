@@ -62,11 +62,18 @@ class JsonHtmlController extends    \Cx\Core\Core\Model\Entity\Controller
      * 
      * @param array $params
      * 
+     * @global array  $_ARRAYLANG
+     * @global object $objInit
+     * 
      * @return array
      * @throws \Exception
      */
     public function updateOrder($params) {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $objInit;
+
+        //get the language interface text
+        $langData   = $objInit->loadLanguageData('Html');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
         
         $post = is_array($params['post']) ? $params['post'] : array();
         if (    empty($post)
