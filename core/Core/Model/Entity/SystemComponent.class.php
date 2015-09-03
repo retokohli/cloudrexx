@@ -28,9 +28,9 @@
 /**
  * A system component (aka "module", "core_module" or "core component")
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */
@@ -40,9 +40,9 @@ namespace Cx\Core\Core\Model\Entity;
 /**
  * Thrown for illegal component types
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */
@@ -51,9 +51,9 @@ class SystemComponentException extends \Exception {}
 /**
  * A system component (aka "module", "core_module" or "core component")
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @version     3.1.0
  */
@@ -163,7 +163,7 @@ class SystemComponent extends \Cx\Model\Base\EntityBase
     /**
      * Returns the absolute path to this component's location in the file system
      * @param boolean $allowCustomizing (optional) Set to false if you want to ignore customizings
-     * @param boolean $relative (optional) If set to true, the path relative to Contrexx main dir is returned, default false
+     * @param boolean $relative (optional) If set to true, the path relative to Cloudrexx main dir is returned, default false
      * @return string Path for this component
      */
     public function getDirectory($allowCustomizing = true, $relative = false) {

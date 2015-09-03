@@ -28,9 +28,9 @@
 /**
  * Main controller for SystemLog
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package contrexx
+ * @copyright   cloudrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package cloudrexx
  * @subpackage core_systemlog
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\SystemLog\Controller;
 /**
  * Main controller for SystemLog
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package contrexx
+ * @copyright   cloudrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package cloudrexx
  * @subpackage core_systemlog
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

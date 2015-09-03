@@ -30,9 +30,9 @@
  *
  * A entity that represents a YamlSetting.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_setting
  */
 
@@ -43,9 +43,9 @@ namespace Cx\Core\Setting\Model\Entity;
  *
  * A entity that represents a YamlSetting.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_setting
  */
 class YamlSettingException extends \Exception {};
@@ -55,9 +55,9 @@ class YamlSettingException extends \Exception {};
  *
  * A entity that represents a YamlSetting.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_setting
  */
 class YamlSetting extends \Cx\Core\Model\Model\Entity\YamlEntity {

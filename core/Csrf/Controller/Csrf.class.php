@@ -29,10 +29,10 @@
  * Csrf Class
  * Protect against Csrf attacks
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      David Vogt <david.vogt@comvation.com>
  * @since       2.1.3
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_csrf
  */
 
@@ -47,10 +47,10 @@ namespace Cx\Core\Csrf\Controller;
  * This class expects that the session has been set up
  * correctly and can be used through $_SESSION.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      David Vogt <david.vogt@comvation.com>
  * @since       2.1.3
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_csrf
  */
 class Csrf {
@@ -368,7 +368,7 @@ class Csrf {
         
         $endcode = $tpl->get();
         
-        // replace links from before contrexx 3
+        // replace links from before cloudrexx 3
         $ls = new \LinkSanitizer(
             ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
             $endcode);

@@ -31,9 +31,9 @@
  * Decorator for SystemComponent
  * Every component needs a SystemComponentController for initialization
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */
@@ -46,9 +46,9 @@ namespace Cx\Core\Core\Model\Entity;
  * Decorator for SystemComponent
  * Every component needs a SystemComponentController for initialization
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */
@@ -68,7 +68,7 @@ class SystemComponentController extends Controller {
     /**
      * Initializes a controller
      * @param \Cx\Core\Core\Model\Entity\SystemComponent $systemComponent SystemComponent to decorate
-     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Contrexx main class
+     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Cloudrexx main class
      */
     public function __construct(\Cx\Core\Core\Model\Entity\SystemComponent $systemComponent, \Cx\Core\Core\Controller\Cx $cx) {
         $this->systemComponent = $systemComponent;

@@ -28,9 +28,9 @@
 /**
  * Class WysiwygEventListener
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  * @version     1.0.0
  */
@@ -44,9 +44,9 @@ use Cx\Core\MediaSource\Model\Entity\MediaSource;
 /**
  * Class WysiwygEventListener
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  * @version     1.0.0
  */

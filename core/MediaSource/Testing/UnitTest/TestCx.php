@@ -26,9 +26,9 @@
  */
  
 /**
- * @copyright   Comvation AG 
+ * @copyright   Cloudrexx AG 
  * @author Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Testing\UnitTest;
@@ -36,9 +36,9 @@ namespace Cx\Core_Modules\MediaBrowser\Testing\UnitTest;
 /**
  * Class TestCx
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  */
 class TestCx {
     private $testEventManager;

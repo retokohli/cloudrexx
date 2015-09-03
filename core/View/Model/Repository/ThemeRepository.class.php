@@ -28,10 +28,10 @@
 /**
  * ThemeRepository
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_view
  */
 
@@ -40,10 +40,10 @@ namespace Cx\Core\View\Model\Repository;
 /**
  * ThemeRepository
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_view
  */
 class ThemeRepository

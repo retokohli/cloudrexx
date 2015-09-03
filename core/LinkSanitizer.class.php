@@ -28,19 +28,19 @@
 /**
  * LinkSanitizer
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  */
 
 /**
- * This class replaces any links from Contrexx < 3.0 on the fly.
+ * This class replaces any links from Cloudrexx < 3.0 on the fly.
  * Handles the [[NODE_<ID>_<LANGID>]] placeholders.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  */
 class LinkSanitizer {

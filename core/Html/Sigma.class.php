@@ -28,9 +28,9 @@
 /**
  * Sigma
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_html
  */
 
@@ -39,10 +39,10 @@ namespace Cx\Core\Html;
 /**
  * Description of Sigma
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Michael Ritter <michael.ritter@comvation.com>
  * @author Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_html
  */
 class Sigma extends \HTML_Template_Sigma {

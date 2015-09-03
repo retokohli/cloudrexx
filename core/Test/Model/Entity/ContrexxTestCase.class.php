@@ -28,10 +28,10 @@
 /**
  * ContrexxTestCase
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
  * @author      ss4u <ss4u.comvation@gmail.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_test
  */
 
@@ -40,10 +40,10 @@ namespace Cx\Core\Test\Model\Entity;
 /**
  * ContrexxTestCase
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
  * @author      ss4u <ss4u.comvation@gmail.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_test
  */
 abstract class ContrexxTestCase extends \PHPUnit_Framework_TestCase {

@@ -26,22 +26,22 @@
  */
  
 /**
- * Contrexx ClassLoader
+ * Cloudrexx ClassLoader
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_classloader
  */
  
 namespace Cx\Core\ClassLoader;
 
 /**
- * Contrexx ClassLoader
+ * Cloudrexx ClassLoader
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_classloader
  */
 class ClassLoader {
@@ -64,7 +64,7 @@ class ClassLoader {
         $this->basePath = $cx->getCodeBaseDocumentRootPath();
         $this->customizingPath = $customizingPath;
 
-        // Check if there is already an other instance of the Contrexx ClassLoader running.
+        // Check if there is already an other instance of the Cloudrexx ClassLoader running.
         // If so, we shall unregister it.
         if (class_exists('Env', false)) {
             $oldClassLoader = \Env::get('ClassLoader');

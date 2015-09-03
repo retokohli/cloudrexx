@@ -28,10 +28,10 @@
 /**
  * Module Checker
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 
@@ -42,10 +42,10 @@ namespace Cx\Core
      * Module Checker
      * Checks for installed and activated modules
      *
-     * @copyright   CONTREXX CMS - COMVATION AG
-     * @author      Comvation Development Team <info@comvation.com>
+     * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+     * @author      Cloudrexx Development Team <info@cloudrexx.com>
      * @version     2.0.0
-     * @package     contrexx
+     * @package     cloudrexx
      * @subpackage  core
      */
     class ModuleChecker
@@ -260,7 +260,7 @@ namespace Cx\Core
         }
 
         /**
-         * Returns the contrexx core modules
+         * Returns the cloudrexx core modules
          * @return array List of core modules
          */
         public function getCoreModules()
@@ -269,7 +269,7 @@ namespace Cx\Core
         }
 
         /**
-         * Returns the contrexx modules
+         * Returns the cloudrexx modules
          * @return array List of modules
          */
         public function getModules()
@@ -278,7 +278,7 @@ namespace Cx\Core
         }
 
         /**
-         * Returns the installed contrexx modules
+         * Returns the installed cloudrexx modules
          * @return array List of installed modules
          */
         public function getInstalledModules()
@@ -287,7 +287,7 @@ namespace Cx\Core
         }
 
         /**
-         * Returns the active contrexx modules
+         * Returns the active cloudrexx modules
          * @return array List of active modules
          */
         public function getActiveModules()

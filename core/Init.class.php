@@ -28,10 +28,10 @@
 /**
  * Initialize the CMS
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
@@ -39,11 +39,11 @@
 /**
  * Initialize the CMS
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Any methods handling content or language should be moved
  *              away from here to a distinct class!

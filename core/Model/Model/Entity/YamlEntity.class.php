@@ -30,9 +30,9 @@
  *
  * A entity that is handled by a YAML repository.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_model
  */
 
@@ -41,9 +41,9 @@ namespace Cx\Core\Model\Model\Entity;
 /**
  * YAML Entity Exception
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_model
  */
 class YamlEntityException extends \Exception {};
@@ -53,9 +53,9 @@ class YamlEntityException extends \Exception {};
  *
  * A entity that is handled by a YAML repository.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_model
  */
 class YamlEntity extends \Cx\Model\Base\EntityBase {

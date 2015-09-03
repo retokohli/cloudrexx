@@ -26,11 +26,11 @@
  */
  
 /**
- * JSON Interface to Contrexx
- * @copyright   Comvation AG
+ * JSON Interface to Cloudrexx
+ * @copyright   Cloudrexx AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -40,13 +40,13 @@ use \Cx\Core\Json\Adapter\JsonPage;
 use \Cx\Core\Json\Adapter\JsonContentManager;
 
 /**
- * JSON Interface to Contrexx Doctrine Database
+ * JSON Interface to Cloudrexx Doctrine Database
  *
  * @api
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class JsonData {
@@ -220,7 +220,7 @@ class JsonData {
 
     /**
      * Passes JSON data to the particular adapter and returns the result
-     * Called from jsondata() or any part of Contrexx
+     * Called from jsondata() or any part of Cloudrexx
      * @author Michael Ritter <michael.ritter@comvation.com>
      * @param String $adapter Adapter name
      * @param String $method Method name

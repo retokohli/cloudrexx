@@ -28,9 +28,9 @@
 /**
  * Theme
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_view
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\View\Model\Entity;
 /**
  * Theme
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_view
  */
 class Theme extends \Cx\Model\Base\EntityBase
@@ -265,7 +265,7 @@ class Theme extends \Cx\Model\Base\EntityBase
     }
     
     /**
-     * @return array all dependencies (javascript libraries) which contrexx should
+     * @return array all dependencies (javascript libraries) which cloudrexx should
      * load when showing this template
      */
     public function getDependencies() {

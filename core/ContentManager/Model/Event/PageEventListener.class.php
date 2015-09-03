@@ -30,9 +30,9 @@
  * On Flushing, all entities are scanned and changed where needed.
  * After persist, the XMLSitemap is rewritten
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 
@@ -44,9 +44,9 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 /**
  * PageEventListenerException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 class PageEventListenerException extends \Exception {}
@@ -54,9 +54,9 @@ class PageEventListenerException extends \Exception {}
 /**
  * PageEventListener
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {

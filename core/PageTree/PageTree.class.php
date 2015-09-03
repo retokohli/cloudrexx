@@ -28,9 +28,9 @@
 /**
  * PageTree
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_pagetree
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\PageTree;
 /**
  * Base class for all kinds of trees such as Sitemaps and Navigation.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_pagetree
  */
 abstract class PageTree {

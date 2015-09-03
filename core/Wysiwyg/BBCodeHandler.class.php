@@ -28,9 +28,9 @@
 /**
  * BBCode Handler for Wysiwyg
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  */
 
@@ -41,10 +41,10 @@ namespace Cx\Core\Wysiwyg;
  *
  * This code comes from the forum module library and is now used by WYSIWYG class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @version     3.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  */
 

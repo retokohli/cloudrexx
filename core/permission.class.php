@@ -27,10 +27,10 @@
  
 /**
  * Permission
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
@@ -39,11 +39,11 @@
  * Permission
  *
  * Checks the permission of the public and backend cms
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @static
  */

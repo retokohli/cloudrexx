@@ -30,9 +30,9 @@
  *
  * Helper methods
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @since       2.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 
@@ -40,9 +40,9 @@
  * Useful methods that help you connect to other hosts using sockets
  *
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @since       2.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 class Socket

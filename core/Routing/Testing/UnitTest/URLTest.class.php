@@ -28,11 +28,11 @@
 /**
  * ResolverTest
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      SS4U <ss4u.comvation@gmail.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_resolver
  */
 
@@ -42,11 +42,11 @@ use Cx\Core\Routing\Url as Url;
 /**
  * ResolverTest
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      SS4U <ss4u.comvation@gmail.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_resolver
  */
 class URLTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase {

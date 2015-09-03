@@ -28,9 +28,9 @@
 /**
  * Handling Request
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\Routing\Model\Entity;
 /**
  * Handling Request
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 

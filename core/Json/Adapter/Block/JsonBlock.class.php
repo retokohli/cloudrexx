@@ -27,9 +27,9 @@
  
 /**
  * JSON Adapter for Block module
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -38,37 +38,37 @@ use \Cx\Core\Json\JsonAdapter;
 
 /**
  * Class NoPermissionException
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class NoPermissionException extends \Exception {}
 
 /**
  * Class NotEnoughArgumentsException
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class NotEnoughArgumentsException extends \Exception {}
 
 /**
  * Class NoBlockFoundException
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class NoBlockFoundException extends \Exception {}
 
 /**
  * Class BlockCouldNotBeSavedException
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class BlockCouldNotBeSavedException extends \Exception {}
 
 /**
  * JSON Adapter for Block module
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class JsonBlock implements JsonAdapter {

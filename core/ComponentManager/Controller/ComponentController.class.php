@@ -28,9 +28,9 @@
 /**
  * Main controller for Component Manager
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package contrexx
+ * @copyright   cloudrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package cloudrexx
  * @subpackage core_componentmanager
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\ComponentManager\Controller;
 /**
  * Main controller for Component Manager
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package contrexx
+ * @copyright   cloudrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package cloudrexx
  * @subpackage core_componentmanager
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

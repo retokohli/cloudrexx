@@ -30,9 +30,9 @@
  *
  * This decorates SystemComponents with SystemComponentController class
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */
@@ -44,9 +44,9 @@ namespace Cx\Core\Core\Model\Repository;
  * 
  * This decorates SystemComponents with SystemComponentController class
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */

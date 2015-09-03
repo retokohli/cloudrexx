@@ -28,11 +28,11 @@
 /**
  * An URL container
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_routing
  * @todo        Edit PHP DocBlocks!
  */
@@ -42,11 +42,11 @@ namespace Cx\Core\Routing;
 /**
  * URL Exception
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_routing
  * @todo        Edit PHP DocBlocks!
  */
@@ -55,11 +55,11 @@ class UrlException extends \Exception {};
 /**
  * An URL container
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_routing
  * @todo        Edit PHP DocBlocks!
  */
@@ -579,7 +579,7 @@ class Url {
      * @param int $lang (optional) Language to use, default is FRONTENT_LANG_ID
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
-     * @param boolean $returnErrorPageOnError (optional) If set to TRUE, this method will return an URL object that point to the error page of Contrexx. Defaults to TRUE.
+     * @param boolean $returnErrorPageOnError (optional) If set to TRUE, this method will return an URL object that point to the error page of Cloudrexx. Defaults to TRUE.
      * @return \Cx\Core\Routing\Url Url object for the supplied module, cmd and lang
      */
     public static function fromModuleAndCmd($module, $cmd = '', $lang = '', $parameters = array(), $protocol = '', $returnErrorPageOnError = true) {

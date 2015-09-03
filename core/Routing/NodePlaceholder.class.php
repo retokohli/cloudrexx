@@ -29,11 +29,11 @@
  * NodePlaceholder class according to
  * http://contrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @access      public
  * @version     3.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 
@@ -42,11 +42,11 @@ namespace Cx\Core\Routing;
 /**
  * Exception that is thrown if a NodePlaceholder cannot be initialized
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @access      public
  * @version     3.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 class NodePlaceholderException extends \Exception {}
@@ -55,11 +55,11 @@ class NodePlaceholderException extends \Exception {}
  * NodePlaceholder class according to
  * http://contrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @access      public
  * @version     3.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 class NodePlaceholder {

@@ -57,7 +57,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
             case 'version':
                 if ($short) {
-                    return 'Displays info about the version of Contrexx';
+                    return 'Displays info about the version of Cloudrexx';
                 }
                 return '(todo)';
                 break;
@@ -86,7 +86,7 @@ cx(.bat) uninstall [core|core_module|module|lib|theme] {component name}';
         
         switch ($command) {
             case 'help':
-                echo 'Contrexx command mode help.
+                echo 'Cloudrexx command mode help.
 
 ';
                 //if (count($arguments))
@@ -187,7 +187,7 @@ Available commands:
         if (!file_exists($file)) {
             return 'deleted';
         }
-        // get path relative to Contrexx root
+        // get path relative to Cloudrexx root
         // md5sum not matching
             // return 'irregular';
         // exists in customizing

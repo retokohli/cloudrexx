@@ -28,9 +28,9 @@
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_netmanager
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\NetManager\Controller;
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_netmanager
  */
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {

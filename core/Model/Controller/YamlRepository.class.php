@@ -30,9 +30,9 @@
  *
  * A entity repository with its storage being in a YAML-file.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_model
  */
 
@@ -41,9 +41,9 @@ namespace Cx\Core\Model\Controller;
 /**
  * YAML Repository Exception
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_model
  */
 class YamlRepositoryException extends \Exception {};
@@ -53,9 +53,9 @@ class YamlRepositoryException extends \Exception {};
  *
  * A entity repository with its storage being in a YAML-file.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_model
  * @todo        Make thread safe. The current implementation of YamlRepository
  *              does not take the case into account if the repository gets

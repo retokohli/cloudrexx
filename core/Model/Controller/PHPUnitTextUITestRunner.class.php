@@ -28,10 +28,10 @@
 /**
  * Wrapper class for PHPUnit_TextUI_TestRunner
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     3.2
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 
@@ -40,10 +40,10 @@ namespace Cx\Core\Model\Controller;
 /**
  * Wrapper class for PHPUnit_TextUI_TestRunner
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     $Id:    Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core 
  */
 class PHPUnitTextUITestRunner extends \PHPUnit_TextUI_TestRunner {

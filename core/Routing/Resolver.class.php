@@ -28,9 +28,9 @@
 /**
  * Resolver
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\Routing;
 /**
  * ResolverException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 class ResolverException extends \Exception {};
@@ -49,9 +49,9 @@ class ResolverException extends \Exception {};
 /**
  * Takes an URL and tries to find the Page.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 class Resolver {
@@ -322,7 +322,7 @@ class Resolver {
                         }
 
                         // TODO: refactor system to be able to remove this backward compatibility
-                        // Backwards compatibility for code pre Contrexx 3.0 (update)
+                        // Backwards compatibility for code pre Cloudrexx 3.0 (update)
                         $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $command;
                         $_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
 

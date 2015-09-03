@@ -27,9 +27,9 @@
  
 /**
  * JSON Adapter for JSON requests
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -37,9 +37,9 @@ namespace Cx\Core\Json;
 
 /**
  * JSON Adapter for JSON requests
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 interface JsonAdapter {

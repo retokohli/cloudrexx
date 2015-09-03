@@ -28,9 +28,9 @@
 /**
  * Represents an abstraction of a component
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */
@@ -40,9 +40,9 @@ namespace Cx\Core\Core\Model\Entity;
 /**
  * ReflectionComponentException
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */
@@ -51,9 +51,9 @@ class ReflectionComponentException extends \Exception {}
 /**
  * Represents an abstraction of a component
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */

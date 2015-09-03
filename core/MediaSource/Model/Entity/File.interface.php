@@ -26,9 +26,9 @@
  */
  
 /**
- * @copyright   Comvation AG 
+ * @copyright   Cloudrexx AG 
  * @author Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  */
 
 namespace Cx\Core\MediaSource\Model\Entity;

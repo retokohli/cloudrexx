@@ -28,9 +28,9 @@
 /**
  * This is the superclass for all Controller classes
  * 
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */
@@ -39,9 +39,9 @@ namespace Cx\Core\Core\Model\Entity;
 /**
  * This is the superclass for all Controller classes
  * 
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */

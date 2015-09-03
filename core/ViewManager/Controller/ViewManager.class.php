@@ -28,10 +28,10 @@
 /**
  * View Manager
  * 
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage core_viewmanager
- * @author     Comvation Development Team <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx Development Team <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @access     public
  * @version    3.1.1
  */
@@ -42,10 +42,10 @@ namespace Cx\Core\ViewManager\Controller;
  * View Manager class
  * View Manager and Themes management functions
  *
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage core_viewmanager
- * @author     Comvation Development Team <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx Development Team <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @access     public
  * @version    3.1.1
  */
@@ -178,8 +178,8 @@ class ViewManager
     
 
     /**
-     * checks whether this contrexx has the possibility to use multi language mode
-     * @return bool is this contrexx in multi language mode
+     * checks whether this cloudrexx has the possibility to use multi language mode
+     * @return bool is this cloudrexx in multi language mode
      */
     private function isInLanguageFullMode() {
         global $_CONFIG, $objDatabase;

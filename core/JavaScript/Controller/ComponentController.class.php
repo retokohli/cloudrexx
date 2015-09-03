@@ -28,9 +28,9 @@
 /**
  * Main controller for JavaScript
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   cloudrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_javascript
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\JavaScript\Controller;
 /**
  * Main controller for JavaScript
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   cloudrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_javascript
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

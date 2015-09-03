@@ -30,9 +30,9 @@
  *
  * Repository to manage the domain entities.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_model
  */
 
@@ -41,9 +41,9 @@ namespace Cx\Core\Net\Model\Repository;
 /**
  * Domain Repository
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_model
  */
 class DomainRepositoryException extends \Exception {};
@@ -53,9 +53,9 @@ class DomainRepositoryException extends \Exception {};
  *
  * Repository to manage the domain entities.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_model
  */
 class DomainRepository extends \Cx\Core\Model\Controller\YamlRepository {

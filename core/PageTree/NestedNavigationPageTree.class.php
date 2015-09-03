@@ -28,9 +28,9 @@
 /**
  * NestedNavigationPageTree
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_pagetree
  */
 
@@ -54,9 +54,9 @@ namespace Cx\Core\PageTree;
  *              [[levels_3+]] means any navigation levels starting from 3;
  *              [[levels_1]] means navigation level 1 only;
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_pagetree
  */
 class NestedNavigationPageTree extends SigmaPageTree {

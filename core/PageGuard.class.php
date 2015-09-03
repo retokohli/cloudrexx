@@ -28,18 +28,18 @@
 /**
  * PageGuard
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  */
 
 /**
  * PageGuardException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  */
 class PageGuardException extends Exception {}
@@ -48,9 +48,9 @@ class PageGuardException extends Exception {}
  * Handles access restriction administration on Pages.
  * (Retrieve / Store)
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  */
 class PageGuard {
@@ -92,7 +92,7 @@ class PageGuard {
 	    else {
 		// cannot create a new dynamic access id.
 		throw new PageGuardException('This protected page doesn\'t have an access id associated with
-it. Contrexx encountered an error while generating a new access id.');
+it. Cloudrexx encountered an error while generating a new access id.');
 	    }
 	    Env::get('em')->persist($page);
 	    Env::get('em')->flush();

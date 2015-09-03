@@ -28,9 +28,9 @@
 /**
  * Main controller for Net Manager
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_netmanager
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\NetManager\Controller;
 /**
  * Main controller for Net Manager
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_netmanager
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

@@ -28,9 +28,9 @@
 /**
  * Wysiwyg
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  */
 
@@ -40,12 +40,12 @@ use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 /**
  * Wysiqyg class
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @author      Michael Räss <michael.raess@comvation.com>
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  */
 
@@ -53,7 +53,7 @@ class Wysiwyg
 {
     /**
      * options for the different types of wysiwyg editors
-     * @var array the types which are available for contrexx wysiwyg editors
+     * @var array the types which are available for cloudrexx wysiwyg editors
      */
     private $types = array(
         'small' => array(

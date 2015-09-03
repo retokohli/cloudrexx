@@ -30,9 +30,9 @@
  *
  * @version     3.0.0
  * @since       2.2.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @todo        Test!
  */
@@ -42,9 +42,9 @@
  *
  * @version     3.0.0
  * @since       2.2.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @todo        Test!
  */

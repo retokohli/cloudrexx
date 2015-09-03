@@ -30,9 +30,9 @@
  *
  * @version     3.0.0
  * @since       2.2.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_mailtemplate
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @todo        Test!
  */
@@ -49,9 +49,9 @@ namespace Cx\Core\MailTemplate\Controller;
  * attachments.
  * @version     3.0.0
  * @since       2.2.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_mailtemplate
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @todo        Test!
  */

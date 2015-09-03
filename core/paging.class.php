@@ -28,11 +28,11 @@
 /**
  * Paging
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      Reto Kohli <reto.kohli@comvation.com> (Rewritten statically)
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 
@@ -44,7 +44,7 @@ if (stristr(__FILE__, $_SERVER['PHP_SELF'])) {
 /**
  * Creates the paging
  *
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @version     3.0.0
  * @author      Reto Kohli <reto.kohli@comvation.com> (Rewritten statically)

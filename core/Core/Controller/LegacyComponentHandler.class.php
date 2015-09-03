@@ -29,11 +29,11 @@
  * This handles exceptions for new Component structure. This is old code
  * and should be replaced so that this class becomes unnecessary
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
- * @link        http://www.contrexx.com/ contrexx homepage
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
  * @since       v3.1.0
  * @todo: Remove this code (move all exceptions to components)
  */
@@ -44,11 +44,11 @@ namespace Cx\Core\Core\Controller;
  * This handles exceptions for new Component structure. This is old code
  * and should be replaced so that this class becomes unnecessary
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
- * @link        http://www.contrexx.com/ contrexx homepage
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
  * @since       v3.1.0
  * @todo: Remove this code (move all exceptions to components)
  */

@@ -28,10 +28,10 @@
 /**
  * Wrapper class for the Gedmo\Loggable\Mapping\Event\Adapter\ORM
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     3.1.2
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core 
  */
 
@@ -43,10 +43,10 @@ use Gedmo\Loggable\Mapping\Event\LoggableAdapter;
 /**
  * Wrapper class for the Gedmo\Loggable\Mapping\Event\Adapter\ORM
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     $Id:    Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 final class ORM extends BaseAdapterORM implements LoggableAdapter

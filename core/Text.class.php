@@ -29,9 +29,9 @@
  * Text (core version)
  *
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
 
@@ -43,9 +43,9 @@
  * to access the database directly (unless you know what you are doing,
  * but you most probably don't).
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
 class Text

@@ -27,9 +27,9 @@
  
 /**
  * Component Manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_componentmanager
  * @todo        Edit PHP DocBlocks!
  */
@@ -43,9 +43,9 @@ class ComponentManagerException extends \Exception {};
  *
  * This class manages the CMS Modules
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_componentmanager
  */
 class ComponentManager

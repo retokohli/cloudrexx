@@ -27,9 +27,9 @@
  
 /**
  * JSON Adapter for ContentManager
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -38,9 +38,9 @@ use \Cx\Core\Json\JsonAdapter;
 
 /**
  * JSON Adapter for ContentManager
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class JsonContentManager implements JsonAdapter {

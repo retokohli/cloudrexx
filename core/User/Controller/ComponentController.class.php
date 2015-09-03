@@ -28,9 +28,9 @@
 /**
  * Main controller for User
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_user
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\User\Controller;
 /**
  * Main controller for User
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_user
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

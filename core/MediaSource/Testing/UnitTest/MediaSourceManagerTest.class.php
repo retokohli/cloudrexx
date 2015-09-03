@@ -28,10 +28,10 @@
 /**
  * MediaSourceManagerTest
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_mediasource
  */
 
@@ -44,10 +44,10 @@ use Cx\Core\Test\Model\Entity\ContrexxTestCase;
 /**
  * Class MediaSourceManagerTest
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_mediasource
  */
 class MediaSourceManagerTest extends ContrexxTestCase

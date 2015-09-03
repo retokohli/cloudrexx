@@ -28,9 +28,9 @@
 /**
  * Create error pages
  *
- * @copyright	CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @package	    contrexx
+ * @copyright	CLOUDREXX CMS - CLOUDREXX AG
+ * @author		Cloudrexx Development Team <info@cloudrexx.com>
+ * @package	    cloudrexx
  * @subpackage  core_error
  * @version		1.0.0
  * @todo        Edit PHP DocBlocks!
@@ -41,10 +41,10 @@ namespace Cx\Core\Error\Controller;
 /**
  * Handles all errors.
  *
- * @copyright	CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
+ * @copyright	CLOUDREXX CMS - CLOUDREXX AG
+ * @author		Cloudrexx Development Team <info@cloudrexx.com>
  * @access		public
- * @package	    contrexx
+ * @package	    cloudrexx
  * @subpackage  core_error
  * @version		1.0.0
  * @todo        Declare and document class variable 'pageContent'

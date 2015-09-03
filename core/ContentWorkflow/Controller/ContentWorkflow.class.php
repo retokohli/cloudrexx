@@ -27,9 +27,9 @@
  
 /**
  * Content Workflow
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_contentworkflow
  * @todo        Edit PHP DocBlocks!
  */
@@ -40,9 +40,9 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 /**
  * ContentWorkflowException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentworkflow
  */
 class ContentWorkflowException extends \ModuleException {}
@@ -51,10 +51,10 @@ class ContentWorkflowException extends \ModuleException {}
  * Content Workflow
  *
  * Class for managing the content history
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_contentworkflow
  * @todo        Edit PHP DocBlocks!
  */

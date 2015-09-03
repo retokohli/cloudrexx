@@ -28,10 +28,10 @@
 /**
  * YamlSettingEventListener
  *  
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_config
  */
 
@@ -40,10 +40,10 @@ namespace Cx\Core\Config\Model\Event;
 /**
  * YamlSettingEventListenerException
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_config
  */
 class YamlSettingEventListenerException extends \Exception {}
@@ -51,10 +51,10 @@ class YamlSettingEventListenerException extends \Exception {}
 /**
  * YamlSettingEventListener
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_config
  */
 class YamlSettingEventListener implements \Cx\Core\Event\Model\Entity\EventListener {

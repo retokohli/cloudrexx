@@ -28,11 +28,11 @@
 /**
  * Specific Setting for this Component. Use this abstract class extends with the Db.class.php or FileSystem.class.php
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @author      Manish Thakur <manishthakur@cdnsol.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
  */
@@ -44,11 +44,11 @@ namespace Cx\Core\Setting\Model\Entity;
  *
  * Before trying to access a modules' settings, *DON'T* forget to call
  * {@see Setting::init()} before calling getValue() for the first time!
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @author      Manish Thakur <manishthakur@cdnsol.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
  */

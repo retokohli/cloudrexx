@@ -27,10 +27,10 @@
  
 /**
  * JSON Adapter for Cx\Core\ContentManager\Model\Entity\Page
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -39,10 +39,10 @@ use \Cx\Core\Json\JsonAdapter;
 
 /**
  * JSON Adapter for Cx\Core\ContentManager\Model\Entity\Page
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class JsonPage implements JsonAdapter {

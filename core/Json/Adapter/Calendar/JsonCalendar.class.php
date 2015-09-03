@@ -27,9 +27,9 @@
  
 /**
  * JSON Adapter for Calendar module
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      ss4u <ss4ugroup@gmail.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -38,9 +38,9 @@ use \Cx\Core\Json\JsonAdapter;
 
 /**
  * JSON Adapter for Calendar module
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      ss4u <ss4ugroup@gmail.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class JsonCalendar implements JsonAdapter {

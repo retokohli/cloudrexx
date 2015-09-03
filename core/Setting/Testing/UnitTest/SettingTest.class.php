@@ -28,11 +28,11 @@
 /**
  * SettingTest
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      Sergei Popov <sergei.popov@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_setting
  */
 
@@ -43,11 +43,11 @@ use Cx\Core\Setting\Controller\Setting as Setting;
 /**
  * SettingTest
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      Sergei Popov <sergei.popov@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_setting
  */
 class SettingTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase

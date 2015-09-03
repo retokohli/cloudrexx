@@ -28,10 +28,10 @@
 /**
  * class MediaSourceManager
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  *              Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_mediasource
  */
 
@@ -43,10 +43,10 @@ use Cx\Model\Base\EntityBase;
 /**
  * Class MediaSourceManager
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  *              Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_mediasource
  */
 class MediaSourceManager extends EntityBase

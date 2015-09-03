@@ -31,7 +31,7 @@
  * At the moment, this is just an empty ComponentController in order to load
  * YAML files via component framework
  * @author Michael Ritter <michael.ritter@comvation.com>
- * @package contrexx
+ * @package cloudrexx
  * @subpackage core_contentmanager
  */
 
@@ -43,7 +43,7 @@ namespace Cx\Core\ContentManager\Controller;
  * At the moment, this is ComponentController is just used to load
  * YAML files and JsonAdapters via component framework
  * @author Michael Ritter <michael.ritter@comvation.com>
- * @package contrexx
+ * @package cloudrexx
  * @subpackage core_contentmanager
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

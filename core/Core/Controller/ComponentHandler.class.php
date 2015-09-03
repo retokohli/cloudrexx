@@ -30,11 +30,11 @@
  * 
  * This is a wrapper class for SystemComponentRepository and LegacyComponentHandler
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
- * @link        http://www.contrexx.com/ contrexx homepage
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
  * @since       v3.1.0
  */
 
@@ -43,11 +43,11 @@ namespace Cx\Core\Core\Controller;
 /**
  * ComponentException is thrown for legacy components without an exception in LegacyComponentHandler
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
- * @link        http://www.contrexx.com/ contrexx homepage
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
  * @since       v3.1.0
  */
 class ComponentException extends \Exception {}
@@ -57,11 +57,11 @@ class ComponentException extends \Exception {}
  *
  * This is a wrapper class for SystemComponentRepository and LegacyComponentHandler
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
- * @link        http://www.contrexx.com/ contrexx homepage
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
  * @since       v3.1.0
  */
 class ComponentHandler {

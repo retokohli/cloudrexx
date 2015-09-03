@@ -28,9 +28,9 @@
 /**
  * Main controller for Routing
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\Routing\Controller;
 /** 
  * Main controller for Routing
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

@@ -28,10 +28,10 @@
 /**
  * Class XmlSitemapPageTree
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_pagetree
  */
 
@@ -40,11 +40,11 @@ namespace Cx\Core\PageTree;
 /**
  * Class XmlSitemapPageTree
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_pagetree
  */
 class XmlSitemapPageTree extends PageTree {

@@ -27,9 +27,9 @@
  
 /**
  * This class is needed in order to make AdoDB use an existing PDO connection
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_db
  */
 
@@ -42,9 +42,9 @@ if (\Env::get('ClassLoader')) {
 
 /**
  * This class is needed in order to make AdoDB use an existing PDO connection
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_db
  */
 class CustomAdodbPdo extends \ADODB_pdo 

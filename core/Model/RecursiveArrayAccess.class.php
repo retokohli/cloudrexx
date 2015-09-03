@@ -28,10 +28,10 @@
 /**
  * Wrapper class for the recursive array
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     3.1.2
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core 
  */
 
@@ -40,10 +40,10 @@ namespace Cx\Core\Model;
 /**
  * Wrapper class for the recursive array
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     $Id:    Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * 
  * @see         /core/session.class.php

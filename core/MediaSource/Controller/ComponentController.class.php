@@ -26,9 +26,9 @@
  */
  
 /**
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_mediasource
  */
 
@@ -42,9 +42,9 @@ use Cx\Core\Core\Model\Entity\SystemComponentController;
 /**
  * Class ComponentController
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_mediasource
  */
 class ComponentController

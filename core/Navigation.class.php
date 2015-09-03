@@ -29,10 +29,10 @@
  * Navigation
  * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
@@ -43,11 +43,11 @@
  * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
  *
  * @deprecated  Use \Cx\Core\PageTree directly instead
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 class Navigation

@@ -28,9 +28,9 @@
 /**
  * This is the controllers for the component
  * 
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Sebastian Brand <sebastian.brand@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  * @version     1.0.0
  */
@@ -42,9 +42,9 @@ use Cx\Core\Wysiwyg\Model\Event\WysiwygEventListener;
 /**
  * This is the main controller for the component
  * 
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Sebastian Brand <sebastian.brand@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  * @version     1.0.0
  */
@@ -53,7 +53,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Initializes a controller
      * @param \Cx\Core\Core\Model\Entity\SystemComponent $systemComponent SystemComponent to decorate
-     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Contrexx main class
+     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Cloudrexx main class
      */
     public function __construct(\Cx\Core\Core\Model\Entity\SystemComponent $systemComponent, \Cx\Core\Core\Controller\Cx $cx) {
         parent::__construct($systemComponent, $cx);

@@ -30,9 +30,9 @@
  *
  * A entity that represents a domain.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_model
  */
 
@@ -41,9 +41,9 @@ namespace Cx\Core\Net\Model\Entity;
 /**
  * Domain Entity
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_model
  */
 class DomainException extends \Exception {};
@@ -53,9 +53,9 @@ class DomainException extends \Exception {};
  *
  * A entity that represents a domain.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_model
  */
 class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {

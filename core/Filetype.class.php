@@ -27,9 +27,9 @@
  
 /**
  * File type
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @version     3.0.0
  */
@@ -37,9 +37,9 @@
 /**
  * All kind of file type stuff, including MIME types
  * @internal    Used to be Mime.class.php
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @version     3.0.0
  */
@@ -190,7 +190,7 @@ class Filetype
      * Return the MIME type for the extension provided.
      *
      * Takes a full file name, or a file extension with or without
-     * the dot as an argument, i.e. 'contrexx.zip', '.gif, or 'txt'.
+     * the dot as an argument, i.e. 'cloudrexx.zip', '.gif, or 'txt'.
      * Returns the string 'application/octet-stream' for any unknown ending.
      * Use {@link isKnownExtension()} to test exactly that.
      * @static

@@ -28,9 +28,9 @@
 /**
  * This listener ensures tree consistency on Node objects.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 
@@ -42,9 +42,9 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 /**
  * NodeEventListenerException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 class NodeEventListenerException extends \Exception {}
@@ -52,9 +52,9 @@ class NodeEventListenerException extends \Exception {}
 /**
  * NodeEventListener
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 class NodeEventListener implements \Cx\Core\Event\Model\Entity\EventListener {

@@ -28,9 +28,9 @@
 /**
  * Create error pages
  *
- * @copyright	CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @package	    contrexx
+ * @copyright	CLOUDREXX CMS - CLOUDREXX AG
+ * @author		Cloudrexx Development Team <info@cloudrexx.com>
+ * @package	    cloudrexx
  * @subpackage  core_error
  * @version		1.0.0
  */
@@ -40,9 +40,9 @@ namespace Cx\Core\Error\Model\Entity;
 /**
  * Display a exception as a human readable error message
  *
- * @copyright	CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @package	    contrexx
+ * @copyright	CLOUDREXX CMS - CLOUDREXX AG
+ * @author		Cloudrexx Development Team <info@cloudrexx.com>
+ * @package	    cloudrexx
  * @subpackage  core_error
  * @version		1.0.0
  */

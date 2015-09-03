@@ -28,9 +28,9 @@
 /**
  * Properties for the wysiwyg template entity
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Sebastian Brand <sebastian.brand@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  * @version     1.0.0
  */

@@ -27,9 +27,9 @@
  
 /**
  * JSON Adapter for User class
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Räss <michael.raess@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -39,9 +39,9 @@ use \Cx\Core\Json\JsonAdapter;
 
 /**
  * JSON Adapter for Block module
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Räss <michael.raess@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class JsonUser implements JsonAdapter {

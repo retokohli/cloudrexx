@@ -28,9 +28,9 @@
 /**
  * Specific FrontendController for this Component. Use this to easily create a frontent view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  modules_skeleton
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Modules\Skeleton\Controller;
 /**
  * Specific FrontendController for this Component. Use this to easily create a frontent view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  modules_skeleton
  */
 class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController {

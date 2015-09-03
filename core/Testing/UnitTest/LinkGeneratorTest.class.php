@@ -28,11 +28,11 @@
 /**
  * LinkGeneratorTest
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      SS4U <ss4u.comvation@gmail.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_linkGenerator
  */
 
@@ -41,11 +41,11 @@ namespace Cx\Core\Testing\UnitTest;
 /**
  * LinkGeneratorTest
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      SS4U <ss4u.comvation@gmail.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_linkGenerator
  */
 class LinkGeneratorTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {

@@ -29,9 +29,9 @@
  * Db Class
  *
  * Database connection handler
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_db
  * @todo        make class a pure library
  */
@@ -57,9 +57,9 @@ namespace Cx\Core\Model {
     /**
      * DB Exception
      *
-     * @copyright   Comvation AG
+     * @copyright   Cloudrexx AG
      * @author      Michael Ritter <michael.ritter@comvation.com>
-     * @package     contrexx
+     * @package     cloudrexx
      * @subpackage  core_db
      */
     class DbException extends \Exception {}
@@ -68,15 +68,15 @@ namespace Cx\Core\Model {
      * Db Class
      *
      * Database connection handler
-     * @copyright   Comvation AG
+     * @copyright   Cloudrexx AG
      * @author      Michael Ritter <michael.ritter@comvation.com>
-     * @package     contrexx
+     * @package     cloudrexx
      * @subpackage  core_db
      */
     class Db {
         
         /**
-         * Contrexx instance
+         * Cloudrexx instance
          * @var \Cx\Core\Core\Controller\Cx
          */
         protected $cx = null;

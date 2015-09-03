@@ -30,10 +30,10 @@
  *
  * Provides methods to operate on compressed lists that are internally
  * represented as strings.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 
@@ -82,10 +82,10 @@ require_once(ASCMS_CORE_PATH.'/validator.inc.php');
  *    That's 2x26x26 = 1352 characters packed to just 5 (not to mention the
  *    overhead when you put the strings into an array)!
  * @todo        Add better Examples
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 class CompressedList

@@ -28,10 +28,10 @@
 /**
  * Config
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_config
  * @todo        Edit PHP DocBlocks!
  */
@@ -54,10 +54,10 @@ isset($objInit) && $objInit->mode == 'backend' ? \Env::get('ClassLoader')->loadF
 /**
  * Config
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_config
  * @todo        Edit PHP DocBlocks!
  */
@@ -508,7 +508,7 @@ class Config
             $request = new \HTTP_Request2($protocol . '://' . $_CONFIG['domainUrl'] . ASCMS_ADMIN_WEB_PATH . '/index.php?cmd=JsonData');
 
             // ignore ssl issues
-            // otherwise, contrexx does not activate 'https' when the server doesn't have an ssl certificate installed
+            // otherwise, cloudrexx does not activate 'https' when the server doesn't have an ssl certificate installed
             $request->setConfig(array(
                 'ssl_verify_peer' => false,
             ));
@@ -525,7 +525,7 @@ class Config
             if (in_array($status, array(500))) {
                 return false;
             }
-            // the request should return a json object with the status 'error' if it is a contrexx installation
+            // the request should return a json object with the status 'error' if it is a cloudrexx installation
             if (!$result || $result->status != 'error') {
                 return false;
             }

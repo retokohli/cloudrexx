@@ -28,9 +28,9 @@
 /**
  * Main controller for Error
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_error
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\Error\Controller;
 /**
  * Main controller for Error
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_error
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

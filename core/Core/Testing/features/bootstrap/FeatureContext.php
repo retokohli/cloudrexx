@@ -57,7 +57,7 @@ class FeatureContext extends BehatContext
     public $page;
 
     /**
-     * @var array contrexx`s configuration array
+     * @var array cloudrexx`s configuration array
      */
     public $config;
 
@@ -198,7 +198,7 @@ class FeatureContext extends BehatContext
         $element = $this->page->find('css', $cssSelector);
         try {
             if ($element == null) {
-                // @todo: add contrexx exception
+                // @todo: add cloudrexx exception
                 throw new \Behat\Mink\Exception\ElementNotFoundException($this->session, 'input', 'css', 'input[type="submit"]');
             }
         } catch (Exception $e) {

@@ -28,9 +28,9 @@
 /**
  * Main controller for Database Manager
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_databasemanager
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core\DatabaseManager\Controller;
 /**
  * Main controller for Database Manager
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_databasemanager
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

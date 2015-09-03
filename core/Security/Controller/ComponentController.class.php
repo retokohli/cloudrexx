@@ -28,10 +28,10 @@
 /**
  * Main controller for Security
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Gerben van der Lubbe <spoofedexistence@gmail.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_security
  */
 
@@ -42,10 +42,10 @@ namespace Cx\Core\Security\Controller;
  * 
  * The security class checks for possible attacks to the server
  * and supports a few functions to make everything more secure.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Gerben van der Lubbe <spoofedexistence@gmail.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_security
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
@@ -57,7 +57,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public $reportingMode = false;
 
     /**
-     * $_SERVER variable indexes used by Contrexx
+     * $_SERVER variable indexes used by Cloudrexx
      *
      * @var array
      */

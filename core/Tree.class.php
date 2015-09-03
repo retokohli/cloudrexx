@@ -28,11 +28,11 @@
 /**
  * Content Tree
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @deprecated  Use PageTree instead
  * @todo        Edit PHP DocBlocks!
@@ -42,12 +42,12 @@
  * This class creates a tree structure as an indexed array object
  * content array provider
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author	Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author	Cloudrexx Development Team <info@cloudrexx.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @access	public
  * @version	1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @deprecated  Use PageTree instead
  * @subpackage  core
  */

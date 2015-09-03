@@ -29,9 +29,9 @@
 * PDF class
 *
 * Generate PDF for pdfview
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author       Comvation Development Team <info@comvation.com>
-* @package      contrexx
+* @copyright    CLOUDREXX CMS - CLOUDREXX AG
+* @author       Cloudrexx Development Team <info@cloudrexx.com>
+* @package      cloudrexx
 * @subpackage   core
 * @version      1.1.0
 */
@@ -45,9 +45,9 @@ require_once ASCMS_LIBRARY_PATH.'/html2fpdf/html2fpdf.php';
 * PDF class
 *
 * Generate PDF for pdfview
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author       Comvation Development Team <info@comvation.com>
-* @package      contrexx
+* @copyright    CLOUDREXX CMS - CLOUDREXX AG
+* @author       Cloudrexx Development Team <info@cloudrexx.com>
+* @package      cloudrexx
 * @subpackage   core
 * @version      1.1.0
 */

@@ -29,8 +29,8 @@
  * Database Manager class
  *
  * CMS Database Manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  core_databasemanager
  * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch> (Pre 2.1.0)
  * @author      Reto Kohli <reto.kohli@comvation.com> (Version 2.1.0)
@@ -49,8 +49,8 @@ define('_DBM_DEBUG', 0);
  * Database Manager class
  *
  * CMS Database Manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  core_databasemanager
  * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch> (Pre 2.1.0)
  * @author      Reto Kohli <reto.kohli@comvation.com> (Version 2.1.0)
@@ -324,7 +324,7 @@ class DatabaseManager
 
 
     /**
-     * Optimizes some or all tables (depending on the POST-Array) used by Contrexx.
+     * Optimizes some or all tables (depending on the POST-Array) used by Cloudrexx.
      *
      * @global     ADONewConnection
      * @global     array
@@ -352,7 +352,7 @@ class DatabaseManager
     }
 
     /**
-     * Repairs some or all tables (depending on the POST-Array) used by Contrexx.
+     * Repairs some or all tables (depending on the POST-Array) used by Cloudrexx.
      *
      * @global     ADONewConnection
      * @global     array

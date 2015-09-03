@@ -29,9 +29,9 @@
  * Global file including
  *
  * Global file to include the required files
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  * @version     1.0.0
  * @uses /core/validator.inc.php
@@ -108,8 +108,8 @@ function contrexx_isModuleInstalled($moduleName)
  * current page.
  * Note that the old $pos parameter is obsolete as well,
  * see {@see getPosition()}.
- * @copyright CONTREXX CMS - COMVATION AG
- * @author    Comvation Development Team <info@comvation.com>
+ * @copyright CLOUDREXX CMS - CLOUDREXX AG
+ * @author    Cloudrexx Development Team <info@cloudrexx.com>
  * @access    public
  * @version   1.0.0
  * @global    array       $_CONFIG        Configuration

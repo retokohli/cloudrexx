@@ -28,9 +28,9 @@
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Sebastian Brand <sebastian.brand@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  * @version     1.0.0
  */
@@ -40,9 +40,9 @@ namespace Cx\Core\Wysiwyg\Controller;
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Sebastian Brand <sebastian.brand@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  * @version     1.0.0
  */
