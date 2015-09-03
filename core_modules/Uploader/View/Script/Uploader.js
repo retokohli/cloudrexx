@@ -112,7 +112,8 @@
                     'X-Requested-With': 'XMLHttpRequest',
                     'Check-CSRF': 'false'
                 },
-                chunk_size: cx.variables.get('chunk_size','uploader')
+                chunk_size: cx.variables.get('chunk_size','uploader'),
+                max_retries: 3
             };
 
             if (iAttrs.allowedExtensions) {
@@ -154,7 +155,7 @@
             var files = [];
 
             $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').bind('click', function () {
-                $J(this).addClass('disabled');
+                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').prop("disabled", true);
                 uploader.start();
             });
 
@@ -243,11 +244,11 @@
                         uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_choose', {title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT_OVERWRITE', 'mediabrowser')}, 'add', true);
                         if (uploaderData.filesToUpload.length > up.settings.max_file_count) {
                           uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_upload', {title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser') + up.settings.max_file_count}, 'add', true);
-                          $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').addClass('disabled');
+                            $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').prop("disabled", false);
                         }
                     }
 
-                    $J('#uploader-modal-' + iAttrs.uploaderId).find(' .fileList tr:last').after('<tr style="display:none;" class="upload-file file-' + file.id + '"><td> <div class="previewImage"></div></td><td><div class="fileInfos">    ' + escapeString(file.name) + ' <span class="errorMessage"></span> <div class="progress"> <div class="progress-bar upload-progress" role="progressbar"style="width: 0%"></div></div></div></td><td class="text-right">' + readablizeBytes(file.size) + ' <br/> <a class="btn btn-default btn-small remove-file">' + cx.variables.get('TXT_CORE_MODULE_UPLOADER_REMOVE_FILE', 'mediabrowser') + '</a> </td>  </tr>');
+                    $J('#uploader-modal-' + iAttrs.uploaderId).find(' .fileList tr:last').after('<tr style="display:none;" class="upload-file file-' + file.id + '"><td> <div class="previewImage"></div></td><td><div class="fileInfos">    ' + escapeString(file.name) + ' <span class="errorMessage"></span> <div class="progress"> <div class="progress-bar upload-progress progress-bar-striped active" role="progressbar"style="width: 0%"></div></div></div></td><td class="text-right">' + readablizeBytes(file.size) + ' <br/> <a class="btn btn-default btn-small remove-file">' + cx.variables.get('TXT_CORE_MODULE_UPLOADER_REMOVE_FILE', 'mediabrowser') + '</a> </td>  </tr>');
                     $J('.file-' + file.id).fadeIn();
                     var removeFile = function () {
                         $J.each(uploaderData.filesToUpload, function (i) {
@@ -282,7 +283,7 @@
                 });
 
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .uploadControl').slideDown();
-
+                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').prop("disabled", false);
             });
 
             uploader.bind('FileUploaded', function (up, file, res) {
@@ -331,6 +332,7 @@
 
             uploader.bind('FileUploaded', function (up, file) {
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .file-' + file.id).find('.upload-progress').css({width: file.percent + '%'});
+                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .file-' + file.id).find('.upload-progress').removeClass('active')
             });
 
             uploader.bind('Init', function (upload) {
@@ -338,7 +340,6 @@
             });
 
             uploader.bind('UploadComplete', function () {
-                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').removeClass('disabled');
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .close-upload-modal').show();
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .close-upload-modal').removeClass('not-finished');
                 uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_upload', '', 'remove', true);
