@@ -115,6 +115,14 @@
                 chunk_size: cx.variables.get('chunk_size','uploader')
             };
 
+            if (iAttrs.allowedExtensions) {
+                options.filters = {
+                    mime_types : [
+                        {  extensions : iAttrs.allowedExtensions.join(',') }
+                    ]
+                }
+            }
+
 
             if (scope.plMultiParamsModel) {
                 options.multipart_params = scope.plMultiParamsModel;

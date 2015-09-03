@@ -99,7 +99,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         }
         $allowedExtensions = false;
         if (isset($_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'])) {
-            $allowedExtensions = $_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'];
+            $allowedExtensions = $_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions']->toArray();
         }
         $uploader = UploaderController::handleRequest(
             array(
