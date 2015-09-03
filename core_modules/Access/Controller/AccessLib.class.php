@@ -1617,7 +1617,7 @@ JSaccessValidatePrimaryGroupAssociation
                     foreach (array_keys($data) as $historyIndex) {
                         if (\FWValidator::is_file_ending_harmless($arrImages['name'][$attribute][$historyId][$historyIndex])) {
                             $arrUploadedImages[] = array(
-                                'name'            => \FWValidator::getCleanFileName($arrImages['name'][$attribute][$historyId][$historyIndex]),
+                                'name'            => \FWValidator::getCleanFileName(urldecode($arrImages['name'][$attribute][$historyId][$historyIndex])),
                                 'tmp_name'        => $arrImages['tmp_name'][$attribute][$historyId][$historyIndex],
                                 'error'            => $arrImages['error'][$attribute][$historyId][$historyIndex],
                                 'size'            => $arrImages['size'][$attribute][$historyId][$historyIndex],
@@ -1628,7 +1628,7 @@ JSaccessValidatePrimaryGroupAssociation
                 } else {
                     if (\FWValidator::is_file_ending_harmless($arrImages['name'][$attribute][$historyId])) {
                         $arrUploadedImages[] = array(
-                            'name'        => \FWValidator::getCleanFileName($arrImages['name'][$attribute][$historyId]),
+                            'name'        => \FWValidator::getCleanFileName(urldecode($arrImages['name'][$attribute][$historyId])),
                             'tmp_name'    => $arrImages['tmp_name'][$attribute][$historyId],
                             'error'        => $arrImages['error'][$attribute][$historyId],
                             'size'        => $arrImages['size'][$attribute][$historyId]
