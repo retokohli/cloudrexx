@@ -649,6 +649,9 @@ var activeLang = [$arrActiveLang];
             \$J.each(activeLang, function(i, v) {
                 if (\$J('#'+ relatedFieldPrefix + '_' + id +'_'+ v).val() == that.data('lastDefaultValue')) {
                     \$J('#'+ relatedFieldPrefix + '_' + id +'_'+ v).val(that.val());
+                    if (that.data('isImage') && \$J('#'+ relatedFieldPrefix + '_' + id +'_'+ v +'_preview')) {
+                        changeImagePreview(\$J('#'+ relatedFieldPrefix + '_' + id +'_'+ v +'_preview'), that.val());
+                    }
                 }
             });
             \$J(this).data('lastDefaultValue', \$J(this).val());
@@ -658,6 +661,9 @@ var activeLang = [$arrActiveLang];
             var id = \$J(this).data('id');
             var relatedFieldPrefix = \$J(this).data('relatedFieldPrefix') ? \$J(this).data('relatedFieldPrefix') : 'mediadirInputfield';            
             \$J('#'+ relatedFieldPrefix + '_' + id +'_0').val(\$J(this).val());
+            if (\$J(this).data('isImage') && \$J('#'+ relatedFieldPrefix + '_' + id +'_0_preview')) {
+                changeImagePreview(\$J('#'+ relatedFieldPrefix + '_' + id +'_0_preview'), \$J(this).val());
+            }
             \$J('#'+ relatedFieldPrefix + '_' + id +'_0').data('lastDefaultValue', \$J(this).val());
         });
     });
@@ -684,6 +690,18 @@ var activeLang = [$arrActiveLang];
         });
     });                
 });
+
+function changeImagePreview(elm, src) {
+    elm.after('<span class="loading">Loading ...</span>');
+    elm.fadeOut(300, function(){
+        \$J(this).attr('src',src).bind('onreadystatechange load', function() {
+            if (this.complete) {
+                \$J(this).fadeIn(300);
+                \$J(this).next('span.loading').remove();
+            }
+      });
+   });
+}
 
 function rememberWysiwygFields(ev) {
     fieldArr   = ev.editor.name.split(/\[(\d+)\]/);

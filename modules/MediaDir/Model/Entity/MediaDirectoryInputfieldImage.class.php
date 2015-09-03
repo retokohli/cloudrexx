@@ -140,7 +140,7 @@ INPUT;
         
         $strImagePreview = null;
         if(!empty($value) && file_exists($cx->getWebsitePath().$value.".thumb")) {
-            $strImagePreview = '<img src="'.$value.'.thumb" alt="" style="border: 1px solid rgb(10, 80, 161); margin: 0px 0px 3px;"  width="'.intval($this->arrSettings['settingsThumbSize']).'" />&nbsp;
+            $strImagePreview = '<img id="'. $this->moduleNameLC . 'Inputfield_' . $id .'_'. $langId.'_preview" src="'.$value.'.thumb" alt="" style="border: 1px solid rgb(10, 80, 161); margin: 0px 0px 3px;"  width="'.intval($this->arrSettings['settingsThumbSize']).'" />&nbsp;
                                 <input 
                                     data-id="'.$id.'"
                                     type="checkbox" 
@@ -164,6 +164,7 @@ INPUT;
             <input type="text" name="{$this->moduleNameLC}Inputfield[$id][$langId]"
                 value="$value" 
                 data-id="$id"
+                data-is-image="true"
                 class="$inputDefaultClass"
                 id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
                 style="$inputStyle" 
@@ -172,6 +173,7 @@ INPUT;
             &nbsp;
             <input type="button" 
                 onClick="getMediaBrowser(\$J(this));"
+                data-is-image="true"
                 data-input-id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
                 data-views="filebrowser"
                 data-startmediatype="{$this->moduleNameLC}"

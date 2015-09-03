@@ -1,14 +1,18 @@
 <!-- START module_mediadir_modify_category.html -->
 <script language="JavaScript" type="text/javascript">
 function getMediaBrowser(e) { // e => jQuery element
-    var inputId = e.data('inputId');
-    var mediaBrowseInputBox = $J('#' + inputId);
+    var inputId = e.data('inputId'),
+        isImageField = e.data('isImage'),
+        mediaBrowseInputBox = $J('#' + inputId);
     cx.variables.get('jquery','mediabrowser')('#mediabrowser_button').trigger('click', {
         callback: function(data) {
             if (data.type == "file") {
                 var path = data.data[0].datainfo.filepath;
                 mediaBrowseInputBox.val(path);
                 mediaBrowseInputBox.trigger('keyup');
+                if (isImageField && $J('#'+ inputId +'_preview')) {
+                    changeImagePreview($J('#'+ inputId +'_preview'), path);
+                }
             }
         },
         cxMbViews : e.data('views'),
