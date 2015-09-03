@@ -1756,7 +1756,7 @@ class MemberDirManager extends MemberDirLibrary
                 \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=MemberDir&act=showdir&id=".$_POST['directory']);
             }
 
-        } elseif ($_FILES['importfile']['size'] == 0) {
+        } elseif (empty($_POST['importfile'])) {
             $importlib->initFileSelectTemplate($this->_objTpl);
 
             /*
@@ -1786,6 +1786,7 @@ class MemberDirManager extends MemberDirLibrary
              * file selection template to the next step of importing
              */
             $this->_objTpl->setVariable(array(
+                "IMPORT_ACTION"     => "?cmd=MemberDir&amp;act=import",
                 "IMPORT_HIDDEN_NAME" => "directory",
                 "IMPORT_HIDDEN_VALUE" => $_POST['directory'],
             ));

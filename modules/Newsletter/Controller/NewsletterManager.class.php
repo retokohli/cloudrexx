@@ -4332,8 +4332,7 @@ $WhereStatement = '';
                 $objTpl->parse("additional");
                 $this->_objTpl->setVariable('NEWSLETTER_USER_FILE', $objTpl->get());
             }
-        } elseif (   (   empty($_FILES['importfile'])
-                      || $_FILES['importfile']['size'] == 0)
+        } elseif (   empty($_POST['importfile'])
                   || (   isset($_POST['imported'])
                       && empty($_POST['newsletter_recipient_associated_list']))) {
             // Dateiauswahldialog. Siehe Fileselect
@@ -4442,6 +4441,10 @@ $WhereStatement = '';
                 'IMPORT_HIDDEN_VALUE' => (isset($_POST['sendEmail']) ? intval($_POST['sendEmail']) : 0),
             ));
             $objTpl->parse('hidden_fields');
+            $objTpl->setVariable(array(
+                'IMPORT_ACTION' => 'index.php?cmd=Newsletter&amp;act=users&amp;tpl=import',
+            ));
+            
             $this->_objTpl->setVariable(array(
                 'TXT_REMOVE_PAIR' => $_ARRAYLANG['TXT_REMOVE_PAIR'],
                 'NEWSLETTER_USER_FILE' => $objTpl->get(),
