@@ -1330,6 +1330,7 @@ class NewsLibrary
                                 n.author         AS author,
                                 n.author_id      AS author_id,
                                 n.startdate      As startDate,
+                                n.enddate        As endDate,
                                 n.allow_comments AS commentactive,
                                 nl.title         AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
@@ -1353,9 +1354,16 @@ class NewsLibrary
 
         if ($objResult !== false) {
             $arrMonthTxt = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
+            $currentDate = date('Y-m-d H:i:s');
             while (!$objResult->EOF) {
-                // If 'Scheduled publication' is active consider Scheduled publication 'startDate' as the option for date  filter else use 'Created' on date
-                $filterDate = ($objResult->fields['startDate'] !== '0000-00-00 00:00:00') ? strtotime($objResult->fields['startDate']) : $objResult->fields['date'];
+                $startDate  = $objResult->fields['startDate'];
+                $endDate    = $objResult->fields['endDate'];
+                if ($startDate >= $currentDate || ($endDate !== '0000-00-00 00:00:00' && $endDate <= $currentDate )) {
+                    $objResult->MoveNext();
+                    continue;
+                }
+                // If 'Scheduled publication' is active consider Scheduled publication 'startDate' as the option for date filter else use 'Publication' on 'date'
+                $filterDate = ($startDate !== '0000-00-00 00:00:00') ? strtotime($startDate) : $objResult->fields['date'];
                 $newsYear = date('Y', $filterDate);
                 $newsMonth = date('m', $filterDate);
                 if (!isset($monthlyStats[$newsYear.'_'.$newsMonth])) {
