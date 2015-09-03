@@ -41,7 +41,7 @@ class ConsoleInterface extends UserInterface {
     /**
      * Initialize this interface
      * @param array $arguments Commandline arguments
-     * @param \Cx\Core\Core\Controller\Cx $cx Contrexx main class
+     * @param \Cx\Core\Core\Controller\Cx $cx Cloudrexx main class
      */
     public function __construct($arguments, $cx) {
         parent::__construct($cx);

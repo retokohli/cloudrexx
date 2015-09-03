@@ -28,9 +28,9 @@
 /**
  * Main controller for Media
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_media
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\Media\Controller;
 /**
  * Main controller for Media
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_media
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

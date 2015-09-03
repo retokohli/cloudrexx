@@ -54,7 +54,7 @@ namespace Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver;
  * @author Jonathan Wage <jonwage@gmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_cache
  */
 abstract class CacheProvider implements \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\Cache

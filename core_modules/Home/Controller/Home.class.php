@@ -28,10 +28,10 @@
 /**
  * my Administrator manager
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
@@ -47,10 +47,10 @@ namespace Cx\Core_Modules\Home\Controller;
  *
  * Class to show the my admin pages
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version	   1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 class Home {

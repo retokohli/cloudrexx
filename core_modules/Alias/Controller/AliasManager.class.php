@@ -27,20 +27,20 @@
  
 /**
  * AliasManager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_alias
  * @todo        Edit PHP DocBlocks!
  */
 namespace Cx\Core_Modules\Alias\Controller;
 /**
  * AliasManager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_alias
  * @todo        Edit PHP DocBlocks!
  */
@@ -153,7 +153,7 @@ class AliasManager extends \Cx\Core_Modules\Alias\Controller\AliasLib
             'ALIAS_SHOW_LEGACY_PAGE_VALUE' => intval($showLegacyPagealiases),
         ));
 
-        // show warning message if contrexx is running on an IIS webserver and the web.config seems not be be registred in the server configuration
+        // show warning message if cloudrexx is running on an IIS webserver and the web.config seems not be be registred in the server configuration
         if (ASCMS_WEBSERVER_SOFTWARE == 'iis') {
             \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/Request2.php');
             $objRequest = new \HTTP_Request2('http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=Error');

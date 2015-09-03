@@ -27,10 +27,10 @@
 
 /**
  * Login
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_login
  * @todo        Edit PHP DocBlocks!
  */
@@ -41,10 +41,10 @@ namespace Cx\Core_Modules\Login\Controller;
  * Login
  *
  * Class to login into the system
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_login
  */
 class Login

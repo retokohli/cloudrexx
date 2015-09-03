@@ -28,9 +28,9 @@
 /**
  * Filesystem Driver Adapter for doctrine
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_cache
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver;
 /**
  * Filesystem Driver Adapter for doctrine
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_cache
  */
 class FilesystemCache extends \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileCache

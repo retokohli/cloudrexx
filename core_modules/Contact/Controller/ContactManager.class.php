@@ -28,10 +28,10 @@
 /**
  * Contact
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  * @todo        Edit PHP DocBlocks!
  */
@@ -41,11 +41,11 @@ namespace Cx\Core_Modules\Contact\Controller;
 /**
  * ContactManager
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  */
 class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
@@ -1392,7 +1392,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
     /**
      * Get the recipient addresses from the post
      *
-     * @author      Comvation AG <info@comvation.com>
+     * @author      Cloudrexx AG <info@cloudrexx.com>
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @return      string
      */
@@ -1448,7 +1448,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
     /**
      * Delete a form
      *
-     * @author      Comvation AG <info@comvation.com>
+     * @author      Cloudrexx AG <info@cloudrexx.com>
      */
     private function _deleteForm()
     {

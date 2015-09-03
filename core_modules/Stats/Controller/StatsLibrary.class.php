@@ -27,20 +27,20 @@
 
 /**
  * Stats Library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @version 1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_stats
  * @todo        Edit PHP DocBlocks!
  */
 namespace Cx\Core_Modules\Stats\Controller;
 /**
  * Stats Library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @version 1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_stats
  */
 class StatsLibrary
@@ -82,7 +82,7 @@ class StatsLibrary
     public $currentTime = 0;
     
     /**
-     * Instance of contrexx
+     * Instance of cloudrexx
      * 
      * @var object \Cx\Core\Core\Controller\Cx
      */

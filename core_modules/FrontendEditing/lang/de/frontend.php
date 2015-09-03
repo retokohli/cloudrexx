@@ -27,9 +27,9 @@
 
 /**
  * German language variables for frontend editing
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_frontendediting
  */
 $_ARRAYLANG['TXT_FRONTEND_EDITING_SHOW_TOOLBAR'] = 'Toolbar einblenden';

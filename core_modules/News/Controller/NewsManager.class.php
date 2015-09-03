@@ -27,10 +27,10 @@
 
 /**
  * News manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  * @todo        Edit PHP DocBlocks!
  *              The news entry management is bulky! It should be rewritten in OOP
@@ -40,11 +40,11 @@ namespace Cx\Core_Modules\News\Controller;
 
 /**
  * News manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {

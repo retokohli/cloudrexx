@@ -28,9 +28,9 @@
 /**
  * Class UploadResponse
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_uploader
  */
 
@@ -40,9 +40,9 @@ namespace Cx\Core_Modules\Uploader\Controller;
  * UploadResponses result from an upload request.
  * They carry information about problems concerning uploaded files.
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_uploader
  */
 class UploadResponse {

@@ -28,9 +28,9 @@
 /**
  * JSON Adapter for Uploader
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -47,7 +47,7 @@ use Cx\Lib\FileSystem\FileSystem;
 /**
  * JSON Adapter for Uploader
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  */
 class JsonUploader extends SystemComponentController implements JsonAdapter

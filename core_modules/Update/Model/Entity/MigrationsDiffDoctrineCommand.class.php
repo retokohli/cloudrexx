@@ -28,9 +28,9 @@
 /**
  * Class MigrationsDiffDoctrineCommand
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_update
  */
 
@@ -48,9 +48,9 @@ use Symfony\Component\Console\Input\InputInterface,
  * Command for generate migration classes by comparing your current database schema
  * to your mapping information.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_update
  */
 class MigrationsDiffDoctrineCommand extends \Doctrine\DBAL\Migrations\Tools\Console\Command\GenerateCommand {

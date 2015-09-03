@@ -28,10 +28,10 @@
 /**
  * Class ComponentController
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  *              Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_mediabrowser
  * @version     1.0.0
  */
@@ -49,7 +49,7 @@ use Cx\Lib\FileSystem\FileSystemException;
 /**
  * Class ComponentController
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  *              Robin Glauser <robin.glauser@comvation.com>
  * @version     1.0.0

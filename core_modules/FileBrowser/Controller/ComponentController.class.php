@@ -28,9 +28,9 @@
 /**
  * Main controller for File Browser
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_filebrowser
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\FileBrowser\Controller;
 /**
  * Main controller for File Browser
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_filebrowser
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

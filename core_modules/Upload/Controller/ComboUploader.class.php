@@ -28,9 +28,9 @@
 /**
  * ComboUploader
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_upload
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\Upload\Controller;
 /**
  * ComboUploader - Displays a FormUploader and possibilities to invoke other types of Uploaders.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_upload
  */
 class ComboUploader extends Uploader

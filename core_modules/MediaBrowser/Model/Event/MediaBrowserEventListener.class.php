@@ -26,9 +26,9 @@
  */
 
 /**
- * @copyright   Comvation AG 
+ * @copyright   Cloudrexx AG 
  * @author Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Model\Event;
@@ -40,7 +40,7 @@ use Cx\Core\Event\Model\Entity\DefaultEventListener;
 /**
  * Class MediaBrowserEventListener
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  */
 class MediaBrowserEventListener extends DefaultEventListener

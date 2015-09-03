@@ -27,9 +27,9 @@
 
 /**
  * JSON Adapter for Cx\Core_Modules\LinkManager\Model\Entity\Link
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
 
@@ -40,9 +40,9 @@ use \Cx\Core\Json\JsonAdapter;
  * JSON Adapter for Cx\Core_Modules\LinkManager\Model\Entity\Link
  * the class JsonLink handles, the link status whether the link is resolved or not.
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
 class JsonLink implements JsonAdapter {

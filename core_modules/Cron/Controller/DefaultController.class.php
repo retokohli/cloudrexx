@@ -28,9 +28,9 @@
 /**
  * DefaultController
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_cron
  */
 
@@ -40,9 +40,9 @@ namespace Cx\Core_Modules\Cron\Controller;
  * 
  * DefaultController for Scheduled Tasks to list entities of Job using ViewGenerator
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_cron
  */
 class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {

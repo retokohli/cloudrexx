@@ -28,9 +28,9 @@
 /**
  * Main controller for Net Tools
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package contrexx
+ * @copyright   cloudrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package cloudrexx
  * @subpackage coremodule_nettools
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\NetTools\Controller;
 /**
  * Main controller for Net Tools
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package contrexx
+ * @copyright   cloudrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package cloudrexx
  * @subpackage coremodule_nettools
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

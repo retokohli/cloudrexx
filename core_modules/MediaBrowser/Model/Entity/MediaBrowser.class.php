@@ -28,9 +28,9 @@
 /**
  * Class MediaBrowser
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_mediabrowser
  */
 namespace Cx\Core_Modules\MediaBrowser\Model\Entity;
@@ -41,7 +41,7 @@ use Cx\Model\Base\EntityBase;
 /**
  * Class MediaBrowser
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  */
 class MediaBrowser extends EntityBase

@@ -26,9 +26,9 @@
  */
 
 /**
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_uploader
  */
 

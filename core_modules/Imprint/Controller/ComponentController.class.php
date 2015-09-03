@@ -28,9 +28,9 @@
 /**
  * Main controller for Imprint
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_imprint
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\Imprint\Controller;
 /**
  * Main controller for Imprint
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_imprint
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

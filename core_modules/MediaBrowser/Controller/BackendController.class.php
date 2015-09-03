@@ -28,9 +28,9 @@
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_mediabrowser
  */
 
@@ -43,7 +43,7 @@ use Cx\Core_Modules\Uploader\Model\Entity\Uploader;
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  *              Robin Glauser <robin.glauser@comvation.com>
  */

@@ -28,9 +28,9 @@
 /**
  * DefaultController
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\LinkManager\Controller;
 /**
  * The class DefaultController for display the latest run details and display all the crawler runs
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
 class DefaultController extends \Cx\Core\Core\Model\Entity\Controller

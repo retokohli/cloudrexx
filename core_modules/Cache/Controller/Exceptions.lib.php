@@ -28,11 +28,11 @@
 /**
  * Cache Module - Exceptions: A list of all pages which shouldn't be cached
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.1
  *
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_cache
  * @todo        Edit PHP DocBlocks!
  */

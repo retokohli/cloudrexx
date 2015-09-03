@@ -26,10 +26,10 @@
  */
 
 /**
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  *              Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_uploader
  */
 
@@ -41,8 +41,8 @@ use Cx\Lib\FileSystem\FileSystem;
 /**
  * UploaderExceptions thrown by uploader
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
  */
 class UploaderException extends \Exception {
 
@@ -59,7 +59,7 @@ define('PLUPLOAD_SECURITY_ERR', 105);
 /**
  * Class UploaderController
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  *              Robin Glauser <robin.glauser@comvation.com>
  */

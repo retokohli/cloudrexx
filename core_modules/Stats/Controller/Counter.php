@@ -27,10 +27,10 @@
 
 /**
  * Statistics
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @version 1.0.3
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_stats
  * @todo        Edit PHP DocBlocks!
  */
@@ -71,11 +71,11 @@ $counter = new \Cx\Core_Modules\Stats\Controller\Counter($arrRobots, $arrBannedW
  * Counter
  *
  * This class counts unique users, page visits, set client infos, referer
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
  * @version 1.0.3
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_stats
  */
 class Counter

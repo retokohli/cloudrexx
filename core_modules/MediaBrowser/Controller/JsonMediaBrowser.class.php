@@ -28,9 +28,9 @@
 /**
  * JSON Adapter for Uploader
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -48,7 +48,7 @@ use Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator;
 /**
  * JSON Adapter for Uploader
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  */
 class JsonMediaBrowser extends SystemComponentController implements JsonAdapter

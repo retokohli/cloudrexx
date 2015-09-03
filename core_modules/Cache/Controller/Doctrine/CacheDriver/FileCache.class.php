@@ -50,7 +50,7 @@ namespace Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver;
  *
  * @since  2.3
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_cache
  */
 abstract class FileCache extends \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\CacheProvider

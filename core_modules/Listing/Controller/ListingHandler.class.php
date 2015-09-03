@@ -28,9 +28,9 @@
 /**
  * Listing handler
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 
@@ -40,7 +40,7 @@ namespace Cx\Core_Modules\Listing\Controller;
  * This class defines a handler for Listings
  * (for example the PagingController)
  * @author ritt0r
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 abstract class ListingHandler {

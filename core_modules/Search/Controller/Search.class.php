@@ -27,10 +27,10 @@
 
 /**
  * Search and view results from the DB
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_search
  * @todo: add namespace
  */
@@ -39,11 +39,11 @@ namespace Cx\Core_Modules\Search\Controller;
 
 /**
  * Search and view results from the DB
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @version     3.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_search
- * @author      Comvation Development Team <info@comvation.com>
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      Reto Kohli <reto.kohli@comvation.com> (class)
  */
 class Search

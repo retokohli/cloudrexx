@@ -27,9 +27,9 @@
 
 /**
  * System log
- * @copyright    CONTREXX CMS - COMVATION AG
+ * @copyright    CLOUDREXX CMS - CLOUDREXX AG
  * @author       Michael Ritter <michael.ritter@comvation.com>
- * @package      contrexx
+ * @package      cloudrexx
  * @subpackage   coremodule_syslog
  * @version      5.0.0
  */
@@ -38,9 +38,9 @@ namespace Cx\Core_Modules\SysLog\Model\Entity;
 
 /**
  * Entity for system logs
- * @copyright    CONTREXX CMS - COMVATION AG
+ * @copyright    CLOUDREXX CMS - CLOUDREXX AG
  * @author       Michael Ritter <michael.ritter@comvation.com>
- * @package      contrexx
+ * @package      cloudrexx
  * @subpackage   coremodule_syslog
  * @version      5.0.0
  */

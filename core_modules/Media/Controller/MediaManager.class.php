@@ -27,10 +27,10 @@
 
 /**
  * Media Manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_media
  * @todo        Edit PHP DocBlocks!
  */
@@ -38,11 +38,11 @@
 namespace Cx\Core_Modules\Media\Controller;
 /**
  * Media Manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       1.0.0
  * @access        public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_media
  */
 class MediaManager extends MediaLibrary

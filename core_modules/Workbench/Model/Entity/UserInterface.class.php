@@ -39,7 +39,7 @@ namespace Cx\Core_Modules\Workbench\Model\Entity;
 abstract class UserInterface {
     
     /**
-     * Contrexx main class instance
+     * Cloudrexx main class instance
      * @var \Cx\Core\Core\Controller\Cx
      */
     protected $cx = null;
@@ -66,7 +66,7 @@ abstract class UserInterface {
      * Initialize this interface
      * 
      * Loads all commands
-     * @param \Cx\Core\Core\Controller\Cx $cx Contrexx main class
+     * @param \Cx\Core\Core\Controller\Cx $cx Cloudrexx main class
      */
     public function __construct($cx) {
         $this->cx = $cx;
@@ -92,9 +92,9 @@ abstract class UserInterface {
             //'addnav' => new AddNavCommand($this), // add a backend navigation entry
             //'rmnav' => new RmNavCommand($this), // remove a backend navigation entry
             //'mvnav' => new MvNavCommand($this), // move a backend navigation entry (remove and add new)
-            //'export' => new ExportCommand($this), // export contrexx files without workbench
-            //'publish' => new PublishCommand($this), // publish component to contrexx app repo (after successful unit testing)
-            //'update' => new UpdateCommand($this), // port a component to this version of contrexx
+            //'export' => new ExportCommand($this), // export cloudrexx files without workbench
+            //'publish' => new PublishCommand($this), // publish component to cloudrexx app repo (after successful unit testing)
+            //'update' => new UpdateCommand($this), // port a component to this version of cloudrexx
             //'upgrade' => new UpgradeCommand($this), // upgrade a component to current or current beta version
             //'push' => new PushCommand($this), // Pushes this installation to a FTP server
             'export' => new ExportCommand($this), // Create install/update package of current installation

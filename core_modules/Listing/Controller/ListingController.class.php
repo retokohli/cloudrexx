@@ -28,9 +28,9 @@
 /**
  * Listing controller
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\Listing\Controller;
 /**
  * Listing exception
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 class ListingException extends \Exception {}
@@ -49,7 +49,7 @@ class ListingException extends \Exception {}
 /**
  * Creates rendered lists (paging, filtering, sorting)
  * @author ritt0r <drissg@gmail.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 class ListingController {

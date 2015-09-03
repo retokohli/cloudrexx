@@ -28,9 +28,9 @@
 /**
  * Main controller for Sitemap
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_sitemap
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\Sitemap\Controller;
 /**
  * Main controller for Sitemap
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_sitemap
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

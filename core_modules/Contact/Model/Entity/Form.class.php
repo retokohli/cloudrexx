@@ -28,9 +28,9 @@
 /**
  * Class Form
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      ss4u <ss4ugroup@gmail.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\Contact\Model\Entity;
 /**
  * Class Form
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      ss4u <ss4ugroup@gmail.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  */
 class Form {

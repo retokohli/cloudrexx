@@ -28,9 +28,9 @@
 /**
  * DeltaRepository
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_update
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\Update\Model\Repository;
 /**
  * DeltaRepository
  *
- * @copyright   Comvation AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_update
  */
 class DeltaRepository extends \Cx\Core\Model\Controller\YamlRepository {

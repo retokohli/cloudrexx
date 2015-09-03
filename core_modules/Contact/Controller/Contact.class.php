@@ -28,9 +28,9 @@
 /**
  * Contact
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  */
 
@@ -39,10 +39,10 @@ namespace Cx\Core_Modules\Contact\Controller;
 /**
  * ContactException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
  * @version     1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  * @todo        Edit PHP DocBlocks!
  */
@@ -55,10 +55,10 @@ class ContactException extends \Exception {}
  * It sends the contact email(s) and uploads data (optional)
  * Ex. <FORM name="form1" action="index.php?section=Contact&cmd=thanks" method="post">
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  */
 class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
@@ -99,7 +99,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
     /**
      * we're in legacy mode if true.
      * this means file uploads are coming directly from inputs, rather than being
-     * handled by the contrexx upload core-module.
+     * handled by the cloudrexx upload core-module.
      * Q: What is the legacyMode for?
      * A: With legacyMode we support the old submission forms that hadn't
      *    been migrated to the new fileUploader structure.

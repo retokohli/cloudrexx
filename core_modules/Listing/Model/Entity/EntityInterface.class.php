@@ -28,9 +28,9 @@
 /**
  * EntityInterface Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 
@@ -42,9 +42,9 @@ namespace Cx\Core_Modules\Listing\Model\Entity;
  * This class used to convert the entity objects into array and array
  * into entity objects
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 class EntityInterface implements Exportable, Importable

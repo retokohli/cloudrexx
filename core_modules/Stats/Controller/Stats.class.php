@@ -27,10 +27,10 @@
 
 /**
  * Stats
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Christian Wehrli <christian.wehrli@astalavista.ch>
  * @version     $Id: index.class.php,v 1.11 2003/05/05 10:10:32 hitsch Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_stats
  * @todo        Edit PHP DocBlocks!
  */
@@ -41,10 +41,10 @@ namespace Cx\Core_Modules\Stats\Controller;
  *
  * Class with different methodes to get statistical information about
  * webaccess
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Christian Wehrli <christian.wehrli@astalavista.ch>
  * @version     $Id: index.class.php,v 1.11 2003/05/05 10:10:32 hitsch Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_stats
  */
 class Stats extends StatsLibrary

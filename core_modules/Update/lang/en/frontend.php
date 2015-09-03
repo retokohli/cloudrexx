@@ -27,12 +27,12 @@
 
 /**
  * This is the english language file for frontend mode.
- * This file is included by Contrexx and all entries are set as placeholder
+ * This file is included by Cloudrexx and all entries are set as placeholder
  * values for frontent page template by SystemComponentFrontendController
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_module_update
  */
 

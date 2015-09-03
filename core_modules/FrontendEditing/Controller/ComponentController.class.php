@@ -28,9 +28,9 @@
 /**
  * Class ComponentController
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_frontendediting
  * @version     1.0.0
  */
@@ -42,9 +42,9 @@ namespace Cx\Core_Modules\FrontendEditing\Controller;
  *
  * The main controller for the frontend editing
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_frontendediting
  * @version     1.0.0
  */
@@ -80,7 +80,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // get current request`s parameters
         $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
 
-        // check whether the contrexx is in frontend mode, a content page exists and it is no pagePreview
+        // check whether the cloudrexx is in frontend mode, a content page exists and it is no pagePreview
         if (
             $this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND ||
             !$this->cx->getPage() ||

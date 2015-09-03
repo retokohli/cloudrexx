@@ -28,9 +28,9 @@
 /**
  * Main controller for Stats
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package contrexx
+ * @copyright   cloudrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package cloudrexx
  * @subpackage coremodule_stats
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\Stats\Controller;
 /**
  * Main controller for Stats
  * 
- * @copyright   comvation
- * @author      Project Team SS4U <info@comvation.com>
- * @package contrexx
+ * @copyright   cloudrexx
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package cloudrexx
  * @subpackage coremodule_stats
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

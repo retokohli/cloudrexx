@@ -28,9 +28,9 @@
 /**
  * SettingsController
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_cron
  */
 
@@ -40,9 +40,9 @@ namespace Cx\Core_Modules\Cron\Controller;
  * 
  * SettingsController for listing The last execution of the cron job
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_cron
  */
 class SettingsController extends \Cx\Core\Core\Model\Entity\Controller {

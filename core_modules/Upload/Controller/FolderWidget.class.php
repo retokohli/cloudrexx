@@ -28,9 +28,9 @@
 /**
  * FolderWidget
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_upload
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\Upload\Controller;
 /**
  * FolderWidgetException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_upload
  */
 class FolderWidgetException extends \Exception {}
@@ -50,9 +50,9 @@ class FolderWidgetException extends \Exception {}
  * A folder widget (obviously). Use this to display a list of the files contained in a 
  * certain folder and let the user modify them (currently only deletion possible).
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_upload
  * @todo does not use filemanager - deleting won't work in folders without the needed permissions
  */

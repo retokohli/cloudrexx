@@ -28,9 +28,9 @@
 /**
  * ContrexxCaptcha
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_captcha
  */
 
@@ -39,11 +39,11 @@ namespace Cx\Core_Modules\Captcha\Controller;
 /**
  * ContrexxCaptcha
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@astalvista.ch>
  * @access      public
  * @version     1.2.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_captcha
  */
 class ContrexxCaptcha implements CaptchaInterface {

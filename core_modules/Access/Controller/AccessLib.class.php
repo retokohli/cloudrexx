@@ -27,10 +27,10 @@
  
 /**
  * User Management
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_access
  */
 
@@ -38,10 +38,10 @@ namespace Cx\Core_Modules\Access\Controller;
 
 /**
  * Common functions used by the front- and backend
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_access
  * @uses        /lib/FRAMEWORK/Image.class.php
  */

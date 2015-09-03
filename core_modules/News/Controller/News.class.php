@@ -29,10 +29,10 @@
  * News
  *
  * This module will get all the news pages
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  * @todo        Edit PHP DocBlocks!
  */
@@ -44,11 +44,11 @@ namespace Cx\Core_Modules\News\Controller;
  *
  * This module will get all the news pages
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
@@ -2047,7 +2047,7 @@ RSS2JSCODE;
 
         /* Prevent comment flooding from same user:
            Either user is authenticated or had to validate a CAPTCHA.
-           In either way, a Contrexx session had been initialized,
+           In either way, a Cloudrexx session had been initialized,
            therefore we are able to use the $_SESSION to log this comment */
         $_SESSION['news']['comments'][$newsMessageId] = $date;
 

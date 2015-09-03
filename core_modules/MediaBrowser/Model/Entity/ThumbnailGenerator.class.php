@@ -28,9 +28,9 @@
 /**
  * Class ThumbnailGenerator
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_mediabrowser
  */
 
@@ -44,7 +44,7 @@ use Cx\Model\Base\EntityBase;
 /**
  * Class ThumbnailGenerator
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  */
 class ThumbnailGenerator extends EntityBase

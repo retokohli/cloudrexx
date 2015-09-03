@@ -28,9 +28,9 @@
 /**
  * Class ComponentController
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_cron
  */
 
@@ -41,9 +41,9 @@ namespace Cx\Core_Modules\Cron\Controller;
  *
  * The main controller for Cron
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_cron
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {

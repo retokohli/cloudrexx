@@ -26,10 +26,10 @@
  */
  
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_access
  */
 $_ARRAYLANG['TXT_LOGIN_NAME'] = "Bitte wählen Sie einen Benutzernamen:";

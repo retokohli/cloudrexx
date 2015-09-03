@@ -28,9 +28,9 @@
 /**
  * LinkCrawlerController
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\LinkManager\Controller;
 /**
  * LinkCrawlerControllerException
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
 class LinkCrawlerControllerException extends \Exception {}
@@ -49,9 +49,9 @@ class LinkCrawlerControllerException extends \Exception {}
 /**
  * Using the class LinkCrawlerController to find all the links and its status in the site.
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
 
@@ -356,7 +356,7 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
         try {
             $request->setUrl($url);
             // ignore ssl issues
-            // otherwise, contrexx does not activate 'https' when the server doesn't have an ssl certificate installed
+            // otherwise, cloudrexx does not activate 'https' when the server doesn't have an ssl certificate installed
             $request->setConfig(array(
                 'ssl_verify_peer'  => false,
                 'ssl_verify_host'  => false,
@@ -417,7 +417,7 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
         try {
             $request->setUrl($requestedUrl);
             // ignore ssl issues
-            // otherwise, contrexx does not activate 'https' when the server doesn't have an ssl certificate installed
+            // otherwise, cloudrexx does not activate 'https' when the server doesn't have an ssl certificate installed
             $request->setConfig(array(
                 'ssl_verify_peer'  => false,
                 'ssl_verify_host'  => false, 

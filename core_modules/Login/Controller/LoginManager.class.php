@@ -29,9 +29,9 @@ namespace Cx\Core_Modules\Login\Controller;
 
 /**
  * Login
- * @copyright   CONTREXX WCMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX WCMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_login
  */
 class LoginManager {
@@ -88,7 +88,7 @@ class LoginManager {
         
         $endcode = $this->objTemplate->get();
         
-        // replace links from before contrexx 3
+        // replace links from before cloudrexx 3
         $ls = new \LinkSanitizer(
             ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
             $endcode);

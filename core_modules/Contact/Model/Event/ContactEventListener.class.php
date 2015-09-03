@@ -28,9 +28,9 @@
 /**
  * Class ContactEventListener
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  * @version     1.0.0
  */
@@ -46,9 +46,9 @@ use Cx\Core\Event\Model\Entity\DefaultEventListener;
 /**
  * Class ContactEventListener
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  * @version     1.0.0
  */

@@ -28,10 +28,10 @@
 /**
  * DataSet Test
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_modules_listing
  */
 
@@ -40,10 +40,10 @@ namespace Cx\Core_Modules\Listing\Testing\UnitTest;
 /**
  * DataSet Test
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Michael Ritter <michael.ritter@cloudrexx.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_modules_listing
  */
 class DataSetTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase

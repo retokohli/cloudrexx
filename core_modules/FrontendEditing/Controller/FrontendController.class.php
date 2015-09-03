@@ -31,9 +31,9 @@
  * This is the frontend controller for the frontend editing.
  * This adds the necessary javascripts and toolbars
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_frontendediting
  * @version     1.0.0
  */
@@ -46,9 +46,9 @@ namespace Cx\Core_Modules\FrontendEditing\Controller;
  * This is the frontend controller for the frontend editing.
  * This adds the necessary javascripts and toolbars
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_frontendediting
  * @version     1.0.0
  */
@@ -58,7 +58,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
      * Init the frontend editing.
      *
      * Register the javascripts and css files
-     * Adds the used language variables to contrexx-js variables, so the toolbar has access to these variables
+     * Adds the used language variables to cloudrexx-js variables, so the toolbar has access to these variables
      *
      * @param ComponentController $componentController
      */
@@ -76,7 +76,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
         \JS::registerCSS(substr(ASCMS_CORE_MODULE_FOLDER . '/' . $componentController->getName() . '/View/Style/Main.css', 1));
         \JS::registerJS($jsFilesRoot . '/Main.js');
         \JS::activate('cx');
-        // not used for contrexx version 3.1
+        // not used for cloudrexx version 3.1
 //        \JS::registerJS($jsFilesRoot . '/CKEditorPlugins.js');
 
         // activate ckeditor
@@ -141,7 +141,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
         $componentTemplate->loadTemplateFile('Toolbar.html');
 
         // @author: Michael Ritter
-        // not used for contrexx 3.1
+        // not used for cloudrexx 3.1
 //        global $_CORELANG;
 //        $template = $objTemplate;
 //        $root = $componentTemplate->fileRoot;

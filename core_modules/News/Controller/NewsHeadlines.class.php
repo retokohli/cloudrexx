@@ -27,10 +27,10 @@
 
 /**
  * News headlines
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @version 1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  * @todo        Edit PHP DocBlocks!
  */
@@ -41,11 +41,11 @@ namespace Cx\Core_Modules\News\Controller;
  * News headlines
  *
  * Gets all the news headlines
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
  * @version 1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary

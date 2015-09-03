@@ -28,9 +28,9 @@
 /**
  * uploadFactory
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_upload
  */
 
@@ -38,9 +38,9 @@ namespace Cx\Core_Modules\Upload\Controller;
 /**
  * UploadFactoryException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_upload
  */
 class UploadFactoryException extends \Exception {}
@@ -49,9 +49,9 @@ class UploadFactoryException extends \Exception {}
  * Upload Factory. Creates the right upload classes and initializes them.
  * This is a Singleton, use @link UploadFactory::getInstance() to work with.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_upload
  */
 class UploadFactory

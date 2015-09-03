@@ -28,9 +28,9 @@
 /**
  * Class Log Repository
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_syslog
  */
 
@@ -39,9 +39,9 @@ namespace Cx\Core_Modules\SysLog\Model\Repository;
 /**
  * Class Log Repository
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_syslog
  */
 class LogRepository extends \Doctrine\ORM\EntityRepository {

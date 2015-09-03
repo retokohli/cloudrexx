@@ -28,10 +28,10 @@
 /**
  * ContactLib
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  * @todo        Edit PHP DocBlocks!
  */
@@ -41,11 +41,11 @@ namespace Cx\Core_Modules\Contact\Controller;
 /**
  * ContactLib
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  */
 class ContactLib
@@ -285,7 +285,7 @@ class ContactLib
     /**
      * Get the form fields
      *
-     * @author      Comvation AG <info@comvation.com>
+     * @author      Cloudrexx AG <info@cloudrexx.com>
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $formID
      * @return      array
@@ -614,7 +614,7 @@ class ContactLib
     /**
      * Update an existing form
      *
-     * @author      Comvation AG <info@comvation.com>
+     * @author      Cloudrexx AG <info@cloudrexx.com>
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $formID
      * @param       string $emails
@@ -676,7 +676,7 @@ class ContactLib
     /**
      * Add a new form
      *
-     * @author      Comvation AG <info@Comvation.com>
+     * @author      Cloudrexx AG <info@Cloudrexx.com>
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       string $emails
      * @param       bool $showForm
@@ -910,7 +910,7 @@ class ContactLib
     /**
      * Delete a form
      *
-     * @author      Comvation AG <info@comvation.com>
+     * @author      Cloudrexx AG <info@cloudrexx.com>
      */
     protected function deleteForm($id)
     {
@@ -1187,7 +1187,7 @@ class ContactLib
     /**
      * Delete form fields and data
      *
-     * @author      Comvation AG <info@comvation.com>
+     * @author      Cloudrexx AG <info@cloudrexx.com>
      * @param       int $id
      */
     private function _deleteFormFieldsAndDataByFormId($id)

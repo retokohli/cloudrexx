@@ -28,11 +28,11 @@
 /**
  * Search
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @version     1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_search
  */
 
@@ -41,12 +41,12 @@ namespace Cx\Core_Modules\Search\Controller;
 /**
  * Search manager
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @access      public
  * @version     1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_search
  */
 class SearchManager
