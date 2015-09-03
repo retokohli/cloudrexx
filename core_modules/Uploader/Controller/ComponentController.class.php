@@ -51,7 +51,7 @@ class ComponentController extends SystemComponentController
             }
         }
         \ContrexxJavascript::getInstance()->setVariable(
-            'chunk_size', floor((\FWSystem::getMaxUploadFileSize()-1000000)/1000000).'mb', 'uploader'
+            'chunk_size', min(floor((\FWSystem::getMaxUploadFileSize()-1000000)/1000000), 20) .'mb', 'uploader'
         );
 
         \JS::activate('mediabrowser');

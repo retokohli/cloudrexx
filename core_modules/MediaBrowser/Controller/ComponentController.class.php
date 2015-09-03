@@ -142,7 +142,7 @@ class ComponentController extends
         );
 
         \ContrexxJavascript::getInstance()->setVariable(
-            'chunk_size', floor((\FWSystem::getMaxUploadFileSize()-1000000)/1000000).'mb', 'mediabrowser'
+            'chunk_size', min(floor((\FWSystem::getMaxUploadFileSize()-1000000)/1000000), 20).'mb', 'mediabrowser'
         );
         \ContrexxJavascript::getInstance()->setVariable(
             'languages', \FWLanguage::getActiveFrontendLanguages(), 'mediabrowser'
