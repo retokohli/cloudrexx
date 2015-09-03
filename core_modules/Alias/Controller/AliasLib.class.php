@@ -120,8 +120,7 @@ class AliasLib
     
     function _getURL($page)
     {
-        $lang = \FWLanguage::getLanguageCodeById($page->getLang());
-        return $page->getUrl('/' . $lang, '');
+        return $page->getUrl();
     }
     
     function _getAliasesWithSameTarget($aliasPage)
