@@ -27,9 +27,9 @@
 
 /**
  * Database access function(s)
- * @copyright    CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright    CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  * @version        1.0.0
  */
@@ -46,7 +46,7 @@ require_once UPDATE_LIB.'/adodb/adodb.inc.php';
  * creates a new database object first.
  * In case of an error, the reference argument $errorMsg is set
  * to the error message.
- * @author  Comvation Development Team <info@comvation.com>
+ * @author  Cloudrexx Development Team <info@cloudrexx.com>
  * @access  public
  * @version 1.0.0
  * @param   string  $errorMsg       Error message

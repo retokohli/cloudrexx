@@ -28,10 +28,10 @@
 namespace Cx\Lib\FileSystem;
 /**
  * File System
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework_file
  */
 
@@ -40,12 +40,12 @@ class FileSystemException extends \Exception {};
 /**
  * File System
  * Collection of file system (direct or through FTP) manipulation tools
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Janik Tschanz <janik.tschanz@comvation.com>
  * @author      Reto Kohli <reto.kohli@comvation.com>
  *              (new static methods, error system)
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework_file
  */
 class FileSystem

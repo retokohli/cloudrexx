@@ -28,10 +28,10 @@
 namespace Cx\Lib\FileSystem;
 /**
  * FTP File
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
 
@@ -46,10 +46,10 @@ class FTPFileException extends \Exception {};
  * which is a wrapper that uses either this class or
  * Cx\Lib\FileSystem\FileSystemFile for file operations, depending on the
  * system configuration.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
 class FTPFile implements FileInterface
@@ -185,11 +185,11 @@ class FTPFile implements FileInterface
         /*$parentDirectory = dirname($this->passedFilePath);
         if (!is_writable($parentDirectory)) {
             if (strpos($parentDirectory, ASCMS_DOCUMENT_ROOT) === 0) {
-                // parent directory lies within the Contrexx installation directory,
+                // parent directory lies within the Cloudrexx installation directory,
                 // therefore, we shall try to make it writable
                 \Cx\Lib\FileSystem\FileSystem::makeWritable($parentDirectory);
             } else {
-                \DBG::msg('Parent directory '.$parentDirectory.' lies outside of Contrexx installation and can therefore not be made writable!');
+                \DBG::msg('Parent directory '.$parentDirectory.' lies outside of Cloudrexx installation and can therefore not be made writable!');
             }
         }*/
 

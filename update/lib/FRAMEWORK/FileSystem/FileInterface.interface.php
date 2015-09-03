@@ -28,17 +28,17 @@
 namespace Cx\Lib\FileSystem;
 /**
  * File Interface
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
 
 /**
- * a Contrexx File interface
+ * a Cloudrexx File interface
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_filesystem
  */
 interface FileInterface {

@@ -26,19 +26,19 @@
  */
 
 /**
- * Contrexx Update System
+ * Cloudrexx Update System
  *
- * This class is used to update the system to a newer version of Contrexx.
+ * This class is used to update the system to a newer version of Cloudrexx.
  * 
- * @copyright   Contrexx WMS - Comvation AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx WMS - Cloudrexx AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  update
  */
 
 $php = phpversion();
 if ($php < '5.3') {
-    die('Das Contrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
+    die('Das Cloudrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
 // Debugging include

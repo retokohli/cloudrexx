@@ -27,11 +27,11 @@
 
 /**
  * Doctrine SQL Logger for DBG
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     3.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework_dbg
  * @todo        Edit PHP DocBlocks!
  */
@@ -39,11 +39,11 @@ namespace Cx\Lib\DBG;
 
 /**
  * Doctrine SQL Logger for DBG
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     3.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework_dbg
  * @todo        Edit PHP DocBlocks!
  */

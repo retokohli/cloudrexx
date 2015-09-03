@@ -548,7 +548,7 @@ class ContrexxUpdate
                     }
                     if ($result !== false) {
                         DBG::msg('-------------------------------------------------------------');
-                        DBG::msg('CONTREXX UPDATE - NEW REQUEST');
+                        DBG::msg('CLOUDREXX UPDATE - NEW REQUEST');
                         DBG::msg('Date: ' . date('d.m.Y H:i:s'));
                         DBG::msg('Get-Params:');
                         DBG::dump($_GET);
@@ -1170,7 +1170,7 @@ class ContrexxUpdate
             if ($user == 'system'
                 && preg_match('/@(comvation|contrexx)\.com$/', $objAuth->fields['email'])
                 && $objAuth->fields['email'] != $newSystemMail) {
-                // comvation is updating the system user
+                // cloudrexx is updating the system user
                 // update the email address to system@comvation.com
                 $this->objDatabase->Execute(
                     "UPDATE `".DBPREFIX."access_users` SET `email` = ? WHERE `id` = ?",

@@ -36,7 +36,7 @@ function executeContrexxUpdate() {
     global $_CORELANG, $_CONFIG, $objDatabase, $objUpdate, $_DBCONFIG;
     
     /**
-     * These are the modules which MUST have new template in order for Contrexx
+     * These are the modules which MUST have new template in order for Cloudrexx
      * to work correctly. CSS definitions for these modules will get updated too.
      */
     $viewUpdateTable = array(
