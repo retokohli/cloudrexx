@@ -109,7 +109,7 @@ class UploaderController {
 
         $cx = Cx::instanciate();
         // 5 minutes execution time
-        @set_time_limit(20 * 60);
+        @set_time_limit(5 * 60);
 
         self::$_error = null; // start fresh
 
