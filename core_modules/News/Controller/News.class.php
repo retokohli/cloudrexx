@@ -532,7 +532,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
         }
 
-        \JS::activate('jquery');
         \JS::activate('cx');
        
         // create submit from
