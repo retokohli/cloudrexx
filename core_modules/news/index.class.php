@@ -522,6 +522,8 @@ class news extends newsLibrary {
             }
         }
 
+        \JS::activate('cx');
+        
         // create submit from
         if (FWUser::getFWUserObject()->objUser->login()) {
             $this->_objTpl->hideBlock('news_add_comment_name');
