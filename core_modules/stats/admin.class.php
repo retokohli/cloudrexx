@@ -1046,7 +1046,8 @@ class stats extends statsLibrary
             'TXT_EXTERNAL_SEARCH_QUERIES'    => $_ARRAYLANG['TXT_EXTERNAL_SEARCH_QUERIES'],
             'TXT_SEARCH_TERMS'    => $_ARRAYLANG['TXT_SEARCH_TERMS'],
             'TXT_SEARCH_TERM'    => $_ARRAYLANG['TXT_SEARCH_TERM'],
-            'TXT_FREQUENCY'        => $_ARRAYLANG['TXT_FREQUENCY']
+            'TXT_FREQUENCY'        => $_ARRAYLANG['TXT_FREQUENCY'],
+            'TXT_NO_DATA_AVAILABLE' => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
         ));
 
         if (isset($this->arrSearchTerms['internal']) && count($this->arrSearchTerms['internal'])>0) {
@@ -1063,9 +1064,7 @@ class stats extends statsLibrary
             $this->_objTpl->hideBlock('stats_search_internal_nodata');
         } else {
             $this->_objTpl->hideBlock('stats_search_internal');
-            $this->_objTpl->setVariable(array(
-                'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
+            $this->_objTpl->touchBlock('stats_search_internal_nodata');
         }
 
         if (isset($this->arrSearchTerms['external']) && count($this->arrSearchTerms['external'])>0) {
@@ -1082,9 +1081,7 @@ class stats extends statsLibrary
             $this->_objTpl->hideBlock('stats_search_external_nodata');
         } else {
             $this->_objTpl->hideBlock('stats_search_external');
-            $this->_objTpl->setVariable(array(
-                'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
+            $this->_objTpl->touchBlock('stats_search_external_nodata');
         }
 
         if (isset($this->arrSearchTerms['summary']) && count($this->arrSearchTerms['summary'])>0) {
@@ -1101,9 +1098,7 @@ class stats extends statsLibrary
             $this->_objTpl->hideBlock('stats_search_summary_nodata');
         } else {
             $this->_objTpl->hideBlock('stats_search_summary');
-            $this->_objTpl->setVariable(array(
-                'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
+            $this->_objTpl->touchBlock('stats_search_summary_nodata');
         }
     }
 
