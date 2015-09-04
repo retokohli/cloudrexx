@@ -1356,9 +1356,7 @@ class NewsLibrary
         if ($objResult !== false) {
             $arrMonthTxt = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
             while (!$objResult->EOF) {
-                $startDate  = $objResult->fields['startDate'];
-                // If 'Scheduled publication' is active consider Scheduled publication 'startDate' as the option for date filter else use 'Publication' on 'date'
-                $filterDate = ($startDate !== '0000-00-00 00:00:00') ? strtotime($startDate) : $objResult->fields['date'];
+                $filterDate = $objResult->fields['date'];
                 $newsYear = date('Y', $filterDate);
                 $newsMonth = date('m', $filterDate);
                 if (!isset($monthlyStats[$newsYear.'_'.$newsMonth])) {
