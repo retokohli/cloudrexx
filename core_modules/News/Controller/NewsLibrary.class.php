@@ -1339,6 +1339,8 @@ class NewsLibrary
                     LEFT JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
                     LEFT JOIN '.DBPREFIX.'module_news_rel_categories AS nc ON nc.news_id = n.id
                     WHERE       n.validated = "1"
+                                AND (n.startdate <="' . date('Y-m-d H:i:s') . '" OR n.startdate="0000-00-00 00:00:00")
+                                AND (n.enddate >="' . date('Y-m-d H:i:s') . '" OR n.enddate="0000-00-00 00:00:00")
                                 AND n.status = 1
                                 AND nl.lang_id = '.FRONTEND_LANG_ID.'                         
                                 AND nl.is_active=1
@@ -1354,14 +1356,8 @@ class NewsLibrary
 
         if ($objResult !== false) {
             $arrMonthTxt = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
-            $currentDate = date('Y-m-d H:i:s');
             while (!$objResult->EOF) {
                 $startDate  = $objResult->fields['startDate'];
-                $endDate    = $objResult->fields['endDate'];
-                if ($startDate >= $currentDate || ($endDate !== '0000-00-00 00:00:00' && $endDate <= $currentDate )) {
-                    $objResult->MoveNext();
-                    continue;
-                }
                 // If 'Scheduled publication' is active consider Scheduled publication 'startDate' as the option for date filter else use 'Publication' on 'date'
                 $filterDate = ($startDate !== '0000-00-00 00:00:00') ? strtotime($startDate) : $objResult->fields['date'];
                 $newsYear = date('Y', $filterDate);
