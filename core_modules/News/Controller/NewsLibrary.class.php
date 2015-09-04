@@ -1329,7 +1329,6 @@ class NewsLibrary
                                 n.publisher_id   AS publisher_id,
                                 n.author         AS author,
                                 n.author_id      AS author_id,
-                                n.startdate      As startDate,
                                 n.allow_comments AS commentactive,
                                 nl.title         AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
