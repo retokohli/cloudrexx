@@ -1330,7 +1330,6 @@ class NewsLibrary
                                 n.author         AS author,
                                 n.author_id      AS author_id,
                                 n.startdate      As startDate,
-                                n.enddate        As endDate,
                                 n.allow_comments AS commentactive,
                                 nl.title         AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
@@ -1339,11 +1338,11 @@ class NewsLibrary
                     LEFT JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
                     LEFT JOIN '.DBPREFIX.'module_news_rel_categories AS nc ON nc.news_id = n.id
                     WHERE       n.validated = "1"
-                                AND (n.startdate <="' . date('Y-m-d H:i:s') . '" OR n.startdate="0000-00-00 00:00:00")
-                                AND (n.enddate >="' . date('Y-m-d H:i:s') . '" OR n.enddate="0000-00-00 00:00:00")
                                 AND n.status = 1
                                 AND nl.lang_id = '.FRONTEND_LANG_ID.'                         
                                 AND nl.is_active=1
+                                AND (n.startdate <="' . date('Y-m-d H:i:s') . '" OR n.startdate="0000-00-00 00:00:00")
+                                AND (n.enddate >="' . date('Y-m-d H:i:s') . '" OR n.enddate="0000-00-00 00:00:00")
                                 '.$categoryFilter.'
                                 ' .($this->arrSettings['news_message_protection'] == "1" && !\Permission::hasAllAccess() ? (
                                 ($objFWUser = \FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
