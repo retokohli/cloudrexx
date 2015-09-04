@@ -504,7 +504,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if (!$newsCommentActive) {
             return;
         }
-
+        
         // abort if request is unauthorized
         if (   $this->arrSettings['news_comments_anonymous'] == '0'
             && !\FWUser::getFWUserObject()->objUser->login()
@@ -512,7 +512,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $this->_objTpl->hideBlock('news_add_comment');
             return;
         }
-        
+         
         $name = '';
         $title = '';
         $message = '';
@@ -532,6 +532,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
         }
 
+        \JS::activate('cx');
+       
         // create submit from
         if (\FWUser::getFWUserObject()->objUser->login()) {
             $this->_objTpl->hideBlock('news_add_comment_name');
