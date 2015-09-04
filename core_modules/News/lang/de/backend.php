@@ -366,6 +366,5 @@ $_ARRAYLANG['TXT_NEWS_TAGS_ROW_DESCRIPTION'] = 'Block zur Auflistung der Tags';
 $_ARRAYLANG['TXT_NEWS_TAG_NAME_DESCRIPTION'] = 'Name des Tags';
 $_ARRAYLANG['TXT_NEWS_TAG_LINK_DESCRIPTION'] = 'Verlinkter Name des Tags';
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'] = 'Block zur Darstellung des Autors eines Kommentars';
-$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_ID'] = 'ID des dazugehörigen Benutzerkontos';
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'] = 'Eingabedatum des Kommentars';
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'] = 'Titel des Kommentars';

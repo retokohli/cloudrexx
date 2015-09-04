@@ -3696,8 +3696,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_TOP_NEWS_PLACEHOLDERS_USAGE'                           => $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'],
             'TXT_NEWS_COMMENTS'                                         => $_ARRAYLANG['TXT_NEWS_COMMENTS'],            
             'TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'                     => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'],
-            'TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_NAME'                => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_NAME'],
-            'TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_ID'                  => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_ID'],
             'TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'],
             'TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'                      => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'],
             'TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST'],

@@ -439,6 +439,5 @@ $_ARRAYLANG['TXT_NEWS_TAGS_ROW_DESCRIPTION'] = 'Block to list the tags';
 $_ARRAYLANG['TXT_NEWS_TAG_NAME_DESCRIPTION'] = 'Name of the tag';
 $_ARRAYLANG['TXT_NEWS_TAG_LINK_DESCRIPTION'] = 'Linked name of the tag';
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'] = 'Block to display the author of a comment';
-$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_ID'] = 'ID of the associated user account';
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'] = 'Submit date of the comment';
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'] = 'Title of the comment';
