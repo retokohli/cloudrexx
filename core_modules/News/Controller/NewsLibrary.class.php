@@ -2458,8 +2458,11 @@ EOF;
     /**
      * Lists all active comments of the news message specified by $messageId
      *
-     * @param   integer News message-ID
-     * @global  ADONewConnection
+     * @param object  $objTpl            Template object \Cx\Core\Html\Sigma
+     * @param integer $messageId         News message-ID
+     * @param integer $newsCommentActive Status of news comment activation
+     *
+     * @return null
      */
     public function parseCommentsOfMessage($objTpl, $messageId, $newsCommentActive)
     {
@@ -2510,7 +2513,7 @@ EOF;
         if ($count > intval($_CONFIG['corePagingLimit'])) {
             $paging = getPaging($count, $pos, '&amp;section=News&amp;cmd=details&amp;newsid='.$messageId, $_ARRAYLANG['TXT_NEWS_COMMENTS'], true);
         }
-        $this->_objTpl->setVariable('COMMENTS_PAGING', $paging);*/
+        $objTpl->setVariable('COMMENTS_PAGING', $paging);*/
 
         $i = 0;
         while (!$objResult->EOF) {
@@ -2539,14 +2542,14 @@ EOF;
      * Additionally, a notification is send out to the administration about the comment
      * by e-mail (only if the corresponding configuration option is set to do so).
      *
-     * @param   integer News message ID for which the comment shall be stored
-     * @param   string  Title of the news message for which the comment shall be stored.
-     *                  The title will be used in the notification e-mail
-     *                  {@link news::storeMessageComment()}
-     * @global    array
-     * @global    array
-     * @return  array   Returns an array of two elements. The first is either TRUE on success or FALSE on failure.
-     *                  The second element contains an error message on failure.
+     * @param object  $objTpl            Template object \Cx\Core\Html\Sigma
+     * @param integer $newsMessageId     News message ID for which the comment shall be stored
+     * @param string  $newsMessageTitle  Title of the news message for which the comment shall be stored.
+     *                                   The title will be used in the notification e-mail
+     *                                   {@link NewsLibrary::storeMessageComment()}
+     * @param integer $newsCommentActive Status of news comment activation
+     *
+     * @return null
      */
     public function parseMessageCommentForm($objTpl, $newsMessageId, $newsMessageTitle, $newsCommentActive)
     {
@@ -2859,7 +2862,7 @@ EOF;
         if (strlen($strSource) > 40) {
             $strSource = substr($strSource, 0, 26) . '...' . substr($strSource, (strrpos($strSource, '.')));
         }
-        return sprintf($linkSourceTag, contrexx_raw2xhtml($linkSource), contrexx_raw2xhtml($strSource));
+        return sprintf($linkSourceTag, contrexx_raw2encodedUrl($linkSource), contrexx_raw2xhtml($strSource));
     }
 
     /**
@@ -3040,7 +3043,7 @@ EOF;
 
             $objTpl->setVariable(array(
                 'TXT_NEWS_REDIRECT_INSTRUCTION' => $_ARRAYLANG['TXT_NEWS_REDIRECT_INSTRUCTION'],
-                'NEWS_REDIRECT_URL'             => contrexx_raw2xhtml($redirect),
+                'NEWS_REDIRECT_URL'             => contrexx_raw2encodedUrl($redirect),
                 'NEWS_REDIRECT_NAME'            => contrexx_raw2xhtml($redirectName),
             ));
             if ($objTpl->blockExists('news_redirect')) {
