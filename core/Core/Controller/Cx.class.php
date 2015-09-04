@@ -531,6 +531,7 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesAccessProfilePath;
         protected $websiteImagesAccessProfileWebPath;
         protected $websiteImagesAccessPhotoPath;
+        protected $websiteImagesAccessPhotoWebPath;
         
         /**
          * @var \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
@@ -2550,6 +2551,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesDataWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Data';
             $this->websiteImagesCrmProfileWebPath = $this->websiteImagesCrmWebPath . '/profile';
             $this->websiteImagesAccessProfileWebPath = $this->websiteImagesAccessWebPath . '/profile';
+            $this->websiteImagesAccessPhotoWebPath   = $this->websiteImagesAccessWebPath . '/photo';
             $this->websiteMediaarchive1WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive1';
             $this->websiteMediaarchive2WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive2';
             $this->websiteMediaarchive3WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive3';
@@ -3037,6 +3039,15 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteImagesAccessPhotoPath() {
             return $this->websiteImagesAccessPhotoPath;
+        }
+        
+        /**
+         * Return the offset path to the data repository of the access photo.
+         * Formerly known as ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.
+         * @return string
+         */
+        public function getWebsiteImagesAccessPhotoWebPath() {
+            return $this->websiteImagesAccessPhotoWebPath;
         }
 
 

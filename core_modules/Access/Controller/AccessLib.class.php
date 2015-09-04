@@ -286,14 +286,19 @@ class AccessLib
             break;
         case 'image':
             $arrSettings = \User_Setting::getSettings();
-
+            $cx    = \Cx\Core\Core\Controller\Cx::instanciate();
             $image = $objUser->getProfileAttribute($objAttribute->getId(), $historyId);
-            if (!$edit || file_exists(($attributeId == 'picture' ? ASCMS_ACCESS_PROFILE_IMG_PATH : ASCMS_ACCESS_PHOTO_IMG_PATH).'/'.$image)) {
+            $imageRepoWeb  = $attributeId == 'picture'
+                                ? $cx->getWebsiteImagesAccessProfileWebPath()
+                                : $cx->getWebsiteImagesAccessPhotoWebPath();
+            $imageRepoPath = $attributeId == 'picture'
+                                ? $cx->getWebsiteImagesAccessProfilePath()
+                                : $cx->getWebsiteImagesAccessPhotoPath();
+            
+            if (!$edit || file_exists($imageRepoPath .'/'. $image)) {
                 $arrPlaceholders['_VALUE'] = htmlentities($objUser->getProfileAttribute($objAttribute->getId(), $historyId), ENT_QUOTES, CONTREXX_CHARSET);
             }
-            $arrPlaceholders['_SRC'] = ($attributeId == 'picture' ?
-                    ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'
-                    : ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.'/')
+            $arrPlaceholders['_SRC'] = $imageRepoWeb
                 .(!empty($arrPlaceholders['_VALUE']) ?
                     $arrPlaceholders['_VALUE']
                     : ($attributeId == 'picture' ?
@@ -837,7 +842,7 @@ class AccessLib
                 $thumbnail = true;
             }
             $imageRepo    = $cx->getWebsiteImagesAccessPhotoPath().'/';
-            $imageRepoWeb = ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.'/';
+            $imageRepoWeb = $cx->getWebsiteImagesAccessPhotoWebPath().'/';
             $arrNoImage   = \User_Profile::$arrNoPicture;
         }
 
@@ -1815,8 +1820,9 @@ JS
             $arrSettings = \User_Setting::getSettings();
         }
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if ($profilePic) {
-            if (!$objImage->loadImage(ASCMS_ACCESS_PROFILE_IMG_PATH.'/'.$imageName)) {
+            if (!$objImage->loadImage($cx->getWebsiteImagesAccessProfilePath() .'/'. $imageName)) {
                 return false;
             }
 
@@ -1845,15 +1851,20 @@ JS
             }
 
             $thumb_name = \ImageManager::getThumbnailFilename($imageName);
-            return $objImage->saveNewImage(ASCMS_ACCESS_PROFILE_IMG_PATH.'/'.$thumb_name);
+            return $objImage->saveNewImage($cx->getWebsiteImagesAccessProfilePath() .'/'. $thumb_name);
         } else {
+            $thumb_name = \ImageManager::getThumbnailFilename($imageName);
             return $objImage->_createThumbWhq(
-                ASCMS_ACCESS_PHOTO_IMG_PATH.'/',
-                ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.'/',
+                $cx->getWebsiteImagesAccessPhotoPath().'/',
+                $cx->getWebsiteImagesAccessPhotoWebPath().'/',
                 $imageName,
                 $arrSettings['max_thumbnail_pic_width']['value'],
                 $arrSettings['max_thumbnail_pic_height']['value'],
-                70
+                70,
+                '',
+                $cx->getWebsiteImagesAccessPhotoPath().'/',
+                $cx->getWebsiteImagesAccessPhotoWebPath().'/',
+                $thumb_name
             );
         }
     }
@@ -1863,10 +1874,13 @@ JS
     {
         global $objDatabase;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         // Regex matching folders and files not to be deleted
         $noAvatarThumbSrc = \ImageManager::getThumbnailFilename(
+            $cx->getWebsiteImagesAccessProfileWebPath() .'/'.
             \User_Profile::$arrNoAvatar['src']);
         $noPictureThumbSrc = \ImageManager::getThumbnailFilename(
+            $cx->getWebsiteImagesAccessPhotoWebPath() .'/'.
             \User_Profile::$arrNoPicture['src']);
         $ignoreRe =
             '/(?:\.(?:\.?|svn)'.
@@ -1878,7 +1892,7 @@ JS
         $arrTrueFalse = array(true, false);
         foreach ($arrTrueFalse as $profilePics) {
             $imagePath = ($profilePics
-                ? ASCMS_ACCESS_PROFILE_IMG_PATH : ASCMS_ACCESS_PHOTO_IMG_PATH);
+                ? $cx->getWebsiteImagesAccessProfilePath() : $cx->getWebsiteImagesAccessPhotoPath());
             $arrImages = array();
             $offset = 0;
             $step = 50000;
