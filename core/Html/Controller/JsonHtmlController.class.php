@@ -70,14 +70,15 @@ class JsonHtmlController extends    \Cx\Core\Core\Model\Entity\Controller
      */
     public function updateOrder($params) {
         global $_ARRAYLANG, $objInit;
-
+        
         //get the language interface text
         $langData   = $objInit->loadLanguageData('Html');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
         
         $post = is_array($params['post']) ? $params['post'] : array();
         if (    empty($post)
-            ||  empty($post['sortOrder'])
+            ||  empty($post['prePosition'])
+            ||  empty($post['curPosition'])
             ||  empty($post['sortField'])
             ||  empty($post['component'])
             ||  empty($post['entity'])
@@ -86,50 +87,89 @@ class JsonHtmlController extends    \Cx\Core\Core\Model\Entity\Controller
         }
         
         //Get all the 'POST' values
-        $sortOrders = is_array($post['sortOrder']) 
-                      ? array_map('contrexx_input2int', $post['sortOrder'])
-                      : array();
-        $sortField  = !empty($post['sortField'])
-                      ? contrexx_input2raw($post['sortField'])
-                      : '';
-        $component  = !empty($post['component'])
-                      ? contrexx_input2raw($post['component'])
-                      : '';
-        $entity     = !empty($post['entity'])
-                      ? contrexx_input2raw($post['entity'])
-                      : '';
+        $sortField       = !empty($post['sortField'])
+                           ? contrexx_input2raw($post['sortField'])
+                           : '';
+        $sortOrder       = !empty($post['sortOrder'])
+                           ? contrexx_input2raw($post['sortOrder'])
+                           : '';
+        $componentName   = !empty($post['component'])
+                           ? contrexx_input2raw($post['component'])
+                           : '';
+        $entityName      = !empty($post['entity'])
+                           ? contrexx_input2raw($post['entity'])
+                           : '';
+        $pagingPosition  = !empty($post['pagingPosition'])
+                           ? contrexx_input2int($post['pagingPosition'])
+                           : 0;
+        $currentPosition = isset($post['curPosition']) 
+                           ? contrexx_input2int($post['curPosition'])
+                           : 0;
+        $prePosition     = isset($post['prePosition']) 
+                           ? contrexx_input2int($post['prePosition'])
+                           : 0;
         
         $em = $this->cx->getDb()->getEntityManager();
         $componentRepo   = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-        $objComponent    = $componentRepo->findOneBy(array('name' => $component));
-        $entityNameSpace = $objComponent->getNamespace() . '\\Model\\Entity\\' . $entity;
+        $objComponent    = $componentRepo->findOneBy(array('name' => $componentName));
+        $entityNameSpace = $objComponent->getNamespace() . '\\Model\\Entity\\' . $entityName;
         //check whether the entity namespace is a valid one or not
         if (!in_array($entityNameSpace, $objComponent->getEntityClasses())) {
             throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
         }
         
-        //Get the Repository object of the corresponding Entity
-        $entityRepo     = $em->getRepository($entityNameSpace);
-        //Get the 'Primary key' name
-        $entityObject   = $em->getClassMetadata($entityNameSpace);
-        $primaryKeyName = $entityObject->getSingleIdentifierFieldName();
-        $classMethods   = get_class_methods($entityObject->newInstance());
-        //check whether the updating entity set method is a valid one or not
-        if (!in_array('set'.ucfirst($sortField), $classMethods)) {
+        $entityObject = $em->getClassMetadata($entityNameSpace);
+        $classMethods = get_class_methods($entityObject->newInstance());
+        //check whether the updating entity set/get method is a valid one or not
+        if (    !in_array('set'.ucfirst($sortField), $classMethods)
+            ||  !in_array('get'.ucfirst($sortField), $classMethods)
+        ) {
             throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
         }
         
-        //update the order field
-        $orderId = 1;
-        foreach ($sortOrders as $sortOrder) {
-            $entity = $entityRepo->findOneBy(array($primaryKeyName => $sortOrder));
-            if ($entity) {
-                $entity->{'set'.ucfirst($sortField)}($orderId);
-                $orderId++;
+        //update the entities order field in DB
+        $oldPosition = $pagingPosition + $prePosition;
+        $newPosition = $pagingPosition + $currentPosition;
+
+        $min = min(array($newPosition, $oldPosition));
+        $max = max(array($newPosition, $oldPosition));
+
+        $offset = $min - 1;
+        $limit  = ($max - $min) + 1;
+
+        $qb = $em->createQueryBuilder();
+        $qb ->select('e')
+            ->from($entityNameSpace, 'e')
+            ->orderBy('e.' . $sortField, $sortOrder)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+        $objResult = $qb->getQuery()->getResult();
+
+        if ($objResult) {
+            if ($oldPosition > $newPosition) {
+                krsort($objResult);
             }
+            $i = 1;
+            $orderFieldSetMethodName = 'set'.ucfirst($sortField);
+            $orderFieldGetMethodName = 'get'.ucfirst($sortField);
+            foreach ($objResult as $result) {
+                $currentOrder = $result->$orderFieldGetMethodName();
+                if ($i == 1) {
+                    $firstResult = $result;
+                    $sortOrder   = $currentOrder;
+                    $i++;
+                    continue;
+                } else if ($i == count($objResult)) {
+                    $firstResult->$orderFieldSetMethodName($currentOrder);
+                    $result->$orderFieldSetMethodName($sortOrder);
+                    continue;
+                }
+                $result->$orderFieldSetMethodName($sortOrder);
+                $sortOrder = $currentOrder;
+                $i++;
+            }
+            $em->flush();
         }
-        $em->flush();
-        
         return array('status' => 'success');
     }
 }

@@ -355,41 +355,35 @@ class ViewGenerator {
      * 
      * @return boolean
      */
-    protected function getSortingOption($object) {
+    protected function getSortingOption($object)
+    {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $em = $cx->getDb()->getEntityManager();
-
-        //For sorting the rows, we need to get the primary key name 
-        //for updating the sorted order value into database
-        $sortBy = isset($this->options['functions']['sortBy']) 
-                    ? $this->options['functions']['sortBy']
-                    : '';
+        $sortBy = (     isset($this->options['functions']['sortBy']) 
+                    &&  is_array($this->options['functions']['sortBy'])
+                  )
+                  ? $this->options['functions']['sortBy']
+                  : array();
+        //If the option 'sortBy' is not set in the function array
+        // then disable the row sorting.
         if (empty($sortBy)) {
             return;
         }
-
-        $entityNameSpace = '';
-        switch (true) {
-            case is_array($object):
-                foreach($object as $entity) {
-                    if (is_object($entity)) {
-                        $entityNameSpace = get_class($entity);
-                        break;
-                    }
-                }
-                break;
-            case is_object($object):
-                $entityNameSpace = get_class($object);
-                break;
-            default :
-                $entityNameSpace = $object;
-                break;
+        
+        //If 'sorting' is applied and sorting field is not equal to
+        //'sortBy' => 'field' then disable the row sorting.
+        $sortField = key($this->options['functions']['sortBy']['field']);
+        if (isset($_GET['order']) && stripos($_GET['order'], $sortField) === false) {
+            return;
         }
 
-        if ($entityNameSpace) {
-            $entityObject   = $em->getClassMetadata($entityNameSpace);
-            $primaryKeyName = $entityObject->getSingleIdentifierFieldName(); //get primary key name
-            $this->options['functions']['sortBy']['sortingKey'] = $primaryKeyName;
+        //If the function array has 'order' option and the order by field 
+        //is not equal to 'sortBy' => 'field' then disable the row sorting
+        $orderOption = (    isset($this->options['functions']['order']) 
+                        &&  is_array($this->options['functions']['order'])
+                       ) 
+                       ? key($this->options['functions']['order']) : array();
+        if (!empty($orderOption) && stripos($orderOption, $sortField) === false) {
+            return;
         }
 
         $componentName = '';
@@ -402,10 +396,44 @@ class ViewGenerator {
         ) {
             $jsonObject = $sortBy['jsonadapter']['object'];
             $jsonAct    = $sortBy['jsonadapter']['act'];
-        } elseif (!isset($sortBy['jsonadapter']) && !empty($entityNameSpace)) {
+        } else {
+            //If the 'sortBy' option does not have 'jsonadapter', 
+            //we need to get the entity namespace for updating the sorting order in database
+            $entityNameSpace = '';
+            switch (true) {
+                case is_array($object):
+                    foreach($object as $entity) {
+                        if (is_object($entity)) {
+                            $entityNameSpace = get_class($entity);
+                            break;
+                        }
+                    }
+                    break;
+                case (is_object($object) &&  $object instanceof \Cx\Model\Base\EntityBase):
+                    $entityNameSpace = get_class($object);
+                    break;
+                case (stripos($object, 'Cx') !== false):
+                    $entityNameSpace = $object;
+                    break;
+                default :
+                    break;
+            }
+
+            //If the entity namespace is empty then disable the row sorting
+            if (empty($entityNameSpace)) {
+                return;
+            }
+
             $split          = explode('\\', $entityNameSpace);
             $componentName  = isset($split[2]) ? $split[2] : '';
             $entityName     = isset($split) ? end($split) : '';
+        }
+
+        //Get the current sorting order
+        $order     = isset($_GET['order']) ? explode('/', $_GET['order']) : '';
+        $sortOrder = ($sortBy['field'][$sortField] == SORT_ASC) ? 'ASC' : 'DESC';
+        if ($order) {
+            $sortOrder = !empty($order[1]) ? $order[1] : 'ASC';
         }
 
         //Register the CX variables
@@ -415,7 +443,9 @@ class ViewGenerator {
             'entity'         => $entityName,
             'jsonObject'     => $jsonObject,
             'jsonAct'        => $jsonAct,
-            'sortField'      => key($this->options['functions']['sortBy']['field'])
+            'sortOrder'      => $sortOrder,
+            'sortField'      => $sortField,
+            'pagingPosition' => isset($_GET['pos']) ? contrexx_input2int($_GET['pos']) : 0
         ), 'ViewGenerator/sortBy');
 
         //Register the script Backend.js and activate the jqueryui and cx for the row sorting
