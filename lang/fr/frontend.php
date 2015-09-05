@@ -226,7 +226,7 @@ $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Enchères";
 $_ARRAYLANG['TXT_MARKET_LATEST'] = "Dernières annonces";
 $_ARRAYLANG['TXT_CORE_LAST_MODIFIED_PAGE'] = "Geändert am";
 $_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Groupe primaire des utilisateurs";
-$_ARRAYLANG['TXT_CSRF_TITLE'] = "Contrexx security information";
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Cloudrexx security information";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = 'You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <a href="%1$s">save changes</a></li><li>after clicking a link inside an e-mail message or outside the administration interface, click <a href="%2$s">discard changes</a></li></ul>';
 $_ARRAYLANG['TXT_CSRF_ABORT'] = "discard changes";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "save changes";

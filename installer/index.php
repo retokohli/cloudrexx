@@ -42,7 +42,7 @@
 
 $php = phpversion();
 if ($php < '5.3') {
-    die('Das Contrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
+    die('Das Cloudrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
 $offsetPath = '';

@@ -3,8 +3,8 @@ global $_DBCONFIG, $_PATHCONFIG, $_FTPCONFIG, $_CONFIG;
 /**
 * @exclude
 *
-* Contrexx CMS Web Installer
-* Please use the Contrexx CMS installer to configure this file
+* Cloudrexx CMS Web Installer
+* Please use the Cloudrexx CMS installer to configure this file
 * or edit this file and configure the parameters for your site and
 * database manually.
 */

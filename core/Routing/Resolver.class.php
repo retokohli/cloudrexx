@@ -322,7 +322,7 @@ class Resolver {
                         }
 
                         // TODO: refactor system to be able to remove this backward compatibility
-                        // Backwards compatibility for code pre Cloudrexx 3.0 (update)
+                        // Backwards compatibility for code pre Contrexx 3.0 (update)
                         $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $command;
                         $_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
 

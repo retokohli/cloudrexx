@@ -117,7 +117,7 @@ $_ARRAYLANG['TXT_REPLACEMENT_LIST'] = 'Yer tutacağı listesi';
 $_ARRAYLANG['TXT_FILES'] = 'Veriler (Dosyalar)';
 $_ARRAYLANG['TXT_CONTENTS'] = 'İçerikler';
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = 'Yer tutacakları dizini';
-$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'A detailed list of placeholders can be found in the <a href="http://www.contrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Contrexx&reg; placeholder directory</a>.';
+$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'A detailed list of placeholders can be found in the <a href="http://www.cloudrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Cloudrexx&reg; placeholder directory</a>.';
 $_ARRAYLANG['TXT_CHANNELS'] = 'Channels';
 $_ARRAYLANG['TXT_MODULE_URLS'] = 'Links to core modules';
 $_ARRAYLANG['TXT_CONTACT'] = 'Contact';

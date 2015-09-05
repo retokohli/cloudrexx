@@ -331,7 +331,7 @@ function _newsUpdate() {
 
                 //title is html entity style
                 $title = html_entity_decode($title, ENT_QUOTES, CONTREXX_CHARSET);
-                //teaserText is html entity style, but no contrexx was specified on encoding
+                //teaserText is html entity style, but no cloudrexx was specified on encoding
                 $teaserText = html_entity_decode($teaserText);
 
                 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_news` SET `title`="'.addslashes($title).'", `teaser_text`="'.addslashes($teaserText).'" where `id`='.$id);

@@ -27,7 +27,7 @@
  
 /**
  * NodePlaceholder class according to
- * http://contrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
+ * http://www.cloudrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
  * 
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
@@ -53,7 +53,7 @@ class NodePlaceholderException extends \Exception {}
 
 /**
  * NodePlaceholder class according to
- * http://contrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
+ * http://www.cloudrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
  * 
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
@@ -372,7 +372,7 @@ class NodePlaceholder {
     
     /**
      * Returns the placeholder in the format specified in
-     * http://contrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
+     * http://www.cloudrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
      * @param boolean $forceNodeId (optional) Wheter to force usage of node ID or not
      * @param boolean $parsedStyle (optional) Wheter to return template parsed format or not
      * @return string String placeholder

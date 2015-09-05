@@ -2025,7 +2025,7 @@ namespace Cx\Core\Core\Controller {
                     $endcode = preg_replace('/<meta.*?X-UA-Compatible.*?>/i', '', $endcode);
                 }
 
-                // replace links from before cloudrexx 3
+                // replace links from before contrexx 3
                 $ls = new \LinkSanitizer(
                     $this->codeBaseOffsetPath . \Env::get('virtualLanguageDirectory').'/',
                     $endcode);
@@ -2135,7 +2135,7 @@ namespace Cx\Core\Core\Controller {
 
                 $endcode = $this->template->get();
 
-                // replace links from before cloudrexx 3
+                // replace links from before contrexx 3
                 $ls = new \LinkSanitizer(
                     ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
                     $endcode);

@@ -120,7 +120,7 @@ $_ARRAYLANG['TXT_REPLACEMENT_LIST'] = 'Platzhalter Liste';
 $_ARRAYLANG['TXT_FILES'] = 'Dateien';
 $_ARRAYLANG['TXT_CONTENTS'] = 'Inhalte';
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = 'Platzhalter Verzeichnis';
-$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'Eine detaillierte Platzhalter-Liste finden Sie im <a href="http://www.contrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Contrexx&reg; Platzhalterverzeichnis</a>.';
+$_ARRAYLANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'] = 'Eine detaillierte Platzhalter-Liste finden Sie im <a href="http://www.cloudrexx.com/wiki/de/index.php?title=Platzhalterverzeichnis" target="_blank">Cloudrexx&reg; Platzhalterverzeichnis</a>.';
 $_ARRAYLANG['TXT_CHANNELS'] = 'Ansichten';
 $_ARRAYLANG['TXT_MODULE_URLS'] = 'Verlinkungen Grundanwendungen';
 $_ARRAYLANG['TXT_CONTACT'] = 'Kontakt';
