@@ -453,7 +453,7 @@ class ThemeRepository
                 'name' => $theme->getThemesname(),
                 'description' => '',
                 'type' => 'template',
-                'publisher' => 'Comvation AG',
+                'publisher' => 'Cloudrexx AG',
                 'subtype' => null,
                 'versions' => array(
                     'state' => 'stable',

@@ -663,7 +663,7 @@ class License {
                 `is_licensed` = \'0\' , 
                 `additional_data` = NULL
             WHERE
-                `distributor` = \'Comvation AG\'
+                `distributor` = \'Cloudrexx AG\'
         ';
         $objDb->Execute($query);
         $query = '
@@ -774,7 +774,7 @@ class License {
             FROM
                 '.DBPREFIX.'modules
             WHERE
-                `distributor` != \'Comvation AG\'
+                `distributor` != \'Cloudrexx AG\'
                 OR
                 `is_licensed` = \'1\'
         ';

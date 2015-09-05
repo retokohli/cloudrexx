@@ -1169,7 +1169,7 @@ class ReflectionComponent {
         }
 
         // modules
-        $distributor = 'Comvation AG';
+        $distributor = 'Cloudrexx AG';
         $workbenchComponent = new self('Workbench', 'core_module');
         if ($workbenchComponent->exists()) {
             $workbench = new \Cx\Core_Modules\Workbench\Controller\Workbench();
