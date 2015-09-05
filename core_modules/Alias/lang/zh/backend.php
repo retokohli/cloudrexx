@@ -67,7 +67,7 @@ $_ARRAYLANG['TXT_ALIAS_NO_ALIASES_MSG'] = "There are no aliases defined!";
 $_ARRAYLANG['TXT_ALIAS_REQUIREMENTS_DESC'] = "The alias administration does only work on an <strong>Apache</strong> webserver with the extension <strong>mod_rewrite</strong> enabled.<br /> Also, the usage of <strong>.htaccess</strong> files must be allowed by the server.";
 $_ARRAYLANG['TXT_ALIAS_USE_ALIAS_ADMINISTRATION'] = "Use alias administration";
 $_ARRAYLANG['TXT_ALIAS_APACHE_MISSING'] = "You are using another webserver than Apache. Alias management only works with Apache, so you cannot use aliases on this server.";
-$_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Contrexx could not determine whether the extension <strong>mod_rewrite</strong> is enabled. Therefore, the alias management cannot be activated, as it would render the site inaccessible if the extension <strong>mod_rewrite</strong> was missing.<br/><br/>
+$_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Cloudrexx could not determine whether the extension <strong>mod_rewrite</strong> is enabled. Therefore, the alias management cannot be activated, as it would render the site inaccessible if the extension <strong>mod_rewrite</strong> was missing.<br/><br/>
 If you are sure that the extension <strong>mod_rewrite</strong> is available, you can enable the alias management manually. To do so, create a new file named <strong>.htaccess</strong> in the top directory of the web site with the following content:
 <br/><div style=\"margin: 10px;\"><code>RewriteEngine On</code></div>
 Next time you access alias management, it will be activated automatically.";

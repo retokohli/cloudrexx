@@ -67,7 +67,7 @@ $_ARRAYLANG['TXT_PRIVATE_NOTIFICATION_LINK'] = "Su Notificaci&oacute;n:";
 $_ARRAYLANG['PRIVATE_MESSAGE_DELETE_SUCCESS'] = "Mensaje eliminado con &eacute;xito";
 $_ARRAYLANG['PRIVATE_MESSAGE_NO_ENTRIES'] = "No tiene mensajes";
 $_ARRAYLANG['TXT_U2U_PREVIEW_MESSAGE'] = "Previsualizar mensaje";
-$_ARRAYLANG['TXT_U2U_PREVIEW_WEBSITE'] = "http://www.comvation.com";
+$_ARRAYLANG['TXT_U2U_PREVIEW_WEBSITE'] = "http://www.cloudrexx.com";
 $_ARRAYLANG['TXT_U2U_INSERT_MAIL_SUBJECT'] = " \\\"[USERNAME]\\\" le ha enviado un mensaje privado";
 $_ARRAYLANG['TXT_U2U_INSERT_MAIL_BODY'] = "  \\\"[USERNAME]\\\" le ha enviado un mensaje privado \n Pulse aqu&iacute; http://ss4ugroup.comvation.com/index.php?section=U2u&cmd=notification para leerlo";
 $_ARRAYLANG['TXT_U2U_ADDRESS_BOOK'] = "Contactos";

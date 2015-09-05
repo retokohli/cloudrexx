@@ -212,6 +212,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return string Command description
      */
     public function getCommandDescription($command, $short = false) {
-        return 'Updates Contrexx license';
+        return 'Updates Cloudrexx license';
     }
 }

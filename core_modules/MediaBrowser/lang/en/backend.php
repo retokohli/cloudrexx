@@ -40,7 +40,7 @@
 global $_ARRAYLANG;
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER'] = "MediaBrowser";
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_DESCRIPTION']
-                                                              = "A filebrowser for all contrexx applications.";
+                                                              = "A filebrowser for all cloudrexx applications.";
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_DEFAULT']       = "Modal Tests";
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_BROWSER']       = "MediaBrowser";
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_DEFAULT']       = "Uploader";

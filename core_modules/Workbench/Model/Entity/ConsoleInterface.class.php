@@ -85,7 +85,7 @@ class ConsoleInterface extends UserInterface {
      * Shows help for workbench
      */
     private function showHelp() {
-        echo 'Contrexx Workbench command line utility
+        echo 'Cloudrexx Workbench command line utility
 
 Synopsis: workbench(.bat) <subcommand> [options] [parameter]
 

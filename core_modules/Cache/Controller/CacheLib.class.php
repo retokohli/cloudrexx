@@ -526,7 +526,7 @@ class CacheLib
 
         $request  = "BAN $domainOffset HTTP/1.0\r\n";
         $request .= "Host: $requestDomain\r\n";
-        $request .= "User-Agent: Contrexx Varnish Cache Clear\r\n";
+        $request .= "User-Agent: Cloudrexx Varnish Cache Clear\r\n";
         $request .= "Connection: Close\r\n\r\n";
 
         fwrite($varnishSocket, $request);

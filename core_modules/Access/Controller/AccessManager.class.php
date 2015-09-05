@@ -2047,7 +2047,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'         => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'],
         ));
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_ACCESS_SOCIALLOGIN_MANUAL'                     => sprintf($_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'], "http://www.contrexx.com/wiki/de/index.php?title=Social_Login"),
+            'TXT_ACCESS_SOCIALLOGIN_MANUAL'                     => sprintf($_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'], "http://www.cloudrexx.com/wiki/de/index.php?title=Social_Login"),
         ));
 
         if (isset($_POST['access_save_settings'])) {

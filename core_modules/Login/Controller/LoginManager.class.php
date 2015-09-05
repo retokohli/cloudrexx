@@ -88,7 +88,7 @@ class LoginManager {
         
         $endcode = $this->objTemplate->get();
         
-        // replace links from before cloudrexx 3
+        // replace links from before contrexx 3
         $ls = new \LinkSanitizer(
             ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
             $endcode);

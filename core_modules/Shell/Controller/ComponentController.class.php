@@ -48,7 +48,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     break;
                 }
             case 'shell':
-                return 'Interactive shell for Contrexx command mode';
+                return 'Interactive shell for Cloudrexx command mode';
                 break;
             case 'prompt':
                 return 'Change interactive shell command prompt';
@@ -84,7 +84,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         $this->commandRunning = true;
-        echo 'This is Contrexx Command mode shell v3.2
+        echo 'This is Cloudrexx Command mode shell v3.2
 Please type `help` to find available commands
 ';
         $componentRepo = $this->cx->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
