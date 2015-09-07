@@ -849,16 +849,16 @@ class AccessLib
         if ($value !== false && $value !== '' && (!$edit || file_exists($imageRepo.$value))) {
             $imageSet = true;
             $image['src'] =
-                $imageRepoWeb.($thumbnail
-                    ? \ImageManager::getThumbnailFilename($value) : $value);
+                        ($thumbnail
+                    ? \ImageManager::getThumbnailFilename($imageRepoWeb . $value) : $imageRepoWeb . $value);
             $image['path'] = htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET);
 
         } else {
             $imageSet = false;
             $image['src'] =
-                $imageRepoWeb.($thumbnail
-                    ? \ImageManager::getThumbnailFilename($arrNoImage['src'])
-                    : $arrNoImage['src']);
+                    ($thumbnail
+                    ? \ImageManager::getThumbnailFilename($imageRepoWeb . $arrNoImage['src'])
+                    : $imageRepoWeb . $arrNoImage['src']);
             $image['path'] = '';
         }
 
@@ -1850,8 +1850,8 @@ JS
                     $arrSettings['profile_thumbnail_pic_height']['value']);
             }
 
-            $thumb_name = \ImageManager::getThumbnailFilename($imageName);
-            return $objImage->saveNewImage($cx->getWebsiteImagesAccessProfilePath() .'/'. $thumb_name);
+            $thumb_name = \ImageManager::getThumbnailFilename($cx->getWebsiteImagesAccessProfilePath() .'/'.$imageName);
+            return $objImage->saveNewImage($thumb_name, true);
         } else {
             $thumb_name = \ImageManager::getThumbnailFilename($imageName);
             return $objImage->_createThumbWhq(
@@ -1864,7 +1864,7 @@ JS
                 '',
                 $cx->getWebsiteImagesAccessPhotoPath().'/',
                 $cx->getWebsiteImagesAccessPhotoWebPath().'/',
-                $thumb_name
+                basename($cx->getWebsiteImagesAccessProfilePath() .'/'. $thumb_name)
             );
         }
     }
@@ -1891,6 +1891,8 @@ JS
 
         $arrTrueFalse = array(true, false);
         foreach ($arrTrueFalse as $profilePics) {
+            $imageWebPath = ($profilePics
+                ? $cx->getWebsiteImagesAccessProfileWebPath() : $cx->getWebsiteImagesAccessPhotoWebPath());
             $imagePath = ($profilePics
                 ? $cx->getWebsiteImagesAccessProfilePath() : $cx->getWebsiteImagesAccessPhotoPath());
             $arrImages = array();
@@ -1954,8 +1956,11 @@ JS
                     $arrImagesDb = array();
                     while (!$objImage->EOF) {
                         $arrImagesDb[] = $objImage->fields['picture'];
-                        $arrImagesDb[] = \ImageManager::getThumbnailFilename(
-                            $objImage->fields['picture']);
+                        $arrImagesDb[] = basename(
+                            \ImageManager::getThumbnailFilename(
+                                $imageWebPath
+                                .'/'. $objImage->fields['picture']
+                        ));
                         $objImage->MoveNext();
                     }
                     $offset += $step;
