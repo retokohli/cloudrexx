@@ -1424,6 +1424,8 @@ die("Failed to update the Cart!");
                 self::$objTemplate->setGlobalVariable(array(
                     'SHOP_PRODUCT_DISCOUNTPRICE' => $discountPrice,
                     'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
+                    'SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_1' => $_ARRAYLANG['TXT_SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_1'],
+                    'SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_2' => $_ARRAYLANG['TXT_SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_2'],
                 ));
                 if (self::$objTemplate->blockExists('price_discount'))
                     self::$objTemplate->touchBlock('price_discount');
