@@ -3042,7 +3042,7 @@ INSERT INTO `contrexx_module_calendar_registration_form_field_name` (`field_id`,
 INSERT INTO `contrexx_module_calendar_registration_form_field_name` (`field_id`, `form_id`, `lang_id`, `name`, `default`) VALUES (1,1,1,'Anrede','Sehr geehrte Frau,Sehr geehrter Herr');
 INSERT INTO `contrexx_module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (8,5,'numPaging','TXT_CALENDAR_NUM_PAGING','15','',1,'','',1);
 INSERT INTO `contrexx_module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (9,5,'numEntrance','TXT_CALENDAR_NUM_EVENTS_ENTRANCE','5','',1,'','',2);
-INSERT INTO `contrexx_module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (10,6,'headlinesStatus','TXT_CALENDAR_HEADLINES_STATUS','1','',3,'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE','',1);
+INSERT INTO `contrexx_module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (10,6,'headlinesStatus','TXT_CALENDAR_HEADLINES_STATUS','0','',3,'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE','',1);
 INSERT INTO `contrexx_module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (11,6,'headlinesCategory','TXT_CALENDAR_HEADLINES_CATEGORY','','',5,'','getCategoryDorpdown',3);
 INSERT INTO `contrexx_module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (12,6,'headlinesNum','TXT_CALENDAR_HEADLINES_NUM','3','',1,'','',2);
 INSERT INTO `contrexx_module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (14,7,'publicationStatus','TXT_CALENDAR_PUBLICATION_STATUS','2','TXT_CALENDAR_PUBLICATION_STATUS_INFO',3,'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE','',0);
@@ -5554,7 +5554,7 @@ INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VA
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (35,'lastAccessId','382',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (37,'newsTeasersStatus','0',8);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (39,'feedNewsMLStatus','0',22);
-INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (40,'calendarheadlines','1',21);
+INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (40,'calendarheadlines','0',21);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (41,'calendarheadlinescount','1',21);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (42,'blockStatus','1',7);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (44,'calendarheadlinescat','0',21);
