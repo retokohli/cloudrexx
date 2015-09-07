@@ -21,6 +21,16 @@ use Cx\Model\Base\EntityBase;
  */
 class MediaBrowser extends EntityBase
 {
+    protected static $optionValues = [
+        'views',
+        'startview',
+        'startmediatype',
+        'mediatypes',
+        'multipleselect',
+        'modalopened',
+        'modalClosed'
+    ];
+
     /**
      * The set options for the mediabrowser
      * @var Array
@@ -91,6 +101,9 @@ class MediaBrowser extends EntityBase
             if (is_int($key)) {
                 $optionsString .= $value . ' ';
             } else {
+                if (in_array($key, self::$optionValues)){
+                    $key = 'data-cx-Mb-'.$key;
+                }
                 $optionsString .= $key . '="' . $value . '" ';
             }
         }
@@ -123,7 +136,7 @@ class MediaBrowser extends EntityBase
      * @return self
      */
     public function addClass($class) {
-        $this->addOption('option', $class);
+        $this->addOption('class', $class);
         return $this;
     }
 

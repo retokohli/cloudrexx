@@ -1,5 +1,5 @@
 #media_image_manipulation_form table td {
-	padding: 0;
+    padding: 0;
 }
 
 #media_image_manipulation {
@@ -9,29 +9,37 @@
 }
 
 #media_image_manipulation table td {
-	border: 0;
-	vertical-align: middle;
+    border: 0;
+    vertical-align: middle;
 }
 
 #media_image_save_as {
-    width: 370px;
-    float: left;
+    width: 100%;
     padding: 5px 0 5px 0;
     background: #FFFFFF;
+    vertical-align: top;
+    text-align: center;
 }
 
 #media_image_save_as input[type=submit],
 #media_image_save_as select {
-	padding: 2px 10px;
-	margin: 5px 0 5px 0;
+    padding: 10px 15px;
+    margin: 5px 0 5px 0;
     color: #444444;
     text-shadow: 1px 1px #FFFFFF;
     border: 1px solid #BBBBBB;
-    background: #dadada url('../../../../core/Core/View/Media/button_bg.png') repeat-x left top;
+    cursor: pointer;
+}
+
+#media_image_save_as input[type=submit]:hover {
+    background-color: rgb(214, 214, 214);
+}
+
+#media_image_save_as input[type=submit]:active {
+    background-color: rgb(208, 208, 208);
 }
 
 #media_image_save_as #save_as_button {
-    float: left;
     margin: 3px 0 3px 0;
 }
 
@@ -42,13 +50,17 @@
 }
 
 #media_image_save_as #save_as_value {
-    float: left;
     margin: 4px 0 0 10px;
+    padding: 8px 15px 9px;
+    vertical-align: top;
 }
 
 #media_image_save_as #save_as_ext {
-    float: left;
-    margin: 5px 0 0 5px;
+    padding: 8px 5px 11px;
+    display: inline-block;
+    margin: 4px 0;
+    color: #444444;     text-shadow: 1px 1px #FFFFFF;     border: 1px solid #BBBBBB;
+    background-color: rgb(221, 221, 221);
 }
 
 #media_image_save_as h2 {
@@ -220,19 +232,19 @@
     #media_image_manipulation fieldset {
         padding-top: 0;
     }
-    
+
     #media_image_manipulation legend {
         padding-bottom: 5px;
     }
-    
+
     #media_image_manipulation #fs_crop_image {
         height: 190px;
     }
-    
+
     #media_image_manipulation #edit_functions_right #fs_rotate_image {
         height: 77px;
     }
-    
+
     #media_image_manipulation #edit_functions_right #fs_scale_image {
         height: 102px;
     }
@@ -240,40 +252,40 @@
 
 /* New style */
 #media_image_manipulation #media_image_functions {
-	width: 216px;
-	float: left;
-	margin: 0 20px 20px 0;
-	border-right: 1px solid #E5E5E5;
+    width: 216px;
+    float: left;
+    margin: 0 20px 20px 0;
+    border-right: 1px solid #E5E5E5;
 }
 
 #media_image_manipulation #media_image_functions .media_image_function {
-	width: 216px;
-	float: left;
-	border-bottom: 1px solid #E5E5E5;
+    width: 216px;
+    float: left;
+    border-bottom: 1px solid #E5E5E5;
 }
 
 #media_image_manipulation #media_image_functions .media_image_function .media_image_function_title {
-	width: 170px;
-	float: left;
-	padding: 8px 8px 8px 38px;
-	font-weight: bold;
-	cursor: pointer;
-	background-repeat: no-repeat;
-	background-position: 8px center;
+    width: 170px;
+    float: left;
+    padding: 8px 8px 8px 38px;
+    font-weight: bold;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: 8px center;
 }
 
 #media_image_manipulation #media_image_functions .media_image_function #reset_image_title,
 #media_image_manipulation #media_image_functions .media_image_function #preview_image_title,
 #media_image_manipulation #media_image_functions .media_image_function #save_image_title {
-	padding: 8px;
+    padding: 8px;
 }
 
 #media_image_manipulation #media_image_functions .media_image_function .media_image_function_functions {
-	display: none;
-	width: 200px;
-	float: left;
-	padding: 8px;
-	border-top: 1px solid #E5E5E5;
+    display: none;
+    width: 200px;
+    float: left;
+    padding: 8px;
+    border-top: 1px solid #E5E5E5;
 }
 
 #media_image_manipulation #media_image_functions #scale_image {
@@ -281,25 +293,25 @@
 }
 
 #media_image_manipulation #media_image_functions #crop_image #crop_image_title {
-	background-image: url('../../../../core/Core/View/Media/icons/crop.png');
+    background-image: url('../../../../core/Core/View/Media/icons/crop.png');
 }
 
 #media_image_manipulation #media_image_functions #rotate_image #rotate_image_title {
-	background-image: url('../../../../core/Core/View/Media/icons/rotate.png');
+    background-image: url('../../../../core/Core/View/Media/icons/rotate.png');
 }
 
 #media_image_manipulation #media_image_functions #scale_image #scale_image_title {
-	background-image: url('../../../../core/Core/View/Media/icons/scale.png');
+    background-image: url('../../../../core/Core/View/Media/icons/scale.png');
 }
 
 #media_image_manipulation #media_image_functions #rotate_image .rotate_buttons {
-	float: left;
-	padding: 7px 10px 2px 0;
-	cursor: pointer;
+    float: left;
+    padding: 7px 10px 2px 0;
+    cursor: pointer;
 }
 
 #media_image_manipulation #media_image_functions #scale_image span {
-	font-size: 10px;
+    font-size: 10px;
 }
 
 #media_image_manipulation #media_image_functions #reset_image_button,
