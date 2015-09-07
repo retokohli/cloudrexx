@@ -1183,8 +1183,8 @@ CREATE TABLE `contrexx_module_data_messages_lang` (
   `image` varchar(250) NOT NULL DEFAULT '',
   `thumbnail` varchar(250) NOT NULL,
   `thumbnail_type` enum('original','thumbnail') NOT NULL DEFAULT 'original',
-  `thumbnail_width` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `thumbnail_height` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `thumbnail_width` int(11) unsigned NOT NULL DEFAULT '0',
+  `thumbnail_height` int(11) unsigned NOT NULL DEFAULT '0',
   `attachment` varchar(255) NOT NULL DEFAULT '',
   `attachment_description` varchar(255) NOT NULL DEFAULT '',
   `mode` set('normal','forward') NOT NULL DEFAULT 'normal',
@@ -2270,6 +2270,7 @@ CREATE TABLE `contrexx_module_mediadir_forms` (
   `use_level` int(1) NOT NULL,
   `use_category` int(1) NOT NULL,
   `use_ready_to_confirm` int(1) NOT NULL,
+  `entries_per_page` int(7) NOT NULL,
   `cmd` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;

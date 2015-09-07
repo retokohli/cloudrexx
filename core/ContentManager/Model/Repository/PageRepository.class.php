@@ -845,10 +845,15 @@ class PageRepository extends EntityRepository {
             $page = $this->findOneByModuleCmdLang($module, $langId, FRONTEND_LANG_ID);
         }
         if (!$page) {
-            $page = $this->findOneBy(array(
-                'nodeIdShadowed' => $nodeId,
-                'lang'           => $langId,
-            ));
+            $nodeRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+            $node = $nodeRepository->find($nodeId);
+            if(!$node) {
+                throw new PageRepositoryException('No target page found!');
+            }
+            $page = $node->getPage($langId);
+        }
+        if(!$page) {
+            throw new PageRepositoryException('No page with the target language found!');
         }
         
         return $page;

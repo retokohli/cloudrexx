@@ -185,13 +185,13 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newsLastUpdate     = !empty($lastUpdate)
                                ? $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />'.date(ASCMS_DATE_FORMAT, $lastUpdate)
                                : '';
+
         if (!empty($url1)) {
             $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] . '<br />' . $this->getNewsLink($url1) . '<br />';
         }
         if (!empty($url2)) {
             $newsUrl .= $this->getNewsLink($url2).'<br />';
         }
-
         if (!empty($source)) {
             $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $this->getNewsLink($source) . '<br />';
         }
@@ -204,7 +204,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newsCategories = $this->getCategoriesByNewsId($newsid);
         // Parse the Category list
         $this->parseCategoryList($this->_objTpl, $newsCategories);
-
+        
         $this->_objTpl->setVariable(array(
            'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
            'NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE,$objResult->fields['date']),
@@ -225,6 +225,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         // Parse the news comments count
         $this->parseNewsCommentsCount($this->_objTpl, $newsid, $newsCommentActive);
+
         // parse author
         self::parseUserAccountData($this->_objTpl, $objResult->fields['authorid'], $objResult->fields['author'], 'news_author');
         // parse publisher
@@ -722,7 +723,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         ) {
             while (!$objResult->EOF) {
                 $newsid = $parameters['newsid'] = $objResult->fields['newsid'];
-                $arrNewsCategories    = $this->getCategoriesByNewsId($newsid);
+                $arrNewsCategories = $this->getCategoriesByNewsId($newsid);
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
                                         ? ''
@@ -737,10 +738,11 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
                 // Parse all the news placeholders
                 $this->parseNewsPlaceholders($this->_objTpl, $objResult, $newsUrl);
-
+                
                 $this->_objTpl->setVariable(array(
-                    'NEWS_CSS'            => 'row'.($i % 2 + 1),
+                   'NEWS_CSS'            => 'row'.($i % 2 + 1),
                 ));
+
                 $this->_objTpl->parse('newsrow');
                 $i++;
                 $objResult->MoveNext();
@@ -1337,7 +1339,7 @@ EOF;
             'NEWS_REDIRECT'             => contrexx_raw2xhtml($data['newsRedirect']),
             'NEWS_TAG_ID'               => $newsTagId
         ));
-
+        
         if ($this->arrSettings['news_use_teaser_text'] != '1' && $this->_objTpl->blockExists('news_use_teaser_text')) {
             $this->_objTpl->hideBlock('news_use_teaser_text');
         }
@@ -1652,9 +1654,9 @@ RSS2JSCODE;
                        'NEWS_ARCHIVE_CSS'           => 'row'.($i % 2 + 1),
                        'NEWS_ARCHIVE_TEASER'        => nl2br($news['teaser_text']),
                        'NEWS_ARCHIVE_TITLE'         => contrexx_raw2xhtml($newstitle),
-                       'NEWS_ARCHIVE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$news['newsdate']),
-                       'NEWS_ARCHIVE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $news['newsdate']),
-                       'NEWS_ARCHIVE_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $news['newsdate']),
+                       'NEWS_ARCHIVE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$news['date']),
+                       'NEWS_ARCHIVE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $news['date']),
+                       'NEWS_ARCHIVE_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $news['date']),
                        'NEWS_ARCHIVE_LINK_TITLE'    => contrexx_raw2xhtml($newstitle),
                        'NEWS_ARCHIVE_LINK'          => $htmlLink,
                        'NEWS_ARCHIVE_LINK_URL'      => contrexx_raw2xhtml($newsUrl),
