@@ -2335,7 +2335,7 @@ function ReadCSS($html)
     $CSSextblock = file_get_contents($path);	
     
     /**
-     * @author: COMVATION
+     * @author: CLOUDREXX
      * only tags bug
      */
     $CSSextblock = str_replace('h1', '.h1', $CSSextblock);
