@@ -179,9 +179,14 @@ class ThumbnailGenerator extends EntityBase
         $thumbnails    = array();
         foreach ($this->thumbnails as $thumbnail) {
             $thumbnails[$thumbnail['size']] = preg_replace(
-                    '/\.' . lcfirst($extension) . '$/', $thumbnail['value'] . '.' . lcfirst($extension), \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . str_replace(
-                            $websitepath, '', rtrim($path, '/') . '/' . $filename . '.' . $extension
-                    )
+                '/\.' . lcfirst($extension) . '$/', $thumbnail['value']
+                . '.' . lcfirst($extension),
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getWebsiteOffsetPath()
+                . str_replace(
+                    $websitepath, '',
+                    rtrim($path, '/') . '/' . $filename . '.' . $extension
+                )
             );
         }
         if ($create && file_exists($websitepath . str_replace($websitepath, '', rtrim($path, '/')) . '/' . $filename . '.' . $extension)) {
@@ -198,18 +203,28 @@ class ThumbnailGenerator extends EntityBase
      * @return string Thumbnail Name
      */
     public function getThumbnailFilename($filename){
-        if (file_exists($filename) && MediaSourceManager::isSubdirectory($this->cx->getWebsitePath(),$filename)){
+        $webpath  = pathinfo($filename, PATHINFO_DIRNAME);
+        if (!file_exists($filename)){
+            $filename = $this->cx->getWebsitePath().$filename;
+        }
+        if (file_exists($filename)
+            && MediaSourceManager::isSubdirectory(
+                $this->cx->getWebsitePath(),
+                $filename
+            )
+        ) {
             $this->createThumbnailFromPath($filename);
         }
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
         $filename  = pathinfo($filename, PATHINFO_FILENAME);
         $this->getThumbnails();
         $thumbnailType = $this->thumbnails[0];
-        return preg_replace(
+        $thumbnail = preg_replace(
             '/\.' . lcfirst($extension) . '$/',
             $thumbnailType['value'] . '.' . lcfirst($extension),
-            $filename . '.' . $extension
+           $webpath .'/'. $filename . '.' . $extension
         );
+        return $thumbnail;
     }
 
 } 
