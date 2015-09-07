@@ -36,7 +36,7 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-namespace Cx\Core\Error\Controller;
+namespace Cx\Core_Modules\Error\Controller;
 
 /**
  * Handles all errors.

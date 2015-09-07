@@ -35,7 +35,7 @@
  * @version		1.0.0
  */
 
-namespace Cx\Core\Error\Model\Entity;
+namespace Cx\Core_Modules\Error\Model\Entity;
 
 /**
  * Display a exception as a human readable error message

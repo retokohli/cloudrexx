@@ -731,8 +731,8 @@ class DBG
                 case E_NOTICE:
                     $type = 'NOTICE';
                     break;
-                case E_CORE_ERROR:
-                    $type = 'E_CORE_ERROR';
+                case E_CORE_MODULE_ERROR:
+                    $type = 'E_CORE_MODULE_ERROR';
                     break;
                 case E_CORE_WARNING:
                     $type = 'E_CORE_WARNING';

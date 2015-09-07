@@ -34,7 +34,7 @@
  * @subpackage  core_error
  */
 
-namespace Cx\Core\Error\Controller;
+namespace Cx\Core_Modules\Error\Controller;
 
 /**
  * Main controller for Error

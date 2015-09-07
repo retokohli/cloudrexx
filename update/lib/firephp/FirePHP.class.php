@@ -422,7 +422,7 @@ class FirePHP {
     public function registerErrorHandler($throwErrorExceptions = false)
     {
         //NOTE: The following errors will not be caught by this error handler:
-        //      E_ERROR, E_PARSE, E_CORE_ERROR,
+        //      E_ERROR, E_PARSE, E_CORE_MODULE_ERROR,
         //      E_CORE_WARNING, E_COMPILE_ERROR,
         //      E_COMPILE_WARNING, E_STRICT
     
