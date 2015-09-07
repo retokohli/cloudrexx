@@ -97,7 +97,7 @@ $_CONFIG['forumTagContent']           = 0;
 * -------------------------------------------------------------------------
 */
 $_CONFIG['calendardefaultcount']      = 16;
-$_CONFIG['calendarheadlines']         = 1;
+$_CONFIG['calendarheadlines']         = 0;
 $_CONFIG['calendarheadlinescat']      = 0;
 $_CONFIG['calendarheadlinescount']    = 5;
 
