@@ -1,3 +1,13 @@
+.uploader-modal, .media-browser-modal-window {
+    font-size: 14.4px;
+}
+
+.uploader-modal .modal-title, .media-browser-modal-window .modal-title {
+    color:#fff;
+    clear:none;
+    text-transform: none;
+}
+
 .uploader-modal .img-rounded, .media-browser-modal-window .img-rounded {
     border-radius: 6px;
 }
@@ -1144,7 +1154,6 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 
 .uploader-modal .mediaBrowserNavigation, .media-browser-modal-window .mediaBrowserNavigation {
     font-size: 14px;
-    font-size: 1.2rem;
     width: 180px;
     border-right: 1px solid #e5e5e5;
 }
@@ -1412,7 +1421,8 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     padding: 0 20px 20px;
 }
 
-.fileOptions .btn {
+#content .media-browser-modal-window .fileOptions .btn,
+.media-browser-modal-window .fileOptions .btn {
     padding: 4px 8px;
     vertical-align: top;
     margin-top: 20px;
