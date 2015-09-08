@@ -1651,8 +1651,7 @@ if ($test === NULL) {
                 $pictureFilename = $objCategory->picture();
                 if ($pictureFilename != '') {
                     $picturePath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$pictureFilename;
-                    $thumbPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.
-                        \ImageManager::getThumbnailFilename($pictureFilename);
+                    $thumbPath = \ImageManager::getThumbnailFilename(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$pictureFilename);
                 }
             }
         }
@@ -2091,8 +2090,9 @@ if ($test === NULL) {
         self::$objTemplate->addBlockfile('SHOP_PRODUCTS_FILE',
             'shop_products_block', 'module_shop_product_manage.html');
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         self::$objTemplate->setVariable(array(
-            'SHOP_DELETE_ICON' => \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreWebPath() . '/Core/View/Media/icons/delete.gif',
+            'SHOP_DELETE_ICON' => $cx->getCodeBaseCoreWebPath() . '/Core/View/Media/icons/delete.gif',
             'SHOP_NO_PICTURE_ICON' => self::$defaultImage
         ));
         if ($product_id > 0) {
@@ -2167,6 +2167,8 @@ if ($test === NULL) {
         $end_time = strtotime($objProduct->date_end());
         if ($end_time > 0) $end_date = date(ASCMS_DATE_FORMAT_DATE, $end_time);
 //DBG::log("Dates from ".$objProduct->date_start()." ($start_time, $start_date) to ".$objProduct->date_start()." ($end_time, $end_date)");
+        $websiteImagesShopPath    = $cx->getWebsiteImagesShopPath() . '/';
+        $websiteImagesShopWebPath = $cx->getWebsiteImagesShopWebPath() . '/';
         self::$objTemplate->setVariable(array(
             'SHOP_PRODUCT_ID' => (isset($_REQUEST['new']) ? 0 : $objProduct->id()),
             'SHOP_PRODUCT_CODE' => contrexx_raw2xhtml($objProduct->code()),
@@ -2207,39 +2209,33 @@ if ($test === NULL) {
                 Manufacturer::getMenuoptions($objProduct->manufacturer_id()),
             'SHOP_PICTURE1_IMG_SRC' =>
                 (   !empty($arrImages[1]['img'])
-                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.
-                        \ImageManager::getThumbnailFilename($arrImages[1]['img']))
-                    ? contrexx_raw2encodedUrl(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.
-                          \ImageManager::getThumbnailFilename($arrImages[1]['img']))
+                 && is_file(\ImageManager::getThumbnailFilename($websiteImagesShopPath . $arrImages[1]['img']))
+                        ? contrexx_raw2encodedUrl(\ImageManager::getThumbnailFilename($websiteImagesShopWebPath . $arrImages[1]['img'])) 
                     : self::$defaultImage),
             'SHOP_PICTURE2_IMG_SRC' =>
                 (   !empty($arrImages[2]['img'])
-                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.
-                        \ImageManager::getThumbnailFilename($arrImages[2]['img']))
-                    ? contrexx_raw2encodedUrl(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.
-                      \ImageManager::getThumbnailFilename($arrImages[2]['img']))
+                 && is_file(\ImageManager::getThumbnailFilename($websiteImagesShopPath . $arrImages[2]['img'])) 
+                        ? contrexx_raw2encodedUrl(\ImageManager::getThumbnailFilename($websiteImagesShopWebPath . $arrImages[2]['img']))
                     : self::$defaultImage),
             'SHOP_PICTURE3_IMG_SRC' =>
                 (   !empty($arrImages[3]['img'])
-                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.
-                        \ImageManager::getThumbnailFilename($arrImages[3]['img']))
-                    ? contrexx_raw2encodedUrl(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.
-                      \ImageManager::getThumbnailFilename($arrImages[3]['img']))
+                 && is_file(\ImageManager::getThumbnailFilename($websiteImagesShopPath . $arrImages[3]['img']))
+                    ? contrexx_raw2encodedUrl(\ImageManager::getThumbnailFilename($websiteImagesShopWebPath . $arrImages[3]['img']))
                     : self::$defaultImage),
             'SHOP_PICTURE1_IMG_SRC_NO_THUMB' =>
                 (   !empty($arrImages[1]['img'])
-                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.$arrImages[1]['img'])
-                    ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$arrImages[1]['img']
+                 && is_file($websiteImagesShopPath . $arrImages[1]['img'])
+                    ? $websiteImagesShopWebPath . $arrImages[1]['img']
                     : self::$defaultImage),
             'SHOP_PICTURE2_IMG_SRC_NO_THUMB' =>
                 (   !empty($arrImages[2]['img'])
-                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.$arrImages[2]['img'])
-                    ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$arrImages[2]['img']
+                 && is_file($websiteImagesShopPath . $arrImages[2]['img'])
+                    ? $websiteImagesShopWebPath . $arrImages[2]['img']
                     : self::$defaultImage),
             'SHOP_PICTURE3_IMG_SRC_NO_THUMB' =>
                 (   !empty($arrImages[3]['img'])
-                 && is_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath().'/'.$arrImages[3]['img'])
-                    ? \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$arrImages[3]['img']
+                 && is_file($websiteImagesShopPath . $arrImages[3]['img'])
+                    ? $websiteImagesShopWebPath . $arrImages[3]['img']
                     : self::$defaultImage),
             'SHOP_PICTURE1_IMG_WIDTH' => $arrImages[1]['width'],
             'SHOP_PICTURE1_IMG_HEIGHT' => $arrImages[1]['height'],
