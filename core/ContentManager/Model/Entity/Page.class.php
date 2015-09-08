@@ -11,6 +11,7 @@
 
 namespace Cx\Core\ContentManager\Model\Entity;
 
+use Cx\Core\ContentManager\Model\Repository\PageRepositoryException;
 use Doctrine\ORM\EntityManager;
 
 define('FRONTEND_PROTECTION', 1 << 0);
@@ -796,9 +797,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             } else if ($this->isTargetInternal()) {
                 // this should not be done here!
                 $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-                $targetPage = $pageRepo->getTargetPage($this);
-                if (!$targetPage ||
-                        !$targetPage->isActive()) {
+                try {
+                    $targetPage = $pageRepo->getTargetPage($this);
+                }
+                catch (PageRepositoryException $e){
                     $status .= 'broken ';
                 }
             }
