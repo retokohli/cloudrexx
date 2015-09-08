@@ -5,6 +5,9 @@ CKEDITOR.on('dialogDefinition', function (event) {
     var tabCount = dialogDefinition.contents.length;
 
     for (var i = 0; i < tabCount; i++) {
+        if(dialogDefinition.contents[i] == undefined){
+            continue;
+        }
         var browseButton = dialogDefinition.contents[i].get('browse');
 
         if (browseButton !== null) {
@@ -77,11 +80,18 @@ CKEDITOR.on('dialogDefinition', function (event) {
             else if (browseButton.filebrowser.target == 'Link:txtUrl' || browseButton.filebrowser.target == 'info:url'){
                 var target = browseButton.filebrowser.target.split(':');
                 var sitestructureCallback = function (callback) {
+                    var link;
                     if (callback.type == 'close') {
                         return;
                     }
+                    if (callback.data[0].node){
+                        link = callback.data[0].node;
+                    }
+                    else {
+                        link = callback.data[0].datainfo.filepath;
+                    }
 
-                    dialogDefinition.dialog.setValueOf(target[0], target[1], callback.data[0].node);
+                    dialogDefinition.dialog.setValueOf(target[0], target[1], link);
                     /**
                      * Protocol field exists only in the info tab.
                      */
@@ -95,7 +105,6 @@ CKEDITOR.on('dialogDefinition', function (event) {
                     //editor.execCommand ('image');
                     cx.variables.get('jquery','mediabrowser')('#ckeditor_image_button').trigger("click", {
                         callback: sitestructureCallback,
-                        cxMbViews: 'sitestructure',
                         cxMbStartview: 'MediaBrowserList'
                     });
                 };

@@ -46,7 +46,7 @@ use Cx\Core\Event\Model\Entity\DefaultEventListener;
 class MediaBrowserEventListener extends DefaultEventListener
 {
     /**
-     * @param MediaBrowserConfiguration $mediaBrowserConfiguration
+     * @param MediaSourceManager $mediaBrowserConfiguration
      */
     public function mediasourceLoad(
         MediaSourceManager $mediaBrowserConfiguration

@@ -43,10 +43,6 @@ namespace Cx\Core\Config\Controller;
  */
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Csrf\Controller\Csrf;
-use Cx\Core\Html\Sigma;
-use Cx\Core\Setting\Controller\Setting;
-use Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator;
-use Cx\Core_Modules\Uploader\Controller\UploaderConfiguration;
 use Cx\Lib\FileSystem\FileSystem;
 
 isset($objInit) && $objInit->mode == 'backend' ? \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Cache/Controller/CacheManager.class.php') : null;
@@ -84,7 +80,19 @@ class Config
     private function setNavigation()
     {
         global $objTemplate, $_ARRAYLANG;
-        
+
+        $componentRepo = \Env::get('cx')->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $component     = $componentRepo->findOneBy(array('name' => 'multisite'));
+
+        $multisiteNavigation = '';
+        if ($component &&
+            \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isWebsiteOwner() &&
+            \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser','MultiSite')
+        ) {
+            $multisiteNavigation = '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.
+                ($this->act == 'Ftp' ? 'active' : '').'">' . $_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>';
+        }
+
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem');
         $objTemplate->setVariable('CONTENT_NAVIGATION','
             <a href="?cmd=Config" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'].'</a>'
@@ -93,7 +101,7 @@ class Config
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>'
             .(in_array('Wysiwyg', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=Config&amp;act=Wysiwyg" class="'.($this->act == 'Wysiwyg' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CORE_WYSIWYG'].'</a>' : '')
             .(in_array('LicenseManager', \Env::get('cx')->getLicense()->getLegalComponentsList()) ? '<a href="index.php?cmd=License">'.$_ARRAYLANG['TXT_LICENSE'].'</a>' : '')
-            . (\Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::isWebsiteOwner() && \Cx\Core\Setting\Controller\Setting::getValue('websiteFtpUser','MultiSite') ? '<a href="index.php?cmd=Config&amp;act=Ftp" class="'.($this->act == 'Ftp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_FTP'].'</a>' : '')
+            . $multisiteNavigation
         );
     }
 
@@ -1740,7 +1748,9 @@ class Config
             = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($cx->getWebsiteImagesPath().'/'), \RecursiveIteratorIterator::SELF_FIRST);
         $jsonFileArray = array();
 
-        $thumbnailList = UploaderConfiguration::getInstance()->getThumbnails();
+        $thumbnailList = Cx::instanciate()->getMediaSourceManager()
+            ->getThumbnailGenerator()
+            ->getThumbnails();
 
         $imageManager = new \ImageManager();
 
@@ -1841,9 +1851,11 @@ class Config
 
             if (!$allThumbnailsExists) {
                 if ($imageManager->_isImage($file->getRealPath())) {
-                    ThumbnailGenerator::createThumbnail(
+                    $cx->getMediaSourceManager()
+                        ->getThumbnailGenerator()
+                        ->createThumbnail(
                         $file->getPath(), $fileNamePlain, $fileExtension, $imageManager, true
-                    );
+                        );
                 }
             }
 

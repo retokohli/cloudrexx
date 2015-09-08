@@ -446,7 +446,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'lib/javascript/bootbox.min.js'
             ),
             'cssfiles' => array(
-                'core_modules/MediaBrowser/View/Style/mediabrowser.css'
+                'core_modules/MediaBrowser/View/Style/MediaBrowser.css'
             ),
             'dependencies' => array('twitter-bootstrap' => '3.2.0', 'cx'),
             'specialcode' => 'if (typeof cx.variables.get(\'jquery\', \'mediabrowser\') == \'undefined\'){

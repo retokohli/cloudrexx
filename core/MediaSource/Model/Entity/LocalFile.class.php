@@ -68,4 +68,7 @@ class LocalFile implements File
         return $this->file;
     }
 
+    public function getFullName() {
+        return pathinfo($this->file, PATHINFO_BASENAME);
+    }
 }

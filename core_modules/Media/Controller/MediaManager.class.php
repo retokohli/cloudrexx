@@ -590,9 +590,9 @@ class MediaManager extends MediaLibrary
         //check if a finished upload caused reloading of the page.
         //if yes, we know the added files and want to highlight them
         if (!empty($_GET['highlightUploadId'])) {
-            $key = 'media_upload_files_'.intval($_GET['highlightUploadId']);
+            $key = 'media_upload_files_'.($_GET['highlightUploadId']);
             if (isset($_SESSION[$key])) {
-                $sessionHighlightCandidates = $_SESSION[$key]; //an array with the filenames, set in mediaLib::uploadFinished
+                $sessionHighlightCandidates = $_SESSION[$key]->toArray(); //an array with the filenames, set in mediaLib::uploadFinished
             }
             //clean up session; we do only highlight once
             unset($_SESSION[$key]);
@@ -604,7 +604,11 @@ class MediaManager extends MediaLibrary
         // Check if an image has been edited.
         // If yes, we know the edited file and want to highlight them.
         if (!empty($_GET['editedImage'])) {
-            $objFile = new \File();
+            \Cx\Core\Core\Controller\Cx::instanciate()->getMediaSourceManager()
+                ->getThumbnailGenerator()
+                ->createThumbnailFromPath(
+                $this->path . $_GET['editedImage'], true
+            );
             $this->highlightName[] = $_GET['editedImage'];
         }
 
@@ -674,19 +678,19 @@ class MediaManager extends MediaLibrary
                     {
                         // make thumbnail if it doesn't exist
                         $tmpSize = @getimagesize($this->path . $fileName);
-
-                        if(!file_exists($this->path . $fileName . '.thumb') && $tmpSize[1] > $this->thumbHeight){
-                            $this->_createThumbnail($this->path . $fileName);
-
-                            $thbSize = @getimagesize($this->path . $fileName . '.thumb');
-                            $thumb   = $this->webPath . $fileName . '.thumb';
-                        }
-                        elseif($tmpSize[1] > $this->thumbHeight){
-                            $thbSize = @getimagesize($this->path . $fileName . '.thumb');
-                            $thumb   = $this->webPath . $fileName . '.thumb';
-                        } else{
-                            $thbSize = @getimagesize($this->path . $fileName);
-                            $thumb   = $this->webPath . $fileName;
+                        $thumbnails = \Cx\Core\Core\Controller\Cx::instanciate()
+                            ->getMediaSourceManager()
+                            ->getThumbnailGenerator()
+                            ->createThumbnailFromPath(
+                            $this->path . $fileName
+                            );
+                        $thumb      = $this->webPath . $thumbnails[0];
+                        if (in_array(
+                            $fileName, $this->highlightName
+                        )) {
+                            $thumb .= '?lastAccess=' . fileatime(
+                                    $this->path . $fileName
+                                );
                         }
 
                         $this->_objTpl->setVariable(array(  // thumbnail
@@ -694,7 +698,7 @@ class MediaManager extends MediaLibrary
                             'MEDIA_FILE_NAME_PRE'      =>'preview_' . $fileName,
                             'MEDIA_FILE_NAME_IMG_HREF' => $this->webPath . $fileName,
                             'MEDIA_FILE_NAME_IMG_SRC'  => $thumb,
-                            'MEDIA_FILE_NAME_IMG_SIZE' => $thbSize[3]
+                            'MEDIA_FILE_NAME_IMG_SIZE' => $thumbnails[0]['size']
                         ));
                         $this->_objTpl->parse('mediaShowThumbnail');
                         
@@ -963,6 +967,7 @@ class MediaManager extends MediaLibrary
                 'TXT_MEDIA_SET_IMAGE_NAME'        => $_ARRAYLANG['TXT_MEDIA_SET_IMAGE_NAME'],
                 'TXT_MEDIA_CONFIRM_REPLACE_IMAGE' => $_ARRAYLANG['TXT_MEDIA_CONFIRM_REPLACE_IMAGE'],
                 'TXT_MEDIA_REPLACE'               => $_ARRAYLANG['TXT_MEDIA_REPLACE'],
+                'TXT_MEDIA_OR'                    => $_ARRAYLANG['TXT_MEDIA_OR'],
                 'TXT_MEDIA_SAVE_NEW_COPY'         => $_ARRAYLANG['TXT_MEDIA_SAVE_NEW_COPY'],
                 'TXT_MEDIA_CROP'                  => $_ARRAYLANG['TXT_MEDIA_CROP'],
                 'TXT_MEDIA_CROP_INFO'             => $_ARRAYLANG['TXT_MEDIA_CROP_INFO'],

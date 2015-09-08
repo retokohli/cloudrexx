@@ -73,8 +73,6 @@ class Uploader extends EntityBase
      */
     protected $cx;
 
-    public static $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip', 'tar', 'gz', 'docx', 'doc');
-
     function __construct()
     {
         $this->cx = Cx::instanciate();
@@ -99,8 +97,7 @@ class Uploader extends EntityBase
             'data-pl-upload',
             'data-uploader-id' => $this->id,
             'class' => "uploader-button button",
-            'uploader-type' => self::UPLOADER_TYPE_MODAL,
-            'allowed-extensions' => self::$allowedExtensions
+            'uploader-type' => self::UPLOADER_TYPE_MODAL
         );
     }
 
@@ -281,6 +278,15 @@ class Uploader extends EntityBase
      */
     public function setType($type) {
         $this->options['uploader-type'] = $type;
+    }
+
+    /**
+     * Set the maximum file size for the upload
+     *
+     * @param string $type
+     */
+    public function setMaxFileSize($type) {
+        $this->options['pl-Max-File-Size'] = $type;
     }
 
     public static function generateId(){

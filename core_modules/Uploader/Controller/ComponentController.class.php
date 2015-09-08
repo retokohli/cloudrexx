@@ -65,21 +65,23 @@ class ComponentController extends SystemComponentController
     public function preFinalize(\Cx\Core\Html\Sigma $template) {
         if (count($this->uploaderInstances) == 0) {
             return;
-        } else {
-            global $_ARRAYLANG;
-
-            \Env::get('init')->loadLanguageData('Uploader');
-            foreach ($_ARRAYLANG as $key => $value) {
-                if (preg_match("/UPLOADER(_[A-Za-z0-9]+)?/", $key)) {
-                    \ContrexxJavascript::getInstance()->setVariable(
-                        $key, $value, 'mediabrowser'
-                    );
-                }
-            }
-
-            \JS::activate('mediabrowser');
-            \JS::registerJS('core_modules/Uploader/View/Script/uploader.js');
         }
+        global $_ARRAYLANG;
+
+        \Env::get('init')->loadLanguageData('Uploader');
+        foreach ($_ARRAYLANG as $key => $value) {
+            if (preg_match("/UPLOADER(_[A-Za-z0-9]+)?/", $key)) {
+                \ContrexxJavascript::getInstance()->setVariable(
+                    $key, $value, 'mediabrowser'
+                );
+            }
+        }
+        \ContrexxJavascript::getInstance()->setVariable(
+            'chunk_size', floor((\FWSystem::getMaxUploadFileSize()-1000000)/1000000).'mb', 'uploader'
+        );
+
+        \JS::activate('mediabrowser');
+        \JS::registerJS('core_modules/Uploader/View/Script/Uploader.js');
     }
 
 }

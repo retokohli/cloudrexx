@@ -90,6 +90,7 @@ class BackendController extends SystemComponentBackendController
         );
 
         $uploader2 = new Uploader();
+        $uploader2->setUploadLimit(1);
         $uploader2->setFinishedCallback(
             '\Cx\Core_Modules\Uploader\Model\DefaultUploadCallback'
         );
@@ -99,15 +100,55 @@ class BackendController extends SystemComponentBackendController
             'UPLOADER_CODE2', $uploader2->getXHtml('Open Uploader 2')
         );
 
-        $mediaBrowser = new MediaBrowser();
-        $mediaBrowser->setCallback('gallery.fancyCallback');
-        $template->setVariable(
-            'MEDIABROWSER_CODE1', $mediaBrowser->getXHtml('MediaBrowser')
+        $configurations = array(
+            array(),
+            array(
+                'startview' => 'sitestructure',
+                'views' => 'sitestructure'
+            ),
+            array(
+                'views' => 'uploader'
+            ),
+            array(
+                'views' => 'sitestructure'
+            ),
+            array(
+                'views' => 'filebrowser'
+            ),
+            array(
+                'startmediatype' => 'gallery'
+            ),
+            array(
+                'mediatypes' => 'gallery, files'
+            ),
+            array(
+                'multipleselect' => true
+            ),
+            array(
+                'data-cx-Mb-Cb-Js-modalopened' => 'testfunction'
+            )
         );
-        $template->setVariable(
-            'MEDIABROWSER_CODE1_RAW',
-            htmlspecialchars($mediaBrowser->getXHtml('MediaBrowser'))
-        );
+
+        foreach ($configurations as $configuration){
+            $mediaBrowser = new MediaBrowser();
+            $mediaBrowser->setOptions($configuration);
+            $mediaBrowser->setCallback('gallery.fancyCallback');
+            $template->setVariable(
+                'MEDIABROWSER_CODE', $mediaBrowser->getXHtml('MediaBrowser')
+            );
+            $template->setVariable(
+                'MEDIABROWSER_OPTIONS', var_export($configuration,true)
+            );
+            $template->setVariable(
+                'MEDIABROWSER_CODE_RAW',
+                htmlspecialchars($mediaBrowser->getXHtml('MediaBrowser'))
+            );
+
+            $template->parse('mediabrowser_demo');
+        }
+
+
+
         $template->setVariable(
             'MEDIABROWSER_FOLDER_WIDGET',
             new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($this->cx->getWebsiteImagesContentPath())

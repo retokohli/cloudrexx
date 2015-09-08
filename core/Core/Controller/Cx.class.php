@@ -47,8 +47,8 @@ namespace {
      * @param string $mode (optional) One of 'frontend', 'backend', 'cli', 'minimal'
      * @return \Cx\Core\Core\Controller\Cx Instance of Cloudrexx
      */
-    function init($mode = null) {
-        return \Cx\Core\Core\Controller\Cx::instanciate($mode);
+    function init($mode = null, $checkInstallationStatus = true) {
+        return \Cx\Core\Core\Controller\Cx::instanciate($mode,  false, null, false, $checkInstallationStatus);
     }
 }
 
@@ -522,6 +522,7 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesCalendarPath;
         protected $websiteImagesPodcastPath;
         protected $websiteImagesBlogPath;
+        protected $websiteImagesDataPath;
         protected $websiteMediaarchive1Path;
         protected $websiteMediaarchive2Path;
         protected $websiteMediaarchive4Path;
@@ -537,6 +538,7 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesCalendarWebPath;
         protected $websiteImagesPodcastWebPath;
         protected $websiteImagesBlogWebPath;
+        protected $websiteImagesDataWebPath;
         protected $websiteMediaarchive1WebPath;
         protected $websiteMediaarchive2WebPath;
         protected $websiteMediaarchive3WebPath;
@@ -573,7 +575,7 @@ namespace Cx\Core\Core\Controller {
          * @param boolean $setAsPreferred (optional) Sets this instance as the preferred one for later
          * @return \Cx\Core\Core\Controller\Cx Instance of this class
          */
-        public static function instanciate($mode = null, $forceNew = false, $configFilePath = null, $setAsPreferred = false) {
+        public static function instanciate($mode = null, $forceNew = false, $configFilePath = null, $setAsPreferred = false, $checkInstallationStatus = true) {
             // at least one instance exists (for given config file path) AND not forced to create a new one
             if (count(self::$instances) && !$forceNew && count(self::$instances[$configFilePath])) {
                 // If no config file path is supplied, return the preferred instance
@@ -589,7 +591,7 @@ namespace Cx\Core\Core\Controller {
                 }
                 return $instance;
             }
-            new static($mode, $configFilePath, $setAsPreferred);
+            new static($mode, $configFilePath, $setAsPreferred, $checkInstallationStatus);
             // Important: We must return the preferred instance (self::$preferredInstance) here,
             //            as it might be possible, that during the instanciation of the above object
             //            an additional instance had been instanciated and had been set as the
@@ -611,7 +613,7 @@ namespace Cx\Core\Core\Controller {
          *                               file (configuration.php) that shall be loaded
          *                               instead of the default one.
          */
-        protected function __construct($mode = null, $configFilePath = null, $setAsPreferred = false) {
+        protected function __construct($mode = null, $configFilePath = null, $setAsPreferred = false, $checkInstallationStatus = true) {
             /** setting up id of new initialized object**/
             self::$autoIncrementValueOfId++;
             $this->id = self::$autoIncrementValueOfId;
@@ -642,10 +644,12 @@ namespace Cx\Core\Core\Controller {
                 $this->loadSettings();
 
                 /**
-                 * Checks if the system has been installed (CONTEXX_INSTALLED).
+                 * Checks if the system has been installed (CONTREXX_INSTALLED).
                  * If not, the user will be redirected to the web-installer.
                  */
-                $this->checkInstallationStatus();
+                if ($checkInstallationStatus) {
+                    $this->checkInstallationStatus();
+                }
 
                 /**
                  * Verifies that the basic configuration ($_CONFIG) has bee loaded.
@@ -884,7 +888,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function checkInstallationStatus() {
             // Check if the system is installed
-            if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
+            if (!defined('CONTREXX_INSTALLED') || !CONTREXX_INSTALLED) {
                 header('Location: '.$this->getCodeBaseOffsetPath().'/installer/index.php');
                 exit;
             }
@@ -1017,7 +1021,6 @@ namespace Cx\Core\Core\Controller {
             $this->initClassLoader();
             $this->initLegacyEnv();
             $this->callPreInitHooks();
-            $this->adjustRequest();
         }
 
         /**
@@ -1299,7 +1302,7 @@ namespace Cx\Core\Core\Controller {
 
             // Initialize base system
             // TODO: Get rid of InitCMS class, merge it with this class instead
-            $objInit = new \InitCMS($this->mode == self::MODE_FRONTEND ? 'frontend' : 'backend', \Env::em());
+            $objInit = new \InitCMS($this->mode == self::MODE_FRONTEND ? 'frontend' : 'backend', \Env::get('em'));
             \Env::set('init', $objInit);
             //$bla = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             //$bla->findAll();
@@ -1426,6 +1429,8 @@ namespace Cx\Core\Core\Controller {
             $this->legacyGlobalsHook(2);                // $objInit, $_LANGID, $_CORELANG, $url;
 
             $this->postResolve();                       // Call post resolve hook scripts
+
+            $this->adjustRequest();
 
             // load content
             $this->preContentLoad();                    // Call pre content load hook scripts
@@ -2545,6 +2550,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesPodcastPath     = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Podcast';
             $this->websiteImagesBlogPath        = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Blog';
             $this->websiteImagesCrmPath         = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Crm';
+            $this->websiteImagesDataPath        = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES . '/Data';
             $this->websiteImagesCrmProfilePath  = $this->websiteImagesCrmPath . '/profile';
             $this->websiteImagesAccessProfilePath = $this->websiteImagesAccessPath .'/profile';
             $this->websiteImagesAccessPhotoPath = $this->websiteImagesAccessPath .'/photo';
@@ -2566,6 +2572,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesPodcastWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Podcast';
             $this->websiteImagesBlogWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Blog';
             $this->websiteImagesCrmWebPath      = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Crm';
+            $this->websiteImagesDataWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Data';
             $this->websiteImagesCrmProfileWebPath = $this->websiteImagesCrmWebPath . '/profile';
             $this->websiteImagesAccessProfileWebPath = $this->websiteImagesAccessWebPath . '/profile';
             $this->websiteMediaarchive1WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive1';
@@ -2753,6 +2760,22 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteImagesBlogWebPath()
         {
             return $this->websiteImagesBlogWebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesDataPath()
+        {
+            return $this->websiteImagesDataPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteImagesDataWebPath()
+        {
+            return $this->websiteImagesDataWebPath;
         }
 
         /**

@@ -63,16 +63,11 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
      */
     function __construct()
     {
-        global $objDatabase, $objInit;
+        global $objInit;
 
-        $objRs = $objDatabase->Execute("
-            SELECT 
-                `setvalue`
-            FROM 
-                `".DBPREFIX."settings`
-            WHERE 
-                `setname`='dataUseModule'");
-        if ($objRs && $objRs->fields['setvalue'] == 1) {
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml');
+        
+        if (\Cx\Core\Setting\Controller\Setting::getValue('dataUseModule')) {
             $this->active = true;
         } else {
             return;
@@ -194,7 +189,6 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         if ($parcat) {
             $this->_objTpl->setVariable("CATTITLE", $this->arrCategories[$id][$_LANGID]['name']);
         }
-
         if ($this->arrCategories[$id]['action'] == "content") {
             $cmd = $this->arrCategories[$id]['cmd'];
             $url = "index.php?section=Data&amp;cmd=".$cmd;
@@ -220,29 +214,7 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
             if ($this->categoryMatches($id, $entry['categories'][$_LANGID])) {
 
                 $translation = $entry['translation'][$_LANGID];
-                $image = '';
-                if (!empty($translation['thumbnail'])) {
-                    if ($translation['thumbnail_type'] == 'original') {
-                        $image = $translation['thumbnail'];
-                    } else {
-                        $image = \ImageManager::getThumbnailFilename(
-                            $translation['thumbnail']
-                        );
-                    }
-                } else {
-                    $path = \ImageManager::getThumbnailFilename(
-                        $translation['image']
-                    );
-                    if (file_exists(ASCMS_PATH.$path)) {
-                        $image = $path;
-                    }
-                }
-
-                if (!empty($image)) {
-                    $image = '<img src='.$image.' alt=\"\" style=\"float: left\" />';
-                } else {
-                    $image = '';
-                }
+                $image = $this->getThumbnailImage($entryId, $translation['image'], $translation['thumbnail'], $translation['thumbnail_type']);
                 
                 if ($entry['mode'] == "normal") {
                     $href = $url."&amp;id=".$entryId;
@@ -303,30 +275,7 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         $this->_objTpl->setTemplate($this->adjustTemplatePlaceholders($this->_arrSettings['data_template_entry']));
 
         $translation = $entry['translation'][$_LANGID];
-        $image = '';
-        if (!empty($translation['thumbnail'])) {
-            if ($translation['thumbnail_type'] == 'original') {
-                $image = $translation['thumbnail'];
-            } else {
-                $image = \ImageManager::getThumbnailFilename(
-                    $translation['thumbnail']
-                );
-            }
-        } else {
-            $path = \ImageManager::getThumbnailFilename(
-                $translation['image']
-            );
-            if (file_exists(ASCMS_PATH.$path)) {
-                $image = $path;
-            }
-        }
-
-        if (!empty($image)) {
-            $image = '<img src='.$image.' alt=\"\" style=\"float: left\" />';
-        } else {
-            $image = '';
-        }
-
+        $image = $this->getThumbnailImage($id, $translation['image'], $translation['thumbnail'], $translation['thumbnail_type']);
         $lang = $_LANGID;
         $width = $this->_arrSettings['data_shadowbox_width'];
         $height = $this->_arrSettings['data_shadowbox_height'];
@@ -334,19 +283,19 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         if ($entry['mode'] == "normal") {
             if ($this->_arrSettings['data_entry_action'] == "content") {
                 $cmd = $this->_arrSettings['data_target_cmd'];
-                $url = "index.php?section=Data&amp;cmd=".$cmd;
+                $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Data', $cmd, '', array('id' => $id));
             } else {
-                $url = "index.php?section=Data&amp;act=shadowbox&amp;height=".$height."&amp;width=".$width."&amp;lang=".$lang;
+                $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Data', '', '', array('height' => $height, 'width' => $width, 'id' => $id, 'lang' => $lang ));
             }
         } else {
-            $url = $entry['translation'][$_LANGID]['forward_url'];
+            $url = $entry['translation'][$_LANGID]['forward_url'].'&amp;id='.$id;
         }
 
         $templateVars = array(
             "TITLE"         => $title,
             "IMAGE"         => $image,
             "CONTENT"       => $content,
-            "HREF"          => $url."&amp;id=".$id,
+            "HREF"          => $url,
             "CLASS"         => ($this->_arrSettings['data_entry_action'] == "overlaybox" && $entry['mode'] =="normal") ? "rel=\"shadowbox;width=".$width.";height=".$height."\"" : "",
             "TXT_MORE"      => $this->langVars['TXT_DATA_MORE']
         );
@@ -365,6 +314,59 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
     function adjustTemplatePlaceholders($str)
     {
         return preg_replace('/\[\[([A-Z_]+)\]\]/', '{$1}', $str);
+    }
+
+    /**
+     * Get the thumbnail image
+     *
+     * @param integer $id             entry id
+     * @param string  $titleImage     title image
+     * @param string  $thumbnailImage thumbnail image
+     * @param string  $thumbType      thumbnail type
+     *
+     * @return string
+     */
+    function getThumbnailImage($id, $titleImage, $thumbnailImage, $thumbType)
+    {
+        global $_LANGID;
+
+        $image = '';
+
+        if (empty($id)) {
+            return $image;
+        }
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $websitePath = $cx->getWebsitePath();
+
+        if (!empty($thumbnailImage)) {
+            $thumbnailImagePath = \ImageManager::getThumbnailFilename(
+                $thumbnailImage
+            );
+
+            if ($thumbType == 'original') {
+                $image = $thumbnailImage;
+            } elseif (file_exists($websitePath . $thumbnailImagePath)){
+                $image = $thumbnailImagePath;
+            } else {
+                $image = $thumbnailImage;
+            }
+        } else {
+            $path = \ImageManager::getThumbnailFilename(
+                    $cx->getWebsiteImagesDataWebPath() . '/' . $id . '_' . $_LANGID . '_' . basename($titleImage)
+            );
+            if (file_exists($websitePath . '/' . $path)) {
+                $image = $path;
+            } elseif (file_exists($websitePath . \ImageManager::getThumbnailFilename($titleImage))) {
+                $image = \ImageManager::getThumbnailFilename($titleImage);
+            } else {
+                $image = $titleImage;
+            }
+        }
+
+        return !empty($image) && file_exists($websitePath. '/' . $image)
+                ? '<img src="'.$image.'" alt= "" />'
+                : '';
     }
 
 }

@@ -107,7 +107,7 @@ class Data extends \Cx\Modules\Data\Controller\DataLibrary
     function showSearch($keyword)
     {
         global $objDatabase, $_LANGID, $_ARRAYLANG;
-
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if (   !empty($keyword)
             && ($objResult = $objDatabase->Execute("
                 SELECT tblM.message_id, tblL.subject, tblL.content,
@@ -137,8 +137,8 @@ class Data extends \Cx\Modules\Data\Controller\DataLibrary
                         } else {
                             $image = "<img src=\"".$objResult->fields['thumbnail']."\" alt=\"\" border=\"1\" style=\"float: left; width: 80px;\" />";
                         }
-                    } elseif (file_exists(ASCMS_DATA_IMAGES_PATH.'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image']))) {
-                        $image = "<img src=\"".ASCMS_DATA_IMAGES_WEB_PATH.'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image'])."\" alt=\"\" border=\"1\" style=\"float: left; width:100px;\"/>";
+                    } elseif (file_exists($cx->getWebsiteImagesDataPath() . '/' . $objResult->fields['message_id'] . '_' . $_LANGID . '_' . basename($objResult->fields['image']))) {
+                        $image = "<img src=\"".$cx->getWebsiteImagesDataWebPath().'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image'])."\" alt=\"\" border=\"1\" style=\"float: left; width:100px;\"/>";
                     } elseif (file_exists(
                         ASCMS_PATH.
                         \ImageManager::getThumbnailFilename(
@@ -260,6 +260,7 @@ class Data extends \Cx\Modules\Data\Controller\DataLibrary
                        "ENTRY_TITLE"   => $value['translation'][$this->_intLanguageId]['subject'],
                        "ENTRY_CONTENT" => $this->getIntroductionText($value['translation'][$this->_intLanguageId]['content']),
                        "ENTRY_ID"      => $key,
+                       "ENTRY_HREF"    => \Cx\Core\Routing\Url::fromModuleAndCmd('Data', $this->curCmd, '', array('id' => $key)), 
                        "TXT_MORE"      => $_ARRAYLANG['TXT_DATA_MORE'],
                        "CMD"           => $this->curCmd,
                     ));
@@ -321,7 +322,7 @@ class Data extends \Cx\Modules\Data\Controller\DataLibrary
     function showDetails($intMessageId)
     {
         global $_ARRAYLANG;
-
+        
         $arrEntries = $this->createEntryArray();
         $entry = $arrEntries[$intMessageId];
 

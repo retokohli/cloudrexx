@@ -92,7 +92,7 @@ class SearchManager
         global $_ARRAYLANG;
         $this->defaultAct = 'getSearchResults';
         
-        $this->em       = \Env::em();
+        $this->em       = \Env::get('em');
         $this->act      = $act;
         $this->template = $tpl;
         $this->license  = $license;

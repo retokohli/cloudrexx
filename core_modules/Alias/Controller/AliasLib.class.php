@@ -67,7 +67,7 @@ class AliasLib
     {
         $this->langId = intval($langId) > 0 ? $langId : FRONTEND_LANG_ID;
         
-        $this->em = \Env::em();
+        $this->em = \Env::get('em');
         $this->nodeRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
         $this->pageRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
     }
@@ -146,8 +146,7 @@ class AliasLib
     
     function _getURL($page)
     {
-        $lang = \FWLanguage::getLanguageCodeById($page->getLang());
-        return $page->getUrl('/' . $lang, '');
+        return $page->getUrl();
     }
     
     function _getAliasesWithSameTarget($aliasPage)
@@ -181,7 +180,7 @@ class AliasLib
                 'node' => $target_node_id,
                 'lang' => $target_lang_id,
             );
-            $page_repo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $page_repo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $targetPage = $page_repo->findBy($crit, true);
             $targetPage = $targetPage[0];
             $targetPath = $page_repo->getPath($targetPage);

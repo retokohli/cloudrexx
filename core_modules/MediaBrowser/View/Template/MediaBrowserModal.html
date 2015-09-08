@@ -4,7 +4,7 @@
         </button>
         <h4 class="modal-title">{{ 'TXT_FILEBROWSER_MEDIABROWSER' | translate }}</h4>
     </div>
-    <div class="mediaBrowserMain" id="mediaBrowserMain">
+    <div class="mediaBrowserMain" id="mediaBrowserMain" data-ng-class="tabs.length == 1 ? 'no-nav': ''">
         <div>
             <nav class="mediaBrowserNavigation">
                 <ul>
@@ -16,7 +16,7 @@
                     </li>
                 </ul>
                 <select class="selectsource" data-ng-options="source as source.name for source in sources"
-                        data-ng-model="selectedSource" data-ng-change="updateSource()" data-ng-show="activeController == 'MediaBrowserListCtrl'">
+                        data-ng-model="selectedSource" data-ng-change="updateSource()" data-ng-show="activeController == 'MediaBrowserListCtrl'" data-ng-class="loadingSources ? 'loading' : ''">
                     <option value="files">
                         {{ 'TXT_FILEBROWSER_FILES' | translate }}
                     </option>

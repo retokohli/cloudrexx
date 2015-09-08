@@ -108,7 +108,12 @@ $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_ORIGINAL_SIZE']  = "Originale Grösse";
 
 $_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER']       = "Datei hierher ziehen";
 $_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_OR']    = "oder";
-$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK'] = "Bild vom Computer auswählen";
+$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK'] = "Datei vom Computer auswählen";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_BUTTON']          = "Hochladen";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_WATING']          = "Die Dateien werden hochgeladen...";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FINISHED']        = "Alle Dateien wurden hochgeladen.";
+$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FINISHED_HINT']   = "Die hochgeladenen Dateien befinden sich nun in der Ablage.";
+$_ARRAYLANG['TXT_FILEBROWSER_LOGGED_OUT']             = "Sie sind nicht mehr eingeloggt. Bitte laden sie die Seite neu um sich einzuloggen.";
+$_ARRAYLANG['TXT_FILEBROWSER_ERROR_HAS_HAPPEND']      = "Ein Fehler ist aufgetreten.";
+$_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_UP']      = "Zurück";
+$_ARRAYLANG['TXT_FILEBROWSER_NO_FILES_IN_DIRECTORY']      = "Es sind keine Dateien in diesem Verzeichnis vorhanden.";

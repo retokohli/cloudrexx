@@ -133,7 +133,7 @@ class StatsLibrary
             //JS::activate('jquery');
             $searchTerm = '';
             $searchTermPlain = '';
-            if (isset($_REQUEST['term']) && !empty($_REQUEST['term']) && $_REQUEST['section'] == "search") {
+            if (isset($_REQUEST['term']) && !empty($_REQUEST['term']) && $_REQUEST['section'] == "Search") {
                 $searchTerm = "&amp;searchTerm=".urlencode($_REQUEST['term'])."' + '";
                 $searchTermPlain = contrexx_addslashes($_REQUEST['term']);
             }
@@ -598,7 +598,7 @@ class StatsLibrary
                 $crit = array(
                     'id' => $objResult->fields['pageId'],
                 );
-                $page = current(\Env::em()->getRepository('\Cx\Core\ContentManager\Model\Entity\Page')->findBy($crit));
+                $page = current(\Env::get('em')->getRepository('\Cx\Core\ContentManager\Model\Entity\Page')->findBy($crit));
                 if ($page) {
                     $objResult->fields['title'] = $page->getTitle();
                     $arrIndexedPage = array(

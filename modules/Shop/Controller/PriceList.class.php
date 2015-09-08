@@ -512,9 +512,9 @@ class PriceList
                 'product_id' => self::decode($objProduct->id()),
                 'price' =>
                     ($objProduct->discount_active()
-                        ? Currency::formatPrice($objProduct->price())
-                        : "S ".Currency::formatPrice($objProduct->discountprice())).
-                    ' '.$currency_symbol,
+                        ? "S " . Currency::formatPrice($objProduct->discountprice())
+                        : Currency::formatPrice($objProduct->price())) .
+                    ' ' . $currency_symbol,
             );
         }
         $objPdf->ezTable($arrOutput, array(

@@ -1365,6 +1365,8 @@ class NewsLibrary
                                 AND n.status = 1
                                 AND nl.lang_id = '.FRONTEND_LANG_ID.'                         
                                 AND nl.is_active=1
+                                AND (n.startdate <="' . date('Y-m-d H:i:s') . '" OR n.startdate="0000-00-00 00:00:00")
+                                AND (n.enddate >="' . date('Y-m-d H:i:s') . '" OR n.enddate="0000-00-00 00:00:00")
                                 '.$categoryFilter.'
                                 ' .($this->arrSettings['news_message_protection'] == "1" && !\Permission::hasAllAccess() ? (
                                 ($objFWUser = \FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
