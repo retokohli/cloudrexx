@@ -2222,6 +2222,9 @@ class GalleryManager extends GalleryLibrary
         $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Gallery/Controller/GalleryManager.class.php', '\Cx\Modules\Gallery\Controller\GalleryManager', 'uploadFinished'));
         $uploader->setData($paths);
         $uploader->addClass('uploadbutton');
+        $uploader->setOptions(array(
+            'allowed-extensions' => array('jpg', 'gif', 'png')
+        ));
 
         $uploader->setCallback('finishedGalleryUpload');
         //set instance name to combo_uploader so we are able to catch the instance with js
@@ -2250,6 +2253,21 @@ class GalleryManager extends GalleryLibrary
             $strEnabledTypes .= 'PNG ';
         }
 
+        $objResult = $objDatabase->Execute('SELECT         *
+                                                    FROM         '.DBPREFIX.'module_gallery_pictures
+                                                    WHERE         validated="0"
+                                                    ORDER BY     lastedit ASC');
+        while (!$objResult->EOF) {
+            $this->_objTpl->setVariable('GALLERY_UPLOADED_IMAGE', '<img src="'.$this->strImageWebPath.$objResult->fields['path'].'" class="galleryImageVisible" />');
+            $this->_objTpl->parse('uploadedImages');
+            $objResult->MoveNext();
+        }
+
+        if ($objResult->_numOfRows == 0)
+        {
+            $this->_objTpl->setVariable('GALLERY_ALREADY_UPLOADED_IMAGES', 'confirmImages');
+        }
+
         $this->_objTpl->setVariable(array(
                 'TXT_TITLE' => $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'],
                 'TXT_GALLERY_UPLOAD_CONFIRM_IMAGES' => $_ARRAYLANG['TXT_GALLERY_UPLOAD_CONFIRM_IMAGES'],
@@ -2276,6 +2294,7 @@ class GalleryManager extends GalleryLibrary
      * @param   integer    	$uploadId
      */
     public static function uploadFinished($tempPath, $tempWebPath, $paths, $uploadId, $fileInfos, $response) {
+
 		global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
         $lang = $objInit->loadLanguageData('Gallery');
 		$objGallery = new GalleryManager();
@@ -2303,7 +2322,8 @@ class GalleryManager extends GalleryLibrary
 
         //delete unwanted files
         if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
-                 @unlink($tempPath.'/'.$file);
+            unlink($tempPath.'/'.$file);
+            return;
         }
 
         //width of the image is wider than the allowed value. Show Error.
