@@ -799,6 +799,9 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                 $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
                 try {
                     $targetPage = $pageRepo->getTargetPage($this);
+                    if (!$targetPage->isActive()){
+                        throw new PageRepositoryException("Page is not active");
+                    }
                 }
                 catch (PageRepositoryException $e){
                     $status .= 'broken ';
