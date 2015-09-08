@@ -315,7 +315,7 @@ class MediaLibrary
             }
          } else {
             if ($this->_isImage($this->path.$file)) {
-                $thumb_name = \ImageManager::getThumbnailFilename($file);
+                $thumb_name = basename(\ImageManager::getThumbnailFilename($this->path . $file));
                 if (file_exists($this->path.$thumb_name)) {
                     $this->dirLog=$obj_file->delFile($this->path, $this->webPath, $thumb_name);
                 }
