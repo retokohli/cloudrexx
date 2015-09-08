@@ -1490,7 +1490,7 @@ EOF;
     {
         // Mediabrowser
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
-        $mediaBrowser->setOptions($options);
+        $mediaBrowser->setOptions($options+array( 'startmediatype' => 'podcast'));
         if ($callback) {
             $mediaBrowser->setCallback($callback);
         }
