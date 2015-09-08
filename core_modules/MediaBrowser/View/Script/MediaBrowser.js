@@ -31,6 +31,10 @@
         $httpProvider.defaults.headers.common["Check-CSRF"] = 'false';
     }]);
 
+    mediaBrowserApp.config(['$compileProvider', function ($compileProvider) {
+        $compileProvider.debugInfoEnabled(false);
+    }]);
+
     mediaBrowserApp.factory('mediabrowserFiles', function ($http, $q) {
         return {
             get: function (type) {
