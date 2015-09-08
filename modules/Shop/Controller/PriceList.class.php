@@ -477,12 +477,15 @@ class PriceList
         $arrCategoryName = ShopCategories::getNameArray();
         $arrOutput = array();
         foreach ($arrProduct as $product_id => $objProduct) {
-            $category_id = $objProduct->category_id();
-            $category_name = self::decode($arrCategoryName[$category_id]);
+            $categoryIds = explode(',', $objProduct->category_id());
+            $arrCategoryNames = array();
+            foreach ($categoryIds as $categoryId){
+               $arrCategoryNames[] = $arrCategoryName[$categoryId];
+            }
 //$objProduct = new Product();
             $arrOutput[$product_id] = array(
                 'product_name' => self::decode($objProduct->name()),
-                'category_name' => $category_name,
+                'category_name' => self::decode(implode(', ', $arrCategoryNames)),
                 'product_code' => self::decode($objProduct->code()),
                 'product_id' => self::decode($objProduct->id()),
                 'price' =>
