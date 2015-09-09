@@ -816,8 +816,8 @@ die("Failed to update the Cart!");
      */
     static function showCategories($parent_id=0)
     {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if ($parent_id) {
-            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $objCategory = ShopCategory::getById($parent_id);
             // If we can't get this ShopCategory, it most probably does
             // not exist.
