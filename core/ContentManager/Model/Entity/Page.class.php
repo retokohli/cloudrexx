@@ -802,8 +802,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                     if (!$targetPage->isActive()){
                         throw new PageRepositoryException("Page is not active");
                     }
-                }
-                catch (PageRepositoryException $e){
+                } catch (PageRepositoryException $e){
                     $status .= 'broken ';
                 }
             }
