@@ -12,6 +12,12 @@
         }
     });
 
+    function escapeString(string){
+        return string.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+            return '&#'+i.charCodeAt(0)+';';
+        });
+    }
+
     angular.module('plupload.module', []).config(['$httpProvider', function ($httpProvider) {
         $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
     }]);
@@ -46,19 +52,6 @@
             if (iAttrs.uploaderType == 'Inline'){
                 jQuery('.close-upload-modal').hide();
             }
-            if (!iAttrs.allowedExtensions) {
-                iAttrs.allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'gif', 'mkv', 'zip', 'tar', 'gz', 'docx',
-                    'doc','mp3','wav','act','aiff','aac','amr','ape','au','awb','dct','dss','flac','gsm','m4a','m4p',
-                    'mp3','mpc','ogg','oga','opus','ra','rm','raw','sln','tta','vox','wav','wma','wv','webm'];
-            }
-
-            if (typeof scope.plFiltersModel == "undefined") {
-                scope.filters = [
-                    {title: "Allowed files", extensions: iAttrs.allowedExtensions.join(',')}
-                ];
-            } else {
-                scope.filters = scope.plFiltersModel;
-            }
 
             $J('#uploader-modal-' + iAttrs.uploaderId).find(' .drop-target').attr('id', 'drop-target-' + iAttrs.id);
             $J('#uploader-modal-' + iAttrs.uploaderId).find('.upload-limit-tooltip .btn').attr('id', 'drop-target-btn-' + iAttrs.id);
@@ -66,7 +59,7 @@
             if (iAttrs.uploadLimit > 0) {
                 $J('#uploader-modal-' + iAttrs.uploaderId)
                     .find('.notify-UploadLimit')
-                    .html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser') + iAttrs.uploadLimit)
+                    .html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser').replace('%s', iAttrs.uploadLimit))
                     .show();
             }
 
@@ -105,21 +98,21 @@
             };
 
             var options = {
-                runtimes: 'html5,flash,silverlight',
-                multi_selection: (iAttrs.uploadLimit !== 1) ? true : false,
+                runtimes: 'html5,flash,silverlight,html4',
+                multi_selection: (iAttrs.uploadLimit !== 1),
                 drop_element: 'drop-target-' + iAttrs.id,
                 browse_button: 'drop-target-btn-' + iAttrs.id,
                 max_file_count: iAttrs.uploadLimit,
                 max_file_size: iAttrs.plMaxFileSize,
                 url: iAttrs.plUrl,
-                flash_swf_url: iAttrs.plFlashSwfUrl,
-                silverlight_xap_url: iAttrs.plSilverlightXapUrl,
-                filters: scope.filters,
+                flash_swf_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.swf',
+                silverlight_xap_url: cx.variables.get('basePath','contrexx')+'lib/plupload/js/Moxie.xap',
                 prevent_duplicates: true,
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Check-CSRF': 'false'
                 },
-                chunk_size: '500kb'
+                chunk_size: cx.variables.get('chunk_size','uploader')
             };
 
 
@@ -243,14 +236,14 @@
                 if ((up.settings.max_file_count > 0) && uploaderData.filesToUpload.length >= up.settings.max_file_count) {
                     uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_choose', {title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT_OVERWRITE', 'mediabrowser')}, 'add', true);
                     if (uploaderData.filesToUpload.length > up.settings.max_file_count) {
-                      uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_upload', {title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser') + up.settings.max_file_count}, 'add', true);
-                      $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').addClass('disabled');
+                        uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_upload', {title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser') + up.settings.max_file_count}, 'add', true);
+                        $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').addClass('disabled');
                     }
                 }
 
                 angular.forEach(files, function (file) {
 
-                    $J('#uploader-modal-' + iAttrs.uploaderId).find(' .fileList tr:last').after('<tr style="display:none;" class="upload-file file-' + file.id + '"><td> <div class="previewImage"></div></td><td><div class="fileInfos">    ' + file.name + ' <span class="errorMessage"></span> <div class="progress"> <div class="progress-bar upload-progress" role="progressbar"style="width: 0%"></div></div></div></td><td class="text-right">' + readablizeBytes(file.size) + ' <br/> <a class="remove-file">' + cx.variables.get('TXT_CORE_MODULE_UPLOADER_REMOVE_FILE', 'mediabrowser') + '</a> </td>  </tr>');
+                    $J('#uploader-modal-' + iAttrs.uploaderId).find(' .fileList tr:last').after('<tr style="display:none;" class="upload-file file-' + file.id + '"><td> <div class="previewImage"></div></td><td><div class="fileInfos">    ' + escapeString(file.name) + ' <span class="errorMessage"></span> <div class="progress"> <div class="progress-bar upload-progress" role="progressbar"style="width: 0%"></div></div></div></td><td class="text-right">' + readablizeBytes(file.size) + ' <br/> <a class="btn btn-default btn-small remove-file">' + cx.variables.get('TXT_CORE_MODULE_UPLOADER_REMOVE_FILE', 'mediabrowser') + '</a> </td>  </tr>');
                     $J('.file-' + file.id).fadeIn();
                     var removeFile = function () {
                         $J.each(uploaderData.filesToUpload, function (i) {
@@ -263,7 +256,7 @@
                                         $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').removeClass('disabled');
                                         uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_upload', {title: cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT_OVERWRITE', 'mediabrowser')}, 'add', uploaderData.uploadOverwiteOnLimit);
                                         if (uploaderData.filesToUpload.length < up.settings.max_file_count) {
-                                          uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_choose', '', 'remove', true);
+                                            uploaderData.updateTooltip('#uploader-modal-' + iAttrs.uploaderId + ' .upload-limit-tooltip.file_choose', '', 'remove', true);
                                         }
                                     }
                                     if (uploaderData.filesToUpload.length == 0) {
@@ -293,7 +286,6 @@
                 try {
                     var response = jQuery.parseJSON(res.response);
                     if (response.status != 'error') {
-                        $J('.file-' + file.id).find('.upload-progress').addClass('progress-bar-success');
                         $J('.file-' + file.id).addClass('success');
                         if (up.settings.max_file_count > 0) {
                             ++uploaderData.uploaded_file_count;
@@ -302,7 +294,7 @@
                         if ((response.data.status == 'error')) {
                             parseStatusMessage(this, file, 'danger', response.data.message, true, 200);
                         } else {
-                            files.push(response.data.file[1]);
+                            files.push(response.data.file);
                         }
                         if (typeof response.data.response != 'undefined') {
                             var displayStatus = 'success';
@@ -330,6 +322,10 @@
             });
 
             uploader.bind('UploadProgress', function (up, file) {
+                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .file-' + file.id).find('.upload-progress').css({width: file.percent + '%'});
+            });
+
+            uploader.bind('FileUploaded', function (up, file) {
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .file-' + file.id).find('.upload-progress').css({width: file.percent + '%'});
             });
 

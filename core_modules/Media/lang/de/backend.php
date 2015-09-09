@@ -100,6 +100,7 @@ $_ARRAYLANG['TXT_MEDIA_SET_IMAGE_NAME'] = "Bitte geben Sie einen Namen ein.";
 $_ARRAYLANG['TXT_MEDIA_CONFIRM_REPLACE_IMAGE'] = "Ersetzen des Bildes bestätigen";
 $_ARRAYLANG['TXT_MEDIA_REPLACE'] = "Ersetzen";
 $_ARRAYLANG['TXT_MEDIA_SAVE_NEW_COPY'] = "Neue Kopie speichern";
+$_ARRAYLANG['TXT_MEDIA_OR'] = "oder";
 $_ARRAYLANG['TXT_MEDIA_CROP'] = "Zuschneiden";
 $_ARRAYLANG['TXT_MEDIA_CROP_INFO'] = "Wählen Sie einen Bildausschnitt, indem Sie mit der Maus auf das Bild klicken und einen Bereich markieren.";
 $_ARRAYLANG['TXT_MEDIA_CANCEL'] = "Abbrechen";

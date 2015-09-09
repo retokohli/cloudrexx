@@ -194,6 +194,7 @@ class User_Profile
         global $objDatabase, $_CORELANG;
 
         $error = false;
+        
         foreach ($this->arrLoadedUsers[$this->id]['profile'] as $attributeId => $arrValue)
         {
             foreach ($arrValue as $historyId => $value)
@@ -201,10 +202,10 @@ class User_Profile
                 $newValue = !isset($this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]);
                 if ($newValue || $value != $this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]) {
                     $query = $this->objAttribute->isCoreAttribute($attributeId) ?
-                        "UPDATE `".DBPREFIX."access_user_profile` SET `".$attributeId."` = '".addslashes($value)."' WHERE `user_id` = ".$this->id :
+                        "UPDATE `".DBPREFIX."access_user_profile` SET `".$attributeId."` = '" . contrexx_raw2db($value) . "' WHERE `user_id` = ".$this->id :
                         ($newValue ?
-                            "INSERT INTO `".DBPREFIX."access_user_attribute_value` (`user_id`, `attribute_id`, `history_id`, `value`) VALUES (".$this->id.", ".$attributeId.", ".$historyId.", '".addslashes($value)."')" :
-                            "UPDATE `".DBPREFIX."access_user_attribute_value` SET `value` = '".addslashes($value)."' WHERE `user_id` = ".$this->id." AND `attribute_id` = ".$attributeId." AND `history_id` = ".$historyId
+                            "INSERT INTO `".DBPREFIX."access_user_attribute_value` (`user_id`, `attribute_id`, `history_id`, `value`) VALUES (".$this->id.", ".$attributeId.", ".$historyId.", '" . contrexx_raw2db($value) . "')" :
+                            "UPDATE `".DBPREFIX."access_user_attribute_value` SET `value` = '" . contrexx_raw2db($value) . "' WHERE `user_id` = ".$this->id." AND `attribute_id` = ".$attributeId." AND `history_id` = ".$historyId
                         );
 
                     if ($objDatabase->Execute($query) === false) {
