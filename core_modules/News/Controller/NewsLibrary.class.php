@@ -1163,13 +1163,6 @@ class NewsLibrary
         return $status;
     }
 
-    protected static function getHtmlImageTag($src, $alt)
-    {
-        static $htmlImgTag = '<img src="%1$s" alt="%2$s" />';
-
-        return sprintf($htmlImgTag, contrexx_raw2xhtml($src), $alt);
-    }
-
     public function parseImageThumbnail($imageSource, $thumbnailSource, $altText, $newsUrl)
     {
         $image = '';
@@ -1184,7 +1177,7 @@ class NewsLibrary
         }
 
         if (!empty($source)) {
-            $image     = self::getHtmlImageTag($source, $altText);
+            $image     = \Html::getImageByPath($source, 'alt="' . contrexx_raw2xhtml($altText) . '"');
             $imageLink = self::parseLink($newsUrl, $altText, $image);
         }
 
@@ -1465,7 +1458,7 @@ class NewsLibrary
     public static function parseImageBlock($objTpl, $imagePath, $altText, $newsUrl, $block)  
     {
         if (!empty($imagePath)) {
-            $image          = self::getHtmlImageTag($imagePath, $altText);
+            $image          = \Html::getImageByPath($imagePath, 'alt="' . contrexx_raw2xhtml($altText) . '"');
             $imgLink        = self::parseLink($newsUrl, $altText, $image);
             $imgPlaceholder = strtoupper($block);
             
