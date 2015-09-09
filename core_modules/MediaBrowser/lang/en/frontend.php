@@ -20,3 +20,4 @@ $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_DESCRIPTION'] = 'This is a new module 
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_CONGRATULATIONS'] = 'Congratulations';
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_SUCCESSFUL_CREATION'] = 'You successfully created a new module!';
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_EXAMPLE_TEMPLATE'] = 'This is the default template for this component. It is used for all ACTs that do not have their own template.';
+require_once 'backend.php';

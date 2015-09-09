@@ -817,6 +817,7 @@ die("Failed to update the Cart!");
     static function showCategories($parent_id=0)
     {
         if ($parent_id) {
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $objCategory = ShopCategory::getById($parent_id);
             // If we can't get this ShopCategory, it most probably does
             // not exist.
@@ -829,7 +830,7 @@ die("Failed to update the Cart!");
                 if ($imageName) {
                     self::$objTemplate->setVariable(array(
                         'SHOP_CATEGORY_CURRENT_IMAGE' =>
-                        \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $imageName,
+                         $cx->getWebsiteImagesShopWebPath() . '/' . $imageName,
                         'SHOP_CATEGORY_CURRENT_IMAGE_ALT' => $objCategory->name(),
                     ));
                 }
@@ -854,7 +855,7 @@ die("Failed to update the Cart!");
             $description = preg_replace('/[\n\r]/', '', $description);
             if (empty($arrDefaultImageSize)) {
 //\DBG::log("Shop::showCategories(): ".\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . self::$defaultImage);
-                $arrDefaultImageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . self::$defaultImage);
+                $arrDefaultImageSize = getimagesize($cx->getWebsitePath() . self::$defaultImage);
                 self::scaleImageSizeToThumbnail($arrDefaultImageSize);
             }
             $arrSize = $arrDefaultImageSize;
@@ -867,12 +868,12 @@ die("Failed to update the Cart!");
                 $imageName = ShopCategories::getPictureById($id);
             }
             if ($imageName) {
-                $thumb_name = \ImageManager::getThumbnailFilename($imageName);
-                if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath() . '/' . $thumb_name)) {
+                if (file_exists(\ImageManager::getThumbnailFilename($cx->getWebsiteImagesShopPath() . '/' . $imageName))) {
                     // Image found!  Use that instead of the default.
-                    $thumbnailPath =
-                        \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $thumb_name;
-                    $arrSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $thumbnailPath);
+                    $thumbnailPath = \ImageManager::getThumbnailFilename(
+                        $cx->getWebsiteImagesShopWebPath() . '/' . $imageName
+                    );
+                    $arrSize = getimagesize($cx->getWebsitePath() . $thumbnailPath);
                     self::scaleImageSizeToThumbnail($arrSize);
                 }
             }
@@ -880,7 +881,7 @@ die("Failed to update the Cart!");
                 self::$objTemplate->setVariable(
                     'SHOP_CATEGORY_IMAGE',
                     contrexx_raw2encodedUrl(
-                        \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$imageName));
+                        $cx->getWebsiteImagesShopWebPath().'/'.$imageName));
             }
             self::$objTemplate->setVariable(array(
                 'SHOP_CATEGORY_ID' => $id,
@@ -1167,6 +1168,7 @@ die("Failed to update the Cart!");
         ));
         $formId = 0;
         $arrDefaultImageSize = $arrSize = null;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         foreach ($arrProduct as $objProduct) {
             if (!empty($product_id)) {
                 self::$pageTitle = $objProduct->name();
@@ -1186,33 +1188,32 @@ die("Failed to update the Cart!");
                     $thumbnailPath = self::$defaultImage;
                     $pictureLink = '#'; //"javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
                     if (empty($arrDefaultImageSize)) {
-                        $arrDefaultImageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . self::$defaultImage);
+                        $arrDefaultImageSize = getimagesize($cx->getWebsitePath() . self::$defaultImage);
                         self::scaleImageSizeToThumbnail($arrDefaultImageSize);
                     }
                     $arrSize = $arrDefaultImageSize;
                 } else {
-                    $thumbnailPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' .
-                            \ImageManager::getThumbnailFilename($image['img']);
+                    $thumbnailPath = \ImageManager::getThumbnailFilename($cx->getWebsiteImagesShopWebPath() . '/' .$image['img']);
                     if ($image['width'] && $image['height']) {
                         $pictureLink =
-                                contrexx_raw2encodedUrl(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $image['img']) .
+                                contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $image['img']) .
                                 // Hack ahead!
                             '" rel="shadowbox['.($formId+1).']';
                         // Thumbnail display size
                         $arrSize = array($image['width'], $image['height']);
                     } else {
                         $pictureLink = '#';
-                        if (!file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $thumbnailPath)) {
+                        if (!file_exists($cx->getWebsitePath() . $thumbnailPath)) {
                             continue;
                         }
-                        $arrSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $thumbnailPath);
+                        $arrSize = getimagesize($cx->getWebsitePath() . $thumbnailPath);
                     }
                     self::scaleImageSizeToThumbnail($arrSize);
                     // Use the first available picture in microdata, if any
                     if (!$havePicture) {
                         $picture_url = \Cx\Core\Routing\Url::fromCapturedRequest(
-                            \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $image['img'],
-                            \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath(), array());
+                            $cx->getWebsiteImagesShopWebPath() . '/' . $image['img'],
+                            $cx->getWebsiteOffsetPath(), array());
                         self::$objTemplate->setVariable(
                             'SHOP_PRODUCT_IMAGE', $picture_url->toString());
 //\DBG::log("Set image to ".$picture_url->toString());

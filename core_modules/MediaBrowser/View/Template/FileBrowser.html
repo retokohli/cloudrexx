@@ -11,19 +11,19 @@
         <label for="FileSearchIsRegex" id="FileSearchIsRegexLabel" data-tooltip-placement="bottom" data-tooltip="{{
             'TXT_FILEBROWSER_EXTENDED_FILE_SEARCH_EXPLANATION' | translate }}">
             <input type="checkbox" id="FileSearchIsRegex" data-ng-model="searchConfig.isRegex"/>
-            {{ 'TXT_FILEBROWSER_EXTENDED_FILE_SEARCH' | translate }}
+            {{:: 'TXT_FILEBROWSER_EXTENDED_FILE_SEARCH' | translate }}
         </label>
 
         <div class="fileActions">
             <ul>
                 <li>
                     <a ng-click="createFolder()">
-                        <i class="icon-addfolder"></i> <span class="fileActions-text"> {{ 'TXT_FILEBROWSER_CREATE_DIRECTORY' | translate }} </span>
+                        <i class="icon-addfolder"></i> <span class="fileActions-text"> {{:: 'TXT_FILEBROWSER_CREATE_DIRECTORY' | translate }} </span>
                     </a>
                 </li>
                 <li>
                     <a ng-click="updateSource()"><i class="icon-refresh"></i>
-                        <span class="fileActions-text"> {{ 'TXT_FILEBROWSER_RELOAD' | translate }} </span>
+                        <span class="fileActions-text"> {{:: 'TXT_FILEBROWSER_RELOAD' | translate }} </span>
                     </a>
                 </li>
             </ul>
@@ -44,16 +44,16 @@
                 <tbody>
                 <tr>
                     <th colspan="2"><a href="" data-ng-click="changeSorting('name')">
-                        {{ 'TXT_FILEBROWSER_FILE_NAME' | translate }}</a></th>
+                        {{:: 'TXT_FILEBROWSER_FILE_NAME' | translate }}</a></th>
                     <th class="text-right"><a href="" data-ng-click="changeSorting('cleansize')">
-                        {{ 'TXT_FILEBROWSER_FILE_SIZE' | translate }}</a></th>
-                    <th class="text-right">{{ 'TXT_FILEBROWSER_FILE_ACTIONS' | translate }}</th>
+                        {{:: 'TXT_FILEBROWSER_FILE_SIZE' | translate }}</a></th>
+                    <th class="text-right">{{:: 'TXT_FILEBROWSER_FILE_ACTIONS' | translate }}</th>
                 </tr>
                 <tr data-ng-hide="path.length == 1">
                     <td width="2%">&#8624;
                     </td>
                     <td>
-                        <a data-ng-click="shrinkPath(1)"> {{ 'TXT_FILEBROWSER_DIRECTORY_UP' | translate }}</a>
+                        <a data-ng-click="shrinkPath(1)"> {{:: 'TXT_FILEBROWSER_DIRECTORY_UP' | translate }}</a>
                     </td>
                     <td class="text-right"></td>
                     <td class="text-right"></td>
@@ -88,7 +88,7 @@
                     <td width="2%">
                     </td>
                     <td>
-                        {{ 'TXT_FILEBROWSER_NO_FILES_IN_DIRECTORY' | translate }}
+                        {{:: 'TXT_FILEBROWSER_NO_FILES_IN_DIRECTORY' | translate }}
                     </td>
                     <td class="text-right"></td>
                     <td class="text-right"></td>
@@ -101,13 +101,13 @@
     <div class="tabMediaBrowserFooter">
 
         <button type="submit" class="btn btn-primary" data-ng-click="go('UploaderCtrl')">
-            {{ 'TXT_FILEBROWSER_UPLOAD_FILE' | translate }}
+            {{:: 'TXT_FILEBROWSER_UPLOAD_FILE' | translate }}
         </button>
         <button type="submit" class="btn btn-primary" data-ng-disabled="noFileSelected" data-ng-click="choosePictures()">
-            {{ 'TXT_FILEBROWSER_CHOOSE_FILE' | translate }}
+            {{:: 'TXT_FILEBROWSER_CHOOSE_FILE' | translate }}
         </button>
         <button type="submit" class="btn btn-primary" data-ng-click="cancel()">
-            {{ 'TXT_FILEBROWSER_CANCEL' | translate }}
+            {{:: 'TXT_FILEBROWSER_CANCEL' | translate }}
         </button>
     </div>
 </div>
