@@ -112,7 +112,9 @@ define('ASCMS_DIRECTORY_FEED_PATH',         ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_O
 define('ASCMS_DIRECTORY_FEED_WEB_PATH',     ASCMS_INSTANCE_OFFSET.'/media/Directory/feeds');
 define('ASCMS_MODULE_MEDIA_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/Directory');
 define('ASCMS_MODULE_MEDIA_WEB_PATH',       ASCMS_INSTANCE_OFFSET.'/media/Directory');
+// Cx::getWebsiteMediaMarketPath()
 define('ASCMS_MARKET_MEDIA_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/Market');
+// Cx::getWebsiteMediaMarketWebPath()
 define('ASCMS_MARKET_MEDIA_WEB_PATH',       ASCMS_INSTANCE_OFFSET.'/media/Market');
 define('ASCMS_CACHE_PATH',                  ASCMS_TEMP_PATH.'/cache');
 define('ASCMS_ECARD_OPTIMIZED_PATH',        ASCMS_MEDIA_PATH.'/Ecard/ecards_optimized');

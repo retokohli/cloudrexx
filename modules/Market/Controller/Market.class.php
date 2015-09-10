@@ -952,6 +952,8 @@ class Market extends MarketLibrary
                        }
                        ';
         }
+        //initialize and get uploader object
+        $uploader = $this->getUploader();
 
         $this->_objTpl->setVariable(array(
             'TXT_MARKET_NAME'                        =>    $_CORELANG['TXT_NAME'],
@@ -976,7 +978,10 @@ class Market extends MarketLibrary
             'TXT_MARKET_DETAIL_SHOW'                =>    $_ARRAYLANG['TXT_MARKET_SHOW_IN_ADVERTISEMENT'],
             'TXT_MARKET_DETAIL_HIDE'                =>    $_ARRAYLANG['TXT_MARKET_NO_SHOW_IN_ADVERTISEMENT'],
             'TXT_MARKET_PREMIUM'                    =>    $_ARRAYLANG['TXT_MARKET_MARK_ADVERTISEMENT'],
-            'TXT_MARKET_DAYS'                        =>    $_ARRAYLANG['TXT_MARKET_DAYS']
+            'TXT_MARKET_DAYS'                        =>    $_ARRAYLANG['TXT_MARKET_DAYS'],
+            'TXT_UPLOAD'                            =>  $_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'],
+            'MARKET_UPLOADER_CODE'                  =>  $uploader->getXHtml(),
+            'MARKET_UPLOADER_ID'                    =>  $uploader->getId()
         ));
 
         if ($this->settings['maxdayStatus'] != 1) {
@@ -1356,8 +1361,13 @@ class Market extends MarketLibrary
         $this->_objTpl->parse('showEntriesHeader');
     }
 
+    /**
+     * Edit the advertisement entry
+     * 
+     * @return null
+     */
 
-    function editEntry() {
+    public function editEntry() {
 
         global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
@@ -1385,6 +1395,8 @@ class Market extends MarketLibrary
         //get search
         $this->getSearch();
 
+        //initialize and get uploader object
+        $uploader = $this->getUploader();
         $this->_objTpl->setVariable(array(
             'TXT_MARKET_TITLE'                        =>    $_ARRAYLANG['TXT_EDIT_ADVERTISEMENT'],
             'TXT_MARKET_TITLE_ENTRY'                =>    $_ARRAYLANG['TXT_MARKET_TITLE'],
@@ -1406,6 +1418,9 @@ class Market extends MarketLibrary
             'TXT_MARKET_USER_DETAIL'                =>    $_ARRAYLANG['TXT_MARKET_USERDETAILS'],
             'TXT_MARKET_DETAIL_SHOW'                =>    $_ARRAYLANG['TXT_MARKET_SHOW_IN_ADVERTISEMENT'],
             'TXT_MARKET_DETAIL_HIDE'                =>    $_ARRAYLANG['TXT_MARKET_NO_SHOW_IN_ADVERTISEMENT'],
+            'TXT_UPLOAD'                            =>  $_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'],
+            'MARKET_UPLOADER_CODE'                  =>  $uploader->getXHtml(),
+            'MARKET_UPLOADER_ID'                    =>  $uploader->getId()
         ));
 
         if (isset($_GET['id'])) {
@@ -1525,7 +1540,7 @@ class Market extends MarketLibrary
             }
         }else{
             if (isset($_POST['submitEntry'])) {
-                if ($_FILES['pic']['name'] != "") {
+                if ($_POST['uploadImage'] != "") {
                     $picture = $this->uploadPicture();
                     if ($picture != "error") {
                         $objFile = new \File();

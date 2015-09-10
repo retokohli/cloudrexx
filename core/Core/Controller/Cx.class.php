@@ -503,6 +503,7 @@ namespace Cx\Core\Core\Controller {
         protected $websiteMediaarchive4Path;
         protected $websiteMediaarchive3Path;
         protected $websiteMediaFileSharingPath;
+        protected $websiteMediaMarketPath;
         protected $websiteImagesContentWebPath;
         protected $websiteImagesAttachWebPath;
         protected $websiteImagesShopWebPath;
@@ -519,6 +520,7 @@ namespace Cx\Core\Core\Controller {
         protected $websiteMediaarchive3WebPath;
         protected $websiteMediaarchive4WebPath;
         protected $websiteMediaFileSharingWebPath;
+        protected $websiteMediaMarketWebPath;
         protected $websiteImagesPath;
         protected $websiteImagesWebPath;
         protected $websitePublicTempPath;
@@ -2535,6 +2537,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaarchive3Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive3';
             $this->websiteMediaarchive4Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive4';
             $this->websiteMediaFileSharingPath  = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
+            $this->websiteMediaMarketPath       = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Market';
             $this->websiteMediaCrmPath          = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Crm';
             
             $this->websiteImagesContentWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/content';
@@ -2557,6 +2560,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaarchive3WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive3';
             $this->websiteMediaarchive4WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive4';
             $this->websiteMediaFileSharingWebPath=$this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
+            $this->websiteMediaMarketWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Market';
                         
             $this->websitePublicTempPath        = $this->websiteTempPath    . self::FOLDER_NAME_PUBLIC_TEMP;
             $this->websitePublicTempWebPath     = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;
@@ -2937,6 +2941,30 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteMediaFileSharingWebPath()
         {
             return $this->websiteMediaFileSharingWebPath;
+        }
+
+        /**
+         * Return the absolute path to the media Market location (/Market)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_MARKET_MEDIA_PATH.
+         *
+         * @return string
+         */
+        public function getWebsiteMediaMarketPath()
+        {
+            return $this->websiteMediaMarketPath;
+        }
+
+        /**
+         * Return the offset path to the media Market location (/Market)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_MARKET_MEDIA_WEB_PATH.
+         *
+         * @return string
+         */
+        public function getWebsiteMediaMarketWebPath()
+        {
+            return $this->websiteMediaMarketWebPath;
         }
 
         /**
