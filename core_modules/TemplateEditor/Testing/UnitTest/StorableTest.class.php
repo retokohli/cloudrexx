@@ -5,8 +5,8 @@ namespace Cx\Core_Modules\TemplateEditor\Testing\UnitTest;
 use Cx\Core\Test\Model\Entity\ContrexxTestCase;
 use Cx\Core\View\Model\Entity\Theme;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\ThemeOptions;
-use Cx\Core_Modules\TemplateEditor\Model\Repository\ThemeOptionsRepository;
+use Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet;
+use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
 use Cx\Core_Modules\TemplateEditor\Model\Storable;
 use Cx\Core_Modules\TemplateEditor\Model\TestStorage;
 
@@ -26,21 +26,21 @@ class StorableTest extends ContrexxTestCase
     protected $testStorage;
 
     /**
-     * @var ThemeOptionsRepository
+     * @var OptionSetRepository
      */
     protected $themeOptionRepository;
 
     protected function setUp()
     {
         $this->testStorage = new TestStorage();
-        $this->themeOptionRepository = new ThemeOptionsRepository($this->testStorage);
+        $this->themeOptionRepository = new OptionSetRepository($this->testStorage);
     }
 
     public function testLoadOption()
     {
         $themeOption = $this->themeOptionRepository->get(new Theme(null, null, 'standard_3_0'));
-        $this->assertTrue($themeOption instanceof ThemeOptions);
-        if ($themeOption instanceof ThemeOptions){
+        $this->assertTrue($themeOption instanceof OptionSet);
+        if ($themeOption instanceof OptionSet){
             $this->assertTrue($themeOption->getOption('main_color') instanceof ColorOption);
         }
     }
@@ -49,8 +49,8 @@ class StorableTest extends ContrexxTestCase
     {
         $themeOption = $this->themeOptionRepository->get(new Theme(null, null, 'standard_3_0'));
         $newColor = 'dddddd';
-        $this->assertTrue($themeOption instanceof ThemeOptions);
-        if ($themeOption instanceof ThemeOptions) {
+        $this->assertTrue($themeOption instanceof OptionSet);
+        if ($themeOption instanceof OptionSet) {
             /**
              * @var $color ColorOption
              */

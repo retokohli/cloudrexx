@@ -29,12 +29,17 @@ body {
 }
 
 .sidebar .option {
-    margin: 10px 0 0 0;
+    margin-top: -1px;
     float: left;
     width: calc(100% - 20px);
     position: relative;
-    border-top:1px solid #cccccc;
-    padding: 10px 10px 0;
+    border-top: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+    padding: 10px 10px 10px;
+}
+
+.option.color {
+    width: calc(50% - 20px);
 }
 
 .sidebar .option.layout {
@@ -71,7 +76,7 @@ body {
     border-bottom: 4px solid #c0392b;
 }
 
-.sidebar button.save {
+#content .sidebar button.save {
     position: absolute;
     left: 0;
     bottom: 0;
@@ -82,9 +87,10 @@ body {
     color: #fff;
     font-size: 18px;
     border-top: 4px solid #efefef;
+    text-shadow: none;
 }
 
-.sidebar button.save:hover {
+#content .sidebar button.save:hover {
     cursor: pointer;
     background: #0080cd;
 }
@@ -125,6 +131,15 @@ body {
     width:25%;
     margin: 0;
     float: left;
+}
+
+.preset .buttons button  {
+    width:calc(50% - 5px);
+    margin-right: 10px;
+}
+
+.preset .buttons button:nth-child(2n){
+    margin-right: 0;
 }
 
 .buttons {
@@ -169,6 +184,11 @@ body {
     color: #fff;
     text-align: center;
     border-radius: 100%;
+}
+
+#content .option.color:after {
+    bottom: 12px;
+    right: 13px;
 }
 
 #content .option.saving:after, #content .option .image.saving:after {
@@ -246,7 +266,7 @@ body {
 }
 
 
-.sidebar button.save.saved {
+#content  .sidebar button.save.saved {
     background: #029711;
 }
 

@@ -50,7 +50,7 @@ class OptionTest extends ContrexxTestCase
         } catch (OptionValueNotValidException $e) {
             $this->assertTrue((strpos($e->getMessage(), $invalidValue) !== 0));
         }
-        $textOption->renderBackend($backendTemplate);
+        $textOption->renderOptionField($backendTemplate);
         $renderedTemplate = $backendTemplate->get();
         $this->assertTrue((strpos($renderedTemplate, $testValue) !== 0));
     }
@@ -62,7 +62,7 @@ class OptionTest extends ContrexxTestCase
         );
         $backendTemplate = new Sigma();
         $backendTemplate->setTemplate($this->template);
-        $areaOption->renderBackend($backendTemplate);
+        $areaOption->renderOptionField($backendTemplate);
         $renderedTemplate = $backendTemplate->get();
         $this->assertTrue((strpos($renderedTemplate, 'checked') !== 0));
     }
@@ -79,7 +79,7 @@ class OptionTest extends ContrexxTestCase
         );
         $backendTemplate = new Sigma();
         $backendTemplate->setTemplate($this->template);
-        $colorOption->renderBackend($backendTemplate);
+        $colorOption->renderOptionField($backendTemplate);
         $renderedTemplate = $backendTemplate->get();
         foreach ($choice as $colorChoice){
             $this->assertTrue((strpos($renderedTemplate, $colorChoice) !== 0));
@@ -95,7 +95,7 @@ class OptionTest extends ContrexxTestCase
             ));
         $backendTemplate = new Sigma();
         $backendTemplate->setTemplate($this->template);
-        $imageOption->renderBackend($backendTemplate);
+        $imageOption->renderOptionField($backendTemplate);
         $renderedTemplate = $backendTemplate->get();
         $this->assertTrue((strpos($renderedTemplate, $url) !== 0));
     }
@@ -108,7 +108,7 @@ class OptionTest extends ContrexxTestCase
             ));
         $backendTemplate = new Sigma();
         $backendTemplate->setTemplate($this->template);
-        $imageOption->renderBackend($backendTemplate);
+        $imageOption->renderOptionField($backendTemplate);
         $renderedTemplate = $backendTemplate->get();
         foreach ($urls as $url) {
             $this->assertTrue((strpos($renderedTemplate, $url) !== 0));

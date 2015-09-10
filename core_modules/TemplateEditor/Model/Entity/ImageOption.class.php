@@ -37,7 +37,8 @@ class ImageOption extends Option
     /**
      * @param Sigma $template
      */
-    public function renderBackend($template) {
+    public function renderOptionField($template)
+    {
         global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
@@ -51,11 +52,18 @@ class ImageOption extends Option
             'TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName
         );
         $mediaBrowser = new MediaBrowser();
+        $mediaBrowser->setOptions(
+            array(
+                'views' => 'uploader,filebrowser',
+                'startView' => 'filebrowser',
+            )
+        );
         $mediaBrowser->setCallback('callback_' . $this->name);
         $subTemplate->setVariable(
-            'MEDIABROWSER_BUTTON', $mediaBrowser->getXHtml(
-            $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CHOOSE_PICTURE']
-        )
+            'MEDIABROWSER_BUTTON',
+            $mediaBrowser->getXHtml(
+                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CHOOSE_PICTURE']
+            )
         );
         $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
         $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'img');
@@ -65,7 +73,8 @@ class ImageOption extends Option
     /**
      * @param Sigma $template
      */
-    public function renderFrontend($template) {
+    public function renderTheme($template)
+    {
         $template->setVariable(
             'TEMPLATE_EDITOR_' . strtoupper($this->name),
             htmlentities($this->url)
@@ -104,17 +113,6 @@ class ImageOption extends Option
     }
 
     /**
-     * @return string
-     */
-    public function yamlSerialize() {
-        $option             = parent::yamlSerialize();
-        $option['specific'] = array(
-            'url' => $this->url
-        );
-        return $option;
-    }
-
-    /**
      * @return mixed
      */
     public function getUrl() {
@@ -126,5 +124,11 @@ class ImageOption extends Option
      */
     public function setUrl($url) {
         $this->url = $url;
+    }
+
+    public function getValue()
+    {
+        return array(
+            'url' => $this->url);
     }
 }

@@ -36,7 +36,8 @@ class AreaOption extends Option
     /**
      * @param Sigma $template
      */
-    public function renderBackend($template) {
+    public function renderOptionField($template)
+    {
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
             Cx::instanciate()->getCodeBaseCoreModulePath()
@@ -57,7 +58,8 @@ class AreaOption extends Option
     /**
      * @param Sigma $template
      */
-    public function renderFrontend($template) {
+    public function renderTheme($template)
+    {
         $blockName = strtolower('TEMPLATE_EDITOR_' . $this->name);
         if ($template->blockExists($blockName) && $this->active) {
             $template->touchBlock($blockName);
@@ -78,14 +80,6 @@ class AreaOption extends Option
         return array('active' => $data);
     }
 
-    /**
-     * @return string
-     */
-    public function yamlSerialize() {
-        $option             = parent::yamlSerialize();
-        $option['specific'] = array('active' => $this->active);
-        return $option;
-    }
 
     /**
      * @return boolean
@@ -99,5 +93,10 @@ class AreaOption extends Option
      */
     public function setActive($active) {
         $this->active = $active;
+    }
+
+    public function getValue()
+    {
+        return array('active' => $this->active);
     }
 }

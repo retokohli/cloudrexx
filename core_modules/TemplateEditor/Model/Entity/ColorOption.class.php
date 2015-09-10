@@ -45,7 +45,8 @@ class ColorOption extends Option
     /**
      * @param Sigma $template
      */
-    public function renderBackend($template) {
+    public function renderOptionField($template)
+    {
         global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
@@ -78,12 +79,17 @@ class ColorOption extends Option
     /**
      * @param Sigma $template
      */
-    public function renderFrontend($template) {
+    public function renderTheme($template) {
         $template->setVariable(
             'TEMPLATE_EDITOR_' . strtoupper($this->name), $this->color
         );
-    }
+        for ($i = -255; $i < 255; $i++){
+            $template->setVariable(
+                'TEMPLATE_EDITOR_' . strtoupper($this->name).'_'.(($i < 0) ? 'SUBTRACT' : 'ADD').'_'.abs($i), $this->adjustBrightness($this->color,$i)
+            );
+        }
 
+    }
     /**
      * @param array $data
      *
@@ -107,7 +113,6 @@ class ColorOption extends Option
     public function yamlSerialize() {
         $option             = parent::yamlSerialize();
         $option['specific'] = array(
-            'color' => $this->color,
             'choice' => $this->choice
         );
         return $option;
@@ -125,5 +130,30 @@ class ColorOption extends Option
      */
     public function setColor($color) {
         $this->color = $color;
+    }
+
+    public function getValue()
+    {
+        return array('color' => $this->color);
+    }
+
+    function adjustBrightness($hex, $steps) {
+        // Steps should be between -255 and 255. Negative = darker, positive = lighter
+        $steps = max(-255, min(255, $steps));
+        // Normalize into a six character long hex string
+        $hex = str_replace('#', '', $hex);
+        if (strlen($hex) == 3) {
+            $hex = str_repeat(substr($hex,0,1), 2).str_repeat(substr($hex,1,1), 2).str_repeat(substr($hex,2,1), 2);
+        }
+        // Split into three parts: R, G and B
+        $color_parts = str_split($hex, 2);
+        $return = '#';
+        foreach ($color_parts as $color) {
+            $color   = hexdec($color); // Convert to decimal
+            $color   = max(0,min(255,$color + $steps)); // Adjust color
+            $return .= str_pad(dechex($color), 2, '0', STR_PAD_LEFT); // Make two char hex code
+        }
+
+        return $return;
     }
 }

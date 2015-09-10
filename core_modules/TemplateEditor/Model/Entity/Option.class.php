@@ -48,12 +48,12 @@ abstract class Option implements YamlSerializable
     /**
      * @param Sigma $template
      */
-    public abstract function renderBackend($template);
+    public abstract function renderOptionField($template);
 
     /**
      * @param Sigma $template
      */
-    public abstract function renderFrontend($template);
+    public abstract function renderTheme($template);
 
     /**
      * @param array $data
@@ -100,6 +100,7 @@ abstract class Option implements YamlSerializable
         );
     }
 
+    public abstract function getValue();
 
 }
 

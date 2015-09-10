@@ -30,7 +30,8 @@ class ImageSeriesOption extends Option
      * @param array  $data
      *
      */
-    public function __construct($name, $translations, $data) {
+    public function __construct($name, $translations, $data)
+    {
         parent::__construct($name, $translations, $data);
         foreach ($data['urls'] as $key => $url) {
             if (!empty($url)) {
@@ -42,7 +43,8 @@ class ImageSeriesOption extends Option
     /**
      * @param Sigma $template
      */
-    public function renderBackend($template) {
+    public function renderOptionField($template)
+    {
         global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
@@ -58,12 +60,23 @@ class ImageSeriesOption extends Option
         }
         $mediaBrowser   = new MediaBrowser();
         $mediaBrowserId = $this->name . '_mediabrowser';
-        $mediaBrowser->setOptions(array('id' => $mediaBrowserId));
+        $mediaBrowser->setOptions(
+            array(
+                'id' => $mediaBrowserId
+            )
+        );
+        $mediaBrowser->setOptions(
+            array(
+                'views' => 'uploader,filebrowser',
+                'startview' => 'filebrowser',
+            )
+        );
         $mediaBrowser->setCallback('callback_' . $this->name);
         $subTemplate->setVariable(
-            'MEDIABROWSER_BUTTON', $mediaBrowser->getXHtml(
-            $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PICTURE']
-        )
+            'MEDIABROWSER_BUTTON',
+            $mediaBrowser->getXHtml(
+                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PICTURE']
+            )
         );
         $subTemplate->setVariable('MEDIABROWSER_ID', $mediaBrowserId);
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
@@ -84,7 +97,8 @@ class ImageSeriesOption extends Option
     /**
      * @param Sigma $template
      */
-    public function renderFrontend($template) {
+    public function renderTheme($template)
+    {
         $blockName = strtolower('TEMPLATE_EDITOR_' . $this->name);
         if ($template->blockExists($blockName)) {
             foreach ($this->urls as $id => $url) {
@@ -103,7 +117,8 @@ class ImageSeriesOption extends Option
      * @return array
      * @throws OptionValueNotValidException
      */
-    public function handleChange($data) {
+    public function handleChange($data)
+    {
 
         global $_ARRAYLANG;
         if (empty($data['id']) && $data['id'] != 0) {
@@ -144,27 +159,25 @@ class ImageSeriesOption extends Option
     }
 
     /**
-     * @return string
-     */
-    public function yamlSerialize() {
-        $option             = parent::yamlSerialize();
-        $option['specific'] = array(
-            'urls' => $this->urls
-        );
-        return $option;
-    }
-
-    /**
      * @return Option[]
      */
-    public function getUrls() {
+    public function getUrls()
+    {
         return $this->urls;
     }
 
     /**
      * @param Option[] $urls
      */
-    public function setUrls($urls) {
+    public function setUrls($urls)
+    {
         $this->urls = $urls;
+    }
+
+    public function getValue()
+    {
+        return array(
+            'urls' => $this->urls
+        );
     }
 }

@@ -3,7 +3,7 @@
 namespace Cx\Core_Modules\TemplateEditor\Model\Repository;
 
 use Cx\Core\View\Model\Entity\Theme;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\ThemeOptions;
+use Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet;
 use Cx\Core_Modules\TemplateEditor\Model\Storable;
 
 /**
@@ -14,7 +14,7 @@ use Cx\Core_Modules\TemplateEditor\Model\Storable;
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class ThemeOptionsRepository
+class OptionSetRepository
 {
 
     /**
@@ -25,29 +25,33 @@ class ThemeOptionsRepository
     /**
      * @param Storable $storage
      */
-    public function __construct(Storable $storage) {
+    public function __construct(Storable $storage)
+    {
         $this->storage = $storage;
     }
 
     /**
      * @param Theme $theme
      *
-     * @return ThemeOptions
+     * @return OptionSet
      */
-    public function get(Theme $theme) {
+    public function get(Theme $theme)
+    {
         $componentData = $this->storage->retrieve($theme->getFoldername());
-        return new ThemeOptions($theme, $componentData);
+        return new OptionSet($theme, $componentData);
     }
 
     /**
      * Save a ThemeOptions entity to the component.yml file.
      *
-     * @param ThemeOptions $entity
+     * @param OptionSet $entity
      *
      * @return bool
      */
-    public function save($entity) {
+    public function save($entity)
+    {
         return $this->storage->persist($entity->getName(), $entity);
     }
+
 
 }

@@ -78,8 +78,108 @@ jQuery(function(){
     });
 
     jQuery('#saveOptionsButton').click(saveOptions);
+
+    jQuery('.add-preset').click(function(){
+        bootbox.dialog({
+                title: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PRESET_TITLE','TemplateEditor'),
+                message: jQuery('#new-preset').html(),
+                buttons: {
+                    success: {
+                        label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE','TemplateEditor'),
+                        className: "btn-success",
+                        callback: function () {
+                            jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=addPreset", {
+                                tid: cx.variables.get('themeid','TemplateEditor'),
+                                preset: jQuery('#new-preset-name').val(),
+                                presetpreset: jQuery('#preset-for-preset').val()
+                            }, function (response) {
+                                var newloaction = location.href.replace(/preset=[a-z0-9]+/i, "preset="+response.data.preset);
+                                window.location.href = (newloaction.search('preset=') == -1 ? newloaction + "&preset=" + jQuery(this).val() : newloaction);
+                            }, "json");
+                        }
+                    }
+                }
+            }
+        );
+    });
+
+    jQuery('.activate-preset').click(function(){
+        bootbox.dialog({
+                title: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_ACTIVATE_PRESET_TITLE','TemplateEditor'),
+                message: jQuery('#active-preset').html(),
+                buttons: {
+                    success: {
+                        label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_YES','TemplateEditor'),
+                        className: "btn-success",
+                        callback: function () {
+                            jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=activatePreset", {
+                                tid: cx.variables.get('themeid','TemplateEditor'),
+                                preset: jQuery('#preset').val()
+                            }, function (response) {
+                                window.location.href = window.location.href;
+                            }, "json");
+                        }
+                    },
+                    danger: {
+                        label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_NO','TemplateEditor'),
+                        className: "btn-danger"
+                    }
+                }
+            }
+        );
+    });
+
+    jQuery('.remove-preset').click(function(){
+        bootbox.dialog({
+                title: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE_TITLE','TemplateEditor'),
+                message: jQuery('#remove-preset').html(),
+                buttons: {
+                    success: {
+                        label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_YES','TemplateEditor'),
+                        className: "btn-danger",
+                        callback: function () {
+                            jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=removePreset", {
+                                tid: cx.variables.get('themeid','TemplateEditor'),
+                                preset: jQuery('#preset').val()
+                            }, function (response) {
+                                window.location.href = window.location.href;
+                            }, "json");
+                        }
+                    }
+                }
+            }
+        );
+    });
+
+    jQuery('.reset-preset').click(function(){
+        bootbox.dialog({
+                title: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE_TITLE','TemplateEditor'),
+                message: jQuery('#reset-preset').html(),
+                buttons: {
+                    success: {
+                        label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_YES','TemplateEditor'),
+                        className: "btn-danger",
+                        callback: function () {
+                            jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=resetPreset", {
+                                tid: cx.variables.get('themeid','TemplateEditor'),
+                                preset: jQuery('#preset').val()
+                            }, function (response) {
+                                window.location.href = window.location.href;
+                            }, "json");
+                        }
+                    }
+                }
+            }
+        );
+    });
+
     jQuery('#layout').change(function(){
         var newloaction = location.href.replace("tid="+cx.variables.get('themeid','TemplateEditor'), "tid="+jQuery(this).val());
         window.location.href = (newloaction.search('tid=') == -1 ? newloaction + "&tid=" + jQuery(this).val() : newloaction);
+    });
+
+    jQuery('#preset').change(function(){
+        var newloaction = location.href.replace(/preset=[a-z0-9]+/i, "preset="+jQuery(this).val());
+        window.location.href = (newloaction.search('preset=') == -1 ? newloaction + "&preset=" + jQuery(this).val() : newloaction);
     });
 });

@@ -27,4 +27,14 @@ interface Storable
      */
     public function persist($name, YamlSerializable $data);
 
+    /**
+     * @return array
+     */
+    public function getList();
+
+    /**
+     * @param $name
+     */
+    public function remove($name);
+
 }

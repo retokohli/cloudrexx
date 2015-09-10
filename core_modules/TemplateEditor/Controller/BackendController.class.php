@@ -14,40 +14,49 @@ namespace Cx\Core_Modules\TemplateEditor\Controller;
 
 use Cx\Core\Html\Sigma;
 use Cx\Core\View\Model\Entity\Theme;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\ThemeOptions;
-use Cx\Core_Modules\TemplateEditor\Model\FileStorage;
-use Cx\Core_Modules\TemplateEditor\Model\Repository\ThemeOptionsRepository;
+use Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet;
+use Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage;
+use Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage;
+use Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException;
+use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
 use Cx\Core\Core\Model\Entity\SystemComponentBackendController;
 use Cx\Core\Routing\Url;
 use Cx\Core\View\Model\Repository\ThemeRepository;
+use Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository;
 
 class BackendController extends SystemComponentBackendController
 {
     /**
      * @var ThemeRepository
      */
-    private $themeRepository;
+    protected $themeRepository;
     /**
-     * @var ThemeOptionsRepository
+     * @var OptionSetRepository
      */
-    private $themeOptionRepository;
+    protected $themeOptionRepository;
 
     /**
-     * @var ThemeOptions
+     * @var OptionSet
      */
-    private $themeOptions;
+    protected $themeOptions;
 
     /**
      * @var Theme
      */
-    private $theme;
+    protected $theme;
+
+    /**
+     * @var PresetRepository
+     */
+    protected $presetRepository;
 
     /**
      * Returns a list of available commands (?act=XY)
      *
      * @return array List of acts
      */
-    public function getCommands() {
+    public function getCommands()
+    {
         return array();
     }
 
@@ -61,21 +70,63 @@ class BackendController extends SystemComponentBackendController
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
      * @param array               $cmd      CMD separated by slashes
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
+    {
         \Permission::checkAccess(47, 'static');
-        $fileStorage                 = new FileStorage(
+        $fileStorage                 = new OptionSetFileStorage(
             $this->cx->getWebsiteThemesPath()
         );
-        $themeOptionRepository       = new ThemeOptionsRepository($fileStorage);
+        $themeOptionRepository       = new OptionSetRepository($fileStorage);
         $this->themeOptionRepository = $themeOptionRepository;
         $this->themeRepository       = new ThemeRepository();
         $themeID                     = isset($_GET['tid']) ? $_GET['tid'] : 1;
         $this->theme                 = $this->themeRepository->findById(
             $themeID
         );
+
+        if (!$_SESSION['TemplateEditor']){
+            $_SESSION['TemplateEditor'] = array();
+        }
+        if (!$_SESSION['TemplateEditor'][$this->theme->getId()]){
+            $_SESSION['TemplateEditor'][$this->theme->getId()] = array();
+        }
+        if (isset($_GET['preset'])){
+            if ($_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset'] != filter_var(
+                    $_GET['preset'], FILTER_SANITIZE_STRING
+                )){
+                $_SESSION['TemplateEditor'][$this->theme->getId()] = array();
+            }
+            $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
+                = isset($_GET['preset']) ? filter_var(
+                $_GET['preset'], FILTER_SANITIZE_STRING
+            ) : 'Default';
+        }
+
+
+        $this->presetRepository = new PresetRepository(
+            new PresetFileStorage(
+                $this->cx->getWebsiteThemesPath() . '/'
+                . $this->theme->getFoldername()
+            )
+        );
         $this->themeOptions          = $this->themeOptionRepository->get(
             $this->theme
         );
+        try {
+            $this->themeOptions->applyPreset(
+                $this->presetRepository->getByName(
+                    $_SESSION['TemplateEditor'][$this->theme->getId(
+                    )]['activePreset']
+                ));
+
+        } catch (PresetRepositoryException $e) {
+            $_SESSION['TemplateEditor'][$this->theme->getId(
+            )]['activePreset'] = 'Default';
+            $this->themeOptions->applyPreset(
+                $this->presetRepository->getByName(
+                    'Default'
+                ));
+        }
 
         $this->showOverview($template);
     }
@@ -87,7 +138,8 @@ class BackendController extends SystemComponentBackendController
      *
      * @throws \Cx\Core\Routing\UrlException
      */
-    public function showOverview(Sigma $template) {
+    public function showOverview(Sigma $template)
+    {
         global $_ARRAYLANG, $_CONFIG;
         \JS::registerJS('core_modules/TemplateEditor/View/Script/spectrum.js');
         $template->loadTemplateFile(
@@ -115,7 +167,37 @@ class BackendController extends SystemComponentBackendController
             $template->parse('layouts');
         }
 
-        $this->themeOptions->renderBackend($template);
+        $presets = $this->presetRepository->findAll();
+        foreach ($presets as $preset) {
+            $template->setVariable(
+                array(
+                    'TEMPLATEEDITOR_PRESET_NAME' => $this->themeOptions->getActivePreset(
+                    )->getName() == $preset ? $preset . ' ('
+                        . $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_PRESET_ACTIVE']
+                        . ')' : $preset,
+                    'TEMPLATEEDITOR_PRESET_ID' => $preset
+                )
+            );
+            if ( $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset'] == $preset) {
+                $template->setVariable(
+                    array(
+                        'TEMPLATEEDITOR_PRESET_ACTIVE' => 'selected'
+                    )
+                );
+            }
+            $template->parse('presets');
+        }
+        foreach ($presets as $preset) {
+            $template->setVariable(
+                array(
+                    'TEMPLATEEDITOR_PRESET_FOR_PRESETS_NAME' => $preset,
+                    'TEMPLATEEDITOR_PRESET_FOR_PRESETS_ID' => $preset
+                )
+            );
+            $template->parse('presetsForPresets');
+        }
+
+        $this->themeOptions->renderOptions($template);
 
         if ($this->themeOptions->getOptionCount() == 0) {
             $template->setVariable(
@@ -125,6 +207,9 @@ class BackendController extends SystemComponentBackendController
                 )
             );
             $template->parse('no_options');
+        }
+        else {
+            $template->parse('presetBlock');
         }
         $template->setVariable(
             array(
@@ -141,10 +226,17 @@ class BackendController extends SystemComponentBackendController
         $template->setGlobalVariable($_ARRAYLANG);
         \ContrexxJavascript::getInstance()->setVariable(
             array(
+                'newPresetTemplate' => '',
                 'TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE'],
                 'TXT_CORE_MODULE_TEMPLATEEDITOR_CANCEL' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CANCEL'],
                 'TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE_CONTENT' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE_CONTENT'],
                 'TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE_TITLE' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE_TITLE'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_YES' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_YES'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_NO' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NO'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PRESET' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PRESET'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_ACTIVATE_PRESET_TITLE' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ACTIVATE_PRESET_TITLE'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PRESET_TITLE' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PRESET_TITLE'],
                 'themeid' => $this->theme->getId(),
                 'iframeUrl' => Url::fromModuleAndCmd(
                     'home', '', null,

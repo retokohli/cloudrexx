@@ -57,7 +57,8 @@ class TextOption extends Option
     /**
      * @param Sigma $template
      */
-    public function renderBackend($template) {
+    public function renderOptionField($template)
+    {
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
             Cx::instanciate()->getCodeBaseCoreModulePath()
@@ -76,7 +77,8 @@ class TextOption extends Option
     /**
      * @param Sigma $template
      */
-    public function renderFrontend($template) {
+    public function renderTheme($template)
+    {
         $template->setVariable(
             'TEMPLATE_EDITOR_' . strtoupper($this->name),
             $this->html ? $this->string : htmlentities($this->string)
@@ -125,7 +127,6 @@ class TextOption extends Option
     public function yamlSerialize() {
         $option             = parent::yamlSerialize();
         $option['specific'] = array(
-            'textvalue' => $this->string,
             'regex' => $this->regex,
             'regexError' => $this->regexError,
             'html' => $this->html
@@ -173,5 +174,10 @@ class TextOption extends Option
      */
     public function setHtml($html) {
         $this->html = $html;
+    }
+
+    public function getValue()
+    {
+        return array( 'textvalue' => $this->string);
     }
 }
