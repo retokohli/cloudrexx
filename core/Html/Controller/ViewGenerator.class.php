@@ -698,9 +698,11 @@ class ViewGenerator {
             // cannot save, no such entry
             \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
             return false;
-        }
-        if (!$this->formGenerator->isValid() || (isset($this->options['validate']) && !$this->options['validate']($this->formGenerator))) {
-            // data validation failed, stay in this view
+        } else if (!$this->formGenerator->isValid()
+                   || (isset($this->options['validate']) 
+                   && !$this->options['validate']($this->formGenerator))
+        ) {
+            // data validation failed
             \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
             return false;
         }
