@@ -3618,21 +3618,23 @@ if ($test === NULL) {
             self::$objTemplate->setVariable(
                 'SHOP_PRICELIST_CATEGORY_ALL_CHECKED', \Html::ATTRIBUTE_CHECKED);
         }
-        $arrCategories = ShopCategories::getChildCategoriesById(0, false);
+        // Get all categories
+        $arrCategories = ShopCategories::getTreeArray(true, false);
         if (empty($arrCategories)) {
             Message::warning($_ARRAYLANG['TXT_SHOP_WARNING_NO_CATEGORIES']);
         }
         $i = 0;
         foreach ($arrCategories as $objCategory) {
-            $category_id = $objCategory->id();
+            $category_id = $objCategory['id'];
             $selected =
                 (   $category_all
                  || preg_match('/(?:^|,)\s*'.$category_id.'\s*(?:,|$)/',
                         $category_ids));
 //DBG::log("Category ID $category_id, ".($selected ? "selected" : "NOT"));
             self::$objTemplate->setVariable(array(
-                'SHOP_CATEGORY_ID' => $category_id,
-                'SHOP_CATEGORY_NAME' => $objCategory->name(),
+                'SHOP_CATEGORY_ID' => contrexx_raw2xhtml($category_id),
+                'SHOP_CATEGORY_NAME' => contrexx_raw2xhtml($objCategory['name']),
+                'SHOP_CATEGORY_LEVELSPACE' => str_repeat('|----', $objCategory['level']),
                 'SHOP_CATEGORY_DISABLED' => ($category_all
                     ? \Html::ATTRIBUTE_DISABLED : ''),
                 'SHOP_CATEGORY_CHECKED' => ($selected ? \Html::ATTRIBUTE_CHECKED : ''),
