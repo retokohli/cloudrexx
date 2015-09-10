@@ -265,48 +265,6 @@ class CrmInterface extends CrmLibrary
     }
 
     /**
-     * Upload a Csv File
-     *
-     * @param String $name File name
-     * @param String $path uploading file path
-     *
-     * @return String
-     */
-    function uploadCSV($name, $path)
-    {
-        //check file array
-        if (isset($_FILES) && !empty($_FILES)) {
-            //get file info
-            $status = "";
-            $tmpFile = $_FILES[$name]['tmp_name'];
-            $fileName = $_FILES[$name]['name'];
-            $fileType = $_FILES[$name]['type'];
-            $fileSize = $_FILES[$name]['size'];
-
-            if ($fileName != "" && \FWValidator::is_file_ending_harmless($fileName)) {
-
-                //check extension
-                $info = pathinfo($fileName);
-                $exte = $info['extension'];
-                $exte = (!empty($exte)) ? '.' . $exte : '';
-                $fileName = time() . $exte;
-                
-                //upload file
-                if (@move_uploaded_file($tmpFile, $path.$fileName)) {
-                    @chmod($path.$fileName, '0777');
-                    $status = $fileName;
-                } else {
-                    $status = "error";
-                }
-
-            } else {
-                $status = "error";
-            }
-        }
-        return $status;
-
-    }
-    /**
      * It displayes the import menu
      *
      * @return customer import screen

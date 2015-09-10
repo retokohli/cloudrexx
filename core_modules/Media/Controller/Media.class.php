@@ -326,6 +326,35 @@ class Media extends MediaLibrary
                 'MEDIA_CREATE_DIRECTORY_URL'        => CONTREXX_SCRIPT_PATH . '?section=' . $this->archive . $this->getCmd . '&amp;act=newDir&amp;path=' . $this->webPath
             ));
             $this->_objTpl->parse('media_create_directory');
+            
+            //custom uploader
+            \JS::activate('cx'); // the uploader needs the framework
+            
+            $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); //create an uploader
+            $uploadId = $uploader->getId();
+            $uploader->setCallback('customUploader');
+            $uploader->setOptions(array(
+                'id'    => 'custom_'.$uploadId,
+            ));
+
+            $folderWidget   = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($_SESSION->getTempPath() . '/' . $uploadId, true);
+            $folderWidgetId = $folderWidget->getId();
+            $extendedFileInputCode = <<<CODE
+    <script type="text/javascript">
+
+        //uploader javascript callback function
+        function customUploader(callback) {
+                angular.element('#mediaBrowserfolderWidget_$folderWidgetId').scope().refreshBrowser();
+        }
+    </script>
+CODE;
+
+            $this->_objTpl->setVariable(array(
+                'UPLOADER_CODE'      => $uploader->getXHtml(),
+                'UPLOADER_ID'        => $uploadId,
+                'FILE_INPUT_CODE'    => $extendedFileInputCode,
+                'FOLDER_WIDGET_CODE' => $folderWidget->getXHtml()
+            ));
         }
     }
 
@@ -471,68 +500,52 @@ class Media extends MediaLibrary
     private function processFormUpload()
     {
         global $_ARRAYLANG;
-
-        $inputField = 'media_upload_file';
-        if (!isset($_FILES[$inputField]) || !is_array($_FILES[$inputField])) {
-            return false;
-        }
-
-        $fileName = !empty($_FILES[$inputField]['name']) ? contrexx_stripslashes($_FILES[$inputField]['name']) : '';
-        $fileTmpName = !empty($_FILES[$inputField]['tmp_name']) ? $_FILES[$inputField]['tmp_name'] : '';
-
-        if (MediaLibrary::isIllegalFileName($fileName)) {
-            $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_DONT_CREATE'];
+        
+        $objSession = \cmsSession::getInstance();
+        $uploaderId = isset($_POST['media_upload_file']) ? contrexx_input2raw($_POST['media_upload_file']) : 0;
+        if (empty($uploaderId)) {
             return false;
         }
         
-        switch ($_FILES[$inputField]['error']) {
-            case UPLOAD_ERR_INI_SIZE:
-                $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_SIZE_EXCEEDS_LIMIT'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET), $this->getFormatedFileSize(\FWSystem::getMaxUploadFileSize()));
-                break;
-
-            case UPLOAD_ERR_FORM_SIZE:
-                $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_TOO_LARGE'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
-                break;
-
-            case UPLOAD_ERR_PARTIAL:
-                $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_CORRUPT'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
-                break;
-
-            case UPLOAD_ERR_NO_FILE:
-                $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_NO_FILE'];
-                continue;
-                break;
-
-            default:
-                if (!empty($fileTmpName)) {
-                    $suffix  = '';
-                    $file    = $this->path . $fileName;
-                    $arrFile = pathinfo($file);
-                    $i       = 0;
-                    while (file_exists($file)) {
-                        $suffix = '-' . (time() + (++$i));
-                        $file   = $this->path . $arrFile['filename'] . $suffix . '.' . $arrFile['extension'];
-                    }
-
-                    if (\FWValidator::is_file_ending_harmless($fileName)) {
-                        $fileExtension = $arrFile['extension'];
-
-                        if (@move_uploaded_file($fileTmpName, $file)) {
-                            $fileName = $arrFile['filename'];
-                            $obj_file = new \File();
-                            $obj_file->setChmod($this->path, $this->webPath, $fileName);
-                            $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADED_SUCESSFULLY'];
-                            return true;
-                        } else {
-                            $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_UPLOAD_FAILED'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
-                        }
-                    } else {
-                        $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_EXTENSION_NOT_ALLOWED'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
-                    }
-                }
-                break;
+        $tempPath = $objSession->getTempPath() .'/' . contrexx_input2raw($uploaderId);
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($tempPath)) {
+            return false;
         }
-        return false;
+        $errorMsg = array();
+        foreach (glob($tempPath.'/*') as $file) {
+            $i        = 0;
+            $fileName = basename($file);
+            $path     = $tempPath . '/' . $fileName;
+            $file     = $this->path . $fileName;
+            $arrFile  = pathinfo($file);
+            while (file_exists($file)) {
+                $suffix = '-' . (time() + (++$i));
+                $file   = $this->path . $arrFile['filename'] . $suffix . '.' . $arrFile['extension'];
+            }
+
+            if (!\FWValidator::is_file_ending_harmless($path)) {
+                $errorMsg[] = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_EXTENSION_NOT_ALLOWED'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));;
+                continue;
+            }
+
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($path);
+                $objFile->move($file, false);
+                $fileObj = new \File();
+                $fileObj->setChmod($this->path, $this->webPath, basename($file));
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
+                $errorMsg[] = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_UPLOAD_FAILED'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
+            }
+        }
+        
+        if (!empty($errorMsg)) {
+            $this->_strErrorMessage = explode('<br>', $errorMsg);
+            return false;
+        }
+        
+        $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADED_SUCESSFULLY'];
+        return true;
     }
 
     /**
