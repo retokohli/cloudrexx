@@ -52,6 +52,7 @@ class ViewGenerator {
         
         $this->viewId = static::$increment++;
         try {
+            \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
             $this->options = $options;
             $entityWithNS = $this->findEntityClass($object);
 
@@ -296,7 +297,6 @@ class ViewGenerator {
         if (is_array($object)) {
             $object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($object);
         }
-        \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
         if ($object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             // render table if no parameter is set
             $this->object = $object;
