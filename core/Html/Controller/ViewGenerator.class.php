@@ -386,10 +386,7 @@ class ViewGenerator {
 
             // get doctrine field name, database field name and type for each field
             foreach($renderObject as $name => $value) {
-                if ($name == 'virtual') {
-                    continue;
-                }
-                if (in_array($name, $primaryKeyNames)) {
+                if ($name == 'virtual' || in_array($name, $primaryKeyNames)) {
                     continue;
                 }
 
