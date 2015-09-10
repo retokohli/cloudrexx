@@ -612,7 +612,9 @@ class ViewGenerator {
     }
     
     /**
-     * @param $entityWithNS
+     * @param $entityWithNS class name including namespace
+     * @access protected
+     * @global $_ARRAYLANG
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\TransactionRequiredException
      * @throws \Exception
