@@ -93,8 +93,8 @@ jQuery(function(){
                                 preset: jQuery('#new-preset-name').val(),
                                 presetpreset: jQuery('#preset-for-preset').val()
                             }, function (response) {
-                                var newloaction = location.href.replace(/preset=[a-z0-9]+/i, "preset="+response.data.preset);
-                                window.location.href = (newloaction.search('preset=') == -1 ? newloaction + "&preset=" + jQuery(this).val() : newloaction);
+                                var newlocation = location.href.replace(/preset=[a-z0-9]+/i, "preset="+response.data.preset);
+                                window.location.href = (newlocation.search('preset=') == -1 ? newlocation + "&preset=" + response.data.preset : newlocation);
                             }, "json");
                         }
                     }

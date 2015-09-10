@@ -187,6 +187,22 @@ class BackendController extends SystemComponentBackendController
             }
             $template->parse('presets');
         }
+        if ( $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset'] == $this->themeOptions->getActivePreset(
+            )->getName()) {
+            $template->setVariable(
+                array(
+                    'TEMPLATEDITOR_PRESET_IS_ALREADY_ACTIVE' => 'disabled'
+                )
+            );
+        }
+        if ($_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset'] == 'Default'){
+            $template->setVariable(
+                array(
+                    'TEMPLATEDITOR_PRESET_IS_DEFAULT' => 'disabled'
+                )
+            );
+
+        }
         foreach ($presets as $preset) {
             $template->setVariable(
                 array(
