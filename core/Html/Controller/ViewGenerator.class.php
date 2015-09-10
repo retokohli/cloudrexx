@@ -48,8 +48,6 @@ class ViewGenerator {
      * @throws ViewGeneratorException 
      */
     public function __construct($object, $options = array()) {
-        global $_ARRAYLANG;
-        
         $this->viewId = static::$increment++;
         try {
             \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
@@ -82,80 +80,7 @@ class ViewGenerator {
                     $this->options['functions']['allowAdd'] != false
                 )
             ) {
-                
-                $this->renderFormForEntry(null);
-                $this->validateForm();
-                if (!empty($_POST)) {
-                    $this->checkBlankPostRequest();
-                    $entityObject = \Env::get('em')->getClassMetadata($entityWithNS);
-                    $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name
-                    $entityColumnNames = $entityObject->getColumnNames(); //get all field names
-
-                    // create new entity without calling the constructor
-// TODO: this might break certain entities!
-                    $entityObj = $entityObject->newInstance();
-                    foreach($entityColumnNames as $column) {
-                        $field = $entityObject->getFieldName($column);
-                        if (
-                            isset($this->options['fields']) &&
-                            isset($this->options['fields'][$field]) &&
-                            isset($this->options['fields'][$field]['storecallback']) &&
-                            is_callable($this->options['fields'][$field]['storecallback'])
-                        ) {
-                            $storecallback = $this->options['fields'][$field]['storecallback'];
-                            $postedValue = null;
-                            if (isset($_POST['field'])) {
-                                $postedValue = contrexx_input2raw($_POST[$field]);
-                            }
-                            $_POST[$field] = $storecallback($postedValue);
-                        }
-                        if (isset($_POST[$field]) && $field != $primaryKeyName) {
-                            $fieldDefinition = $entityObject->getFieldMapping($field);
-                            if ($fieldDefinition['type'] == 'datetime') {
-                                $newValue = new \DateTime($_POST[$field]);
-                            } elseif ($fieldDefinition['type'] == 'array') {
-                                $newValue = unserialize($_POST[$field]);
-                                // verify that the value is actually an array -> prevent to store other php data
-                                if (!is_array($newValue)) {
-                                    $newValue = array();
-                                }
-                            } else {
-                                $newValue = contrexx_input2raw($_POST[$field]);
-                            }
-                            $entityObj->{'set'.preg_replace('/_([a-z])/', '\1', ucfirst($field))}($newValue);
-                        }
-                    }
-
-                    // store single-valued-associations
-                    $associationMappings = \Env::get('em')->getClassMetadata($entityWithNS)->getAssociationMappings();
-                    $classMethods = get_class_methods($entityObj);
-                    foreach ($associationMappings as $field => $associationMapping) {
-                        if (   !empty($_POST[$field])
-                            && \Env::get('em')->getClassMetadata($entityWithNS)->isSingleValuedAssociation($field)
-                            && in_array('set'.ucfirst($field), $classMethods)
-                        ) {
-                            $col = $associationMapping['joinColumns'][0]['referencedColumnName'];
-                            $association = \Env::get('em')->getRepository($associationMapping['targetEntity'])->findOneBy(array($col => $_POST[$field]));
-                            $entityObj->{'set'.ucfirst($field)}($association);
-                        }
-                    }
-
-                    if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                        $entityRepository = \Env::get('em')->getRepository($entityWithNS);
-                        $entityRepository->add($entityObj);
-                        $entityRepository->flush();
-                    } else {
-                        if (!($entityObj instanceof \Cx\Model\Base\EntityBase)) {
-                            \DBG::msg('Unkown entity model '.get_class($entityObj).'! Trying to persist using entity manager...');
-                        }
-                        \Env::get('em')->persist($entityObj);
-                        \Env::get('em')->flush();
-                    }
-                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL']);   
-                    $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-                    $actionUrl->setParam('add', null);
-                    \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
-                }
+                $this->saveEntry($entityWithNS);
             }
 
             // execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
@@ -172,95 +97,7 @@ class ViewGenerator {
                     )
                 )
             ) {
-                $entityId = contrexx_input2raw($this->getEntryId());
-                // render form for editid
-                $this->renderFormForEntry($entityId);
-                $form = $this->formGenerator;
-                if ($form === false) {
-                    // cannot save, no such entry
-                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
-                    return;
-                }
-                if (!$form->isValid() || (isset($this->options['validate']) && !$this->options['validate']($form))) {
-                    // data validation failed, stay in edit view
-                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
-                    return;
-                }
-                $entityObject=array();
-                if ($this->object->entryExists($entityId)) {
-                    $entityObject = $this->object->getEntry($entityId);
-                }
-                if (empty($entityObject)) {
-                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
-                    return;
-                }
-                $updateArray=array();
-                $entityObj = \Env::get('em')->getClassMetadata($entityWithNS);
-                $primaryKeyName =$entityObj->getSingleIdentifierFieldName(); //get primary key name  
-                $associationMappings = \Env::get('em')->getClassMetadata($entityWithNS)->getAssociationMappings();
-                $classMethods = get_class_methods($entityObj->newInstance());
-                foreach ($entityObject as $name=>$value) {
-                    if (!isset ($_POST[$name])) {
-                        continue;
-                    }
-                    $methodName = 'set'.str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
-                    if (   \Env::get('em')->getClassMetadata($entityWithNS)->isSingleValuedAssociation($name)
-                        && in_array($methodName, $classMethods)
-                    ) {
-                        // store single-valued-associations
-                        $col = $associationMappings[$name]['joinColumns'][0]['referencedColumnName'];
-                        $association = \Env::get('em')->getRepository($associationMappings[$name]['targetEntity'])->findOneBy(array($col => $_POST[$name]));
-                        $updateArray[$methodName] = $association;
-                    } elseif (   $_POST[$name] != $value
-                              && in_array($methodName, $classMethods)
-                    ) {
-                        $fieldDefinition = $entityObj->getFieldMapping($name);
-                        if (
-                            isset($this->options['fields']) &&
-                            isset($this->options['fields'][$name]) &&
-                            isset($this->options['fields'][$name]['storecallback']) &&
-                            is_callable($this->options['fields'][$name]['storecallback'])
-                        ) {
-                            $storecallback = $this->options['fields'][$name]['storecallback'];
-                            $newValue = $storecallback(contrexx_input2raw($_POST[$name]));
-                        } else if ($fieldDefinition['type'] == 'datetime') {
-                            if (empty($_POST[$name])) {
-                                $newValue = null;
-                            } else {
-                                $newValue = new \DateTime($_POST[$name]);
-                            }
-                        } elseif ($fieldDefinition['type'] == 'array') {
-                            $newValue = unserialize($_POST[$name]);
-                            // verify that the value is actually an array -> prevent to store other php data
-                            if (!is_array($newValue)) {
-                                $newValue = array();
-                            }
-                        } else {
-                            $newValue = contrexx_input2raw($_POST[$name]);
-                        }
-                        $updateArray[$methodName] = $newValue;
-                    }
-                }
-                $id = $entityObject[$primaryKeyName]; //get primary key value  
-                if (!empty($updateArray) && !empty($id)) {
-                    $entityObj = \Env::get('em')->getRepository($entityWithNS)->find($id);
-                    if (!empty($entityObj)) {
-                        foreach($updateArray as $key=>$value) {
-                            $entityObj->$key($value);
-                        }
-                        if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                            \Env::get('em')->getRepository($entityWithNS)->flush();
-                        } else {
-                            \Env::get('em')->flush();    
-                        }
-                        \Message::add($_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL']);   
-                    } else {
-                        \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
-                    }
-                } 
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-                $actionUrl->setParam('editid', null);
-                \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
+                $this->saveEntry($entityWithNS);
             }
 
             // execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
@@ -609,6 +446,180 @@ class ViewGenerator {
      */
     public function getObject() {
         return $this->object;
+    }
+
+    /**
+     * This function saves an entity to the database
+     *
+     * @param $entityWithNS class name including namespace
+     * @access protected
+     * @global $_ARRAYLANG
+     */
+    protected function saveEntry($entityWithNS) {
+        global $_ARRAYLANG;
+
+        // if entityId is a number the user edited an existing entry. If it is null we create a new one
+        $entityId = contrexx_input2raw($this->getEntryId());
+        $this->renderFormForEntry($entityId);
+
+        // if the form is not valid in any case, we stay in this view and do not save anything, because we can not be
+        // sure that everything is alright
+        if(!$this->validateForm()) {
+            return;
+        }
+
+        // if there are no data submitted, we stay on this view, because we have nothing to save
+        if(!$this->checkBlankPostRequest()){
+            return;
+        }
+
+        $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
+        $associationMappings = $entityClassMetadata->getAssociationMappings();
+        $primaryKeyName = $entityClassMetadata->getSingleIdentifierFieldName(); //get primary key name
+        
+        
+        // if we do not have an entityId, we came from add mode
+        if (empty($entityId)) {
+            $entityColumnNames = $entityClassMetadata->getColumnNames(); //get all field names
+
+            // create new entity without calling the constructor
+            // TODO: this might break certain entities!
+            $entityObj = $entityClassMetadata->newInstance();
+            foreach($entityColumnNames as $column) {
+                $field = $entityClassMetadata->getFieldName($column);
+                if (
+                    isset($this->options['fields']) &&
+                    isset($this->options['fields'][$field]) &&
+                    isset($this->options['fields'][$field]['storecallback']) &&
+                    is_callable($this->options['fields'][$field]['storecallback'])
+                ) {
+                    $storecallback = $this->options['fields'][$field]['storecallback'];
+                    $postedValue = null;
+                    if (isset($_POST['field'])) {
+                        $postedValue = contrexx_input2raw($_POST[$field]);
+                    }
+                    $_POST[$field] = $storecallback($postedValue);
+                }
+                if (isset($_POST[$field]) && $field != $primaryKeyName) {
+                    $fieldDefinition = $entityClassMetadata->getFieldMapping($field);
+                    if ($fieldDefinition['type'] == 'datetime') {
+                        $newValue = new \DateTime($_POST[$field]);
+                    } elseif ($fieldDefinition['type'] == 'array') {
+                        $newValue = unserialize($_POST[$field]);
+                        // verify that the value is actually an array -> prevent to store other php data
+                        if (!is_array($newValue)) {
+                            $newValue = array();
+                        }
+                    } else {
+                        $newValue = contrexx_input2raw($_POST[$field]);
+                    }
+                    $entityObj->{'set'.preg_replace('/_([a-z])/', '\1', ucfirst($field))}($newValue);
+                }
+            }
+
+            $classMethods = get_class_methods($entityObj);
+            foreach ($associationMappings as $field => $associationMapping) {
+                if (   !empty($_POST[$field])
+                    && $entityClassMetadata->isSingleValuedAssociation($field)
+                    && in_array('set'.ucfirst($field), $classMethods)
+                ) {
+                    $col = $associationMapping['joinColumns'][0]['referencedColumnName'];
+                    $association = \Env::get('em')->getRepository($associationMapping['targetEntity'])->findOneBy(array($col => $_POST[$field]));
+                    $entityObj->{'set'.ucfirst($field)}($association);
+                }
+            }
+
+            if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
+                $entityRepository = \Env::get('em')->getRepository($entityWithNS);
+                $entityRepository->add($entityObj);
+                $entityRepository->flush();
+            } else {
+                if (!($entityObj instanceof \Cx\Model\Base\EntityBase)) {
+                    \DBG::msg('Unkown entity model '.get_class($entityObj).'! Trying to persist using entity manager...');
+                }
+                \Env::get('em')->persist($entityObj);
+                \Env::get('em')->flush();
+            }
+            $param = 'add';
+            $successMessage = $_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL'];
+        } else {
+            $entityObject=array();
+            if ($this->object->entryExists($entityId)) {
+                $entityObject = $this->object->getEntry($entityId);
+            }
+            if (empty($entityObject)) {
+                \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
+                return;
+            }
+            $updateArray=array();
+            $classMethods = get_class_methods($entityClassMetadata->newInstance());
+            foreach ($entityObject as $name=>$value) {
+                if (!isset ($_POST[$name])) {
+                    continue;
+                }
+                $methodName = 'set'.str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+                if (   \Env::get('em')->getClassMetadata($entityWithNS)->isSingleValuedAssociation($name)
+                    && in_array($methodName, $classMethods)
+                ) {
+                    // store single-valued-associations
+                    $col = $associationMappings[$name]['joinColumns'][0]['referencedColumnName'];
+                    $association = \Env::get('em')->getRepository($associationMappings[$name]['targetEntity'])->findOneBy(array($col => $_POST[$name]));
+                    $updateArray[$methodName] = $association;
+                } elseif (   $_POST[$name] != $value
+                    && in_array($methodName, $classMethods)
+                ) {
+                    $fieldDefinition = $entityClassMetadata->getFieldMapping($name);
+                    if (
+                        isset($this->options['fields']) &&
+                        isset($this->options['fields'][$name]) &&
+                        isset($this->options['fields'][$name]['storecallback']) &&
+                        is_callable($this->options['fields'][$name]['storecallback'])
+                    ) {
+                        $storecallback = $this->options['fields'][$name]['storecallback'];
+                        $newValue = $storecallback(contrexx_input2raw($_POST[$name]));
+                    } else if ($fieldDefinition['type'] == 'datetime') {
+                        if (empty($_POST[$name])) {
+                            $newValue = null;
+                        } else {
+                            $newValue = new \DateTime($_POST[$name]);
+                        }
+                    } elseif ($fieldDefinition['type'] == 'array') {
+                        $newValue = unserialize($_POST[$name]);
+                        // verify that the value is actually an array -> prevent to store other php data
+                        if (!is_array($newValue)) {
+                            $newValue = array();
+                        }
+                    } else {
+                        $newValue = contrexx_input2raw($_POST[$name]);
+                    }
+                    $updateArray[$methodName] = $newValue;
+                }
+            }
+            $id = $entityObject[$primaryKeyName]; //get primary key value
+            if (!empty($updateArray) && !empty($id)) {
+                $entityObj = \Env::get('em')->getRepository($entityWithNS)->find($id);
+                if (!empty($entityObj)) {
+                    foreach($updateArray as $key=>$value) {
+                        $entityObj->$key($value);
+                    }
+                    if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
+                        \Env::get('em')->getRepository($entityWithNS)->flush();
+                    } else {
+                        \Env::get('em')->flush();
+                    }
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL']);
+                } else {
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
+                }
+            }
+            $param = 'editid';
+            $successMessage = $_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL'];
+        }
+        \Message::add($successMessage);
+        // get the proper action url and redirect the user
+        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+        $actionUrl->setParam($param, null);
+        \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
     
     /**
