@@ -336,9 +336,9 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 break;
             case 2:
                 //modify (add/edit) View
-                $objAddStep = new MediaDirectoryAddStep($this->moduleName);
-				$i = 0;
-
+                $objAddStep       = new MediaDirectoryAddStep($this->moduleName);
+		$i                = 0;
+                $isFileInputFound = false;
                 foreach ($this->arrInputfields as $key => $arrInputfield) {
                     $strInputfield = null;
 
@@ -349,6 +349,11 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                     }
 
                     if(!empty($arrInputfield['type'])) {
+                        if (   !$isFileInputFound
+                            && in_array($arrInputfield['type_name'], array('image', 'file', 'downloads'))
+                        ) {
+                            $isFileInputFound = true;
+                        }
                         $strType = $arrInputfield['type_name'];
                         $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield".ucfirst($strType);
 
@@ -466,6 +471,21 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                     if($objInit->mode != 'backend') {
                         $objTpl->parse($this->moduleNameLC.'InputfieldElement');
                     }
+                }
+
+                if ($isFileInputFound && $objInit->mode != 'backend' ) {
+                    // init uploader to upload images
+                    $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+                    $uploader->setCallback($this->moduleNameLC .'UploaderCallback');
+                    $uploader->setOptions(array(
+                        'id'                 => $this->moduleNameLC . 'ImageUploader',
+                        'style'              => 'display:none',
+                        'data-upload-limit'  => 1,
+                    ));
+                    $objTpl->setVariable(array(
+                        $this->moduleLangVar.'_UPLOADER_ID'   => $uploader->getId(),
+                        $this->moduleLangVar.'_UPLOADER_CODE' => $uploader->getXHtml(),
+                    ));
                 }
 
                 if(!empty($objAddStep->arrSteps) && $objInit->mode != 'backend') {
@@ -1045,6 +1065,22 @@ EOF;
 
         $strstrInputfieldJavascript = <<<EOF
 
+var inputId, isImageField, uploaderInputBox;
+function getUploader(e) { // e => jQuery element
+    inputId = e.data('inputId');
+    isImageField = e.data('isImage');
+    uploaderInputBox = \$J('#' + inputId);
+    \$J('#mediadirImageUploader').trigger('click');
+}
+function mediadirUploaderCallback(data) {
+    if (typeof data[0] !== 'undefined') {
+        var data       = data[0].split('/'),
+            fileName   = data.pop();
+
+        uploaderInputBox.val(fileName);
+        uploaderInputBox.trigger('keyup');
+    }
+}
 function selectAddStep(stepName){
     if(document.getElementById(stepName).style.display != "block")
     {

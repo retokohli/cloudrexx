@@ -312,16 +312,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             exit;
         }
 
-        // init uploader to upload images
-        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
-        $uploader->setCallback('accessImageUploaderCallback');
-        $uploader->setOptions(array(
-            'id'                 => 'accessImageUploader',
-            'allowed-extensions' => array('jpg', 'jpeg', 'png', 'gif'),
-            'style'              => 'display:none',
-            'data-upload-limit'  => 1,
-        ));
-        $this->attachJavaScriptFunction('imageUploaderCode');
+        $uploader = $this->getImageUploader();
         
         $this->parseAccountAttributes($objFWUser->objUser, true);
         $this->parseNewsletterLists($objFWUser->objUser);
@@ -542,10 +533,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                         ($arrProfile = $_POST['access_profile_attribute'])
                         && (
                             // either no profile images are set
-                            (!isset($_FILES['access_profile_attribute_images']) || !is_array($_FILES['access_profile_attribute_images']))
+                            (!isset($_POST['access_profile_attribute_images']) || !is_array($_POST['access_profile_attribute_images']))
                             ||
                             // otherwise try to upload them
-                            ($uploadImageError = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_FILES['access_profile_attribute_images'])) === true
+                            ($uploadImageError = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_POST['access_profile_attribute_images'], $_POST['access_image_uploader_id'])) === true
                         )
                         && $objUser->setProfile($arrProfile)
                     )
@@ -620,9 +611,12 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $this->attachJavaScriptFunction('accessSetWebsite');
 
+        $uploader = $this->getImageUploader();
         $this->_objTpl->setVariable(array(
             'ACCESS_SIGNUP_BUTTON'          => '<input type="submit" name="access_signup" value="'.$_ARRAYLANG['TXT_ACCESS_CREATE_ACCOUNT'].'" />',
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
+            'ACCESS_IMAGE_UPLOADER_ID'      => $uploader->getId(),
+            'ACCESS_IMAGE_UPLOADER_CODE'    => $uploader->getXHtml(),
             'ACCESS_SIGNUP_MESSAGE'         => implode("<br />\n", $this->arrStatusMsg['error'])
         ));
 

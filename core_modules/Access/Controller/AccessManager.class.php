@@ -1394,17 +1394,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $this->attachJavaScriptFunction('addHistoryField');
         
-        // init uploader to upload images
-        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
-        $uploader->setCallback('accessImageUploaderCallback');
-        $uploader->setOptions(array(
-            'id'                 => 'accessImageUploader',
-            'allowed-extensions' => array('jpg', 'jpeg', 'png', 'gif'),
-            'style'              => 'display:none',
-            'data-upload-limit'  => 1,
-        ));
-        $this->attachJavaScriptFunction('imageUploaderCode');
-        
+        $uploader = $this->getImageUploader();
         $this->_objTpl->setVariable(array(
             'ACCESS_USER_ID'                       => $objUser->getId(),
             'ACCESS_USER_IS_ADMIN'                 => $objUser->getAdminStatus() ? 'checked="checked"' : '',
