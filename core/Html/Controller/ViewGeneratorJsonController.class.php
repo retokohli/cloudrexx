@@ -29,8 +29,26 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
      */
     public function getAccessableMethods()
     {
+        // at the moment we only allow backend users to edit ViewGenerator over json/ajax.
+        // As soon as we have permissions on entity level we can change this, so getViewOverJson can also be used from frontend
         return array(
-            'getViewOverJson',
+            'getViewOverJson' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, true, null, null,
+                function () {
+                    $objUser = \FWUser::getFWUserObject()->objUser->getUser($_SESSION->userId);
+                    $objBackendGroups = \FWUser::getFWUserObject()->objGroup->getGroups(
+                        array('is_active' => true, 'type' => 'backend'),
+                        null,
+                        array('group_id')
+                    );
+                    while (!$objBackendGroups->EOF) {
+                        if(in_array($objBackendGroups->getId(), $objUser->getAssociatedGroupIds())){
+                            return true;
+                        }
+                        $objBackendGroups->next();
+                    }
+                    return false;
+                }
+            ),
         );
     }
 
