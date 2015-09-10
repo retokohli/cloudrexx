@@ -372,6 +372,8 @@ class ViewGenerator {
                         continue;
                     }
                     $renderArray[$field]= new $associationMapping['targetEntity']();
+                } elseif (\Env::get('em')->getClassMetadata($entityClassWithNS)->isCollectionValuedAssociation($field)) {
+                    $renderArray[$field]= new $associationMapping['targetEntity']();
                 }
             }
         } elseif ($entityId && $this->object->entryExists($entityId)) { // load edit entry form
@@ -404,9 +406,10 @@ class ViewGenerator {
             $classMethods = get_class_methods($entityObject->newInstance());
             foreach ($associationMappings as $field => $associationMapping) {
                 if (!empty($renderArray[$field])) {
-                    continue;
-                }
-                if (   \Env::get('em')->getClassMetadata($entityClass)->isSingleValuedAssociation($field)
+                    if (\Env::get('em')->getClassMetadata($entityClassWithNS)->isCollectionValuedAssociation($field)) {
+                        $renderArray[$field] = new $associationMapping['targetEntity']();
+                    }
+                } elseif (\Env::get('em')->getClassMetadata($entityClassWithNS)->isSingleValuedAssociation($field)
                     && in_array('set'.ucfirst($field), $classMethods)
                 ) {
                     $renderArray[$field] = new $associationMapping['targetEntity']();
@@ -426,7 +429,7 @@ class ViewGenerator {
             }
             $renderArray = array_merge($sortedData,$renderArray);
         }
-        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options);
+        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options, $entityId);
         // This should be moved to FormGenerator as soon as FormGenerator
         // gets the real entity instead of $renderArray
         $additionalContent = '';
@@ -472,147 +475,128 @@ class ViewGenerator {
 
         $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
         $associationMappings = $entityClassMetadata->getAssociationMappings();
-        $primaryKeyName = $entityClassMetadata->getSingleIdentifierFieldName(); //get primary key name
-        
-        
-        // if we do not have an entityId, we came from add mode
-        if (empty($entityId)) {
-            $entityColumnNames = $entityClassMetadata->getColumnNames(); //get all field names
 
-            // create new entity without calling the constructor
-            // TODO: this might break certain entities!
-            $entityObj = $entityClassMetadata->newInstance();
-            foreach($entityColumnNames as $column) {
-                $field = $entityClassMetadata->getFieldName($column);
-                if (
-                    isset($this->options['fields']) &&
-                    isset($this->options['fields'][$field]) &&
-                    isset($this->options['fields'][$field]['storecallback']) &&
-                    is_callable($this->options['fields'][$field]['storecallback'])
-                ) {
-                    $storecallback = $this->options['fields'][$field]['storecallback'];
-                    $postedValue = null;
-                    if (isset($_POST['field'])) {
-                        $postedValue = contrexx_input2raw($_POST[$field]);
-                    }
-                    $_POST[$field] = $storecallback($postedValue);
-                }
-                if (isset($_POST[$field]) && $field != $primaryKeyName) {
-                    $fieldDefinition = $entityClassMetadata->getFieldMapping($field);
-                    if ($fieldDefinition['type'] == 'datetime') {
-                        $newValue = new \DateTime($_POST[$field]);
-                    } elseif ($fieldDefinition['type'] == 'array') {
-                        $newValue = unserialize($_POST[$field]);
-                        // verify that the value is actually an array -> prevent to store other php data
-                        if (!is_array($newValue)) {
-                            $newValue = array();
-                        }
-                    } else {
-                        $newValue = contrexx_input2raw($_POST[$field]);
-                    }
-                    $entityObj->{'set'.preg_replace('/_([a-z])/', '\1', ucfirst($field))}($newValue);
-                }
-            }
-
-            $classMethods = get_class_methods($entityObj);
-            foreach ($associationMappings as $field => $associationMapping) {
-                if (   !empty($_POST[$field])
-                    && $entityClassMetadata->isSingleValuedAssociation($field)
-                    && in_array('set'.ucfirst($field), $classMethods)
-                ) {
-                    $col = $associationMapping['joinColumns'][0]['referencedColumnName'];
-                    $association = \Env::get('em')->getRepository($associationMapping['targetEntity'])->findOneBy(array($col => $_POST[$field]));
-                    $entityObj->{'set'.ucfirst($field)}($association);
-                }
-            }
-
-            if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                $entityRepository = \Env::get('em')->getRepository($entityWithNS);
-                $entityRepository->add($entityObj);
-                $entityRepository->flush();
-            } else {
-                if (!($entityObj instanceof \Cx\Model\Base\EntityBase)) {
-                    \DBG::msg('Unkown entity model '.get_class($entityObj).'! Trying to persist using entity manager...');
-                }
-                \Env::get('em')->persist($entityObj);
-                \Env::get('em')->flush();
-            }
-            $param = 'add';
-            $successMessage = $_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL'];
-        } else {
-            $entityObject=array();
+        // if we have a entityId, we came from edit mode and so we try to load the existing entry
+        if($entityId) {
+            $entity = \Env::get('em')->getRepository($entityWithNS)->find($entityId);
+            $entityArray = array(); // This array is used for the existing values
             if ($this->object->entryExists($entityId)) {
-                $entityObject = $this->object->getEntry($entityId);
+                $entityArray = $this->object->getEntry($entityId);
             }
-            if (empty($entityObject)) {
-                \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
+            if (empty($entityArray)) {
+                \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
                 return;
             }
-            $updateArray=array();
-            $classMethods = get_class_methods($entityClassMetadata->newInstance());
-            foreach ($entityObject as $name=>$value) {
-                if (!isset ($_POST[$name])) {
-                    continue;
-                }
-                $methodName = 'set'.str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
-                if (   \Env::get('em')->getClassMetadata($entityWithNS)->isSingleValuedAssociation($name)
-                    && in_array($methodName, $classMethods)
-                ) {
-                    // store single-valued-associations
-                    $col = $associationMappings[$name]['joinColumns'][0]['referencedColumnName'];
-                    $association = \Env::get('em')->getRepository($associationMappings[$name]['targetEntity'])->findOneBy(array($col => $_POST[$name]));
-                    $updateArray[$methodName] = $association;
-                } elseif (   $_POST[$name] != $value
-                    && in_array($methodName, $classMethods)
-                ) {
-                    $fieldDefinition = $entityClassMetadata->getFieldMapping($name);
-                    if (
-                        isset($this->options['fields']) &&
-                        isset($this->options['fields'][$name]) &&
-                        isset($this->options['fields'][$name]['storecallback']) &&
-                        is_callable($this->options['fields'][$name]['storecallback'])
-                    ) {
-                        $storecallback = $this->options['fields'][$name]['storecallback'];
-                        $newValue = $storecallback(contrexx_input2raw($_POST[$name]));
-                    } else if ($fieldDefinition['type'] == 'datetime') {
-                        if (empty($_POST[$name])) {
-                            $newValue = null;
-                        } else {
-                            $newValue = new \DateTime($_POST[$name]);
-                        }
-                    } elseif ($fieldDefinition['type'] == 'array') {
-                        $newValue = unserialize($_POST[$name]);
-                        // verify that the value is actually an array -> prevent to store other php data
-                        if (!is_array($newValue)) {
-                            $newValue = array();
-                        }
-                    } else {
-                        $newValue = contrexx_input2raw($_POST[$name]);
+        } else {
+            // create new entity without calling the constructor TODO: this might break certain entities!
+            $entity = $entityClassMetadata->newInstance();
+        }
+        $classMethods = get_class_methods($entity);
+
+        foreach ($associationMappings as $name => $value) {
+            $methodName = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+
+            /* if we can not find the class name or the function to save the association we skip the entry, because there
+               is now way to store it without these information */
+            if (empty($value["targetEntity"])) {
+                \Message::add(sprintf($_ARRAYLANG['TXT_CORE_RECORD_CLASS_NOT_FOUND'], $name), \Message::CLASS_ERROR);
+                continue;
+            }
+            if (!in_array($methodName, $classMethods)) {
+                \Message::add(sprintf($_ARRAYLANG['TXT_CORE_RECORD_FUNCTION_NOT_FOUND'], $name, $methodName), \Message::CLASS_ERROR);
+                continue;
+            }
+
+            /* this variable is the name of the field where we saved the values of the one to many associations
+               because css does not support \ in class name */
+            $relatedClassInputFieldName = str_replace('\\', '_', strtolower($value["targetEntity"]));
+
+            if (!empty($_POST[$name])
+                && \Env::get('em')->getClassMetadata($entityWithNS)->isSingleValuedAssociation($name)
+            ) {
+                // store single-valued-associations
+                $col = $value['joinColumns'][0]['referencedColumnName'];
+                $association = \Env::get('em')->getRepository($value['targetEntity'])->findOneBy(array($col => $_POST[$name]));
+                $entity->{$methodName}($association);
+            } else if (!empty($relatedClassInputFieldName)
+                        && !empty($_POST[$relatedClassInputFieldName])
+                        && \Env::get('em')->getClassMetadata($entityWithNS)->isCollectionValuedAssociation($name)
+            ) {
+                // store one to many associated entries
+                $associatedEntityClassMetadata = \Env::get('em')->getClassMetadata($value["targetEntity"]);
+
+                foreach ($_POST[$relatedClassInputFieldName] as $relatedPostData) {
+                    $entityData = array();
+                    parse_str($relatedPostData, $entityData);
+
+                    // if we have already an entry (on update) we take the existing one and update it.
+                    // Otherwise we create a new one
+                    if (isset($entityData['id']) && $entityData['id'] != 0) { // update/edit case
+                        $associatedClassRepo = \Env::get('em')->getRepository($value["targetEntity"]);
+                        $associatedEntity = $associatedClassRepo->find($entityData['id']);
+                    } else { // add case
+                        $associatedEntity = $associatedEntityClassMetadata->newInstance();
                     }
-                    $updateArray[$methodName] = $newValue;
+
+                    // if there are any entries which the user wants to delete, we delete them here
+                    if (isset($entityData['delete']) && $entityData['delete'] == 1) {
+                        \Env::get('em')->remove($associatedEntity);
+                    }
+
+                    // save the "n" associated class data to its class
+                    $this->savePropertiesToClass($associatedEntity, $associatedEntityClassMetadata, $entityData);
+                    $entity->{'add' . preg_replace('/_([a-z])/', '\1', ucfirst(substr($name, 0, -1)))}($associatedEntity);
                 }
             }
-            $id = $entityObject[$primaryKeyName]; //get primary key value
-            if (!empty($updateArray) && !empty($id)) {
-                $entityObj = \Env::get('em')->getRepository($entityWithNS)->find($id);
-                if (!empty($entityObj)) {
-                    foreach($updateArray as $key=>$value) {
-                        $entityObj->$key($value);
-                    }
-                    if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                        \Env::get('em')->getRepository($entityWithNS)->flush();
-                    } else {
-                        \Env::get('em')->flush();
-                    }
-                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL']);
-                } else {
-                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
-                }
-            }
+        }
+
+        if($entityId) { // edit case
+            // update the main entry in doctrine so we can store it over doctrine to database later
+            $this->savePropertiesToClass($entity, $entityClassMetadata);
             $param = 'editid';
             $successMessage = $_ARRAYLANG['TXT_CORE_RECORD_UPDATED_SUCCESSFUL'];
+        } else { // add case
+            // save main formular class data to its class over $_POST
+            $this->savePropertiesToClass($entity, $entityClassMetadata);
+            $param = 'add';
+            $successMessage = $_ARRAYLANG['TXT_CORE_RECORD_ADDED_SUCCESSFUL'];
         }
-        \Message::add($successMessage);
+
+        $showSuccessMessage = false;
+        if ($entity instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
+            // Save the yaml entities
+            $entityRepository = \Env::get('em')->getRepository($entityWithNS);
+            $entityRepository->add($entity);
+            $entityRepository->flush();
+            $showSuccessMessage = true;
+        } else if ($entity instanceof \Cx\Model\Base\EntityBase) {
+            /* We try to store the prepared em. This may fail if (for example) we have a one to many association which
+               can not be null but was not set in the post request. This cases should be caught here. */
+            try{
+                \Env::get('em')->persist($entity);
+                \Env::get('em')->flush();
+                $showSuccessMessage = true;
+            } catch(\Cx\Core\Error\Model\Entity\ShinyException $e){
+                /* Display the message from the exception. If this message is empty, we output a general message,
+                   so the user konws what to do in every case */
+                if ($e->getMessage() != "") {
+                    \Message::add($e->getMessage(), \Message::CLASS_ERROR);
+                } else {
+                    \Message::add($_ARRAYLANG['TXT_CORE_RECORD_UNKNOWN_ERROR'], \Message::CLASS_ERROR);
+                }
+                return;
+            } catch (\Exception $e) {
+                echo $e->getMessage();die();
+            }
+
+        } else {
+            \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
+            \DBG::msg('Unkown entity model '.get_class($entity).'! Trying to persist using entity manager...');
+        }
+
+        if($showSuccessMessage) {
+            \Message::add($successMessage);
+        }
         // get the proper action url and redirect the user
         $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
         $actionUrl->setParam($param, null);
@@ -630,15 +614,28 @@ class ViewGenerator {
     protected function removeEntry($entityWithNS) {
         global $_ARRAYLANG;
 
+        $deleteId = !empty($_GET['deleteid']) ? contrexx_input2raw($_GET['deleteid']) : '';
         $entityObject = $this->object->getEntry($deleteId);
         if (empty($entityObject)) {
-            \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
+            \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
             return;
         }
-       $entityObj = \Env::get('em')->getClassMetadata($entityWithNS);
-       $primaryKeyName = $entityObj->getSingleIdentifierFieldName(); //get primary key name  
-       $id = $entityObject[$primaryKeyName]; //get primary key value  
-       if (!empty($id)) {
+        $entityObj = \Env::get('em')->getClassMetadata($entityWithNS);
+        $id = $entityObject[$entityObj->getSingleIdentifierFieldName()]; //get primary key value
+
+        // delete all n associated entries, because the are not longer used and we can delete the main entry only if we
+        // have no more n associated entries
+        $pageRepo = \Env::get('em')->getRepository($entityWithNS);
+        $associationMappings = $entityObj->getAssociationMappings();
+        foreach ($associationMappings as $mapping => $value) {
+            $mainEntity = $pageRepo->find($id);
+            $associatedEntities = $mainEntity->{'get'.preg_replace('/_([a-z])/', '\1', ucfirst($mapping))}();
+            foreach ($associatedEntities as $associatedEntity) {
+                \Env::get('em')->remove($associatedEntity);
+            }
+        }
+
+        if (!empty($id)) {
             $entityObj = \Env::get('em')->getRepository($entityWithNS)->find($id);
             if (!empty($entityObj)) {
                 if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
