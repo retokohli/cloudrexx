@@ -314,7 +314,6 @@ class ViewGenerator {
                     return $this->object->getDataType();
                 }
             } else {
-                // render form
                 $this->object = $object;
                 return get_class($this->object);
             }
@@ -378,6 +377,8 @@ class ViewGenerator {
     }
 
     /**
+     * This function returns the EntryId which was sent over get or post (if both are set it will take get)
+     *
      * $_GET['editid'] has the following format:
      * {<vg_incr_no>,<id_to_edit>}[,{<vg_incr_no>,<id_to_edit>}[,...]
      * <id_to_edit> can be a number, string or set of both, separated by comma
@@ -659,8 +660,10 @@ class ViewGenerator {
     }
 
     /**
-     * This function checks if a post request contains any data
+     * This function checks if a post request contains any data besides csrf
+     *
      * @access protected
+     * @global $_ARRAYLANG
      * @return bool
      */
     protected function checkBlankPostRequest() {
@@ -685,6 +688,7 @@ class ViewGenerator {
      * This function checks if a form is valid
      *
      * @access protected
+     * @global $_ARRAYLANG
      * @return boolean
      */
     protected function validateForm() {
