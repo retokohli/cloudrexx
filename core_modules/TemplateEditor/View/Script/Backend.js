@@ -140,7 +140,7 @@ jQuery(function(){
                 buttons: {
                     success: {
                         label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_YES','TemplateEditor'),
-                        className: "btn-danger",
+                        className: "btn-success",
                         callback: function () {
                             jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=removePreset", {
                                 tid: cx.variables.get('themeid','TemplateEditor'),
