@@ -15,6 +15,7 @@ use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\View\Model\Repository\ThemeRepository;
 use Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage;
+use Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
 
 class ComponentController extends SystemComponentController
@@ -32,26 +33,32 @@ class ComponentController extends SystemComponentController
      */
     public function preFinalize(\Cx\Core\Html\Sigma $template) {
         if ($this->cx->getMode() == Cx::MODE_FRONTEND) {
-            $fileStorage           = new OptionSetFileStorage(
-                $this->cx->getWebsiteThemesPath()
-            );
-            $themeOptionRepository = new OptionSetRepository($fileStorage);
-            $themeRepository       = new ThemeRepository();
-            $themeID               = isset($_GET['preview']) ? $_GET['preview']
-                : null;
-            $theme                 = $themeID ? $themeRepository->findById((int)$themeID) : $themeRepository->getDefaultTheme();
-            $themeOptions          = $themeOptionRepository->get(
-                $theme
-            );
-
-            if (isset($_GET['templateEditor'])){
-                $themeOptions->applyPreset(
-                    $themeOptions->getPresetRepository()->getByName(
-                        $_SESSION['TemplateEditor'][$themeID]['activePreset']
-                    )
+            try {
+                $fileStorage = new OptionSetFileStorage(
+                    $this->cx->getWebsiteThemesPath()
                 );
+                $themeOptionRepository = new OptionSetRepository($fileStorage);
+                $themeRepository = new ThemeRepository();
+                $themeID = isset($_GET['preview']) ? $_GET['preview']
+                    : null;
+                $theme = $themeID ? $themeRepository->findById(
+                    (int)$themeID
+                ) : $themeRepository->getDefaultTheme();
+                $themeOptions = $themeOptionRepository->get(
+                    $theme
+                );
+
+                if (isset($_GET['templateEditor'])) {
+                    $themeOptions->applyPreset(
+                        $themeOptions->getPresetRepository()->getByName(
+                            $_SESSION['TemplateEditor'][$themeID]['activePreset']
+                        )
+                    );
+                }
+                $themeOptions->renderTheme($template);
+            } catch (PresetRepositoryException $e) {
+
             }
-            $themeOptions->renderTheme($template);
         }
     }
 

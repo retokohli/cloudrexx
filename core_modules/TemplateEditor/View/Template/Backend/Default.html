@@ -3,6 +3,8 @@
 </script>
 <script id="remove-preset" type="text/template">
     {TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT}
+
+    <div class="bs-callout bs-callout-info"> {TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_ACTIVE}</div>
 </script>
 <script id="reset-preset" type="text/template">
     {TXT_CORE_MODULE_TEMPLATEEDITOR_RESET_PRESET_TEXT}
@@ -10,13 +12,13 @@
 <script id="new-preset" type="text/template">
 
 {TXT_CORE_MODULE_TEMPLATEEDITOR_NEW_PRESET_TEXT}
-   <br><br>
+    <br><br>
     <div class="form-group">
         <label class="col-md-4 control-label" for="new-preset-name">{TXT_CORE_MODULE_TEMPLATEEDITOR_NEW_PRESET_NAME}</label>
 
         <div class="col-md-4">
             <input id="new-preset-name" name="new-preset-name" type="text"
-                   class="form-control input-md">
+                   class="form-control input-md new-preset-name">
         </div>
     </div>
     <div class="form-group">

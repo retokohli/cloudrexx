@@ -183,11 +183,16 @@ class JsonController implements JsonAdapter
 
     public function addPreset($params)
     {
+        global $_ARRAYLANG;
+
+        \Env::get('init')->loadLanguageData('TemplateEditor');
         $presetName            = filter_var(
             $params['post']['preset'], FILTER_SANITIZE_STRING
         );
-        if (empty($presetName)){
-            return;
+        if (empty($presetName) || !preg_match("/^[a-z0-9]+$/i",$presetName)){
+            throw new \LogicException(
+                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NEW_PRESET_TEXT_NOT_ALLOWED_CHARACTERS']
+            );
         }
         $presetPresetName      = isset($params['post']['tid']) ? filter_var(
             $params['post']['presetpreset'], FILTER_SANITIZE_STRING
@@ -215,6 +220,9 @@ class JsonController implements JsonAdapter
 
     public function removePreset($params)
     {
+        global $_ARRAYLANG;
+
+        \Env::get('init')->loadLanguageData('TemplateEditor');
         $presetName            = filter_var(
             $params['post']['preset'], FILTER_SANITIZE_STRING
         );
@@ -222,7 +230,7 @@ class JsonController implements JsonAdapter
          * Default shouldn't be deletable
          */
         if ($presetName == 'Default'){
-            return;
+            throw new \LogicException($_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_DEFAULT_WARNING']);
         }
         $themeID               = isset($params['post']['tid']) ? filter_var(
             $params['post']['tid'], FILTER_VALIDATE_INT
@@ -239,6 +247,12 @@ class JsonController implements JsonAdapter
         $preset = $themeOptions->getPresetRepository()->getByName(
             $presetName
         );
+        if ($themeOptions->getActivePreset()->getName() == $preset->getName()){
+            $themeOptions->setActivePreset($themeOptions->getPresetRepository()->getByName(
+                'Default'
+            ));
+            $themeOptionRepository->save($themeOptions);
+        }
         $themeOptions->getPresetRepository()->remove($preset);
     }
 

@@ -4,6 +4,7 @@ namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core\View\Model\Entity\Theme;
+use Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository;
 use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 use Cx\Core\Html\Sigma;
@@ -65,7 +66,13 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
             $data['activePreset'] = 'Default';
         }
         $activePreset       = $data['activePreset'];
-        $this->activePreset = $this->presetRepository->getByName($activePreset);
+        try {
+            $this->activePreset = $this->presetRepository->getByName($activePreset);
+        }
+        catch (PresetRepositoryException $e){
+            $this->activePreset = $this->presetRepository->getByName('Default');
+        }
+
         $this->applyPreset($this->activePreset);
     }
 

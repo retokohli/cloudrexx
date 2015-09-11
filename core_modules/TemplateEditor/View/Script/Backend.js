@@ -88,11 +88,20 @@ jQuery(function(){
                         label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE','TemplateEditor'),
                         className: "btn-success",
                         callback: function () {
+                            var preset = jQuery('.new-preset-name').val();
                             jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=addPreset", {
                                 tid: cx.variables.get('themeid','TemplateEditor'),
-                                preset: jQuery('#new-preset-name').val(),
+                                preset: preset,
                                 presetpreset: jQuery('#preset-for-preset').val()
                             }, function (response) {
+                                if (response.status == 'error'){
+                                    console.log(preset);
+                                    console.log(jQuery('.new-preset-name'));
+                                    jQuery('.add-preset').trigger('click');
+                                    jQuery('.new-preset-name').val(preset);
+                                    bootbox.alert(response.message);
+                                    return;
+                                }
                                 var newlocation = location.href.replace(/preset=[a-z0-9]+/i, "preset="+response.data.preset);
                                 window.location.href = (newlocation.search('preset=') == -1 ? newlocation + "&preset=" + response.data.preset : newlocation);
                             }, "json");

@@ -84,16 +84,18 @@ class BackendController extends SystemComponentBackendController
             $themeID
         );
 
-        if (!$_SESSION['TemplateEditor']){
+        if (!$_SESSION['TemplateEditor']) {
             $_SESSION['TemplateEditor'] = array();
         }
-        if (!$_SESSION['TemplateEditor'][$this->theme->getId()]){
+        if (!$_SESSION['TemplateEditor'][$this->theme->getId()]) {
             $_SESSION['TemplateEditor'][$this->theme->getId()] = array();
         }
-        if (isset($_GET['preset'])){
-            if ($_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset'] != filter_var(
+        if (isset($_GET['preset'])) {
+            if ($_SESSION['TemplateEditor'][$this->theme->getId(
+                )]['activePreset'] != filter_var(
                     $_GET['preset'], FILTER_SANITIZE_STRING
-                )){
+                )
+            ) {
                 $_SESSION['TemplateEditor'][$this->theme->getId()] = array();
             }
             $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
@@ -109,23 +111,25 @@ class BackendController extends SystemComponentBackendController
                 . $this->theme->getFoldername()
             )
         );
-        $this->themeOptions          = $this->themeOptionRepository->get(
+        $this->themeOptions     = $this->themeOptionRepository->get(
             $this->theme
         );
         try {
             $this->themeOptions->applyPreset(
                 $this->presetRepository->getByName(
-                    $_SESSION['TemplateEditor'][$this->theme->getId(
-                    )]['activePreset']
-                ));
-
+                    $_SESSION['TemplateEditor']
+                    [$this->theme->getId()]
+                    ['activePreset']
+                )
+            );
         } catch (PresetRepositoryException $e) {
-            $_SESSION['TemplateEditor'][$this->theme->getId(
-            )]['activePreset'] = 'Default';
+            $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
+                = 'Default';
             $this->themeOptions->applyPreset(
                 $this->presetRepository->getByName(
                     'Default'
-                ));
+                )
+            );
         }
 
         $this->showOverview($template);
@@ -178,7 +182,9 @@ class BackendController extends SystemComponentBackendController
                     'TEMPLATEEDITOR_PRESET_ID' => $preset
                 )
             );
-            if ( $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset'] == $preset) {
+            if ($_SESSION['TemplateEditor'][$this->theme->getId()]
+                ['activePreset'] == $preset
+            ) {
                 $template->setVariable(
                     array(
                         'TEMPLATEEDITOR_PRESET_ACTIVE' => 'selected'
@@ -187,15 +193,24 @@ class BackendController extends SystemComponentBackendController
             }
             $template->parse('presets');
         }
-        if ( $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset'] == $this->themeOptions->getActivePreset(
-            )->getName()) {
+        if ($_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
+            == $this->themeOptions->getActivePreset()->getName()
+        ) {
             $template->setVariable(
                 array(
                     'TEMPLATEDITOR_PRESET_IS_ALREADY_ACTIVE' => 'disabled'
                 )
             );
+
+            $template->setVariable(
+                array(
+                    'TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_ACTIVE' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_IS_ACTIVE']
+                )
+            );
         }
-        if ($_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset'] == 'Default'){
+        if ($_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
+            == 'Default'
+        ) {
             $template->setVariable(
                 array(
                     'TEMPLATEDITOR_PRESET_IS_DEFAULT' => 'disabled'
@@ -223,8 +238,7 @@ class BackendController extends SystemComponentBackendController
                 )
             );
             $template->parse('no_options');
-        }
-        else {
+        } else {
             $template->parse('presetBlock');
         }
         $template->setVariable(
