@@ -97,6 +97,10 @@ jQuery(function(){
                                 window.location.href = (newlocation.search('preset=') == -1 ? newlocation + "&preset=" + response.data.preset : newlocation);
                             }, "json");
                         }
+                    },
+                    danger: {
+                        label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_CANCEL','TemplateEditor'),
+                        className: "btn-danger"
                     }
                 }
             }
@@ -145,6 +149,10 @@ jQuery(function(){
                                 window.location.href = window.location.href;
                             }, "json");
                         }
+                    },
+                    danger: {
+                        label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_CANCEL','TemplateEditor'),
+                        className: "btn-danger"
                     }
                 }
             }
@@ -158,7 +166,7 @@ jQuery(function(){
                 buttons: {
                     success: {
                         label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_YES','TemplateEditor'),
-                        className: "btn-danger",
+                        className: "btn-success",
                         callback: function () {
                             jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=resetPreset", {
                                 tid: cx.variables.get('themeid','TemplateEditor'),
@@ -167,6 +175,10 @@ jQuery(function(){
                                 window.location.href = window.location.href;
                             }, "json");
                         }
+                    },
+                    danger: {
+                        label: cx.variables.get('TXT_CORE_MODULE_TEMPLATEEDITOR_CANCEL','TemplateEditor'),
+                        className: "btn-danger"
                     }
                 }
             }
