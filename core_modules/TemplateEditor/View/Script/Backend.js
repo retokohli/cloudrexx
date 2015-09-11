@@ -9,20 +9,19 @@ function updateOption(optionName,optionData, callback){
     jQuery('#saveOptionsButton').attr("disabled", "disabled");
     jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=updateOption&tid="+cx.variables.get('themeid','TemplateEditor'), { optionName: optionName, optionData:optionData }, function (reponse) {
         if (reponse.status != 'error'){
-            var domainurl = cx.variables.get('domainurl','TemplateEditor');
+            var previewIframe = jQuery("#preview-template-editor");
             try {
-                var currentIframeUrl = jQuery("#preview-template-editor").get(0).contentWindow.location.href;
-                if (currentIframeUrl.search(domainurl)){
-                    jQuery("#preview-template-editor").attr('src', currentIframeUrl);
+                var iframeLocation = previewIframe.get(0).contentDocument.location;
+                if (iframeLocation.host == window.location.host){
+                    previewIframe.attr('src', iframeLocation.href);
                 }
                 else {
-                    jQuery("#preview-template-editor").attr('src', cx.variables.get('iframeUrl','TemplateEditor'));
+                    previewIframe.attr('src', cx.variables.get('iframeUrl','TemplateEditor'));
                 }
             }
             catch (e){
-                jQuery("#preview-template-editor").attr('src', cx.variables.get('iframeUrl','TemplateEditor'));
+                previewIframe.attr('src', cx.variables.get('iframeUrl','TemplateEditor'));
             }
-
         }
         callback(reponse);
         jQuery('#saveOptionsButton').removeAttr("disabled");
