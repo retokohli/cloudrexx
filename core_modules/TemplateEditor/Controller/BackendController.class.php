@@ -204,9 +204,11 @@ class BackendController extends SystemComponentBackendController
 
             $template->setVariable(
                 array(
-                    'TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_ACTIVE' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_IS_ACTIVE']
+                    'TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_IS_ACTIVE'
+                    => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_IS_ACTIVE']
                 )
             );
+            $template->show('presetTextActive');
         }
         if ($_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
             == 'Default'
