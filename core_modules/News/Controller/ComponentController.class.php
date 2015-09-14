@@ -45,14 +45,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 \Env::get('cx')->getPage()->setContent($newsObj->getNewsPage());
                 $newsObj->getPageTitle(\Env::get('cx')->getPage()->getTitle());
                 
-                // Set the meta page description to the teaser text if displaying news details
-                $teaser = $newsObj->getTeaser();
-                if ($teaser !== null) //news details, else getTeaser would return null
-                    $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
                 if (substr($page->getCmd(), 0, 7) == 'details') {
                     \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
                     \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
                     \Env::get('cx')->getPage()->setMetaTitle($newsObj->newsTitle);
+
+                    // Set the meta page description to the teaser text if displaying news details
+                    $teaser = $newsObj->getTeaser();
+                    if ($teaser !== null) {
+                        \Env::get('cx')->getPage()->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
+                    }
                 }
                 break;
 
