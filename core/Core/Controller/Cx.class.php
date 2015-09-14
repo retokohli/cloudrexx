@@ -1544,7 +1544,9 @@ namespace Cx\Core\Core\Controller {
                     $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
                     $this->resolvedPage->setVirtual(true);
                 } else {
-                    $this->resolvedPage = $this->resolver->resolve();
+                    try{
+                        $this->resolvedPage = $this->resolver->resolve();
+                    } catch (\Cx\Core\Error\Model\Event\SkipResolverException $e) {}
                 }
 
             } else {
@@ -1588,7 +1590,9 @@ namespace Cx\Core\Core\Controller {
          * @todo Remove usage of globals
          */
         protected function postResolve() {
-            $this->ch->callPostResolveHooks();
+            try {
+                $this->ch->callPostResolveHooks();
+            } catch (\Cx\Core\Error\Model\Event\SkipResolverException $e) {}
         }
 
         /**
@@ -2157,7 +2161,7 @@ namespace Cx\Core\Core\Controller {
             $this->ch->callPostFinalizeHooks();
         }
 
-        /* GETTERS */
+        /* SETTERS AND GETTERS */
 
         /**
          * Returns the mode this instance of Cx is in
@@ -2192,6 +2196,14 @@ namespace Cx\Core\Core\Controller {
          */
         public function getPage() {
             return $this->resolvedPage;
+        }
+
+        /**
+         * Sets the resolved page
+         * @param \Cx\Core\ContentManager\Model\Entity\Page $page
+         */
+        public function setPage(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+            $this->resolvedPage = $page;
         }
 
         /**

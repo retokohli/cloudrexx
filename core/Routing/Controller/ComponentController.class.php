@@ -71,5 +71,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . $url->toString(), true, $rewriteRule->getRewriteStatusCode());
             die();
         }
-    }    
+    }
+
+    /**
+     * Register Routing/PageNotFound-Event
+     * @throws \Cx\Core\Event\Controller\EventManagerException
+     */
+    public function registerEvents() {
+        $this->cx->getEvents()->addEvent("Routing/PageNotFound");
+    }
 }

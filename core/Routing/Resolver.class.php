@@ -204,7 +204,7 @@ class Resolver {
                         global $section, $command, $history, $sessionObj, $url, $_CORELANG,
                                 $page, $pageId, $themesPages,
                                 $page_template,
-                                $isRegularPageRequest, $now, $start, $end, $plainSection;
+                                $isRegularPageRequest, $plainSection;
 
                         $section = isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
                         $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
@@ -254,9 +254,16 @@ class Resolver {
                                     // If the error module is not installed, show this
                                     die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                                 } else {
-                                    //page not found, redirect to error page.
-                                    \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
-                                    exit;
+                                    $plainSection = $this->evaluateModuleIndexPlainSection($section);
+                                    //page not found, trigger PageNotFound-Event.
+                                    \Cx\Core\Core\Controller\Cx::instanciate()->getEvents()->triggerEvent('Routing/PageNotFound', array(
+                                        'section'   => isset($_REQUEST['section']) ? $_REQUEST['section'] : $this->getSection(),
+                                        'cmd'       => isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : $this->getCmd(),
+                                        // page might only be inactive
+                                        'page'      => $this->getPage(),
+                                        'history'   => $history,
+                                        'resolver'  => $this
+                                    ));
                                 }
                             }
 
@@ -266,19 +273,10 @@ class Resolver {
                             $_GET['section'] = $section;
                         // END of TODO question
 
-                            //check whether the page is active
-                            $now = new \DateTime('now');
-                            $start = $page->getStart();
-                            $end = $page->getEnd();
-
                             $pageId = $page->getId();
 
-                            //access: frontend access id for default requests
-                            $pageAccessId = $page->getFrontendAccessId();
                             //revert the page if a history param has been given
                             if($history) {
-                                //access: backend access id for history requests
-                                $pageAccessId = $page->getBackendAccessId();
                                 $logRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
                                 try {
                                     $logRepo->revert($page, $history);
@@ -288,35 +286,10 @@ class Resolver {
 
                                 $logRepo->revert($page, $history);
                             }
-                            /*
-                            //404 for inactive pages
-                            if(($start > $now && $start != null) || ($now > $end && $end != null)) {
-                                if ($section == 'Error') {
-                                    // If the error module is not installed, show this
-                                    die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                                }
-                                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Error&id=404');
-                                exit;
-                                }*/
 
+                            $this->setTemplateBasedOnPage($page);
 
-                            \Env::get('init')->setCustomizedTheme($page->getSkin(), $page->getCustomContent(), $page->getUseSkinForAllChannels());
-
-                            $themesPages = \Env::get('init')->getTemplates($page);
-
-                            //replace the {NODE_<ID>_<LANG>}- placeholders
-                            \LinkGenerator::parseTemplate($themesPages);
-
-                        //TODO: analyze those, take action.
-                            //$page_protected = $objResult->fields['protected'];
-                            $page_protected = $page->isFrontendProtected();
-
-                            //$page_access_id = $objResult->fields['frontend_access_id'];
-                            $page_template  = $themesPages['content'];
-
-                            // Authentification for protected pages
-                            // This is only done for regular page requests ($isRegularPageRequest == TRUE)
-                            $this->checkPageFrontendProtection($page, $history);
+                            $this->checkFrontendAccess($page, $history);
 
                         //TODO: history
                         }
@@ -326,25 +299,7 @@ class Resolver {
                         $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $command;
                         $_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
 
-                        // To clone any module, use an optional integer cmd suffix.
-                        // E.g.: "shop2", "gallery5", etc.
-                        // Mind that you *MUST* copy all necessary database tables, and fix any
-                        // references to your module (section and cmd parameters, database tables)
-                        // using the MODULE_INDEX constant in the right place both in your code
-                        // *AND* templates!
-                        // See the Shop module for an example.
-                        $arrMatch = array();
-                        if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
-                            // The plain section/module name, used below
-                            $plainSection = $arrMatch[1];
-                        } else {
-                            $plainSection = $section;
-                        }
-                        // The module index.
-                        // An empty or 1 (one) index represents the same (default) module,
-                        // values 2 (two) and larger represent distinct instances.
-                        $moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
-                        define('MODULE_INDEX', $moduleIndex);
+                        $plainSection = $this->evaluateModuleIndexPlainSection($section);
 
                         // Start page or default page for no section
                         if ($section == 'Home') {
@@ -893,5 +848,62 @@ class Resolver {
     public function setSection($section, $command = '') {
         $this->section = $section;
         $this->command = $command;
+    }
+
+    /**
+     * Set the module-index for calendar, media, knowledge and shop module
+     *
+     * @param string $section
+     * @return string $plainSection
+     */
+    public function evaluateModuleIndexPlainSection($section = '') {
+        // To clone any module, use an optional integer cmd suffix.
+        // E.g.: "shop2", "gallery5", etc.
+        // Mind that you *MUST* copy all necessary database tables, and fix any
+        // references to your module (section and cmd parameters, database tables)
+        // using the MODULE_INDEX constant in the right place both in your code
+        // *AND* templates!
+        // See the Shop module for an example.
+        $arrMatch = array();
+        if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
+            // The plain section/module name, used below
+            $plainSection = $arrMatch[1];
+        } else {
+            $plainSection = $section;
+        }
+        // The module index.
+        // An empty or 1 (one) index represents the same (default) module,
+        // values 2 (two) and larger represent distinct instances.
+        $moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
+        define('MODULE_INDEX', $moduleIndex);
+
+        return $plainSection;
+    }
+
+    /**
+     * Sets @see $themesPage and @see $page_template based on the given page
+     *
+     * @param \Cx\Core\Wysiwyg\Model\Entity\Page $page
+     * @global $themesPages array All the theme-files available in the assigned theme
+     * @global $page_template string The template of the page
+     */
+    public function setTemplateBasedOnPage(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        global $themesPages, $page_template;
+        \Env::get('init')->setCustomizedTheme($page->getSkin(), $page->getCustomContent(), $page->getUseSkinForAllChannels());
+
+        $themesPages = \Env::get('init')->getTemplates($page);
+
+        //replace the {NODE_<ID>_<LANG>}- placeholders
+        \LinkGenerator::parseTemplate($themesPages);
+
+        //TODO: analyze those, take action.
+
+        $page_template = $themesPages['content'];
+    }
+
+    public function checkFrontendAccess(\Cx\Core\ContentManager\Model\Entity\Page $page, $history) {
+        // Authentification for protected pages
+        // This is only done for regular page requests ($isRegularPageRequest == TRUE)
+        $this->checkPageFrontendProtection($page, $history);
     }
 }
