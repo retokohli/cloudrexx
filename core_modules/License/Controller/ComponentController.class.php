@@ -132,8 +132,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-// TODO: Deactivated license check for now. Implement new behavior.
-        return true;
 
         global $plainCmd, $objDatabase, $_CORELANG, $_LANGID, $section;
 
@@ -151,9 +149,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         // If the error module is not installed, show this
                         die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                     } else {
-                        //page not found, redirect to error page.
-                        \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
-                        exit;
+                        //Component in current license unavailable trigger PageNotFound-event.
+                        $this->cx->getEvents()->triggerEvent('Routing/PageNotFound', array(
+                            'section'   => $section,
+                            'cmd'       => $plainCmd,
+                            // page might only be inactive
+                            'page'      => $page,
+                            'history'   => isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0,
+                            'resolver'  => \Env::get('Resolver')
+                        ));
                     }
                 }
                 break;
