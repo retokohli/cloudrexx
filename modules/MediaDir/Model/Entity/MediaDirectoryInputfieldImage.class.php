@@ -312,7 +312,7 @@ INPUT;
      */
     function uploadMedia($imagePath)
     {
-        if ($imagePath == '') {
+        if ($imagePath == '' || !\FWValidator::is_file_ending_harmless($imagePath)) {
             return false;
         }
         
