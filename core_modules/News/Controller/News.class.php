@@ -504,7 +504,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if (!$newsCommentActive) {
             return;
         }
-
+        
         // abort if request is unauthorized
         if (   $this->arrSettings['news_comments_anonymous'] == '0'
             && !\FWUser::getFWUserObject()->objUser->login()
@@ -512,7 +512,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $this->_objTpl->hideBlock('news_add_comment');
             return;
         }
-        
+         
         $name = '';
         $title = '';
         $message = '';
@@ -532,6 +532,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
         }
 
+        \JS::activate('cx');
+       
         // create submit from
         if (\FWUser::getFWUserObject()->objUser->login()) {
             $this->_objTpl->hideBlock('news_add_comment_name');
@@ -2160,14 +2162,15 @@ RSS2JSCODE;
                     $author = \FWUser::getParsedUserTitle($news['author_id'], $news['author']);
                     $publisher = \FWUser::getParsedUserTitle($news['publisher_id'], $news['publisher']);
                     $objResult = $objDatabase->Execute('SELECT count(`id`) AS `countComments` FROM `'.DBPREFIX.'module_news_comments` WHERE `newsid` = '.$newsid);
+                    
                     $this->_objTpl->setVariable(array(
                        'NEWS_ARCHIVE_ID'            => $newsid,
                        'NEWS_ARCHIVE_CSS'           => 'row'.($i % 2 + 1),
                        'NEWS_ARCHIVE_TEASER'        => nl2br($news['teaser_text']),
                        'NEWS_ARCHIVE_TITLE'         => contrexx_raw2xhtml($newstitle),
-                       'NEWS_ARCHIVE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$news['newsdate']),
-                       'NEWS_ARCHIVE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $news['newsdate']),
-                       'NEWS_ARCHIVE_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $news['newsdate']),
+                       'NEWS_ARCHIVE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$news['date']),
+                       'NEWS_ARCHIVE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $news['date']),
+                       'NEWS_ARCHIVE_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $news['date']),
                        'NEWS_ARCHIVE_LINK_TITLE'    => contrexx_raw2xhtml($newstitle),
                        'NEWS_ARCHIVE_LINK'          => $htmlLink,
                        'NEWS_ARCHIVE_LINK_URL'      => contrexx_raw2xhtml($newsUrl),

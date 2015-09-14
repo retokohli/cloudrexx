@@ -72,15 +72,6 @@ class RSSWriter {
     var $_currentItem = 0;
 
     /**
-     * PHP4 Contructor
-     *
-     */
-    function RSSWriter()
-    {
-        $this->__construct();
-    }
-
-    /**
      * PHP5 contructor
      *
      */

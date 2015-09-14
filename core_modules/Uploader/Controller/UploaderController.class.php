@@ -52,14 +52,14 @@ class UploaderController {
      *
      * @var int
      */
-    private static $_error = null;
+    protected static $_error = null;
 
     /**
      * List of errors
      *
      * @var array
      */
-    private static $_errors = array(
+    protected static $_errors = array(
         PLUPLOAD_MOVE_ERR => "Failed to move uploaded file.",
         PLUPLOAD_INPUT_ERR => "Failed to open input stream.",
         PLUPLOAD_OUTPUT_ERR => "Failed to open output stream.",
@@ -154,17 +154,6 @@ class UploaderController {
                 $fileName = $conf['fileName'];
             }
 
-            // Check if file type is allowed
-            if ($conf['allow_extensions']) {
-                if (is_string($conf['allow_extensions'])) {
-                    $conf['allow_extensions'] = preg_split('{\s*,\s*}', $conf['allow_extensions']);
-                }
-
-                if (!in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), $conf['allow_extensions'])) {
-                    throw new UploaderException('', PLUPLOAD_TYPE_ERR);
-                }
-            }
-
             $file_path = rtrim($conf['tmp_dir'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $fileName;
             $tmp_path = $file_path . ".part";
 
@@ -188,6 +177,13 @@ class UploaderController {
                 }
 
                 $new_path = $conf['target_dir'] . $fileName;
+                $new_path_default = $conf['target_dir'] . $fileName;
+                $i = 1;
+                while (file_exists($new_path)){
+                    $new_path = pathinfo($new_path_default, PATHINFO_DIRNAME).'/'. pathinfo($new_path_default, PATHINFO_FILENAME).'_'.$i.'.'.pathinfo($new_path_default, PATHINFO_EXTENSION);
+                    $i++;
+                }
+
                 \Cx\Lib\FileSystem\FileSystem::move($tmp_path, $new_path, true);
 
                 $rootPath      = $cx->getWebsitePath() . $conf['target_dir'];
@@ -199,7 +195,9 @@ class UploaderController {
                 $im = new \ImageManager();
                 if ($im->_isImage($rootPathFull)) {
                     foreach (
-                        UploaderConfiguration::getInstance()->getThumbnails() as
+                        $cx->getMediaSourceManager()
+                            ->getThumbnailGenerator()
+                            ->getThumbnails() as
                         $thumbnail
                     ) {
                         $im->_createThumb(
@@ -349,7 +347,7 @@ class UploaderController {
     /**
      * Cleanup method
      */
-    private static function cleanup() {
+    protected static function cleanup() {
         // Remove old temp files	
         if (file_exists(self::$conf['tmp_dir'])) {
             foreach (glob(self::$conf['tmp_dir'] . '/*.part') as $tmpFile) {
@@ -367,22 +365,27 @@ class UploaderController {
     }
 
     /**
-     * Sanitizes a filename replacing whitespace with dashes
-     *
-     * Removes special characters that are illegal in filenames on certain
-     * operating systems and special characters requiring special escaping
-     * to manipulate at the command line. Replaces spaces and consecutive
-     * dashes with a single dash. Trim period, dash and underscore from beginning
-     * and end of filename.
-     *
-     * @author WordPress
+     * Sanitizes the filename by adding a .txt file extension to files with
+     * bad extensions and by removing strange characters.
      *
      * @param string $filename The filename to be sanitized
      *
      * @return string The sanitized filename
      */
     public static function sanitizeFileName($filename) {
-        FileSystem::replaceCharacters($filename);
+        $filename = FileSystem::replaceCharacters(filter_var($filename,FILTER_SANITIZE_URL));
+        $fileInfo = pathinfo($filename);
+        if (empty($filename)){
+            $filename = 'file'.date('Y-m-d H:i:s');
+        }
+        if (!isset($fileInfo['extension'])){
+            $filename = $filename.'.txt';
+        }
+        if (!\FWValidator::is_file_ending_harmless(
+            $filename
+        )){
+            $filename = $filename.'.txt';
+        }
         return $filename;
     }
 
@@ -392,7 +395,7 @@ class UploaderController {
      *
      * @param string $dir Directory to remove
      */
-    private static function rrmdir($dir) {
+    protected static function rrmdir($dir) {
         foreach (glob($dir . '/*') as $file) {
             if (is_dir($file)) {
                 self::rrmdir($file);

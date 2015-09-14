@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright   Comvation AG 
+ * @copyright   Comvation AG
  * @author Robin Glauser <robin.glauser@comvation.com>
  * @package     contrexx
  */
@@ -20,7 +20,7 @@ use Cx\Core\Event\Model\Entity\DefaultEventListener;
 class MediaBrowserEventListener extends DefaultEventListener
 {
     /**
-     * @param MediaBrowserConfiguration $mediaBrowserConfiguration
+     * @param MediaSourceManager $mediaBrowserConfiguration
      */
     public function mediasourceLoad(
         MediaSourceManager $mediaBrowserConfiguration

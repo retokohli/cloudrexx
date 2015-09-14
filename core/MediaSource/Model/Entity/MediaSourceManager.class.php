@@ -45,6 +45,11 @@ class MediaSourceManager extends EntityBase
     protected $allMediaTypePaths = array();
 
     /**
+     * @var ThumbnailGenerator
+     */
+    protected $thumbnailGenerator;
+
+    /**
      * @param $cx Cx
      *
      * @throws \Cx\Core\Event\Controller\EventManagerException
@@ -84,11 +89,11 @@ class MediaSourceManager extends EntityBase
         )
         ) {
             $pathArray = explode('/', $virtualPath);
-            return Cx::instanciate()->getMediaSourceManager()
+            return realpath(Cx::instanciate()->getMediaSourceManager()
                 ->getMediaTypePathsbyNameAndOffset(array_shift($pathArray), 0)
             . '/' . join(
                 '/', $pathArray
-            );
+            ));
         }
         return $virtualPath;
     }
@@ -200,6 +205,16 @@ class MediaSourceManager extends EntityBase
 
     public function getAllMediaTypePaths() {
         return $this->allMediaTypePaths;
+    }
+
+    /**
+     * @return ThumbnailGenerator
+     */
+    public function getThumbnailGenerator(){
+        if (!$this->thumbnailGenerator){
+            $this->thumbnailGenerator = new ThumbnailGenerator($this->cx,$this);
+        }
+        return $this->thumbnailGenerator;
     }
 
 }
