@@ -979,7 +979,7 @@ class Market extends MarketLibrary
             'TXT_MARKET_DETAIL_HIDE'                =>    $_ARRAYLANG['TXT_MARKET_NO_SHOW_IN_ADVERTISEMENT'],
             'TXT_MARKET_PREMIUM'                    =>    $_ARRAYLANG['TXT_MARKET_MARK_ADVERTISEMENT'],
             'TXT_MARKET_DAYS'                        =>    $_ARRAYLANG['TXT_MARKET_DAYS'],
-            'TXT_UPLOAD'                            =>  $_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'],
+            'TXT_MARKET_CHOOSE_FILE'                 =>  $_ARRAYLANG['TXT_MARKET_CHOOSE_FILE'],
             'MARKET_UPLOADER_CODE'                  =>  $uploader->getXHtml(),
             'MARKET_UPLOADER_ID'                    =>  $uploader->getId()
         ));
@@ -1418,7 +1418,7 @@ class Market extends MarketLibrary
             'TXT_MARKET_USER_DETAIL'                =>    $_ARRAYLANG['TXT_MARKET_USERDETAILS'],
             'TXT_MARKET_DETAIL_SHOW'                =>    $_ARRAYLANG['TXT_MARKET_SHOW_IN_ADVERTISEMENT'],
             'TXT_MARKET_DETAIL_HIDE'                =>    $_ARRAYLANG['TXT_MARKET_NO_SHOW_IN_ADVERTISEMENT'],
-            'TXT_UPLOAD'                            =>  $_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'],
+            'TXT_MARKET_CHOOSE_FILE'                =>  $_ARRAYLANG['TXT_MARKET_CHOOSE_FILE'],
             'MARKET_UPLOADER_CODE'                  =>  $uploader->getXHtml(),
             'MARKET_UPLOADER_ID'                    =>  $uploader->getId()
         ));

@@ -649,7 +649,7 @@ class MarketManager extends MarketLibrary
             'TXT_DETAIL_SHOW'                =>    $_ARRAYLANG['TXT_MARKET_SHOW_IN_ADVERTISEMENT'],
             'TXT_DETAIL_HIDE'                =>    $_ARRAYLANG['TXT_MARKET_NO_SHOW_IN_ADVERTISEMENT'],
             'TXT_PREMIUM'                    =>    $_ARRAYLANG['TXT_MARKET_MARK_ADVERTISEMENT'],
-            'TXT_UPLOAD'                     => $_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'],
+            'TXT_MARKET_CHOOSE_FILE'         => $_ARRAYLANG['TXT_MARKET_CHOOSE_FILE'],
             'MARKET_UPLOADER_CODE'           => $uploader->getXHtml(),
             'MARKET_UPLOADER_ID'             => $uploader->getId()
         ));
@@ -819,7 +819,7 @@ class MarketManager extends MarketLibrary
             'TXT_PREMIUM'                    =>    $_ARRAYLANG['TXT_MARKET_MARK_ADVERTISEMENT'],
             'FORM_ACTION'                    =>    $copy ? "addEntry" : "editEntry",
             'TXT_DAYS'                        =>    $_ARRAYLANG['TXT_MARKET_DAYS'],
-            'TXT_UPLOAD'                     => $_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'],
+            'TXT_MARKET_CHOOSE_FILE'         =>  $_ARRAYLANG['TXT_MARKET_CHOOSE_FILE'],
             'MARKET_UPLOADER_CODE'           => $uploader->getXHtml(),
             'MARKET_UPLOADER_ID'             => $uploader->getId()
         ));
