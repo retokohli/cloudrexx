@@ -472,13 +472,13 @@ class DirectoryLibrary
     }
 
     /**
-     * Upload media files
+     * Upload the media files
      * 
-     * @param string $fileName
-     * @param string $path
-     * @param string $uploaderId
+     * @param string $fileName   name of the media file
+     * @param string $path       folder path
+     * @param string $uploaderId uploader id
      * 
-     * @return string
+     * @return string $status name of the uploaded file / error
      */
     function uploadMedia($fileName, $path, $uploaderId)
     {
