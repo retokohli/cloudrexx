@@ -821,7 +821,7 @@ class DirectoryLibrary
                     $inputName == "spez_field_19" ||
                     $inputName == "spez_field_20") {
 
-                    $fileName   = isset($_POST[$inputName]) ? contrexx_raw2xhtml($_POST[$inputName]) : '';
+                    $fileName   = isset($_POST[$inputName]) ? contrexx_input2raw($_POST[$inputName]) : '';
                     $inputValue = $this->uploadMedia($fileName, 'images/', $imgUploadId);
 
                     if ($inputValue == "error") {
@@ -837,7 +837,7 @@ class DirectoryLibrary
                     $inputName == "spez_field_28" ||
                     $inputName == "spez_field_29") {
 
-                    $fileName   = isset($_POST[$inputName]) ? contrexx_raw2xhtml($_POST[$inputName]) : '';
+                    $fileName   = isset($_POST[$inputName]) ? contrexx_input2raw($_POST[$inputName]) : '';
                     $inputValue = $this->uploadMedia($fileName, 'uploads/', $fileUploadId);
                     if ($inputValue == "error") {
                         $inputValue = "";
@@ -2141,7 +2141,7 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                     $inputName == "spez_field_19" ||
                     $inputName == "spez_field_20") {
 
-                    $fileName = isset($_POST[$inputName]) ? contrexx_raw2xhtml($_POST[$inputName]) : '';
+                    $fileName = isset($_POST[$inputName]) ? contrexx_input2raw($_POST[$inputName]) : '';
                     if (!empty($fileName) || $_POST['deleteMedia'][$inputName] == 1) {
                         $obj_file = new \File();
                         //thumb
@@ -2171,7 +2171,7 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                 //check uploads
                 $arrSpezialUploadFields = array('attachment', 'spez_field_25', 'spez_field_26', 'spez_field_27', 'spez_field_28', 'spez_field_29');
                 if (in_array($inputName, $arrSpezialUploadFields)) {
-                    $fileName = isset($_POST[$inputName]) ? contrexx_raw2xhtml($_POST[$inputName]) : '';
+                    $fileName = isset($_POST[$inputName]) ? contrexx_input2raw($_POST[$inputName]) : '';
                     if (!empty($fileName) || $_POST['deleteMedia'][$inputName] == 1) {
                         $obj_file = new \File();
                         //upload
