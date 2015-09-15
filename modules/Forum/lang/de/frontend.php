@@ -107,4 +107,5 @@ $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_CLOSE_CONFIRM_1'] = "Dieses Thema wirklich 
 $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_CONFIRM_0'] = "Dieses Thema wirklich festhalten?";
 $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_STICKY_CONFIRM_1'] = "Dieses Thema wirklich freigeben?";
 $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE_CONFIRM'] = "Dieses Thema wirklich löschen?";
+$_ARRAYLANG['TXT_FORUM_CHOOSE_FILE'] = "Datei auswählen";
 ?>

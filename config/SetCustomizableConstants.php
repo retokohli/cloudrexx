@@ -38,7 +38,9 @@ define('ASCMS_CONTENT_IMAGE_WEB_PATH',      ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_F
 // Cx::getWebsiteFeedPath()
 define('ASCMS_FEED_PATH',                   ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/feed');
 define('ASCMS_FEED_WEB_PATH',               ASCMS_INSTANCE_OFFSET.'/feed');
+// Cx::getWebsiteMediaForumUploadPath()
 define('ASCMS_FORUM_UPLOAD_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/Forum/upload');
+// Cx::getWebsiteMediaForumUploadWebPath()
 define('ASCMS_FORUM_UPLOAD_WEB_PATH',       ASCMS_INSTANCE_OFFSET.'/media/Forum/upload');
 define('ASCMS_GALLERY_THUMBNAIL_WEB_PATH',  ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/gallery_thumbs');
 define('ASCMS_GALLERY_THUMBNAIL_PATH',      ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/gallery_thumbs');

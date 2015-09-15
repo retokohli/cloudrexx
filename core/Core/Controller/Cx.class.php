@@ -498,6 +498,7 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesPodcastPath;
         protected $websiteImagesBlogPath;
         protected $websiteImagesDataPath;
+        protected $websiteMediaForumUploadPath;
         protected $websiteMediaarchive1Path;
         protected $websiteMediaarchive2Path;
         protected $websiteMediaarchive4Path;
@@ -515,6 +516,7 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesPodcastWebPath;
         protected $websiteImagesBlogWebPath;
         protected $websiteImagesDataWebPath;
+        protected $websiteMediaForumUploadWebPath;
         protected $websiteMediaarchive1WebPath;
         protected $websiteMediaarchive2WebPath;
         protected $websiteMediaarchive3WebPath;
@@ -2534,6 +2536,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesCrmProfilePath  = $this->websiteImagesCrmPath . '/profile';
             $this->websiteImagesAccessProfilePath = $this->websiteImagesAccessPath .'/profile';
             $this->websiteImagesAccessPhotoPath = $this->websiteImagesAccessPath .'/photo';
+            $this->websiteMediaForumUploadPath  = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Forum/upload';
             $this->websiteMediaarchive1Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive1';
             $this->websiteMediaarchive2Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive2';
             $this->websiteMediaarchive3Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive3';
@@ -2558,6 +2561,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesCrmProfileWebPath = $this->websiteImagesCrmWebPath . '/profile';
             $this->websiteImagesAccessProfileWebPath = $this->websiteImagesAccessWebPath . '/profile';
             $this->websiteImagesAccessPhotoWebPath   = $this->websiteImagesAccessWebPath . '/photo';
+            $this->websiteMediaForumUploadWebPath    = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Forum/upload';
             $this->websiteMediaarchive1WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive1';
             $this->websiteMediaarchive2WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive2';
             $this->websiteMediaarchive3WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive3';
@@ -2873,6 +2877,22 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteMediaarchive1WebPath()
         {
             return $this->websiteMediaarchive1WebPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaForumUploadPath()
+        {
+            return $this->websiteMediaForumUploadPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaForumUploadWebPath()
+        {
+            return $this->websiteMediaForumUploadWebPath;
         }
 
         /**
