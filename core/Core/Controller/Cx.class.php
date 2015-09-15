@@ -530,6 +530,8 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesCrmProfilePath;
         protected $websiteImagesCrmProfileWebPath;
         protected $websiteMediaCrmPath;
+        protected $websiteMediaDirectoryPath;
+        protected $websiteMediaDirectoryWebPath;
         protected $websiteImagesAccessProfilePath;
         protected $websiteImagesAccessProfileWebPath;
         protected $websiteImagesAccessPhotoPath;
@@ -2539,6 +2541,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaFileSharingPath  = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
             $this->websiteMediaMarketPath       = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Market';
             $this->websiteMediaCrmPath          = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Crm';
+            $this->websiteMediaDirectoryPath    = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Directory';
             
             $this->websiteImagesContentWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/content';
             $this->websiteImagesAttachWebPath   = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/attach';
@@ -2561,6 +2564,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteMediaarchive4WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive4';
             $this->websiteMediaFileSharingWebPath=$this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
             $this->websiteMediaMarketWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Market';
+            $this->websiteMediaDirectoryWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Directory';
                         
             $this->websitePublicTempPath        = $this->websiteTempPath    . self::FOLDER_NAME_PUBLIC_TEMP;
             $this->websitePublicTempWebPath     = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;
@@ -3035,11 +3039,20 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path from the website's data repository to the
-         * location of the /madia/Crm
+         * location of the /media/Crm
          * @return string
          */
         public function getWebsiteMediaCrmPath() {
             return $this->websiteMediaCrmPath;
+        }
+
+        /**
+         * Return the absolute path from the website's data repository to the
+         * location of the /media/Directory
+         * @return string
+         */
+        public function getWebsiteMediaDirectoryPath() {
+            return $this->websiteMediaDirectoryPath;
         }
 
         /**
@@ -3078,6 +3091,14 @@ namespace Cx\Core\Core\Controller {
             return $this->websiteImagesAccessPhotoWebPath;
         }
 
+        /**
+         * Return the offset path from the website's data repository to the
+         * location of the /media/Downloads
+         * @return string
+         */
+        public function getWebsiteMediaDirectoryWebPath() {
+            return $this->websiteMediaDirectoryWebPath;
+        }
 
         /**
          * @return int

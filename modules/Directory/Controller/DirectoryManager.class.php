@@ -74,12 +74,13 @@ class DirectoryManager extends DirectoryLibrary
 
         $this->langId=$objInit->userFrontendLangId;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $this->path = ASCMS_DIR_PATH . '/';
         $this->webPath = ASCMS_DIR_WEB_PATH . '/';
         $this->imagePath = ASCMS_DIR_PATH . '/View/Media';
         $this->imageWebPath = ASCMS_DIR_WEB_PATH . '/View/Media';
-        $this->mediaPath = ASCMS_MODULE_MEDIA_PATH . '/';
-        $this->mediaWebPath = ASCMS_MODULE_MEDIA_WEB_PATH . '/';
+        $this->mediaPath = $cx->getWebsiteMediaDirectoryPath() . '/';
+        $this->mediaWebPath = $cx->getWebsiteMediaDirectoryWebPath() . '/';
         $this->rssPath = \Env::get('cx')->getWebsiteFeedPath() . '/';
         $this->rssWebPath = ASCMS_FEED_WEB_PATH . '/';
 
