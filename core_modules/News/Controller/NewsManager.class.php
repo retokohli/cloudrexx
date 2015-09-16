@@ -1227,17 +1227,17 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         //Parsing the saved tags
         if (!empty($this->arrSettings['news_use_tags'])) {
             $this->registerTagJsCode();
-            if (    $this->_objTpl->blockExists('newsTags')
+            if (    $this->_objTpl->blockExists('news_tags')
                 &&  !empty($newsTags)
             ) {
                 foreach ($newsTags as $newsTag) {
                     $this->_objTpl->setVariable('NEWS_TAGS', contrexx_raw2xhtml($newsTag));
-                    $this->_objTpl->parse('newsTags');
+                    $this->_objTpl->parse('news_tags');
                 }
             }
-            $this->_objTpl->touchBlock('newsTagsBlock');
+            $this->_objTpl->touchBlock('news_tags_container');
         } else {
-            $this->_objTpl->hideBlock('newsTagsBlock');
+            $this->_objTpl->hideBlock('news_tags_container');
         }
          $this->_objTpl->setVariable(array(
             'NEWS_TEXT_PREVIEW'             => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', !empty($locales['text'][\FWLanguage::getDefaultLangId()]) ? $locales['text'][\FWLanguage::getDefaultLangId()] : '', 'full'),
@@ -1852,15 +1852,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $this->registerTagJsCode();
                 $newsTagDetails = $this->getNewsTags($id);
                 $newsTags       = $newsTagDetails['tagList'];
-                if ($this->_objTpl->blockExists('newsTags')) {
+                if ($this->_objTpl->blockExists('news_tags')) {
                     foreach ($newsTags as $newsTag) {
-                        $this->_objTpl->setVariable('NEWS_TAGS', $newsTag);
-                        $this->_objTpl->parse('newsTags');
+                        $this->_objTpl->setVariable('NEWS_TAGS', contrexx_raw2xhtml($newsTag));
+                        $this->_objTpl->parse('news_tags');
                     }
                 }
-                $this->_objTpl->touchBlock('newsTagsBlock');
+                $this->_objTpl->touchBlock('news_tags_container');
             } else {
-                $this->_objTpl->hideBlock('newsTagsBlock');
+                $this->_objTpl->hideBlock('news_tags_container');
             }
             if (!empty($this->arrSettings['use_related_news'])) {
                 $objCx = \ContrexxJavascript::getInstance();
@@ -3515,7 +3515,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_USE_TEASER_TEXT'                   => $_ARRAYLANG['TXT_USE_TEASER_TEXT'],
             'TXT_USE_TYPES'                         => $_ARRAYLANG['TXT_USE_TYPES'],
             'TXT_USE_RELATED_NEWS'                  => $_ARRAYLANG['TXT_USE_RELATED_NEWS'],
-            'TXT_USE_TAGS'                          => $_ARRAYLANG['TXT_USE_TAGS'],
+            'TXT_NEWS_USE_TAGS'                     => $_ARRAYLANG['TXT_NEWS_USE_TAGS'],
             'TXT_NOTIFY_GROUP'                      => $_ARRAYLANG['TXT_NOTIFY_GROUP'],
             'TXT_NOTIFY_USER'                       => $_ARRAYLANG['TXT_NOTIFY_USER'],
             'TXT_DEACTIVATE'                        => $_ARRAYLANG['TXT_DEACTIVATE'],

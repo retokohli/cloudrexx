@@ -9,19 +9,17 @@
     });
 </script>
 <div id="news-date" class="news-info">
-    <p>
     {NEWS_DATE}&nbsp;{NEWS_TIME} | {NEWS_AUTHOR}<!-- BEGIN news_comments_count --> | {NEWS_COUNT_COMMENTS}<!-- END news_comments_count -->
-    </p>
-    <!-- BEGIN tagsBlock --> 
-    <p class="newsTags">
+    <!-- BEGIN news_tags_container --> 
+    <span class="newsTags">
         | 
         <span class="tagCont">
-            <!-- BEGIN newsTagList -->
+            <!-- BEGIN news_tag_list -->
             {NEWS_TAG_LINK}
-            <!-- END newsTagList -->
+            <!-- END news_tag_list -->
         </span>
-    </p>
-    <!-- END tagsBlock -->
+    </span>
+    <!-- END news_tags_container -->
 </div>
 <!-- BEGIN news_use_teaser_text -->
 <div id="news-teaser-text">

@@ -98,9 +98,10 @@ $_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "News not found...";
 $_ARRAYLANG['TXT_ERROR_SAVING_RELATED_NEWS_RELATION'] = "Error occured while saving the related news!...";
 
 $_ARRAYLANG['TXT_NEWS_TAGS'] = "Tags";
-$_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Add Tags";
-$_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG'] = "Error Occured while saving the news tag!...";
-$_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG_RELATION'] = "Error occured while saving the news tag relationship!...";
-$_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'] = "No tags found.";
+$_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Add tags";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG'] = "Unable to store the tags.";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG_RELATION'] = "Unable to store the associated tags.";
+$_ARRAYLANG['TXT_NEWS_ERROR_DELETE_NEWS_TAG_RELATION'] = "Unable to remove the associated tags.";
+$_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'] = "No tags assigned";
 $_ARRAYLANG['TXT_NEWS_NEXT_LINK'] = "Next News";
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] = "Previous News";

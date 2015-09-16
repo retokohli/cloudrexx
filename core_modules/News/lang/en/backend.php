@@ -321,7 +321,7 @@ $_ARRAYLANG['TXT_NEWS_TYPE_NAME_DESCRIPTION'] = "Name des zugehörigen Typen";
 $_ARRAYLANG['TXT_NEWS_TYPE_ADD_ERROR_EMPTY'] = "Typ konnte nicht hinzugefügt werden, es wurde kein Name angegeben.";
 $_ARRAYLANG['TXT_USE_TEASER_TEXT'] = 'Use teaser text';
 $_ARRAYLANG['TXT_USE_RELATED_NEWS'] = 'Use related news';
-$_ARRAYLANG['TXT_USE_TAGS'] = 'Use tags';
+$_ARRAYLANG['TXT_NEWS_USE_TAGS'] = 'Use tags';
 
 $_ARRAYLANG['TXT_USE_TYPES'] = "Typen verwenden";
 $_ARRAYLANG['TXT_NO_TYPE'] = "Keine Angabe";
@@ -408,12 +408,12 @@ $_ARRAYLANG['TXT_ERROR_DELETE_RELATED_NEWS_RELATION'] = "Error occured while rem
 $_ARRAYLANG['TXT_ERROR_SAVING_RELATED_NEWS_RELATION'] = "Error occured while saving the related news!...";
 
 $_ARRAYLANG['TXT_NEWS_TAGS'] = "Tags";
-$_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Add Tags";
+$_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Add tags";
 $_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'] = "Enable";
-$_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG'] = "Error Occured while saving the news tag!...";
-$_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG_RELATION'] = "Error occured while saving the news tag relationship!...";
-$_ARRAYLANG['TXT_ERROR_DELETE_NEWS_TAG_RELATION'] = "Error occured while removing the news tag relationship!...";
-$_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'] = "No tags found.";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG'] = "Unable to store the tags.";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG_RELATION'] = "Unable to store the associated tags.";
+$_ARRAYLANG['TXT_NEWS_ERROR_DELETE_NEWS_TAG_RELATION'] = "Unable to remove the associated tags.";
+$_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'] = "No tags assigned";
 
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'] = "Tag to display the previous and next news link.<br />
 Starttag: &lt!-- BEGIN previousNextLink --&gt;<br />

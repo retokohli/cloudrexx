@@ -285,6 +285,8 @@ $_ARRAYLANG['TXT_NEWS_TYPE_DESCRIPTION'] = "Typ der Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_TYPE_NAME_DESCRIPTION'] = "Name des zugehörigen Typen";
 $_ARRAYLANG['TXT_NEWS_TYPE_ADD_ERROR_EMPTY'] = "Typ konnte nicht hinzugefügt werden, es wurde kein Name angegeben.";
 $_ARRAYLANG['TXT_USE_TEASER_TEXT'] = 'News Container Text verwenden';
+$_ARRAYLANG['TXT_NEWS_USE_TAGS'] = 'Use tags';
+
 $_ARRAYLANG['TXT_USE_TYPES'] = "Typen verwenden";
 $_ARRAYLANG['TXT_NO_TYPE'] = "Keine Angabe";
 $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'] = "In der Designvorlage <b>top_news.html</b>. Diese Seite kann mit dem Platzhalter [[TOP_NEWS_FILE]] im Design oder in einer Content Seite eingebunden werden.";
@@ -354,3 +356,10 @@ $_ARRAYLANG['TXT_NEWS_NO_CATEGORY'] = "Weisen Sie der Meldung eine Rubrik zu.";
 $_ARRAYLANG['TXT_NEWS_NO_TITLE_AND_CATEGORY'] = "Setzen Sie einen Titel und weisen Sie die Meldung einer Rubrik zu";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_ID_DESCRIPTION'] = "ID der News Rubrik";
 $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
+
+$_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Tags hinzufügen";
+$_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'] = "Verwenden";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG'] = "Die angegebenen Tags konnten nicht gespeichert werden.";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG_RELATION'] = "Die Zuweisung der Tags konnte nicht gespeichert werden.";
+$_ARRAYLANG['TXT_NEWS_ERROR_DELETE_NEWS_TAG_RELATION'] = "Die Entfernung der Tags konnte nicht gespeichert werden.";
+$_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'] = "Keine Tags zugewiesen";
