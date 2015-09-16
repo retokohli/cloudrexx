@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_access
  */
 $_ARRAYLANG['TXT_SETTINGS'] = "Settings";
@@ -97,11 +123,11 @@ $_ARRAYLANG['TXT_ACCESS_EXTENDED'] = "Extended";
 $_ARRAYLANG['TXT_ACCESS_FAILED_PROTECT_PAGE'] = "An error occurred while protecting the page!";
 $_ARRAYLANG['TXT_ACCESS_FAILED_RELEASE_PAGE'] = "An error occurred while approving the page!";
 $_ARRAYLANG['TXT_ACCESS_FAILED_STORE_ATTRIBUTE'] = "An error occurred while saving the property!";
-$_ARRAYLANG['TXT_ACCESS_FAILED_STORE_ATTRIBUTE_DESC'] = "Contrexx was unable to save all descriptions of the property!";
+$_ARRAYLANG['TXT_ACCESS_FAILED_STORE_ATTRIBUTE_DESC'] = "Cloudrexx was unable to save all descriptions of the property!";
 $_ARRAYLANG['TXT_ACCESS_FAILED_STORE_FRAME'] = "An error occurred while saving the frame!";
-$_ARRAYLANG['TXT_ACCESS_FAILED_STORE_FRAME_DESC'] = "Contrexx was unable to save all descriptions of the frame!";
+$_ARRAYLANG['TXT_ACCESS_FAILED_STORE_FRAME_DESC'] = "Cloudrexx was unable to save all descriptions of the frame!";
 $_ARRAYLANG['TXT_ACCESS_FAILED_STORE_MENU_OPTION'] = "An error occurred while saving the menu option!";
-$_ARRAYLANG['TXT_ACCESS_FAILED_STORE_MENU_OPTION_DESC'] = "Contrexx was unable to save all descriptions of the menu option!";
+$_ARRAYLANG['TXT_ACCESS_FAILED_STORE_MENU_OPTION_DESC'] = "Cloudrexx was unable to save all descriptions of the menu option!";
 $_ARRAYLANG['TXT_ACCESS_FRAME'] = "Frame";
 $_ARRAYLANG['TXT_ACCESS_FRAMES'] = "Frames";
 $_ARRAYLANG['TXT_ACCESS_FRONTEND_BLOCK_FUNCTIONS'] = "Block functions (frontend)";
@@ -287,7 +313,7 @@ $_ARRAYLANG['TXT_ACCESS_USE_USERNAMES'] = "Use usernames";
 $_ARRAYLANG['TXT_ACCESS_USE_USERNAMES_TOOLTIP'] = "Instead of the usernames are the email adresses used to log in.";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_INFORMATION_TITLE'] = "Informations";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_DESCRIPTION'] = "Activate this function to give an option for your users to log in with a social network.";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'] = "A manual how you can setup this login you can find here: <a href='%s' target='_blank'>Contrexx Wiki</a>";
+$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'] = "A manual how you can setup this login you can find here: <a href='%s' target='_blank'>Cloudrexx Wiki</a>";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN'] = "Login with social networks";
 $_ARRAYLANG['TXT_ACCESS_ENABLE_SOCIALLOGIN'] = "Enable social media login";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PROVIDER_APP_ID'] = "App ID";

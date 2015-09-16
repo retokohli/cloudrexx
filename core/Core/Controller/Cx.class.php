@@ -1,12 +1,37 @@
 <?php
 
 /**
- * Main script for Contrexx
- * @copyright   CONTREXX CMS - COMVATION AG
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
+ * Main script for Cloudrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
- * @link        http://www.contrexx.com/ contrexx homepage
+ * @link        http://www.cloudrexx.com/ cloudrexx homepage
  * @since       v3.1.0
  */
 
@@ -20,7 +45,7 @@ namespace {
      * This is necessary, because we cannot use namespaces in index.php
      * in order to catch errors with PHP versions prior to 5.3
      * @param string $mode (optional) One of 'frontend', 'backend', 'cli', 'minimal'
-     * @return \Cx\Core\Core\Controller\Cx Instance of Contrexx
+     * @return \Cx\Core\Core\Controller\Cx Instance of Cloudrexx
      */
     function init($mode = null, $checkInstallationStatus = true) {
         return \Cx\Core\Core\Controller\Cx::instanciate($mode,  false, null, false, $checkInstallationStatus);
@@ -35,11 +60,11 @@ namespace Cx\Core\Core\Controller {
 
     /**
      * This loads and controls everything
-     * @copyright   CONTREXX CMS - COMVATION AG
+     * @copyright   CLOUDREXX CMS - CLOUDREXX AG
      * @author      Michael Ritter <michael.ritter@comvation.com>
-     * @package     contrexx
+     * @package     cloudrexx
      * @subpackage  core
-     * @link        http://www.contrexx.com/ contrexx homepage
+     * @link        http://www.cloudrexx.com/ cloudrexx homepage
      * @since       v3.1.0
      * @todo Remove all instances of "global" or at least move them to a single place
      */
@@ -49,7 +74,7 @@ namespace Cx\Core\Core\Controller {
         /**
          * Commandline interface mode
          *
-         * In this mode, Contrexx is initialized for commandline usage
+         * In this mode, Cloudrexx is initialized for commandline usage
          * This mode is BETA at this time
          */
         const MODE_COMMAND = 'command';
@@ -57,14 +82,14 @@ namespace Cx\Core\Core\Controller {
         /**
          * Frontend mode
          *
-         * In this mode, Contrexx shows the frontend
+         * In this mode, Cloudrexx shows the frontend
          */
         const MODE_FRONTEND = 'frontend';
 
         /**
          * Backend mode
          *
-         * In this mode, Contrexx show the administrative backend
+         * In this mode, Cloudrexx show the administrative backend
          */
         const MODE_BACKEND = 'backend';
 
@@ -84,7 +109,7 @@ namespace Cx\Core\Core\Controller {
          * The first one is the normally used one, all others are special.
          * This is a two dimensional array. The first level key is the
          * configuration file path. Each of these entries contains a list of
-         * all Contrexx instances for this config file.
+         * all Cloudrexx instances for this config file.
          * @var array
          */
         protected static $instances = array();
@@ -180,14 +205,14 @@ namespace Cx\Core\Core\Controller {
         protected $license = null;
 
         /**
-         * Contrexx toolbox
+         * Cloudrexx toolbox
          * @todo Update FWSystem
          * @var \FWSystem
          */
         protected $toolbox = null;
 
         /**
-         * Contrexx event manager
+         * Cloudrexx event manager
          * @var \Cx\Core\Event\Controller\EventManager
          */
         protected $eventManager = null;
@@ -278,14 +303,14 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The offset path from the webserver's DocumentRoot to the
-         * location of the Code Base of the Contrexx installation.
+         * location of the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_PATH_OFFSET.
          * @var string
          */
         protected $codeBaseOffsetPath = null;
 
         /**
-         * The absolute path to the Code Base of the Contrexx installation.
+         * The absolute path to the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_DOCUMENT_ROOT.
          * @var string
          */
@@ -294,14 +319,14 @@ namespace Cx\Core\Core\Controller {
         /**
          * The absolute path to the storage location of the
          * configuration files (/config) of the Code Base of the
-         * Contrexx installation.
+         * Cloudrexx installation.
          * @var string
          */
         protected $codeBaseConfigPath = null;
 
         /**
          * The absolute path to the core components (/core)
-         * of the Code Base of the Contrexx installation.
+         * of the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_CORE_PATH.
          * @var string
          */
@@ -309,14 +334,14 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The offset path to the core components (/core)
-         * of the Code Base of the Contrexx installation.
+         * of the Code Base of the Cloudrexx installation.
          * @var string
          */
         protected $codeBaseCoreWebPath = null;
 
         /**
          * The absolute path used to access the backend template
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_ADMIN_TEMPLATE_PATH
          * @var string
          */
@@ -324,7 +349,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The offset path used to access the backend template
-         * of the Code Base of the Contrexx installation.
+         * of the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_ADMIN_TEMPLATE_WEB_PATH.
          * @var string
          */
@@ -332,7 +357,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path of the core modules(core_modules) folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_CORE_MODULE_PATH
          * @var string
          */
@@ -340,7 +365,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The offset path of the core modules(core_modules) folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_CORE_MODULE_WEB_PATH
          * @var string
          */
@@ -348,7 +373,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path of the lib folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_LIBRARY_PATH
          * @var string
          */
@@ -356,7 +381,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path of the FRAMEWORK folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_FRAMEWORK_PATH
          * @var string
          */
@@ -364,7 +389,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path of the model folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_MODEL_PATH
          * @var string
          */
@@ -372,7 +397,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path of the module folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_MODULE_PATH
          * @var string
          */
@@ -380,7 +405,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The offset path of the module folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_MODULE_WEB_PATH
          * @var string
          */
@@ -388,7 +413,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path to the themes storage location (/themes)
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * @var string
          */
         protected $codeBaseThemesPath = null;
@@ -402,14 +427,14 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The offset path from the website's data repository to the
-         * location of the Contrexx installation if it is run in a subdirectory.
+         * location of the Cloudrexx installation if it is run in a subdirectory.
          * Formerly known as ASCMS_INSTANCE_OFFSET.
          * @var string
          */
         protected $websiteOffsetPath = null;
 
         /**
-         * The absolute path to the data repository of the Contrexx installation.
+         * The absolute path to the data repository of the Cloudrexx installation.
          * Formerly known as ASCMS_INSTANCE_DOCUMENT_ROOT.
          * @var string
          */
@@ -544,7 +569,7 @@ namespace Cx\Core\Core\Controller {
          * to be the preferred one using the $setAsPreferred argument.
          * @param string $mode (optional) One of the modes listed in constants above
          * @param boolean $forceNew (optional) Wheter to force a new instance or not, default false
-         * @param string $configFilePath (optional) The absolute path to a Contrexx configuration
+         * @param string $configFilePath (optional) The absolute path to a Cloudrexx configuration
          *                               file (configuration.php) that shall be loaded
          *                               instead of the default one.
          * @param boolean $setAsPreferred (optional) Sets this instance as the preferred one for later
@@ -582,9 +607,9 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Initializes the Cx class
-         * This does everything related to Contrexx.
+         * This does everything related to Cloudrexx.
          * @param string $mode (optional) Use constants, one of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
-         * @param string $configFilePath The absolute path to a Contrexx configuration
+         * @param string $configFilePath The absolute path to a Cloudrexx configuration
          *                               file (configuration.php) that shall be loaded
          *                               instead of the default one.
          */
@@ -639,7 +664,7 @@ namespace Cx\Core\Core\Controller {
                 $this->setCustomizingPath();
 
                 /**
-                 * Sets the mode Contrexx runs in
+                 * Sets the mode Cloudrexx runs in
                  * One of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
                  */
                 $this->setMode($mode);
@@ -652,7 +677,7 @@ namespace Cx\Core\Core\Controller {
                 $this->preInit();
 
                 /**
-                 * Defines the core constants (ASCMS_*) of Contrexx as defined in config/set_constants.php
+                 * Defines the core constants (ASCMS_*) of Cloudrexx as defined in config/set_constants.php
                  * and config/SetCustomizableConstants.php.
                  */
                 $this->defineLegacyConstants();
@@ -751,7 +776,7 @@ namespace Cx\Core\Core\Controller {
                     $offlinePath = $this->codeBaseDocumentRootPath;
                 }
                 echo file_get_contents($offlinePath . '/offline.html');
-                \DBG::msg('Contrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
+                \DBG::msg('Cloudrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
                 \DBG::msg('In file ' . $e->getFile() . ' on Line ' . $e->getLine());
                 \DBG::dump($e->getTrace());
                 die();
@@ -857,7 +882,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Checks if the Contrexx installation has been set up yet (CONTREXX_INSTALLED).
+         * Checks if the Cloudrexx installation has been set up yet (CONTEXX_INSTALLED).
          * If not, the user will be redirected (through a HTTP-Location redirect) to
          * the web-installer (/installer).
          */
@@ -938,7 +963,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Set the mode Contrexx is used in
+         * Set the mode Cloudrexx is used in
          * @param mixed $mode Mode as string or true for front- or false for backend
          */
         protected function setMode($mode) {
@@ -1170,7 +1195,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Check whether the requested url is correct or not
-         * there is a settings option in the general settings section of contrexx which allows
+         * there is a settings option in the general settings section of cloudrexx which allows
          * to force the domain url which is provided
          * @return null|string the correct domain url
          */
@@ -1191,7 +1216,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function adjustProtocol() {
             global $_CONFIG;
-            // check whether Contrexx has to redirect to the correct protocol
+            // check whether Cloudrexx has to redirect to the correct protocol
 
             $configOption = 'forceProtocolFrontend';
             if ($this->mode == self::MODE_BACKEND) {
@@ -1224,7 +1249,7 @@ namespace Cx\Core\Core\Controller {
             global $objDatabase, $objInit, $objCache, $_DBCONFIG, $_CONFIG;
 
             /**
-             * Start caching with op cache, user cache and contrexx caching
+             * Start caching with op cache, user cache and cloudrexx caching
              */
             $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
             if ($this->mode == self::MODE_FRONTEND) {
@@ -1234,7 +1259,7 @@ namespace Cx\Core\Core\Controller {
             }
             $this->tryToSetMemoryLimit();
 
-            // start contrexx caching
+            // start cloudrexx caching
             $objCache->startContrexxCaching();
 
             /**
@@ -2178,7 +2203,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Returns the Contrexx event manager instance
+         * Returns the Cloudrexx event manager instance
          * @return \Cx\Core\Event\Controller\EventManager
          */
         public function getEvents() {
@@ -2316,7 +2341,7 @@ namespace Cx\Core\Core\Controller {
          * Set the path to the location of the website's Code Base in the file system.
          * @param string The base path of the Code Base (webserver's DocumentRoot path).
          * @param string The offset path from the webserver's DocumentRoot to the
-         *               location of the Code Base of the Contrexx installation.
+         *               location of the Code Base of the Cloudrexx installation.
          */
         public function setCodeBaseRepository($codeBasePath, $codeBaseOffsetPath) {
             $this->codeBasePath                 = $codeBasePath;
@@ -2348,7 +2373,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the offset path from the webserver's DocumentRoot to the
-         * location of the Code Base of the Contrexx installation.
+         * location of the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_PATH_OFFSET.
          * @return string
          */
@@ -2357,7 +2382,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Return the absolute path to the Code Base of the Contrexx installation.
+         * Return the absolute path to the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_DOCUMENT_ROOT.
          * @return string
          */
@@ -2368,7 +2393,7 @@ namespace Cx\Core\Core\Controller {
         /**
          * Return the absolute path to the storage location of the
          * configuration files (/config) of the Code Base of the
-         * Contrexx installation.
+         * Cloudrexx installation.
          * @return string
          */
         public function getCodeBaseConfigPath() {
@@ -2377,7 +2402,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path to the core components (/core)
-         * of the Code Base of the Contrexx installation.
+         * of the Code Base of the Cloudrexx installation.
          * Formerly known as ASCMS_CORE_PATH.
          * @return string
          */
@@ -2387,7 +2412,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the offset path to the core components (/core)
-         * of the Code Base of the Contrexx installation.
+         * of the Code Base of the Cloudrexx installation.
          * @return string
          */
         public function getCodeBaseCoreWebPath() {
@@ -2396,7 +2421,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path used to access the backend template
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_ADMIN_TEMPLATE_PATH
          * @return string
          */
@@ -2406,7 +2431,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the offset path used to access the backend template
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_ADMIN_TEMPLATE_WEB_PATH
          * @return string
          */
@@ -2416,7 +2441,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path of the core modules(core_modules) folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_CORE_MODULE_PATH
          * @return string
          */
@@ -2426,7 +2451,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the offset path of the core modules(core_modules) folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_CORE_MODULE_WEB_PATH
          * @return string
          */
@@ -2436,7 +2461,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * The absolute path of the lib folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_LIBRARY_PATH
          * @return string
          */
@@ -2445,7 +2470,7 @@ namespace Cx\Core\Core\Controller {
         }
         /**
          * Return the absolute path of the FRAMEWORK folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_FRAMEWORK_PATH
          * @return string
          */
@@ -2454,7 +2479,7 @@ namespace Cx\Core\Core\Controller {
         }
         /**
          * Return the absolute path of the lib folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_MODEL_PATH
          * @return string
          */
@@ -2464,7 +2489,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path of the module folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_MODULE_PATH
          * @return string
          */
@@ -2474,7 +2499,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the offset path of the module folder
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_MODULE_WEB_PATH
          * @return string
          */
@@ -2484,7 +2509,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path to the themes storage location (/themes)
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * @return string
          */
         public function getCodeBaseThemesPath() {
@@ -2495,7 +2520,7 @@ namespace Cx\Core\Core\Controller {
          * Set the path to the location of the website's data repository in the file system.
          * @param string $websitePath The absolute path to the website's data repository.
          * @param string $websiteOffsetPath The offset path from the website's data repository to the
-         *               location of the Contrexx installation if it is run in a subdirectory.
+         *               location of the Cloudrexx installation if it is run in a subdirectory.
          */
         public function setWebsiteRepository($websitePath, $websiteOffsetPath) {
             $this->websitePath                  = $websitePath;
@@ -2571,7 +2596,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the offset path from the website's data repository to the
-         * location of the Contrexx installation if it is run in a subdirectory.
+         * location of the Cloudrexx installation if it is run in a subdirectory.
          * Formerly known as ASCMS_INSTANCE_OFFSET.
          * @return string
          */
@@ -2580,7 +2605,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Return the absolute path to the data repository of the Contrexx installation.
+         * Return the absolute path to the data repository of the Cloudrexx installation.
          * Formerly known as ASCMS_INSTANCE_DOCUMENT_ROOT.
          * @return string
          */
@@ -2665,7 +2690,7 @@ namespace Cx\Core\Core\Controller {
 
          /**
          * Return the absolute path to the feed storage location (/feed)
-         * of the Code Base of the Contrexx installation
+         * of the Code Base of the Cloudrexx installation
          * Formerly known as ASCMS_FEED_PATH
          * @return string
          */

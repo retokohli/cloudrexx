@@ -1,11 +1,37 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Main controller for Security
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Gerben van der Lubbe <spoofedexistence@gmail.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_security
  */
 
@@ -16,10 +42,10 @@ namespace Cx\Core\Security\Controller;
  * 
  * The security class checks for possible attacks to the server
  * and supports a few functions to make everything more secure.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Gerben van der Lubbe <spoofedexistence@gmail.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_security
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
@@ -31,7 +57,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public $reportingMode = false;
 
     /**
-     * $_SERVER variable indexes used by Contrexx
+     * $_SERVER variable indexes used by Cloudrexx
      *
      * @var array
      */

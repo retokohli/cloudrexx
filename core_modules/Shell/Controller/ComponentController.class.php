@@ -1,5 +1,31 @@
 <?php
 
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+
 namespace Cx\Core_Modules\Shell\Controller;
 
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
@@ -22,7 +48,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     break;
                 }
             case 'shell':
-                return 'Interactive shell for Contrexx command mode';
+                return 'Interactive shell for Cloudrexx command mode';
                 break;
             case 'prompt':
                 return 'Change interactive shell command prompt';
@@ -58,7 +84,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         $this->commandRunning = true;
-        echo 'This is Contrexx Command mode shell v3.2
+        echo 'This is Cloudrexx Command mode shell v3.2
 Please type `help` to find available commands
 ';
         $componentRepo = $this->cx->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');

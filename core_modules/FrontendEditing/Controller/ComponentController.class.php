@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Class ComponentController
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_frontendediting
  * @version     1.0.0
  */
@@ -16,9 +42,9 @@ namespace Cx\Core_Modules\FrontendEditing\Controller;
  *
  * The main controller for the frontend editing
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_frontendediting
  * @version     1.0.0
  */
@@ -54,7 +80,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // get current request`s parameters
         $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
 
-        // check whether the contrexx is in frontend mode, a content page exists and it is no pagePreview
+        // check whether the cloudrexx is in frontend mode, a content page exists and it is no pagePreview
         if (
             $this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND ||
             !$this->cx->getPage() ||
