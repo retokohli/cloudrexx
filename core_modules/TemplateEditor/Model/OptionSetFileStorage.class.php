@@ -3,6 +3,8 @@
 namespace Cx\Core_Modules\TemplateEditor\Model;
 
 use Symfony\Component\Yaml\Exception;
+use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\ParserException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -33,6 +35,7 @@ class OptionSetFileStorage implements Storable
      * @param String $name
      *
      * @return array
+     * @throws ParserException
      */
     public function retrieve($name)
     {
@@ -41,9 +44,16 @@ class OptionSetFileStorage implements Storable
             . '/' . $name . '/options/options.yml'
         );
         if ($file) {
-            return Yaml::load($file);
+            try {
+                $yaml = new Parser();
+                return $yaml->parse($file);
+            }
+            catch (ParserException $e){
+                preg_match("/line (?P<line>[0-9]+)/",$e->getMessage(),$matches);
+                throw new ParserException($e->getMessage(), $matches['line']);
+            }
         } else {
-            return [];
+            throw new ParserException("");
         }
     }
 

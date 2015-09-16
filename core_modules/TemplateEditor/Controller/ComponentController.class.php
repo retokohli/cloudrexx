@@ -59,6 +59,9 @@ class ComponentController extends SystemComponentController
             } catch (PresetRepositoryException $e) {
 
             }
+            catch (\Symfony\Component\Yaml\ParserException $e){
+
+            }
         }
     }
 

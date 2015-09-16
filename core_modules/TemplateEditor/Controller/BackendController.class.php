@@ -111,25 +111,29 @@ class BackendController extends SystemComponentBackendController
                 . $this->theme->getFoldername()
             )
         );
-        $this->themeOptions     = $this->themeOptionRepository->get(
-            $this->theme
-        );
         try {
-            $this->themeOptions->applyPreset(
-                $this->presetRepository->getByName(
-                    $_SESSION['TemplateEditor']
-                    [$this->theme->getId()]
-                    ['activePreset']
-                )
+            $this->themeOptions = $this->themeOptionRepository->get(
+                $this->theme
             );
-        } catch (PresetRepositoryException $e) {
-            $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
-                = 'Default';
-            $this->themeOptions->applyPreset(
-                $this->presetRepository->getByName(
-                    'Default'
-                )
-            );
+            try {
+                $this->themeOptions->applyPreset(
+                    $this->presetRepository->getByName(
+                        $_SESSION['TemplateEditor']
+                        [$this->theme->getId()]
+                        ['activePreset']
+                    )
+                );
+            } catch (PresetRepositoryException $e) {
+                $_SESSION['TemplateEditor']
+                    [$this->theme->getId()]['activePreset'] = 'Default';
+                $this->themeOptions->applyPreset(
+                    $this->presetRepository->getByName(
+                        'Default'
+                    )
+                );
+            }
+        } catch (\Symfony\Component\Yaml\ParserException $e) {
+
         }
 
         $this->showOverview($template);
@@ -170,69 +174,76 @@ class BackendController extends SystemComponentBackendController
             }
             $template->parse('layouts');
         }
-
-        $presets = $this->presetRepository->findAll();
-        foreach ($presets as $preset) {
-            $template->setVariable(
-                array(
-                    'TEMPLATEEDITOR_PRESET_NAME' => $this->themeOptions->getActivePreset(
-                    )->getName() == $preset ? $preset . ' ('
-                        . $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_PRESET_ACTIVE']
-                        . ')' : $preset,
-                    'TEMPLATEEDITOR_PRESET_ID' => $preset
-                )
-            );
-            if ($_SESSION['TemplateEditor'][$this->theme->getId()]
-                ['activePreset'] == $preset
+        if ($this->themeOptions) {
+            $presets = $this->themeOptions->getPresetRepository()->findAll();
+            foreach ($presets as $preset) {
+                $template->setVariable(
+                    array(
+                        'TEMPLATEEDITOR_PRESET_NAME' => $this->themeOptions->getActivePreset(
+                        )->getName() == $preset ? $preset . ' ('
+                            . $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_PRESET_ACTIVE']
+                            . ')' : $preset,
+                        'TEMPLATEEDITOR_PRESET_ID' => $preset
+                    )
+                );
+                if ($_SESSION['TemplateEditor'][$this->theme->getId()]
+                    ['activePreset'] == $preset
+                ) {
+                    $template->setVariable(
+                        array(
+                            'TEMPLATEEDITOR_PRESET_ACTIVE' => 'selected'
+                        )
+                    );
+                }
+                $template->parse('presets');
+            }
+            if ($_SESSION['TemplateEditor'][$this->theme->getId(
+                )]['activePreset']
+                == $this->themeOptions->getActivePreset()->getName()
             ) {
                 $template->setVariable(
                     array(
-                        'TEMPLATEEDITOR_PRESET_ACTIVE' => 'selected'
+                        'TEMPLATEDITOR_PRESET_IS_ALREADY_ACTIVE' => 'disabled'
                     )
                 );
+
+                $template->setVariable(
+                    array(
+                        'TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_IS_ACTIVE'
+                        => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_IS_ACTIVE']
+                    )
+                );
+                $template->show('presetTextActive');
             }
-            $template->parse('presets');
-        }
-        if ($_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
-            == $this->themeOptions->getActivePreset()->getName()
-        ) {
-            $template->setVariable(
-                array(
-                    'TEMPLATEDITOR_PRESET_IS_ALREADY_ACTIVE' => 'disabled'
-                )
-            );
+            if ($_SESSION['TemplateEditor'][$this->theme->getId(
+                )]['activePreset']
+                == 'Default'
+            ) {
+                $template->setVariable(
+                    array(
+                        'TEMPLATEDITOR_PRESET_IS_DEFAULT' => 'disabled'
+                    )
+                );
 
-            $template->setVariable(
-                array(
-                    'TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_IS_ACTIVE'
-                    => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_IS_ACTIVE']
-                )
-            );
-            $template->show('presetTextActive');
-        }
-        if ($_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
-            == 'Default'
-        ) {
-            $template->setVariable(
-                array(
-                    'TEMPLATEDITOR_PRESET_IS_DEFAULT' => 'disabled'
-                )
-            );
+            }
+            foreach ($presets as $preset) {
+                $template->setVariable(
+                    array(
+                        'TEMPLATEEDITOR_PRESET_FOR_PRESETS_NAME' => $preset,
+                        'TEMPLATEEDITOR_PRESET_FOR_PRESETS_ID' => $preset
+                    )
+                );
+                $template->parse('presetsForPresets');
+            }
 
-        }
-        foreach ($presets as $preset) {
-            $template->setVariable(
-                array(
-                    'TEMPLATEEDITOR_PRESET_FOR_PRESETS_NAME' => $preset,
-                    'TEMPLATEEDITOR_PRESET_FOR_PRESETS_ID' => $preset
-                )
-            );
-            $template->parse('presetsForPresets');
-        }
+            $this->themeOptions->renderOptions($template);
 
-        $this->themeOptions->renderOptions($template);
 
-        if ($this->themeOptions->getOptionCount() == 0) {
+            if ($this->themeOptions->getOptionCount() != 0) {
+                $template->parse('presetBlock');
+            }
+        }
+        else {
             $template->setVariable(
                 array(
                     'TEMPLATEOPTION_NO_OPTIONS_TEXT' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NO_OPTIONS_HELP'],
@@ -240,8 +251,6 @@ class BackendController extends SystemComponentBackendController
                 )
             );
             $template->parse('no_options');
-        } else {
-            $template->parse('presetBlock');
         }
         $template->setVariable(
             array(

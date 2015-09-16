@@ -7,6 +7,8 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model;
 
+use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\ParserException;
 use Symfony\Component\Yaml\Yaml;
 
 class PresetFileStorage implements Storable
@@ -29,6 +31,7 @@ class PresetFileStorage implements Storable
      * @param String $name
      *
      * @return array
+     * @throws ParserException
      * @throws PresetRepositoryException
      */
     public function retrieve($name)
@@ -40,9 +43,16 @@ class PresetFileStorage implements Storable
             $this->path . '/options/presets/' . $name . '.yml'
         );
         if ($file) {
-            return Yaml::load($file);
+            try {
+                $yaml = new Parser();
+                return $yaml->parse($file);
+            }
+            catch (ParserException $e){
+                preg_match("/line (?P<line>[0-9]+)/",$e->getMessage(),$matches);
+                throw new ParserException($e->getMessage(), $matches['line']);
+            }
         } else {
-            return [];
+            throw new ParserException("");
         }
     }
 

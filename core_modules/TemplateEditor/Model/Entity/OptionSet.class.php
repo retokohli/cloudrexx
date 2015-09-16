@@ -8,6 +8,7 @@ use Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository;
 use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 use Cx\Core\Html\Sigma;
+use Symfony\Component\Yaml\ParserException;
 
 /**
  * Class ThemeOptions
@@ -53,11 +54,11 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
      */
     public function __construct($theme, $data)
     {
-        $this->name             = $theme->getFoldername();
-        $this->data             = $data;
-        $this->theme            = $theme;
-        $presetStorage
-                                = new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
+        $this->name  = $theme->getFoldername();
+        $this->data  = $data;
+        $this->theme = $theme;
+        $presetStorage =
+            new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
             $this->cx->getWebsiteThemesPath() . '/' . $theme->getFoldername()
         );
         $this->presetRepository = new PresetRepository($presetStorage);
@@ -70,6 +71,9 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
             $this->activePreset = $this->presetRepository->getByName($activePreset);
         }
         catch (PresetRepositoryException $e){
+            $this->activePreset = $this->presetRepository->getByName('Default');
+        }
+        catch (ParserException $e){
             $this->activePreset = $this->presetRepository->getByName('Default');
         }
 
@@ -226,7 +230,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
             }
         }
 
-        $this->options = array();
+//        $this->options = array();
         foreach ($data['options'] as $option) {
             $optionReflection = new \ReflectionClass($option['type']);
             if ($optionReflection->getParentClass()->getName()
@@ -256,11 +260,11 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     }
 
     /**
-     * @param Preset $preSet
+     * @param Preset $preset
      */
-    public function setActivePreset(Preset $preSet)
+    public function setActivePreset(Preset $preset)
     {
-        $this->activePreset = $preSet;
+        $this->activePreset = $preset;
     }
 }
 
