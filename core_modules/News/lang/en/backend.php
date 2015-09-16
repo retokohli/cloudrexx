@@ -414,20 +414,17 @@ $_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG'] = "Error Occured while saving the news ta
 $_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG_RELATION'] = "Error occured while saving the news tag relationship!...";
 $_ARRAYLANG['TXT_ERROR_DELETE_NEWS_TAG_RELATION'] = "Error occured while removing the news tag relationship!...";
 
-$_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'] = "Tag to display the previous and next news link.<br />
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'] = "Block to display the links to the previous and next article.<br />
 Starttag: &lt!-- BEGIN previousNextLink --&gt;<br />
   &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN previousNewsLink --&gt;<br />
   &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END previousNewsLink --&gt;<br /><br />
   &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN nextNewsLink --&gt;<br />
   &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END nextNewsLink --&gt;<br />
 Endtag: &lt!-- END previousNextLink --&gt;";
-$_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINKS'] = "Previous Next Links";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINKS'] = "Links to previous & next articles";
 
-$_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK_DESCRITION'] = "Previous news link";
-$_ARRAYLANG['TXT_NEWS_PREVIOUS_TITLE_DESCRITION'] = "Previous news title";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK_DESCRITION'] = "Link to previous article";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_TITLE_DESCRITION'] = "Title of previous article";
 
-$_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'] = "Next news link";
-$_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Next news title";
-
-
-?>
+$_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'] = "Link to next article";
+$_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Title of next article";

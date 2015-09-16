@@ -73,3 +73,8 @@ $_ARRAYLANG['TXT_ERROR_DELETE_NEWS_CATGORY_RELATION'] = "Bei der Entfernung der 
 $_ARRAYLANG['TXT_ERROR_SAVING_NEWS_CATGORY_RELATION'] = "Beim Speichervorgang der Rubrikzugehörigkeit trat ein Fehler auf";
 $_ARRAYLANG['TXT_SET_NEWS_TITLE_CATEGORY_AND_TEXT_OR_REDIRECT'] = "Es muss zwingend ein Titel, eine Rubrikzugehörigkeit und etwas Inhalt (oder eine Weiterleitung) erfasst werden.";
 $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
+
+$_ARRAYLANG['TXT_NEWS_NEXT_LINK'] = "Nächster Artikel";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] = "Vorangehender Artikel";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC'] = "URL zum vorangehenden Artikel";
+$_ARRAYLANG['TXT_NEWS_NEXT_SRC'] = "URL zum nächsten Artikel";

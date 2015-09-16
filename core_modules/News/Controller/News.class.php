@@ -313,7 +313,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         self::parseImageBlock($this->_objTpl, $objResult->fields['newsThumbImg'], $newstitle, $newsUrl, 'image_thumbnail');
         self::parseImageBlock($this->_objTpl, $objResult->fields['newsimage'], $newstitle, $newsUrl, 'image_detail');
         //previous next newslink 
-        if ($this->_objTpl->blockExists('previousNextLink')) {
+        if ($this->_objTpl->blockExists('news_details_previous_next_links')) {
+            //Register the RelatedLinks.css for styling the previous and next link
+            \JS::registerCss('core_modules/News/View/Style/RelatedLinks.css');
+            
             $this->parseNextAndPreviousLinks($this->_objTpl);
         }
 
@@ -783,7 +786,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
         }
         
-        $newsCategories = $categories = !empty($catFromReq) ? $catFromReq : (!empty($catFromCmd) ? $catFromCmd : array());
+        $newsCategories = $categories = !empty($catFromReq) ? $catFromReq : (!empty($menuCategories) ? $menuCategories : array());
         if ((count($newsCategories) == 1) && $this->categoryExists($newsCategories[0])) {
             $selectedCat = intval($newsCategories[0]);
         }
