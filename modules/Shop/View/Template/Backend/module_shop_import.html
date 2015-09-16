@@ -114,16 +114,14 @@ function MakeExport(groupCode) {
 var inputId, uploaderInputBox;
 function getUploader(e) { // e => jQuery element
     inputId = e.data('inputId');
-    uploaderInputBox = jQuery('#' + inputId);
-    jQuery('#importCsvUploader').trigger('click');
+    uploaderInputBox = cx.jQuery('#' + inputId);
+    cx.jQuery('#importCsvUploader').trigger('click');
 }
 function importUploaderCallback(data) {
     if (typeof data[0] !== 'undefined') {
         var data       = data[0].split('/'),
             fileName   = data.pop();
-
         uploaderInputBox.val(fileName);
-        uploaderInputBox.trigger('keyup');
     }
 }
 //]]></script>
@@ -153,10 +151,10 @@ function importUploaderCallback(data) {
         </td>
         <td width='80%'>
           <input type="input" name="csvFile"
-            id="importFileCategories" style="width: 200px;"
+            id="importFileCategories" autocomplete="off" style="width: 200px;"
             size="50" />
-          <input type="button" onClick="getUploader(jQuery(this));" data-input-id="importFileCategories" value ="{TXT_SHOP_CHOOSE_FILE}"/>
-          <input type="hidden" name="importCsvUploaderId" value="{UPLOADER_ID}"/>
+          <input type="button" onClick="getUploader(cx.jQuery(this));" data-input-id="importFileCategories" value ="{TXT_SHOP_CHOOSE_FILE}"/>
+          <input type="hidden" name="importCsvUploaderId" value="{SHOP_IMPORT_CSV_UPLOADER_ID}"/>
         </td>
       </tr>
       <tr class="row1">
@@ -193,9 +191,9 @@ function importUploaderCallback(data) {
         </td>
         <td>
           <input type="input" name="csvFile" id="importfile"
-                 style="width: 200px;" size="50" />
-          <input type="button" onClick="getUploader(jQuery(this));" data-input-id="importfile" value ="{TXT_SHOP_CHOOSE_FILE}"/>
-          <input type="hidden" name="importCsvUploaderId" value="{UPLOADER_ID}"/>
+                 style="width: 200px;" autocomplete="off" size="50" />
+          <input type="button" onClick="getUploader(cx.jQuery(this));" data-input-id="importfile" value ="{TXT_SHOP_CHOOSE_FILE}"/>
+          <input type="hidden" name="importCsvUploaderId" value="{SHOP_IMPORT_CSV_UPLOADER_ID}"/>
         </td>
       </tr>
       <tr class="row1">
@@ -330,9 +328,9 @@ function importUploaderCallback(data) {
     </tr>
     <tr class="row1">
       <td>
-        <input type="input" id="tplFile" name="csvFile" size="50" />
-        <input type="button" onClick="getUploader(jQuery(this));" data-input-id="tplFile" value ="{TXT_SHOP_CHOOSE_FILE}"/>
-          <input type="hidden" name="importCsvUploaderId" value="{UPLOADER_ID}"/>
+        <input type="input" id="tplFile" name="csvFile" autocomplete="off" size="50" />
+        <input type="button" onClick="getUploader(cx.jQuery(this));" data-input-id="tplFile" value ="{TXT_SHOP_CHOOSE_FILE}"/>
+          <input type="hidden" name="importCsvUploaderId" value="{SHOP_IMPORT_CSV_UPLOADER_ID}"/>
         &nbsp;
         <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_IMPORT_CREATE_TEMPLATE_TIPS}</span>
       </td>
@@ -378,7 +376,7 @@ function importUploaderCallback(data) {
   <div class="infobox_head">{TXT_SHOP_TIP}</div>
   <div class="infobox_body">{TXT_SHOP_EXPORT_TIPS}</div>
 </div>
-{UPLOADER_CODE}
+{SHOP_IMPORT_CSV_UPLOADER_CODE}
 <script type="text/javascript">
 <!-- //
 {SELECT_LAYER_ONLOAD}

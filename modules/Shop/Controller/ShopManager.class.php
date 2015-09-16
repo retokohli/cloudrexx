@@ -640,8 +640,8 @@ class ShopManager extends ShopLibrary
             'NO_FILES' => (isset($jsnofiles)  ? $jsnofiles  : ''),
             'FILE_FIELDS_LIST' => (isset($fileFields) ? $fileFields : ''),
             'DB_FIELDS_LIST' => (isset($dblist) ? $dblist : ''),
-            'UPLOADER_CODE' => $uploader->getXHtml(),
-            'UPLOADER_ID' => $uploader->getId(),
+            'SHOP_IMPORT_CSV_UPLOADER_CODE' => $uploader->getXHtml(),
+            'SHOP_IMPORT_CSV_UPLOADER_ID' => $uploader->getId(),
             // Export: instructions added
 //            'SHOP_EXPORT_TIPS' => $tipText,
         ));
