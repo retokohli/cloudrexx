@@ -1154,14 +1154,14 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             // Those two checks may slow jstree a lot, so use only when needed
             "max_depth" : -2,
             "max_children" : -2,
-            // next ln will be neede as soon as we want to manage multiple sites in one contrexx install
+            // next ln will be neede as soon as we want to manage multiple sites in one cloudrexx install
             //"valid_children" : [ "site" ],
             "types" : {
                 // The default type
                 "default" : {
                     "valid_children" : "default"
                 }/*,
-                     // sites - i.e. manage multiple sites in one contrexx install
+                     // sites - i.e. manage multiple sites in one cloudrexx install
                      "site" : {
                      // can have pages in them
                      "valid_children" : [ "default" ],

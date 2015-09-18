@@ -1,4 +1,30 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Abstract class for user interfaces
  * @author Michael Ritter <michael.ritter@comvation.com>
@@ -13,7 +39,7 @@ namespace Cx\Core_Modules\Workbench\Model\Entity;
 abstract class UserInterface {
     
     /**
-     * Contrexx main class instance
+     * Cloudrexx main class instance
      * @var \Cx\Core\Core\Controller\Cx
      */
     protected $cx = null;
@@ -40,7 +66,7 @@ abstract class UserInterface {
      * Initialize this interface
      * 
      * Loads all commands
-     * @param \Cx\Core\Core\Controller\Cx $cx Contrexx main class
+     * @param \Cx\Core\Core\Controller\Cx $cx Cloudrexx main class
      */
     public function __construct($cx) {
         $this->cx = $cx;
@@ -66,9 +92,9 @@ abstract class UserInterface {
             //'addnav' => new AddNavCommand($this), // add a backend navigation entry
             //'rmnav' => new RmNavCommand($this), // remove a backend navigation entry
             //'mvnav' => new MvNavCommand($this), // move a backend navigation entry (remove and add new)
-            //'export' => new ExportCommand($this), // export contrexx files without workbench
-            //'publish' => new PublishCommand($this), // publish component to contrexx app repo (after successful unit testing)
-            //'update' => new UpdateCommand($this), // port a component to this version of contrexx
+            //'export' => new ExportCommand($this), // export cloudrexx files without workbench
+            //'publish' => new PublishCommand($this), // publish component to cloudrexx app repo (after successful unit testing)
+            //'update' => new UpdateCommand($this), // port a component to this version of cloudrexx
             //'upgrade' => new UpgradeCommand($this), // upgrade a component to current or current beta version
             //'push' => new PushCommand($this), // Pushes this installation to a FTP server
             'export' => new ExportCommand($this), // Create install/update package of current installation

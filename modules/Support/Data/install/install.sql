@@ -1,5 +1,5 @@
 # Insert Module into Modules table
-INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES ('100', 'Support', 'Comvation AG', 'TXT_MODULE_SUPPORT_DESCRIPTION', 'y', '1', '0', '1', '1');
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES ('100', 'Support', 'Cloudrexx AG', 'TXT_MODULE_SUPPORT_DESCRIPTION', 'y', '1', '0', '1', '1');
 
 # Insert Modul into components table
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES ('100', 'Support', 'module');

@@ -2,7 +2,7 @@
 INSERT INTO `contrexx_component` (`name`, `type`) VALUES ('LinkManager', 'core_module');
 # Step 2: Insert Module into Modules table
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`) 
-VALUES (95, 'LinkManager', 'Comvation', 'TXT_CORE_MODULE_LINKMANAGER_DESCRIPTION', 'y', 0, 0, 1);
+VALUES (95, 'LinkManager', 'Cloudrexx AG', 'TXT_CORE_MODULE_LINKMANAGER_DESCRIPTION', 'y', 0, 0, 1);
 # Step 3: Insert Menu table
 INSERT INTO `contrexx_backend_areas` (`parent_area_id`,`type`,`scope`,`area_name`,`is_active`,`uri`,`target`,`module_id`, `order_id`, `access_id`)
 VALUES (2, 'navigation', 'backend', 'TXT_CORE_MODULE_LINKMANAGER', 1, 'index.php?cmd=LinkManager', '_self', 95, 1, 189);

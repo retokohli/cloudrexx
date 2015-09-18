@@ -1,7 +1,7 @@
 /**
 
     Depends on Prototype >= 1.6.0.2 and scriptaculous >= 1.8.1
-    2008 by Stefan Heinemann, Comvation AG
+    2008 by Stefan Heinemann, Cloudrexx AG
     Last changed: 2008-11-05
 
 */
