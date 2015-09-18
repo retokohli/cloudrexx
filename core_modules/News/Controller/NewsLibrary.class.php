@@ -1643,7 +1643,7 @@ class NewsLibrary
                 $objTpl->touchBlock($nextLink);
             }
         }
-        if(!empty($previousNewsId) || !empty($nextNewsId)){ 
+        if (!empty($previousNewsId) || !empty($nextNewsId)) {
             $objTpl->touchBlock($parentBlock);
         }
     }
