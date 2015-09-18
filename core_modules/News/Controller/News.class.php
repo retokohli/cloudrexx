@@ -276,7 +276,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if (    !empty($this->arrSettings['news_use_tags'])
             &&  !empty($objResult->fields['enableTags'])
         ) {
-            $this->parseNewsTags($this->_objTpl, $newsid);
+            \JS::registerCss('core_modules/News/View/Style/Tags.css');
+            $this->parseNewsTags($this->_objTpl, $newsid, 'news_tag_list', true);
         }
         
         if (    !empty($this->arrSettings['use_related_news'])
@@ -651,6 +652,10 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $this->_objTpl->setVariable('NEWS_AUTHOR_DROPDOWNMENU', $authorMenu);
         }
         
+        if (!empty($this->arrSettings['news_use_tags'])) {
+            \JS::registerCss('core_modules/News/View/Style/Tags.css');
+        }
+
         //Filter by tag
         if (!empty($_REQUEST['tag'])) {
             $parameters['filterTag'] = $searchTag = contrexx_input2raw($_REQUEST['tag']);
@@ -659,14 +664,14 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             if (!empty($searchedTag['newsIds'])) {
                 $this->incrementViewingCount($searchedTagId);
                 $newsfilter .= ' AND n.`id` IN ('
-                    . implode(',', $searchedTag['newsIds'])
+                    . implode(',', contrexx_raw2db($searchedTag['newsIds']))
                     . ')';
                 $this->_objTpl->setVariable(array(
-                   'NEWS_FILTER_TAG_ID'   =>  $searchedTagId,
-                   'NEWS_FILTER_TAG_NAME' =>  ucfirst(current($searchedTag['tagList']))
+                   'NEWS_TAG_FILTER_ID'   => contrexx_raw2xhtml($searchedTagId),
+                   'NEWS_TAG_FILTER_NAME' => contrexx_raw2xhtml(ucfirst(current($searchedTag['tagList'])))
                 ));
-                if ($this->_objTpl->blockExists('tagFilterCont')) {
-                    $this->_objTpl->parse('tagFilterCont');
+                if ($this->_objTpl->blockExists('news_tag_filter_container')) {
+                    $this->_objTpl->parse('news_tag_filter_container');
                 }
             } else {
                 $validToShowList = false;
@@ -1292,20 +1297,21 @@ JSCODE;
         if (!empty($this->arrSettings['news_use_tags'])) {
             \JS::registerJS('lib/javascript/tag-it/js/tag-it.min.js');
             \JS::registerCss('lib/javascript/tag-it/css/tag-it.css');
+            \JS::registerCss('core_modules/News/View/Style/Tags.css');
             $this->registerTagJsCode();
-            if (    $this->_objTpl->blockExists('newsTags')
+            if (    $this->_objTpl->blockExists('news_tags')
                 &&  !empty($data['newsTags'])
             ) {
                 foreach ($data['newsTags'] as $newsTag) {
                     $this->_objTpl->setVariable(array(
                         'NEWS_TAGS' => contrexx_raw2xhtml($newsTag)
                     ));
-                    $this->_objTpl->parse('newsTags');
+                    $this->_objTpl->parse('news_tags');
                 }
             }
-            $this->_objTpl->touchBlock('newsTagsBlock');
+            $this->_objTpl->touchBlock('news_tags_container');
         } else {
-            $this->_objTpl->hideBlock('newsTagsBlock');
+            $this->_objTpl->hideBlock('news_tags_container');
         }
         
         \JS::activate('chosen');
@@ -1504,7 +1510,7 @@ EOF;
                 `validated` = '$enable',
                 `userid` = '$userid',
                 `changelog` = '$date',
-                `enable_tags`='" . $data['enableTags'] . "',
+                `enable_tags`='" . contrexx_raw2db($data['enableTags']) . "',
                 `enable_related_news`=" . $data['enableRelatedNews'] . ",
                 # the following are empty defaults for the text fields.
                 # text fields can't have a default and we need one in SQL_STRICT_TRANS_MODE
