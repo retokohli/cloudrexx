@@ -1709,6 +1709,7 @@ die("Failed to update the Cart!");
                 self::$objTemplate->hideBlock('shopProductOptionsRow');
                 self::$objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
+                $isUpload = false;
                 // Loop through the Attribute Names for the Product
                 foreach ($arrAttributes as $attribute_id => $objAttribute) {
                     $mandatory = false;
@@ -1923,11 +1924,14 @@ die("Failed to update the Cart!");
                           case Attribute::TYPE_UPLOAD_OPTIONAL:
                           case Attribute::TYPE_UPLOAD_MANDATORY:
 //                            $option_price = '&nbsp;';
-                            $selectValues .=
-                                '<input type="file" name="productOption['.$attribute_id.
+                            $isUpload = true;
+                            $selectValues .='<input type="input" name="productOption['.$attribute_id.
                                 ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
-                                '" style="width:180px;" />'.
-                                '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
+                                '" style="width:180px; float:left" />'.
+                                  '<input type="button" name="productOption['.$attribute_id.
+                                ']" onClick="getUploader(cx.jQuery(this));" data-input-id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
+                                '" value="'.$_ARRAYLANG['TXT_SHOP_CHOOSE_FILE'].'"/>'.
+                                  '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
                                 $option_price."</label><br />\n";
                             break;
                           case Attribute::TYPE_TEXTAREA_OPTIONAL:
@@ -2005,6 +2009,21 @@ die("Failed to update the Cart!");
                     self::$objTemplate->parse('shopProductOptionsValuesRow');
                 }
                 self::$objTemplate->parse('shopProductOptionsRow');
+                if ($isUpload) {
+                    //initialize the uploader
+                    $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); //create an uploader
+                    $uploader->setCallback('productOptionsUploaderCallback');
+                    $uploader->setOptions(array(
+                        'id' => 'productOptionsUploader',
+                        'allowed-extensions' => array('jpg', 'png', 'gif'),
+                        'data-upload-limit' => 1,
+                        'style' => 'display:none'
+                    ));
+                    self::$objTemplate->setVariable(array(
+                        'SHOP_PRODUCT_OPTIONS_UPLOADER_CODE' => $uploader->getXHtml(),
+                        'SHOP_PRODUCT_OPTIONS_UPLOADER_ID'   => $uploader->getId()
+                    ));
+                }
             }
         }
         return
@@ -4000,22 +4019,30 @@ die("Shop::processRedirect(): This method is obsolete!");
 
     /**
      * Upload a file to be associated with a product in the cart
-     * @param   integer   $productAttributeId   The Attribute ID the
-     *                                          file belongs to
+     * @param   string    $fileName             upload file name
+     *
      * @return  string                          The file name on success,
      *                                          the empty string otherwise
      * @author    Reto Kohli <reto.kohli@comvation.com>
      * @static
      */
-    static function uploadFile($productAttributeId)
+    static function uploadFile($fileName)
     {
         global $_ARRAYLANG;
 
-        if (empty($_FILES['productOption']['tmp_name'][$productAttributeId])) {
+        $uploaderId = isset($_REQUEST['productOptionsUploaderId'])
+                        ? contrexx_input2raw($_REQUEST['productOptionsUploaderId'])
+                        : '';
+
+        if (empty($uploaderId) || empty($fileName)) {
             return '';
         }
-        $uploadFileName = $_FILES['productOption']['tmp_name'][$productAttributeId];
-        $originalFileName = $_FILES['productOption']['name'][$productAttributeId];
+        $objSession = \cmsSession::getInstance();
+        $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($tmpFile)) {
+            return '';
+        }
+        $originalFileName = $fileName;
         $arrMatch = array();
         $filename = '';
         $fileext = '';
@@ -4030,11 +4057,17 @@ die("Shop::processRedirect(): This method is obsolete!");
             || $fileext == '.png') {
             $newFileName = $filename.'['.uniqid().']'.$fileext;
             $newFilePath = Order::UPLOAD_FOLDER.$newFileName;
-            if (move_uploaded_file($uploadFileName,
-                       \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath() . $newFilePath)) {
-                return $newFileName;
+            //Move the uploaded file to the path specified in the variable $newFilePath
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($tmpFile);
+                if ($objFile->move(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath() . '/' . $newFilePath, false)) {
+                   return $newFileName;
+                } else {
+                    \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);
+                }
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
             }
-            \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);
         } else {
             \Message::error(sprintf(
                 $_ARRAYLANG['TXT_SHOP_ERROR_WRONG_FILETYPE'], $fileext));
