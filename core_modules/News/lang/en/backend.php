@@ -454,6 +454,16 @@ $_ARRAYLANG['TXT_NEWS_PREVIOUS_TITLE_DESCRITION'] = "Previous news title";
 
 $_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'] = "Next news link";
 $_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Next news title";
-
-
-?>
+$_ARRAYLANG['TXT_NEWS_USER_ID_DESCRIPTION'] = 'ID of the associated user account';
+$_ARRAYLANG['TXT_NEWS_USERNAME_DESCRIPTION'] = 'Username of the associated user account';
+$_ARRAYLANG['TXT_NEWS_USER_PROFILE_ATTRIBUTE_DESCRIPTION'] = 'Profile data of the associated user account';
+$_ARRAYLANG['TXT_NEWS_TEASER_TEXT_ROW_DESCRIPTION'] = 'Optional tag to display the news teaser text.';
+$_ARRAYLANG['TXT_NEWS_NEWS_COMMENT_COUNT_ROW_DESCRIPTION'] = 'Optional tag to display the number of comments.';
+$_ARRAYLANG['TXT_NEWS_TEXT_ROW_DESCRIPTION'] = 'This block will be hidden if the news is set to redirect type';
+$_ARRAYLANG['TXT_NEWS_REDIRECT_ROW_DESCRIPTION'] = 'This block will be visible only if the news is set to redirect type';
+$_ARRAYLANG['TXT_NEWS_TAGS_ROW_DESCRIPTION'] = 'Block to list the tags';
+$_ARRAYLANG['TXT_NEWS_TAG_NAME_DESCRIPTION'] = 'Name of the tag';
+$_ARRAYLANG['TXT_NEWS_TAG_LINK_DESCRIPTION'] = 'Linked name of the tag';
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'] = 'Block to display the author of a comment';
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'] = 'Submit date of the comment';
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'] = 'Title of the comment';

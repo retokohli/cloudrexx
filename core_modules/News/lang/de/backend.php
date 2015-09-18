@@ -380,3 +380,17 @@ $_ARRAYLANG['TXT_NEWS_NO_CATEGORY'] = "Weisen Sie der Meldung eine Rubrik zu.";
 $_ARRAYLANG['TXT_NEWS_NO_TITLE_AND_CATEGORY'] = "Setzen Sie einen Titel und weisen Sie die Meldung einer Rubrik zu";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_ID_DESCRIPTION'] = "ID der News Rubrik";
 $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
+
+$_ARRAYLANG['TXT_NEWS_USER_ID_DESCRIPTION'] = 'ID des dazugehörigen Benutzerkontos';
+$_ARRAYLANG['TXT_NEWS_USERNAME_DESCRIPTION'] = 'Benutzername des dazugehörigen Benutzerkontos';
+$_ARRAYLANG['TXT_NEWS_USER_PROFILE_ATTRIBUTE_DESCRIPTION'] = 'Profildaten des dazugehörigen Benutzerkontos';
+$_ARRAYLANG['TXT_NEWS_TEASER_TEXT_ROW_DESCRIPTION'] = 'Optionaler Block zur Darstellung des News Container Textes.';
+$_ARRAYLANG['TXT_NEWS_NEWS_COMMENT_COUNT_ROW_DESCRIPTION'] = 'Optionaler Block zur Darstellung der Anzahl Kommentare.';
+$_ARRAYLANG['TXT_NEWS_TEXT_ROW_DESCRIPTION'] = 'Bei News Artikel vom Typ "Weiterleitung" wird dieser Block nicht angezeigt';
+$_ARRAYLANG['TXT_NEWS_REDIRECT_ROW_DESCRIPTION'] = 'Dieser Block wird nur bei News Artikel vom Typ "Weiterleitung" angezeigt';
+$_ARRAYLANG['TXT_NEWS_TAGS_ROW_DESCRIPTION'] = 'Block zur Auflistung der Tags';
+$_ARRAYLANG['TXT_NEWS_TAG_NAME_DESCRIPTION'] = 'Name des Tags';
+$_ARRAYLANG['TXT_NEWS_TAG_LINK_DESCRIPTION'] = 'Verlinkter Name des Tags';
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'] = 'Block zur Darstellung des Autors eines Kommentars';
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'] = 'Eingabedatum des Kommentars';
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'] = 'Titel des Kommentars';
