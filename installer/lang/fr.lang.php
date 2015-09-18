@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Installer language file
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  installer
  * @todo        Edit PHP DocBlocks!
  */
@@ -28,7 +53,7 @@ $_ARRLANG['TXT_HELP'] = "Aide";
 
 // welcome
 $_ARRLANG['TXT_WELCOME'] = "Bienvenue";
-$_ARRLANG['TXT_WELCOME_MSG'] = "<b>Bienvenue dans le programme d'installation de Contrexx</b><br />Vous êtes sur le point d'installer version [VERSION] de [NAME].";
+$_ARRLANG['TXT_WELCOME_MSG'] = "<b>Bienvenue dans le programme d'installation de Cloudrexx</b><br />Vous êtes sur le point d'installer version [VERSION] de [NAME].";
 $_ARRLANG['TXT_LANGUAGE'] = "Langue";
 $_ARRLANG['TXT_NEW_VERSION'] = "Une version plus récente de [NAME] a été publiée.<br />Dernière version disponible: [VERSION]";
 
@@ -46,7 +71,7 @@ $_ARRLANG['TXT_FILL_OUT_ALL_FIELDS'] = "Veuillez compléter tous les champs!";
 // license
 $_ARRLANG['TXT_READ_LICENCE'] = "Veuillez lire/accepter le contrat de licence pour continuer l'installation";
 $_ARRLANG['TXT_MUST_ACCEPT_LICENCE'] = "Vous devez accepter le contrat de licence pour pouvoir continuer l'installation!";
-$_ARRLANG['TXT_ACCEPT_LICENSE'] = "J'accepte le contrat de licence Contrexx";
+$_ARRLANG['TXT_ACCEPT_LICENSE'] = "J'accepte le contrat de licence Cloudrexx";
 
 // requirements
 $_ARRLANG['TXT_SOFTWARE_REQUIREMENTS'] = "Configuration logicielle requise";
@@ -75,8 +100,8 @@ $_ARRLANG['TXT_PDO_SUPPORT_REQUIRED'] = "L'intallation requière l'extension PDO
 $_ARRLANG['TXT_GD_VERSION_REQUIRED'] = "L'installation requière au minimum la version [VERSION] de l'extension GD de PHP!";
 $_ARRLANG['TXT_ALLOW_URL_FOPEN_FOR_RSS_REQUIRED'] = "Le module <i>Syndication aux flux de nouvelles</i> ne fonctionnera pas tant que la directive \"allow_url_fopen\" de la configuration PHP sera désactivée!";
 $_ARRLANG['TXT_FTP_SUPPORT_REQUIRED'] = "Le support FTP pour PHP est indispensable à l'installation automatique (PHP fonctionne en Safemode). Hors, elle est interdite sur ce serveur. Veuillez devez soit modifier la configuration PHP avec l'option ('--enable-ftp'), soit installer le système manuellement.";
-$_ARRLANG['TXT_IGNORE_PHP_REQUIREMENT'] = "Vous pouvez malgré tout installer Contrexx&reg; sous votre propre responsabilité, mais, dans ce cas, l'éditeur décline toute responsabilité en cas de dysfonctionnement.";
-$_ARRLANG['TXT_ACCEPT_NO_SLA'] = "Installer malgré tout Contrexx&reg; sous ces conditions";
+$_ARRLANG['TXT_IGNORE_PHP_REQUIREMENT'] = "Vous pouvez malgré tout installer Cloudrexx&reg; sous votre propre responsabilité, mais, dans ce cas, l'éditeur décline toute responsabilité en cas de dysfonctionnement.";
+$_ARRLANG['TXT_ACCEPT_NO_SLA'] = "Installer malgré tout Cloudrexx&reg; sous ces conditions";
 
 // configuration
 $_ARRLANG['TXT_FTP_PATH_CONFIG'] = "Configuration du chemin FTP";
@@ -89,9 +114,9 @@ $_ARRLANG['TXT_HOSTNAME'] = "Serveur";
 $_ARRLANG['TXT_DATABASE_NAME'] = "Nom de la base de données";
 $_ARRLANG['TXT_TABLE_PREFIX'] = "Préfixe des tables";
 $_ARRLANG['TXT_FTP_PATH'] = "Chemin du dossier racine";
-$_ARRLANG['TXT_FTP_PATH_DESCRIPTION'] = "Saisir ici l'emplacement du serveur FTP où vous avez déposé les fichiers du CMS Contrexx.";
+$_ARRLANG['TXT_FTP_PATH_DESCRIPTION'] = "Saisir ici l'emplacement du serveur FTP où vous avez déposé les fichiers du CMS Cloudrexx.";
 $_ARRLANG['TXT_FTP'] = "FTP";
-$_ARRLANG['TXT_DOCUMENT_ROOT_NEEDED'] = "Veuillez svp indiquer le dossier racine  des fichiers Contrexx sur votre serveur Web!";
+$_ARRLANG['TXT_DOCUMENT_ROOT_NEEDED'] = "Veuillez svp indiquer le dossier racine  des fichiers Cloudrexx sur votre serveur Web!";
 $_ARRLANG['TXT_DB_HOSTNAME_NEEDED'] = "Veuillez svp indiquer le nom du serveur de la base de données!";
 $_ARRLANG['TXT_DB_USERNAME_NEEDED'] = "Veuillez svp saisir un nom d'utilisateur valide, avec lequel vous accéderez à la base de données!";
 $_ARRLANG['TXT_DB_DATABASE_NEEDED'] = "Veuillez svp saisir un nom de base de donnée, existante ou à créer!";
@@ -122,7 +147,7 @@ $_ARRLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "La base de données \"[DATABASE]\" 
 $_ARRLANG['TXT_COULD_NOT_CREATE_DATABASE'] = "Impossible de créer la base de données!";
 $_ARRLANG['TXT_CANNOT_CONNECT_TO_FTP_HOST'] = "Impossible d'établir une connexion au serveur FTP!";
 $_ARRLANG['TXT_FTP_AUTH_FAILED'] = "Authentification avec ces identifiants refusée par le serveur FTP!";
-$_ARRLANG['TXT_FTP_PATH_DOES_NOT_EXISTS'] = "Le chemin du dossier indiqué pour le CMS Contrexx n'existe pas sur le serveur FTP!";
+$_ARRLANG['TXT_FTP_PATH_DOES_NOT_EXISTS'] = "Le chemin du dossier indiqué pour le CMS Cloudrexx n'existe pas sur le serveur FTP!";
 $_ARRLANG['TXT_COULD_NOT_READ_SQL_DUMP_FILE'] = "Impossible d'ouvrir le fichier Dump SQL \"[FILENAME]\"!";
 $_ARRLANG['TXT_SQL_QUERY_ERROR'] = "Erreur de la requête SQL: ".
 $_ARRLANG['TXT_CORRECT_THE_FOLLOWING_ERROR'] = "Veuillez corriger les erreurs suivantes, puis actualiser cette page pour recommencer l'installation:";
@@ -144,14 +169,14 @@ $_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE'] = ".htaccess created";
 $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] = "web.config created";
 $_ARRLANG['TXT_CREATE_VERSION_FILE'] = "Fichier de version créé";
 $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Impossible de détecter toutes les tables!";
-$_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Le serveur de base de données ne supporte pas UTF-8! Veuillez utiliser une Version de Contrexx avec le jeu de caractère latin1!";
-$_ARRLANG['TXT_ENGINGE_NOT_SUPPORTED'] = 'Le serveur de base de données ne supporte pas InnoDB. Contrexx ne peux pas être installé!';
+$_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Le serveur de base de données ne supporte pas UTF-8! Veuillez utiliser une Version de Cloudrexx avec le jeu de caractère latin1!";
+$_ARRLANG['TXT_ENGINGE_NOT_SUPPORTED'] = 'Le serveur de base de données ne supporte pas InnoDB. Cloudrexx ne peux pas être installé!';
 $_ARRLANG['TXT_COULD_NOT_SET_DATABASE_CHARSET'] = "Impossible de paramétrer la collation de la base de données!";
 $_ARRLANG['TXT_COULD_NOT_SET_INSTALLATIONID'] = "Le ID d'installation n'a pa pu être enrgistré.";
 $_ARRLANG['TXT_COULD_NOT_SET_TIMEZONE'] = "The timezone could not be set.";
 $_ARRLANG['TXT_CONFIG_DATABASE'] = "Configuration de la base de données";
 $_ARRLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "The file %s can't be updated due it's write-protected! Please remove the write-protection for letting the system working properly.";
-$_ARRLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Contrexx specific directives!";
+$_ARRLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Cloudrexx specific directives!";
 $_ARRLANG['TXT_NO_WRITE_PERMISSION'] = "The file \"%s\" could not be created or is not writable.<br />Please create the file manually on the web server in the root directory of your website and give the file write permissions or contact your server administrator.";
 
 // system configuration
@@ -196,7 +221,7 @@ $_ARRLANG['TXT_COULD_NOT_CREATE_ADMIN_ACCOUNT'] = "Impossible de créer le compt
 
 // termination
 $_ARRLANG['TXT_CONGRATULATIONS'] = "Félicitations";
-$_ARRLANG['TXT_CONGRATULATIONS_MESSAGE'] = "Le CMS Contrexx [VERSION] [EDITION] est correctement installé.";
+$_ARRLANG['TXT_CONGRATULATIONS_MESSAGE'] = "Le CMS Cloudrexx [VERSION] [EDITION] est correctement installé.";
 $_ARRLANG['TXT_INTERNET_SITE_FOR_VISITORS'] = "Adresse Internet pour les visiteurs";
 $_ARRLANG['TXT_INTERNET_SITE_MESSAGE'] = "Le site est dès à présent disponible à l'adresse suivante: <br /><b>[WEB_URL]</b>";
 $_ARRLANG['TXT_ADMIN_SITE'] = "Console d'administration";

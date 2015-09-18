@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Contact
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  */
 
@@ -14,10 +39,10 @@ namespace Cx\Core_Modules\Contact\Controller;
 /**
  * ContactException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
  * @version     1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  * @todo        Edit PHP DocBlocks!
  */
@@ -30,10 +55,10 @@ class ContactException extends \Exception {}
  * It sends the contact email(s) and uploads data (optional)
  * Ex. <FORM name="form1" action="index.php?section=Contact&cmd=thanks" method="post">
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  */
 class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
@@ -74,7 +99,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
     /**
      * we're in legacy mode if true.
      * this means file uploads are coming directly from inputs, rather than being
-     * handled by the contrexx upload core-module.
+     * handled by the cloudrexx upload core-module.
      * Q: What is the legacyMode for?
      * A: With legacyMode we support the old submission forms that hadn't
      *    been migrated to the new fileUploader structure.
@@ -244,10 +269,9 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
 
                 $this->objTemplate->setVariable(array(
-                    $formId.'_FORM_NAME'    => wordwrap($this->arrForms[$formId]['lang'][$_LANGID]['name'], 90, "<br/>\n", true),
+                    $formId.'_FORM_NAME'    => contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$_LANGID]['name']),
                     $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
-// TODO: why do we wordwrap here?
-                    $fieldId.'_LABEL'       => ($arrField['lang'][$_LANGID]['name'] != "") ? wordwrap($arrField['lang'][$_LANGID]['name'], 90, "<br/>\n", true) : "&nbsp;"
+                    $fieldId.'_LABEL'       => ($arrField['lang'][$_LANGID]['name'] != "") ? $arrField['lang'][$_LANGID]['name'] : "&nbsp;"
                 ));
 
                 /*

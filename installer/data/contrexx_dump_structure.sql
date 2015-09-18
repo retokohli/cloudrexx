@@ -3379,13 +3379,6 @@ CREATE TABLE `contrexx_sessions` (
   PRIMARY KEY (`sessionid`),
   KEY `LastUpdated` (`lastupdated`)
 ) ENGINE=InnoDB;
-CREATE TABLE `contrexx_settings` (
-  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `setname` varchar(250) NOT NULL DEFAULT '',
-  `setvalue` text NOT NULL,
-  `setmodule` tinyint(2) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`setid`)
-) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_settings_image` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,

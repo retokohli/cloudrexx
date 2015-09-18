@@ -1,13 +1,38 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Pricelist
  *
  * Creates a PDF document with product price information
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <gwanun@astalavista.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -17,10 +42,10 @@ namespace Cx\Modules\Shop\Controller;
  * Pricelist
  *
  * Creates a PDF document with product price information
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <gwanun@astalavista.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Font, color and basic layout should be configurable in the backend
  */
@@ -477,19 +502,22 @@ class PriceList
         $arrCategoryName = ShopCategories::getNameArray();
         $arrOutput = array();
         foreach ($arrProduct as $product_id => $objProduct) {
-            $category_id = $objProduct->category_id();
-            $category_name = self::decode($arrCategoryName[$category_id]);
+            $categoryIds = explode(',', $objProduct->category_id());
+            $arrCategoryNames = array();
+            foreach ($categoryIds as $categoryId){
+               $arrCategoryNames[] = $arrCategoryName[$categoryId];
+            }
 //$objProduct = new Product();
             $arrOutput[$product_id] = array(
                 'product_name' => self::decode($objProduct->name()),
-                'category_name' => $category_name,
+                'category_name' => self::decode(implode(', ', $arrCategoryNames)),
                 'product_code' => self::decode($objProduct->code()),
                 'product_id' => self::decode($objProduct->id()),
                 'price' =>
                     ($objProduct->discount_active()
-                        ? Currency::formatPrice($objProduct->price())
-                        : "S ".Currency::formatPrice($objProduct->discountprice())).
-                    ' '.$currency_symbol,
+                        ? "S " . Currency::formatPrice($objProduct->discountprice())
+                        : Currency::formatPrice($objProduct->price())) .
+                    ' ' . $currency_symbol,
             );
         }
         $objPdf->ezTable($arrOutput, array(

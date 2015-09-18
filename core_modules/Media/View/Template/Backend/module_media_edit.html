@@ -359,22 +359,23 @@
     function showSaveAs() {
         if ($J.browser.msie && ($J.browser.version == '7.0')) {
             width = 400;
-            height = 140;
+            height = 250;
         } else {
             width = 390;
-            height = 120;
+            height = 230;
         }
         
         cx.ui.dialog({
+            resizable: false,
             width: width,
             height: height,
             title: '{TXT_MEDIA_CONFIRM_REPLACE_IMAGE}',
-            content: '<div id="media_image_save_as">' + 
-                         '<input id="save_button" type="submit" value="{TXT_MEDIA_REPLACE}" onclick="saveImage();" /><br />' + 
-                         '<input id="save_as_button" type="submit" value="{TXT_MEDIA_SAVE_NEW_COPY}" onclick="checkImageName($J(\'#save_as_value\').val()); return false;" />' + 
-                         '<input id="save_as_value" type="text" name="newName" id="new_name" value="' + $J('#org_name').val() + '" /><span id="save_as_ext">. ' + $J('#org_ext').val() + '</span>' + 
-                     '</div>'
-        });
+            content: '<div id="media_image_save_as">' +
+            '<input id="save_button" type="submit" value="{TXT_MEDIA_REPLACE}" onclick="saveImage();" /><div>- {TXT_MEDIA_OR} -</div>' +
+            '<div><input id="save_as_value" type="text" name="newName" id="new_name" value="' + $J('#org_name').val() + '" /><span id="save_as_ext">. ' + $J('#org_ext').val() + '</span>' +
+            '</div><input id="save_as_button" type="submit" value="{TXT_MEDIA_SAVE_NEW_COPY}" onclick="checkImageName($J(\'#save_as_value\').val()); return false;" />' +
+            '</div>',
+         });
     }
     
     /**

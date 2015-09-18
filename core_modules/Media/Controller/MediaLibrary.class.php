@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media Library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_media
  * @todo        Edit PHP DocBlocks!
  */
@@ -14,11 +39,11 @@ namespace Cx\Core_Modules\Media\Controller;
  * Media Library
  *
  * LibClass to manage cms media manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version       1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_media
  */
 class MediaLibrary
@@ -497,9 +522,7 @@ class MediaLibrary
             if (!$this->_objImage->saveNewImage($this->path.$this->fileLog, true)) {
                 throw new \Exception('Is not a valid image or image type');
             }
-            
-            // Update (overwrite) thumbnail
-            $this->_createThumbnail($this->path.$this->fileLog, true);
+
             
             // If no error occured, return true
             return $this->fileLog;
@@ -556,32 +579,6 @@ class MediaLibrary
             return $type;
         } else {
             return false;
-        }
-    }
-
-
-    // creates an image thumbnail
-    function _createThumbnail($file, $overwrite = false)
-    {
-        global $_ARRAYLANG;
-
-        $tmpSize    = getimagesize($file);
-        $thumbWidth = $this->thumbHeight / $tmpSize[1] * $tmpSize[0];
-        $thumb_name = \ImageManager::getThumbnailFilename($file);
-
-        $tmp = new \ImageManager();
-        $tmp->loadImage($file);
-        $tmp->resizeImage($thumbWidth, $this->thumbHeight, $this->thumbQuality);
-        $tmp->saveNewImage($thumb_name, $overwrite);
-
-        if (!file_exists($thumb_name)) {
-            $img     = imagecreate(100, 50);
-            $colBody = imagecolorallocate($img, 255, 255, 255);
-            ImageFilledRectangle($img, 0, 0, 100, 50, $colBody);
-            $colFont = imagecolorallocate($img, 0, 0, 0);
-            imagettftext($img, 10, 0, 18, 29, $colFont, self::_getIconPath().'arial.ttf', 'no preview');
-            imagerectangle($img, 0, 0, 99, 49, $colFont);
-            imagejpeg($img, $thumb_name, $this->thumbQuality);
         }
     }
 
@@ -1271,8 +1268,8 @@ END;
         }
 
         //remeber the uploaded files
-        $_SESSION["media_upload_files_$uploadId"] = $arrFiles;
-
+        $files = $_SESSION["media_upload_files_$uploadId"];
+        $_SESSION["media_upload_files_$uploadId"] = array_merge($arrFiles, ($files ? $files->toArray() : []));
         /* unwanted files have been deleted, unallowed filenames corrected.
            we can now simply return the desired target path, as only valid
            files are present in $tempPath                                   */

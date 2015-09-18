@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Javascript
  *
  * @author      Stefan Heinemann <sh@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -14,8 +39,8 @@
  * Javascript
  *
  * @author      Stefan Heinemann <sh@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -54,7 +79,7 @@ class JS
     /**
      * Available JS libs
      * These JS files are per default available
-     * in every Contrexx CMS.
+     * in every Cloudrexx CMS.
      * The format is the following:
      * array(
      *      scriptname : array (
@@ -279,7 +304,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'jquery-tools', // depends on jquery
             ),
             'lazyDependencies' => array('jqueryui'),
-            //we insert the specialCode for the Contrexx-API later in getCode()
+            //we insert the specialCode for the Cloudrexx-API later in getCode()
         ),
         'jstree' => array(
             'jsfiles' => array(
@@ -421,7 +446,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'lib/javascript/bootbox.min.js'
             ),
             'cssfiles' => array(
-                'core_modules/MediaBrowser/View/Style/mediabrowser.css'
+                'core_modules/MediaBrowser/View/Style/MediaBrowser.css'
             ),
             'dependencies' => array('twitter-bootstrap' => '3.2.0', 'cx'),
             'specialcode' => 'if (typeof cx.variables.get(\'jquery\', \'mediabrowser\') == \'undefined\'){
@@ -492,10 +517,10 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 
     /**
      * Array holding certain scripts we do not want the user to include - we provide
-     * the version supplied with Contrexx instead.
+     * the version supplied with Cloudrexx instead.
      *
      * This was introduced to prevent the user from overriding the jQuery plugins included
-     * by the Contrexx javascript framework.
+     * by the Cloudrexx javascript framework.
      *
      * @see registerFromRegex()
      * @var array associative array ( '/regexstring/' => 'componentToIncludeInstead' )
@@ -755,7 +780,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 if (isset($data['makecallback'])) {
                     self::$data['makecallback']();
                 }
-                // Special case contrexx-API: fetch specialcode if activated
+                // Special case cloudrexx-API: fetch specialcode if activated
                 if ($name == 'cx') {
                     $jsScripts[] = self::makeSpecialCode(
                         array(ContrexxJavascript::getInstance()->initJs()));
