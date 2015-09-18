@@ -15,10 +15,10 @@ namespace Cx\Core\Model;
 /**
  * Exception class for recursive array access
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Adrian Berger <adrian.berger@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 class RecursiveArrayAccessException extends \Exception {}
@@ -175,7 +175,7 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
     public function recursiveOffsetExists($offset, $delimiter = '/') {
         try {
             $this->recursiveOffsetGet($offset, $delimiter);
-        } catch(\Cx\Core\Model\RecursiveArrayAccessException $e){
+        } catch(RecursiveArrayAccessException $e){
             return false;
         }
         return true;
@@ -216,7 +216,7 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
             // if the array-index is not set, we throw an RecursiveArrayAccessException.
             // recursiveOffsetExists() will catch this
             if (!isset($array[$offsetPart])) {
-                throw new \Cx\Core\Model\RecursiveArrayAccessException('RecursiveArrayOffset "' . $offset . '" could not be found');
+                throw new RecursiveArrayAccessException('RecursiveArrayOffset "' . $offset . '" could not be found');
             }
             $array = $array[$offsetPart];
         }
