@@ -24,7 +24,6 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
-
 /**
  * News
  *
@@ -203,39 +202,23 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $lastUpdate         = $objResult->fields['changelog'];
         $text               = $objResult->fields['text'];
         $redirect           = contrexx_raw2xhtml($objResult->fields['redirect']);
-        $sourceHref         = contrexx_raw2xhtml($objResult->fields['source']);
-        $url1Href           = contrexx_raw2xhtml($objResult->fields['url1']);
-        $url2Href           = contrexx_raw2xhtml($objResult->fields['url2']);
         $source             = contrexx_raw2xhtml($objResult->fields['source']);
         $url1               = contrexx_raw2xhtml($objResult->fields['url1']);
         $url2               = contrexx_raw2xhtml($objResult->fields['url2']);
         $newsUrl            = '';
         $newsSource         = '';
-        $newsLastUpdate     = '';
+        $newsLastUpdate     = !empty($lastUpdate)
+                               ? $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />'.date(ASCMS_DATE_FORMAT, $lastUpdate)
+                               : '';
 
         if (!empty($url1)) {
-          $strUrl1 = contrexx_raw2xhtml($objResult->fields['url1']);
-            if (strlen($strUrl1) > 40) {
-                $strUrl1 = substr($strUrl1,0,26).'...'.substr($strUrl1,(strrpos($strUrl1,'.')));
-            }
-            $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'].'<br /><a target="_blank" href="'.$url1Href.'" title="'.$url1.'">'.$strUrl1.'</a><br />';
+            $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] . '<br />' . $this->getNewsLink($url1) . '<br />';
         }
         if (!empty($url2)) {
-          $strUrl2 = contrexx_raw2xhtml($objResult->fields['url2']);
-            if (strlen($strUrl2) > 40) {
-                $strUrl2 = substr($strUrl2,0,26).'...'.substr($strUrl2,(strrpos($strUrl2,'.')));
-            }
-            $newsUrl .= '<a target="_blank" href="'.$url2Href.'" title="'.$url2.'">'.$strUrl2.'</a><br />';
+            $newsUrl .= $this->getNewsLink($url2).'<br />';
         }
         if (!empty($source)) {
-          $strSource = contrexx_raw2xhtml($objResult->fields['source']);
-            if (strlen($strSource) > 40) {
-                $strSource = substr($strSource,0,26).'...'.substr($strSource,(strrpos($strSource,'.')));
-            }
-            $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'].'<br /><a target="_blank" href="'.$sourceHref.'" title="'.$source.'">'.$strSource.'</a><br />';
-        }
-        if (!empty($lastUpdate)) {
-            $newsLastUpdate = $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />'.date(ASCMS_DATE_FORMAT,$objResult->fields['changelog']);
+            $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'] . '<br />'. $this->getNewsLink($source) . '<br />';
         }
 
         $this->newsTitle = $objResult->fields['title'];
@@ -243,18 +226,9 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $newsTeaser = nl2br($objResult->fields['teaser_text']);
         \LinkGenerator::parseTemplate($newsTeaser);
 
-        $objSubResult = $objDatabase->Execute('SELECT count(`id`) AS `countComments` FROM `'.DBPREFIX.'module_news_comments` WHERE `newsid` = '.$newsid);
-        //Get the Category list
         $newsCategories = $this->getCategoriesByNewsId($newsid);
-        if (!empty($newsCategories) && $this->_objTpl->blockExists('news_category_list')) {
-            foreach ($newsCategories as $catId => $catTitle) {
-                $this->_objTpl->setVariable(array(
-                    'NEWS_CATEGORY_TITLE'   => contrexx_raw2xhtml($catTitle),
-                    'NEWS_CATEGORY_ID'      => contrexx_input2int($catId)
-                ));
-                $this->_objTpl->parse('news_category');
-            }
-        }
+        // Parse the Category list
+        $this->parseCategoryList($this->_objTpl, $newsCategories);
         
         $this->_objTpl->setVariable(array(
            'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
@@ -266,20 +240,16 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
            'NEWS_SOURCE'         => $newsSource,
            'NEWS_URL'            => $newsUrl,
            'NEWS_CATEGORY_NAME'  => implode(', ', contrexx_raw2xhtml($newsCategories)),
-           'NEWS_COUNT_COMMENTS' => ($newsCommentActive && $this->arrSettings['news_comments_activated']) ? contrexx_raw2xhtml($objSubResult->fields['countComments'].' '.$_ARRAYLANG['TXT_NEWS_COMMENTS']) : '',
 // TODO: create a new methode from which we can fetch the name of the 'type' (do not fetch it from within the same SQL query of which we collect any other data!)
            //'NEWS_TYPE_NAME' => ($this->arrSettings['news_use_types'] == 1 ? htmlentities($objResult->fields['typename'], ENT_QUOTES, CONTREXX_CHARSET) : '')
         ));
 
-        if (!$newsCommentActive || !$this->arrSettings['news_comments_activated']) {
-            if ($this->_objTpl->blockExists('news_comments_count')) {
-                $this->_objTpl->hideBlock('news_comments_count');
-            }
-        }        
-
         if ($this->arrSettings['news_use_teaser_text'] != '1' && $this->_objTpl->blockExists('news_use_teaser_text')) {
             $this->_objTpl->hideBlock('news_use_teaser_text');
         }
+
+        // Parse the news comments count
+        $this->parseNewsCommentsCount($this->_objTpl, $newsid, $newsCommentActive);
 
         // parse author
         self::parseUserAccountData($this->_objTpl, $objResult->fields['authorid'], $objResult->fields['author'], 'news_author');
@@ -287,8 +257,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         self::parseUserAccountData($this->_objTpl, $objResult->fields['publisherid'], $objResult->fields['publisher'], 'news_publisher');
 
         // show comments
-        $this->parseMessageCommentForm($newsid, $newstitle, $newsCommentActive);
-        $this->parseCommentsOfMessage($newsid, $newsCommentActive);
+        $this->parseMessageCommentForm($this->_objTpl, $newsid, $newstitle, $newsCommentActive);
+        $this->parseCommentsOfMessage($this->_objTpl, $newsid, $newsCommentActive);
 
         // Show related_messages
         $this->parseRelatedMessagesOfMessage($newsid, 'category', array_keys($newsCategories));
@@ -342,42 +312,11 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if ($this->_objTpl->blockExists('news_details_previous_next_links')) {
             //Register the RelatedLinks.css for styling the previous and next link
             \JS::registerCss('core_modules/News/View/Style/RelatedLinks.css');
-            
             $this->parseNextAndPreviousLinks($this->_objTpl);
         }
 
-        if (empty($redirect)) {
-            $text = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $text);
-            $newsTeaser = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $newsTeaser);
-            \LinkGenerator::parseTemplate($text);
-            $this->_objTpl->setVariable('NEWS_TEXT', $text);
-            if ($this->_objTpl->blockExists('news_text')) {
-                $this->_objTpl->parse('news_text');
-            }
-            if ($this->_objTpl->blockExists('news_redirect')) {
-                $this->_objTpl->hideBlock('news_redirect');
-            }
-        } else {
-            if (\FWValidator::isUri($redirect)) {
-                $redirectName = preg_replace('#^https?://#', '', $redirect);
-            //} elseif (\FWValidator::isEmail($redirect)) {
-                //$redirectName
-            } else {
-                $redirectName = basename($redirect);
-            }
-
-            $this->_objTpl->setVariable(array(
-                'TXT_NEWS_REDIRECT_INSTRUCTION' => $_ARRAYLANG['TXT_NEWS_REDIRECT_INSTRUCTION'],
-                'NEWS_REDIRECT_URL'             => $redirect,
-                'NEWS_REDIRECT_NAME'            => $redirectName,
-            ));
-            if ($this->_objTpl->blockExists('news_redirect')) {
-                $this->_objTpl->parse('news_redirect');
-            }
-            if ($this->_objTpl->blockExists('news_text')) {
-                $this->_objTpl->hideBlock('news_text');
-            }
-        }
+        // The news_text block will be hidden if the news is set to redirect type
+        $this->showNewsTextOrRedirectLink($this->_objTpl, $text, $redirect);
 
         $this->countNewsMessageView($newsid);
         $objResult->MoveNext();
@@ -421,183 +360,6 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                          news_id  = '$newsMessageId'";
         $objDatabase->Execute($query);
     }
-
-    /**
-     * Lists all active comments of the news message specified by $messageId
-     *
-     * @param   integer News message-ID 
-     * @global  ADONewConnection
-     */
-    private function parseCommentsOfMessage($messageId, $newsCommentActive)
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        // abort if template block is missing
-        if (!$this->_objTpl->blockExists('news_comments')) {
-            return;
-        }
-
-        // abort if commenting system is not active
-        if (!$this->arrSettings['news_comments_activated']) {
-            $this->_objTpl->hideBlock('news_comments');
-            return;
-        }
-
-        // abort if comment deactivated for this news
-        if (!$newsCommentActive) {
-            return;
-        }
-
-        $query = '  SELECT      `title`,
-                                `date`,
-                                `poster_name`,
-                                `userid`,
-                                `text`
-                    FROM        `'.DBPREFIX.'module_news_comments`
-                    WHERE       `newsid` = '.$messageId.' AND `is_active` = "1"
-                    ORDER BY    `date` DESC';
-
-        $objResult = $objDatabase->Execute($query);
-
-        // no comments for this message found
-        if (!$objResult || $objResult->EOF) {
-            if ($this->_objTpl->blockExists('news_no_comment')) {
-                $this->_objTpl->setVariable('TXT_NEWS_COMMENTS_NONE_EXISTING', $_ARRAYLANG['TXT_NEWS_COMMENTS_NONE_EXISTING']);
-                $this->_objTpl->parse('news_no_comment');
-            }
-
-            $this->_objTpl->hideBlock('news_comment_list');
-            $this->_objTpl->parse('news_comments');
-
-            return;
-        }
-
-// TODO: Add AJAX-based paging
-        /*$count = $objResult->RecordCount();
-        if ($count > intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pos, '&amp;section=News&amp;cmd=details&amp;newsid='.$messageId, $_ARRAYLANG['TXT_NEWS_COMMENTS'], true);
-        }
-        $this->_objTpl->setVariable('COMMENTS_PAGING', $paging);*/
-
-        $i = 0;
-        while (!$objResult->EOF) {
-            self::parseUserAccountData($this->_objTpl, $objResult->fields['userid'], $objResult->fields['poster_name'], 'news_comments_poster');
-
-            $this->_objTpl->setVariable(array(
-               'NEWS_COMMENTS_CSS'          => 'row'.($i % 2 + 1),
-               'NEWS_COMMENTS_TITLE'        => contrexx_raw2xhtml($objResult->fields['title']),
-               'NEWS_COMMENTS_MESSAGE'      => nl2br(contrexx_raw2xhtml($objResult->fields['text'])),
-               'NEWS_COMMENTS_LONG_DATE'    => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-               'NEWS_COMMENTS_DATE'         => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
-               'NEWS_COMMENTS_TIME'         => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['date']),
-            ));
-
-            $this->_objTpl->parse('news_comment');
-            $i++;
-            $objResult->MoveNext();
-        }
-
-        $this->_objTpl->parse('news_comment_list');
-        $this->_objTpl->hideBlock('news_no_comment');
-    }
-
-    /**
-     * Validates the submitted comment data and writes it to the databse if valid.
-     * Additionally, a notification is send out to the administration about the comment
-     * by e-mail (only if the corresponding configuration option is set to do so). 
-     *
-     * @param   integer News message ID for which the comment shall be stored
-     * @param   string  Title of the news message for which the comment shall be stored.
-     *                  The title will be used in the notification e-mail
-     *                  {@link news::storeMessageComment()}
-     * @global    array
-     * @global    array
-     * @return  array   Returns an array of two elements. The first is either TRUE on success or FALSE on failure.
-     *                  The second element contains an error message on failure.  
-     */
-    private function parseMessageCommentForm($newsMessageId, $newsMessageTitle, $newsCommentActive)
-    {
-        global $_CORELANG, $_ARRAYLANG;
-        
-        // abort if template block is missing
-        if (!$this->_objTpl->blockExists('news_add_comment')) {
-            return;
-        }
-
-        // abort if comment system is deactivated
-        if (!$this->arrSettings['news_comments_activated']) {
-            return;
-        }
-        
-        // abort if comment deactivated for this news
-        if (!$newsCommentActive) {
-            return;
-        }
-        
-        // abort if request is unauthorized
-        if (   $this->arrSettings['news_comments_anonymous'] == '0'
-            && !\FWUser::getFWUserObject()->objUser->login()
-        ) {
-            $this->_objTpl->hideBlock('news_add_comment');
-            return;
-        }
-         
-        $name = '';
-        $title = '';
-        $message = '';
-        $error = '';
-
-        $arrData = $this->fetchSubmittedCommentData();
-        if ($arrData) {
-            $name    = $arrData['name'];
-            $title   = $arrData['title'];
-            $message = $arrData['message'];
-            list($status, $error) = $this->storeMessageComment($newsMessageId, $newsMessageTitle, $name, $title, $message);
-
-            // new comment added successfully
-            if ($status) {
-                $this->_objTpl->hideBlock('news_add_comment');
-                return;
-            }
-        }
-
-        \JS::activate('cx');
-       
-        // create submit from
-        if (\FWUser::getFWUserObject()->objUser->login()) {
-            $this->_objTpl->hideBlock('news_add_comment_name');
-            $this->_objTpl->hideBlock('news_add_comment_captcha');
-        } else {
-            // Anonymous guests must enter their name as well as validate a CAPTCHA
-
-            $this->_objTpl->setVariable(array(
-                'NEWS_COMMENT_NAME' => contrexx_raw2xhtml($name),
-                'TXT_NEWS_NAME'     => $_ARRAYLANG['TXT_NEWS_NAME'],
-            ));
-            $this->_objTpl->parse('news_add_comment_name');
-
-            // parse CAPTCHA
-            $this->_objTpl->setVariable(array(
-                'TXT_NEWS_CAPTCHA'          => $_CORELANG['TXT_CORE_CAPTCHA'],
-                'NEWS_COMMENT_CAPTCHA_CODE' => \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->getCode(),
-            ));
-            $this->_objTpl->parse('news_add_comment_captcha');
-        }
-
-        $this->_objTpl->setVariable(array(
-            'NEWS_ID'               => $newsMessageId,
-            'NEWS_ADD_COMMENT_ERROR'=> $error,
-            'NEWS_COMMENT_TITLE'    => contrexx_raw2xhtml($title),
-            'NEWS_COMMENT_MESSAGE'  => contrexx_raw2xhtml($message),
-            'TXT_NEWS_ADD_COMMENT'  => $_ARRAYLANG['TXT_NEWS_ADD_COMMENT'],
-            'TXT_NEWS_TITLE'        => $_ARRAYLANG['TXT_NEWS_TITLE'],
-            'TXT_NEWS_COMMENT'      => $_ARRAYLANG['TXT_NEWS_COMMENT'],
-            'TXT_NEWS_ADD'          => $_ARRAYLANG['TXT_NEWS_ADD'],
-        ));
-
-        $this->_objTpl->parse('news_add_comment');
-    }
-
 
     /**
      * Parses a list of news messages that are related to a specific news message
@@ -931,8 +693,13 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                 n.author_id,
                                 n.allow_comments AS commentactive,
                                 n.enable_tags,
+                                n.changelog,
+                                n.source,
+                                n.url1,
+                                n.url2,
                                 nl.title            AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
+                                nl.text AS text,
                                 nl.teaser_text
                     FROM        '.DBPREFIX.'module_news AS n
                     INNER JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
@@ -982,11 +749,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             &&  $validToShowList
         ) {
             while (!$objResult->EOF) {
-                $newsid         = $objResult->fields['newsid'];
-                $newstitle      = $objResult->fields['newstitle'];
-                $newsCommentActive = $objResult->fields['commentactive'];
+                $newsid = $parameters['newsid'] = $objResult->fields['newsid'];
                 $arrNewsCategories = $this->getCategoriesByNewsId($newsid);
-                $parameters['newsid'] = $newsid;
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
                                         ? ''
@@ -999,76 +763,13 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                     )
                                     : $objResult->fields['redirect'];
 
-                $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
-                $htmlLinkTitle  = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
-                // in case that the message is a stub, we shall just display the news title instead of a html-a-tag with no href target
-                if (empty($htmlLinkTitle)) {
-                    $htmlLinkTitle = contrexx_raw2xhtml($newstitle);
-                }
-
-                list($image, $htmlLinkImage, $imageSource) = self::parseImageThumbnail($objResult->fields['teaser_image_path'],
-                                                                                       $objResult->fields['teaser_image_thumbnail_path'],
-                                                                                       $newstitle,
-                                                                                       $newsUrl);
-                $author = \FWUser::getParsedUserTitle($objResult->fields['author_id'], $objResult->fields['author']);
-                $publisher = \FWUser::getParsedUserTitle($objResult->fields['publisher_id'], $objResult->fields['publisher']);
-
-                $objSubResult = $objDatabase->Execute('SELECT count(`id`) AS `countComments` FROM `'.DBPREFIX.'module_news_comments` WHERE `newsid` = '.$objResult->fields['newsid']);
-
-                if (    empty($arrNewsCategories)
-                    &&  $this->_objTpl->blockExists('newsCategories')) {
-                    $this->_objTpl->hideBlock('newsCategories');
-                }
+                // Parse all the news placeholders
+                $this->parseNewsPlaceholders($this->_objTpl, $objResult, $newsUrl);
                 
                 $this->_objTpl->setVariable(array(
-                   'NEWS_ID'             => $newsid,
                    'NEWS_CSS'            => 'row'.($i % 2 + 1),
-                   'NEWS_TEASER'         => nl2br($objResult->fields['teaser_text']),
-                   'NEWS_TITLE'          => contrexx_raw2xhtml($newstitle),
-                   'NEWS_LONG_DATE'      => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
-                   'NEWS_DATE'           => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
-                   'NEWS_TIME'           => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['newsdate']),
-                   'NEWS_LINK_TITLE'     => $htmlLinkTitle,
-                   'NEWS_LINK'           => $htmlLink,
-                   'NEWS_LINK_URL'       => contrexx_raw2xhtml($newsUrl),
-                   'NEWS_CATEGORY'       => implode(', ', contrexx_raw2xhtml($arrNewsCategories)),
-// TODO: fetch typename from a newly to be created separate methode
-                   //'NEWS_TYPE'          => ($this->arrSettings['news_use_types'] == 1 ? stripslashes($objResult->fields['typename']) : ''),
-                   'NEWS_PUBLISHER'      => contrexx_raw2xhtml($publisher),
-                   'NEWS_AUTHOR'         => contrexx_raw2xhtml($author),
-                   'NEWS_COUNT_COMMENTS' => contrexx_raw2xhtml($objSubResult->fields['countComments'].' '.$_ARRAYLANG['TXT_NEWS_COMMENTS']),
                 ));
 
-                if (!$newsCommentActive || !$this->arrSettings['news_comments_activated']) {
-                    if ($this->_objTpl->blockExists('news_comments_count')) {
-                        $this->_objTpl->hideBlock('news_comments_count');
-                    }
-                }
-
-                if (!empty($image)) {
-                    $this->_objTpl->setVariable(array(
-                        'NEWS_IMAGE'               => $image,
-                        'NEWS_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
-                        'NEWS_IMAGE_ALT'           => contrexx_raw2xhtml($newstitle),
-                        'NEWS_IMAGE_LINK'          => $htmlLinkImage,
-                    ));
-
-                    if ($this->_objTpl->blockExists('news_image')) {
-                        $this->_objTpl->parse('news_image');
-                    }
-                } else {
-                    if ($this->_objTpl->blockExists('news_image')) {
-                        $this->_objTpl->hideBlock('news_image');
-                    }
-                }
-                
-                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'image_thumbnail');
-                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'image_detail');
-                if (    !empty($this->arrSettings['news_use_tags'])
-                    &&  !empty($objResult->fields['enable_tags'])
-                ) {
-                    $this->parseNewsTags($this->_objTpl, $newsid);
-                }
                 $this->_objTpl->parse('newsrow');
                 $i++;
                 $objResult->MoveNext();
@@ -1927,222 +1628,6 @@ RSS2JSCODE;
     {
         return $this->_teaser;
     }
-
-
-    /**
-     * Fetch news comment data that has been submitted via POST
-     * and return it as array with three elements.
-     * Where the first element is the name of the poster (if poster is anonymous),
-     * the second is the title of the comment and the third is the comment
-     * message by it self.
-     *
-     * @return array
-     */
-    private function fetchSubmittedCommentData()
-    {
-        // only proceed if the user did submit any data
-        if (!isset($_POST['news_add_comment'])) {
-            return false;
-        }
-
-        $arrData = array(
-            'name'    => '',
-            'title'   => '',
-            'message' => '',
-        );
-
-        if (isset($_POST['news_comment_name'])) {
-            $arrData['name'] = contrexx_input2raw(trim($_POST['news_comment_name']));
-        }
-
-        if (isset($_POST['news_comment_title'])) {
-            $arrData['title'] = contrexx_input2raw(trim($_POST['news_comment_title']));
-        }
-
-        if (isset($_POST['news_comment_message'])) {
-            $arrData['message'] = contrexx_input2raw(trim($_POST['news_comment_message']));
-        }
-
-        return $arrData;
-    }
-
-
-    /**
-     * Validates the submitted comment data and writes it to the databse if valid.
-     * Additionally, a notification is send out to the administration about the comment
-     * by e-mail (only if the corresponding configuration option is set to do so). 
-     *
-     * @param   integer News message ID for which the comment shall be stored
-     * @param   string  Title of the news message for which the comment shall be stored.
-     *                  The title will be used in the notification e-mail
-     * @param   string  The poster's name of the comment
-     * @param   string  The comment's title
-     * @param   string  The comment's message text
-     * @global    ADONewConnection
-     * @global    array
-     * @global    array
-     * @global    array
-     * @return  array   Returns an array of two elements. The first is either TRUE on success or FALSE on failure.
-     *                  The second element contains an error message on failure.  
-     */
-    private function storeMessageComment($newsMessageId, $newsMessageTitle, $name, $title, $message)
-    {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
-
-        if (!isset($_SESSION['news'])) {
-            $_SESSION['news'] = array();
-            $_SESSION['news']['comments'] = array();
-        }
-        
-        // just comment
-        if ($this->checkForCommentFlooding($newsMessageId)) {
-            return array(   
-                false,
-                sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_INTERVAL_MSG'],
-                        //DateTimeTool::getLiteralStringOfSeconds($this->arrSettings['news_comments_timeout'])),
-                        $this->arrSettings['news_comments_timeout']),
-            );
-        }
-
-        if (empty($title)) {
-            return array(false, $_ARRAYLANG['TXT_NEWS_MISSING_COMMENT_TITLE']);
-        }
-
-        if (empty($message)) {
-            return array(false, $_ARRAYLANG['TXT_NEWS_MISSING_COMMENT_MESSAGE']);
-        }
-
-
-        $date = time();
-        $userId = 0;
-        if (\FWUser::getFWUserObject()->objUser->login()) {
-            $userId = \FWUser::getFWUserObject()->objUser->getId();
-            $name = \FWUser::getParsedUserTitle($userId);
-        } elseif ($this->arrSettings['news_comments_anonymous'] == '1') {
-            // deny comment if the poster did not specify his name
-            if (empty($name)) {
-                return array(false, $_ARRAYLANG['TXT_NEWS_POSTER_NAME_MISSING']);
-            }
-
-            // check CAPTCHA for anonymous posters
-            if (!\Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check()) {
-                return array(false, null);
-            }
-        } else {
-            // Anonymous comments are not allowed
-            return array(false, null);
-        }
-
-        $isActive  = $this->arrSettings['news_comments_autoactivate'];
-        $ipAddress = contrexx_input2raw($_SERVER['REMOTE_ADDR']);
-
-        $objResult = $objDatabase->Execute("
-            INSERT INTO `".DBPREFIX."module_news_comments` 
-                    SET `title` = '".contrexx_raw2db($title)."',
-                        `text` = '".contrexx_raw2db($message)."',
-                        `newsid` = '".contrexx_raw2db($newsMessageId)."',
-                        `date` = '".contrexx_raw2db($date)."',
-                        `poster_name` = '".contrexx_raw2db($name)."',
-                        `userid` = '".contrexx_raw2db($userId)."',
-                        `ip_address` = '".contrexx_raw2db($ipAddress)."',
-                        `is_active` = '".contrexx_raw2db($isActive)."'");
-        if (!$objResult) {
-            return array(false, $_ARRAYLANG['TXT_NEWS_COMMENT_SAVE_ERROR']);
-        }
-
-        /* Prevent comment flooding from same user:
-           Either user is authenticated or had to validate a CAPTCHA.
-           In either way, a Cloudrexx session had been initialized,
-           therefore we are able to use the $_SESSION to log this comment */
-        $_SESSION['news']['comments'][$newsMessageId] = $date;
-
-        // Don't send a notification e-mail to the administrator
-        if (!$this->arrSettings['news_comments_notification']) {
-            return array(true, null);
-        }
-
-        // Send a notification e-mail to administrator
-        if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-            \DBG::msg('Unable to send e-mail notification to admin');
-            //DBG::stack();
-            return array(true, null);
-        }
-
-        $objMail = new \phpmailer();
-
-        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-            if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                $objMail->IsSMTP();
-                $objMail->Host = $arrSmtp['hostname'];
-                $objMail->Port = $arrSmtp['port'];
-                $objMail->SMTPAuth = true;
-                $objMail->Username = $arrSmtp['username'];
-                $objMail->Password = $arrSmtp['password'];
-            }
-        }
-
-        $objMail->CharSet   = CONTREXX_CHARSET;
-        $objMail->From      = $_CONFIG['coreAdminEmail'];
-        $objMail->FromName  = $_CONFIG['coreGlobalPageTitle'];
-        $objMail->IsHTML(false);
-        $objMail->Subject   = sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_SUBJECT'], $newsMessageTitle);
-        $manageCommentsUrl  = ASCMS_PROTOCOL.'://'
-                              .$_CONFIG['domainUrl']
-                              .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
-                              .ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=News&act=comments&newsId='.$newsMessageId;
-        $activateCommentTxt = $this->arrSettings['news_comments_autoactivate']
-                              ? ''
-                              : sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_LINK'], $manageCommentsUrl);
-        $objMail->Body      = sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_BODY'],
-                                      $_CONFIG['domainUrl'],
-                                      $newsMessageTitle,
-                                      \FWUser::getParsedUserTitle($userId, $name),
-                                      $title,
-                                      nl2br($message),
-                                      $activateCommentTxt);
-        $objMail->AddAddress($_CONFIG['coreAdminEmail']);
-        if (!$objMail->Send()) {
-            \DBG::msg('Sending of notification e-mail failed');
-            //DBG::stack();
-        }
-
-        return array(true, null);
-    }
-
-
-    /**
-     * Check if the current user has already written a comment within
-     * the definied timeout-time set by news_comments_timeout.
-     *
-     * @param   integer News message-ID
-     * @global  object
-     * @return  boolean TRUE, if the user hast just written a comment before.
-     */
-    private function checkForCommentFlooding($newsMessageId)
-    {
-        global $objDatabase;
-
-        //Check cookie first
-        if (!empty($_SESSION['news']['comments'][$newsMessageId])) {
-            $intLastCommentTime = intval($_SESSION['news']['comments'][$newsMessageId]);
-            if (time() < $intLastCommentTime + intval($this->arrSettings['news_comments_timeout'])) {
-                //The current system-time is smaller than the time in the session plus timeout-time, so the user just submitted a comment
-                return true;
-            }
-        }
-
-        //Now check database (make sure the user didn't delete the cookie
-        $objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_news_comments`
-                                                 WHERE  `ip_address` = '".contrexx_input2db($_SERVER['REMOTE_ADDR'])."'
-                                                        AND `date` > ".(time() - intval($this->arrSettings['news_comments_timeout'])));
-        if ($objResult && !$objResult->EOF) {
-            return true;
-        }
-
-        //Nothing found, i guess the user didn't comment within the timeout-period.
-        return false;
-    }
-
 
     /**
      * Get a list of all news messages sorted by year and month.
