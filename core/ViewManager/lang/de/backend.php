@@ -187,5 +187,6 @@ $_ARRAYLANG['TXT_THEME_FOLDER_RESET_SUCCESS'] = 'Das Verzeichnis wurde erfolgrei
 $_ARRAYLANG['TXT_THEME_RESET_FAILED']      = "Die Rücksetzung ist fehl geschlagen. Bitte versuchen Sie es erneut.";
 $_ARRAYLANG['TXT_THEME_FULLSCREEN'] = 'Vollbild';
 $_ARRAYLANG['TXT_THEME_EXIT_FULLSCREEN'] = 'Vollbild Modus verlassen';
+$_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_USABLE'] = 'Anpassbar';
 $_ARRAYLANG['TXT_THEME_ERROR_IN_INSERT_THEME'] = 'Das Template konnte nicht in der Datenbank gespeichert werden.';
 $_ARRAYLANG['TXT_UNABLE_TO_CONVERT_THEME_TO_COMPONENT'] = 'Das Template konnte nicht korrekt eingelesen werden. Stellen Sie sicher das auf das Verzeichnis im Dateisystem Schreibzugriff besteht.';

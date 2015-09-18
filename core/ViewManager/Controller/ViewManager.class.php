@@ -300,7 +300,7 @@ class ViewManager
      * @param type $theme
      */
     private function parseThemesData($theme, $subType) {
-        global $objTemplate;
+        global $objTemplate,$_ARRAYLANG;
         
         $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
         
@@ -317,13 +317,28 @@ class ViewManager
             ));
         }
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
+        $objTemplate->setVariable(array(
+            "TXT_THEME_TEMPLATEEDITOR_USABLE"      => $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_USABLE']
+        ));
+
+        $supportForTemplateEditor = false;
+        if (file_exists($cx->getClassLoader()->getFilePath($cx->getWebsiteThemesPath().
+             '/' . $theme->getFoldername() . '/options/options.yml'))){
+            $supportForTemplateEditor = true;
+        }
+
         $objTemplate->setVariable(array(
             'THEME_PREVIEW'                      => $theme->getPreviewImage(),
             'THEME_ID'                           => $theme->getId(),
+            'THEME_ACTION'                       => $supportForTemplateEditor ?
+                'cmd=TemplateEditor&tid='.$theme->getId()
+                : 'cmd=ViewManager&act=templates&themes='.$theme->getFoldername(),
             'THEME_FOLDER_NAME'                  => $theme->getFoldername(),
+            'THEME_TEMPLATEEDITOR'               => $supportForTemplateEditor ? 'templateEditor' : '',
             'THEME_ACTIVATE_DISABLED'            => count($frontendLanguages) == count($activeLanguages) ? 'disabled' : '' ,
             'THEME_NAME'                         => contrexx_raw2xhtml($theme->getThemesname()),
-
         ));
 
         $objTemplate->parse('themes'. ucfirst($subType));

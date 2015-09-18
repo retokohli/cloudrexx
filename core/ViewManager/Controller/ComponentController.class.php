@@ -25,7 +25,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array();
     }
 
-    public function getControllersAccessableByJson() { 
+    public function getControllersAccessableByJson() {
         return array('JsonViewManager');
     }
      /**
