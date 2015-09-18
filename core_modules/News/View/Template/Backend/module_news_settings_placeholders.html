@@ -182,27 +182,37 @@
         </tr>
         
         <tr class="row1">
-            <td><b>[[NEWS_PREVIOUS_LINK]]</b></td>
+            <td>[[NEWS_PREVIOUS_LINK]]</td>
             <td>{TXT_NEWS_PREVIOUS_LINK_DESCRITION}</td>
         </tr>
         
         <tr class="row2">
-            <td><b>[[NEWS_PREVIOUS_TITLE]]</b></td>
+            <td>[[NEWS_PREVIOUS_TITLE]]</td>
             <td>{TXT_NEWS_PREVIOUS_TITLE_DESCRITION}</td>
         </tr>
         
+        <tr class="row2">
+            <td>[[NEWS_PREVIOUS_SRC]]</td>
+            <td>{TXT_NEWS_PREVIOUS_SRC_DESCRITION}</td>
+        </tr>
+        
         <tr class="row1">
-            <td><b>[[NEWS_NEXT_LINK]]</b></td>
+            <td>[[NEWS_NEXT_LINK]]</td>
             <td>{TXT_NEWS_NEXT_LINK_DESCRITION}</td>
         </tr>
         
         <tr class="row2">
-            <td><b>[[NEWS_NEXT_TITLE]]</b></td>
+            <td>[[NEWS_NEXT_TITLE]]</td>
             <td>{TXT_NEWS_NEXT_TITLE_DESCRITION}</td>
         </tr>
         
+        <tr class="row2">
+            <td>[[NEWS_NEXT_SRC]]</td>
+            <td>{TXT_NEWS_NEXT_SRC_DESCRITION}</td>
+        </tr>
+        
         <tr class="row1">
-            <td>&lt;!-- previousNextLink --&gt;</td>
+            <td>&lt;!-- news_details_previous_next_links --&gt;</td>
             <td>{TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION}</td>
         </tr>
     </table>
@@ -240,15 +250,19 @@
                 <b>[[NEWS_PAGING]]</b>&lt;br&nbsp;/&gt;<br />
                 &lt;br&nbsp;/&gt;
                 <br />
-                <b>&lt;!-- BEGIN previousNextLink --&gt;</b><br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN previousNewsLink --&gt;</b><br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[[NEWS_PREVIOUS_LINK]]" title="[[NEWS_PREVIOUS_TITLE]]">[[NEWS_PREVIOUS_TITLE]]&lt;/a&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END previousNewsLink --&gt;</b><br />
+                <b>&lt;!-- BEGIN news_details_previous_next_links --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN news_details_previous_link --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[NEWS_PREVIOUS_LINK]]<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(or)<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[[NEWS_PREVIOUS_SRC]]" title="[[NEWS_PREVIOUS_TITLE]]">[[NEWS_PREVIOUS_TITLE]]&lt;/a&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END news_details_previous_link --&gt;</b><br />
 
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN nextNewsLink --&gt;</b><br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[[NEWS_NEXT_LINK]]" title="[[NEWS_NEXT_TITLE]]">[[NEWS_NEXT_TITLE]]&lt;/a&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END nextNewsLink --&gt;</b><br />
-                <b>&lt;!-- END previousNextLink --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN news_details_next_link --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[NEWS_NEXT_LINK]]<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(or)<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[[NEWS_NEXT_SRC]]" title="[[NEWS_NEXT_TITLE]]">[[NEWS_NEXT_TITLE]]&lt;/a&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END news_details_next_link --&gt;</b><br />
+                <b>&lt;!-- END news_details_previous_next_links --&gt;</b><br />
             </td>
         </tr>
     </table>

@@ -76,5 +76,3 @@ $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
 
 $_ARRAYLANG['TXT_NEWS_NEXT_LINK'] = "Nächster Artikel";
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] = "Vorangehender Artikel";
-$_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC'] = "URL zum vorangehenden Artikel";
-$_ARRAYLANG['TXT_NEWS_NEXT_SRC'] = "URL zum nächsten Artikel";

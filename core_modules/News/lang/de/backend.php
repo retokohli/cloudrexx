@@ -356,12 +356,12 @@ $_ARRAYLANG['TXT_NEWS_CATEGORY_ID_DESCRIPTION'] = "ID der News Rubrik";
 $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
 
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'] = "Block zur Darstellung der Verlinkungen zum vorangehenden und nächsten Artikel.<br />
-Starttag: &lt!-- BEGIN previousNextLink --&gt;<br />
-  &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN previousNewsLink --&gt;<br />
-  &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END previousNewsLink --&gt;<br /><br />
-  &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN nextNewsLink --&gt;<br />
-  &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END nextNewsLink --&gt;<br />
-Endtag: &lt!-- END previousNextLink --&gt;";
+Starttag: &lt!-- BEGIN news_details_previous_next_links --&gt;<br />
+  &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN news_details_previous_link --&gt;<br />
+  &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END news_details_previous_link --&gt;<br /><br />
+  &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN news_details_next_link --&gt;<br />
+  &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END news_details_next_link --&gt;<br />
+Endtag: &lt!-- END news_details_previous_next_links --&gt;";
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINKS'] = "Verlinkungen zum vorangehendem und nächsten Artikel";
 
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK_DESCRITION'] = "Link zum vorangehenden Artikel";
@@ -369,3 +369,5 @@ $_ARRAYLANG['TXT_NEWS_PREVIOUS_TITLE_DESCRITION'] = "Titel des vorangehenden Art
 
 $_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'] = "Link zum nächsten Artikel";
 $_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Titel des nächsten Artikels";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC_DESCRITION'] = "URL zum vorangehenden Artikel";
+$_ARRAYLANG['TXT_NEWS_NEXT_SRC_DESCRITION'] = "URL zum nächsten Artikel";

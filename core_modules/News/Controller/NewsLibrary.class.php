@@ -1595,7 +1595,6 @@ class NewsLibrary
                                 . '<span class=\'news-title-label news-title-label-prev\'>' . $newsTitle . '</span>';
                 $objTpl->setVariable(
                         array(
-                            'TXT_NEWS_PREVIOUS_SRC'  => $_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC'],
                             'NEWS_PREVIOUS_TITLE'    => $newsTitle,
                             'NEWS_PREVIOUS_SRC'      => $newsSrc,
                             'NEWS_PREVIOUS_LINK'     => \Html::getLink($newsSrc, $aLinkContent, null, 'title="' . $newsTitle . '"')
@@ -1618,7 +1617,6 @@ class NewsLibrary
                                 . '<span class=\'news-title-label news-title-label-next\'>' . $newsTitle . '</span>';
                 $objTpl->setVariable(
                         array(
-                            'TXT_NEWS_NEXT_SRC'  => $_ARRAYLANG['TXT_NEWS_NEXT_SRC'],
                             'NEWS_NEXT_TITLE'    => $newsTitle,
                             'NEWS_NEXT_SRC'      => $newsSrc,
                             'NEWS_NEXT_LINK'     => \Html::getLink($newsSrc, $aLinkContent, null, 'title="' . $newsTitle . '"')

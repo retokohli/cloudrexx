@@ -103,5 +103,3 @@ $_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG'] = "Error Occured while saving the news ta
 $_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG_RELATION'] = "Error occured while saving the news tag relationship!...";
 $_ARRAYLANG['TXT_NEWS_NEXT_LINK'] = "Next article";
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] = "Previous article";
-$_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC'] = "Source/path to previous article";
-$_ARRAYLANG['TXT_NEWS_NEXT_SRC'] = "Source/path to next article";
