@@ -1728,57 +1728,6 @@ form[name="registrationForm"] .row {
     padding: 0 10px 0 10px;
 }
 /*//Styles for related News started here*/
-/*//Styles for next and previous news link blocks*/
-#link-blocks-cont {
-    float: left;
-    width: 100%;
-    border-bottom: 1px solid #D6D6D6;
-    padding: 20px 0;
-}
-#previous-link-block {
-    float: left;
-    width: 50%;
-    text-align: left;
-}
-#next-link-block {
-    float: right;
-    width: 50%;
-    text-align: right;
-}
-.link-label {
-    cursor: pointer;
-    width: auto;
-    color: #9C9C9C;
-    text-transform: uppercase;
-    font-size: 12px;
-}
-.title-label {
-    cursor: pointer;
-    width: 100%;
-    font-size: 15px;
-}
-.title-label.title-label-next,
-.link-label.link-label-next {
-    float: right;
-    text-align: right;
-}
-.title-label.title-label-prev,
-.link-label.link-label-prev {
-    float: left;
-    text-align: left;
-}
-.link-label-next small {
-    font-size: 20px;
-    margin-left: 5px;
-}
-.link-label-prev small {
-    font-size: 20px;
-    margin-right: 5px;
-}
-.title-label h6 {
-    padding: 5px 0;
-}
-/*//Styles for next and previous news link blocks Ends here*/
 div#related-news {
     width: 100%;
     float: left;

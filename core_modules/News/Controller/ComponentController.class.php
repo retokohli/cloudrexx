@@ -104,12 +104,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $themesPages, $page_template;
+        global $themesPages, $page_template, $objInit;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 // Get Headlines
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsHeadlines.class.php';
                 if (file_exists($modulespath)) {
+                    $first = true;
                     for ($i = 0; $i < 5; $i++) {
                         $visibleI = '';
                         if ($i > 0) {
@@ -126,6 +127,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 $matches = array();
                                 if (preg_match('/\{CATEGORY_([0-9]+)\}/', trim($themesPages['headlines' . $visibleI]), $matches)) {
                                     $category = $matches[1];
+                                }
+                                if ($first) {
+                                    $first = false;
+                                    $objInit->loadLanguageData('News');
                                 }
                                 $newsHeadlinesObj = new NewsHeadlines($themesPages['headlines' . $visibleI]);
                                 $homeHeadlines = $newsHeadlinesObj->getHomeHeadlines($category);

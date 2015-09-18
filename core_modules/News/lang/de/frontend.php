@@ -100,6 +100,9 @@ $_ARRAYLANG['TXT_ERROR_SAVING_NEWS_CATGORY_RELATION'] = "Beim Speichervorgang de
 $_ARRAYLANG['TXT_SET_NEWS_TITLE_CATEGORY_AND_TEXT_OR_REDIRECT'] = "Es muss zwingend ein Titel, eine Rubrikzugehörigkeit und etwas Inhalt (oder eine Weiterleitung) erfasst werden.";
 $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
 
+$_ARRAYLANG['TXT_NEWS_NEXT_LINK'] = "Nächster Artikel";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] = "Vorangehender Artikel";
+
 $_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Tags hinzufügen";
 $_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG'] = "Die angegebenen Tags konnten nicht gespeichert werden.";
 $_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG_RELATION'] = "Die Zuweisung der Tags konnte nicht gespeichert werden.";

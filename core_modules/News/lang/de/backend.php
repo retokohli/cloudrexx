@@ -312,7 +312,6 @@ $_ARRAYLANG['TXT_NEWS_TYPE_NAME_DESCRIPTION'] = "Name des zugehörigen Typen";
 $_ARRAYLANG['TXT_NEWS_TYPE_ADD_ERROR_EMPTY'] = "Typ konnte nicht hinzugefügt werden, es wurde kein Name angegeben.";
 $_ARRAYLANG['TXT_USE_TEASER_TEXT'] = 'News Container Text verwenden';
 $_ARRAYLANG['TXT_NEWS_USE_TAGS'] = 'Use tags';
-
 $_ARRAYLANG['TXT_USE_TYPES'] = "Typen verwenden";
 $_ARRAYLANG['TXT_NO_TYPE'] = "Keine Angabe";
 $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'] = "In der Designvorlage <b>top_news.html</b>. Diese Seite kann mit dem Platzhalter [[TOP_NEWS_FILE]] im Design oder in einer Content Seite eingebunden werden.";
@@ -382,6 +381,36 @@ $_ARRAYLANG['TXT_NEWS_NO_CATEGORY'] = "Weisen Sie der Meldung eine Rubrik zu.";
 $_ARRAYLANG['TXT_NEWS_NO_TITLE_AND_CATEGORY'] = "Setzen Sie einen Titel und weisen Sie die Meldung einer Rubrik zu";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_ID_DESCRIPTION'] = "ID der News Rubrik";
 $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
+$_ARRAYLANG['TXT_NEWS_USER_ID_DESCRIPTION'] = 'ID des dazugehörigen Benutzerkontos';
+$_ARRAYLANG['TXT_NEWS_USERNAME_DESCRIPTION'] = 'Benutzername des dazugehörigen Benutzerkontos';
+$_ARRAYLANG['TXT_NEWS_USER_PROFILE_ATTRIBUTE_DESCRIPTION'] = 'Profildaten des dazugehörigen Benutzerkontos';
+$_ARRAYLANG['TXT_NEWS_TEASER_TEXT_ROW_DESCRIPTION'] = 'Optionaler Block zur Darstellung des News Container Textes.';
+$_ARRAYLANG['TXT_NEWS_NEWS_COMMENT_COUNT_ROW_DESCRIPTION'] = 'Optionaler Block zur Darstellung der Anzahl Kommentare.';
+$_ARRAYLANG['TXT_NEWS_TEXT_ROW_DESCRIPTION'] = 'Bei News Artikel vom Typ "Weiterleitung" wird dieser Block nicht angezeigt';
+$_ARRAYLANG['TXT_NEWS_REDIRECT_ROW_DESCRIPTION'] = 'Dieser Block wird nur bei News Artikel vom Typ "Weiterleitung" angezeigt';
+$_ARRAYLANG['TXT_NEWS_TAGS_ROW_DESCRIPTION'] = 'Block zur Auflistung der Tags';
+$_ARRAYLANG['TXT_NEWS_TAG_NAME_DESCRIPTION'] = 'Name des Tags';
+$_ARRAYLANG['TXT_NEWS_TAG_LINK_DESCRIPTION'] = 'Verlinkter Name des Tags';
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'] = 'Block zur Darstellung des Autors eines Kommentars';
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'] = 'Eingabedatum des Kommentars';
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'] = 'Titel des Kommentars';
+
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'] = "Block zur Darstellung der Verlinkungen zum vorangehenden und nächsten Artikel.<br />
+Starttag: &lt!-- BEGIN news_details_previous_next_links --&gt;<br />
+  &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN news_details_previous_link --&gt;<br />
+  &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END news_details_previous_link --&gt;<br /><br />
+  &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN news_details_next_link --&gt;<br />
+  &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END news_details_next_link --&gt;<br />
+Endtag: &lt!-- END news_details_previous_next_links --&gt;";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINKS'] = "Verlinkungen zum vorangehendem und nächsten Artikel";
+
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK_DESCRITION'] = "Link zum vorangehenden Artikel";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_TITLE_DESCRITION'] = "Titel des vorangehenden Artikels";
+
+$_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'] = "Link zum nächsten Artikel";
+$_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Titel des nächsten Artikels";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC_DESCRITION'] = "URL zum vorangehenden Artikel";
+$_ARRAYLANG['TXT_NEWS_NEXT_SRC_DESCRITION'] = "URL zum nächsten Artikel";
 
 $_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Tags hinzufügen";
 $_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'] = "Verwenden";

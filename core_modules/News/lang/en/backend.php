@@ -441,20 +441,35 @@ $_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG_RELATION'] = "Unable to store the asso
 $_ARRAYLANG['TXT_NEWS_ERROR_DELETE_NEWS_TAG_RELATION'] = "Unable to remove the associated tags.";
 $_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'] = "No tags assigned";
 
-$_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'] = "Tag to display the previous and next news link.<br />
-Starttag: &lt!-- BEGIN previousNextLink --&gt;<br />
-  &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN previousNewsLink --&gt;<br />
-  &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END previousNewsLink --&gt;<br /><br />
-  &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN nextNewsLink --&gt;<br />
-  &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END nextNewsLink --&gt;<br />
-Endtag: &lt!-- END previousNextLink --&gt;";
-$_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINKS'] = "Previous Next Links";
-
-$_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK_DESCRITION'] = "Previous news link";
-$_ARRAYLANG['TXT_NEWS_PREVIOUS_TITLE_DESCRITION'] = "Previous news title";
-
 $_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'] = "Next news link";
 $_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Next news title";
+$_ARRAYLANG['TXT_NEWS_USER_ID_DESCRIPTION'] = 'ID of the associated user account';
+$_ARRAYLANG['TXT_NEWS_USERNAME_DESCRIPTION'] = 'Username of the associated user account';
+$_ARRAYLANG['TXT_NEWS_USER_PROFILE_ATTRIBUTE_DESCRIPTION'] = 'Profile data of the associated user account';
+$_ARRAYLANG['TXT_NEWS_TEASER_TEXT_ROW_DESCRIPTION'] = 'Optional tag to display the news teaser text.';
+$_ARRAYLANG['TXT_NEWS_NEWS_COMMENT_COUNT_ROW_DESCRIPTION'] = 'Optional tag to display the number of comments.';
+$_ARRAYLANG['TXT_NEWS_TEXT_ROW_DESCRIPTION'] = 'This block will be hidden if the news is set to redirect type';
+$_ARRAYLANG['TXT_NEWS_REDIRECT_ROW_DESCRIPTION'] = 'This block will be visible only if the news is set to redirect type';
+$_ARRAYLANG['TXT_NEWS_TAGS_ROW_DESCRIPTION'] = 'Block to list the tags';
+$_ARRAYLANG['TXT_NEWS_TAG_NAME_DESCRIPTION'] = 'Name of the tag';
+$_ARRAYLANG['TXT_NEWS_TAG_LINK_DESCRIPTION'] = 'Linked name of the tag';
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'] = 'Block to display the author of a comment';
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'] = 'Submit date of the comment';
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'] = 'Title of the comment';
 
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'] = "Block to display the links to the previous and next article.<br />
+Starttag: &lt!-- BEGIN news_details_previous_next_links --&gt;<br />
+  &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN news_details_previous_link --&gt;<br />
+  &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END news_details_previous_link --&gt;<br /><br />
+  &nbsp;&nbsp;&nbsp;Starttag: &lt!-- BEGIN news_details_next_link --&gt;<br />
+  &nbsp;&nbsp;&nbsp;Endtag: &lt!-- END news_details_next_link --&gt;<br />
+Endtag: &lt!-- END news_details_previous_next_links --&gt;";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINKS'] = "Links to previous & next articles";
 
-?>
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK_DESCRITION'] = "Link to previous article";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_TITLE_DESCRITION'] = "Title of previous article";
+
+$_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'] = "Link to next article";
+$_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Title of next article";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC_DESCRITION'] = "Source/path to previous article";
+$_ARRAYLANG['TXT_NEWS_NEXT_SRC_DESCRITION'] = "Source/path to next article";
