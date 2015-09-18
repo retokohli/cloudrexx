@@ -1506,26 +1506,23 @@ class NewsLibrary
     
     
     /**
-     * Generate next and previous news links from the current news
+     * Generate the next and previous news links from the current news
      * 
-     * @global object $objDatabase
-     * @global array  $_ARRAYLANG
-     * 
-     * @param object  $objTpl
+     * @param \Cx\Core\Html\Sigma $objTpl template object
      * 
      * @return null
      */
-    public function parseNextAndPreviousLinks($objTpl = null)
+    public function parseNextAndPreviousLinks(\Cx\Core\Html\Sigma $objTpl)
     {
         global $objDatabase, $_ARRAYLANG;
-        $parentBlock    = 'previousNextLink';
-        $previousLink   = 'previousNewsLink';
-        $nextLink       = 'nextNewsLink';
+        
+        $parentBlock    = 'news_details_previous_next_links';
+        $previousLink   = 'news_details_previous_link';
+        $nextLink       = 'news_details_next_link';
         
         $params = $_GET;
         
-        if (empty($objTpl) || empty($params['newsid']))
-        {
+        if (empty($params['newsid'])) {
             return;
         }
         $newsId = intval($params['newsid']);
@@ -1608,14 +1605,17 @@ class NewsLibrary
             $preNewsDetails = self::getNewsDetailsById($previousNewsId);
             $arrNewsCategories = $this->getCategoriesByNewsId($previousNewsId);
             if ($objTpl->blockExists($previousLink) && !empty($preNewsDetails)) {
+                $newsTitle    = contrexx_raw2xhtml($preNewsDetails['newsTitle']);
+                $newsSrc      = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories),$arrCategory)),
+                                FRONTEND_LANG_ID, array('newsid' => contrexx_raw2xhtml($preNewsDetails['id'])));
+                $aLinkContent = '<span class=\'news-link-label news-link-label-prev\'><small>&larr;</small>' . $_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] . '</span>'
+                                . '<span class=\'news-title-label news-title-label-prev\'>' . $newsTitle . '</span>';
                 $objTpl->setVariable(
                         array(
-                            'TXT_NEWS_PREVIOUS_LINK' => $_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'],
-                            'NEWS_PREVIOUS_TITLE' => $preNewsDetails['newsTitle'],
-                            'NEWS_PREVIOUS_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd(
-                                    'news', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories),$arrCategory)),
-                                    FRONTEND_LANG_ID, array('newsid' => contrexx_raw2xhtml($preNewsDetails['id']))
-                            )
+                            'NEWS_PREVIOUS_TITLE'    => $newsTitle,
+                            'NEWS_PREVIOUS_SRC'      => $newsSrc,
+                            'NEWS_PREVIOUS_LINK'     => \Html::getLink($newsSrc, $aLinkContent, null, 'title="' . $newsTitle . '"')
                         )
                 );
                 $objTpl->touchBlock($previousLink);
@@ -1627,20 +1627,23 @@ class NewsLibrary
             $nextNewsDetails = self::getNewsDetailsById($nextNewsId);
             $arrNewsCategories = $this->getCategoriesByNewsId($nextNewsId);
             if ($objTpl->blockExists($nextLink) && !empty($nextNewsDetails)) {
+                $newsTitle    = contrexx_raw2xhtml($nextNewsDetails['newsTitle']);
+                $newsSrc      = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories),$arrCategory)),
+                                FRONTEND_LANG_ID, array('newsid' => contrexx_raw2xhtml($nextNewsDetails['id'])));
+                $aLinkContent = '<span class=\'news-link-label news-link-label-next\'><small>&larr;</small>' . $_ARRAYLANG['TXT_NEWS_NEXT_LINK'] . '</span>'
+                                . '<span class=\'news-title-label news-title-label-next\'>' . $newsTitle . '</span>';
                 $objTpl->setVariable(
                         array(
-                            'TXT_NEWS_NEXT_LINK' => $_ARRAYLANG['TXT_NEWS_NEXT_LINK'],
-                            'NEWS_NEXT_TITLE' => $nextNewsDetails['newsTitle'],
-                            'NEWS_NEXT_LINK' => \Cx\Core\Routing\Url::fromModuleAndCmd(
-                                    'news', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories),$arrCategory)),
-                                    FRONTEND_LANG_ID, array('newsid' => contrexx_raw2xhtml($nextNewsDetails['id']))
-                            )
+                            'NEWS_NEXT_TITLE'    => $newsTitle,
+                            'NEWS_NEXT_SRC'      => $newsSrc,
+                            'NEWS_NEXT_LINK'     => \Html::getLink($newsSrc, $aLinkContent, null, 'title="' . $newsTitle . '"')
                         )
                 );
                 $objTpl->touchBlock($nextLink);
             }
         }
-        if(!empty($previousNewsId) || !empty($nextNewsId)){ 
+        if (!empty($previousNewsId) || !empty($nextNewsId)) {
             $objTpl->touchBlock($parentBlock);
         }
     }
@@ -1661,7 +1664,7 @@ class NewsLibrary
                     AND ($tableAlias.startdate<='" . date('Y-m-d H:i:s') . "' OR $tableAlias.startdate=\"0000-00-00 00:00:00\")
                     AND ($tableAlias.enddate>='" . date('Y-m-d H:i:s') . "' OR $tableAlias.enddate=\"0000-00-00 00:00:00\")"
                 . ($this->arrSettings['news_message_protection'] == '1' 
-                            && !Permission::hasAllAccess() ? (($objFWUser = FWUser::getFWUserObject()) 
+                            && !\Permission::hasAllAccess() ? (($objFWUser = \FWUser::getFWUserObject()) 
                                     && $objFWUser->objUser->login() ? " AND (frontend_access_id IN (" . implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())) . ") OR userid = " . $objFWUser->objUser->getId() . ") " : " AND frontend_access_id=0 ") : ''
                 );
         if (!empty($filters)) {

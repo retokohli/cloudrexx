@@ -3775,6 +3775,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_TAG_NAME_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_TAG_NAME_DESCRIPTION'],
             'TXT_NEWS_TAG_LINK_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_TAG_LINK_DESCRIPTION'],
             'TXT_NEWS_NO_TAGS_FOUND'                                    => $_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'],
+            'TXT_NEWS_PREVIOUS_SRC_DESCRITION'                          => $_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC_DESCRITION'],
+            'TXT_NEWS_NEXT_SRC_DESCRITION'                              => $_ARRAYLANG['TXT_NEWS_NEXT_SRC_DESCRITION'],
         ));
         $this->_objTpl->parse('settings_content');
     }
