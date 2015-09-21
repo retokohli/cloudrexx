@@ -655,6 +655,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (10,'GuestBook','
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (11,'Sitemap','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (12,'Directory','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (13,'Ids','core_module');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (14,'Error','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (15,'Home','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (16,'Shop','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (17,'Voting','module');
@@ -731,7 +732,6 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (106,'Wysiwyg','c
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (107,'User','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (108,'Html','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (905,'MediaSource','core');
-INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (906,'Error','core_module');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (3,34,11,12,2);
