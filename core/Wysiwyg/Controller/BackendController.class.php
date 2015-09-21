@@ -259,15 +259,13 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * This method defines the option to generate the backend view (list and form)
      * 
      * @global array $_ARRAYLANG Language data
-     * @param string $entityClassName contains the FQCN from entity
-     * @return array array containing the options
+     * @param string $entityClassName class name of the used entity
+     * @param string $classIdentifier class identifier
+     * @return array formed as needed for the view generator
      */
-    protected function getViewGeneratorOptions($entityClassName) {
+    protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
         global $_ARRAYLANG;
-
-        $classNameParts = explode('\\', $entityClassName);
-        $classIdentifier = end($classNameParts);
-
+        
         return array(
             'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier)],
             'entityName' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_ENTITY'],

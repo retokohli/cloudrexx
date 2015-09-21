@@ -882,7 +882,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Checks if the Cloudrexx installation has been set up yet (CONTEXX_INSTALLED).
+         * Checks if the Contrexx installation has been set up yet (CONTREXX_INSTALLED).
          * If not, the user will be redirected (through a HTTP-Location redirect) to
          * the web-installer (/installer).
          */

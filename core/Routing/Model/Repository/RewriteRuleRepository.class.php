@@ -39,6 +39,7 @@ namespace Cx\Core\Routing\Model\Repository;
 /**
  * Class RewriteRuleRepository
  *
+<<<<<<< HEAD
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
