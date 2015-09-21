@@ -162,6 +162,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
+// TODO: Deactivated license check for now. Implement new behavior.
+                return true;
                 // check if the requested module is active:
                 if (!in_array($plainCmd, array('Login', 'noaccess', ''))) {
                     $query = '
