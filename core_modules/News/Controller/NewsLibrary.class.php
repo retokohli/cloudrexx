@@ -1858,7 +1858,7 @@ class NewsLibrary
         \Cx\Core\Html\Sigma $objTpl,
         $relatedNewsIds = array(),
         $langId = null,
-        $blockName = 'news_related_news'
+        $blockName = 'news_modify_related_news'
     )
     {
 
@@ -1918,7 +1918,7 @@ class NewsLibrary
         \Cx\Core\Html\Sigma $objTpl,
         $newsId = null,
         $langId = null,
-        $blockName = 'news_related_news',
+        $blockName = 'news_modify_related_news',
         $limit=0
     )
     {

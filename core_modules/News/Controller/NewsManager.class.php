@@ -1245,9 +1245,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
          ));
         if (!empty($this->arrSettings['use_related_news'])) {
             $this->parseRelatedNewsTags($this->_objTpl, $relatedNews, LANG_ID);
-            $this->_objTpl->touchBlock('news_related_news_block');
+            $this->_objTpl->touchBlock('news_modify_related_news_block');
         } else {
-            $this->_objTpl->hideBlock('news_related_news_block');
+            $this->_objTpl->hideBlock('news_modify_related_news_block');
         }
         //Parsing the saved tags
         if (!empty($this->arrSettings['news_use_tags'])) {
@@ -1888,7 +1888,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $this->_objTpl->hideBlock('newsTagsBlock');
             }
             //Parse the related news if the setting option 'use_related_news' is enable
-            //otherwise hide the block 'news_related_news_block'
+            //otherwise hide the block 'news_modify_related_news_block'
             if (!empty($this->arrSettings['use_related_news'])) {
                 $objCx = \ContrexxJavascript::getInstance();
                 $objCx->setVariable(
@@ -1910,9 +1910,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     LANG_ID
                 );
 
-                $this->_objTpl->touchBlock('news_related_news_block');
+                $this->_objTpl->touchBlock('news_modify_related_news_block');
             } else {
-                $this->_objTpl->hideBlock('news_related_news_block');
+                $this->_objTpl->hideBlock('news_modify_related_news_block');
         }
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_ENTRY_NOT_FOUND'];
