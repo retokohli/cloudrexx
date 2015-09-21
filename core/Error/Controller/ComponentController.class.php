@@ -19,18 +19,21 @@ namespace Cx\Core\Error\Controller;
  * @subpackage  core_error
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
-   
+
+    /**
+     * @var array $missingPage Information about the missing page if there are some
+     */
+    protected $missingPage = array();
+
     public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
-        return array();
+        return array('Frontend');
     }
 
      /**
      * Load your component.
      * 
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
-     */
+
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
@@ -38,13 +41,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                \Env::get('cx')->getPage()->setContent($errorObj->getErrorPage());
                 break;
         }
-    }
+    }*/
 
     /**
      * Register event-listener for Routing/PageNotFound-Event
      * @throws \Cx\Core\Event\Controller\EventManagerException
      */
     public function registerEventListeners() {
-        $this->cx->getEvents()->addEventListener('Routing/PageNotFound', new \Cx\Core\Error\Model\Event\PageNotFoundEventListener($this->cx));
+        $this->cx->getEvents()->addEventListener('Routing/PageNotFound', $this->getController('Frontend'));
+    }
+
+    public function setMissingPage(array $missingPageDetails) {
+        $this->missingPage = $missingPageDetails;
     }
 }

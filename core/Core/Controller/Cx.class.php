@@ -1546,7 +1546,7 @@ namespace Cx\Core\Core\Controller {
                 } else {
                     try{
                         $this->resolvedPage = $this->resolver->resolve();
-                    } catch (\Cx\Core\Error\Model\Event\SkipResolverException $e) {}
+                    } catch (\Cx\Core\Error\Controller\SkipResolverException $e) {}
                 }
 
             } else {
@@ -1592,7 +1592,7 @@ namespace Cx\Core\Core\Controller {
         protected function postResolve() {
             try {
                 $this->ch->callPostResolveHooks();
-            } catch (\Cx\Core\Error\Model\Event\SkipResolverException $e) {}
+            } catch (\Cx\Core\Error\Controller\SkipResolverException $e) {}
         }
 
         /**
