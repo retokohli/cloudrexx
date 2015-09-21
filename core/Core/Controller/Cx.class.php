@@ -1423,14 +1423,12 @@ namespace Cx\Core\Core\Controller {
 
             // resolve
             $this->preResolve();                        // Call pre resolve hook scripts
+            $this->adjustRequest();                     // Adjust the protocol and the domain
             $this->resolve();                           // Resolving, Language
 
             // @TODO: remove this
             $this->legacyGlobalsHook(2);                // $objInit, $_LANGID, $_CORELANG, $url;
-
             $this->postResolve();                       // Call post resolve hook scripts
-
-            $this->adjustRequest();
 
             // load content
             $this->preContentLoad();                    // Call pre content load hook scripts
