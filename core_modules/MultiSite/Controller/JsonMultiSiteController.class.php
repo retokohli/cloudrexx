@@ -1156,6 +1156,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         }
         
         if (md5($secretKey.$installationId) !== $authenticationValue['key']) {
+            \DBG::msg(__METHOD__." failed: installationId=$installationId / authenticationValue={$authenticationValue['key']}");
             return false;
         }
 
