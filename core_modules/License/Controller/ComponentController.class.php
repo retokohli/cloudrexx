@@ -153,7 +153,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $this->cx->getEvents()->triggerEvent('Routing/PageNotFound', array(
                             'section'   => $section,
                             'cmd'       => $plainCmd,
-                            // page might only be inactive
                             'page'      => $page,
                             'history'   => isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0,
                             'resolver'  => \Env::get('Resolver')

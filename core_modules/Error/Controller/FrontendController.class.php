@@ -10,7 +10,7 @@
  * @subpackage core_modules_error
  */
 
-namespace Cx\Core\Error\Controller;
+namespace Cx\Core_Modules\Error\Controller;
 
 /**
  * Exception to skip the resolving of the current page/component
@@ -50,12 +50,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     /**
      * @var string The cmd if one is set
      */
-    private $cmd = '';
+    protected $cmd = '';
 
     /**
      * @var \Cx\Core\ContentManager\Model\Entity\Page The page which might only be inactive
      */
-    private $inactivePage = null;
+    protected $inactivePage = null;
 
     /**
      * @param $eventName String The name of the Event
@@ -77,7 +77,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     /**
      * @TODO: Check what happens when this is called in load or preContentLoad $eventArgs might need a stage-value
      * @param array $eventArgs
-     * @throws \Cx\Core\Error\Controller\SkipResolverException
+     * @throws \Cx\Core_Modules\Error\Controller\SkipResolverException
      */
     private function pageNotFound(array $eventArgs) {
         global $page, $plainSection;
@@ -85,7 +85,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         // display a sexy message in the stacktrace
         \DBG::stack();
 
-        // might not be used if we don't change anything in the $eventArgs-array
+        // get the information about missing or deactivated component / page
         $this->section = $eventArgs['section'];
         $this->cmd = $eventArgs['cmd'];
         $this->inactivePage = $eventArgs['page'];
@@ -112,7 +112,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         // set 404 page not found http-header
         header("HTTP/1.0 404 Not Found");
         // throw exception so that the resolver stops resolving gets caught in \Cx\Core\Core\Controller\Cx.class.php
-        throw new \Cx\Core\Error\Controller\SkipResolverException();
+        throw new \Cx\Core_Modules\Error\Controller\SkipResolverException();
     }
 
     /**
@@ -135,9 +135,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         }
 
         // load language data of given component
-        $componentLang = \Env::get('init')->getComponentSpecificLanguageData($this->section, false, FRONTEND_LANG_ID);
+        $coreLang = \Env::get('init')->getComponentSpecificLanguageData('Core', false, FRONTEND_LANG_ID);
 
-        $noDescription = !isset($componentLang['TXT_' . strtoupper($this->section) . 'MODULE_DESCRIPTION']) ? true : false;
+        // check if a description is available
+        $noDescription = !isset($coreLang['TXT_' . strtoupper($this->section) . '_MODULE_DESCRIPTION']) ? true : false;
 
         // prepare the template
         $template->touchBlock('error_module_information');
@@ -148,10 +149,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         }
         $template->touchBlock('error_module_description');
         // only replace the description if one exists
-        if($noDescription) {
+        if(!$noDescription) {
             $template->setVariable(array(
-                'ERROR_MODULE_DESCRIPTION' => $componentLang['TXT_'
-                . strtoupper($this->section) . 'MODULE_DESCRIPTION']
+                'ERROR_MODULE_DESCRIPTION' => $coreLang['TXT_' . strtoupper($this->section) . '_MODULE_DESCRIPTION']
             ));
         }
         // replace the variables

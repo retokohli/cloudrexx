@@ -746,7 +746,7 @@ namespace Cx\Core\Core\Controller {
              * on model level whereas the overlying component is not
              * aware of such a check and won't handly it therefore.
              */
-            catch (\Cx\Core\Error\Model\Entity\ShinyException $e) {
+            catch (\Cx\Core_Modules\Error\Model\Entity\ShinyException $e) {
                 if ($this->mode != self::MODE_BACKEND) {
                     throw new \Exception($e->getMessage());
                 }
@@ -1546,7 +1546,7 @@ namespace Cx\Core\Core\Controller {
                 } else {
                     try{
                         $this->resolvedPage = $this->resolver->resolve();
-                    } catch (\Cx\Core\Error\Controller\SkipResolverException $e) {}
+                    } catch (\Cx\Core_Modules\Error\Controller\SkipResolverException $e) {}
                 }
 
             } else {
@@ -1592,7 +1592,7 @@ namespace Cx\Core\Core\Controller {
         protected function postResolve() {
             try {
                 $this->ch->callPostResolveHooks();
-            } catch (\Cx\Core\Error\Controller\SkipResolverException $e) {}
+            } catch (\Cx\Core_Modules\Error\Controller\SkipResolverException $e) {}
         }
 
         /**
