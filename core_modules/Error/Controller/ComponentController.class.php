@@ -1,37 +1,11 @@
 <?php
-
-/**
- * Cloudrexx
- *
- * @link      http://www.cloudrexx.com
- * @copyright Cloudrexx AG 2007-2015
- * 
- * According to our dual licensing model, this program can be used either
- * under the terms of the GNU Affero General Public License, version 3,
- * or under a proprietary license.
- *
- * The texts of the GNU Affero General Public License with an additional
- * permission and of our proprietary license can be found at and
- * in the LICENSE file you have received along with this program.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * "Cloudrexx" is a registered trademark of Cloudrexx AG.
- * The licensing of the program under the AGPLv3 does not imply a
- * trademark license. Therefore any rights, title and interest in
- * our trademarks remain entirely with us.
- */
- 
 /**
  * Main controller for Error
  * 
- * @copyright   CLOUDREXX CMS - CLOUDREXX AG
- * @author      Cloudrexx Development Team <info@cloudrexx.com>
- * @package     cloudrexx
- * @subpackage  core_error
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_error
  */
 
 namespace Cx\Core_Modules\Error\Controller;
@@ -39,24 +13,27 @@ namespace Cx\Core_Modules\Error\Controller;
 /**
  * Main controller for Error
  * 
- * @copyright   CLOUDREXX CMS - CLOUDREXX AG
- * @author      Cloudrexx Development Team <info@cloudrexx.com>
- * @package     cloudrexx
- * @subpackage  core_error
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_error
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
-   
+
+    /**
+     * @var array $missingPage Information about the missing page if there are some
+     */
+    protected $missingPage = array();
+
     public function getControllerClasses() {
-        // Return an empty array here to let the component handler know that there
-        // does not exist a backend, nor a frontend controller of this component.
-        return array();
+        return array('Frontend');
     }
 
      /**
      * Load your component.
      * 
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
-     */
+
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
@@ -64,5 +41,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                \Env::get('cx')->getPage()->setContent($errorObj->getErrorPage());
                 break;
         }
+    }*/
+
+    /**
+     * Register event-listener for Routing/PageNotFound-Event
+     * @throws \Cx\Core\Event\Controller\EventManagerException
+     */
+    public function registerEventListeners() {
+        $this->cx->getEvents()->addEventListener('Routing/PageNotFound', $this->getController('Frontend'));
+    }
+
+    public function setMissingPage(array $missingPageDetails) {
+        $this->missingPage = $missingPageDetails;
     }
 }
