@@ -31,7 +31,7 @@
  * @copyright	CLOUDREXX CMS - CLOUDREXX AG
  * @author		Cloudrexx Development Team <info@cloudrexx.com>
  * @package	    cloudrexx
- * @subpackage  core_error
+ * @subpackage  core_module_error
  * @version		1.0.0
  * @todo        Edit PHP DocBlocks!
  */
@@ -45,7 +45,7 @@ namespace Cx\Core_Modules\Error\Controller;
  * @author		Cloudrexx Development Team <info@cloudrexx.com>
  * @access		public
  * @package	    cloudrexx
- * @subpackage  core_error
+ * @subpackage  core_module_error
  * @version		1.0.0
  * @todo        Declare and document class variable 'pageContent'
  */

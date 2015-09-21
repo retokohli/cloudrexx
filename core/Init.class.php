@@ -873,6 +873,49 @@ class InitCMS
         return $moduleSpecificLanguageData;
     }
 
+    /**
+     * Get component specific language data
+     * State of the init will be backedup and restored while loading the language
+     * data
+     *
+     * @param string $componentName Name of the desired component
+     * @param bool|true $frontend true if desired mode is frontend false otherwise
+     * @param integer $languageId Id of the desired language i.e. 1 for german
+     * @return array The language data which has been loaded
+     */
+    public function getComponentSpecificLanguageData($componentName, $frontend = true, $languageId) {
+        global $_ARRAYLANG;
+
+        $mode = $frontend ? 'frontend' : 'backend';
+
+        if ($componentName == 'Core') {
+            $componentName = lcfirst($componentName);
+        }
+
+        // save init state
+        $langBackup = $_ARRAYLANG;
+        $modeBackup = $this->mode;
+        $frontentLangIdBackup = $this->frontendLangId;
+        $backendLangIdBackup = $this->backupLangId;
+
+        // set custom init state
+        $this->mode = $mode;
+        $this->frontentLangId = $languageId;
+        $this->backendLangId = $languageId;
+
+        // load language data
+        $this->loadLanguageData($componentName);
+        $moduleSpecificLanguageData = $_ARRAYLANG;
+
+        // restore init state
+        $_ARRAYLANG = $langBackup;
+        $this->mode = $modeBackup;
+        $this->frontendLangId = $frontentLangIdBackup;
+        $this->backendLangId = $backendLangIdBackup;
+
+        return $moduleSpecificLanguageData;
+    }
+
     protected function getLangFilePath($module, $langId) {
         // check whether the language file exists
         $mode = in_array($this->mode, array('backend', 'update')) ? 'backend' : 'frontend';

@@ -31,7 +31,7 @@
  * @copyright	CLOUDREXX CMS - CLOUDREXX AG
  * @author		Cloudrexx Development Team <info@cloudrexx.com>
  * @package	    cloudrexx
- * @subpackage  core_error
+ * @subpackage  core_module_error
  * @version		1.0.0
  */
 
@@ -43,7 +43,7 @@ namespace Cx\Core_Modules\Error\Model\Entity;
  * @copyright	CLOUDREXX CMS - CLOUDREXX AG
  * @author		Cloudrexx Development Team <info@cloudrexx.com>
  * @package	    cloudrexx
- * @subpackage  core_error
+ * @subpackage  core_module_error
  * @version		1.0.0
  */
 class ShinyException extends \Exception
