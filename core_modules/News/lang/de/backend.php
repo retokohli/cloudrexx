@@ -411,3 +411,4 @@ $_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'] = "Link zum nächsten Artikel";
 $_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Titel des nächsten Artikels";
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC_DESCRITION'] = "URL zum vorangehenden Artikel";
 $_ARRAYLANG['TXT_NEWS_NEXT_SRC_DESCRITION'] = "URL zum nächsten Artikel";
+$_ARRAYLANG['TXT_NEWS_USE_PREVIOUS_NEXT_LINK'] = "Vorangehenden & nächsten Artikel verwenden";
