@@ -914,7 +914,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 'news/news-live-search'
             );
             \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
-            \JS::registerCss('core_modules/News/View/Style/news-live-search.css');
+            \JS::registerCss('core_modules/News/View/Style/NewsLiveSearch.css');
         }
 
         if (!$this->hasCategories()) {
@@ -1245,9 +1245,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
          ));
         if (!empty($this->arrSettings['use_related_news'])) {
             $this->parseRelatedNewsTags($this->_objTpl, $relatedNews, LANG_ID);
-            $this->_objTpl->touchBlock('relatedNewsBlock');
+            $this->_objTpl->touchBlock('news_related_news_block');
         } else {
-            $this->_objTpl->hideBlock('relatedNewsBlock');
+            $this->_objTpl->hideBlock('news_related_news_block');
         }
         //Parsing the saved tags
         if (!empty($this->arrSettings['news_use_tags'])) {
@@ -1872,7 +1872,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             } else {
                 $this->_objTpl->hideBlock('news_permission_tab');
             }
-            //Customized News Module Improvements
+
             if (!empty($this->arrSettings['news_use_tags'])) {
                 $this->registerTagJsCode();
                 $newsTagDetails = $this->getNewsTags($id);
@@ -1887,6 +1887,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             } else {
                 $this->_objTpl->hideBlock('newsTagsBlock');
             }
+            //Parse the related news if the setting option 'use_related_news' is enable
+            //otherwise hide the block 'news_related_news_block'
             if (!empty($this->arrSettings['use_related_news'])) {
                 $objCx = \ContrexxJavascript::getInstance();
                 $objCx->setVariable(
@@ -1895,7 +1897,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     'news/news-live-search'
                 );
                 \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
-                \JS::registerCss('core_modules/News/View/Style/news-live-search.css');
+                \JS::registerCss('core_modules/News/View/Style/NewsLiveSearch.css');
 
                 //Parsing the related news tags
                 $relatedNewsIds = isset($_POST['relatedNews'])
@@ -1908,9 +1910,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     LANG_ID
                 );
 
-                $this->_objTpl->touchBlock('relatedNewsBlock');
+                $this->_objTpl->touchBlock('news_related_news_block');
             } else {
-                $this->_objTpl->hideBlock('relatedNewsBlock');
+                $this->_objTpl->hideBlock('news_related_news_block');
         }
         } else {
             $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_ENTRY_NOT_FOUND'];
@@ -3539,7 +3541,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_USE_TEASERS'                       => $_ARRAYLANG['TXT_USE_TEASERS'],
             'TXT_USE_TEASER_TEXT'                   => $_ARRAYLANG['TXT_USE_TEASER_TEXT'],
             'TXT_USE_TYPES'                         => $_ARRAYLANG['TXT_USE_TYPES'],
-            'TXT_USE_RELATED_NEWS'                  => $_ARRAYLANG['TXT_USE_RELATED_NEWS'],
+            'TXT_NEWS_SETTINGS_USE_RELATED_NEWS'    => $_ARRAYLANG['TXT_NEWS_SETTINGS_USE_RELATED_NEWS'],
             'TXT_USE_TAGS'                          => $_ARRAYLANG['TXT_USE_TAGS'],
             'TXT_NOTIFY_GROUP'                      => $_ARRAYLANG['TXT_NOTIFY_GROUP'],
             'TXT_NOTIFY_USER'                       => $_ARRAYLANG['TXT_NOTIFY_USER'],

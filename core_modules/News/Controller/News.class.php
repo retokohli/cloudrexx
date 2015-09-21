@@ -286,7 +286,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $this->_objTpl,
                 $newsid,
                 FRONTEND_LANG_ID,
-                'related_news',
+                'news_details_related_news',
                 3
             );
         }
@@ -1325,16 +1325,18 @@ EOF;
                 'news/news-live-search'
             );
             \JS::registerJS('core_modules/News/View/Script/news-live-search.js');
+            \JS::registerCss('core_modules/News/View/Style/NewsRelatedNews.css');
             if (!empty($data['relatedNews'])) {
                 $this->parseRelatedNewsTags(
                     $this->_objTpl,
                     $data['relatedNews'],
-                    FRONTEND_LANG_ID
+                    FRONTEND_LANG_ID,
+                    'news_submit_related_news'
                 );
             }
-            $this->_objTpl->touchBlock('relatedNewsBlock');
+            $this->_objTpl->touchBlock('news_submit_related_news_block');
         } else {
-            $this->_objTpl->hideBlock('relatedNewsBlock');
+            $this->_objTpl->hideBlock('news_submit_related_news_block');
         }
         $this->_objTpl->setVariable(array(
             'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],

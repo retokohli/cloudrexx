@@ -26,14 +26,14 @@
         </div>
         <!-- END newsTagsBlock -->
         
-        <!-- BEGIN relatedNewsBlock -->
+        <!-- BEGIN news_submit_related_news_block -->
         <!--Live search-->
         <div id='live-search-news-block' class="live-search-news news-frm-full-width">
             <label class="news-frm-full-width" for="related-news">
                 {TXT_NEWS_INCLUDE_NEWS}
                 <span class="tooltip-trigger icon-info"></span>
                 <span class="tooltip-message">{TXT_NEWS_INCLUDE_RELATED_NEWS_DESC}</span>
-                <span class="live-search-user-info">
+                <span class="live-search-user-info live-search-news-info">
                     {TXT_NEWS_SEARCH_INFO}
                 </span>
             </label>
@@ -45,16 +45,16 @@
         <!--Selected News-->
         <div id='related-news-list' class='news-frm-full-width' style="display: none;">
             <ul class='news-frm-12'>
-                <!-- BEGIN related_news -->
+                <!-- BEGIN news_submit_related_news -->
                 <li>
                     <label>{NEWS_RELATED_NEWS_TITLE}</label>
                     <span class="news_list_close">✕</span>
                     <input type=hidden class="relationNewsId" name="relatedNews[]" value='{NEWS_RELATED_NEWS_ID}'>
                 </li>
-                <!-- END related_news -->
+                <!-- END news_submit_related_news -->
             </ul>
         </div>
-        <!-- END relatedNewsBlock -->
+        <!-- END news_submit_related_news_block -->
         <div><label for="newsTeaserText">{TXT_NEWS_TEASER_TEXT}</label><textarea id="newsTeaserText" name="newsTeaserText">{NEWS_TEASER_TEXT}</textarea></div>
         <div>
             <label>{TXT_TYPE}</label>

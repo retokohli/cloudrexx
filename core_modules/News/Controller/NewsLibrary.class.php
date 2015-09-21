@@ -1759,7 +1759,7 @@ class NewsLibrary
                 . implode(',', $relatedNewsIds).')';
             if (!$objDatabase->Execute($deleteNewsRealtionQuery)) {
 //TODO@  Throw execption or log error message
-                $this->errMsg[] = $_ARRAYLANG['TXT_ERROR_DELETE_RELATED_NEWS_RELATION'];
+                $this->errMsg[] = $_ARRAYLANG['TXT_NEWS_ERROR_DELETE_RELATED_NEWS_RELATION'];
                 return false;
             }
         }
@@ -1777,7 +1777,7 @@ class NewsLibrary
                 . ')';
             if (!$objDatabase->Execute($insertRelatedNewsQuery)) {
 //TODO@  Throw execption or log error message
-                $this->errMsg[] = $_ARRAYLANG['TXT_ERROR_SAVING_RELATED_NEWS_RELATION'];
+                $this->errMsg[] = $_ARRAYLANG['TXT_NEWS_ERROR_SAVING_RELATED_NEWS_RELATION'];
                 return false;
             }
         }
@@ -1858,7 +1858,7 @@ class NewsLibrary
         \Cx\Core\Html\Sigma $objTpl,
         $relatedNewsIds = array(),
         $langId = null,
-        $blockName = 'related_news'
+        $blockName = 'news_related_news'
     )
     {
 
@@ -1918,7 +1918,7 @@ class NewsLibrary
         \Cx\Core\Html\Sigma $objTpl,
         $newsId = null,
         $langId = null,
-        $blockName = 'related_news',
+        $blockName = 'news_related_news',
         $limit=0
     )
     {
@@ -1942,8 +1942,6 @@ class NewsLibrary
         );
 
         if (!empty($relatedNewsDetails)) {
-            $defaultImage = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseCoreModulePath()
-                            .'/News/View/Media/default_news_image.png';
 
             $currentCount = 1;
             foreach ($relatedNewsIds as $relatedNewsId) {
@@ -2014,25 +2012,16 @@ class NewsLibrary
                     $htmlLinkTitle = contrexx_raw2xhtml($newstitle);
                 }
 
-                $imagePath =
-                    !empty($currentRelatedDetails['teaser_image_path'])
-                        ? $currentRelatedDetails['teaser_image_path']
-                        : $defaultImage;
-                $imageThumbPath =
-                    !empty($currentRelatedDetails['teaser_image_thumbnail_path'])
-                        ? $currentRelatedDetails['teaser_image_thumbnail_path']
-                        : $defaultImage;
-
                 $this->parseImageBlock(
                     $objTpl,
-                    $imagePath,
+                    $currentRelatedDetails['teaser_image_path'],
                     $newstitle,
                     $newsUrl,
                     'related_news_image'
                 );
                 $this->parseImageBlock(
                     $objTpl,
-                    $imageThumbPath,
+                    $currentRelatedDetails['teaser_image_thumbnail_path'],
                     $newstitle,
                     $newsUrl,
                     'related_news_image_thumb'
@@ -2100,9 +2089,9 @@ class NewsLibrary
                 }
                 $objTpl->parse($blockName);
             }
-            if ($objTpl->blockExists('related_news_block')) {
+            if ($objTpl->blockExists('news_details_related_news_block')) {
                 $objTpl->setVariable('TXT_NEWS_RELATED_NEWS', $_ARRAYLANG['TXT_NEWS_RELATED_NEWS']);
-                $objTpl->touchBlock('related_news_block');
+                $objTpl->touchBlock('news_details_related_news_block');
             }
         }
     }
