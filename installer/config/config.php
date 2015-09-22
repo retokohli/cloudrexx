@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Installer config
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
@@ -54,12 +79,12 @@ if ($selectedTimezoneId !== '') {
     @ini_set('date.timezone', $arrTimezones[$selectedTimezoneId]);
 }
 
-$_CONFIG['coreCmsName']         = 'ContrexxÂ® Web Content Management System';
-$_CONFIG['coreCmsVersion']      = '1.2.0';
-$_CONFIG['coreCmsStatus']       = 'RC1';
-$_CONFIG['coreCmsEdition']      = 'Premium';
-$_CONFIG['coreCmsCodeName']     = 'Cow Feeder';
-$_CONFIG['coreCmsReleaseDate']  = '22.10.2007';
+$_CONFIG['coreCmsName']         = 'Contrexx';
+$_CONFIG['coreCmsVersion']      = '4.0.0';
+$_CONFIG['coreCmsStatus']       = 'Stable';
+$_CONFIG['coreCmsEdition']      = 'Standard';
+$_CONFIG['coreCmsCodeName']     = 'Eric S. Raymond';
+$_CONFIG['coreCmsReleaseDate']  = '17.12.2014';
 
 $arrDefaultConfig = array(
     'dbHostname'        => 'localhost',

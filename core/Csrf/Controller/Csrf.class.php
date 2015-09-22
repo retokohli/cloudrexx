@@ -1,13 +1,38 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Csrf Class
  * Protect against Csrf attacks
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      David Vogt <david.vogt@comvation.com>
  * @since       2.1.3
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_csrf
  */
 
@@ -22,10 +47,10 @@ namespace Cx\Core\Csrf\Controller;
  * This class expects that the session has been set up
  * correctly and can be used through $_SESSION.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      David Vogt <david.vogt@comvation.com>
  * @since       2.1.3
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_csrf
  */
 class Csrf {
@@ -388,9 +413,10 @@ class Csrf {
 
     private static function __is_ajax()
     {
-        return
-            (   isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-             && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest');
+        return (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+        || (isset($_SERVER['HTTP_CHECK_CSRF'])
+            && $_SERVER['HTTP_CHECK_CSRF'] == 'false');
     }
 
 

@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media  Directory Form Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
@@ -13,9 +38,9 @@ namespace Cx\Modules\MediaDir\Controller;
 /**
  * Media Directory Form Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 class MediaDirectoryForm extends MediaDirectoryLibrary
@@ -58,6 +83,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                 form.`use_category` AS `use_category`,
                 form.`use_level` AS `use_level`,
                 form.`use_ready_to_confirm` AS `use_ready_to_confirm`,    
+                form.`entries_per_page` AS `entries_per_page`,
                 form.`active` AS `active`,
                 form_names.`form_name` AS `name`,
                 form_names.`form_description` AS `description`
@@ -103,16 +129,17 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                     }
                 }
 
-                $arrForm['formId'] = intval($objFormsRS->fields['id']);
-                $arrForm['formOrder'] = intval($objFormsRS->fields['order']);
-                $arrForm['formPicture'] = htmlspecialchars($objFormsRS->fields['picture'], ENT_QUOTES, CONTREXX_CHARSET);
-                $arrForm['formName'] = $arrFormName;
-                $arrForm['formDescription'] = $arrFormDesc;
-                $arrForm['formActive'] = intval($objFormsRS->fields['active']);
-                $arrForm['formCmd'] = htmlspecialchars($objFormsRS->fields['cmd'], ENT_QUOTES, CONTREXX_CHARSET);
-                $arrForm['formUseCategory'] = intval($objFormsRS->fields['use_category']);
-                $arrForm['formUseLevel'] = intval($objFormsRS->fields['use_level']);
+                $arrForm['formId']                = intval($objFormsRS->fields['id']);
+                $arrForm['formOrder']             = intval($objFormsRS->fields['order']);
+                $arrForm['formPicture']           = htmlspecialchars($objFormsRS->fields['picture'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrForm['formName']              = $arrFormName;
+                $arrForm['formDescription']       = $arrFormDesc;
+                $arrForm['formActive']            = intval($objFormsRS->fields['active']);
+                $arrForm['formCmd']               = htmlspecialchars($objFormsRS->fields['cmd'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrForm['formUseCategory']       = intval($objFormsRS->fields['use_category']);
+                $arrForm['formUseLevel']          = intval($objFormsRS->fields['use_level']);
                 $arrForm['formUseReadyToConfirm'] = intval($objFormsRS->fields['use_ready_to_confirm']);
+                $arrForm['formEntriesPerPage']    = $objFormsRS->fields['entries_per_page'];
 
                 $arrForms[$objFormsRS->fields['id']] = $arrForm;
                 $objFormsRS->MoveNext();
@@ -239,7 +266,88 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
         }
     }
 
+    /**
+     * Update the form values
+     *
+     * @param array   $arrName        Form names array, The array key is refered as the language id
+     * @param array   $arrDescription Form description array, The array key is refered as the language id
+     * @param integer $intFormId      Form id
+     *
+     * @return boolean true | false
+     */
+    public function updateFormLocale($arrName, $arrDescription, $intFormId)
+    {
+        global $objDatabase, $_LANGID;
 
+        if (empty($intFormId)) {
+            return false;
+        }
+
+        $objDefaultLang = $objDatabase->Execute('
+            SELECT
+                `form_name` AS `name`,
+                `form_description` AS `description`
+            FROM
+                '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_form_names
+            WHERE
+                lang_id='.$_LANGID.'
+                AND `form_id` = "'.$intFormId.'"
+            LIMIT
+                1
+        ');
+
+        $strOldDefaultName        = '';
+        $strOldDefaultDescription = '';
+
+        if ($objDefaultLang !== false) {
+            $strOldDefaultName        = $objDefaultLang->fields['name'];
+            $strOldDefaultDescription = $objDefaultLang->fields['description'];
+        }
+
+        foreach ($this->arrFrontendLanguages as $lang) {
+            $activeLang[] = $lang['id'];
+        }
+        // Before updating the form names Remove the corresponding existing form names from db.
+        $objDatabase->Execute('DELETE FROM ' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_form_names WHERE form_id="' . $intFormId . '" AND lang_id IN("'.  implode('","', $activeLang).'")');
+
+        foreach ($this->arrFrontendLanguages as $arrLang) {
+            $strName        = $arrName[$arrLang['id']];
+            $strDescription = $arrDescription[$arrLang['id']];
+
+            if ($arrLang['id'] == $_LANGID) {
+                if ($arrName[0] != $strOldDefaultName) {
+                    $strName = $arrName[0];
+                }
+                if ($arrName[$arrLang['id']] != $strOldDefaultName) {
+                    $strName = $arrName[$arrLang['id']];
+                }
+                if ($arrDescription[0] != $strOldDefaultDescription) {
+                    $strDescription = $arrDescription[0];
+                }
+                if ($arrDescription[$arrLang['id']] != $strOldDefaultDescription) {
+                    $strDescription = $arrDescription[$arrLang['id']];
+                }
+            }
+
+            if (empty($strName)) {
+                $strName = $arrName[0];
+            }
+            if (empty($strDescription)) {
+                $strDescription = $arrDescription[0];
+            }
+            $objInsertNames = $objDatabase->Execute('
+                        INSERT INTO
+                            ' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_form_names
+                        SET
+                            `lang_id`="' . intval($arrLang['id']) . '",
+                            `form_id`="' . intval($intFormId) . '",
+                            `form_name`="' . contrexx_input2db($strName) . '",
+                            `form_description`="' . contrexx_input2db($strDescription) . '"
+                    ');
+        }
+
+        return $objInsertNames;
+    }
 
     function saveForm($arrData, $intFormId=null)
     {
@@ -254,6 +362,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
         $intUseCategory = intval($arrData['formUseCategory']);
         $intUseLevel = isset($arrData['formUseLevel']) ? contrexx_input2int($arrData['formUseLevel']) : 0;
         $intUseReadyToConfirm = isset($arrData['formUseReadyToConfirm']) ? contrexx_input2int($arrData['formUseReadyToConfirm']) : 0;
+        $intEntriesPerPage = isset($arrData['formEntriesPerPage']) ? contrexx_input2int($arrData['formEntriesPerPage']) : 0;
 
         if(empty($intId)) {
             //insert new form
@@ -267,6 +376,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                     `use_category`='".$intUseCategory."',
                     `use_level`='".$intUseLevel."',
                     `use_ready_to_confirm`='".$intUseReadyToConfirm."',
+                    `entries_per_page`='".$intEntriesPerPage."',
                     `active`='0'
             ");
 
@@ -347,31 +457,14 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                     `cmd`='".$strCmd."',
                     `use_category`='".$intUseCategory."',
                     `use_level`='".$intUseLevel."',
-                    `use_ready_to_confirm`='".$intUseReadyToConfirm."'
+                    `use_ready_to_confirm`='".$intUseReadyToConfirm."',
+                    `entries_per_page`='".$intEntriesPerPage."'
                 WHERE
                     `id`='".$intId."'
             ");
             
             if($objUpdateAttributes !== false) {
                 
-                $objDefaultLang = $objDatabase->Execute("
-                    SELECT
-                        `form_name` AS `name`,
-                        `form_description` AS `description`
-                    FROM
-                        ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names
-                    WHERE
-                        lang_id=".$_LANGID."
-                        AND `form_id` = '".$intId."'
-                    LIMIT
-                        1
-                ");
-
-                if ($objDefaultLang !== false) {
-                    $strOldDefaultName = $objDefaultLang->fields['name'];
-                    $strOldDefaultDescription = $objDefaultLang->fields['description'];
-                }
-
                 //permissions
                 $objDeletePerm = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms WHERE form_id='".$intId."'");
                 $settingsPermissionGroupForm = isset($arrData['settingsPermGroupForm'][$intId]) ? $arrData['settingsPermGroupForm'][$intId] : array();
@@ -387,33 +480,7 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                     ");
                 } 
                 
-                $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names WHERE form_id='".$intId."'");
-
-                foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                    $strName = $arrName[$arrLang['id']];
-                    $strDescription = $arrDescription[$arrLang['id']];
-
-                    if($arrLang['id'] == $_LANGID) {
-                        if($arrName[0] != $strOldDefaultName) $strName = $arrName[0];
-                        if($arrName[$arrLang['id']] != $strOldDefaultName) $strName = $arrName[$arrLang['id']];
-
-                        if($arrDescription[0] != $strOldDefaultDescription) $strDescription = $arrDescription[0];
-                        if($arrDescription[$arrLang['id']] != $strOldDefaultDescription) $strDescription = $arrDescription[$arrLang['id']];
-                    }
-
-                    if(empty($strName)) $strName = $arrName[0];
-                    if(empty($strDescription)) $strDescription = $arrDescription[0];
-
-                    $objInsertNames = $objDatabase->Execute("
-                        INSERT INTO
-                            ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names
-                        SET
-                            `lang_id`='".intval($arrLang['id'])."',
-                            `form_id`='".intval($intId)."',
-                            `form_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
-                            `form_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
-                    ");
-                }
+                $objInsertNames = $this->updateFormLocale($arrName, $arrDescription, $intId);
 
                 if($objInsertNames !== false) {
                     return true;

@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  */
 $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM'] = "Hier sind die übermittelten Informationen vom Kontaktformular der Webseite von";
@@ -135,7 +161,7 @@ $_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "Die Datei %s wurde nicht hinauf gel
 $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Die Datei %s wurde nicht komplet hinauf geladen!";
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Eine Datei wurde nicht hinauf geladen!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA-Schutz";
-$_ARRAYLANG['TXT_CONTACT_SAVE_DATA_IN_CRM']   = "Daten im CRM speichern";
+$_ARRAYLANG['TXT_CONTACT_SAVE_DATA_IN_CRM']   = "Neuer CRM Kontakt von Kontaktanfrage erstellen";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Tippen Sie bitte die Zeichenfolge im dargestellten Bild in das Textfeld ein. Dies ist notwendig, damit das System Sie von einem Spambot unterscheiden kann.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird zusätzlich eine Kopie der angegebenen Formulardaten an den Absender geschickt.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie an Absender";
@@ -201,4 +227,6 @@ $_ARRAYLANG['TXT_CONTACT_XLS_TOOLTIP'] = "CSV-Export in ISO-8859-1<br /><i>(opti
 $_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM'] = "Die Anfragen dieses Formulars werden automatisch ins CRM als neue Kontaktpersonen übertragen.";
 $_ARRAYLANG['TXT_CONTACT_DATETIME'] = "Datum & Zeit";
 $_ARRAYLANG['TXT_CONTACT_CHOOSE_MEMBERSHIPS']  = "Kundengruppe wählen";
+$_ARRAYLANG['TXT_CONTACT_ASSIGN_TO_CRM_CUSTOMER_GROUP']  = "Zuordnung zu CRM Kundengruppe";
+$_ARRAYLANG['TXT_CONTACT_ASSIGN_CRM_CUSTOMER_GROUP_DESCRIPTION'] = "Wählen Sie die Kundengruppen, zu welchen der neue CRM Kontakt hinzugefügt werden soll.";
 ?>

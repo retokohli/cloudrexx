@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 $_ARRAYLANG['TXT_DATE'] = "Datum";
@@ -73,3 +99,12 @@ $_ARRAYLANG['TXT_ERROR_DELETE_NEWS_CATGORY_RELATION'] = "Bei der Entfernung der 
 $_ARRAYLANG['TXT_ERROR_SAVING_NEWS_CATGORY_RELATION'] = "Beim Speichervorgang der Rubrikzugehörigkeit trat ein Fehler auf";
 $_ARRAYLANG['TXT_SET_NEWS_TITLE_CATEGORY_AND_TEXT_OR_REDIRECT'] = "Es muss zwingend ein Titel, eine Rubrikzugehörigkeit und etwas Inhalt (oder eine Weiterleitung) erfasst werden.";
 $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
+
+$_ARRAYLANG['TXT_NEWS_NEXT_LINK'] = "Nächster Artikel";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] = "Vorangehender Artikel";
+
+$_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Tags hinzufügen";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG'] = "Die angegebenen Tags konnten nicht gespeichert werden.";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG_RELATION'] = "Die Zuweisung der Tags konnte nicht gespeichert werden.";
+$_ARRAYLANG['TXT_NEWS_ERROR_DELETE_NEWS_TAG_RELATION'] = "Die Entfernung der Tags konnte nicht gespeichert werden.";
+$_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'] = "Keine Tags zugewiesen";

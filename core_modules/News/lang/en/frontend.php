@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 $_ARRAYLANG['TXT_DATE'] = "Date";
@@ -96,10 +122,12 @@ $_ARRAYLANG['TXT_NEWS_SEARCH_INFO'] = "Enter at least 3 character(s) of News tit
 $_ARRAYLANG['TXT_NEWS_SEARCH_PLACEHOLDER'] = "Search News...";
 $_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "News not found...";
 $_ARRAYLANG['TXT_ERROR_SAVING_RELATED_NEWS_RELATION'] = "Error occured while saving the related news!...";
+$_ARRAYLANG['TXT_NEWS_NEXT_LINK'] = "Next article";
+$_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] = "Previous article";
 
 $_ARRAYLANG['TXT_NEWS_TAGS'] = "Tags";
-$_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Add Tags";
-$_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG'] = "Error Occured while saving the news tag!...";
-$_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG_RELATION'] = "Error occured while saving the news tag relationship!...";
-$_ARRAYLANG['TXT_NEWS_NEXT_LINK'] = "Next News";
-$_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] = "Previous News";
+$_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Add tags";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG'] = "Unable to store the tags.";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG_RELATION'] = "Unable to store the associated tags.";
+$_ARRAYLANG['TXT_NEWS_ERROR_DELETE_NEWS_TAG_RELATION'] = "Unable to remove the associated tags.";
+$_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'] = "No tags assigned";

@@ -1,13 +1,38 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Navigation
  * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
@@ -18,11 +43,11 @@
  * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
  *
  * @deprecated  Use \Cx\Core\PageTree directly instead
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version        1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  */
 class Navigation
@@ -103,7 +128,7 @@ class Navigation
                 $this->subNavTag = trim($this->_objTpl->_blocks['sub_menu']);
                 $templateContent = preg_replace('<!--\s+BEGIN\s+sub_menu\s+-->.*<!--\s+END\s+sub_menu\s+-->/ms', NULL, $templateContent);
             }
-            $navi = new \Cx\Core\PageTree\DropdownNavigationPageTree(Env::em(), $license, 0, $rootNode, $this->langId, $this->page);
+            $navi = new \Cx\Core\PageTree\DropdownNavigationPageTree(\Env::get('em'), $license, 0, $rootNode, $this->langId, $this->page);
             $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
@@ -112,7 +137,7 @@ class Navigation
         }
 
         if (isset($this->_objTpl->_blocks['navigation'])) {
-            $navi = new \Cx\Core\PageTree\NavigationPageTree(Env::em(), $license, 0, $rootNode, $this->langId, $this->page);
+            $navi = new \Cx\Core\PageTree\NavigationPageTree(\Env::get('em'), $license, 0, $rootNode, $this->langId, $this->page);
             $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             return $navi->render();
@@ -120,7 +145,7 @@ class Navigation
 
         // Create a nested list, formatted with ul and li-Tags
         if (isset($this->_objTpl->_blocks['nested_navigation'])) {
-            $navi = new \Cx\Core\PageTree\NestedNavigationPageTree(Env::em(), $license, 0, $rootNode, $this->langId, $this->page);
+            $navi = new \Cx\Core\PageTree\NestedNavigationPageTree(\Env::get('em'), $license, 0, $rootNode, $this->langId, $this->page);
             $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();

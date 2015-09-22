@@ -1,12 +1,37 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * The Shop
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */
@@ -23,7 +48,7 @@ namespace Cx\Modules\Shop\Controller;
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */
@@ -1424,6 +1449,8 @@ die("Failed to update the Cart!");
                 self::$objTemplate->setGlobalVariable(array(
                     'SHOP_PRODUCT_DISCOUNTPRICE' => $discountPrice,
                     'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
+                    'SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_1' => $_ARRAYLANG['TXT_SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_1'],
+                    'SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_2' => $_ARRAYLANG['TXT_SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_2'],
                 ));
                 if (self::$objTemplate->blockExists('price_discount'))
                     self::$objTemplate->touchBlock('price_discount');
@@ -2598,7 +2625,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             $_SESSION['shop']['cancellation_terms'] = '';
         }
         // Since 3.1.0
-        $page_repository = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $page_repository = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         if ($page_repository->findOneByModuleCmdLang(
             'Shop', 'payment', FRONTEND_LANG_ID)) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(
@@ -3358,7 +3385,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 //\DBG::log("Shop::process(): Customer is not in final customer group (ID $usergroup_id), either");
                 // Neither one, add to the final customer group (default)
                 $arrGroups[] = $usergroup_id;
-                self::$objCustomer->setGroups(array($usergroup_id));
+                self::$objCustomer->setGroups($arrGroups);
 //\DBG::log("Shop::process(): Added Customer to final customer group (ID $usergroup_id): ".var_export(self::$objCustomer->getAssociatedGroupIds(), true));
             } else {
 //\DBG::log("Shop::process(): Customer is a final customer (ID $usergroup_id) already: ".var_export(self::$objCustomer->getAssociatedGroupIds(), true));

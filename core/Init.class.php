@@ -1,12 +1,37 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Initialize the CMS
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
@@ -14,11 +39,11 @@
 /**
  * Initialize the CMS
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Any methods handling content or language should be moved
  *              away from here to a distinct class!
@@ -139,11 +164,6 @@ class InitCMS
         if (!empty($_REQUEST['setLang'])) {
             $backendLangId = intval($_REQUEST['setLang']);
             $setUserLanguage = true;
-        } elseif (!empty($_COOKIE['backendLangId'])) {
-            // the language already has changed for the backend, but he hasn't been logged in at this time
-            // (perhaps on login page)
-            $setUserLanguage = true;
-            $backendLangId = intval($_COOKIE['backendLangId']);
         }
 
         // the language is activated for the backend
@@ -155,21 +175,11 @@ class InitCMS
         if ($setUserLanguage && $objFWUser->objUser->login(true) && $objFWUser->objUser->getBackendLanguage() != $backendLangId) {
             $objFWUser->objUser->setBackendLanguage($backendLangId);
             $objFWUser->objUser->store();
-
-            // delete cookie for authenticated users
-            setcookie('backendLangId', '', time() - 3600, ASCMS_PATH_OFFSET.'/');
         }
 
         $this->backendLangId = $this->arrLang[$backendLangId]['id'];
         $this->currentThemesId = $this->arrLang[$backendLangId]['themesid'];
         $this->backendLangCharset = $this->arrLang[$backendLangId]['charset'];
-
-        // Set a COOKIE to remember the selected backend language.
-        // But do this only for non-authenticated users, as authenticated
-        // users have the selected backend language being stored in their profile.
-        if (!$objFWUser->objUser->login(true)) {
-            setcookie('backendLangId', $backendLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
-        }
     }
 
 
@@ -689,6 +699,7 @@ class InitCMS
                         case 'SystemLog':
                         case 'NetManager':
                         case 'Wysiwyg':
+                        case 'Routing':
                             $this->arrModulePath[$objResult->fields['name']] = ASCMS_CORE_PATH.'/'. $objResult->fields['name'] . '/lang/';
                             break;
                         default:

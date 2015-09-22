@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * JSON Adapter for Uploader
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -14,20 +39,17 @@ namespace Cx\Core_Modules\Uploader\Controller;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use \Cx\Core\Json\JsonAdapter;
 use Cx\Core\Model\RecursiveArrayAccess;
-use Cx\Core_Modules\MediaBrowser\Model\MoveFileException;
-use Cx\Core_Modules\MediaBrowser\Model\RemoveDirectoryException;
-use Cx\Core_Modules\MediaBrowser\Model\RemoveFileException;
 use Cx\Lib\FileSystem\FileSystem;
 
 /**
  * JSON Adapter for Uploader
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  */
 class JsonUploader extends SystemComponentController implements JsonAdapter
 {
-    
+
     /**
      * Message which gets displayed.
      *
@@ -53,7 +75,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
      */
     public function getAccessableMethods()
     {
-        return array('upload');
+        return array('upload' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('https','http'), array('post'), false));
     }
 
     /**
@@ -100,13 +122,13 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 )
             );
         }
-        $allowedExtensions = \Cx\Core_Modules\Uploader\Model\Entity\Uploader::$allowedExtensions;
+        $allowedExtensions = false;
         if (isset($_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'])) {
             $allowedExtensions = $_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'];
         }
         $uploader = UploaderController::handleRequest(
             array(
-                'allow_extensions' => explode(', ', $allowedExtensions),
+                'allow_extensions' => is_array($allowedExtensions) ? explode(', ', $allowedExtensions) : $allowedExtensions,
                 'target_dir' => $path,
                 'tmp_dir' => $tmpPath
             )
@@ -119,7 +141,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
 
 
         $response = new UploadResponse();
-        if (isset($_SESSION['uploader']['handlers'][$id]['callback'])) {
+        if (isset($_SESSION['uploader']['handlers'][$id]['callback']) && $uploader !== true) {
 
             /**
              * @var $callback RecursiveArrayAccess
@@ -171,26 +193,43 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                     ), $data, $id, $uploader, $response
                 );
             }
+
+            $files = new \RegexIterator(
+                new \DirectoryIterator(
+                    $filePath.'/'
+                ), '/.*/'
+            );
+            $file = false;
+            foreach($files as $fileInfo){
+                if ($fileInfo->isFile()) {
+                    $file = $fileInfo->getRealPath();
+                    break;
+                }
+            }
+            if (!$file){
+                throw new UploaderException(PLUPLOAD_TMPDIR_ERR);
+            }
             \Cx\Lib\FileSystem\FileSystem::move(
-                $uploader['path'], $fileLocation[0] . '/' . $uploader['name'],
+                $file, $fileLocation[0] . pathinfo( $file, PATHINFO_BASENAME),
                 true
             );
-            \Cx\Lib\FileSystem\FileSystem::delete_file($uploader['path']);
+
+            \Cx\Lib\FileSystem\FileSystem::delete_file($file);
 
             if (isset($fileLocation[2])){
                 $uploader['name'] = $fileLocation[2];
             }
             $fileLocation = array(
-                $fileLocation[0] . '/' . $uploader['name'],
-                $fileLocation[1] . '/' . $uploader['name']
+                $fileLocation[0] . pathinfo( $file, PATHINFO_BASENAME),
+                $fileLocation[1] . pathinfo( $file, PATHINFO_BASENAME)
             );
         }
-        
+
         if ($response->getWorstStatus()) {
                 $result = $response->getResponse();
                 return array(
                     'OK' => 0,
-                    'file' => $fileLocation,
+                    'file' => $fileLocation[1],
                     'response' => $result['messages']
                 );
         }
@@ -199,7 +238,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         } else {
             return array(
                 'OK' => 1,
-                'file' => $fileLocation
+                'file' => $fileLocation[1]
             );
         }
     }

@@ -1,12 +1,37 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * RSSWriter
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CLOUDREXX CMS - ASTALAVISTA IT AG
  * @author Astalavista Development Team <thun@astalavista.ch>
  * @version 2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -15,10 +40,10 @@
  * RSSWriter
  * Creates RSS files
  *
- * @copyright   CONTREXX CMS - ASTALAVISTA IT AG
+ * @copyright   CLOUDREXX CMS - ASTALAVISTA IT AG
  * @author Astalavista Development Team <thun@astalavista.ch>
  * @version 2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class RSSWriter {
@@ -33,8 +58,8 @@ class RSSWriter {
     var $arrErrorMsg = array();
     var $arrWarningMsg = array();
 
-    var $channelTitle = ''; //'Contrexx.com Neuste Videos';
-    var $channelLink = ''; //'http://www.contrexx.com/podcast';
+    var $channelTitle = ''; //'Cloudrexx.com Neuste Videos';
+    var $channelLink = ''; //'http://www.cloudrexx.com/podcast';
     var $channelDescription = ''; //'Neuste Videos';
 
     var $channelLanguage = '';
@@ -70,15 +95,6 @@ class RSSWriter {
     var $_arrItems = array();
     var $xmlItems = '';
     var $_currentItem = 0;
-
-    /**
-     * PHP4 Contructor
-     *
-     */
-    function RSSWriter()
-    {
-        $this->__construct();
-    }
 
     /**
      * PHP5 contructor

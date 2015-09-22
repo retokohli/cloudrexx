@@ -1,15 +1,41 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Library Class CRM
  * CrmLibrary class
  *
  * @category   CrmLibrary
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
- * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @copyright  2012 and CLOUDREXX CMS - CLOUDREXX AG
  * @license    trial license
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 namespace Cx\Modules\Crm\Controller;
@@ -23,12 +49,12 @@ define('CRM_EVENT_ON_ACCOUNT_UPDATED', 'crm_notify_staff_on_contact_added');
  * CrmLibrary class
  *
  * @category   CrmLibrary
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
- * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @copyright  2012 and CLOUDREXX CMS - CLOUDREXX AG
  * @license    trial license
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 class CrmLibrary
 {
@@ -1854,7 +1880,7 @@ class CrmLibrary
     }
 
     /**
-     * Populates the Contrexx user Filter Drop Down
+     * Populates the Cloudrexx user Filter Drop Down
      *
      * @param String  $block      The name of the template block to parse
      * @param Integer $selectedId The ID of the selected user
@@ -2483,8 +2509,8 @@ class CrmLibrary
     }
     /**
      * Make the url string's into clickable link's.
-     * Example: <p> http://www.contrexx.com </p> will be
-     * <p> <a href="http://www.contrexx.com" rel="nofollow"> http://www.contrexx.com </a> </p>
+     * Example: <p> http://www.cloudrexx.com </p> will be
+     * <p> <a href="http://www.cloudrexx.com" rel="nofollow"> http://www.cloudrexx.com </a> </p>
      *
      * @param String $html
      *
@@ -2579,14 +2605,20 @@ class CrmLibrary
                 }
 
                 //insert address
-                if (!empty ($fieldValues['access_address']) || !empty ($fieldValues['access_city']) || !empty ($fieldValues['access_zip']) || !empty ($fieldValues['access_country'])) {
+                $accessAddress = !empty ($fieldValues['access_address']) ? contrexx_input2db($fieldValues['access_address']) : '';
+                $accessCity    = !empty ($fieldValues['access_city']) ? contrexx_input2db($fieldValues['access_city']) : '';
+                $accessZip     = !empty ($fieldValues['access_zip']) ? contrexx_input2db($fieldValues['access_zip']) : '';
+                $accessCountry = !empty ($fieldValues['access_country']) ? contrexx_input2db($fieldValues['access_country']) : '';
+                $accessState   = !empty ($fieldValues['access_state']) ? contrexx_input2db($fieldValues['access_state']) : '';
+                
+                if ($accessAddress || $accessCity || $accessZip || $accessCountry) {
 
                     $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` SET
-                                    address      = '". contrexx_input2db($fieldValues['access_address']) ."',
-                                    city         = '". contrexx_input2db($fieldValues['access_city']) ."',
-                                    state        = '". contrexx_input2db($fieldValues['access_state']) ."',
-                                    zip          = '". contrexx_input2db($fieldValues['access_zip']) ."',
-                                    country      = '". contrexx_input2db($fieldValues['access_country']) ."',
+                                    address      = '". $accessAddress ."',
+                                    city         = '". $accessCity ."',
+                                    state        = '". $accessState ."',
+                                    zip          = '". $accessZip ."',
+                                    country      = '". $accessCountry ."',
                                     Address_Type = '2',
                                     is_primary   = '1',
                                     contact_id   = '{$this->contact->id}'";
@@ -2633,8 +2665,8 @@ class CrmLibrary
                     $query .= implode(",", $values);
                     $objDatabase->Execute($query);
                 }
-                if (!empty($arrFormData['assigned_membreships'])) {
-                    $this->updateCustomerMemberships($arrFormData['assigned_membreships'], $this->contact->id);
+                if (!empty($arrFormData['crmCustomerGroups'])) {
+                    $this->updateCustomerMemberships($arrFormData['crmCustomerGroups'], $this->contact->id);
                 }
                 // notify the staff's
                 $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName, $this->contact->family_name, $this->contact->contact_gender);

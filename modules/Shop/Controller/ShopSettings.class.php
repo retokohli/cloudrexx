@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Shop settings
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */
@@ -14,10 +39,10 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * Shop settings
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */
@@ -178,6 +203,12 @@ class ShopSettings
             intval($_POST['numof_coupon_per_page_backend']))) {
             \Cx\Core\Setting\Controller\Setting::add('numof_coupon_per_page_backend',
                 intval($_POST['numof_coupon_per_page_backend']), 58,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        }
+        if (!\Cx\Core\Setting\Controller\Setting::set('numof_products_per_page_frontend',
+            intval($_POST['numof_products_per_page_frontend']))) {
+            \Cx\Core\Setting\Controller\Setting::add('numof_products_per_page_frontend',
+                intval($_POST['numof_products_per_page_frontend']), null,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         }
     }

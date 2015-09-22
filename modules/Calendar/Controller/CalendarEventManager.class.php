@@ -1,11 +1,37 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Calendar 
  * 
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_calendar
- * @author     Comvation <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
 namespace Cx\Modules\Calendar\Controller;
@@ -13,10 +39,10 @@ namespace Cx\Modules\Calendar\Controller;
 /**
  * Calendar Class EventManager
  * 
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_calendar
- * @author     Comvation <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
 class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
@@ -218,8 +244,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
         parent::getSettings();
         
         // need for database TIMESTAMP
-        $startDate = !empty($this->startDate) ? date("Y-m-d H:i:s", $this->startDate) : $this->startDate;
-        $endDate   = !empty($this->endDate) ? date("Y-m-d H:i:s", $this->endDate) : $this->endDate;
+        $startDate = !empty($this->startDate) ? date("Y-m-d H:i:s", $this->startDate) : '0000-00-00 00:00:00';
+        $endDate   = !empty($this->endDate) ? date("Y-m-d H:i:s", $this->endDate) : '0000-00-00 00:00:00';
         
         $onlyActive_where = ($this->onlyActive == true ? ' AND event.status=1' : '');  
         $categoryId_where = ($this->categoryId != 0 ? ' AND event.catid='.$this->categoryId : '');  
@@ -1423,10 +1449,11 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 $isAllowedEvent = (boolean) $objCloneEvent->seriesData['seriesPatternEnd']; 
                 break;
             case 3:
-                if($objCloneEvent->startDate <= $objCloneEvent->seriesData['seriesPatternEnd']) {
+                if($objCloneEvent->startDate <= $objCloneEvent->seriesData['seriesPatternEndDate']) {
                     $getNextEvent = true;
                 } else {
-                    $getNextEvent = false;
+                    // don't show the event when startdate is greater then seriesPatternEndDate
+                    $isAllowedEvent = $getNextEvent = false;
                 }
                 break;
         }

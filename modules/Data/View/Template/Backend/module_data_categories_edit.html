@@ -26,37 +26,26 @@ function copyText(strField) {
 	}	
 }
 
-var switchAction = function(obj)
+function switchAction(obj)
 {
-    var pageSelect = $("select_display");
-    var height = $('box_height');
-    var width = $('box_width');
-    if (obj.value == "overlaybox" ) {
-        pageSelect.style.display = "none";
-        makeVisible(width, "table-row");
-        makeVisible(height, "table-row");
-    } else if (obj.value == "subcategories") {
-        pageSelect.style.display = "none";
-        width.style.display = "none";
-        height.style.display = "none";
-    } else {
-        makeVisible(pageSelect, "table-row");
-        height.style.display = "none";
-        width.style.display = "none";
-    }
+  if (obj.value == "overlaybox") {
+    showOrHide('#select_display', false);
+    showOrHide('#box_height,#box_width', true);
+  } else if (obj.value == "subcategories") {
+    showOrHide('#select_display', false);
+    showOrHide('#box_height,#box_width', false);
+  } else {
+    showOrHide('#select_display', true);
+    showOrHide('#box_height,#box_width', false);
+  }
 }
 
-/**
- * IE doesn't neither know the table-row nor 
- * table-cell properties of CSS
- */
-var makeVisible = function(ref, property)
-{
-    try {
-        ref.style.display = property;
-    } catch(e) {
-        ref.style.display = "block";
-    }
+function showOrHide(selector, status) {
+  if (status) {
+    jQuery(selector).show();
+  } else {
+    jQuery(selector).hide();
+  }
 }
 
 //]]>
@@ -87,7 +76,7 @@ var makeVisible = function(ref, property)
                     <!-- END addCategoryDropDown -->
             </select>
             </td>
-        </tr>-->
+        </tr>
 		<tr class="row1">
 			<td>{TXT_EDIT_LANGUAGES}</td>
 			<td style="width: 10%; vertical-alignt: top;">{EDIT_LANGUAGES_1}</td>

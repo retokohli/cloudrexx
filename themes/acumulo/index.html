@@ -39,11 +39,11 @@
         </script>
         <script type="text/javascript" src= "themes/acumulo/scripts.js"></script>
         <script type="text/javascript">
-           $J.ajax({
+           $jq.ajax({
                url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg',
                statusCode: {
                    200: function() {
-                       $J('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg" alt="Titelbild" />');
+                       $jq('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg" alt="Titelbild" />');
                    }
                }
            });

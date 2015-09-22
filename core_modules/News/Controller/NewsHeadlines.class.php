@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * News headlines
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @version 1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  * @todo        Edit PHP DocBlocks!
  */
@@ -16,11 +41,11 @@ namespace Cx\Core_Modules\News\Controller;
  * News headlines
  *
  * Gets all the news headlines
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
  * @version 1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
@@ -72,8 +97,8 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
             $objResult=false;
         } else {//fetch news
             $objResult = $objDatabase->SelectLimit("
-                SELECT DISTINCT(tblN.id) AS id,
-                       tblN.`date`, 
+                SELECT DISTINCT(tblN.id) AS newsid,
+                       tblN.`date` AS newsdate,
                        tblN.teaser_image_path,
                        tblN.teaser_image_thumbnail_path,
                        tblN.redirect,
@@ -81,8 +106,15 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                        tblN.publisher_id,
                        tblN.author,
                        tblN.author_id,
+                       tblN.changelog,
+                       tblN.source,
+                       tblN.allow_comments AS commentactive,
+                       tblN.enable_tags,
+                       tblN.url1,
+                       tblN.url2,
                        tblL.text NOT REGEXP '^(<br type=\"_moz\" />)?\$' AS newscontent,
-                       tblL.title AS title, 
+                       tblL.text AS text,
+                       tblL.title AS newstitle,
                        tblL.teaser_text
                   FROM ".DBPREFIX."module_news AS tblN
             INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
@@ -106,75 +138,21 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
         if ($objResult !== false && $objResult->RecordCount() >= 0) {
             while (!$objResult->EOF) {
-                $newsid    = $objResult->fields['id'];
-                $newstitle = $objResult->fields['title'];
+                $newsid = $objResult->fields['newsid'];
                 $newsCategories = $this->getCategoriesByNewsId($newsid);
                 $newsUrl   = empty($objResult->fields['redirect'])
                                 ? (empty($objResult->fields['newscontent'])
                                     ? ''
                                     : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), array($catId))), FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                 : $objResult->fields['redirect'];
-                $htmlLink   = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), 'headlineLink');
-                $htmlLinkTitle  = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
-                // in case that the message is a stub, we shall just display the news title instead of a html-a-tag with no href target
-                if (empty($htmlLinkTitle)) {
-                    $htmlLinkTitle = contrexx_raw2xhtml($newstitle);
-                }
 
-                list($image, $htmlLinkImage, $imageSource) = self::parseImageThumbnail($objResult->fields['teaser_image_path'],
-                                                                                       $objResult->fields['teaser_image_thumbnail_path'],
-                                                                                       $newstitle,
-                                                                                       $newsUrl);
-
-                $author     = \FWUser::getParsedUserTitle($objResult->fields['author_id'], $objResult->fields['author']);
-                $publisher  = \FWUser::getParsedUserTitle($objResult->fields['publisher_id'], $objResult->fields['publisher']);
+                //Parse all the news placeholders
+                $this->parseNewsPlaceholders($this->_objTemplate, $objResult, $newsUrl);
 
                 $this->_objTemplate->setVariable(array(
-                    'NEWS_ID'           => $newsid,
-                    'NEWS_CSS'          => 'row'.($i % 2 + 1),
-                    'NEWS_LONG_DATE'    => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                    'NEWS_DATE'         => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
-                    'NEWS_TIME'         => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['date']),
-                    'NEWS_TITLE'        => contrexx_raw2xhtml($newstitle),
-                    'NEWS_TEASER'       => nl2br($objResult->fields['teaser_text']),
-                    'NEWS_LINK_TITLE'   => $htmlLinkTitle,
-                    'NEWS_LINK'         => $htmlLink,
-                    'NEWS_LINK_URL'     => contrexx_raw2xhtml($newsUrl),
-                    'NEWS_AUTHOR'       => contrexx_raw2xhtml($author),
-                    'NEWS_PUBLISHER'    => contrexx_raw2xhtml($publisher),
-
-                    // Backward compatibility for templates pre 3.0
-                    'HEADLINE_ID'       => $newsid,
-                    'HEADLINE_DATE'     => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
-                    'HEADLINE_TEXT'     => nl2br($objResult->fields['teaser_text']),
-                    'HEADLINE_LINK'     => $htmlLinkTitle,
-                    'HEADLINE_AUTHOR'   => contrexx_raw2xhtml($author),
+                    'NEWS_CSS' => 'row'.($i % 2 + 1),
                 ));
 
-                if (!empty($image)) {
-                    $this->_objTemplate->setVariable(array(
-                        'NEWS_IMAGE'         => $image,
-                        'NEWS_IMAGE_SRC'     => contrexx_raw2xhtml($imageSource),
-                        'NEWS_IMAGE_ALT'     => contrexx_raw2xhtml($newstitle),
-                        'NEWS_IMAGE_LINK'    => $htmlLinkImage,
-
-                        // Backward compatibility for templates pre 3.0
-                        'HEADLINE_IMAGE_PATH'     => contrexx_raw2xhtml($objResult->fields['teaser_image_path']),
-                        'HEADLINE_THUMBNAIL_PATH' => contrexx_raw2xhtml($imageSource),
-                    ));
-
-                    if ($this->_objTemplate->blockExists('news_image')) {
-                        $this->_objTemplate->parse('news_image');
-                    }
-                } else {
-                    if ($this->_objTemplate->blockExists('news_image')) {
-                        $this->_objTemplate->hideBlock('news_image');
-                    }
-                }
-                
-                self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'image_thumbnail');
-                self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'image_detail');
-                
                 $this->_objTemplate->parse('headlines_row');
                 $i++;
                 $objResult->MoveNext();

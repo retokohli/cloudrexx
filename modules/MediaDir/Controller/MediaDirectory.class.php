@@ -1,10 +1,35 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media  Directory
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
@@ -13,9 +38,9 @@ namespace Cx\Modules\MediaDir\Controller;
 /**
  * Media Directory
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 class MediaDirectory extends MediaDirectoryLibrary
@@ -298,9 +323,14 @@ class MediaDirectory extends MediaDirectoryLibrary
                 $bolLatest = true;
                 $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']);
             } else {
-                $bolLatest = false;
+                $bolLatest   = false;
                 $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
-            }                 
+                if (    !empty($intCmdFormId)
+                    &&  !empty($objForms->arrForms[$intCmdFormId]['formEntriesPerPage'])
+                ) {
+                    $intLimitEnd = $objForms->arrForms[$intCmdFormId]['formEntriesPerPage'];
+                }
+            }
 
             //check show entries
             if((isset($objLevel) && $objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1) || (isset($objCategory) && $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1) || $bolLatest == true || (!$bolFormUseCategory && !$bolFormUseLevel)) {
@@ -372,9 +402,22 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         $_GET['term'] = trim($_GET['term']);
 
-
-        $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+        $cmd         = isset($_GET['cmd']) ? contrexx_input2raw($_GET['cmd']) : '';
         $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
+        if (!empty($cmd)) {
+            $objForms = new MediaDirectoryForm(null, $this->moduleName);
+            foreach ($objForms->arrForms as $intFormId => $arrForm) {
+                if (    !empty($arrForm['formCmd'])
+                    &&  $arrForm['formCmd'] === $cmd
+                    &&  !empty($arrForm['formEntriesPerPage'])
+                ) {
+                    $intLimitEnd = $arrForm['formEntriesPerPage'];
+                    break;
+                }
+            }
+        }
+        
+        $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
         if(!empty($_GET['term']) || $_GET['type'] == 'exp') {
             $objSearch = new MediaDirectorySearch($this->moduleName);

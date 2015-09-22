@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Main controller for News
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 
@@ -13,9 +39,9 @@ namespace Cx\Core_Modules\News\Controller;
 /**
  * Main controller for News
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
@@ -53,6 +79,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
                     \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
                     \Env::get('cx')->getPage()->setMetaTitle($newsObj->newsTitle);
+                    \Env::get('cx')->getPage()->setMetakeys($newsObj->newsMetaKeys);
                 }
                 break;
 
@@ -77,12 +104,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $themesPages, $page_template;
+        global $themesPages, $page_template, $objInit;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 // Get Headlines
                 $modulespath = ASCMS_CORE_MODULE_PATH.'/News/Controller/NewsHeadlines.class.php';
                 if (file_exists($modulespath)) {
+                    $first = true;
                     for ($i = 0; $i < 5; $i++) {
                         $visibleI = '';
                         if ($i > 0) {
@@ -99,6 +127,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 $matches = array();
                                 if (preg_match('/\{CATEGORY_([0-9]+)\}/', trim($themesPages['headlines' . $visibleI]), $matches)) {
                                     $category = $matches[1];
+                                }
+                                if ($first) {
+                                    $first = false;
+                                    $objInit->loadLanguageData('News');
                                 }
                                 $newsHeadlinesObj = new NewsHeadlines($themesPages['headlines' . $visibleI]);
                                 $homeHeadlines = $newsHeadlinesObj->getHomeHeadlines($category);

@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Stats
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Christian Wehrli <christian.wehrli@astalavista.ch>
  * @version     $Id: index.class.php,v 1.11 2003/05/05 10:10:32 hitsch Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_stats
  * @todo        Edit PHP DocBlocks!
  */
@@ -16,10 +41,10 @@ namespace Cx\Core_Modules\Stats\Controller;
  *
  * Class with different methodes to get statistical information about
  * webaccess
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Christian Wehrli <christian.wehrli@astalavista.ch>
  * @version     $Id: index.class.php,v 1.11 2003/05/05 10:10:32 hitsch Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_stats
  */
 class Stats extends StatsLibrary
@@ -1015,7 +1040,8 @@ class Stats extends StatsLibrary
             'TXT_EXTERNAL_SEARCH_QUERIES'    => $_ARRAYLANG['TXT_EXTERNAL_SEARCH_QUERIES'],
             'TXT_SEARCH_TERMS'    => $_ARRAYLANG['TXT_SEARCH_TERMS'],
             'TXT_SEARCH_TERM'    => $_ARRAYLANG['TXT_SEARCH_TERM'],
-            'TXT_FREQUENCY'        => $_ARRAYLANG['TXT_FREQUENCY']
+            'TXT_FREQUENCY'        => $_ARRAYLANG['TXT_FREQUENCY'],
+            'TXT_NO_DATA_AVAILABLE' => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
         ));
 
         if (isset($this->arrSearchTerms['internal']) && count($this->arrSearchTerms['internal'])>0) {
@@ -1032,9 +1058,7 @@ class Stats extends StatsLibrary
             $this->_objTpl->hideBlock('stats_search_internal_nodata');
         } else {
             $this->_objTpl->hideBlock('stats_search_internal');
-            $this->_objTpl->setVariable(array(
-                'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
+            $this->_objTpl->touchBlock('stats_search_internal_nodata');
         }
 
         if (isset($this->arrSearchTerms['external']) && count($this->arrSearchTerms['external'])>0) {
@@ -1051,9 +1075,7 @@ class Stats extends StatsLibrary
             $this->_objTpl->hideBlock('stats_search_external_nodata');
         } else {
             $this->_objTpl->hideBlock('stats_search_external');
-            $this->_objTpl->setVariable(array(
-                'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
+            $this->_objTpl->touchBlock('stats_search_external_nodata');
         }
 
         if (isset($this->arrSearchTerms['summary']) && count($this->arrSearchTerms['summary'])>0) {
@@ -1070,9 +1092,7 @@ class Stats extends StatsLibrary
             $this->_objTpl->hideBlock('stats_search_summary_nodata');
         } else {
             $this->_objTpl->hideBlock('stats_search_summary');
-            $this->_objTpl->setVariable(array(
-                'TXT_NO_DATA_AVAILABLE'                => $_ARRAYLANG['TXT_NO_DATA_AVAILABLE']
-            ));
+            $this->_objTpl->touchBlock('stats_search_summary_nodata');
         }
     }
 

@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  */
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Bestätigung erfolgreich! Sie werden ab sofort den Newsletter erhalten.";
@@ -63,7 +89,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'] = "Geburtstag";
 $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE'] = "Abonnieren";
 $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'] = "Firma";
 $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY'] = "Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember";
-$_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST'] = "Sie müssen mindestens eine Liste auswählen!";
 $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED'] = "Ihre Daten wurden erfolgreich aktualisiert.";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "Beim aktualisieren Ihrer Daten trat ein Fehler auf!";
 $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "Beim hinzufügen zum Newsletter-System trat ein Fehler auf!";

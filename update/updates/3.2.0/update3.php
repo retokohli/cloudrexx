@@ -1,6 +1,31 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * This file updates a RC1 or RC2 installation to a stable installation
  * To update your installation perform the following:
  * 1. Copy all your files to a backup folder
@@ -1707,7 +1732,7 @@ while (!$result->EOF) {
 
 // fix fallback pages
 if ($version == 'rc1') {
-    $em = \Env::em();
+    $em = \Env::get('em');
     $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
     $fallbackPages = $pageRepo->findBy(array(
@@ -1787,7 +1812,7 @@ if ($version == 'rc1' || $version == 'rc2'
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     // contact core_module
     // update the content pages
-    $em = \Env::em();
+    $em = \Env::get('em');
     $cl = \Env::get('ClassLoader');
     $cl->loadFile(ASCMS_CORE_MODULE_PATH . '/contact/admin.class.php');
     $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -2367,7 +2392,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
 }
 
 // fix tree
-\Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
+\Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
 
 require(dirname(__FILE__).'/config.inc.php');
 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsVersion'] . '\' WHERE `setname` = \'coreCmsVersion\'');

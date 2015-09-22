@@ -1,6 +1,31 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * @ignore
  */
 require_once(ASCMS_FRAMEWORK_PATH.'/Validator.class.php');
@@ -12,10 +37,10 @@ require_once(ASCMS_FRAMEWORK_PATH.'/User/User.class.php');
 
 /**
  * Install Wizard Controller
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       $Id:     Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  installer
  * @todo        Edit PHP DocBlocks!
  */
@@ -1837,7 +1862,7 @@ class Installer
     }
 
     function _showTermination() {
-        global $objTpl, $_ARRLANG, $_CONFIG, $_DBCONFIG, $objCommon, $basePath, $sessionObj, $objInit, $objDatabse, $objDatabase, $documentRoot;
+        global $objTpl, $_ARRLANG, $_CONFIG, $_DBCONFIG, $objCommon, $basePath, $sessionObj, $documentRoot;
 
         // load template file
         $objTpl->addBlockfile('CONTENT', 'CONTENT_BLOCK', "termination.html");
@@ -1891,15 +1916,23 @@ class Installer
 
             $objTpl->parse('termination');
 
+            // overwrite current DBCONFIG with the new data, so the database can be loaded correct in this request
+            $_DBCONFIG['host'] = $_SESSION['installer']['config']['dbHostname'];
+            $_DBCONFIG['database'] = $_SESSION['installer']['config']['dbDatabaseName'];
+            $_DBCONFIG['user'] = $_SESSION['installer']['config']['dbUsername'];
+            $_DBCONFIG['password'] = $_SESSION['installer']['config']['dbPassword'];
+            $_DBCONFIG['tablePrefix'] = $_SESSION['installer']['config']['dbTablePrefix'];
+
             @session_destroy();
-            
+            // clear cx in env, because from now on we use the core Cx and not longer the InstallerCx
+            \Env::clear('cx');
             // we will now initialize a new session and will login the administrator (userID = 1).
             // this is required to allow the License system (versioncheck.php) to update
             // the license section template
             // We might have some overhead, since versioncheck.php does more or less the same again
             $documentRoot = realpath(dirname($basePath));
             require_once($documentRoot.'/core/Core/init.php');
-            init('minimal');
+            init('minimal', false);
             
             if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = cmsSession::getInstance();
 

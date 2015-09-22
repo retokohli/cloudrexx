@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * News manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  * @todo        Edit PHP DocBlocks!
  *              The news entry management is bulky! It should be rewritten in OOP
@@ -15,11 +40,11 @@ namespace Cx\Core_Modules\News\Controller;
 
 /**
  * News manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
@@ -1227,17 +1252,17 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         //Parsing the saved tags
         if (!empty($this->arrSettings['news_use_tags'])) {
             $this->registerTagJsCode();
-            if (    $this->_objTpl->blockExists('newsTags')
+            if (    $this->_objTpl->blockExists('news_tags')
                 &&  !empty($newsTags)
             ) {
                 foreach ($newsTags as $newsTag) {
                     $this->_objTpl->setVariable('NEWS_TAGS', contrexx_raw2xhtml($newsTag));
-                    $this->_objTpl->parse('newsTags');
+                    $this->_objTpl->parse('news_tags');
                 }
             }
-            $this->_objTpl->touchBlock('newsTagsBlock');
+            $this->_objTpl->touchBlock('news_tags_container');
         } else {
-            $this->_objTpl->hideBlock('newsTagsBlock');
+            $this->_objTpl->hideBlock('news_tags_container');
         }
          $this->_objTpl->setVariable(array(
             'NEWS_TEXT_PREVIEW'             => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', !empty($locales['text'][\FWLanguage::getDefaultLangId()]) ? $locales['text'][\FWLanguage::getDefaultLangId()] : '', 'full'),
@@ -1852,15 +1877,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $this->registerTagJsCode();
                 $newsTagDetails = $this->getNewsTags($id);
                 $newsTags       = $newsTagDetails['tagList'];
-                if ($this->_objTpl->blockExists('newsTags')) {
+                if ($this->_objTpl->blockExists('news_tags')) {
                     foreach ($newsTags as $newsTag) {
-                        $this->_objTpl->setVariable('NEWS_TAGS', $newsTag);
-                        $this->_objTpl->parse('newsTags');
+                        $this->_objTpl->setVariable('NEWS_TAGS', contrexx_raw2xhtml($newsTag));
+                        $this->_objTpl->parse('news_tags');
                     }
                 }
-                $this->_objTpl->touchBlock('newsTagsBlock');
+                $this->_objTpl->touchBlock('news_tags_container');
             } else {
-                $this->_objTpl->hideBlock('newsTagsBlock');
+                $this->_objTpl->hideBlock('news_tags_container');
             }
             if (!empty($this->arrSettings['use_related_news'])) {
                 $objCx = \ContrexxJavascript::getInstance();
@@ -3295,6 +3320,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTeaserText'])."' WHERE name = 'news_use_teaser_text'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTags'])."' WHERE name = 'news_use_tags'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['useRelatedNews'])."' WHERE name = 'use_related_news'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUsePreviousNextLink'])."' WHERE name = 'use_previous_next_news_link'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTypes'])."' WHERE name = 'news_use_types'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTop'])."' WHERE name='news_use_top'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".(!empty($_POST['newsTopDays']) ? intval($_POST['newsTopDays']) : 10)."' WHERE name = 'news_top_days'");
@@ -3495,6 +3521,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'NEWS_USE_TEASER_TEXT_CHECKED'          => $this->arrSettings['news_use_teaser_text'] == '1' ? 'checked="checked"' : '',
             'NEWS_USE_TYPES_CHECKED'                => $this->arrSettings['news_use_types'] == '1' ? 'checked="checked"' : '',
             'NEWS_USE_RELATED_NEWS_CHECKED'         => $this->arrSettings['use_related_news'] == '1' ? 'checked="checked"' : '',
+            'NEWS_USE_PREVIOUS_NEXT_LINK_CHECKED'   => $this->arrSettings['use_previous_next_news_link'] == '1' ? 'checked="checked"' : '',
             'NEWS_USE_TAGS_CHECKED'                 => $this->arrSettings['news_use_tags'] == '1' ? 'checked="checked"' : '',
             'TXT_STORE'                             => $_ARRAYLANG['TXT_STORE'],
             'TXT_NAME'                              => $_ARRAYLANG['TXT_NAME'],
@@ -3515,7 +3542,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_USE_TEASER_TEXT'                   => $_ARRAYLANG['TXT_USE_TEASER_TEXT'],
             'TXT_USE_TYPES'                         => $_ARRAYLANG['TXT_USE_TYPES'],
             'TXT_USE_RELATED_NEWS'                  => $_ARRAYLANG['TXT_USE_RELATED_NEWS'],
-            'TXT_USE_TAGS'                          => $_ARRAYLANG['TXT_USE_TAGS'],
+            'TXT_NEWS_USE_TAGS'                     => $_ARRAYLANG['TXT_NEWS_USE_TAGS'],
             'TXT_NOTIFY_GROUP'                      => $_ARRAYLANG['TXT_NOTIFY_GROUP'],
             'TXT_NOTIFY_USER'                       => $_ARRAYLANG['TXT_NOTIFY_USER'],
             'TXT_DEACTIVATE'                        => $_ARRAYLANG['TXT_DEACTIVATE'],
@@ -3544,6 +3571,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT'             => $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT'],
             'TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT_HELP'        => $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT_HELP'],
             'TXT_NEWS_SETTINGS_RECENT_MESSAGES_LIMIT_HELP'   => $_ARRAYLANG['TXT_NEWS_SETTINGS_RECENT_MESSAGES_LIMIT_HELP'],
+            'TXT_NEWS_USE_PREVIOUS_NEXT_LINK'                => $_ARRAYLANG['TXT_NEWS_USE_PREVIOUS_NEXT_LINK'],
             'TXT_NEWS_DEFAULT_TEASERS'       => $_ARRAYLANG['TXT_NEWS_DEFAULT_TEASERS'],
             'TXT_NEWS_DEFAULT_TEASERS_HELP'       => $_ARRAYLANG['TXT_NEWS_DEFAULT_TEASERS_HELP'],
             'TXT_NEWS_EXTENDED'                     => $_ARRAYLANG['TXT_NEWS_EXTENDED'],
@@ -3696,8 +3724,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_TOP_NEWS_PLACEHOLDERS_USAGE'                           => $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'],
             'TXT_NEWS_COMMENTS'                                         => $_ARRAYLANG['TXT_NEWS_COMMENTS'],            
             'TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'                     => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'],
-            'TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_NAME'                => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_NAME'],
-            'TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_ID'                  => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_ID'],
             'TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'],
             'TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'                      => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'],
             'TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST'],
@@ -3740,6 +3766,20 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_NEXT_LINK_DESCRITION'                             => $_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'],
             'TXT_NEWS_NEXT_TITLE_DESCRITION'                            => $_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'],
             'TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'               => $_ARRAYLANG['TXT_NEWS_PREVIOUS_NEXT_LINK_ROW_DESCRIPTION'],
+            'TXT_NEWS_USER_ID_DESCRIPTION'                              => $_ARRAYLANG['TXT_NEWS_USER_ID_DESCRIPTION'],
+            'TXT_NEWS_USERNAME_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_USERNAME_DESCRIPTION'],
+            'TXT_NEWS_USER_PROFILE_ATTRIBUTE_DESCRIPTION'               => $_ARRAYLANG['TXT_NEWS_USER_PROFILE_ATTRIBUTE_DESCRIPTION'],
+            'TXT_NEWS_TEASER_TEXT_ROW_DESCRIPTION'                      => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_ROW_DESCRIPTION'],
+            'TXT_NEWS_NEWS_COMMENT_COUNT_ROW_DESCRIPTION'               => $_ARRAYLANG['TXT_NEWS_NEWS_COMMENT_COUNT_ROW_DESCRIPTION'],
+            'TXT_NEWS_TEXT_ROW_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_TEXT_ROW_DESCRIPTION'],
+            'TXT_NEWS_REDIRECT_ROW_DESCRIPTION'                         => $_ARRAYLANG['TXT_NEWS_REDIRECT_ROW_DESCRIPTION'],
+            'TXT_NEWS_TAGS'                                             => $_ARRAYLANG['TXT_NEWS_TAGS'],
+            'TXT_NEWS_TAGS_ROW_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_TAGS_ROW_DESCRIPTION'],
+            'TXT_NEWS_TAG_NAME_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_TAG_NAME_DESCRIPTION'],
+            'TXT_NEWS_TAG_LINK_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_TAG_LINK_DESCRIPTION'],
+            'TXT_NEWS_NO_TAGS_FOUND'                                    => $_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'],
+            'TXT_NEWS_PREVIOUS_SRC_DESCRITION'                          => $_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC_DESCRITION'],
+            'TXT_NEWS_NEXT_SRC_DESCRITION'                              => $_ARRAYLANG['TXT_NEWS_NEXT_SRC_DESCRITION'],
         ));
         $this->_objTpl->parse('settings_content');
     }

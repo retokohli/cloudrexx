@@ -1682,7 +1682,7 @@ class HTML_Template_Sigma extends PEAR
     }
 
     /**
-     * added by comvation for media directory
+     * added by cloudrexx for media directory
      */
     function clearVariables()
     {

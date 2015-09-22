@@ -1,12 +1,37 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * ContactLib
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  * @todo        Edit PHP DocBlocks!
  */
@@ -16,11 +41,11 @@ namespace Cx\Core_Modules\Contact\Controller;
 /**
  * ContactLib
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  */
 class ContactLib
@@ -107,7 +132,7 @@ class ContactLib
                     'recipients'        => $this->getRecipients($objResult->fields['id'], true),
                     'number'            => 0,
                     'last'              => 0,
-                    'crmCustomerGroups' => ($objResult->fields['crm_customer_groups']) ? unserialize(contrexx_stripslashes($objResult->fields['crm_customer_groups'])) :  array()
+                    'crmCustomerGroups' => $objResult->fields['crm_customer_groups'] ? unserialize($objResult->fields['crm_customer_groups']) : array()
                 );                
                 $objResult->MoveNext();
             }
@@ -214,12 +239,13 @@ class ContactLib
         return $this->_arrSettings;
     }
 
-    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$mailTemplate, &$showForm, &$useCaptcha, &$sendCopy, &$useEmailOfSender, &$htmlMail, &$sendAttachment)
+    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$mailTemplate, &$showForm, &$useCaptcha, &$sendCopy, &$useEmailOfSender, &$htmlMail, &$sendAttachment, &$saveDataInCRM, &$crmCustomerGroups)
     {
         global $objDatabase, $_CONFIG, $_ARRAYLANG, $_LANGID;
 
         $objContactForm = $objDatabase->SelectLimit("SELECT f.mails, l.subject, l.feedback, l.mailTemplate, f.showForm,
-                                                            f.use_captcha, f.send_copy, f.use_email_of_sender, f.html_mail, f.send_attachment
+                                                            f.use_captcha, f.send_copy, f.use_email_of_sender, f.html_mail, f.send_attachment,
+                                                            f.save_data_in_crm, f.crm_customer_groups
                                                      FROM ".DBPREFIX."module_contact_form AS f
                                                      LEFT JOIN ".DBPREFIX."module_contact_form_lang AS l
                                                      ON ( f.id = l.formID )
@@ -239,6 +265,8 @@ class ContactLib
             $useEmailOfSender    = $objContactForm->fields['use_email_of_sender'];
             $htmlMail            = $objContactForm->fields['html_mail'];
             $sendAttachment      = $objContactForm->fields['send_attachment'];
+            $saveDataInCRM       = $objContactForm->fields['save_data_in_crm'];
+            $crmCustomerGroups   = $objContactForm->fields['crm_customer_groups'] ? unserialize($objContactForm->fields['crm_customer_groups']) : array();
             return true;
         } else {
             return false;
@@ -260,7 +288,7 @@ class ContactLib
     /**
      * Get the form fields
      *
-     * @author      Comvation AG <info@comvation.com>
+     * @author      Cloudrexx AG <info@cloudrexx.com>
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $formID
      * @return      array
@@ -589,7 +617,7 @@ class ContactLib
     /**
      * Update an existing form
      *
-     * @author      Comvation AG <info@comvation.com>
+     * @author      Cloudrexx AG <info@cloudrexx.com>
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $formID
      * @param       string $emails
@@ -651,7 +679,7 @@ class ContactLib
     /**
      * Add a new form
      *
-     * @author      Comvation AG <info@Comvation.com>
+     * @author      Cloudrexx AG <info@Cloudrexx.com>
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       string $emails
      * @param       bool $showForm
@@ -885,7 +913,7 @@ class ContactLib
     /**
      * Delete a form
      *
-     * @author      Comvation AG <info@comvation.com>
+     * @author      Cloudrexx AG <info@cloudrexx.com>
      */
     protected function deleteForm($id)
     {
@@ -1162,7 +1190,7 @@ class ContactLib
     /**
      * Delete form fields and data
      *
-     * @author      Comvation AG <info@comvation.com>
+     * @author      Cloudrexx AG <info@cloudrexx.com>
      * @param       int $id
      */
     private function _deleteFormFieldsAndDataByFormId($id)

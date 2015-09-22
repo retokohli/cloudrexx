@@ -1,12 +1,37 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Newsletter Modul
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
  * @version 1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
@@ -18,11 +43,11 @@ namespace Cx\Modules\Newsletter\Controller;
  *
  * frontend newsletter class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
  * @version 1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
@@ -439,30 +464,26 @@ class Newsletter extends NewsletterLib
                         } else {
                             if ($this->_validateRecipientAttributes($recipientAttributeStatus, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientBirthday)) {
                                 if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {                    
-                                    if (!empty($arrAssociatedInactiveLists) || !empty($arrAssociatedLists) && ($objList = $objDatabase->SelectLimit('SELECT id FROM '.DBPREFIX.'module_newsletter_category WHERE status=1 AND (id='.implode(' OR id=', $arrAssociatedLists).')' , 1)) && $objList->RecordCount() > 0) {
-                                        if ($recipientId > 0) {
-                                            if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, 1, $arrAssociatedLists, $recipientLanguage)) {
-                                                array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED']);
-                                                $showForm = false;
-                                            } else {
-                                                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA']);
-                                            }
+                                    if ($recipientId > 0) {
+                                        if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, 1, $arrAssociatedLists, $recipientLanguage)) {
+                                            array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED']);
+                                            $showForm = false;
                                         } else {
-                                            if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
-                                                if ($this->_sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
-                                                    array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
-                                                    $showForm = false;
-                                                } else {
-                                                    $objDatabase->Execute("DELETE tblU, tblR FROM ".DBPREFIX."module_newsletter_user AS tblU, ".DBPREFIX."module_newsletter_rel_user_cat AS tblR WHERE tblU.email='".contrexx_addslashes($recipientEmail)."' AND tblR.user = tblU.id");
-                                                    array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL']);
-                                                }
-                                            } else {
-                                                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU']);
-                                            }
+                                            array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA']);
                                         }
                                     } else {
-                                        array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST']);
-                                    }                       
+                                        if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
+                                            if ($this->_sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
+                                                array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
+                                                $showForm = false;
+                                        } else {
+                                                $objDatabase->Execute("DELETE tblU, tblR FROM ".DBPREFIX."module_newsletter_user AS tblU, ".DBPREFIX."module_newsletter_rel_user_cat AS tblR WHERE tblU.email='".contrexx_addslashes($recipientEmail)."' AND tblR.user = tblU.id");
+                                                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL']);
+                                            }
+                                        } else {
+                                            array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU']);
+                                        }
+                                    }
                                 } elseif (empty($recipientId)) {
                                     // We must send a new confirmation e-mail here
                                     // otherwise someone could reactivate someone else's e-mail address
@@ -678,35 +699,22 @@ class Newsletter extends NewsletterLib
             // only show newsletter-lists that are visible for new users (not yet registered ones)
             $excludeDisabledLists = $recipientId == 0;
             $arrLists = self::getLists($excludeDisabledLists);
-            if ($this->_objTpl->blockExists('newsletter_lists')) {
-                switch (count($arrLists)) {
-                    case 0:
-                        // no lists are active, therefore we shall not try to parse any non existing list
-                    case 1:
-                        // only one list is active, therefore we will not parse any list and will automatically subscribe the user to this very list
-                        if (!$isAccessRecipient) {
-                            $this->_objTpl->hideBlock('newsletter_lists');
-                            break;
-                        }
-
-                    default:
-                        foreach ($arrLists as $listId => $arrList) {
-                            if ($arrList['status'] || in_array($listId, $arrPreAssociatedInactiveLists)) {
-                                $this->_objTpl->setVariable(array(
-                                    'NEWSLETTER_LIST_ID'        => $listId,
-                                    'NEWSLETTER_LIST_NAME'      => contrexx_raw2xhtml($arrList['name']),
-                                    'NEWSLETTER_LIST_SELECTED'  => in_array($listId, $arrAssociatedLists) ? 'checked="checked"' : ''
-                                ));
-                                $this->_objTpl->parse('newsletter_list');
-                            }
-                        }
-
+            if ($this->_objTpl->blockExists('newsletter_lists') && !empty($arrLists)) {
+                foreach ($arrLists as $listId => $arrList) {
+                    if ($arrList['status'] || in_array($listId, $arrPreAssociatedInactiveLists)) {
                         $this->_objTpl->setVariable(array(
-                            'TXT_NEWSLETTER_LISTS'             => $_ARRAYLANG['TXT_NEWSLETTER_LISTS'],
+                            'NEWSLETTER_LIST_ID'        => $listId,
+                            'NEWSLETTER_LIST_NAME'      => contrexx_raw2xhtml($arrList['name']),
+                            'NEWSLETTER_LIST_SELECTED'  => in_array($listId, $arrAssociatedLists) ? 'checked="checked"' : ''
                         ));
-                        $this->_objTpl->parse('newsletter_lists');
-                        break;
+                        $this->_objTpl->parse('newsletter_list');
+                    }
                 }
+
+                $this->_objTpl->setVariable(array(
+                    'TXT_NEWSLETTER_LISTS'             => $_ARRAYLANG['TXT_NEWSLETTER_LISTS'],
+                ));
+                $this->_objTpl->parse('newsletter_lists');
             }
 
             $this->_objTpl->setVariable(array(

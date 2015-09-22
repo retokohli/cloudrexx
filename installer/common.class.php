@@ -1,6 +1,31 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * @ignore
  */
 require_once(ASCMS_FRAMEWORK_PATH.'/DBG/DBG.php');
@@ -12,10 +37,10 @@ require_once(ASCMS_FRAMEWORK_PATH.'/FileSystem/FileSystem.class.php');
 
 /**
  * Install Wizard Controller
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       $Id:     Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  installer
  * @todo        Edit PHP DocBlocks!
  */
@@ -37,10 +62,10 @@ function cxupdateAdodbPdoConnectionFactory() {
  *
  * The Install Wizard
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       $Id:     Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  installer
  */
 class CommonFunctions
@@ -512,7 +537,7 @@ class CommonFunctions
         if ($result === false) {
             return false;
         } else {
-            return (defined('CONTEXX_INSTALLED') && CONTEXX_INSTALLED);
+            return (defined('CONTREXX_INSTALLED') && CONTREXX_INSTALLED);
         }
     }
 
@@ -978,7 +1003,7 @@ class CommonFunctions
     {
         $pathOffset = $_SESSION['installer']['config']['offsetPath'];
         
-        // in case no offset path is set (contrexx runs directly in the document root)
+        // in case no offset path is set (cloudrexx runs directly in the document root)
         // then, we must set pathOffset to /. Path offset is used as RewriteBase.
         // Otherwise, an empty RewriteBase would be invalid
         if (empty($pathOffset)) {
@@ -1224,7 +1249,7 @@ class CommonFunctions
             $objFile->write($configFileContent);
             return true;
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            DBG::msg($e->getMessage());
+            \DBG::msg($e->getMessage());
         }
 
         return sprintf($_ARRLANG['TXT_CANNOT_CREATE_FILE']."<br />", $configFilePath);
@@ -1513,40 +1538,40 @@ class CommonFunctions
     }
 
     /**
-     * Configure the Contrexx caching so it fits the server configuration
+     * Configure the Cloudrexx caching so it fits the server configuration
      */
     protected function configureCaching() {
         $_CONFIG = array();
 
-        require_once ASCMS_CORE_MODULE_PATH . '/cache/lib/cacheLib.class.php';
+        require_once ASCMS_CORE_MODULE_PATH . '/Cache/Controller/CacheLib.class.php';
 
         $isInstalled = function($cacheEngine) {
             switch ($cacheEngine) {
-                case \cacheLib::CACHE_ENGINE_APC:
+                case \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_APC:
                     return extension_loaded('apc');
-                case \cacheLib::CACHE_ENGINE_ZEND_OPCACHE:
+                case \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_ZEND_OPCACHE:
                     return extension_loaded('opcache') || extension_loaded('Zend OPcache');
-                case \cacheLib::CACHE_ENGINE_MEMCACHE:
+                case \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_MEMCACHE:
                     return extension_loaded('memcache') || extension_loaded('memcached');
-                case \cacheLib::CACHE_ENGINE_XCACHE:
+                case \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_XCACHE:
                     return extension_loaded('xcache');
-                case \cacheLib::CACHE_ENGINE_FILESYSTEM:
+                case \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_FILESYSTEM:
                     return true;
             }
         };
 
         $isConfigured = function($cacheEngine, $user = false) {
             switch ($cacheEngine) {
-                case \cacheLib::CACHE_ENGINE_APC:
+                case \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_APC:
                     if ($user) {
                         return ini_get('apc.serializer') == 'php';
                     }
                     return true;
-                case \cacheLib::CACHE_ENGINE_ZEND_OPCACHE:
+                case \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_ZEND_OPCACHE:
                     return ini_get('opcache.save_comments') && ini_get('opcache.load_comments');
-                case \cacheLib::CACHE_ENGINE_MEMCACHE:
+                case \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_MEMCACHE:
                     return false;
-                case \cacheLib::CACHE_ENGINE_XCACHE:
+                case \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_XCACHE:
                     if ($user) {
                         return (
                             ini_get('xcache.var_size') > 0 &&
@@ -1555,7 +1580,7 @@ class CommonFunctions
                         );
                     }
                     return ini_get('xcache.size') > 0;
-                case \cacheLib::CACHE_ENGINE_FILESYSTEM:
+                case \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_FILESYSTEM:
                     return is_writable(ASCMS_DOCUMENT_ROOT . '/tmp/cache');
             }
         };
@@ -1563,30 +1588,30 @@ class CommonFunctions
         // configure opcaches
         $configureOPCache = function() use($isInstalled, $isConfigured, &$_CONFIG) {
             // APC
-            if ($isInstalled(\cacheLib::CACHE_ENGINE_APC) && $isConfigured(\cacheLib::CACHE_ENGINE_APC)) {
-                $_CONFIG['cacheOPCache'] = \cacheLib::CACHE_ENGINE_APC;
+            if ($isInstalled(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_APC) && $isConfigured(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_APC)) {
+                $_CONFIG['cacheOPCache'] = \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_APC;
                 return;
             }
 
             // Disable zend opcache if it is enabled
             // If save_comments is set to TRUE, doctrine2 will not work properly.
             // It is not possible to set a new value for this directive with php.
-            if ($isInstalled(\cacheLib::CACHE_ENGINE_ZEND_OPCACHE)) {
+            if ($isInstalled(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_ZEND_OPCACHE)) {
                 ini_set('opcache.save_comments', 1);
                 ini_set('opcache.load_comments', 1);
                 ini_set('opcache.enable', 1);
 
-                if ($isConfigured(\cacheLib::CACHE_ENGINE_ZEND_OPCACHE)) {
-                    $_CONFIG['cacheOPCache'] = \cacheLib::CACHE_ENGINE_ZEND_OPCACHE;
+                if ($isConfigured(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_ZEND_OPCACHE)) {
+                    $_CONFIG['cacheOPCache'] = \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_ZEND_OPCACHE;
                     return;
                 }
             }
 
             // XCache
-            if ($isInstalled(\cacheLib::CACHE_ENGINE_XCACHE) &&
-                $isConfigured(\cacheLib::CACHE_ENGINE_XCACHE)
+            if ($isInstalled(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_XCACHE) &&
+                $isConfigured(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_XCACHE)
             ) {
-                $_CONFIG['cacheOPCache'] = \cacheLib::CACHE_ENGINE_XCACHE;
+                $_CONFIG['cacheOPCache'] = \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_XCACHE;
                 return;
             }
             return false;
@@ -1595,33 +1620,33 @@ class CommonFunctions
         // configure user caches
         $configureUserCache = function() use($isInstalled, $isConfigured, &$_CONFIG) {
             // APC
-            if ($isInstalled(\cacheLib::CACHE_ENGINE_APC)) {
+            if ($isInstalled(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_APC)) {
                 // have to use serializer "php", not "default" due to doctrine2 gedmo tree repository
                 ini_set('apc.serializer', 'php');
-                if ($isConfigured(\cacheLib::CACHE_ENGINE_APC, true)) {
-                    $_CONFIG['cacheUserCache'] = \cacheLib::CACHE_ENGINE_APC;
+                if ($isConfigured(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_APC, true)) {
+                    $_CONFIG['cacheUserCache'] = \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_APC;
                     return;
                 }
             }
 
             // Memcache
-            if ($isInstalled(\cacheLib::CACHE_ENGINE_MEMCACHE) && $isConfigured(\cacheLib::CACHE_ENGINE_MEMCACHE)) {
-                $_CONFIG['cacheUserCache'] = \cacheLib::CACHE_ENGINE_MEMCACHE;
+            if ($isInstalled(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_MEMCACHE) && $isConfigured(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_MEMCACHE)) {
+                $_CONFIG['cacheUserCache'] = \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_MEMCACHE;
                 return;
             }
 
             // XCache
             if (
-                $isInstalled(\cacheLib::CACHE_ENGINE_XCACHE) &&
-                $isConfigured(\cacheLib::CACHE_ENGINE_XCACHE, true)
+                $isInstalled(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_XCACHE) &&
+                $isConfigured(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_XCACHE, true)
             ) {
-                $_CONFIG['cacheUserCache'] = \cacheLib::CACHE_ENGINE_XCACHE;
+                $_CONFIG['cacheUserCache'] = \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_XCACHE;
                 return;
             }
 
             // Filesystem
-            if ($isConfigured(\cacheLib::CACHE_ENGINE_FILESYSTEM)) {
-                $_CONFIG['cacheUserCache'] = \cacheLib::CACHE_ENGINE_FILESYSTEM;
+            if ($isConfigured(\Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_FILESYSTEM)) {
+                $_CONFIG['cacheUserCache'] = \Cx\Core_Modules\Cache\Controller\CacheLib::CACHE_ENGINE_FILESYSTEM;
                 return;
             }
             return false;

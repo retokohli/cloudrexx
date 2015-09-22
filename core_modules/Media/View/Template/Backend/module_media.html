@@ -100,7 +100,13 @@ function openWindow(theURL,winName,features)
        });
     });
     function mediaCallbackJs(callback) {
-        window.location = window.location;
+        if (callback.length > 0){
+            var newUrl = window.location.href+'&highlightUploadId='+$J('#media_browse_button').data('uploaderId');
+            if (window.location.href.match(/highlightUploadId/)){
+                newUrl = window.location.href.replace(/highlightUploadId=[a-z0-9]+/i, 'highlightUploadId='+$J('#media_browse_button').data('uploaderId'))
+            }
+            window.location = newUrl;
+        }
     }
 </script>
 {MEDIA_JAVA_SCRIPT_PREVIEW}
