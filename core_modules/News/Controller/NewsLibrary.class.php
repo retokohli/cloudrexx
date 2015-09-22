@@ -1515,7 +1515,7 @@ class NewsLibrary
     public function parseNextAndPreviousLinks(\Cx\Core\Html\Sigma $objTpl)
     {
         global $objDatabase, $_ARRAYLANG;
-        
+
         $parentBlock    = 'news_details_previous_next_links';
         $previousLink   = 'news_details_previous_link';
         $nextLink       = 'news_details_next_link';
@@ -2111,37 +2111,37 @@ class NewsLibrary
      * Getting all the stored tags
      *
      * @global object $objDatabase
-     *
-     * @param Interger $id
-     * @param Interger $tag
+     * @param integer $id  Tag id
+     * @param integer $tag Tag name
      *
      * @return boolean|array Array list of tag and its id as key
      * array('id'  => //Id of the tag
      *       'tag' => //Tag value)
      */
-    public function getTags($id=null, $tag=null)
+    public function getTags($id = null, $tag = null)
     {
         global $objDatabase;
         
         $query = 'SELECT `id`, `tag`
             FROM `' . DBPREFIX . 'module_news_tags`';
 
-        $where = '';
+        $where = array();
         //Search with the id or list of ids
-        if (    is_array($id)
-            &&  !empty($id)
-        ) {
-            $where .= ' WHERE `id` IN (' .implode(',', $id). ')';
-        } elseif (!empty($id)) {
-            $where .= ' WHERE `id` = '.intval($id);
-        }
-        //Search the given tag
-        if (!empty($tag)) {
-            $where .= (empty($where)) ? ' WHERE ' : ' AND ';
-            $where .= '`tag` = "' . $tag . '"';
+        if (!empty($id)) {
+            if (is_array($id)) {
+                $where[] = ' `id` IN (' .implode(', ', contrexx_input2int($id)). ')';
+            } else {
+                $where[] = ' `id` = '. contrexx_input2int($id);
+            }
         }
 
-        $objTags = $objDatabase->Execute($query.$where);
+        //Search the given tag
+        if (!empty($tag)) {
+            $where[] = ' `tag` = "' . contrexx_raw2db($tag) . '"';
+        }
+
+        $sqlWhere = !empty($where) ? ' WHERE '. implode(' AND ', $where) : '';
+        $objTags = $objDatabase->Execute($query . $sqlWhere);
 
         if (!$objTags) {
 //TODO@  Throw execption or log error message
@@ -2154,13 +2154,13 @@ class NewsLibrary
         }
         return $tagList;
     }
+
     /**
-     * Getting the related news tags with given news id (and|or) tag
+     * Get the news id's and tags using news id (and|or) tag
      *
      * @global object $objDatabase
-     *
-     * @param type $newsId News id to get the corresponding related tags
-     * @param type $tag    Tag string to search the corresponding tags
+     * @param integer $newsId News id to get the corresponding related tags
+     * @param string  $tag    Tag string to search the corresponding tags
      *
      * @return boolean|array Array List of News Related tags
      */
@@ -2174,24 +2174,25 @@ class NewsLibrary
             rt.`news_id` AS newsId,
             rt.`tag_id` AS tagId,
             t.`tag` AS tagName
-            FROM `' . DBPREFIX . 'module_news_rel_tags` rt
-            LEFT JOIN `' . DBPREFIX . 'module_news_tags` t
+                  FROM 
+                    `' . DBPREFIX . 'module_news_rel_tags` rt
+                  LEFT JOIN 
+                    `' . DBPREFIX . 'module_news_tags` t
             ON rt.`tag_id` = t.`id`';
 
-        $where = '';
+        $where = array();
 
         if (!empty($newsId)) {
-            $where .=' WHERE rt.`news_id` = "' . $newsId . '"';
+            $where[] =' rt.`news_id` = "' . contrexx_input2int($newsId) . '"';
         }
 
         //Search the given tag
         if (!empty($tag)) {
-            $where .= (empty($where)) ? ' WHERE ' : ' AND ';
-            $where .= 't.`tag` = "' . contrexx_raw2db($tag) . '"';
+            $where[] = ' t.`tag` = "' . contrexx_raw2db($tag) . '"';
         }
 
-
-        $objNewsTags = $objDatabase->Execute($query.$where);
+        $sqlWhere = !empty($where) ? ' WHERE '. implode(' AND ', $where) : '';
+        $objNewsTags = $objDatabase->Execute($query . $sqlWhere);
 
         if (!$objNewsTags) {
 //TODO@  Throw execption or log error message
@@ -2211,12 +2212,14 @@ class NewsLibrary
             'newsIds' => $newsIdList
         );
     }
+
     /**
-     * Add the new tag
+     * Save new tag into database
      *
      * @global object $objDatabase
-     * @param string $tag New Tag to be inserted
-     * @return boolean|integer Retrun inserted Tag id and retrun false if
+     * @param string $tag Tag name to insert
+     * 
+     * @return boolean|integer Retrun inserted Tag id or retrun false if
      *                         failed to insert
      */
     public function addTag($tag)
@@ -2233,20 +2236,20 @@ class NewsLibrary
             }
         }
 //TODO@  Throw execption or log error message
-        $this->errMsg[] = $_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG'];
+        $this->errMsg[] = $_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG'];
         return false;
     }
+
     /**
      * Manipulating the submitted tags from the news Entry form.
      * i)   Adding the new tag if the tag is not availbale already.
      * ii)  Update the relationship of the news in the corresponding table
      * iii) Delete the removed tags ids from the news relation table
      *
-     *
      * @global object $objDatabase
-     * @param array $tags   Array of submitted tags
-     * @param type $newsId  News id for manipulation
-     * @return boolean
+     * @param array   $tags    Array of submitted tags
+     * @param integer $newsId  News id for manipulation
+     * @return boolean true when tags stored, false otherwise
      */
     public function manipulateTags(array $tags = array(), $newsId = null)
     {
@@ -2288,12 +2291,12 @@ class NewsLibrary
                     . DBPREFIX . 'module_news_rel_tags` '
                     . '(`news_id`, `tag_id`) '
                     . 'VALUES ('
-                    . $newsId . ','
-                    . $tagId
+                    . contrexx_input2int($newsId) . ','
+                    . contrexx_raw2db($tagId)
                     . ')';
                 if (!$objDatabase->Execute($insertTagRelQuery)) {
 //TODO@  Throw execption or log error message
-                    $this->errMsg[] = $_ARRAYLANG['TXT_ERROR_SAVE_NEWS_TAG_RELATION'];
+                    $this->errMsg[] = $_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG_RELATION'];
                     return false;
                 }
             }
@@ -2305,46 +2308,54 @@ class NewsLibrary
         ) {
             $deleteNewsRealtionQuery = 'DELETE FROM `'
                 . DBPREFIX . 'module_news_rel_tags` '
-                . 'WHERE `news_id` = "'. $newsId . '" '
+                . 'WHERE `news_id` = "'. contrexx_input2int($newsId) . '" '
                 . 'AND `tag_id` IN ('
-                . implode(',', array_keys($oldNewsTags)).')';
+                . implode(', ', contrexx_raw2db(array_keys($oldNewsTags))) .')';
             if (!$objDatabase->Execute($deleteNewsRealtionQuery)) {
 //TODO@  Throw execption or log error message
-                    $this->errMsg[] = $_ARRAYLANG['TXT_ERROR_DELETE_NEWS_TAG_RELATION'];
+                    $this->errMsg[] = $_ARRAYLANG['TXT_NEWS_ERROR_DELETE_NEWS_TAG_RELATION'];
 
                     return false;
             }
         }
         return true;
     }
+
     /**
      * Parsing the News tags.
      *
      * @global type $_ARRAYLANG
-     * @param type $objTpl
-     * @param type $newsId
+     * @param \Cx\Core\Html\Sigma $objTpl       Template object
+     * @param integer             $newsId       News id
+     * @param string              $block        Name of the block to parse the news tags
+     * @param boolean             $setMetaKeys  Set the tags as $this->newsMetaKeys when it is true 
      */
     public function parseNewsTags(
-        $objTpl = null,
+        \Cx\Core\Html\Sigma $objTpl,
         $newsId = null,
-        $block='newsTagList'
+        $block       ='news_tag_list',
+        $setMetaKeys = false
     )
     {
         global $_ARRAYLANG;
 
-        $newsTags = array();
-
+        $tags = $newsTags = array();
         if (!empty($newsId)) {
             $newsTagDetails = $this->getNewsTags($newsId);
             $newsTags       = $newsTagDetails['tagList'];
         }
-        $tags = (!empty($newsId) && empty($newsTags)) ? '' : $this->getTags(array_keys($newsTags));
+        if (!empty($newsId) && !empty($newsTags)) {
+            $tags = $this->getTags(array_keys($newsTags));
+        }
         if (empty($tags)) {
-            if ($objTpl->blockExists('noTags')) {
+            if ($objTpl->blockExists('news_no_tags')) {
                 $objTpl->setVariable('TXT_NEWS_NO_TAGS_FOUND', $_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND']);
-                $objTpl->touchBlock('noTags');
+                $objTpl->touchBlock('news_no_tags');
             }
             return;
+        }
+        if ($setMetaKeys) {
+            $this->newsMetaKeys = implode(',', $tags);
         }
         $tagCount = count($tags);
         $currentTagCount = 0;
@@ -2354,34 +2365,34 @@ class NewsLibrary
             foreach ($tags as $tag) {
                 ++$currentTagCount;
                 $newsLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                    'news',
+                    'News',
                     '',
                     FRONTEND_LANG_ID,
                     array('tag'=> urlencode($tag))
                 );
                 $objTpl->setVariable(
                     array(
-                        'NEWS_TAG_NAME' => $tag,
+                        'NEWS_TAG_NAME' => contrexx_raw2xhtml($tag),
                         'NEWS_TAG_LINK' =>
                             '<a class="tags" href="' . $newsLink . '">'
-                            . ucfirst($tag)
+                            . contrexx_raw2xhtml(ucfirst($tag))
                             . '</a>'//Including the tag separator
                             . (($currentTagCount < $tagCount) ? ',' : '')
                     )
                 );
                 $objTpl->parse($block);
             }
-            if ($objTpl->blockExists('tagsBlock')) {
-                $objTpl->touchBlock('tagsBlock');
+            if ($objTpl->blockExists('news_tags_container')) {
+                $objTpl->touchBlock('news_tags_container');
             }
         }
     }
+
     /**
-     * Increment the viewing count
+     * Increment the tags viewing count
      *
      * @global object $objDatabase
-     * @param type $tagId
-     * @return type
+     * @param integer $tagId Tag id
      */
     public function incrementViewingCount($tagId = null)
     {
@@ -2395,9 +2406,10 @@ class NewsLibrary
             'UPDATE `'
             . DBPREFIX . 'module_news_tags`
             SET `viewed_count` = `viewed_count`+1
-            WHERE `id`=' . $tagId
+            WHERE `id`=' . contrexx_input2int($tagId)
         );
     }
+
     /**
      * Retruns most Frequent(Searched|Viewed) tag details.
      *
@@ -2416,6 +2428,7 @@ class NewsLibrary
             ORDER BY `viewed_count` DESC LIMIT 1';
         return $objDatabase->GetRow($query);
     }
+
     /**
      * Retruns most used tag details
      *
@@ -2441,6 +2454,7 @@ class NewsLibrary
             'maxUsedCount' => $maxUsedTag['maxUsedCount']
         );
     }
+
     /**
      * Register the JS code for the given input field ID
      * 
@@ -2461,13 +2475,13 @@ class NewsLibrary
         $newsTagsFormated  = htmlspecialchars_decode($concatedTag);
         $placeholderText = $_ARRAYLANG['TXT_NEWS_ADD_TAGS'];
         $jsCode = <<< EOF
-\$J(document).ready(function() {
+cx.jQuery(document).ready(function() {
 var encoded = [$newsTagsFormated];
 var decoded = [];
-\$J.each(encoded, function(key, value){
+cx.jQuery.each(encoded, function(key, value){
     decoded.push(\$J("<div/>").html(value).text());
 });
-\$J("#$newsTagId").tagit({
+cx.jQuery("#$newsTagId").tagit({
     fieldName: "newsTags[]",
         availableTags : decoded,
         placeholderText : "$placeholderText",
