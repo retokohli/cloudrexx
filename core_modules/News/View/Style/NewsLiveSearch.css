@@ -39,7 +39,7 @@
     color: #222222;
 }
 input.live-search-news-input.ui-autocomplete-input.loading {
-    background-image: url('../Media/loading.gif');
+    background-image: url('../Media/Loading.gif');
     background-repeat: no-repeat;
     background-position: 98% center;
     background-size: 16px;
