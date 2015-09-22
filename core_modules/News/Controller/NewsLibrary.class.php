@@ -2465,14 +2465,7 @@ class NewsLibrary
         global $_ARRAYLANG;
 
         $allNewsTags = $this->getTags();
-        $concatedTag = '';
-        $tagCount = 0;
-        foreach ($allNewsTags as $newsTag) {
-            ++$tagCount;
-            $concatedTag .= '"' . contrexx_raw2xhtml(addslashes($newsTag)) . '"'
-                . (($tagCount != count($allNewsTags)) ? ',' : '') ;
-        }
-        $newsTagsFormated  = htmlspecialchars_decode($concatedTag);
+        $newsTagsFormated  = '"' . implode('", "', contrexx_raw2xhtml(array_map('addslashes', $allNewsTags))) . '"';
         $placeholderText = $_ARRAYLANG['TXT_NEWS_ADD_TAGS'];
         $jsCode = <<< EOF
 cx.jQuery(document).ready(function() {
@@ -2485,7 +2478,11 @@ cx.jQuery("#$newsTagId").tagit({
     fieldName: "newsTags[]",
         availableTags : decoded,
         placeholderText : "$placeholderText",
-        allowSpaces : true
+        allowSpaces : true,
+        afterTagAdded: function(event, object) {
+            var tagDecoded = cx.jQuery("<div/>").html(object.tagLabel).text();
+            object.tag.find('input').val(tagDecoded);
+        }
     });
 });
 EOF;
