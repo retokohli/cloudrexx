@@ -33,10 +33,12 @@
  * @subpackage  coremodule_error
  */
 
-$_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE'] = 'Diese Anwendung ist zurzeit nicht installiert.
-Um die Anwendung zu installieren, melden Sie sich in der %1$s an.
-Wechseln Sie zum %2$s.
-Wählen Sie bei der Gewünschten Anwendung (%3$s) die Checkbox aus und klicken Sie am Ende der Seite auf Änderungen übernehmen.';
+$_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_PART_1'] = 'Diese Anwendung ist zurzeit nicht installiert.
+Um die Anwendung zu installieren, melden Sie sich in der';
+$_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_PART_2'] = 'an.
+Wechseln Sie zum';
+$_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_PART_3'] = 'Wählen Sie bei der Gewünschten Anwendung (%s) die
+Checkbox aus und klicken Sie am Ende der Seite auf Änderungen übernehmen.';
 $_ARRAYLANG['TXT_ERROR_BACKEND_NAME'] = 'Administration';
 $_ARRAYLANG['TXT_ERROR_COMPONENT_MANAGER_NAME'] = 'Anwendungs Manager';
-$_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_INSTRUCTION_TITLE'] = 'Installationsanleitung';
+$_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_TITLE'] = 'Installationsanleitung';

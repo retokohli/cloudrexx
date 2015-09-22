@@ -176,18 +176,25 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 
         // only show installation instructions when the user has the permissions to
         if(!$noAccess && $this->reason == 'page not found') {
-            // prepare the instructions
-            $instructions = nl2br($_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE']);
-            $backendLink = '<a href="' . ASCMS_PROTOCOL . $_CONFIG['domainUrl'] . '/' . ASCMS_PATH_OFFSET . '/cadmin" title="' .
-                $_ARRAYLANG['TXT_ERROR_BACKEND_NAME'] . '" target="_blank">' . $_ARRAYLANG['TXT_ERROR_BACKEND_NAME'] . '</a>';
-            $componentManagerLink = '<a href="' . ASCMS_PROTOCOL . $_CONFIG['domainUrl'] . '/' . ASCMS_PATH_OFFSET . '/cadmin/ComponentManager/edit" title="' .
-                $_ARRAYLANG['TXT_ERROR_COMPONENT_MANAGER_NAME'] . '" target="_blank">' .
-                $_ARRAYLANG['TXT_ERROR_COMPONENT_MANAGER_NAME'] . '</a>';
-            $instructions = sprintf($instructions, $backendLink, $componentManagerLink, $this->section);
             $template->setVariable(array(
-                'ERROR_MODULE_INSTALLATION_INSTRUCTION_TITLE' => $_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_INSTRUCTION_TITLE'],
-                'ERROR_MODULE_INSTALLATION_GUIDE' => $instructions
+                'ERROR_MODULE_INSTALLATION_GUIDE_TITLE' => $_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_TITLE'],
+                'ERROR_BACKEND_URL' => $this->getBackendUrl(),
+                'ERROR_BACKEND_NAME' => $_ARRAYLANG['TXT_ERROR_BACKEND_NAME'],
+                'ERROR_COMPONENT_MANAGER_URL' => $this->getBackendUrl('ComponentManager', 'edit'),
+                'ERROR_COMPONENT_CONTROLLER_NAME' => $_ARRAYLANG['TXT_ERROR_COMPONENT_MANAGER_NAME']
             ));
+
+            for ($i = 1; $i <= 3; $i++) {
+                if ($i == 3) {
+                    $template->setVariable('ERROR_MODULE_INSTALLATION_GUIDE_PART_' . $i,
+                        nl2br(sprintf($_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_PART_' . $i], $this->section))
+                    );
+                } else {
+                    $template->setVariable('ERROR_MODULE_INSTALLATION_GUIDE_PART_' . $i,
+                        nl2br($_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_PART_'.$i])
+                    );
+                }
+            }
         }
 
         // replace the variables
@@ -195,5 +202,25 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             'ERROR_MODULE_NAME' => $this->section
         ));
 
+    }
+
+    /**
+     * Get the backend URL
+     *
+     * @param string $component Name of the component needs to be the formatted value (CamelCase)
+     * @param string $cmd
+     * @return string The absolute URL
+     */
+    private function getBackendUrl($component = '', $cmd = '') {
+        $backendUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $backendUrl->setMode('backend');
+        $backendUrl->setPath($this->cx->getBackendFolderName() . '/');
+        $backendUrl->setParams(array(
+            'module' => isset($component) ? $component : '',
+            'cmd' => isset($cmd) ? $cmd : '',
+            \Cx\Core\Csrf\Controller\Csrf::key() => \Cx\Core\Csrf\Controller\Csrf::code(),
+        ));
+
+        return $backendUrl->toString();
     }
 }
