@@ -58,6 +58,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected $inactivePage = null;
 
     /**
+     * @var string reason why the event was triggered
+     */
+    protected $reason = '';
+
+    /**
      * @param $eventName String The name of the Event
      * @param array $eventArgs
      * @throws \Exception
@@ -91,6 +96,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $this->inactivePage = $eventArgs['page'];
         $history = $eventArgs['history'];
         $this->resolver = $eventArgs['resolver'];
+        $this->reason = $eventArgs['reason'];
 
         // Load the content of the error-page
         $pageRepo = $this->cx->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -126,11 +132,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, $cmd)
     {
+        global $_ARRAYLANG, $_CONFIG;
         // is a component-page
         if (!isset($this->section)) {
             $template->hideBlock('error_module_information');
             $template->hideBlock('error_module_description');
             $template->hideBlock('error_module_name');
+            $template->hideBlock('error_module_installation_instructions');
             return;
         }
 
@@ -139,21 +147,49 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 
         // check if a description is available
         $noDescription = !isset($coreLang['TXT_' . strtoupper($this->section) . '_MODULE_DESCRIPTION']) ? true : false;
+        // check if user has permission to install a module
+        $noAccess = !(\FWUser::getFWUserObject()->objUser->login(true) && \Permission::checkAccess(52, 'static', true));
 
         // prepare the template
         $template->touchBlock('error_module_information');
         $template->touchBlock('error_module_name');
+
         // only parse the description-block if a description is available
         if ($noDescription) {
             $template->hideBlock('error_module_description');
+        } else {
+            $template->touchBlock('error_module_description');
         }
-        $template->touchBlock('error_module_description');
+
+        if ($noAccess) {
+            $template->hideBlock('error_module_installation_instructions');
+        } else {
+            $template->touchBlock('error_module_installation_instructions');
+        }
+
         // only replace the description if one exists
         if(!$noDescription) {
             $template->setVariable(array(
                 'ERROR_MODULE_DESCRIPTION' => $coreLang['TXT_' . strtoupper($this->section) . '_MODULE_DESCRIPTION']
             ));
         }
+
+        // only show installation instructions when the user has the permissions to
+        if(!$noAccess && $this->reason == 'page not found') {
+            // prepare the instructions
+            $instructions = nl2br($_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE']);
+            $backendLink = '<a href="' . ASCMS_PROTOCOL . $_CONFIG['domainUrl'] . '/' . ASCMS_PATH_OFFSET . '/cadmin" title="' .
+                $_ARRAYLANG['TXT_ERROR_BACKEND_NAME'] . '" target="_blank">' . $_ARRAYLANG['TXT_ERROR_BACKEND_NAME'] . '</a>';
+            $componentManagerLink = '<a href="' . ASCMS_PROTOCOL . $_CONFIG['domainUrl'] . '/' . ASCMS_PATH_OFFSET . '/cadmin/ComponentManager/edit" title="' .
+                $_ARRAYLANG['TXT_ERROR_COMPONENT_MANAGER_NAME'] . '" target="_blank">' .
+                $_ARRAYLANG['TXT_ERROR_COMPONENT_MANAGER_NAME'] . '</a>';
+            $instructions = sprintf($instructions, $backendLink, $componentManagerLink, $this->section);
+            $template->setVariable(array(
+                'ERROR_MODULE_INSTALLATION_INSTRUCTION_TITLE' => $_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_INSTRUCTION_TITLE'],
+                'ERROR_MODULE_INSTALLATION_GUIDE' => $instructions
+            ));
+        }
+
         // replace the variables
         $template->setVariable(array(
             'ERROR_MODULE_NAME' => $this->section

@@ -155,7 +155,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'cmd'       => $plainCmd,
                             'page'      => $page,
                             'history'   => isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0,
-                            'resolver'  => \Env::get('Resolver')
+                            'resolver'  => \Env::get('Resolver'),
+                            'reason'    => 'not licensed'
                         ));
                     }
                 }

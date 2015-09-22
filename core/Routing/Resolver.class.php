@@ -262,7 +262,8 @@ class Resolver {
                                         // page might only be inactive
                                         'page'      => $this->getPage(),
                                         'history'   => $history,
-                                        'resolver'  => $this
+                                        'resolver'  => $this,
+                                        'reason'    => 'page not found'
                                     ));
                                 }
                             }
