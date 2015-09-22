@@ -202,6 +202,7 @@ $_ARRAYLANG['TXT_THEME_FULLSCREEN'] = 'Full screen';
 $_ARRAYLANG['TXT_THEME_FULLSCREEN_INFO'] = 'Shortcut F11';
 $_ARRAYLANG['TXT_THEME_EXIT_FULLSCREEN'] = 'Exit full screen';
 $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_USABLE'] = 'Customizable';
+$_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_EDIT'] = 'Customize';
 $_ARRAYLANG['TXT_THEME_NEW_THEME'] = 'New Theme';
 $_ARRAYLANG['TXT_THEME_FILESYSTEM'] = 'Import from filesystem (%s directory)';
 $_ARRAYLANG['TXT_VIEWMANAGER_THEME_SELECTION_TXT'] = 'Select the source from where you would like to import a new theme';

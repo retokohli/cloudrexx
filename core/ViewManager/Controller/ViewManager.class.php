@@ -329,17 +329,26 @@ class ViewManager
             $supportForTemplateEditor = true;
         }
 
-        $objTemplate->setVariable(array(
-            'THEME_PREVIEW'                      => $theme->getPreviewImage(),
-            'THEME_ID'                           => $theme->getId(),
-            'THEME_ACTION'                       => $supportForTemplateEditor ?
-                'cmd=TemplateEditor&tid='.$theme->getId()
-                : 'cmd=ViewManager&act=templates&themes='.$theme->getFoldername(),
-            'THEME_FOLDER_NAME'                  => $theme->getFoldername(),
-            'THEME_TEMPLATEEDITOR'               => $supportForTemplateEditor ? 'templateEditor' : '',
-            'THEME_ACTIVATE_DISABLED'            => count($frontendLanguages) == count($activeLanguages) ? 'disabled' : '' ,
-            'THEME_NAME'                         => contrexx_raw2xhtml($theme->getThemesname()),
-        ));
+        $objTemplate->setVariable(
+            array(
+                'THEME_PREVIEW' => $theme->getPreviewImage(),
+                'THEME_ID' => $theme->getId(),
+                'THEME_ACTION' => $supportForTemplateEditor
+                    ? 'cmd=TemplateEditor&tid=' . $theme->getId()
+                    : 'cmd=ViewManager&act=templates&themes='
+                    . $theme->getFoldername(),
+                'THEME_FOLDER_NAME' => $theme->getFoldername(),
+                'THEME_TEMPLATEEDITOR' => $supportForTemplateEditor
+                    ? 'templateEditor' : '',
+                'TXT_EDIT' => $supportForTemplateEditor
+                    ? $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_EDIT']
+                    : $_ARRAYLANG['TXT_SETTINGS_MODFIY'],
+                'THEME_ACTIVATE_DISABLED' => count($frontendLanguages) == count(
+                    $activeLanguages
+                ) ? 'disabled' : '',
+                'THEME_NAME' => contrexx_raw2xhtml($theme->getThemesname()),
+            )
+        );
 
         $objTemplate->parse('themes'. ucfirst($subType));
                 
@@ -786,7 +795,7 @@ CODE;
             "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
             "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
             "html","shtml","css","js","tpl","thumb","ico",
-            "eot", "ttf", "woff", "otf", // font files
+            "eot", "ttf", "woff", "otf", "yml"// font files
         );
 
         if (($files = $archive->extract(PCLZIP_OPT_PATH, $this->path . $theme->getFoldername(), PCLZIP_OPT_REMOVE_PATH, $themeDirectoryFromArchive, PCLZIP_OPT_BY_PREG, '/('.implode('|', $valid_exts).')$/')) != 0){
@@ -980,7 +989,6 @@ CODE;
         if (is_dir($this->codeBaseThemesFilePath) || is_dir($this->websiteThemesFilePath)) {
             $archive    = new \PclZip($this->_archiveTempPath . $themeFolder . '.zip');
             $themeFiles = $this->getThemesFiles();
-            
             \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
             $this->createZipFolder($themeFiles, '', $archive);
             \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath . $themeFolder . '.zip');

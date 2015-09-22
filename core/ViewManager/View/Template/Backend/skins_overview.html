@@ -4,7 +4,6 @@
         $J("#tabs").tabs({
             show : function (event, ui) {
                 $J('#selectedTab').val($J( "#tabs" ).tabs('option', 'selected'));
-                $J(window).trigger('resize');
             },
             select: function(event, ui) {
                 window.location.hash = ui.tab.hash;                
@@ -130,370 +129,9 @@
             }
         });
     }
-    $J(window).load(function(){
-       $J(window).trigger('resize'); 
-    });
-    $J(window).resize(function(){
-        $J('.themesPreviewContainer').each(function(i, e){
-           $J(e).height($J(e).width() - 50);
-        });
 
-        $J(window.location.hash + ' .newthemeWrapper').show();
-        
-        newthemeWrapperHeight =   $J(window.location.hash + ' .themeWrapper:not(.newthemeWrapper):first').length 
-                                ? $J(window.location.hash + ' .themeWrapper:not(.newthemeWrapper):first').height() 
-                                : $J(window.location.hash + ' .newthemeWrapper').width(); 
-        
-        $J(window.location.hash + ' .newthemeWrapper')
-            .height(newthemeWrapperHeight + 'px')
-            .show();
-    });
 </script>
 <style type="text/css">
-    @media (min-width: 1050px) and (max-width: 1200px) {
-        a.themePreview {
-            top: 62%;
-        }
-        .themeWrapper .themesActivate, .themePreview {
-            width: 48% !important;
-        }
-    }
-    @media (min-width: 480px) and (max-width: 1499px) {
-        .themeWrapper {
-            width: 49%;
-            margin-left: 2%;
-        }
-        .themeWrapper:nth-child(2n+1) {
-            margin-left: 0;
-        }
-
-    }
-    @media (min-width: 1500px) and (max-width: 1919px) {
-        .themeWrapper {
-            width: 32.333333333%;
-            margin-left: 1.5%;
-        }
-        .themeWrapper:nth-child(3n+1) {
-            margin-left: 0;
-        }
-        .themePreview {
-            top: 64% !important;
-        }
-        .themeWrapper .themesActivate, .themePreview {
-            width: 48% !important;
-            margin-left: -24%;
-        }
-    }
-    @media (min-width: 1920px) and (max-width: 2399px) {
-        .themeWrapper {
-            width: 24%;
-            margin-left: 1.333333333%;
-        }
-        .themeWrapper:nth-child(4n+1) {
-            margin-left: 0;
-        }
-        .themePreview {
-            top: 64% !important;
-        }
-        .themeWrapper .themesActivate, .themePreview {
-            width: 48% !important;
-            margin-left: -24%;
-        }
-    }
-    @media (min-width: 2400px) and (max-width: 2899px) {
-        .themeWrapper {
-            width: 19%;
-            margin-left: 1.25%;
-        }
-        .themeWrapper:nth-child(5n+1) {
-            margin-left: 0;
-        }
-    }
-    @media (min-width: 2900px) {
-        .themeWrapper {
-            width: 15.666666666%;
-            margin-left: 1.2%;
-        }
-        .themeWrapper:nth-child(6n+1) {
-            margin-left: 0;
-        }
-    }
-    @media (min-width: 320px) and (max-width: 1050px) {
-        .themesOverview .themeWrapper:hover .themeFooter .themeAction, .themesOverview .themeWrapper:hover .preview-overlay {
-            display: none;
-        }
-        .themesOverview .themeWrapper:hover .preview-overlay-small {
-            display: block;
-        }
-        .themesOverview .themeWrapper.newthemeWrapper .addThemeText {
-            display: none;
-        }
-        .themesOverview .themeWrapper.newthemeWrapper .add-icon img {
-            width: 100%;
-        }
-        .themesOverview .themeWrapper:hover .themeFooter {
-            background: rgba(0,0,0,0.6);
-        }
-    }
-
-    .newthemeWrapper .themesPreviewContainer, .newthemeWrapper .themesPreviewContainer a {
-        width: 100%;
-        height: 100%;
-        display: block;
-    }
-    .newthemeWrapper .themesPreviewContainer a {
-        position: relative;
-        z-index: 3;
-    }
-    .themesPreviewContainer {
-        position: relative;
-    }
-    .newthemeWrapper:hover {
-        background: #0071bc;
-    }
-    .themeWrapper.newthemeWrapper {
-        display: none;
-    }
-    .themeAction {
-        float: right;
-        padding-left: 13px;
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-
-    }
-    .themeIcons{
-        bottom: 0;
-        position: absolute;
-        right: 0;
-        width: 50px;
-    }
-    #content input[type='submit']:disabled {
-        color: transparent;
-        background: transparent;
-        border: none;
-    }
-
-    .themeWrapper .default_active .themeDelete, .themeWrapper .default_active .disabled {
-        display: none !important;
-    }
-
-    .themeFooter .themeAction {
-        display: none;
-    }
-
-    .lang-menu span {
-        padding-right: 10px;
-    }
-    .themeWrapper:before {
-        content: ' ';
-        border: 1px solid #e5e5e5;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
-        margin-left: -1px;
-        margin-top: -1px;
-    }
-    .themeWrapper {
-        position: relative;
-        float: left;
-        margin-bottom: 46px;
-    }
-    .themeDetail{
-        float: left;
-        padding-left: 13px;
-
-    }
-    .themeFooter.default_active{
-        background: #1F2022;
-        color: #fff;
-
-    }
-    .themeFooter{
-        width: 100%;
-        background: #ECECEC;
-        padding-top: 13px;
-        min-height: 37px;
-        color: #000;
-        float :left;
-        position: relative;
-        z-index: 2;
-    }
-    .themesOverview {
-        margin-top: 20px;
-        float: left;
-        width: 100%;
-    }
-
-    .themeAction a.themeCopy, a.themeEdit, a.themeExport{
-        color: #fff;
-        padding: 4px 6px 4px 6px;
-        background: #0071BD;
-        font-size: 14px;
-        margin-right: 12px;
-        float: left;
-        cursor: pointer;
-    }
-    .themeAction a.themeCopy:hover, a.themeEdit:hover, a.themeExport:hover,
-    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeEdit:hover,
-    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeCopy:hover,
-    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeExport:hover {
-        background: #095080;
-    }
-    .themeDelete {
-        float: right;
-        color: red !important;
-        font-size: 14px;
-        padding-right: 10px;
-        padding-top: 3px;
-        cursor: pointer;
-    }
-    .themeDelete:hover {
-        color: rgb(190, 5, 5) !important;
-    }
-    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeDelete:hover {
-        background: #fff !important;
-    }
-    .themePreview input {
-        padding: 4px 6px 4px 6px !important;
-        margin: 0 !important;
-        border: 0 none;
-        height: 25px;
-        line-height: 1;
-        cursor: pointer;
-    }
-
-    .themeWrapper:hover .themeFooter .themeAction{
-        width: 100%;
-        float: left !important;
-    }
-
-    .themeWrapper:hover  .themeDetail div {
-        position: absolute;
-        top: 35%;
-        font-size: 24px !important;
-        color: #fff;
-        text-align: center;
-        width: 92%;
-    }
-
-    body #content .themeWrapper .themesActivate, .themePreview {
-        position: absolute;
-        font-size: 18px !important;
-        display: block;
-        border: 0 none !important;
-        text-shadow: none !important;
-        text-align: center;
-        color: #fff !important;
-        padding: 10px;
-        cursor: pointer;
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        -webkit-box-sizing: border-box;
-        width: 48% ;
-        left: 50%;
-        margin-left: -24%;
-    }
-
-    input.themesActivate:hover {
-        background: #408809 !important;
-    }
-    a.themePreview:hover {
-        background: #E5E4E4 !important;
-    }
-    .themeWrapper .themesActivate {
-        top: 48%;
-        background: #499111 !important;
-    }
-
-    .themeWrapper td {
-        padding:0;
-    }
-
-    .themePreview {
-        top: 60%;
-        color: #1F2022 !important;
-        background: #fff !important;
-    }
-
-    .themeWrapper:hover .themeFooter .themeAction, .themeWrapper:hover .preview-overlay {
-        display: block;
-    }
-    .themeWrapper:hover .theme-name {
-        display: none;
-    }
-    .ui-dialog.noTitle .ui-dialog-titlebar {
-        display: none;
-    }
-    .themesPreviewContainer .preview-image img {
-        bottom: 0;
-        left: 0;
-        top: 0;
-        right: 0;
-        margin: auto;
-        position: absolute;
-        max-width: 100%;
-        max-height: 100%;
-    }
-    body #content .themeWrapper .preview-overlay-small .action-small-screen {
-        position: static;
-        font-size: 12px !important;
-        width: 98%;
-        margin: 1%;
-        border: 0 none !important;
-        text-shadow: none !important;
-        text-align: center;
-        padding: 4% 0px !important;
-        cursor: pointer;
-        display: block;
-        float: none;
-        color: #fff ;
-    }
-    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themesActivate {
-        background: #499111;
-    }
-    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeEdit,
-    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeCopy,
-    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeExport {
-        background: #0071BD;
-    }
-    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themePreview {
-        background: white;
-        color: black !important;
-    }
-    .themesOverview .themeWrapper .preview-overlay-small .action-small-screen.themeDelete {
-        background: #ececec;
-        color: red !important;
-    }
-    .preview-overlay, .preview-overlay-small {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        background: rgba(0,0,0,0.6);
-        display: none;
-        z-index: 1000;
-    }
-    .preview-overlay .actions {
-        display: table-cell;
-        vertical-align: middle;
-    }
-    div.theme-lang {
-        float: right;
-        display: inline-block;
-    }
-    span.theme-lang-code {
-        background-color: #9DCB3B;
-        padding: 3px 0px 3px 5px;
-        font-size: 10px;
-        height: 18px;
-        width: 21px;
-        line-height: 18px;
-        margin: 2px 3px 2px 0px;
-        text-align: center;
-    }
-
     .tabs-wraper .ui-widget-content {
         border: 0;
         background: #ffffff;
@@ -563,38 +201,106 @@
         padding:0;
         margin:0;
     }
-    .newthemeWrapper .addThemeText {
-        display: block;
-        text-align: center;
-        font-size: 18px;
-        line-height: 36px;
+
+    .preview-image img {
+        max-width: 100%;
     }
-    .themeWrapper.newthemeWrapper .add-icon img {
-        width: auto;
+
+    .themeDetail {
+        font-size: 20px;
+        margin: 15px -18px 0;
+        padding: 15px 18px 15px;
     }
-    .add-icon {
-        display: block;
-        width: 100%;
-        text-align: center;
-    }
-    .newthemeWrapper:hover .addThemeText {
-        color: #ffffff;
-    }
-    .table {
-        display: table;
-        width: 100%;
-        height: 100%;
-    }
-    .table-row {
-        display: table-row;
-    }
-    .table-td {
-        display: table-cell;
-        vertical-align: middle;
+
+    .default_active .themeDetail {
+        background-color: #000;
+        color: #fff;
     }
 
     .themeWrapper {
+        float: left;
+        width: calc(20% - 30px);
+        border: 1px solid #CACACA;
+        box-sizing: border-box;
+        padding: 15px 15px 0;
+        margin: 15px;
+        position: relative;
         overflow: hidden;
+    }
+
+    .themeDetail {
+        text-align: left;
+    }
+
+    .themeDetail input.themesActivate {
+        display: none;
+    }
+
+    .themeDetail a.themePreview {
+        display: none;
+    }
+
+    .preview-overlay-small {
+        clear: both;
+        display: none;
+        font-size: 0;
+        z-index: 11;
+    }
+
+    .themeFooter {
+        display: block;
+    }
+
+    .themeAction {
+        display: none;
+    }
+
+    .preview-overlay-small a,
+    body #content .preview-overlay-small input {
+        display: inline-block;
+        font-size: 14px;
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+        background: #fff;
+        border: 1px solid #BBBBBB;
+        color: #444444;
+        margin: 2px 0;
+        padding: 10px 10px;
+        text-shadow: none;
+    }
+
+    .preview-overlay-small a:hover, body #content .preview-overlay-small input:hover {
+
+    }
+
+    span.add-icon.addThemeText {
+        text-align: center;
+        font-size: 30px;
+        margin-top: 30px;
+    }
+
+    span.add-icon {
+        display: block;
+        text-align: center;
+    }
+
+    span.add-icon img {
+        border:none;
+    }
+
+    .themeWrapper.newthemeWrapper {
+        padding: 30px 30px;
+    }
+
+    .themeWrapper.newthemeWrapper:hover {
+        background-color: #444;
+        color: #fff;
+    }
+
+    .themeWrapper.newthemeWrapper:hover span {
+        color: #fff;
     }
 
     .themeWrapper.templateEditor:after {
@@ -607,9 +313,194 @@
         top: 10%;
         color: #fff;
         padding: 5px 15px;
+        -webkit-transform: rotate(45deg);
         transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
         text-align: center;
-        box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+        z-index: 10;
+    }
+
+    .cf:before,
+    .cf:after {
+        content: " "; /* 1 */
+        display: table; /* 2 */
+    }
+
+    .cf:after {
+        clear: both;
+    }
+    .cf {
+        *zoom: 1;
+    }
+
+    .themesOverview .cf {
+        display: none;
+    }
+
+    @media (min-width: 1900px)  {
+        .themesOverview .cf:nth-child(10n){
+            display:block;
+        }
+    }
+
+    @media (min-width:1600px) and (max-width: 1899px)  {
+        .themesOverview .themeWrapper {
+            width: calc(25% - 30px);
+        }
+
+        .themesOverview .cf:nth-child(8n){
+            display:block;
+        }
+    }
+
+    @media (min-width:1300px) and (max-width: 1599px) {
+        .themesOverview .themeWrapper {
+            width: calc(33.33333% - 30px);
+        }
+
+        .themesOverview .cf:nth-child(6n){
+            display:block;
+        }
+    }
+
+    @media (min-width:1000px) and (max-width: 1299px) {
+        .themesOverview .themeWrapper {
+            width: calc(50% - 30px);
+        }
+
+        .themesOverview .cf:nth-child(4n){
+            display:block;
+        }
+    }
+
+    @media (max-width: 999px) {
+        .themesOverview .themeWrapper {
+            width: calc(100% - 30px);
+        }
+
+        .themesOverview .cf {
+            display: block;
+        }
+    }
+
+    .themesOverview {
+        margin: 0 -14px;
+    }
+
+    span.theme-lang-code {
+        padding: 4px;
+        text-align: center;
+        width: auto;
+        font-size: 10px;
+        color: #fff;
+        float: right;
+        margin-left: 5px;
+        background-color: #9DCB3B;
+        margin-top: 1px;
+    }
+
+    .themeWrapper:hover .preview-overlay-small {
+        display: block;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.6);
+        width: 100%;
+        padding: 5px;
+        box-sizing: border-box;
+        height: 100%;
+        z-index: 11;
+    }
+
+    .preview-overlay-small a.themeDelete.action-small-screen {
+        background: #c0392b;
+        color: #fff;
+        border-color: #c0392b;
+        float:right;
+        margin-right: 5px;
+    }
+
+    body #content .preview-overlay-small input.themesActivate {
+        background: #4EAA09;
+        color: #fff;
+        border-color: #4EAA09;
+    }
+
+    a.themePreview.action-small-screen,
+    body #content .preview-overlay-small input.themesActivate {
+        display: block;
+        margin: 5px auto;
+        width: 50%;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    body #content .preview-overlay-small.default_active input.themesActivate,
+    .preview-overlay-small.default_active a.themeDelete {
+        display: none;
+    }
+
+    a.themeEdit.action-small-screen,
+    a.themeCopy.action-small-screen,
+    a.themeExport.action-small-screen {
+        background: #0071BD;
+        color: #fff;
+        border-color: #0071BD;
+    }
+
+    .action {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        padding: 11px;
+        background-color: #000;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .action a.action-small-screen {
+        display: inline-block;
+        width: auto;
+        margin-right: 3px;
+        padding: 5px 5px;
+    }
+
+    span.themeTitle {
+        font-size: 24px;
+        color: #fff;
+        text-align: center;
+        width: 100%;
+        display: block;
+        margin: 40px 0 15px;
+        max-height: 59px;
+        overflow: hidden;
+    }
+
+
+    @media (max-width: 1000px) {
+
+        span.themeTitle {
+            margin-top: 15px;
+        }
+
+        .action a.action-small-screen,a.action-small-screen,
+        a.themePreview.action-small-screen,
+        body #content .preview-overlay-small input.themesActivate{
+            width: 100%;
+            margin: 0 0 5px;
+            padding: 5px 5px;
+            font-size: 20px;
+        }
+
+        .action {
+            padding: 0;
+            background:none;
+            position: static;
+        }
+
+        span.themeTitle {
+            display: none;
+        }
     }
 </style>
 <div style="clear: both"></div>
@@ -626,54 +517,34 @@
     <div id="tab-standard">
         <div class="themesOverview">
             <!-- BEGIN themesWeb -->
-            <div class="themeWrapper {THEME_TEMPLATEEDITOR} ">
+            <div class="themeWrapper {THEME_TEMPLATEEDITOR} {TXT_THEME_STANDARD_DISPLAY}">
                 <div  class="themesPreviewContainer">
                     <div class="preview-image"><img src="{THEME_PREVIEW}" alt="preview" /></div>
                     <div class="preview-overlay">
-                        <table width="100%" height="100%">
-                            <tr>
-                                <td style="text-align: center;">
-                                    <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" >
-                                        <div style="font-size:18px">{THEME_NAME}</div>
-                                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate {THEME_ACTIVATE_DISABLED}"/>
-                                        <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" class="themePreview">{TXT_THEME_PREVIEW}</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="themeDetail" >
+                           {THEME_NAME}
+                                <!-- BEGIN activatedLangCodeWeb -->
+                                <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE}</span>
+                                <!-- END activatedLangCodeWeb -->
+                        </div>
                     </div>
                     <div class="preview-overlay-small {TXT_THEME_STANDARD_DISPLAY}">
+                        <span class="themeTitle">
+                               {THEME_NAME}
+                        </span>
                         <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate action-small-screen {THEME_ACTIVATE_DISABLED}"/>
                         <a title="{TXT_THEME_PREVIEW}" class="themePreview action-small-screen" href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" >{TXT_THEME_PREVIEW}</a>
+                       <div class="action">
                         <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
                         <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
                         <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
                         <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
-                    </div>
-                </div>
-                <div class="themeFooter {TXT_THEME_STANDARD_DISPLAY}">
-                    <span class="theme-name" style="font-size:18px;padding-left: 13px;">
-                        {THEME_NAME}
-                        <div class="theme-lang">
-                            <!-- BEGIN activatedLangCodeWeb -->
-                            <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE} &nbsp;</span>
-                            <!-- END activatedLangCodeWeb -->
-                        </div>
-
-                    </span>
-                    <div class="themeAction">
-                        <input type="hidden" name="activateThemeId" class="activateThemeId" />
-                        <input type="hidden" name="themesId" value="{THEME_ID}"/>
-                        <a title="{TXT_EDIT}" class="themeEdit" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
-                        <a title="{TXT_COPY}" class="themeCopy" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
-                        <a title="{TXT_THEME_EXPORT}" class="themeExport" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
-                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
-                    </div>
+                       </div> </div>
                 </div>
             </div>
-
+            <div class="cf"></div>
             <!-- END themesWeb -->
-            <div class="themeWrapper {THEME_TEMPLATEEDITOR} newthemeWrapper">
+            <div class="themeWrapper {THEME_TEMPLATEEDITOR} newthemeWrapper {TXT_THEME_STANDARD_DISPLAY}">
                 <div  class="themesPreviewContainer addTheme">
                     <a href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=newDir" title="{TXT_THEME_ADD_NEW}">
                         <span class="table">
@@ -699,54 +570,35 @@
     <div id="tab-mobile" style="display: none;">
         <div class="themesOverview">
             <!-- BEGIN themesMobile -->
-            <div class="themeWrapper">
+            <div class="themeWrapper  {THEME_TEMPLATEEDITOR} {TXT_THEME_STANDARD_DISPLAY}">
                 <div  class="themesPreviewContainer">
                     <div class="preview-image"><img src="{THEME_PREVIEW}" alt="preview" /></div>
                     <div class="preview-overlay">
-                        <table width="100%" height="100%">
-                            <tr>
-                                <td style="text-align: center;">
-                                    <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" >
-                                        <div style="font-size:18px">{THEME_NAME}</div>
-                                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate {THEME_ACTIVATE_DISABLED}"/>
-                                        <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" class="themePreview">{TXT_THEME_PREVIEW}</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="preview-overlay-small {TXT_THEME_STANDARD_DISPLAY}">
-                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate action-small-screen {THEME_ACTIVATE_DISABLED}"/>
-                        <a title="{TXT_THEME_PREVIEW}" class="themePreview action-small-screen" href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" >{TXT_THEME_PREVIEW}</a>
-                        <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
-                        <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
-                        <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
-                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
-                    </div>
-                </div>
-                <div class="themeFooter {TXT_THEME_STANDARD_DISPLAY}">
-                    <span class="theme-name" style="font-size:18px;padding-left: 13px;">
-                        {THEME_NAME}
-                        <div class="theme-lang">
+                        <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" >
+                            {THEME_NAME}
                             <!-- BEGIN activatedLangCodeMobile -->
-                            <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE} &nbsp;</span>
+                            <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE}</span>
                             <!-- END activatedLangCodeMobile -->
                         </div>
-
-                    </span>
-                    <div class="themeAction">
-                        <input type="hidden" name="activateThemeId" class="activateThemeId" />
-                        <input type="hidden" name="themesId" value="{THEME_ID}"/>
-                        <a title="{TXT_EDIT}" class="themeEdit" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
-                        <a title="{TXT_COPY}" class="themeCopy" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
-                        <a title="{TXT_THEME_EXPORT}" class="themeExport" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
-                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
+                    </div>
+                    <div class="preview-overlay-small {TXT_THEME_STANDARD_DISPLAY}">
+                        <span class="themeTitle">
+                               {THEME_NAME}
+                        </span>
+                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate action-small-screen {THEME_ACTIVATE_DISABLED}"/>
+                        <a title="{TXT_THEME_PREVIEW}" class="themePreview action-small-screen" href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" >{TXT_THEME_PREVIEW}</a>
+                        <div class="action">
+                            <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
+                            <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                            <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
+                            <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
+                        </div>
                     </div>
                 </div>
             </div>
-
+            <div class="cf"></div>
             <!-- END themesMobile -->
-            <div class="themeWrapper {THEME_TEMPLATEEDITOR} newthemeWrapper">
+            <div class="themeWrapper {THEME_TEMPLATEEDITOR} newthemeWrapper {TXT_THEME_STANDARD_DISPLAY}">
                 <div  class="themesPreviewContainer addTheme">
                     <a href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=newDir" title="{TXT_THEME_ADD_NEW}">
                         <span class="table">
@@ -772,54 +624,36 @@
     <div id="tab-print" style="display: none;">
         <div class="themesOverview">
             <!-- BEGIN themesPrint -->
-            <div class="themeWrapper">
+            <div class="themeWrapper  {THEME_TEMPLATEEDITOR} {TXT_THEME_STANDARD_DISPLAY}">
                 <div  class="themesPreviewContainer">
                     <div class="preview-image"><img src="{THEME_PREVIEW}" alt="preview" /></div>
                     <div class="preview-overlay">
-                        <table width="100%" height="100%">
-                            <tr>
-                                <td style="text-align: center;">
-                                    <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" >
-                                        <div style="font-size:18px">{THEME_NAME}</div>
-                                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate {THEME_ACTIVATE_DISABLED}"/>
-                                        <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" class="themePreview">{TXT_THEME_PREVIEW}</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" >
+                           {THEME_NAME}
+                                <!-- BEGIN activatedLangCodePrint -->
+                                <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE}</span>
+                                <!-- END activatedLangCodePrint -->
+                        </div>
                     </div>
                     <div class="preview-overlay-small {TXT_THEME_STANDARD_DISPLAY}">
+                        <span class="themeTitle">
+                               {THEME_NAME}
+                        </span>
                         <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate action-small-screen {THEME_ACTIVATE_DISABLED}"/>
                         <a title="{TXT_THEME_PREVIEW}" class="themePreview action-small-screen" href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" >{TXT_THEME_PREVIEW}</a>
-                        <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
-                        <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
-                        <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
-                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
-                    </div>
-                </div>
-                <div class="themeFooter {TXT_THEME_STANDARD_DISPLAY}">
-                    <span class="theme-name" style="font-size:18px;padding-left: 13px;">
-                        {THEME_NAME}
-                        <div class="theme-lang">
-                            <!-- BEGIN activatedLangCodePrint -->
-                            <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE} &nbsp;</span>
-                            <!-- END activatedLangCodePrint -->
+                        <div class="action">
+                            <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
+                            <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                            <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
+                            <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
                         </div>
-
-                    </span>
-                    <div class="themeAction">
-                        <input type="hidden" name="activateThemeId" class="activateThemeId" />
-                        <input type="hidden" name="themesId" value="{THEME_ID}"/>
-                        <a title="{TXT_EDIT}" class="themeEdit" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
-                        <a title="{TXT_COPY}" class="themeCopy" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
-                        <a title="{TXT_THEME_EXPORT}" class="themeExport" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
-                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
                     </div>
                 </div>
             </div>
 
+            <div class="cf"></div>
             <!-- END themesPrint -->
-            <div class="themeWrapper {THEME_TEMPLATEEDITOR} newthemeWrapper">
+            <div class="themeWrapper  {THEME_TEMPLATEEDITOR} newthemeWrapper {TXT_THEME_STANDARD_DISPLAY}">
                 <div  class="themesPreviewContainer addTheme">
                     <a href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&act=newDir" title="{TXT_THEME_ADD_NEW}">
                         <span class="table">
@@ -845,52 +679,34 @@
     <div id="tab-pdf" style="display: none;">
         <div class="themesOverview">
             <!-- BEGIN themesPdf -->
-            <div class="themeWrapper">
+            <div class="themeWrapper {TXT_THEME_STANDARD_DISPLAY}">
                 <div  class="themesPreviewContainer">
                     <div class="preview-image"><img src="{THEME_PREVIEW}" alt="preview" /></div>
                     <div class="preview-overlay">
-                        <table width="100%" height="100%">
-                            <tr>
-                                <td style="text-align: center;">
-                                    <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" >
-                                        <div style="font-size:18px">{THEME_NAME}</div>
-                                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate {THEME_ACTIVATE_DISABLED}"/>
-                                        <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" class="themePreview">{TXT_THEME_PREVIEW}</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" >
+                           {THEME_NAME}
+                                <!-- BEGIN activatedLangCodePdf -->
+                                <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE}</span>
+                                <!-- END activatedLangCodePdf -->
+                        </div>
                     </div>
                     <div class="preview-overlay-small {TXT_THEME_STANDARD_DISPLAY}">
+                        <span class="themeTitle">
+                               {THEME_NAME}
+                        </span>
                         <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate action-small-screen {THEME_ACTIVATE_DISABLED}"/>
                         <a title="{TXT_THEME_PREVIEW}" class="themePreview action-small-screen" href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" >{TXT_THEME_PREVIEW}</a>
-                        <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
-                        <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
-                        <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
-                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
-                    </div>
-                </div>
-                <div class="themeFooter {TXT_THEME_STANDARD_DISPLAY}">
-                    <span class="theme-name" style="font-size:18px;padding-left: 13px;">
-                        {THEME_NAME}
-                        <div class="theme-lang">
-                            <!-- BEGIN activatedLangCodePdf -->
-                            <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE} &nbsp;</span>
-                            <!-- END activatedLangCodePdf -->
+                        <div class="action">
+                            <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
+                            <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                            <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
+                            <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
                         </div>
-
-                    </span>
-                    <div class="themeAction">
-                        <input type="hidden" name="activateThemeId" class="activateThemeId" />
-                        <input type="hidden" name="themesId" value="{THEME_ID}"/>
-                        <a title="{TXT_EDIT}" class="themeEdit" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
-                        <a title="{TXT_COPY}" class="themeCopy" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
-                        <a title="{TXT_THEME_EXPORT}" class="themeExport" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
-                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
                     </div>
                 </div>
             </div>
 
+            <div class="cf"></div>
             <!-- END themesPdf -->
             <div class="themeWrapper {THEME_TEMPLATEEDITOR} newthemeWrapper">
                 <div  class="themesPreviewContainer addTheme">
@@ -918,52 +734,34 @@
     <div id="tab-app" style="display: none;">
         <div class="themesOverview">
             <!-- BEGIN themesApp -->
-            <div class="themeWrapper">
+            <div class="themeWrapper  {TXT_THEME_STANDARD_DISPLAY}">
                 <div  class="themesPreviewContainer">
                     <div class="preview-image"><img src="{THEME_PREVIEW}" alt="preview" /></div>
                     <div class="preview-overlay">
-                        <table width="100%" height="100%">
-                            <tr>
-                                <td style="text-align: center;">
-                                    <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" >
-                                        <div style="font-size:18px">{THEME_NAME}</div>
-                                        <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate {THEME_ACTIVATE_DISABLED}"/>
-                                        <a href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" class="themePreview">{TXT_THEME_PREVIEW}</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="themeDetail {TXT_THEME_STANDARD_DISPLAY}" >
+                           {THEME_NAME}
+                                <!-- BEGIN activatedLangCodeApp -->
+                                <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE}</span>
+                                <!-- END activatedLangCodeApp -->
+                        </div>
                     </div>
                     <div class="preview-overlay-small {TXT_THEME_STANDARD_DISPLAY}">
+                        <span class="themeTitle">
+                               {THEME_NAME}
+                        </span>
                         <input type="submit" name="themesActivate" value="{TXT_THEME_ACTIVATE}"  data-themeId = "{THEME_ID}" class="themesActivate action-small-screen {THEME_ACTIVATE_DISABLED}"/>
                         <a title="{TXT_THEME_PREVIEW}" class="themePreview action-small-screen" href="{CONTREXX_BASE_URL}index.php?preview={THEME_ID}" target="_blank" >{TXT_THEME_PREVIEW}</a>
-                        <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
-                        <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
-                        <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
-                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
-                    </div>
-                </div>
-                <div class="themeFooter {TXT_THEME_STANDARD_DISPLAY}">
-                    <span class="theme-name" style="font-size:18px;padding-left: 13px;">
-                        {THEME_NAME}
-                        <div class="theme-lang">
-                            <!-- BEGIN activatedLangCodeApp -->
-                            <span class="theme-lang-code">{THEME_ACTIVATED_LANG_CODE} &nbsp;</span>
-                            <!-- END activatedLangCodeApp -->
+                        <div class="action">
+                            <a title="{TXT_EDIT}" class="themeEdit action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
+                            <a title="{TXT_COPY}" class="themeCopy action-small-screen" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
+                            <a title="{TXT_THEME_EXPORT}" class="themeExport action-small-screen" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
+                            <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete action-small-screen" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
                         </div>
-
-                    </span>
-                    <div class="themeAction">
-                        <input type="hidden" name="activateThemeId" class="activateThemeId" />
-                        <input type="hidden" name="themesId" value="{THEME_ID}"/>
-                        <a title="{TXT_EDIT}" class="themeEdit" href="{CONTREXX_BACKEND_URL_LINK}index.php?{THEME_ACTION}">{TXT_EDIT}</a>
-                        <a title="{TXT_COPY}" class="themeCopy" href="{CONTREXX_BACKEND_URL_LINK}index.php?cmd=ViewManager&amp;act=newDir&amp;copy={THEME_FOLDER_NAME}" >{TXT_COPY}</a>
-                        <a title="{TXT_THEME_EXPORT}" class="themeExport" href="?cmd=ViewManager&amp;act=settings&amp;tpl=manage&amp;export={THEME_ID}" >{TXT_THEME_EXPORT}</a>
-                        <a title="{TXT_DELETE}"   href="javascript:void(0);"  class="themeDelete" onclick="return checkThemeExistsByThemeId({THEME_ID})">{TXT_DELETE}</a>
                     </div>
                 </div>
             </div>
 
+            <div class="cf"></div>
             <!-- END themesApp -->
             <div class="themeWrapper {THEME_TEMPLATEEDITOR} newthemeWrapper">
                 <div  class="themesPreviewContainer addTheme">
