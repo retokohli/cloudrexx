@@ -381,6 +381,7 @@ $_ARRAYLANG['TXT_NEWS_NO_CATEGORY'] = "Weisen Sie der Meldung eine Rubrik zu.";
 $_ARRAYLANG['TXT_NEWS_NO_TITLE_AND_CATEGORY'] = "Setzen Sie einen Titel und weisen Sie die Meldung einer Rubrik zu";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_ID_DESCRIPTION'] = "ID der News Rubrik";
 $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
+
 $_ARRAYLANG['TXT_NEWS_USER_ID_DESCRIPTION'] = 'ID des dazugehörigen Benutzerkontos';
 $_ARRAYLANG['TXT_NEWS_USERNAME_DESCRIPTION'] = 'Benutzername des dazugehörigen Benutzerkontos';
 $_ARRAYLANG['TXT_NEWS_USER_PROFILE_ATTRIBUTE_DESCRIPTION'] = 'Profildaten des dazugehörigen Benutzerkontos';
@@ -411,6 +412,7 @@ $_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'] = "Link zum nächsten Artikel";
 $_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Titel des nächsten Artikels";
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC_DESCRITION'] = "URL zum vorangehenden Artikel";
 $_ARRAYLANG['TXT_NEWS_NEXT_SRC_DESCRITION'] = "URL zum nächsten Artikel";
+$_ARRAYLANG['TXT_NEWS_USE_PREVIOUS_NEXT_LINK'] = "Vorangehenden & nächsten Artikel verwenden";
 
 $_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Tags hinzufügen";
 $_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'] = "Verwenden";

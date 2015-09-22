@@ -473,3 +473,4 @@ $_ARRAYLANG['TXT_NEWS_NEXT_LINK_DESCRITION'] = "Link to next article";
 $_ARRAYLANG['TXT_NEWS_NEXT_TITLE_DESCRITION'] = "Title of next article";
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_SRC_DESCRITION'] = "Source/path to previous article";
 $_ARRAYLANG['TXT_NEWS_NEXT_SRC_DESCRITION'] = "Source/path to next article";
+$_ARRAYLANG['TXT_NEWS_USE_PREVIOUS_NEXT_LINK'] = "Use previous & next article linking";

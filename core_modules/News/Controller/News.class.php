@@ -311,7 +311,9 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         self::parseImageBlock($this->_objTpl, $objResult->fields['newsThumbImg'], $newstitle, $newsUrl, 'image_thumbnail');
         self::parseImageBlock($this->_objTpl, $objResult->fields['newsimage'], $newstitle, $newsUrl, 'image_detail');
         //previous next newslink 
-        if ($this->_objTpl->blockExists('news_details_previous_next_links')) {
+        if (    !empty($this->arrSettings['use_previous_next_news_link']) 
+            &&  $this->_objTpl->blockExists('news_details_previous_next_links')
+        ) {
             //Register the RelatedLinks.css for styling the previous and next link
             \JS::registerCss('core_modules/News/View/Style/RelatedLinks.css');
             $this->parseNextAndPreviousLinks($this->_objTpl);
