@@ -117,4 +117,40 @@ class Sigma extends \HTML_Template_Sigma {
             $this->restoreFileRoot = null;
         }
     }
+    
+    function touchBlock($block)
+    {
+        if (!parent::blockExists($block)) {
+            \DBG::log('The SIGMA-Block ' . $block . ' does not exist');
+            return SIGMA_BLOCK_NOT_FOUND;
+        }
+        return parent::touchBlock($block);
+    }
+    
+    function hideBlock($block)
+    {
+        if (!parent::blockExists($block)) {
+            \DBG::log('The SIGMA-Block ' . $block . ' does not exist');
+            return SIGMA_BLOCK_NOT_FOUND;
+        }
+        return parent::hideBlock($block);
+    }
+    
+    function setCurrentBlock($block = '__global__')
+    {
+        if (!parent::blockExists($block)) {
+            \DBG::log('The SIGMA-Block ' . $block . ' does not exist');
+            return SIGMA_BLOCK_NOT_FOUND;
+        }
+        return parent::setCurrentBlock($block);
+    }
+    
+    function parse($block = '__global__', $flagRecursion = false, $fakeParse = false)
+    {
+        if (!parent::blockExists($block)) {
+            \DBG::log('The SIGMA-Block ' . $block . ' does not exist');
+            return '';
+        }
+        return parent::parse($block, $flagRecursion, $fakeParse);
+    }
 }
