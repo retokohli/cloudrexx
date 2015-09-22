@@ -1,38 +1,80 @@
 <?php
 /**
- * Event-listener for Routing/PageNotFound-event
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * FrontendController of Error-Component and Event-listener for Routing/PageNotFound-event.
+ *
+ * The Event-listener provides the functionality for pages or components which could not be resolved for either:
+ * * Component isn't licensed (@see \Cx\Core_Modules\License\ComponentController::postResolve())
+ * * Page or Component is inactive (@see \Cx\Core\Routing\Resolver::resolve())
+ * * Page or Compoent couldn't be found (@see \Cx\Core\Routing\Resolver:.resolve())
+ *
+ * The FrontendController parses the page-not-found-page
  *
  * @copyright CLOUDREXX *MS - CLOUDREXX AG
  * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
- * @version 5
  * @package cloudrexx
- * @subpackage core_modules_error
+ * @subpackage coremodule_error
+ * @version 1.0.0
  */
 
 namespace Cx\Core_Modules\Error\Controller;
 
 /**
- * Exception to skip the resolving of the current page/component
+ * Exception to skip the resolving of the current page/component.
+ *
+ * The Event-listener changes the resolved page and component to be the error-component and the page-not-found-page.
+ * Therefore the resolver must stop resolving after triggering the event
  *
  * @copyright CLOUDREXX *MS - CLOUDREXX AG
  * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
- * @version 5
  * @package cloudrexx
- * @subpackage core_modules_error
+ * @subpackage coremodule_error
+ * @version 1.0.0
  */
 class SkipResolverException extends \Exception {}
 
 /**
- * Event-listener for Routing/PageNotFound-event
+ * FrontendController of Error-Component and Event-listener for Routing/PageNotFound-event.
+ *
+ * The Event-listener provides the functionality for pages or components which could not be resolved for either:
+ * * Component isn't licensed (@see \Cx\Core_Modules\License\ComponentController::postResolve())
+ * * Page or Component is inactive (@see \Cx\Core\Routing\Resolver::resolve())
+ * * Page or Compoent couldn't be found (@see \Cx\Core\Routing\Resolver:.resolve())
+ *
+ * The FrontendController parses the page-not-found-page
  *
  * @copyright CLOUDREXX *MS - CLOUDREXX AG
  * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
- * @version 5
  * @package cloudrexx
- * @subpackage core_modules_error
+ * @subpackage coremodule_error
+ * @version 1.0.0
  */
 
 class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController implements \Cx\Core\Event\Model\Entity\EventListener
@@ -63,15 +105,22 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected $reason = '';
 
     /**
-     * @param $eventName String The name of the Event
-     * @param array $eventArgs
-     * @throws \Exception
+     * Resolves all events which the error-component has been registered as handler.
+     *
+     * @param string $eventName The name of the Event
+     * @param array $eventArgs The arguments supplied
      */
     public function onEvent($eventName, array $eventArgs) {
+        // Check if the event-name contains a forward-slash
         if (preg_match("#/#", $eventName)) {
+            // and only use the second part of it since that is the actual event-name
             $eventName = explode("/", $eventName)[1];
         }
+
+        // make sure that the event-name is CCL
         $eventName = lcfirst($eventName);
+
+        // check if the event-handler for the event exists
         if (!method_exists($this, $eventName)) {
             return;
         }
@@ -80,9 +129,15 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
-     * @TODO: Check what happens when this is called in load or preContentLoad $eventArgs might need a stage-value
-     * @param array $eventArgs
-     * @throws \Cx\Core_Modules\Error\Controller\SkipResolverException
+     * Handles the event of a missing, deactivated or not licensed component or page respectively.
+     *
+     * Loads the page-not-found-page and sets it as resolvedPage (@see \Cx\Core\Core\Controller\Cx::setPage($page))
+     * Swaps the missing, deativated or not licensed component with the error-component
+     * Sets the HTTP/1.0 404-header
+     *
+     * @TODO: Check what happens when this is called in load or preContentLoad $eventArgs might need a stage-value to abort this method if it is already too late
+     * @param array $eventArgs The arguments supplied while triggering the event
+     * @throws \Cx\Core_Modules\Error\Controller\SkipResolverException to stop resolving the faulty page or component
      */
     private function pageNotFound(array $eventArgs) {
         global $page, $plainSection;
@@ -122,18 +177,21 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
-     * Use this to parse your frontend page
+     * Parses the page-not-found-page.
      *
-     * You will get a template based on the content of the resolved page
-     * You can access Cx class using $this->cx
-     * To show messages, use \Message class
+     * If the faulty page is a normal page, no component-information are shown.
+     * If the user has not sufficient permissions to install a component, he won't see the instructions to do so.
+     * A description of a component is only shown when the description could be found.
+     *
      * @param \Cx\Core\Html\Sigma $template Template containing content of resolved page
-     * @return null
+     * @param string $cmd The cmd of the resolved page
+     * @return null Return only when we have a normal page and no information shall be displayed
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, $cmd)
     {
         global $_ARRAYLANG, $_CONFIG;
         // is a component-page
+        //@TODO: Implement check if given section is in fact an available component
         if (!isset($this->section)) {
             $template->hideBlock('error_module_information');
             $template->hideBlock('error_module_description');
@@ -142,7 +200,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             return;
         }
 
-        // load language data of given component
+        // load language data of the core to display Component information
         $coreLang = \Env::get('init')->getComponentSpecificLanguageData('Core', false, FRONTEND_LANG_ID);
 
         // check if a description is available
@@ -206,6 +264,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 
     /**
      * Get the backend URL
+     *
+     * Creates a Url using {@link \Cx\Core\Routing\Url::fromDocumentRoot()} and sets the url-params for component, cmd
+     * and csrf.
      *
      * @param string $component Name of the component needs to be the formatted value (CamelCase)
      * @param string $cmd
