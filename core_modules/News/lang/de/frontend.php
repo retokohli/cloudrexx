@@ -103,6 +103,12 @@ $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
 $_ARRAYLANG['TXT_NEWS_NEXT_LINK'] = "Nächster Artikel";
 $_ARRAYLANG['TXT_NEWS_PREVIOUS_LINK'] = "Vorangehender Artikel";
 
+$_ARRAYLANG['TXT_NEWS_ADD_TAGS'] = "Tags hinzufügen";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG'] = "Die angegebenen Tags konnten nicht gespeichert werden.";
+$_ARRAYLANG['TXT_NEWS_ERROR_SAVE_NEWS_TAG_RELATION'] = "Die Zuweisung der Tags konnte nicht gespeichert werden.";
+$_ARRAYLANG['TXT_NEWS_ERROR_DELETE_NEWS_TAG_RELATION'] = "Die Entfernung der Tags konnte nicht gespeichert werden.";
+$_ARRAYLANG['TXT_NEWS_NO_TAGS_FOUND'] = "Keine Tags zugewiesen";
+
 $_ARRAYLANG['TXT_NEWS_RELATED_NEWS'] = "Verwandte Artikel";
 $_ARRAYLANG['TXT_NEWS_INCLUDE_NEWS'] = "Verknüpfte Artikel";
 $_ARRAYLANG['TXT_NEWS_INCLUDE_RELATED_NEWS_DESC'] = "Wählen Sie bestehende Artikel aus, die mit diesem Artikel verknüpft werden sollen.";

@@ -79,6 +79,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
                     \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
                     \Env::get('cx')->getPage()->setMetaTitle($newsObj->newsTitle);
+                    \Env::get('cx')->getPage()->setMetakeys($newsObj->newsMetaKeys);
                 }
                 break;
 
