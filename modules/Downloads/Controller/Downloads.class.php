@@ -1,19 +1,44 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Downloads
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_downloads
  * @version     1.0.0
  */
 namespace Cx\Modules\Downloads\Controller;
 /**
 * Downloads
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author       COMVATION Development Team <info@comvation.com>
-* @package      contrexx
+* @copyright    CLOUDREXX CMS - CLOUDREXX AG
+* @author       CLOUDREXX Development Team <info@cloudrexx.com>
+* @package      cloudrexx
 * @subpackage   module_downloads
 * @version      1.0.0
 */
@@ -1157,6 +1182,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_SIZE'                => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
                 'DOWNLOADS_FILE_SIZE'               => $this->getFormatedFileSize($objDownload->getSize())
             ));
+            $this->objTemplate->touchBlock('download_size_information');
+            $this->objTemplate->touchBlock('download_size_list');
+        } else {
+            $this->objTemplate->hideBlock('download_size_information');
+            $this->objTemplate->hideBlock('download_size_list');
         }
 
         // parse license
@@ -1165,6 +1195,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_LICENSE'             => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
                 'DOWNLOADS_FILE_LICENSE'            => htmlentities($objDownload->getLicense(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            $this->objTemplate->touchBlock('download_license_information');
+            $this->objTemplate->touchBlock('download_license_list');
+        } else {
+            $this->objTemplate->hideBlock('download_license_information');
+            $this->objTemplate->hideBlock('download_license_list');
         }
 
         // parse version
@@ -1173,6 +1208,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_VERSION'             => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
                 'DOWNLOADS_FILE_VERSION'            => htmlentities($objDownload->getVersion(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            $this->objTemplate->touchBlock('download_version_information');
+            $this->objTemplate->touchBlock('download_version_list');
+        } else {
+            $this->objTemplate->hideBlock('download_version_information');
+            $this->objTemplate->hideBlock('download_version_list');
         }
 
         // parse author
@@ -1181,6 +1221,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_AUTHOR'              => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
                 'DOWNLOADS_FILE_AUTHOR'             => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            $this->objTemplate->touchBlock('download_author_information');
+            $this->objTemplate->touchBlock('download_author_list');
+        } else {
+            $this->objTemplate->hideBlock('download_author_information');
+            $this->objTemplate->hideBlock('download_author_list');
         }
 
         // parse website
@@ -1190,6 +1235,11 @@ JS_CODE;
                 'DOWNLOADS_FILE_WEBSITE'            => $this->getHtmlLinkTag(htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET)),
                 'DOWNLOADS_FILE_WEBSITE_SRC'        => htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            $this->objTemplate->touchBlock('download_website_information');
+            $this->objTemplate->touchBlock('download_website_list');
+        } else {
+            $this->objTemplate->hideBlock('download_website_information');
+            $this->objTemplate->hideBlock('download_website_list');
         }
     }
 

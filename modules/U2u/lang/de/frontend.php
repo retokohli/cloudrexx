@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_u2u
  */
 $_ARRAYLANG['TXT_SEND_PRIVATE_MESSAGE'] = "Eine U2U Nachricht an einen anderen Benutzer verschicken";
@@ -41,7 +67,7 @@ $_ARRAYLANG['TXT_PRIVATE_NOTIFICATION_LINK'] = "Ihre Benachrichtigungen:";
 $_ARRAYLANG['PRIVATE_MESSAGE_DELETE_SUCCESS'] = "Nachricht erfolgreich gelöscht";
 $_ARRAYLANG['PRIVATE_MESSAGE_NO_ENTRIES'] = "Keine Nachrichten";
 $_ARRAYLANG['TXT_U2U_PREVIEW_MESSAGE'] = "Vorschau der Nachricht";
-$_ARRAYLANG['TXT_U2U_PREVIEW_WEBSITE'] = "http://www.comvation.com";
+$_ARRAYLANG['TXT_U2U_PREVIEW_WEBSITE'] = "http://www.cloudrexx.com";
 $_ARRAYLANG['TXT_U2U_INSERT_MAIL_SUBJECT'] = "\\\"[USERNAME]\\\" hat Ihnen eine Nachricht gesendet.";
 $_ARRAYLANG['TXT_U2U_INSERT_MAIL_BODY'] = "\\\"[USERNAME]\\\" hat Ihnen eine Nachricht gesendet. \n Folgen Sie diesem Link um die Nachricht zu lesen: /index.php?section=U2u&cmd=notification";
 $_ARRAYLANG['TXT_U2U_ADDRESS_BOOK'] = "Adressbuch";

@@ -1,14 +1,39 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * OBSOLETE -- See {@see core/MailTemplate.class.php}
  *
  * Note that this partial class is left over for updating to the new
  * MailTemplate.  We use it to migrate the existing templates ONLY.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -17,9 +42,9 @@ namespace Cx\Modules\Shop\Controller;
 /**
  * OBSOLETE -- See {@see core/MailTemplate.class.php}
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 class Mail
@@ -370,7 +395,7 @@ die("Mail::storeTemplate(): Obsolete method called!");
         $arrKey =  array(
             // DE: Bestellungsbestätigung (includes account data, obsoletes #4)
             // EN:
-            // FR: Confirmation de commande Contrexx
+            // FR: Confirmation de commande Cloudrexx
             // IT:
             1 => 'order_confirmation',
             // DE: Auftrag abgeschlossen
