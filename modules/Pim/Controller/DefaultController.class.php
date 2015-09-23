@@ -105,17 +105,8 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         if (empty($products)) {
             $products = new \Cx\Modules\Pim\Model\Entity\Product();
         }
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($products, array(
-            'header'    => $_ARRAYLANG['TXT_MODULE_PIM_ACT_DEFAULT'],
-            'functions' => array(
-                'add'       => true,
-                'edit'      => true,
-                'delete'    => true,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-                )
-            ));
+        $options = $this->getController('Backend')->getAllViewGeneratorOptions();
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($products, $options);
         $this->template->setVariable('PRODUCTS_CONTENT', $view->render());
     }
 }

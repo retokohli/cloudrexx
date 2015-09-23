@@ -57,11 +57,17 @@ class FormGenerator {
     protected $options;
 
     /**
+     * @var array $componentOptions component options
+     */
+    protected $componentOptions;
+
+    /**
      * @var string $entityClass class to create form for
      */
     protected $entityClass;
     
-    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0) {
+    public function __construct($entity, $actionUrl = null, $entityClass = '', $title = '', $options = array(), $entityId=0, $componentOptions) {
+        $this->componentOptions = $componentOptions;
         $this->formId = static::$formIncrement;
         static::$formIncrement++;
         $this->options = $options;
@@ -292,8 +298,11 @@ class FormGenerator {
                     $addButton->setAttribute('data-params',
                         'entityClass:'.$associatedClass.';'.
                         'mappedBy:'.$assocMapping['mappedBy'].';'.
-                        'cssName:'.$this->createCssClassNameFromEntity($associatedClass).';'
+                        'cssName:'.$this->createCssClassNameFromEntity($associatedClass).';'.
+                        'sessionKey:'.$this->entityClass
                     );
+                    $_SESSION['vgOptions'] = array();
+                    $_SESSION['vgOptions'][$this->entityClass] = $this->componentOptions;
                     if (!empty($entityId) && $entityId != 0) {
                         // if we edit the main form, we also want to show the existing associated values we already have
                         $existingValues = $this->getExistingValues($assocMapping, $associatedClass, $entityId);
@@ -795,9 +804,6 @@ CODE;
                         'name'        => $this->createCssClassNameFromEntity($entityClass).'[]',
                         'value'       => $entityValueSerialized
                     )
-                );
-                $hiddenInput->setAttribute('data-options',
-                    serialize($this->componentOptions)
                 );
                 $editLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
                 $editLink->setAttributes(

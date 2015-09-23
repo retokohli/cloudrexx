@@ -80,5 +80,128 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         
         \Message::show();
     }
+
+    /**
+     * Returns all entities of this components, which can have an autogeneratet view
+     *
+     * @access protected
+     * @return array
+     */
+    protected function getEntityClassesWithView() {
+        // at the moment the view is only used for domain overview
+        return array(
+            'Cx\Core\Net\Model\Entity\Domain',
+        );
+    }
+    /**
+     * This function returns the ViewGeneration options for a given entityClass
+     *
+     * @access protected
+     * @global $_ARRAYLANG
+     * @param $entityClassName contains the FQCN from entity
+     * @return array with options
+     */
+    protected function getViewGeneratorOptions($entityClassName) {
+        global $_ARRAYLANG;
+
+        $classNameParts = explode('\\', $entityClassName);
+        $classIdentifier = end($classNameParts);
+
+        $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
+        $header = '';
+        if (isset($_ARRAYLANG[$langVarName])) {
+            $header = $_ARRAYLANG[$langVarName];
+        }
+        switch($entityClassName){
+            case 'Cx\Core\Net\Model\Entity\Domain':
+                return array(
+                    'header'    => $_ARRAYLANG['TXT_CORE_NETMANAGER'],
+                    'entityName'    => $_ARRAYLANG['TXT_CORE_NETMANAGER_ENTITY'],
+                    'fields'    => array(
+                        'name'  => array(
+                            'header' => $_ARRAYLANG['TXT_NAME'],
+                            'table' => array(
+                                'parse' => function($value) {
+                                    global $_ARRAYLANG;
+                                    static $mainDomainName;
+                                    if (empty($mainDomainName)) {
+                                        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                                        $mainDomainName = $domainRepository->getMainDomain()->getName();
+                                    }
+                                    $domainName = contrexx_raw2xhtml(\Cx\Core\Net\Controller\ComponentController::convertIdnToUtf8Format($value));
+                                    if($domainName!=contrexx_raw2xhtml($value)) {
+                                        $domainName.= ' (' .  contrexx_raw2xhtml($value) . ')';
+                                    }
+                                    $mainDomainIcon = '';
+                                    if ($value == $mainDomainName) {
+                                        $mainDomainIcon = ' <img src="'.\Env::get('cx')->getCodeBaseCoreWebPath().'/Core/View/Media/icons/Home.png" title="'.$_ARRAYLANG['TXT_CORE_CONFIG_MAINDOMAINID'].'" />';
+                                    }
+                                    return $domainName.$mainDomainIcon;
+                                },
+                            ),
+                            'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
+                                return \Cx\Core\Net\Controller\ComponentController::convertIdnToUtf8Format($fieldvalue);
+                            },
+                        ),
+                        'id'    => array(
+                            'showOverview' => false,
+                        ),
+                    ),
+                    'functions' => array(
+                        'add'           => true,
+                        'edit'          => false,
+                        'allowEdit'    => true,
+                        'delete'        => false,
+                        'allowDelete'   => true,
+                        'sorting'       => true,
+                        'paging'        => true,
+                        'filtering'     => false,
+                        'actions'       => function($rowData, $rowId) {
+                            global $_CORELANG;
+                            static $mainDomainName;
+                            if (empty($mainDomainName)) {
+                                $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                                $mainDomainName = $domainRepository->getMainDomain()->getName();
+                            }
+
+                            preg_match_all('/\d+/', $rowId, $ids, null, 0);
+
+                            $actionIcons = '';
+                            $csrfParams = \Cx\Core\Csrf\Controller\Csrf::param();
+                            if ($mainDomainName !== $rowData['name']) {
+                                $actionIcons = '<a '
+                                    . 'href="' . \Env::get('cx')->getWebsiteBackendPath() . '/?cmd=NetManager&amp;editid=' . $rowId . '"'
+                                    . 'class="edit" title="Edit entry">'
+                                    . '</a>';
+                                $actionIcons .= '<a
+                                    onclick=" if(confirm(\''.$_CORELANG['TXT_CORE_RECORD_DELETE_CONFIRM'].'\'))'
+                                    . 'window.location.replace(\'' . \Env::get('cx')->getWebsiteBackendPath()
+                                    . '/?cmd=NetManager&amp;deleteid=' . (empty($ids[0][1])?0:$ids[0][1])
+                                    . '&amp;vg_increment_number=' . (empty($ids[0][0])?0:$ids[0][0])
+                                    . '&amp;' . $csrfParams . '\');" href="javascript:void(0);"'
+                                    . 'class="delete"'
+                                    . 'title="Delete entry">
+                                    </a>';
+                            }
+                            return $actionIcons;
+                        }
+                    )
+                );
+            default:
+                return array(
+                    'header' => $header,
+                    'functions' => array(
+                        'add'       => true,
+                        'edit'      => true,
+                        'delete'    => true,
+                        'sorting'   => true,
+                        'paging'    => true,
+                        'filtering' => false,
+                    ),
+                );
+                break;
+        }
+    }
+
     
 }

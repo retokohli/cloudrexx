@@ -7,8 +7,6 @@ jQuery(document).ready(function(){
     jQuery('.mappedAssocciationButton, .edit').click(function() {
         editAssociation(jQuery(this));
     });
-
-
 });
 
 function editAssociation (thisElement) {
@@ -31,6 +29,7 @@ function editAssociation (thisElement) {
         paramAssociativeArray['entityClass'],
         paramAssociativeArray['mappedBy'],
         paramAssociativeArray['cssName'],
+        paramAssociativeArray['sessionKey'],
         existingData
     );
 }
@@ -156,17 +155,18 @@ function deleteAssociationMappingEntry(element)
 
 /*
  * This function creates an ajax request to the ViewGenerator and on success call the function to open the dialog where
- * we can insert the data for the mapped assocciation
+ * we can insert the data for the mapped association
  *
  */
-function createAjaxRequest(entityClass, mappedBy, className, existingData){
+function createAjaxRequest(entityClass, mappedBy, className, sessionKey, existingData){
     cx.ajax(
         'Html',
         'getViewOverJson',
     {
         data: {
             entityClass: entityClass,
-            mappedBy:    mappedBy
+            mappedBy:    mappedBy,
+            sessionKey:  sessionKey
         },
         success: function(data) {
             openDialogForAssociation(

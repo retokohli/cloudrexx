@@ -100,17 +100,9 @@ class InvoiceController extends \Cx\Core\Core\Model\Entity\Controller {
         if (empty($invoices)) {
             $invoices = new \Cx\Modules\Order\Model\Entity\Invoice();
         }
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($invoices, array(
-            'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_INVOICE'],
-            'functions' => array(
-                'add'       => true,
-                'edit'      => true,
-                'delete'    => true,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-                )
-            ));
+
+        $options = $this->getController('Backend')->getAllViewGeneratorOptions();
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($invoices, $options);
         $this->template->setVariable('INVOICE_CONTENT', $view->render());
     }
 }

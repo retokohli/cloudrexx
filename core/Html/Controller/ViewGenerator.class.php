@@ -62,6 +62,11 @@ class ViewGenerator {
     protected $options;
 
     /**
+     * @var array $componentOptions component options
+     */
+    protected $componentOptions;
+
+    /**
      * @var FormGenerator $formGenerator
      */
     protected $formGenerator = null;
@@ -73,12 +78,25 @@ class ViewGenerator {
      * @throws ViewGeneratorException 
      */
     public function __construct($object, $options = array()) {
+        $this->componentOptions = $options;
         $this->viewId = static::$increment++;
         try {
             \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
-            $this->options = $options;
             $entityWithNS = $this->findEntityClass($object);
-
+            $this->options = array();
+            if (isset($options[$entityWithNS]) && is_array($options[$entityWithNS])) {
+                    $this->options = $options[$entityWithNS];
+            } elseif (
+                $entityWithNS == 'array'
+                && isset($options['Cx\Core_Modules\Listing\Model\Entity\DataSet'])
+                && isset($options['Cx\Core_Modules\Listing\Model\Entity\DataSet'][$object->getIdentifier()])
+            ) {
+                $this->options = $options['Cx\Core_Modules\Listing\Model\Entity\DataSet'][$object->getIdentifier()];
+            }
+            // If the options for this object are not set, we use the standard values from the component
+            if (empty($this->options)) {
+                $this->options = $options[''];
+            }
             if (
                 (!isset($_POST['vg_increment_number']) || $_POST['vg_increment_number'] != $this->viewId) &&
                 (!isset($_GET['vg_increment_number']) || $_GET['vg_increment_number'] != $this->viewId)
@@ -454,7 +472,7 @@ class ViewGenerator {
             }
             $renderArray = array_merge($sortedData,$renderArray);
         }
-        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options, $entityId);
+        $this->formGenerator = new FormGenerator($renderArray, $actionUrl, $entityClassWithNS, $title, $this->options, $entityId, $this->componentOptions);
         // This should be moved to FormGenerator as soon as FormGenerator
         // gets the real entity instead of $renderArray
         $additionalContent = '';

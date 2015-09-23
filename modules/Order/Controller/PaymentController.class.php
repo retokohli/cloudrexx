@@ -94,23 +94,12 @@ class PaymentController extends \Cx\Core\Core\Model\Entity\Controller {
     
     public function showPayments() 
     {
-        global $_ARRAYLANG;
-        
         $payments = $this->paymentRepo->findAll();
         if (empty($payments)) {
             $payments = new \Cx\Modules\Order\Model\Entity\Payment();
         }
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($payments, array(
-            'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_PAYMENT'],
-            'functions' => array(
-                'add'       => true,
-                'edit'      => true,
-                'delete'    => true,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-                )
-            ));
+        $options = $this->getController('Backend')->getAllViewGeneratorOptions();
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($payments, $options);
         $this->template->setVariable('PAYMENT_CONTENT', $view->render());
     }
 }

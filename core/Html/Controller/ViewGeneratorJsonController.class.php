@@ -80,25 +80,37 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
     }
 
     /**
-     * Returns default permission as object
+     * Always returns the add view of an entity
+     * This is mostly used for oneToMany associations to load the associated entity (in a model)
+     *
+     * @access public
      * @param array $params data from ajax request
      * @return json rendered form
      */
     public function getViewOverJson($params)
     {
-        $entityClassObject = new $params['get']['entityClass']();
-        $entityClassObjectView = new \Cx\Core\Html\Controller\ViewGenerator($entityClassObject,
-            array(
-                'functions' => array(
-                    'add' => true,
-                    'formButtons' => false,
-                ),
-                'fields' => array(
-                    $params['get']['mappedBy'] => array(
-                        'showDetail' => false,
-                    )
-                )
-            )
+        $entityClass = $params['get']['entityClass'];
+        $entityClassObject = new $entityClass();
+        $mappedBy = $params['get']['mappedBy'];
+        $options = $_SESSION['vgOptions'][$params['get']['sessionKey']];
+
+        // add must always be true, otherwise we have no change to open the view, because it is not allowed
+        $options->recursiveOffsetSet(true, $entityClass.'/functions/add');
+
+        // formButtons should not be set over ViewGenerator, because they are set over modal (js) and we do not want to
+        // load them twice. Furthermore there should be no save button, because the entry should be saved if the main
+        // for gets stored and not in the modal.
+        $options->recursiveOffsetSet(false, $entityClass.'/functions/formButtons');
+
+        // We never show the mapped-attribute, because it should not be possible to change this.
+        // The value of this field must always be the id of the main form entry.
+        // This will automatically be done by ViewGenerator while saving the main entry
+        $options->recursiveOffsetSet(false, $entityClass.'/fields/'.$mappedBy.'/showDetail');
+
+
+        $entityClassObjectView = new \Cx\Core\Html\Controller\ViewGenerator(
+            $entityClassObject,
+            $options->toArray() // must be array and not recursiveArrayAccess object
         );
         return $entityClassObjectView->render();
     }
