@@ -27,7 +27,7 @@
  */
 
 /**
- * Marketplace Modul Inputfield Country Class
+ * MediaDir Modul Inputfield Country Class
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
@@ -42,7 +42,7 @@
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
 
 /**
- * Marketplace Modul Inputfield Country Class
+ * MediaDir Modul Inputfield Country Class
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>

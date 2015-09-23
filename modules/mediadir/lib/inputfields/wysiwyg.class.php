@@ -52,7 +52,7 @@ require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface
  */
 class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements inputfield
 {
-    public $arrPlaceholders = array('TXT_MARKETPLACE_INPUTFIELD_NAME','MARKETPLACE_INPUTFIELD_VALUE');
+    public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE');
 
 
     /**
