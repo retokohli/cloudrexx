@@ -260,6 +260,10 @@ class DataSet implements \Iterator {
     public function getDataType() {
         return $this->dataType;
     }
+
+    public function setDataType($dataType) {
+        $this->dataType = $dataType;
+    }
     
     public function entryExists($key) {
         return isset($this->data[$key]);

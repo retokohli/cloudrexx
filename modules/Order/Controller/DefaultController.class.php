@@ -118,6 +118,9 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         } else {
             $orders = $this->orderRepository->getAllByDesc();
         }
+        $orders = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($orders);
+        // setDataType is used to make the ViewGenerator load the proper options if $orders is empty
+        $orders->setDataType('Cx\Modules\Order\Model\Entity\Order');
         
         $view = new \Cx\Core\Html\Controller\ViewGenerator($orders, array(
             'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_DEFAULT'],

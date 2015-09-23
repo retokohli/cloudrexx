@@ -69,7 +69,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if (!isset($_GET['order'])) {
             $_GET['order'] = 'timestamp/DESC';
         }
-        
+        $parseObject = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array());
+        // setDataType is used to make the ViewGenerator load the proper options if $parseObject is empty
+        $parseObject->setDataType('Cx\Core_Modules\SysLog\Model\Entity\Log');
         // configure view
         $viewGenerator = new \Cx\Core\Html\Controller\ViewGenerator($parseObject, array(
             'functions' => array(

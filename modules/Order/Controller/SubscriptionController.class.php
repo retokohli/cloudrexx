@@ -108,7 +108,11 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
         } else {
             $subscriptions = $this->subscriptionRepo->getSubscriptionsByCriteria(null, array('s.id' => 'DESC'));
         }
-        
+
+        $subscriptions = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($subscriptions);
+        // setDataType is used to make the ViewGenerator load the proper options if $subscriptions is empty
+        $subscriptions->setDataType('Cx\Modules\Order\Model\Entity\Subscription');
+
         $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll();
         $this->getSearchFilterDropDown($products, $filterProduct, 'product');
         
