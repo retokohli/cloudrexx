@@ -26,7 +26,7 @@
  */
 
 /**
- * Marketplace Modul Inputfield Country Class
+ * MediaDir Modul Inputfield Country Class
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
@@ -36,7 +36,7 @@
  */
 namespace Cx\Modules\MediaDir\Model\Entity;
 /**
- * Marketplace Modul Inputfield Country Class
+ * MediaDir Modul Inputfield Country Class
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      CLOUDREXX Development Team <info@cloudrexx.com>

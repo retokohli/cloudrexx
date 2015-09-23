@@ -47,7 +47,7 @@ namespace Cx\Modules\MediaDir\Model\Entity;
  */
 class MediaDirectoryInputfieldWysiwyg extends \Cx\Modules\MediaDir\Controller\MediaDirectoryLibrary implements Inputfield
 {
-    public $arrPlaceholders = array('TXT_MARKETPLACE_INPUTFIELD_NAME','MARKETPLACE_INPUTFIELD_VALUE');
+    public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE');
 
 
     /**
