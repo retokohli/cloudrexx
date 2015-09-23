@@ -3,6 +3,7 @@
     cx.ready(function() {
         $J("#tabs").tabs({
             show : function (event, ui) {
+                $J(window).trigger('resize');
                 $J('#selectedTab').val($J( "#tabs" ).tabs('option', 'selected'));
             },
             select: function(event, ui) {
@@ -125,10 +126,22 @@
                 } else {
                     cx.tools.StatusMessage.showMessage(response.data.message, "error", 1000);
                 }
-
             }
         });
     }
+
+    $J(window).load(function(){
+        $J(window).trigger('resize');
+    });
+
+    $J(window).resize(function(){
+        $J('.themeWrapper').height("");
+        var height = 0;
+        $J('.themeWrapper').each(function(){
+            height = Math.max(height, $J(this).outerHeight())
+        });
+        $J('.themeWrapper').height(height);
+    });
 
 </script>
 <style type="text/css">
@@ -247,6 +260,19 @@
         z-index: 11;
     }
 
+    .preview-overlay {
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        left: 0;
+        box-sizing: border-box;
+        padding: 0 15px;
+    }
+
+    .preview-image {
+        padding-bottom: 70px;
+    }
+
     .themeFooter {
         display: block;
     }
@@ -265,14 +291,17 @@
         box-sizing: border-box;
         background: #fff;
         border: 1px solid #BBBBBB;
-        color: #444444;
+        color: #000;
         margin: 2px 0;
         padding: 10px 10px;
         text-shadow: none;
     }
 
-    .preview-overlay-small a:hover, body #content .preview-overlay-small input:hover {
-
+    .preview-overlay-small a:hover,
+    body #content .preview-overlay-small input:hover,
+    .preview-overlay-small a:focus,
+    body #content .preview-overlay-small input:focus {
+        background: #BBBBBB;
     }
 
     span.add-icon.addThemeText {
@@ -420,10 +449,23 @@
         margin-right: 5px;
     }
 
+    .preview-overlay-small a.themeDelete.action-small-screen:hover,
+    .preview-overlay-small a.themeDelete.action-small-screen:focus
+    {
+        background: #a23029;
+        border-color: #a23029;
+    }
+
     body #content .preview-overlay-small input.themesActivate {
         background: #4EAA09;
         color: #fff;
         border-color: #4EAA09;
+    }
+
+    body #content .preview-overlay-small input.themesActivate:hover,
+    body #content .preview-overlay-small input.themesActivate:focus {
+        background: #448909;
+        border-color: #448909;
     }
 
     a.themePreview.action-small-screen,
@@ -446,6 +488,13 @@
         background: #0071BD;
         color: #fff;
         border-color: #0071BD;
+    }
+
+    a.themeEdit.action-small-screen:hover,
+    a.themeCopy.action-small-screen:hover,
+    a.themeExport.action-small-screen:hover {
+        background: #005ca1;
+        border-color: #005ca1;
     }
 
     .action {
@@ -488,7 +537,7 @@
         body #content .preview-overlay-small input.themesActivate{
             width: 100%;
             margin: 0 0 5px;
-            padding: 5px 5px;
+            padding: 12px 5px;
             font-size: 20px;
         }
 
