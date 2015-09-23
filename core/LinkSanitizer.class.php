@@ -70,6 +70,7 @@ class LinkSanitizer {
             $content = preg_replace_callback("/
                 (\<(?:a|form)[^>]*?\s+(?:href|action)\s*=\s*)
                 (['\"])
+                (?!\#)
                 ((?![a-zA-Z]+?:|\\\\).+?)
                 \\2
                 ([^>]*\>)
