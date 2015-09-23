@@ -1631,7 +1631,7 @@ class NewsLibrary
                 $newsSrc      = \Cx\Core\Routing\Url::fromModuleAndCmd(
                                 'News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories),$arrCategory)),
                                 FRONTEND_LANG_ID, array('newsid' => contrexx_raw2xhtml($nextNewsDetails['id'])));
-                $aLinkContent = '<span class=\'news-link-label news-link-label-next\'><small>&larr;</small>' . $_ARRAYLANG['TXT_NEWS_NEXT_LINK'] . '</span>'
+                $aLinkContent = '<span class=\'news-link-label news-link-label-next\'><small>&rarr;</small>' . $_ARRAYLANG['TXT_NEWS_NEXT_LINK'] . '</span>'
                                 . '<span class=\'news-title-label news-title-label-next\'>' . $newsTitle . '</span>';
                 $objTpl->setVariable(
                         array(
