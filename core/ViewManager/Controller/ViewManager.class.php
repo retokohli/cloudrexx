@@ -2325,6 +2325,7 @@ CODE;
         // write component.yml file
         // this line will create a default component.yml file    
         try {
+            $this->themeRepository->loadComponentData($theme);
             $this->themeRepository->convertThemeToComponent($theme);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());

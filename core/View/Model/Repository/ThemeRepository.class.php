@@ -396,9 +396,11 @@ class ThemeRepository
      * @param \Cx\Core\View\Model\Entity\Theme $theme
      */
     public function convertThemeToComponent(\Cx\Core\View\Model\Entity\Theme $theme) {
+        if ($theme->getComponentData()) {
+            return;
+        }
 
         $themePath = \Env::get('cx')->getWebsiteThemesPath() . '/' . $theme->getFoldername();
-        
         $infoFile         = null;
         $themeInformation = array('DlcInfo' => array());
         if (file_exists($themePath . '/info.xml')) {
