@@ -1,3 +1,23 @@
+<!-- BEGIN error_default_explanation -->
+    <h2>{ERROR_DEFAULT_TITLE}</h2>
+
+    <!-- BEGIN error_search_bar -->
+        <form action="{NODE_SEARCH}" method="get">
+            <input id="search-input" type="text" name="term" value="{ERROR_SEARCH_TERM}" />
+            <input type="submit" id="search-icon" value=""/>
+        </form>
+    <!-- END error_search_bar -->
+
+    <div class="default-explanation">
+        <a href="{NODE_HOME}" title="{ERROR_HOME_PAGE_NAME}">{ERROR_HOME_PAGE_NAME}</a><br />
+        <a href="{NODE_SEARCH}" title="{ERROR_SEARCH_NAME}">{ERROR_SEARCH_NAME}</a><br />
+        <br />
+        {ERROR_EXPLANATION_GERMAN}<br />
+        <br />
+        {ERROR_EXPLANATION_ENGLISH}<br />
+    </div>
+<!-- END error_default_explanation -->
+
 <!-- BEGIN error_module_information -->
     <!-- BEGIN error_module_name -->
         <h2>{ERROR_MODULE_NAME}</h2>
@@ -11,8 +31,7 @@
     <div class="instructions">
         {ERROR_MODULE_INSTALLATION_GUIDE_PART_1}
         <a href="{ERROR_BACKEND_URL}" title="{ERROR_BACKEND_NAME}" target="_blank">
-            {ERROR_BACKEND_NAME}
-        </a>
+            {ERROR_BACKEND_NAME}</a>. <br />
         {ERROR_MODULE_INSTALLATION_GUIDE_PART_2}
         <a href="{ERROR_COMPONENT_MANAGER_URL}" title="{ERROR_COMPONENT_CONTROLLER_NAME}" target="_blank">
             {ERROR_COMPONENT_CONTROLLER_NAME}</a>. <br />

@@ -189,10 +189,21 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, $cmd)
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG;
+
+        // Default content
+        $template->touchBlock('error_default_explanation');
+        $template->setVariable(array(
+            'ERROR_DEFAULT_TITLE'       => $_ARRAYLANG['TXT_ERROR_DEFAULT_TITLE'],
+            'ERROR_SEARCH_NAME'         => $_ARRAYLANG['TXT_ERROR_SEARCH_NAME'],
+            'ERROR_HOME_PAGE_NAME'      => $_ARRAYLANG['TXT_ERROR_HOME_PAGE_NAME'],
+            'ERROR_EXPLANATION_GERMAN'  => $_ARRAYLANG['TXT_ERROR_EXPLANATION_GERMAN'],
+            'ERROR_EXPLANATION_ENGLISH' => $_ARRAYLANG['TXT_ERROR_EXPLANATION_ENGLISH']
+        ));
+
         // is a component-page
-        //@TODO: Implement check if given section is in fact an available component
-        if (!isset($this->section)) {
+        $systemComponentRepo = $this->cx->getDb()->getEntityManager()->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
+        if (empty($this->section) || empty($systemComponentRepo->findOneBy(array('name' => ucfirst($this->section))))) {
             $template->hideBlock('error_module_information');
             $template->hideBlock('error_module_description');
             $template->hideBlock('error_module_name');
@@ -218,8 +229,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         } else {
             $template->touchBlock('error_module_description');
         }
-
-        if ($noAccess) {
+        if ($noAccess || $this->reason == 'not licensed') {
             $template->hideBlock('error_module_installation_instructions');
         } else {
             $template->touchBlock('error_module_installation_instructions');
@@ -232,8 +242,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             ));
         }
 
-        // only show installation instructions when the user has the permissions to
-        if(!$noAccess && $this->reason == 'page not found') {
+        // only show installation instructions when the user has the permissions to and the component was not found
+        if(!$noAccess) {
             $template->setVariable(array(
                 'ERROR_MODULE_INSTALLATION_GUIDE_TITLE' => $_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_TITLE'],
                 'ERROR_BACKEND_URL' => $this->getBackendUrl(),
@@ -243,15 +253,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             ));
 
             for ($i = 1; $i <= 3; $i++) {
-                if ($i == 3) {
-                    $template->setVariable('ERROR_MODULE_INSTALLATION_GUIDE_PART_' . $i,
-                        nl2br(sprintf($_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_PART_' . $i], $this->section))
-                    );
-                } else {
-                    $template->setVariable('ERROR_MODULE_INSTALLATION_GUIDE_PART_' . $i,
-                        nl2br($_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_PART_'.$i])
-                    );
-                }
+                // replace the placeholder (%s) with the component-name
+                $template->setVariable('ERROR_MODULE_INSTALLATION_GUIDE_PART_' . $i,
+                    nl2br(sprintf($_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_PART_' . $i], $this->section))
+                );
             }
         }
 
