@@ -131,11 +131,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     /**
      * Handles the event of a missing, deactivated or not licensed component or page respectively.
      *
-     * Loads the page-not-found-page and sets it as resolvedPage (@see \Cx\Core\Core\Controller\Cx::setPage($page))
-     * Swaps the missing, deativated or not licensed component with the error-component
+     * Loads the page-not-found-page and sets it as resolvedPage (see \Cx\Core\Core\Controller\Cx::setPage($page))
+     * Swaps the missing, deactivated or not licensed component with the error-component
      * Sets the HTTP/1.0 404-header
      *
      * @TODO: Check what happens when this is called in load or preContentLoad $eventArgs might need a stage-value to abort this method if it is already too late
+     * @example "../../core/Routing/Resolver.class.php" 234 6
      * @param array $eventArgs The arguments supplied while triggering the event
      * @throws \Cx\Core_Modules\Error\Controller\SkipResolverException to stop resolving the faulty page or component
      */
@@ -192,6 +193,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     public function parsePage(\Cx\Core\Html\Sigma $template, $cmd)
     {
         global $_ARRAYLANG;
+
+        if (!empty($_REQUEST['initialModule'])) {
+            $this->section = $_REQUEST['initialModule'];
+        }
 
         // Default content
         $template->touchBlock('error_default_explanation');
