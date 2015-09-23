@@ -117,4 +117,72 @@ class Sigma extends \HTML_Template_Sigma {
             $this->restoreFileRoot = null;
         }
     }
+    
+    /**
+     * Check if the given block exist. If not then an error is logged.
+     * Otherwise it preserves the block.
+     *
+     * @param    string      block name
+     * @return   integer     SIGMA_OK on success, SIGMA_BLOCK_NOT_FOUND on failure
+     */
+    function touchBlock($block)
+    {
+        if (!$this->blockExists($block)) {
+            \DBG::log('The SIGMA-Block ' . $block . ' does not exist');
+            return SIGMA_BLOCK_NOT_FOUND;
+        }
+        return parent::touchBlock($block);
+    }
+    
+    /**
+     * Check if the given block exist. If not then an error is logged.
+     * Otherwise it hides the block even if it is not "empty".
+     *
+     * Is somewhat an opposite to touchBlock().
+     *
+     * @param    string      block name
+     * @return   integer     SIGMA_OK on success, SIGMA_BLOCK_NOT_FOUND on failure
+     */
+    function hideBlock($block)
+    {
+        if (!$this->blockExists($block)) {
+            \DBG::log('The SIGMA-Block ' . $block . ' does not exist');
+            return SIGMA_BLOCK_NOT_FOUND;
+        }
+        return parent::hideBlock($block);
+    }
+    
+    /**
+     * Check if the given block exist. If not then an error is logged.
+     * Otherwise it sets the name of the current block: the block where variables are added
+     *
+     * @param    string      block name
+     * @return   integer     SIGMA_OK on success, SIGMA_BLOCK_NOT_FOUND on failure
+     */
+    function setCurrentBlock($block = '__global__')
+    {
+        if (!$this->blockExists($block)) {
+            \DBG::log('The SIGMA-Block ' . $block . ' does not exist');
+            return SIGMA_BLOCK_NOT_FOUND;
+        }
+        return parent::setCurrentBlock($block);
+    }
+    
+    /**
+     * Check if the given block exist and if it exist the given block is parsed.
+     * Otherwise an error is logged.
+     *
+     * @param    string    block name
+     * @param    boolean   true if the function is called recursively (do not set this to true yourself!)
+     * @param    boolean   true if parsing a "hidden" block (do not set this to true yourself!)
+     * @return   boolean   true if block is not empty
+     */
+    function parse($block = '__global__', $flagRecursion = false, $fakeParse = false)
+    {
+        if (!$this->blockExists($block)) {
+            \DBG::log('The SIGMA-Block ' . $block . ' does not exist');
+            return false;
+        }
+        return parent::parse($block, $flagRecursion, $fakeParse);
+    }
 }
