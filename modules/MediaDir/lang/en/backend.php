@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 $_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'] = "Overview";
@@ -263,7 +289,6 @@ $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL'] = 'Use levels';
 $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL_INFO'] = 'Allows do en- or disable assigning of levels to entries';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM'] = 'Authors have to release entries for approval';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO'] = 'If set, the user has to explicitly state that his entry is ready for approval. Non-ready entries can\'t be approved.<br /><br />We suggest to activate this for bigger forms to allow saving the form while editing.';
-$_ARRAYLANG['TXT_MEDIADIR_FORM_ENTRIES_PER_PAGE'] = "Entries per page";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_RELATION'] = 'Link to existing entry';    
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_RELATION_GROUP'] = 'Link to existing entries'; 
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_ACCOUNTS'] = 'Link to user accounts';

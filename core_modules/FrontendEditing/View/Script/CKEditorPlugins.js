@@ -2,7 +2,7 @@
  * Frontend Editing
  * @author: Ueli Kramer <ueli.kramer@comvation.com>
  * @version: 1.0
- * @package: contrexx
+ * @package: cloudrexx
  * @subpackage: coremodules_frontendediting
  */
 

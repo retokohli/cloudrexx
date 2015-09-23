@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * UpdateUtil
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 
@@ -14,9 +39,9 @@ namespace Cx\Lib;
 /**
  * UpdateException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class UpdateException extends \Exception {};
@@ -25,9 +50,9 @@ class UpdateException extends \Exception {};
 /**
  * Update_DatabaseException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class Update_DatabaseException extends UpdateException {
@@ -42,9 +67,9 @@ class Update_DatabaseException extends UpdateException {
 /**
  * UpdateUtil
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class UpdateUtil
@@ -703,9 +728,9 @@ class UpdateUtil
      * If $cmd is set to NULL, the replacement will be done on every content
      * page of the specified module.
      * $search and $replace can either be a single string or an array of strings.
-     * $changeVersion specifies the Contrexx version in which the replacement
+     * $changeVersion specifies the Cloudrexx version in which the replacement
      * should take place. Latter means that the replace will only be done if
-     * the installed Contrexx version is older than the one specified by
+     * the installed Cloudrexx version is older than the one specified by
      * $changeVersion.
      *
      * @global  ContrexxUpdate     $objUpdate
@@ -714,7 +739,7 @@ class UpdateUtil
      * @param   string    $cmd        CMD
      * @param   mixed     $search     Search string or array of strings
      * @param   mixed     $replace    Replacement string or array of strings
-     * @param   string    $changeVersion  Contrexx version of the content page
+     * @param   string    $changeVersion  Cloudrexx version of the content page
      */
     public static function migrateContentPage($module, $cmd, $search, $replace, $changeVersion)
     {
@@ -742,9 +767,9 @@ class UpdateUtil
      * This method will do a preg_replace() on pages (filtered by $criteria) data specified by $subject using $pattern as PATTERN and $replacement as REPLACEMENT.
      * Subject is either a string or an array referencing attributes of a page.
      * The behaviour of $pattern and $replacement is exactly the same as implemented by preg_replace().
-     * $changeVersion specifies the Contrexx version in which the replacement
+     * $changeVersion specifies the Cloudrexx version in which the replacement
      * should take place. Latter means that the replace will only be done if
-     * the installed Contrexx version is older than the one specified by
+     * the installed Cloudrexx version is older than the one specified by
      * $changeVersion.
      *
      * @global  ContrexxUpdate     $objUpdate
@@ -753,7 +778,7 @@ class UpdateUtil
      * @param   mixed               $pattern          The pattern to search for. It can be either a string or an array with strings.
      * @param   mixed               $replacement      The string or an array with strings (pattern) to replace
      * @param   mixed               $subject          A string or array containing the name of an attribute of the page object
-     * @param   string              $changeVersion    Contrexx version of the content page
+     * @param   string              $changeVersion    Cloudrexx version of the content page
      */
     public static function migrateContentPageUsingRegex($criteria, $pattern, $replacement, $subject, $changeVersion)
     {

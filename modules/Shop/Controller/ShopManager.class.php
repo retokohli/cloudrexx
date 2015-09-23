@@ -1,14 +1,39 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Shop Manager
  *
  * Administration of the Shop
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  */
 
@@ -16,11 +41,11 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * Administration of the Shop
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  */
@@ -3593,21 +3618,23 @@ if ($test === NULL) {
             self::$objTemplate->setVariable(
                 'SHOP_PRICELIST_CATEGORY_ALL_CHECKED', \Html::ATTRIBUTE_CHECKED);
         }
-        $arrCategories = ShopCategories::getChildCategoriesById(0, false);
+        // Get all categories
+        $arrCategories = ShopCategories::getTreeArray(true, false);
         if (empty($arrCategories)) {
             Message::warning($_ARRAYLANG['TXT_SHOP_WARNING_NO_CATEGORIES']);
         }
         $i = 0;
         foreach ($arrCategories as $objCategory) {
-            $category_id = $objCategory->id();
+            $category_id = $objCategory['id'];
             $selected =
                 (   $category_all
                  || preg_match('/(?:^|,)\s*'.$category_id.'\s*(?:,|$)/',
                         $category_ids));
 //DBG::log("Category ID $category_id, ".($selected ? "selected" : "NOT"));
             self::$objTemplate->setVariable(array(
-                'SHOP_CATEGORY_ID' => $category_id,
-                'SHOP_CATEGORY_NAME' => $objCategory->name(),
+                'SHOP_CATEGORY_ID' => contrexx_raw2xhtml($category_id),
+                'SHOP_CATEGORY_NAME' => contrexx_raw2xhtml($objCategory['name']),
+                'SHOP_CATEGORY_LEVELSPACE' => str_repeat('|----', $objCategory['level']),
                 'SHOP_CATEGORY_DISABLED' => ($category_all
                     ? \Html::ATTRIBUTE_DISABLED : ''),
                 'SHOP_CATEGORY_CHECKED' => ($selected ? \Html::ATTRIBUTE_CHECKED : ''),

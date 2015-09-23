@@ -1,29 +1,52 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * JSON Adapter for Uploader
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
 
-use Cx\Core\ContentManager\Model\Entity\Page;
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 use Cx\Core\Json\JsonAdapter;
-use Cx\Core\Json\JsonData;
-use Cx\Core\Routing\NodePlaceholder;
-use Cx\Core_Modules\MediaBrowser\Model\Entity\ThumbnailGenerator;
+use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowserPageTree;
+use Cx\Core\MediaSource\Model\Entity\ThumbnailGenerator;
 
 /**
  * JSON Adapter for Uploader
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  */
 class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
@@ -131,85 +154,12 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      * @return array
      */
     public function getSites() {
-        $jd                   = new JsonData();
-        $data                 = $jd->data(
-            'node', 'getTree', array('get' => array('recursive' => 'true'))
+        $pageTree = new MediaBrowserPageTree(
+            $this->cx->getDb()->getEntityManager(), $this->cx->getLicense(), 0, null, FRONTEND_LANG_ID
+            , null, false, false
         );
-        $pageStack            = array();
-        $data['data']['tree'] = array_reverse($data['data']['tree']);
-        foreach ($data['data']['tree'] as &$entry) {
-            $entry['attr']['level'] = 0;
-            array_push($pageStack, $entry);
-        }
-        $return = array();
-        while (count($pageStack)) {
-            $entry              = array_pop($pageStack);
-            $page               = $entry['data'][0];
-            $arrPage['level']   = $entry['attr']['level'];
-            $arrPage['node_id'] = $entry['attr']['rel_id'];
-            $children           = $entry['children'];
-            $children           = array_reverse($children);
-            foreach ($children as &$entry) {
-                $entry['attr']['level'] = $arrPage['level'] + 1;
-                array_push($pageStack, $entry);
-            }
-            $arrPage['catname']   = $page['title'];
-            $arrPage['catid']     = $page['attr']['id'];
-            $arrPage['lang']      = BACKEND_LANG_ID;
-            $arrPage['protected'] = $page['attr']['protected'];
-            $arrPage['type']      = Page::TYPE_CONTENT;
-            $arrPage['alias']     = $page['title'];
-            $arrPage['frontend_access_id']
-                                          = $page['attr']['frontend_access_id'];
-            $arrPage['backend_access_id'] = $page['attr']['backend_access_id'];
-            $jsondata                     = json_decode(
-                $page['attr']['data-href']
-            );
-            $path                         = $jsondata->path;
-            if (trim($jsondata->module) != '') {
-                $arrPage['type']       = Page::TYPE_APPLICATION;
-                $module                = explode(' ', $jsondata->module, 2);
-                $arrPage['modulename'] = $module[0];
-                if (count($module) > 1) {
-                    $arrPage['cmd'] = $module[1];
-                }
-            }
-
-            $url = '[[' . NodePlaceholder::PLACEHOLDER_PREFIX;
-
-// TODO: This only works for regular application pages. Pages of type fallback that are linked to an application
-//       will be parsed using their node-id ({NODE_<ID>})
-            if (($arrPage['type'] == Page::TYPE_APPLICATION)
-//                && ($this->_mediaType !== 'alias')
-            ) {
-                $url .= $arrPage['modulename'];
-                if (!empty($arrPage['cmd'])) {
-                    $url .= '_' . $arrPage['cmd'];
-                }
-
-                $url = strtoupper($url);
-            } else {
-                $url .= $arrPage['node_id'];
-            }
-
-
-            $url .= "]]";
-
-            $return[] = array(
-                'click' =>
-                    "javascript:{setUrl('$url',null,null,'"
-                    . \FWLanguage::getLanguageCodeById(
-                        BACKEND_LANG_ID
-                    )
-                    . $path . "','page')}",
-                'name' => $arrPage['catname'],
-                'extension' => 'Html',
-                'level' => $arrPage['level'],
-                'url' => $path,
-                'node' => $url
-            );
-        }
-        return $return;
+        $pageTree->render();
+        return $pageTree->getFlatTree();
     }
 
 
@@ -222,7 +172,9 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      */
     public function createThumbnails($params) {
         if (isset($params['get']['file'])) {
-            ThumbnailGenerator::createThumbnailFromPath($params['get']['file']);
+            $this->cx->getMediaSourceManager()
+                ->getThumbnailGenerator()
+                ->createThumbnailFromPath($params['get']['file']);
             return true;
         }
         return false;
@@ -232,14 +184,10 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      * @param $params
      */
     public function createDir($params) {
-        $mediaBrowserConfiguration = $this->cx->getMediaSourceManager();
         $pathArray                 = explode('/', $params['get']['path']);
         // Shift off the first element of the array to get the media type.
         $mediaType = array_shift($pathArray);
-        $strPath   = $mediaBrowserConfiguration->getMediaTypePathsbyNameAndOffset(
-            $mediaType, 0
-        );
-        $strPath .= '/' . join('/', $pathArray);
+        $strPath = '/' . join('/', $pathArray);
         $dir        = $params['post']['dir'] . '/';
         $this->setMessage(
             $this->cx->getMediaSourceManager()->getMediaType($mediaType)->getFileSystem()->createDirectory(
@@ -253,11 +201,11 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      */
     public function renameFile($params) {
         \Env::get('init')->loadLanguageData('MediaBrowser');
-        
+
         $path       = !empty($params['get']['path']) ? contrexx_input2raw($params['get']['path']) : null;
         $oldName    = !empty($params['post']['oldName']) ? contrexx_input2raw($params['post']['oldName']) : null;
         $newName    = !empty($params['post']['newName']) ? contrexx_input2raw($params['post']['newName']) : null;
-        
+
         if ($path && $oldName && $newName) {
             $pathArray = explode('/', $path);
             // Shift off the first element of the array to get the media type.
@@ -276,7 +224,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     /**
      * @param $params
      */
-    public function removeFile($params) {        
+    public function removeFile($params) {
         \Env::get('init')->loadLanguageData('MediaBrowser');
         $path     = !empty($params['get']['path']) ? contrexx_input2raw($params['get']['path']) : null;
         $filename = !empty($params['post']['file']['datainfo']['name']) ? contrexx_input2raw($params['post']['file']['datainfo']['name']) : null;
@@ -315,7 +263,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
      */
     public function folderWidget($params) {
         \cmsSession::getInstance();
-        
+
         $folderWidgetId = isset($params['get']['id']) ? contrexx_input2int($params['get']['id']) : 0;
         if (   empty($folderWidgetId)
             || empty($_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId])
@@ -351,7 +299,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
 
     /**
      * Remove the file from folder widget
-     * 
+     *
      * @param array $params array from json request
      */
     public function removeFileFromFolderWidget($params)
@@ -365,22 +313,22 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
         ) {
             return false;
         }
-        
+
         $path = !empty($params['get']['file']) ? contrexx_input2raw($params['get']['file']) : null;
         if (empty($path)) {
             return false;
         }
         $folder          = $_SESSION['MediaBrowser']['FolderWidget'][$folderWidgetId]['folder'];
         $localFileSystem = new \Cx\Core\MediaSource\Model\Entity\LocalFileSystem($folder);
-        
+
         $file    = '/' . $path;
         $objFile = new \Cx\Core\MediaSource\Model\Entity\LocalFile($file);
-        
+
         $this->setMessage($localFileSystem->removeFile($objFile));
-        
+
         return array();
     }
-    
+
     /**
      * @param mixed $message
      */

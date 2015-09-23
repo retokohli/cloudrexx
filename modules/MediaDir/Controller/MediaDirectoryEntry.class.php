@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media  Directory Entry Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
@@ -13,9 +38,9 @@ namespace Cx\Modules\MediaDir\Controller;
 /**
  * Media Directory Entry Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 class MediaDirectoryEntry extends MediaDirectoryInputfield
@@ -782,7 +807,48 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         return count($pages) > 0;
     }
 
+    /**
+     * Update the entries while activating the new language.
+     *
+     * @return null
+     */
+    public function updateEntries()
+    {
+        global $objDatabase, $_LANGID;
 
+        $objEntries = $objDatabase->Execute('SELECT t1.* FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` as t1 WHERE `lang_id` = '.$_LANGID.' OR `lang_id` =  "SELECT
+                                            first_rel_inputfield.`lang_id` AS `id`
+                                        FROM
+                                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS first_rel_inputfield
+                                        LEFT JOIN
+                                            '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_inputfields AS inputfield
+                                        ON
+                                            first_rel_inputfield.`field_id` = inputfield.`id`
+                                        WHERE
+                                            (first_rel_inputfield.`entry_id` = t1.`entry_id`)
+                                        AND
+                                            (first_rel_inputfield.`form_id` = t1.`form_id`)
+                                        AND
+                                            (first_rel_inputfield.`value` != "")
+                                        LIMIT 1" GROUP BY `field_id`, `entry_id`, `form_id`  ORDER BY `entry_id`'
+                        );
+
+        if ($objEntries !== false) {
+            while (!$objEntries->EOF) {
+                foreach ($this->arrFrontendLanguages as $lang) {
+                    $objDatabase->Execute('
+                        INSERT IGNORE INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields
+                            SET `entry_id`="' . contrexx_raw2db($objEntries->fields['entry_id']) . '",
+                                `lang_id`="' . contrexx_raw2db($lang['id']) . '",
+                                `form_id`="' . contrexx_raw2db($objEntries->fields['form_id']) . '",
+                                `field_id`="' . contrexx_raw2db($objEntries->fields['field_id']) . '",
+                                `value`="' . contrexx_raw2db($objEntries->fields['value']) . '"'
+                    );
+                }
+                $objEntries->MoveNext();
+            }
+        }
+    }
 
     function saveEntry($arrData, $intEntryId=null)
     {
