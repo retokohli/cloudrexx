@@ -80,6 +80,16 @@ class SkipResolverException extends \Exception {}
 class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFrontendController implements \Cx\Core\Event\Model\Entity\EventListener
 {
     /**
+     * @var string
+     */
+    const ERROR_REASON_PAGE_NOT_FOUND = 'page not found';
+
+    /**
+     * @var string
+     */
+    const ERROR_REASON_NOT_LICENSED = 'not licensed';
+
+    /**
      * @var \Cx\Core\Routing\Resolver Resolver which triggered the event
      */
     protected $resolver;
@@ -88,16 +98,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @var string The section of the page if it is a component-page
      */
     protected $section = '';
-
-    /**
-     * @var string The cmd if one is set
-     */
-    protected $cmd = '';
-
-    /**
-     * @var \Cx\Core\ContentManager\Model\Entity\Page The page which might only be inactive
-     */
-    protected $inactivePage = null;
 
     /**
      * @var string reason why the event was triggered
@@ -146,10 +146,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         \DBG::stack();
 
         // get the information about missing or deactivated component / page
-        $this->section = $eventArgs['section'];
-        $this->cmd = $eventArgs['cmd'];
-        $this->inactivePage = $eventArgs['page'];
         $history = $eventArgs['history'];
+        $this->section = $eventArgs['section'];
         $this->resolver = $eventArgs['resolver'];
         $this->reason = $eventArgs['reason'];
 
@@ -172,8 +170,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 
         // set 404 page not found http-header
         header("HTTP/1.0 404 Not Found");
-        // throw exception so that the resolver stops resolving gets caught in \Cx\Core\Core\Controller\Cx.class.php
-        throw new \Cx\Core_Modules\Error\Controller\SkipResolverException();
+
+        // only throw the SkipResolverException when whe are resolving or postResolving
+        if ($this->reason == $this::ERROR_REASON_PAGE_NOT_FOUND || $this->reason == $this::ERROR_REASON_NOT_LICENSED) {
+            // throw exception so that the resolver stops resolving gets caught in \Cx\Core\Core\Controller\Cx.class.php
+            throw new \Cx\Core_Modules\Error\Controller\SkipResolverException();
+        }
     }
 
     /**
@@ -229,7 +231,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         } else {
             $template->touchBlock('error_module_description');
         }
-        if ($noAccess || $this->reason == 'not licensed') {
+        if ($noAccess || $this->reason == $this::ERROR_REASON_PAGE_NOT_FOUND) {
             $template->hideBlock('error_module_installation_instructions');
         } else {
             $template->touchBlock('error_module_installation_instructions');

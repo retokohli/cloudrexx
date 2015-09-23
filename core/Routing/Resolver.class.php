@@ -258,12 +258,10 @@ class Resolver {
                                     //page not found, trigger PageNotFound-Event.
                                     \Cx\Core\Core\Controller\Cx::instanciate()->getEvents()->triggerEvent('Routing/PageNotFound', array(
                                         'section'   => isset($_REQUEST['section']) ? $_REQUEST['section'] : $this->getSection(),
-                                        'cmd'       => isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : $this->getCmd(),
                                         // page might only be inactive
-                                        'page'      => $this->getPage(),
                                         'history'   => $history,
                                         'resolver'  => $this,
-                                        'reason'    => 'page not found'
+                                        'reason'    => \Cx\Core_Modules\Error\Controller\FrontendController::ERROR_REASON_PAGE_NOT_FOUND
                                     ));
                                 }
                             }

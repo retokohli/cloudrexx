@@ -152,11 +152,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         //Component in current license unavailable trigger PageNotFound-event.
                         $this->cx->getEvents()->triggerEvent('Routing/PageNotFound', array(
                             'section'   => $section,
-                            'cmd'       => $plainCmd,
-                            'page'      => $page,
                             'history'   => isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0,
                             'resolver'  => \Env::get('Resolver'),
-                            'reason'    => 'not licensed'
+                            'reason'    => \Cx\Core_Modules\Error\Controller\FrontendController::ERROR_REASON_NOT_LICENSED
                         ));
                     }
                 }
