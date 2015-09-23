@@ -40,13 +40,18 @@ cx.jQuery(function(jQuery) {
 
             var that   = this,
                 sortTd = jQuery('table.sortable tbody > tr:not(:nth-child(1), :nth-child(2), :last-child) > td.sortBy'),
-                currentIndex   = ui.item.index() - 1,
-                previousIndex  = jQuery(ui.item).data('pIndex') - 1,
-                data = 'sortOrder=' + sortOrder + '&curPosition=' + currentIndex
+                updatedOrder  = jQuery('.sortable tbody').sortable('serialize'), recordCount,
+                currentIndex  = ui.item.index() - 1,
+                previousIndex = jQuery(ui.item).data('pIndex') - 1,
+                repeat = isOrderNoRepeat(sortTd, previousIndex, currentIndex),
+                data   = 'sortOrder=' + sortOrder + '&curPosition=' + currentIndex
                        + '&prePosition=' + previousIndex
                        + '&sortField=' + sortField + '&pagingPosition=' + pagingPosition;
             if (component && entity) {
                 data += '&component=' + component + '&entity=' + entity;
+            }
+            if (repeat) {
+                data += '&' + updatedOrder;
             }
             jQuery(ui.item).removeData('pIndex');
             jQuery.ajax({
@@ -58,28 +63,11 @@ cx.jQuery(function(jQuery) {
                     jQuery(that).sortable("disable");
                     jQuery(ui.item).find('td:first-child').addClass('sorter-loading');
                 },
+                success: function(msg) {
+                    recordCount = msg.data.recordCount;
+                },
                 complete: function() {
-                    var obj, currentOrder, order, firstObj,
-                        condition = currentIndex > previousIndex,
-                        min       = condition ? previousIndex : currentIndex,
-                        max       = condition ? currentIndex : previousIndex,
-                        first     = true;
-                    while (min <= max) {
-                        obj = condition ? sortTd.eq(min - 1) : sortTd.eq(max - 1);
-                        currentOrder = obj.text();
-                        if (first) {
-                            first = false;
-                            order = currentOrder;
-                            firstObj = obj;
-                            continue;
-                        } else if (min == max) {
-                            firstObj.text(currentOrder);
-                            obj.text(order);
-                        }
-                        obj.text(order);
-                        order = currentOrder;
-                        condition ? min++ : max--;
-                    }
+                    updateOrder(sortTd, previousIndex, currentIndex, repeat, recordCount);
                     jQuery(that).sortable("enable");
                     jQuery('body').removeClass('loading');
                     jQuery(ui.item).find('td:first-child').removeClass('sorter-loading');
@@ -87,5 +75,58 @@ cx.jQuery(function(jQuery) {
             });
         }
     });
+
+    //Check the same 'order' field value is repeated or not
+    function isOrderNoRepeat(obj, pIndex, cIndex) {
+        var orderArray = [], currentval,
+            condition = cIndex > pIndex,
+            min       = condition ? pIndex : cIndex,
+            max       = condition ? cIndex : pIndex;
+        while (min <= max) {
+            currentval = condition ? obj.eq(min - 1).text() : obj.eq(max - 1).text();
+            if (jQuery.inArray(currentval, orderArray) == -1) {
+                orderArray.push(currentval);
+                condition ? min++ : max--;
+                continue;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    //Update the sorted order in the 'order' field
+    function updateOrder(obj, pIndex, cIndex, repeat, recordCnt) {
+        var currentObj, currentOrder, order, firstObj,
+            condition = cIndex > pIndex,
+            min       = condition ? pIndex : cIndex,
+            max       = condition ? cIndex : pIndex,
+            first     = true;
     
+        if (repeat) {
+            var pagingCnt = (sortOrder == 'DESC') 
+                            ? (recordCnt - pagingPosition) + 1
+                            : pagingPosition;
+            obj.each(function() {
+                (sortOrder == 'DESC') ? pagingCnt-- : pagingCnt++;
+                jQuery(this).text(pagingCnt);
+            });
+        } else {
+            while (min <= max) {
+                currentObj = condition ? obj.eq(min - 1) : obj.eq(max - 1);
+                currentOrder = currentObj.text();
+                if (first) {
+                    first = false;
+                    order = currentOrder;
+                    firstObj = currentObj;
+                    continue;
+                } else if (min == max) {
+                    firstObj.text(currentOrder);
+                    currentObj.text(order);
+                }
+                currentObj.text(order);
+                order = currentOrder;
+                condition ? min++ : max--;
+            }
+        }
+    }
 });

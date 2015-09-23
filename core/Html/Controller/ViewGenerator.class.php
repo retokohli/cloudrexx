@@ -358,6 +358,7 @@ class ViewGenerator {
     protected function getSortingOption($object)
     {
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
         $sortBy = (     isset($this->options['functions']['sortBy']) 
                     &&  is_array($this->options['functions']['sortBy'])
                   )
@@ -386,6 +387,37 @@ class ViewGenerator {
             return;
         }
 
+        //we need to get the entity namespace for updating the sorting order in database
+        $entityNameSpace = '';
+        switch (true) {
+            case is_array($object):
+                foreach($object as $entity) {
+                    if (is_object($entity)) {
+                        $entityNameSpace = get_class($entity);
+                        break;
+                    }
+                }
+                break;
+            case (is_object($object) &&  $object instanceof \Cx\Model\Base\EntityBase):
+                $entityNameSpace = get_class($object);
+                break;
+            case (stripos($object, 'Cx') !== false):
+                $entityNameSpace = $object;
+                break;
+            default :
+                break;
+        }
+
+        //If the entity namespace is empty then disable the row sorting
+        if (empty($entityNameSpace)) {
+            return;
+        }
+
+        //get the primary key name
+        $entityObject   = $em->getClassMetadata($entityNameSpace);
+        $primaryKeyName = $entityObject->getSingleIdentifierFieldName();
+        $this->options['functions']['sortBy']['sortingKey'] = $primaryKeyName;
+
         $componentName = '';
         $entityName    = '';
         $jsonObject    = 'Html';
@@ -398,32 +430,7 @@ class ViewGenerator {
             $jsonAct    = $sortBy['jsonadapter']['act'];
         } else {
             //If the 'sortBy' option does not have 'jsonadapter', 
-            //we need to get the entity namespace for updating the sorting order in database
-            $entityNameSpace = '';
-            switch (true) {
-                case is_array($object):
-                    foreach($object as $entity) {
-                        if (is_object($entity)) {
-                            $entityNameSpace = get_class($entity);
-                            break;
-                        }
-                    }
-                    break;
-                case (is_object($object) &&  $object instanceof \Cx\Model\Base\EntityBase):
-                    $entityNameSpace = get_class($object);
-                    break;
-                case (stripos($object, 'Cx') !== false):
-                    $entityNameSpace = $object;
-                    break;
-                default :
-                    break;
-            }
-
-            //If the entity namespace is empty then disable the row sorting
-            if (empty($entityNameSpace)) {
-                return;
-            }
-
+            //we need to get the component name and entity name for updating the sorting order in db
             $split          = explode('\\', $entityNameSpace);
             $componentName  = isset($split[2]) ? $split[2] : '';
             $entityName     = isset($split) ? end($split) : '';

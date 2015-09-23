@@ -35,6 +35,9 @@ class BackendTable extends HTML_Table {
                           )
                           ? $options['functions']['sortBy']
                           : array();
+            $sortingKey = !empty($sortBy) && isset($sortBy['sortingKey'])
+                          ? $sortBy['sortingKey']
+                          : '';
             $sortField  = !empty($sortBy) && isset($sortBy['field'])
                           ? key($sortBy['field'])
                           : '';
@@ -47,6 +50,10 @@ class BackendTable extends HTML_Table {
                     $col++;
                 }
                 foreach ($rows as $header=>$data) {
+                    if (!empty($sortingKey) && $header === $sortingKey) {
+                        //Add the additional attribute id, for getting the updated sort order after the row sorting
+                        $this->updateRowAttributes($row, array('id' => 'sortingOrder_' . $data), true);
+                    }
                     if (!empty($sortField) && $header === $sortField) {
                         //Add the additional attribute class, to display the updated sort order after the row sorting
                         $this->updateColAttributes($col, array('class' => 'sortBy'));
