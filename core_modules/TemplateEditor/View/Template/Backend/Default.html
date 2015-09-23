@@ -38,9 +38,8 @@
 <div class="sidebar">
     <a href="{TEMPLATEEDITOR_BACKURL}" class="back-to-layoutmanager">&larr;
         {TXT_CORE_MODULE_TEMPLATEEDITOR_BACK_TO_LAYOUTMANAGER}</a>
-
+    <button class="button help">?</button>
     <div class="options">
-
         <div class="option layout">
             <label for="layout">{TXT_CORE_MODULE_TEMPLATEEDITOR_LAYOUT}</label>
             <select name="layout" id="layout">
@@ -83,12 +82,13 @@
             </div>
         </div>
 
+        <div class="option-list">
         <!-- BEGIN option -->
         <div class="option {TEMPLATEEDITOR_OPTION_TYPE}">
             {TEMPLATEEDITOR_OPTION}
         </div>
         <!-- END option -->
-
+        </div>
         <!-- BEGIN no_options -->
         <div class="option">
             {TEMPLATEOPTION_NO_OPTIONS_TEXT}
@@ -100,7 +100,9 @@
         <!-- END no_options -->
     </div>
 
+    <!-- BEGIN save_button -->
     <button type="submit" class="save" id="saveOptionsButton">{TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE}</button>
+    <!-- END save_button -->
 
 </div>
 <div class="preview">

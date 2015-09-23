@@ -150,6 +150,7 @@ class BackendController extends SystemComponentBackendController
     {
         global $_ARRAYLANG, $_CONFIG;
         \JS::registerJS('core_modules/TemplateEditor/View/Script/spectrum.js');
+        \JS::activate('intro.js');
         $template->loadTemplateFile(
             $this->cx->getCodeBaseCoreModulePath()
             . '/TemplateEditor/View/Template/Backend/Default.html'
@@ -241,6 +242,8 @@ class BackendController extends SystemComponentBackendController
 
             if ($this->themeOptions->getOptionCount() != 0) {
                 $template->parse('presetBlock');
+                $template->setVariable('TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE',  $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE']);
+                $template->parse('save_button');
             }
         }
         else {
@@ -278,6 +281,18 @@ class BackendController extends SystemComponentBackendController
                 'TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT'],
                 'TXT_CORE_MODULE_TEMPLATEEDITOR_ACTIVATE_PRESET_TITLE' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ACTIVATE_PRESET_TITLE'],
                 'TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PRESET_TITLE' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PRESET_TITLE'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_LAYOUT_OPTION' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_LAYOUT_OPTION'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_OPTION' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_OPTION'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_ACTIVATE' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_ACTIVATE'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_ADD' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_ADD'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_RESET' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_RESET'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_VIEW_OPTION' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_VIEW_OPTION'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_VIEW_OPTION_LIST' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_VIEW_OPTION_LIST'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PREVIEW' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PREVIEW'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_SAVE' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_SAVE'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_NEXT' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_NEXT'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_BACK' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_BACK'],
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_STOP' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_STOP'],
                 'themeid' => $this->theme->getId(),
                 'iframeUrl' => Url::fromModuleAndCmd(
                     'home', '', null,

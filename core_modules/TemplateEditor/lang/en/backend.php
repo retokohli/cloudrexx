@@ -23,7 +23,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ACT_SETTINGS_HELP'] = 'Help';
 // Now our content specific values:
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SELECT'] = 'Select';
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CANCEL'] = 'Cancel';
-$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_BACK_TO_LAYOUTMANAGER'] = 'Back to Layoutmanager';
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_BACK_TO_LAYOUTMANAGER'] = 'Back to overview';
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_LAYOUT'] = 'Layout';
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_PRESET'] = 'Preset';
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE'] = 'Save';
@@ -69,3 +69,17 @@ $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT'] = "Would you li
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_DEFAULT_WARNING'] = "The preset Default can't be removed.";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_RESET_PRESET_TEXT'] = "Do you want to reset this preset to the initial state?";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_IS_ACTIVE'] = "This preset is active at the moment. If you remove it, the Default preset will be activated.";
+
+
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_LAYOUT_OPTION'] = "You can change the active template here.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_OPTION'] = "You can change the active preset here. Please be aware that this will remove any unsaved changes.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_ACTIVATE'] = "If you activate a preset it will be visible for all users of the website.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_ADD'] = "You can create new preset based on existing presets.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_RESET'] = "If you don't like the changes you've made you can reset your template here.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_VIEW_OPTION'] = "To preview the template for mobile devices like tablets, phones or on a desktop you can click here.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_VIEW_OPTION_LIST'] = "You can now change all options here to individualise your template.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PREVIEW'] = "If you change a option, the preview will get refreshed automatically.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_SAVE'] = "You can save your preset here but this won't activate it.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_NEXT'] = "Next";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_BACK'] = "Back";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_STOP'] = "Close";

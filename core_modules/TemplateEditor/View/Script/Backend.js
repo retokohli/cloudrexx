@@ -101,8 +101,8 @@ jQuery(function(){
                                     bootbox.alert(response.message);
                                     return;
                                 }
-                                var newlocation = location.href.replace(/preset=[a-z0-9]+/i, "preset="+response.data.preset);
-                                window.location.href = (newlocation.search('preset=') == -1 ? newlocation + "&preset=" + response.data.preset : newlocation);
+                                var newLocation = location.href.replace(/preset=[a-z0-9]+/i, "preset="+response.data.preset);
+                                window.location.href = (newLocation.search('preset=') == -1 ? newLocation + "&preset=" + response.data.preset : newLocation);
                             }, "json");
                         }
                     },
@@ -194,12 +194,69 @@ jQuery(function(){
     });
 
     jQuery('#layout').change(function(){
-        var newloaction = location.href.replace("tid="+cx.variables.get('themeid','TemplateEditor'), "tid="+jQuery(this).val());
-        window.location.href = (newloaction.search('tid=') == -1 ? newloaction + "&tid=" + jQuery(this).val() : newloaction);
+        var newLocation = location.href.replace("tid="+cx.variables.get('themeid','TemplateEditor'), "tid="+jQuery(this).val());
+        window.location.href = (newLocation.search('tid=') == -1 ? newLocation + "&tid=" + jQuery(this).val() : newLocation);
     });
 
     jQuery('#preset').change(function(){
-        var newloaction = location.href.replace(/preset=[a-z0-9]+/i, "preset="+jQuery(this).val());
-        window.location.href = (newloaction.search('preset=') == -1 ? newloaction + "&preset=" + jQuery(this).val() : newloaction);
+        var newLocation = location.href.replace(/preset=[a-z0-9]+/i, "preset="+jQuery(this).val());
+        window.location.href = (newLocation.search('preset=') == -1 ? newLocation + "&preset=" + jQuery(this).val() : newLocation);
     });
+
+    jQuery('.help').click(function(){
+        intro();
+    });
+
+    function intro(){
+        var intro = introJs();
+        intro.setOptions({
+            nextLabel:cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_NEXT","TemplateEditor"),
+            prevLabel:cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_BACK","TemplateEditor"),
+            skipLabel:cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_STOP","TemplateEditor"),
+            doneLabel:cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_STOP","TemplateEditor"),
+            showStepNumbers: false,
+            steps: [
+                {
+                    element: '.option.layout',
+                    intro: cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_LAYOUT_OPTION","TemplateEditor")
+                },
+                {
+                    element: '.option.preset',
+                    intro: cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_OPTION","TemplateEditor")
+                },
+                {
+                    element: '.activate-preset',
+                    intro: cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_ACTIVATE","TemplateEditor")
+                },
+                {
+                    element: '.add-preset',
+                    intro: cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_ADD","TemplateEditor")
+                },
+                {
+                    element: '.reset-preset',
+                    intro: cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_RESET","TemplateEditor")
+                },
+                {
+                    element: '.option.view',
+                    intro: cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_VIEW_OPTION","TemplateEditor")
+                },
+                {
+                    element: '.option-list > .option',
+                    intro: cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_VIEW_OPTION_LIST","TemplateEditor"),
+                    position: 'right'
+                },
+                {
+                    element: '#preview-template-editor',
+                    intro: cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PREVIEW","TemplateEditor"),
+                    position: 'left'
+                },
+                {
+                    element: 'button.save',
+                    intro: cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_SAVE","TemplateEditor"),
+                    position: 'top'
+                }
+            ]
+        });
+        intro.start();
+    }
 });

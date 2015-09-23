@@ -21,7 +21,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ACT_SETTINGS'] = 'Einstellungen';
 // Now our content specific values:
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SELECT'] = 'Auswählen';
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CANCEL'] = 'Abbrechen';
-$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_BACK_TO_LAYOUTMANAGER'] = 'Zurück zum Layoutmanager';
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_BACK_TO_LAYOUTMANAGER'] = 'Zurück zur Übersicht';
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_LAYOUT'] = 'Layout';
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_PRESET'] = 'Vorlage';
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE'] = 'Speichern';
@@ -68,3 +68,16 @@ $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT'] = "Möchten sie
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_DEFAULT_WARNING'] = "Die Vorlage Default kann nicht entfernt werden.";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_RESET_PRESET_TEXT'] = "Möchten sie die Vorlage auf den Anfangszustand zurücksetzen?";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_IS_ACTIVE'] = "Diese Vorlage ist momentan aktiv. Falls sie dies löschen, wird die Default Vorlage aktiviert.";
+
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_LAYOUT_OPTION'] = "Hier können sie das Template wechseln.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_OPTION'] = "Vorlagen für das ausgewählte Template können sie hier auswählen. Beachten sie dabei dass somit ihre bisherigen Änderungen an einer Vorlage verloren gehen.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_ACTIVATE'] = "Wenn sie die momentane Vorlage aktivieren ist diese für alle Besucher auf Ihrer Website sichtbar.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_ADD'] = "Sie können neue Vorlagen bestehend auf bereits existierenden Vorlagen erstellen.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PRESET_RESET'] = "Wenn sie mit ihren temporären Anpassungen nicht zufrieden sind, können sie diese hier auf den Anfangszustand zurücksetzten.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_VIEW_OPTION'] = "Um das Template in einer Vorschau für verschiedene Geräte anzusehen, können sie diese über diese Optionen das Template auf Handy, Tablet oder Desktop Ansicht wechseln.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_VIEW_OPTION_LIST'] = "Sie können nun alle Optionen welche hier aufgeführt werden für Ihr Template anpassen.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_PREVIEW'] = "Wenn sie eine Option anpassen, wird die Ansicht automatisch aktualisiert.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_SAVE'] = "Hier können sie ihre Vorlage abspeichern. Dies aktiviert die Vorlage jedoch nicht.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_NEXT'] = "Weiter";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_BACK'] = "Zurück";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_STOP'] = "Beenden";

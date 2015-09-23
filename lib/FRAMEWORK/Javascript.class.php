@@ -428,6 +428,11 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     cx.variables.set({"jquery": jQuery.noConflict(true)},\'mediabrowser\');
 }'
         ),
+        'intro.js' => array(
+            'jsfiles' => array(
+                'lib/javascript/intro.min.js',
+            )
+        ),
     );
 
     /**
