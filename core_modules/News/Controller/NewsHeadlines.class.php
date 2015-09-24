@@ -138,16 +138,8 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
         if ($objResult !== false && $objResult->RecordCount() >= 0) {
             while (!$objResult->EOF) {
-                $newsid = $objResult->fields['newsid'];
-                $newsCategories = $this->getCategoriesByNewsId($newsid);
-                $newsUrl   = empty($objResult->fields['redirect'])
-                                ? (empty($objResult->fields['newscontent'])
-                                    ? ''
-                                    : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), array($catId))), FRONTEND_LANG_ID, array('newsid' => $newsid)))
-                                : $objResult->fields['redirect'];
-
                 //Parse all the news placeholders
-                $this->parseNewsPlaceholders($this->_objTemplate, $objResult, $newsUrl);
+                $this->parseNewsPlaceholders($this->_objTemplate, $objResult, array($catId));
 
                 $this->_objTemplate->setVariable(array(
                     'NEWS_CSS' => 'row'.($i % 2 + 1),

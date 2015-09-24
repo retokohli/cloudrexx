@@ -102,8 +102,8 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
             $objResult=false;
         } else {//fetch news
             $objResult = $objDatabase->SelectLimit("
-                SELECT DISTINCT(tblN.id) AS id,
-                       tblN.`date`, 
+                SELECT DISTINCT(tblN.id) AS newsid,
+                       tblN.`date` AS newsdate,
                        tblN.teaser_image_path,
                        tblN.teaser_image_thumbnail_path,
                        tblN.redirect,
@@ -111,7 +111,15 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
                        tblN.publisher_id,
                        tblN.author,
                        tblN.author_id,
-                       tblL.title AS title, 
+                       tblN.allow_comments AS commentactive,
+                       tblN.source,
+                       tblN.url1,
+                       tblN.url2,
+                       tblN.changelog,
+                       tblN.enable_tags,
+                       tblL.text NOT REGEXP '^(<br type=\"_moz\" />)?\$' AS newscontent,
+                       tblL.text AS text,
+                       tblL.title AS newstitle,
                        tblL.teaser_text
                   FROM ".DBPREFIX."module_news AS tblN
             INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
@@ -135,55 +143,11 @@ class NewsTop extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
         if ($objResult !== false && $objResult->RecordCount()) {
             while (!$objResult->EOF) {
-                $newsid     = $objResult->fields['id'];
-                $newstitle  = $objResult->fields['title'];
-                $author     = \FWUser::getParsedUserTitle($objResult->fields['author_id'], $objResult->fields['author']);
-                $publisher  = \FWUser::getParsedUserTitle($objResult->fields['publisher_id'], $objResult->fields['publisher']);
-                $newsCategories  = $this->getCategoriesByNewsId($newsid);
-                $newsUrl    = empty($objResult->fields['redirect'])
-                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($newsCategories), array($catId))), FRONTEND_LANG_ID, array('newsid' => $newsid))
-                                : $objResult->fields['redirect'];
-                $htmlLink   = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
-
-                list($image, $htmlLinkImage, $imageSource) = self::parseImageThumbnail($objResult->fields['teaser_image_path'],
-                                                                                       $objResult->fields['teaser_image_thumbnail_path'],
-                                                                                       $newstitle,
-                                                                                       $newsUrl);
-
+                //Parse all the news placeholders
+                $this->parseNewsPlaceholders($this->_objTemplate, $objResult, array($catId));
                 $this->_objTemplate->setVariable(array(
-                    'NEWS_ID'           => $newsid,
-                    'NEWS_CSS'          => 'row'.($i % 2 + 1),
-                    'NEWS_LONG_DATE'    => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                    'NEWS_DATE'         => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
-                    'NEWS_TIME'         => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['date']),
-                    'NEWS_TITLE'        => contrexx_raw2xhtml($newstitle),
-                    'NEWS_TEASER'       => nl2br($objResult->fields['teaser_text']),
-                    'NEWS_LINK'         => $htmlLink,
-                    'NEWS_LINK_URL'     => contrexx_raw2xhtml($newsUrl),
-                    'NEWS_AUTHOR'       => contrexx_raw2xhtml($author),
-                    'NEWS_PUBLISHER'    => contrexx_raw2xhtml($publisher),
+                    'NEWS_CSS' => 'row'.($i % 2 + 1),
                 ));
-
-                if (!empty($image)) {
-                    $this->_objTemplate->setVariable(array(
-                        'NEWS_IMAGE'         => $image,
-                        'NEWS_IMAGE_SRC'     => contrexx_raw2xhtml($imageSource),
-                        'NEWS_IMAGE_ALT'     => contrexx_raw2xhtml($newstitle),
-                        'NEWS_IMAGE_LINK'    => $htmlLinkImage,
-                    ));
-
-                    if ($this->_objTemplate->blockExists('news_image')) {
-                        $this->_objTemplate->parse('news_image');
-                    }
-                } else {
-                    if ($this->_objTemplate->blockExists('news_image')) {
-                        $this->_objTemplate->hideBlock('news_image');
-                    }
-                }
-                
-                self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'image_thumbnail');
-                self::parseImageBlock($this->_objTemplate, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'image_detail');
-               
                 $this->_objTemplate->parseCurrentBlock();
                 $i++;
                 $objResult->MoveNext();

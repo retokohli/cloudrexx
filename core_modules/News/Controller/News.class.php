@@ -757,27 +757,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             &&  $validToShowList
         ) {
             while (!$objResult->EOF) {
-                $newsid = $parameters['newsid'] = $objResult->fields['newsid'];
-                $arrNewsCategories = $this->getCategoriesByNewsId($newsid);
-                $newsUrl        = empty($objResult->fields['redirect'])
-                                    ? (empty($objResult->fields['newscontent'])
-                                        ? ''
-                                        : \Cx\Core\Routing\Url::fromModuleAndCmd(
-                                                    'News', 
-                                                    $this->findCmdById('details', self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories), $categories)),
-                                                    FRONTEND_LANG_ID,
-                                                    $parameters
-                                                )
-                                    )
-                                    : $objResult->fields['redirect'];
-
+                $parameters['newsid'] = $objResult->fields['newsid'];
                 // Parse all the news placeholders
-                $this->parseNewsPlaceholders($this->_objTpl, $objResult, $newsUrl);
-                
+                $this->parseNewsPlaceholders($this->_objTpl, $objResult, $categories, $parameters);
                 $this->_objTpl->setVariable(array(
-                   'NEWS_CSS'            => 'row'.($i % 2 + 1),
+                   'NEWS_CSS' => 'row'.($i % 2 + 1),
                 ));
-
                 $this->_objTpl->parse('newsrow');
                 $i++;
                 $objResult->MoveNext();
@@ -922,8 +907,15 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                                 n.publisher_id,
                                 n.author,
                                 n.author_id,
-                                nl.title            AS newstitle,
+                                n.source,
+                                n.url1,
+                                n.url2,
+                                n.changelog,
+                                n.enable_tags,
+                                n.allow_comments AS commentactive,
+                                nl.title          AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
+                                nl.text AS text,
                                 nl.teaser_text
                     FROM        '.DBPREFIX.'module_news AS n
                     INNER JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
@@ -952,66 +944,12 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         if ($count>=1) {
             while (!$objResult->EOF) {
-                $newsid         = $objResult->fields['newsid'];
-                $newstitle      = $objResult->fields['newstitle'];
-                $newsCategories = $this->getCategoriesByNewsId($newsid);
-                $newsUrl        = empty($objResult->fields['redirect'])
-                                    ? (empty($objResult->fields['newscontent'])
-                                        ? ''
-                                        : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', array_keys($newsCategories)), FRONTEND_LANG_ID, array('newsid' => $newsid)))
-                                    : $objResult->fields['redirect'];
-
-                $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
-                $htmlLinkTitle  = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
-                // in case that the message is a stub, we shall just display the news title instead of a html-a-tag with no href target
-                if (empty($htmlLinkTitle)) {
-                    $htmlLinkTitle = contrexx_raw2xhtml($newstitle);
-                }
-
-                list($image, $htmlLinkImage, $imageSource) = self::parseImageThumbnail($objResult->fields['teaser_image_path'],
-                                                                                       $objResult->fields['teaser_image_thumbnail_path'],
-                                                                                       $newstitle,
-                                                                                       $newsUrl);
-                $author = \FWUser::getParsedUserTitle($objResult->fields['author_id'], $objResult->fields['author']);
-                $publisher = \FWUser::getParsedUserTitle($objResult->fields['publisher_id'], $objResult->fields['publisher']);
+                // Parse all the news placeholders
+                $this->parseNewsPlaceholders($this->_objTpl, $objResult);
 
                 $this->_objTpl->setVariable(array(
-                   'NEWS_ID'            => $newsid,
-                   'NEWS_CSS'           => 'row'.($i % 2 + 1),
-                   'NEWS_TEASER'        => nl2br($objResult->fields['teaser_text']),
-                   'NEWS_TITLE'         => contrexx_raw2xhtml($newstitle),
-                   'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
-                   'NEWS_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['newsdate']),
-                   'NEWS_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $objResult->fields['newsdate']),
-                   'NEWS_LINK_TITLE'    => $htmlLinkTitle,
-                   'NEWS_LINK'          => $htmlLink,
-                   'NEWS_LINK_URL'      => contrexx_raw2xhtml($newsUrl),
-                   'NEWS_CATEGORY'      => implode(', ', contrexx_raw2xhtml($newsCategories)),
-// TODO: fetch typename from a newly to be created separate methode
-                   //'NEWS_TYPE'          => ($this->arrSettings['news_use_types'] == 1 ? stripslashes($objResult->fields['typename']) : ''),
-                   'NEWS_PUBLISHER'     => contrexx_raw2xhtml($publisher),
-                   'NEWS_AUTHOR'        => contrexx_raw2xhtml($author),
+                   'NEWS_CSS' => 'row'.($i % 2 + 1),
                 ));
-
-                if (!empty($image)) {
-                    $this->_objTpl->setVariable(array(
-                        'NEWS_IMAGE'               => $image,
-                        'NEWS_IMAGE_SRC'           => contrexx_raw2xhtml($imageSource),
-                        'NEWS_IMAGE_ALT'           => contrexx_raw2xhtml($newstitle),
-                        'NEWS_IMAGE_LINK'          => $htmlLinkImage,
-                    ));
-
-                    if ($this->_objTpl->blockExists('news_image')) {
-                        $this->_objTpl->parse('news_image');
-                    }
-                } else {
-                    if ($this->_objTpl->blockExists('news_image')) {
-                        $this->_objTpl->hideBlock('news_image');
-                    }
-                }
-                
-                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_thumbnail_path'], $newstitle, $newsUrl, 'image_thumbnail');
-                self::parseImageBlock($this->_objTpl, $objResult->fields['teaser_image_path'], $newstitle, $newsUrl, 'image_detail');
                 
                 $this->_objTpl->parse('newsrow');
                 $i++;

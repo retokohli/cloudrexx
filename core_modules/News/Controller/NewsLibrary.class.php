@@ -2909,10 +2909,12 @@ EOF;
      *
      * @param object $objTpl       Template object \Cx\Core\Html\Sigma
      * @param array  $objResult    Result Array
-     * @param string $newsUrl      News Url
+     * @param array  $categories   Categories id
+     * @param array  $parameters   News details page parameters
+     *
      * @return string
      */
-    public function parseNewsPlaceholders($objTpl, $objResult, $newsUrl)
+    public function parseNewsPlaceholders($objTpl, $objResult, $categories = array(), $parameters = array())
     {
         global $_ARRAYLANG;
 
@@ -2933,6 +2935,13 @@ EOF;
                                     ? $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />' . date(ASCMS_DATE_FORMAT, $objResult->fields['changelog'])
                                     : '';
         $arrNewsCategories = $this->getCategoriesByNewsId($newsid);
+        $categoriesId      = empty($categories) ? array_keys($arrNewsCategories) : self::sortCategoryIdByPriorityId(array_keys($arrNewsCategories), $categories);
+        $urlParameters     = empty($parameters) ? array('newsid' => $newsid) : $parameters;
+        $newsUrl           = empty($redirect)
+                                ? (empty($objResult->fields['newscontent'])
+                                    ? ''
+                                    : \Cx\Core\Routing\Url::fromModuleAndCmd('News', $this->findCmdById('details', $categoriesId), FRONTEND_LANG_ID, $urlParameters))
+                                : $redirect;
 
         $newsTeaser = nl2br($objResult->fields['teaser_text']);
         \LinkGenerator::parseTemplate($newsTeaser);
