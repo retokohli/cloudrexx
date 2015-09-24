@@ -508,7 +508,7 @@
     width: auto;
     height: auto;
     margin: 0;
-    overflow: visible;
+    overflow: visible
 }
 
 .media-browser-modal-window [role=button], .uploader-modal [role=button] {
@@ -521,7 +521,7 @@
     background-color: transparent
 }
 
-.media-browser-modal-window.uploader-modal{
+.media-browser-modal-window.uploader-modal {
     padding-top: 8px;
     padding-bottom: 8px;
     color: #777;
@@ -550,7 +550,7 @@
     border-bottom: 2px solid #ddd
 }
 
-.media-browser-modal-window .table >+ thead > tr:first-child > td, .media-browser-modal-window .table >+ thead > tr:first-child > th, .media-browser-modal-window .table > colgroup + thead > tr:first-child > td, .media-browser-modal-window .table > colgroup + thead > tr:first-child > th, .media-browser-modal-window .table > thead:first-child > tr:first-child > td, .media-browser-modal-window .table > thead:first-child > tr:first-child > th, .uploader-modal .table >+ thead > tr:first-child > td, .uploader-modal .table >+ thead > tr:first-child > th, .uploader-modal .table > colgroup + thead > tr:first-child > td, .uploader-modal .table > colgroup + thead > tr:first-child > th, .uploader-modal .table > thead:first-child > tr:first-child > td, .uploader-modal .table > thead:first-child > tr:first-child > th {
+.media-browser-modal-window .table > + thead > tr:first-child > td, .media-browser-modal-window .table > + thead > tr:first-child > th, .media-browser-modal-window .table > colgroup + thead > tr:first-child > td, .media-browser-modal-window .table > colgroup + thead > tr:first-child > th, .media-browser-modal-window .table > thead:first-child > tr:first-child > td, .media-browser-modal-window .table > thead:first-child > tr:first-child > th, .uploader-modal .table > + thead > tr:first-child > td, .uploader-modal .table > + thead > tr:first-child > th, .uploader-modal .table > colgroup + thead > tr:first-child > td, .uploader-modal .table > colgroup + thead > tr:first-child > th, .uploader-modal .table > thead:first-child > tr:first-child > td, .uploader-modal .table > thead:first-child > tr:first-child > th {
     border-top: 0
 }
 
@@ -1220,7 +1220,7 @@
     background-image: none;
     text-shadow: none;
     font-size: 14px;
-    border: 1px solid #adadad !important;
+    border: 1px solid #adadad !important
 }
 
 .fade.uploader-modal {
@@ -1378,10 +1378,7 @@
     filter: alpha(opacity=20)
 }
 
-.media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li a,
-.media-browser-modal-window input#fileSearch,
-.uploader-modal .tabMediaBrowserBreadcrumbs > ul li a,
-.uploader-modal input#fileSearch {
+.media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li a, .media-browser-modal-window input#fileSearch, .uploader-modal .tabMediaBrowserBreadcrumbs > ul li a, .uploader-modal input#fileSearch {
     float: none;
     font-family: Arial, sans-serif;
     -webkit-font-kerning: auto;
@@ -1406,7 +1403,15 @@
     text-shadow: none;
     text-transform: none;
     -ms-touch-action: auto;
-    touch-action: auto
+    touch-action: auto;
+    border-collapse: separate;
+    border-image-outset: 0;
+    border-image-repeat: stretch;
+    border-image-slice: 100%;
+    border-image-source: none;
+    border-image-width: 1;
+    bottom: auto;
+    clear: none
 }
 
 .media-browser-modal-window .close:hover, .media-browser-modal-window .modal.uploader-modal.close:focus, .uploader-modal .close:hover, .uploader-modal .modal.uploader-modal.close:focus {
@@ -1424,10 +1429,7 @@
     border: 0
 }
 
-#content .media-browser-modal-window.modal .modal-header button.close[type=button],
-#content .uploader-modal.modal .modal-header button.close[type=button],
-.media-browser-modal-window.modal .modal-header button.close[type=button],
-.uploader-modal.modal .modal-header button.close[type=button] {
+#content .media-browser-modal-window.modal .modal-header button.close[type=button], #content .uploader-modal.modal .modal-header button.close[type=button], .media-browser-modal-window.modal .modal-header button.close[type=button], .uploader-modal.modal .modal-header button.close[type=button] {
     border: none;
     border-radius: 0;
     text-shadow: none;
@@ -1445,13 +1447,10 @@
     -webkit-filter: none;
     filter: none;
     background: 0 0;
-    font-weight: bold;
+    font-weight: 700
 }
 
-#content .media-browser-modal-window.modal .modal-header button.close[type=button]:hover,
-#content .uploader-modal.modal .modal-header button.close[type=button]:hover,
-.media-browser-modal-window.modal .modal-header button.close[type=button]:hover,
-.uploader-modal.modal .modal-header button.close[type=button]:hover {
+#content .media-browser-modal-window.modal .modal-header button.close[type=button]:hover, #content .uploader-modal.modal .modal-header button.close[type=button]:hover, .media-browser-modal-window.modal .modal-header button.close[type=button]:hover, .uploader-modal.modal .modal-header button.close[type=button]:hover {
     background-color: #0071bc;
     -webkit-filter: none;
     filter: none
@@ -1459,7 +1458,7 @@
 
 .media-browser-modal-window .modal-title, .uploader-modal .modal-title {
     font-size: 20px;
-    font-weight: normal;
+    font-weight: 400
 }
 
 .media-browser-modal-window .modal-header, .uploader-modal .modal-header {
@@ -1549,17 +1548,6 @@
     list-style: none
 }
 
-.media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li a, .media-browser-modal-window input#fileSearch, .uploader-modal .tabMediaBrowserBreadcrumbs > ul li a, .uploader-modal input#fileSearch {
-    border-collapse: separate;
-    border-image-outset: 0;
-    border-image-repeat: stretch;
-    border-image-slice: 100%;
-    border-image-source: none;
-    border-image-width: 1;
-    bottom: auto;
-    clear: none;
-}
-
 .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li a, .uploader-modal .tabMediaBrowserBreadcrumbs > ul li a {
     -webkit-animation-play-state: running;
     animation-play-state: running;
@@ -1647,8 +1635,42 @@
 }
 
 .media-browser-modal-window #FileSearchIsRegexLabel, .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul, .uploader-modal #FileSearchIsRegexLabel, .uploader-modal .tabMediaBrowserBreadcrumbs > ul {
-    pointer-events: auto;
-    position: static;
+    -webkit-filter: none;
+    filter: none;
+    -webkit-font-kerning: auto;
+    -moz-font-kerning: auto;
+    font-kerning: auto;
+    -webkit-font-variant-ligatures: normal;
+    -moz-font-variant-ligatures: normal;
+    font-variant-ligatures: normal;
+    outline-offset: 0;
+    -webkit-perspective: none;
+    perspective: none;
+    border-image-outset: 0;
+    border-image-repeat: stretch;
+    border-image-slice: 100%;
+    border-image-source: none;
+    border-image-width: 1;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: 0 none #444;
+    border-right: 0 none #444;
+    border-left: 0 none #444;
+    animation-play-state: running;
+    -webkit-animation-timing-function: ease;
+    animation-timing-function: ease;
+    -webkit-backface-visibility: visible;
+    backface-visibility: visible;
+    background-blend-mode: normal;
+    bottom: auto;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    clear: none
+}
+
+.media-browser-modal-window #FileSearchIsRegexLabel, .media-browser-modal-window .fileActions > ul li a, .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul, .media-browser-modal-window input#FileSearchIsRegex, .uploader-modal #FileSearchIsRegexLabel, .uploader-modal .fileActions > ul li a, .uploader-modal .tabMediaBrowserBreadcrumbs > ul, .uploader-modal input#FileSearchIsRegex {
     table-layout: auto;
     text-anchor: start;
     text-decoration: none;
@@ -1656,36 +1678,28 @@
     text-shadow: none;
     text-transform: none;
     top: auto;
-    direction: ltr;
-    -webkit-filter: none;
-    filter: none;
-    float: none;
-    font-family: Arial, sans-serif;
-    -webkit-font-kerning: auto;
-    -moz-font-kerning: auto;
-    font-kerning: auto;
-    font-size: 12px;
-    font-stretch: normal;
-    font-style: normal;
-    font-variant: normal;
-    -webkit-font-variant-ligatures: normal;
-    -moz-font-variant-ligatures: normal;
-    font-variant-ligatures: normal;
-    font-weight: 400;
-    left: auto;
-    letter-spacing: normal;
-    line-height: normal;
+    pointer-events: auto;
+    position: static;
     max-height: none;
     max-width: none;
     min-height: 0;
     min-width: 0;
     opacity: 1;
-    outline-offset: 0;
     overflow-wrap: normal;
     overflow-x: visible;
     overflow-y: visible;
-    -webkit-perspective: none;
-    perspective: none
+    direction: ltr;
+    float: none;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    left: auto;
+    letter-spacing: normal;
+    line-height: normal;
+    -webkit-animation-play-state: running
 }
 
 .media-browser-modal-window #FileSearchIsRegexLabel, .media-browser-modal-window input#FileSearchIsRegex, .uploader-modal #FileSearchIsRegexLabel, .uploader-modal input#FileSearchIsRegex {
@@ -1705,41 +1719,13 @@
     list-style: disc
 }
 
-.media-browser-modal-window #FileSearchIsRegexLabel, .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul, .uploader-modal #FileSearchIsRegexLabel, .uploader-modal .tabMediaBrowserBreadcrumbs > ul {
-    border-image-outset: 0;
-    border-image-repeat: stretch;
-    border-image-slice: 100%;
-    border-image-source: none;
-    border-image-width: 1;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-top: 0 none #444;
-    border-right: 0 none #444;
-    border-left: 0 none #444;
-    -webkit-animation-play-state: running;
-    animation-play-state: running;
-    -webkit-animation-timing-function: ease;
-    animation-timing-function: ease;
-    -webkit-backface-visibility: visible;
-    backface-visibility: visible;
-    background-blend-mode: normal;
-    bottom: auto;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    clear: none;
-}
-
 .media-browser-modal-window #FileSearchIsRegexLabel, .uploader-modal #FileSearchIsRegexLabel {
-
     color: #444;
     color-interpolation: sRGB;
     color-interpolation-filters: linearRGB;
     color-rendering: auto;
     cursor: default;
     fill: #000;
-
     height: 16px;
     -webkit-box-pack: start;
     -webkit-justify-content: start;
@@ -1763,14 +1749,12 @@
     border-top: 0 none #444;
     border-right: 0 none #444;
     border-left: 0 none #444;
-
     color: #444;
     color-interpolation: sRGB;
     color-interpolation-filters: linearRGB;
     color-rendering: auto;
     cursor: auto;
     fill: #000;
-
     height: 13px;
     vertical-align: baseline;
     width: 13px;
@@ -1785,46 +1769,17 @@
 }
 
 .media-browser-modal-window .fileActions > ul li a, .media-browser-modal-window input#FileSearchIsRegex, .uploader-modal .fileActions > ul li a, .uploader-modal input#FileSearchIsRegex {
-    table-layout: auto;
-    text-anchor: start;
-    text-decoration: none;
-    text-indent: 0;
-    text-shadow: none;
-    text-transform: none;
-    top: auto;
-    pointer-events: auto;
-    position: static;
     resize: none;
     right: auto;
-    max-height: none;
-    max-width: none;
-    min-height: 0;
-    min-width: 0;
-    opacity: 1;
     outline-offset: 0;
-    overflow-wrap: normal;
-    overflow-x: visible;
-    overflow-y: visible;
-    direction: ltr;
     -webkit-filter: none;
     filter: none;
-    float: none;
-    font-family: Arial, sans-serif;
     -webkit-font-kerning: auto;
     -moz-font-kerning: auto;
     font-kerning: auto;
-    font-size: 12px;
-    font-stretch: normal;
-    font-style: normal;
-    font-variant: normal;
     -webkit-font-variant-ligatures: normal;
     -moz-font-variant-ligatures: normal;
     font-variant-ligatures: normal;
-    font-weight: 400;
-    left: auto;
-    letter-spacing: normal;
-    line-height: normal;
-    -webkit-animation-play-state: running;
     animation-play-state: running;
     -webkit-animation-timing-function: ease;
     animation-timing-function: ease;
@@ -1836,11 +1791,10 @@
     box-shadow: none;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    clear: none;
+    clear: none
 }
 
-.media-browser-modal-window .fileActions > ul li a,
-.uploader-modal .fileActions > ul li a {
+.media-browser-modal-window .fileActions > ul li a, .uploader-modal .fileActions > ul li a {
     color: #444;
     color-interpolation: sRGB;
     color-interpolation-filters: linearRGB;
@@ -1853,7 +1807,7 @@
     -webkit-justify-content: start;
     -ms-flex-pack: start;
     justify-content: start;
-    outline: none 0;
+    outline: 0;
     text-align: left;
     vertical-align: baseline;
     visibility: visible;
@@ -1886,7 +1840,45 @@
     font-size: 14px
 }
 
-.media-browser-modal-window tr.data-row.files td.col_2 a,
-.media-browser-modal-window a {
-    cursor: pointer;
+.media-browser-modal-window a, .media-browser-modal-window tr.data-row.files td.col_2 a {
+    cursor: pointer
+}
+
+.uploader-modal~.modal-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    background-color: #000;
+}
+
+.uploader-modal .fade, .uploader-modal~.fade {
+    opacity: 0;
+    -webkit-transition: opacity .15s linear;
+    -o-transition: opacity .15s linear;
+    transition: opacity .15s linear;
+}
+
+.uploader-modal .fade.in , .uploader-modal~.fade.in {
+    opacity: 1;
+}
+
+.uploader-modal~.modal-backdrop.in {
+    opacity: .5;
+    filter: alpha(opacity=50);
+}
+
+.uploader-modal.modal.fade .modal-dialog {
+    -webkit-transform: translate3d(0, -25%, 0);
+    transform: translate3d(0, -25%, 0);
+    -webkit-transition: -webkit-transform 0.3s ease-out;
+    -moz-transition: -moz-transform 0.3s ease-out;
+    -o-transition: -o-transform 0.3s ease-out;
+    transition: transform 0.3s ease-out;
+}
+.uploader-modal.modal.in .modal-dialog {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
 }
