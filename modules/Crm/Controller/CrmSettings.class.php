@@ -1,16 +1,42 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * This is the settings class file for handling the all functionalities under settings menu.
  *
  * PHP version 5.3 or >
  *
  * @category   Settings
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
  * @version    1.0.0
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 namespace Cx\Modules\Crm\Controller;
@@ -18,9 +44,9 @@ namespace Cx\Modules\Crm\Controller;
 /**
  * CrmSettingsException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Adrian Berger <ab@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_crm
  * @version     1.0.0
  */
@@ -33,12 +59,12 @@ class CrmSettingsException extends \Exception
  * This is the settings class file for handling the all functionalities under settings menu.
  *
  * @category   Settings
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
  * @version    1.0.0
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 class CrmSettings extends CrmLibrary

@@ -1,4 +1,30 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 class ContrexxUpdate
 {
     public $arrStatusMsg = array('title' => '', 'button' => '', 'msg' => array(), 'error' => array());
@@ -522,7 +548,7 @@ class ContrexxUpdate
                     }
                     if ($result !== false) {
                         DBG::msg('-------------------------------------------------------------');
-                        DBG::msg('CONTREXX UPDATE - NEW REQUEST');
+                        DBG::msg('CLOUDREXX UPDATE - NEW REQUEST');
                         DBG::msg('Date: ' . date('d.m.Y H:i:s'));
                         DBG::msg('Get-Params:');
                         DBG::dump($_GET);
@@ -1144,7 +1170,7 @@ class ContrexxUpdate
             if ($user == 'system'
                 && preg_match('/@(comvation|contrexx)\.com$/', $objAuth->fields['email'])
                 && $objAuth->fields['email'] != $newSystemMail) {
-                // comvation is updating the system user
+                // cloudrexx is updating the system user
                 // update the email address to system@comvation.com
                 $this->objDatabase->Execute(
                     "UPDATE `".DBPREFIX."access_users` SET `email` = ? WHERE `id` = ?",

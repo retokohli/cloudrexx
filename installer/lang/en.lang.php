@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Installer language file
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  installer
  * @todo        Edit PHP DocBlocks!
  */
@@ -28,7 +53,7 @@ $_ARRLANG['TXT_HELP'] = "Help";
 
 // welcome
 $_ARRLANG['TXT_WELCOME'] = "Welcome";
-$_ARRLANG['TXT_WELCOME_MSG'] = "<b>Welcome to the Contrexx Web Installer</b><br />You will install the version [VERSION] of [NAME].";
+$_ARRLANG['TXT_WELCOME_MSG'] = "<b>Welcome to the Cloudrexx Web Installer</b><br />You will install the version [VERSION] of [NAME].";
 $_ARRLANG['TXT_LANGUAGE'] = "Language";
 $_ARRLANG['TXT_NEW_VERSION'] = "A newer version of [NAME] is released.<br />Newest version: [VERSION]";
 
@@ -46,7 +71,7 @@ $_ARRLANG['TXT_FILL_OUT_ALL_FIELDS'] = "You have to fill in all fields!";
 // license
 $_ARRLANG['TXT_READ_LICENCE'] = "Please read/accept license to continue installation";
 $_ARRLANG['TXT_MUST_ACCEPT_LICENCE'] = "You have to accept the license agreement to proceed with the installation!";
-$_ARRLANG['TXT_ACCEPT_LICENSE'] = "I accept the Contrexx license";
+$_ARRLANG['TXT_ACCEPT_LICENSE'] = "I accept the Cloudrexx license";
 
 // requirements
 $_ARRLANG['TXT_SOFTWARE_REQUIREMENTS'] = "Software requirements";
@@ -75,8 +100,8 @@ $_ARRLANG['TXT_PDO_SUPPORT_REQUIRED'] = "PDO extension of PHP is required!";
 $_ARRLANG['TXT_GD_VERSION_REQUIRED'] = "GD extension version [VERSION] or later for PHP is required!";
 $_ARRLANG['TXT_ALLOW_URL_FOPEN_FOR_RSS_REQUIRED'] = "As long as the directive \"allow_url_fopen\" is turned off in the PHP configuration, the module <i>News Syndication</i> cannot be used!";
 $_ARRLANG['TXT_FTP_SUPPORT_REQUIRED'] = "FTP support for PHP is not permitted on this server.This is necessary because PHP runs in Safemode! Change the PHP configuration with the option ('--enable ftp ') or installing the system manually.";
-$_ARRLANG['TXT_IGNORE_PHP_REQUIREMENT'] = "Sie können Contrexx&reg; unter eigener Verantwortung trotzdem installieren. Sollten in diesem Fall Funktionsmängel entstehen, lehnt Comvation Internet Solutions jede Haftung oder Supportbeteiligung ab.";
-$_ARRLANG['TXT_ACCEPT_NO_SLA'] = "Contrexx&reg;  unter diesen Bedingungen installieren";
+$_ARRLANG['TXT_IGNORE_PHP_REQUIREMENT'] = "Sie können Cloudrexx&reg; unter eigener Verantwortung trotzdem installieren. Sollten in diesem Fall Funktionsmängel entstehen, lehnt Cloudrexx Internet Solutions jede Haftung oder Supportbeteiligung ab.";
+$_ARRLANG['TXT_ACCEPT_NO_SLA'] = "Cloudrexx&reg;  unter diesen Bedingungen installieren";
 
 // configuration
 $_ARRLANG['TXT_FTP_PATH_CONFIG'] = "FTP path configuration";
@@ -89,9 +114,9 @@ $_ARRLANG['TXT_HOSTNAME'] = "Hostname";
 $_ARRLANG['TXT_DATABASE_NAME'] = "Database name";
 $_ARRLANG['TXT_TABLE_PREFIX'] = "Table prefix";
 $_ARRLANG['TXT_FTP_PATH'] = "Path to the Document Root directory";
-$_ARRLANG['TXT_FTP_PATH_DESCRIPTION'] = "Specify the path in which you saved the files of Contrexx CMS on the FTP server.";
+$_ARRLANG['TXT_FTP_PATH_DESCRIPTION'] = "Specify the path in which you saved the files of Cloudrexx CMS on the FTP server.";
 $_ARRLANG['TXT_FTP'] = "FTP";
-$_ARRLANG['TXT_DOCUMENT_ROOT_NEEDED'] = "You must provide the local path to the Contrexx WCMS on your Web server!";
+$_ARRLANG['TXT_DOCUMENT_ROOT_NEEDED'] = "You must provide the local path to the Cloudrexx WCMS on your Web server!";
 $_ARRLANG['TXT_DB_HOSTNAME_NEEDED'] = "You must provide the computer name of your database server!";
 $_ARRLANG['TXT_DB_USERNAME_NEEDED'] = "You must provide a valid user name which exists on the database server to process request!";
 $_ARRLANG['TXT_DB_DATABASE_NEEDED'] = "You must define or select an existing database!";
@@ -109,7 +134,7 @@ $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'] = "The directory tree couldn't be show
 $_ARRLANG['TXT_DATABASE_CONNECTION_COLLATION'] = "Connection collation";
 $_ARRLANG['TXT_DB_COLLATION_DESCRIPTION'] = "The connection collation is used to determine to sort order, or for search operations.<br /><br />If you are going to create a multilanguage based Website, then it is recommended to use either <strong>utf8_unicode_ci</strong> or <strong>utf8_general_ci</strong> as a collation. The difference of these two collations is that only <strong>utf8_unicode_ci</strong> supports expansions, which means it knows for example that in German `ß´ is equal to `ss´. On the other hand, <strong>utf8_general_ci</strong> is faster, but comparisons are less correct, due of its lack of expansions support.<br /><br />Wenn this will be only a one language based website, then you could probably use a language specific collation.";
 $_ARRLANG['TXT_CACHING'] = "Caching";
-$_ARRLANG['TXT_CACHING_ACTIVATE_BY_DEFAULT'] = "Configure the Contrexx caching automatically (recommended)";
+$_ARRLANG['TXT_CACHING_ACTIVATE_BY_DEFAULT'] = "Configure the Cloudrexx caching automatically (recommended)";
 
 // installation
 $_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES'] = "Could not deactivate the unused languages!";
@@ -124,7 +149,7 @@ $_ARRLANG['TXT_DATABASE_DOES_NOT_EXISTS'] = "The database file name \"[DATABASE]
 $_ARRLANG['TXT_COULD_NOT_CREATE_DATABASE'] = "The database could not be created!";
 $_ARRLANG['TXT_CANNOT_CONNECT_TO_FTP_HOST'] = "No connection to the FTP server!";
 $_ARRLANG['TXT_FTP_AUTH_FAILED'] = "The authentication to the FTP server failed with the provided user name and password!";
-$_ARRLANG['TXT_FTP_PATH_DOES_NOT_EXISTS'] = "The path to the Contrexx WCMS on the FTP server does not exist!";
+$_ARRLANG['TXT_FTP_PATH_DOES_NOT_EXISTS'] = "The path to the Cloudrexx WCMS on the FTP server does not exist!";
 $_ARRLANG['TXT_COULD_NOT_READ_SQL_DUMP_FILE'] = "Could not open the SQL-Dump file \"[FILENAME]\"!";
 $_ARRLANG['TXT_SQL_QUERY_ERROR'] = "SQL query error:";
 $_ARRLANG['TXT_CORRECT_THE_FOLLOWING_ERROR'] = "To repeat the installation step, correct the following errors and reload the site:";
@@ -146,14 +171,14 @@ $_ARRLANG['TXT_CREATE_APACHE_HTACCESS_FILE'] = ".htaccess created";
 $_ARRLANG['TXT_CREATE_IIS_HTACCESS_FILE'] = "web.config created";
 $_ARRLANG['TXT_CREATE_VERSION_FILE'] = "Create version file";
 $_ARRLANG['TXT_COULD_NOT_GATHER_ALL_DATABASE_TABLES'] = "Could not find the available database tables!";
-$_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Your database server doesn't support the character set UTF-8! You need the a version of Contrexx which uses the latin1 character set instead!";
-$_ARRLANG['TXT_ENGINGE_NOT_SUPPORTED'] = 'Your database server doesn\'t support the engine InnoDB. Contrexx can not be installed on this system!';
+$_ARRLANG['TXT_NO_DB_UTF8_SUPPORT_MSG'] = "Your database server doesn't support the character set UTF-8! You need the a version of Cloudrexx which uses the latin1 character set instead!";
+$_ARRLANG['TXT_ENGINGE_NOT_SUPPORTED'] = 'Your database server doesn\'t support the engine InnoDB. Cloudrexx can not be installed on this system!';
 $_ARRLANG['TXT_COULD_NOT_SET_DATABASE_CHARSET'] = "Could not set database collation!";
 $_ARRLANG['TXT_COULD_NOT_SET_INSTALLATIONID'] = "The installation ID could not be set.";
 $_ARRLANG['TXT_COULD_NOT_SET_TIMEZONE'] = "The timezone could not be set.";
 $_ARRLANG['TXT_CONFIG_DATABASE'] = "Config database";
 $_ARRLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "The file %s can't be updated due it's write-protected! Please remove the write-protection for letting the system working properly.";
-$_ARRLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Contrexx specific directives!";
+$_ARRLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Cloudrexx specific directives!";
 $_ARRLANG['TXT_NO_WRITE_PERMISSION'] = "The file \"%s\" could not be created or is not writable.<br />Please create the file manually on the web server in the root directory of your website and give the file write permissions or contact your server administrator.";
 
 // system configuration
@@ -198,7 +223,7 @@ $_ARRLANG['TXT_COULD_NOT_CREATE_ADMIN_ACCOUNT'] = "Could not create the administ
 
 // termination
 $_ARRLANG['TXT_CONGRATULATIONS'] = "Congratulation";
-$_ARRLANG['TXT_CONGRATULATIONS_MESSAGE'] = "The Contrexx WCMS [VERSION] [EDITION] was installed successfully on your system.";
+$_ARRLANG['TXT_CONGRATULATIONS_MESSAGE'] = "The Cloudrexx WCMS [VERSION] [EDITION] was installed successfully on your system.";
 $_ARRLANG['TXT_INTERNET_SITE_FOR_VISITORS'] = "Internet site for visitors";
 $_ARRLANG['TXT_INTERNET_SITE_MESSAGE'] = "The Web site is available immediately at the following address: <br /><b>[WEB_URL]</b>";
 $_ARRLANG['TXT_ADMIN_SITE'] = "Administrator area";

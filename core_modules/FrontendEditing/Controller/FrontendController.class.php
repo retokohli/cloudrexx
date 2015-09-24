@@ -1,13 +1,39 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Class FrontendController
  *
  * This is the frontend controller for the frontend editing.
  * This adds the necessary javascripts and toolbars
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_frontendediting
  * @version     1.0.0
  */
@@ -20,9 +46,9 @@ namespace Cx\Core_Modules\FrontendEditing\Controller;
  * This is the frontend controller for the frontend editing.
  * This adds the necessary javascripts and toolbars
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_frontendediting
  * @version     1.0.0
  */
@@ -32,7 +58,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
      * Init the frontend editing.
      *
      * Register the javascripts and css files
-     * Adds the used language variables to contrexx-js variables, so the toolbar has access to these variables
+     * Adds the used language variables to cloudrexx-js variables, so the toolbar has access to these variables
      *
      * @param ComponentController $componentController
      */
@@ -115,7 +141,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
         $componentTemplate->loadTemplateFile('Toolbar.html');
 
         // @author: Michael Ritter
-        // not used for contrexx 3.1
+        // not used for cloudrexx 3.1
 //        global $_CORELANG;
 //        $template = $objTemplate;
 //        $root = $componentTemplate->fileRoot;

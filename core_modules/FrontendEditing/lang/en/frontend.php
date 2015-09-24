@@ -1,9 +1,35 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * English language variables for frontend editing
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_frontendediting
  */
 $_ARRAYLANG['TXT_FRONTEND_EDITING_SHOW_TOOLBAR'] = 'Show toolbar';
@@ -17,7 +43,7 @@ $_ARRAYLANG['TXT_FRONTEND_EDITING_EDIT'] = 'Start edit mode';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_CANCEL_EDIT'] = 'Cancel';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_FINISH_EDIT_MODE'] = 'Exit edit mode';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_THE_DRAFT'] = 'You are editing the newest version which haven\'t been published yet.';
-$_ARRAYLANG['TXT_FRONTEND_EDITING_MODULE_PAGE'] = 'You are editing a content page of a contrexx module. The editing possibility is limited.';
+$_ARRAYLANG['TXT_FRONTEND_EDITING_MODULE_PAGE'] = 'You are editing a content page of a cloudrexx module. The editing possibility is limited.';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_NO_TITLE_AND_CONTENT'] = 'The title and the content is not available for the template used by this page. The editing possibility is limited.';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_HISTORY'] = 'History';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_OPTIONS'] = 'Options';

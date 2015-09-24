@@ -1,12 +1,37 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Dummy class for simulating an external payment provider.
  *
  * Creates a dummy form for testing the payment process in the shop.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Reto Kohli <reto.kohli@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  * @todo        Edit PHP DocBlocks!
@@ -19,9 +44,9 @@
  * This also demonstrates the requirements of the current specification
  * for any external payment service provider class.
  * See {@link PaymentProcessing.class} for details.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @version     3.0.0
  * @todo        Edit PHP DocBlocks!

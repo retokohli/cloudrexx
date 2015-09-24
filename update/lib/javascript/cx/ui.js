@@ -22,14 +22,14 @@ cx.internal.dependencyInclude(
     function() {
 
         /**
-         * Contrexx JS API: User Interface extension
+         * Cloudrexx JS API: User Interface extension
          */
         var UI = function() {
             //we want jQuery at $ locally
             var $ = cx.jQuery;
 
             /**
-             * A contrexx dialog.
+             * A cloudrexx dialog.
              * 
              * @param array options {
              *     [ title: 'the title', ]
@@ -159,7 +159,7 @@ cx.internal.dependencyInclude(
             };
 
             /**
-             * A contrexx tooltip.
+             * A cloudrexx tooltip.
              */
             var Tooltip = function(element) {
                 if (typeof(element) == 'undefined') {
