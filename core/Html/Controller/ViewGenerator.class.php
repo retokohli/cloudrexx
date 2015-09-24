@@ -683,6 +683,10 @@ class ViewGenerator {
         $pageRepo = \Env::get('em')->getRepository($entityWithNS);
         $associationMappings = $entityObj->getAssociationMappings();
         foreach ($associationMappings as $mapping => $value) {
+            // we only need to delete the n associated values, the single associated will be handled by doctrine itself
+            if (!$entityObj->isCollectionValuedAssociation($mapping)) {
+                continue;
+            }
             $mainEntity = $pageRepo->find($id);
             $associatedEntities = $mainEntity->{'get'.preg_replace('/_([a-z])/', '\1', ucfirst($mapping))}();
             foreach ($associatedEntities as $associatedEntity) {
