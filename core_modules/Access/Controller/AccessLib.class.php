@@ -2100,4 +2100,24 @@ JS
         return $_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'];
     }
 
+    /**
+     * Initialize the access image uploader and get the uploader instance
+     * 
+     * @return \Cx\Core_Modules\Uploader\Model\Entity\Uploader
+     */
+    public function getImageUploader()
+    {
+        // init uploader to upload images
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $uploader->setCallback('accessImageUploaderCallback');
+        $uploader->setOptions(array(
+            'id'                 => 'accessImageUploader',
+            'allowed-extensions' => array('jpg', 'jpeg', 'png', 'gif'),
+            'style'              => 'display:none',
+            'data-upload-limit'  => 1,
+        ));
+        $this->attachJavaScriptFunction('imageUploaderCode');
+        
+        return $uploader;
+    }
 }

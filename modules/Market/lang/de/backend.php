@@ -92,4 +92,5 @@ $_ARRAYLANG['TXT_MARKET_LOCATION_SORTING_UPDATED'] = "Die Sortierung wurde Erfol
 $_ARRAYLANG['TXT_COPY_ADVERTISEMENT'] = "Inserat kopieren";
 $_ARRAYLANG['TXT_MARKET_COLOR'] = "Farbe";
 $_ARRAYLANG['TXT_SAVE'] = "Speichern";
+$_ARRAYLANG['TXT_MARKET_CHOOSE_FILE'] = 'Datei wählen';
 ?>

@@ -63,9 +63,13 @@
             <!-- BEGIN inputfieldsOutput -->
             <p><label>{FIELD_NAME}&nbsp;{FIELD_REQUIRED}</label>{FIELD_VALUE}</p>
             <!-- END inputfieldsOutput -->
+            <input type="hidden" name="imgUploaderId" value="{DIRECTORY_IMAGE_UPLOADER_ID}"/>
+            <input type="hidden" name="fileUploaderId" value="{DIRECTORY_FILE_UPLOADER_ID}"/>
             <p><input class="btn btn-default" type="submit" name="addSubmit" value="{TXT_DIRECTORY_ADD}" /></p>
         </form>
     </div>
     <!-- END directoryInputFields -->
 </div>
 {DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK}
+{DIRECTORY_IMAGE_UPLOADER_CODE}
+{DIRECTORY_FILE_UPLOADER_CODE}

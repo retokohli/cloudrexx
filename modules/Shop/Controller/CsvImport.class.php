@@ -113,11 +113,17 @@ class CsvImport
         return $content;
     }
 
-
-    function getFilefieldMenuOptions()
+    /**
+     * Get the file field menu options
+     *
+     * @param string $file file name with path
+     *
+     * @return string
+     */
+    function getFilefieldMenuOptions($file)
     {
         $csv_source = new CsvBv(
-            $_FILES['CSVfile']['tmp_name'],
+            $file,
             CsvImport::$separator, CsvImport::$delimiter, CsvImport::$escapor
         );
         $csv_source->SkipEmptyRows(true);
@@ -151,11 +157,17 @@ class CsvImport
         return $strOptions;
     }
 
-
-    function GetFileContent()
+    /**
+     * Get the file content from the csv file
+     *
+     * @param string $file file name with path
+     *
+     * @return array
+     */
+    function GetFileContent($file)
     {
         $csv_source = new CsvBv(
-            $_FILES['importfile']['tmp_name'],
+            $file,
             CsvImport::$separator, CsvImport::$delimiter, CsvImport::$escapor
         );
         $csv_source->SkipEmptyRows(true);

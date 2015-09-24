@@ -876,4 +876,37 @@ EOF;
         
         return current($thumbnails);
     }
+
+    /**
+    * Get uploaded file path by using uploader id and file name
+    * 
+    * @param string $uploaderId Uploader id
+    * @param string $fileName   File name
+    * 
+    * @return boolean|string File path when File exists, false otherwise
+    */
+    public function getUploadedFilePath($uploaderId, $fileName)
+    {
+        global $sessionObj;
+
+        if (empty($uploaderId) || empty($fileName)) {
+            return false;
+        }
+
+        if (empty($sessionObj)) {
+            $sessionObj = \cmsSession::getInstance();
+        }
+
+        $uploaderFolder = $sessionObj->getTempPath() . '/' . $uploaderId;
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($uploaderFolder)) {
+            return false;
+        }
+
+        $filePath = $uploaderFolder .'/'. $fileName;
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
+            return false;
+        }
+        
+        return $filePath;
+    }
 }

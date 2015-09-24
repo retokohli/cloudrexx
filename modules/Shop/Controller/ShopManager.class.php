@@ -415,24 +415,21 @@ class ShopManager extends ShopLibrary
             }
         }
         $objCSVimport->initTemplateArray();
-        // When there is an uploaded file, check its extension and type.
-        // Displays one of two warnings on mismatch.
-        if (!empty($_FILES)) {
-            $file = current($_FILES);
-            if (!preg_match('/\.csv$/i', $file['name'])) {
-                \Message::warning($_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_EXTENSION_MISMATCH']);
-            } else {
-                if (!preg_match('
-                    /application\\/vnd\.ms-excel
-                    |text\\/(?:plain|csv|comma-separated-values)
-                    /x', $file['type'])) {
-                    \Message::warning($_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_TYPE_MISMATCH']);
-                }
-            }
+        $fileExists = false;
+        $fileName   = isset($_POST['csvFile'])
+                        ? contrexx_input2raw($_POST['csvFile'])
+                        : '';
+        $uploaderId = isset($_POST['importCsvUploaderId'])
+                        ? contrexx_input2raw($_POST['importCsvUploaderId'])
+                        : '';
+        if (!empty($fileName) && !empty($uploaderId)) {
+            $objSession = \cmsSession::getInstance();
+            $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
+            $fileExists = \Cx\Lib\FileSystem\FileSystem::exists($tmpFile);
         }
         // Import Categories
         // This is not subject to change, so it's hardcoded
-        if (isset($_REQUEST['ImportCategories'])) {
+        if (isset($_REQUEST['ImportCategories']) && $fileExists) {
             // delete existing categories on request only!
             // mind that this necessarily also clears all products and
             // their associated attributes!
@@ -442,7 +439,7 @@ class ShopManager extends ShopLibrary
 // NOTE: Removing Attributes is now disabled.  Optionally enable this.
 //                Attributes::deleteAll();
             }
-            $objCsv = new CsvBv($_FILES['importFileCategories']['tmp_name']);
+            $objCsv = new CsvBv($tmpFile);
             $importedLines = 0;
             $arrCategoryLevel = array(0,0,0,0,0,0,0,0,0,0);
             $line = $objCsv->NextLine();
@@ -465,7 +462,7 @@ class ShopManager extends ShopLibrary
                 ': '.$importedLines);
         }
         // Import
-        if (isset($_REQUEST['importFileProducts'])) {
+        if (isset($_REQUEST['importFileProducts']) && $fileExists) {
             if (isset($_POST['clearProducts']) && $_POST['clearProducts']) {
                 Products::deleteByShopCategory(0, false, true);
                 // The categories need not be removed, but it is done by design!
@@ -473,7 +470,7 @@ class ShopManager extends ShopLibrary
 // NOTE: Removing Attributes is now disabled.  Optionally enable this.
 //                Attributes::deleteAll();
             }
-            $arrFileContent = $objCSVimport->GetFileContent();
+            $arrFileContent = $objCSVimport->GetFileContent($tmpFile);
             $query = '
                 SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db
                   FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_importimg
@@ -588,14 +585,16 @@ class ShopManager extends ShopLibrary
             if (!isset($_REQUEST['SelectFields'])) {
                 $jsnofiles = "selectTab('import1');";
             } else {
-                if ($_FILES['CSVfile']['name'] == '') {
+                if (isset($_POST['mode']) && $_POST['csvFile'] == '') {
                     $jsnofiles = "selectTab('import4');";
                 } else {
                     $jsnofiles = "selectTab('import2');";
-                    $fileFields = '
-                        <select name="FileFields" id="file_field" style="width: 200px;" size="10">
-                            '.$objCSVimport->getFilefieldMenuOptions().'
-                        </select>'."\n";
+                    if ($fileExists) {
+                        $fileFields = '
+                            <select name="FileFields" id="file_field" style="width: 200px;" size="10">
+                                '.$objCSVimport->getFilefieldMenuOptions($tmpFile).'
+                            </select>'."\n";
+                    }
                     $dblist = '
                         <select name="DbFields" id="given_field" style="width: 200px;" size="10">
                             '.$objCSVimport->getAvailableNamesMenuOptions().'
@@ -626,11 +625,23 @@ class ShopManager extends ShopLibrary
             ));
             self::$objTemplate->parse('imgRow');
         }
+        //initialize the uploader
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); //create an uploader
+        $uploader->setCallback('importUploaderCallback');
+        $uploader->setOptions(array(
+                    'id'                 => 'importCsvUploader',
+                    'allowed-extensions' => array('csv', 'xls'),
+                    'data-upload-limit'  => 1,
+                    'style' => 'display:none'
+        ));
+
         self::$objTemplate->setVariable(array(
             'SELECT_LAYER_ONLOAD' => $jsSelectLayer,
             'NO_FILES' => (isset($jsnofiles)  ? $jsnofiles  : ''),
             'FILE_FIELDS_LIST' => (isset($fileFields) ? $fileFields : ''),
             'DB_FIELDS_LIST' => (isset($dblist) ? $dblist : ''),
+            'SHOP_IMPORT_CSV_UPLOADER_CODE' => $uploader->getXHtml(),
+            'SHOP_IMPORT_CSV_UPLOADER_ID' => $uploader->getId(),
             // Export: instructions added
 //            'SHOP_EXPORT_TIPS' => $tipText,
         ));
