@@ -1,6 +1,7 @@
 #Installing a clone of Cloudrexx from GitHub
 ##For Cloudrexx master
 These are the instructions for the installation/setup of a clone of GitHub branch or master  
+
 1. 
    Execute `git clone https://github.com/Cloudrexx/cloudrexx.git <directory name>`  
 2. 
