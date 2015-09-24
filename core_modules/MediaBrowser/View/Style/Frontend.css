@@ -260,7 +260,7 @@
 }
 
 .media-browser-modal-window hr, .uploader-modal hr {
-    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box;
     box-sizing: content-box;
     height: 0
 }
@@ -302,13 +302,13 @@
 }
 
 .media-browser-modal-window input[type=checkbox], .media-browser-modal-window input[type=radio], .uploader-modal input[type=checkbox], .uploader-modal input[type=radio] {
-    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
     padding: 0
 }
 
 .media-browser-modal-window input[type=search], .uploader-modal input[type=search] {
-    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box;
     box-sizing: content-box
 }
 
@@ -336,7 +336,7 @@
 }
 
 .media-browser-modal-window *, .media-browser-modal-window :after, .media-browser-modal-window :before, .uploader-modal *, .uploader-modal :after, .uploader-modal :before {
-    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box
 }
 
@@ -391,15 +391,15 @@
 
 .media-browser-modal-window .modal.fade.uploader-modal.modal-dialog, .uploader-modal .modal.fade.uploader-modal.modal-dialog {
     -ms-transform: translate(0, -25%);
-    -o-transform: translate(0, -25%);
+    -webkit-transform: translate(0, -25%);
     transform: translate(0, -25%);
-    -o-transition: -o-transform .3s ease-out;
+    -webkit-transition: -webkit-transform .3s ease-out;
     transition: transform .3s ease-out
 }
 
 .media-browser-modal-window .modal.in.uploader-modal.modal-dialog, .uploader-modal .modal.in.uploader-modal.modal-dialog {
     -ms-transform: translate(0, 0);
-    -o-transform: translate(0, 0);
+    -webkit-transform: translate(0, 0);
     transform: translate(0, 0)
 }
 
@@ -435,6 +435,7 @@
     }
 
     .media-browser-modal-window .modal-content, .uploader-modal .modal-content {
+        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
         box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
     }
 
@@ -474,7 +475,7 @@
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
-    -o-transition: all .2s ease-in-out;
+    -webkit-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
     display: inline-block;
     max-width: 100%;
@@ -690,6 +691,7 @@
     border-radius: 4px;
     -moz-user-select: none;
     -ms-user-select: none;
+    -webkit-user-select: none;
     user-select: none
 }
 
@@ -706,6 +708,7 @@
 .media-browser-modal-window .btn.active, .media-browser-modal-window .btn:active, .uploader-modal .btn.active, .uploader-modal .btn:active {
     outline: 0;
     background-image: none;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125)
 }
 
@@ -713,6 +716,7 @@
     cursor: not-allowed;
     opacity: .65;
     filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
     box-shadow: none
 }
 
@@ -956,6 +960,7 @@
 
 .media-browser-modal-window .btn-link, .media-browser-modal-window .btn-link.active, .media-browser-modal-window .btn-link:active, .media-browser-modal-window .btn-link[disabled], .media-browser-modal-window fieldset[disabled] .btn-link, .uploader-modal .btn-link, .uploader-modal .btn-link.active, .uploader-modal .btn-link:active, .uploader-modal .btn-link[disabled], .uploader-modal fieldset[disabled] .btn-link {
     background-color: transparent;
+    -webkit-box-shadow: none;
     box-shadow: none
 }
 
@@ -1078,10 +1083,12 @@
 }
 
 .media-browser-modal-window .btn-group.open .dropdown-toggle, .uploader-modal .btn-group.open .dropdown-toggle {
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125)
 }
 
 .media-browser-modal-window .btn-group.open .dropdown-toggle.btn-link, .uploader-modal .btn-group.open .dropdown-toggle.btn-link {
+    -webkit-box-shadow: none;
     box-shadow: none
 }
 
@@ -1218,6 +1225,7 @@
 
 .fade.uploader-modal {
     opacity: 0;
+    -webkit-transition: opacity .15s linear;
     transition: opacity .15s linear
 }
 
@@ -1245,6 +1253,7 @@
 
 .modal.in.uploader-modal .modal-dialog {
     -ms-transform: translate(0, 0);
+    -webkit-transform: translate(0, 0);
     transform: translate(0, 0)
 }
 
@@ -1263,7 +1272,9 @@
     background-color: #fff;
     border: 1px solid #999;
     border: none;
+    -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, .5);
     box-shadow: 0 5px 30px rgba(0, 0, 0, .5);
+    -webkit-background-clip: padding-box;
     background-clip: padding-box;
     outline: 0;
     border-radius: 0;
@@ -1337,6 +1348,7 @@
     }
 
     .media-browser-modal-window .modal-content, .uploader-modal .modal-content {
+        -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, .5);
         box-shadow: 0 5px 30px rgba(0, 0, 0, .5)
     }
 
@@ -1372,10 +1384,14 @@
 .uploader-modal input#fileSearch {
     float: none;
     font-family: Arial, sans-serif;
+    -webkit-font-kerning: auto;
+    -moz-font-kerning: auto;
     font-kerning: auto;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
+    -webkit-font-variant-ligatures: normal;
+    -moz-font-variant-ligatures: normal;
     font-variant-ligatures: normal;
     left: auto;
     letter-spacing: normal;
@@ -1389,6 +1405,7 @@
     text-indent: 0;
     text-shadow: none;
     text-transform: none;
+    -ms-touch-action: auto;
     touch-action: auto
 }
 
@@ -1407,10 +1424,14 @@
     border: 0
 }
 
-#content .media-browser-modal-window.modal .modal-header button.close[type=button], #content .uploader-modal.modal .modal-header button.close[type=button], .media-browser-modal-window.modal .modal-header button.close[type=button], .uploader-modal.modal .modal-header button.close[type=button] {
+#content .media-browser-modal-window.modal .modal-header button.close[type=button],
+#content .uploader-modal.modal .modal-header button.close[type=button],
+.media-browser-modal-window.modal .modal-header button.close[type=button],
+.uploader-modal.modal .modal-header button.close[type=button] {
     border: none;
     border-radius: 0;
     text-shadow: none;
+    -webkit-box-shadow: none;
     box-shadow: none;
     color: #fff;
     opacity: 1;
@@ -1419,14 +1440,20 @@
     padding: 13px 21px;
     right: 0;
     margin-right: -15px;
+    -webkit-transition: .2s background;
     transition: .2s background;
+    -webkit-filter: none;
     filter: none;
     background: 0 0;
     font-weight: bold;
 }
 
-#content .media-browser-modal-window.modal .modal-header button.close[type=button]:hover, #content .uploader-modal.modal .modal-header button.close[type=button]:hover, .media-browser-modal-window.modal .modal-header button.close[type=button]:hover, .uploader-modal.modal .modal-header button.close[type=button]:hover {
+#content .media-browser-modal-window.modal .modal-header button.close[type=button]:hover,
+#content .uploader-modal.modal .modal-header button.close[type=button]:hover,
+.media-browser-modal-window.modal .modal-header button.close[type=button]:hover,
+.uploader-modal.modal .modal-header button.close[type=button]:hover {
     background-color: #0071bc;
+    -webkit-filter: none;
     filter: none
 }
 
@@ -1448,9 +1475,10 @@
 .media-browser-modal-window input#fileSearch, .uploader-modal input#fileSearch {
     border-radius: 0;
     border: 1px solid #ccc;
+    -webkit-box-shadow: rgba(0, 0, 0, .0745098) 0 1px 1px 0 inset;
     box-shadow: rgba(0, 0, 0, .0745098) 0 1px 1px 0 inset;
+    -webkit-box-sizing: content-box;
     box-sizing: content-box;
-
     color: #555;
     color-interpolation: sRGB;
     color-interpolation-filters: linearRGB;
@@ -1459,12 +1487,14 @@
     direction: ltr;
     display: inline-block;
     fill: #000;
-
+    -webkit-filter: none;
     filter: none;
-    
     font-size: 14px;
     font-weight: 400;
     height: 16px;
+    -webkit-box-pack: start;
+    -webkit-justify-content: start;
+    -ms-flex-pack: start;
     justify-content: start;
     line-height: normal;
     list-style: disc;
@@ -1477,17 +1507,23 @@
     text-align: start;
     text-rendering: auto;
     top: auto;
+    -webkit-transform: none;
+    -ms-transform: none;
     transform: none;
+    -webkit-transform-style: flat;
     transform-style: flat;
+    -webkit-transition-delay: 0s, 0s;
     transition-delay: 0s, 0s;
+    -webkit-transition-duration: .15s, .15s;
     transition-duration: .15s, .15s;
+    -webkit-transition-property: border-color, -webkit-box-shadow;
     transition-property: border-color, box-shadow;
+    -webkit-transition-timing-function: ease-in-out, ease-in-out;
     transition-timing-function: ease-in-out, ease-in-out;
-    unicode-bidi: normal;
     vertical-align: baseline;
     visibility: visible;
     white-space: normal;
-    width: 169.75px;
+    width: 169px;
     word-break: normal;
     word-spacing: 0;
     z-index: auto;
@@ -1498,14 +1534,16 @@
     vertical-align: baseline;
     word-break: normal;
     cursor: auto;
-    paint-order: fill
     resize: none;
     right: auto;
+    -webkit-transition-delay: 0s;
     transition-delay: 0s;
+    -webkit-transition-duration: 0s;
     transition-duration: 0s;
+    -webkit-transition-property: all;
     transition-property: all;
+    -webkit-transition-timing-function: ease;
     transition-timing-function: ease;
-    unicode-bidi: normal;
     visibility: visible;
     white-space: normal;
     list-style: none
@@ -1523,13 +1561,17 @@
 }
 
 .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li a, .uploader-modal .tabMediaBrowserBreadcrumbs > ul li a {
+    -webkit-animation-play-state: running;
     animation-play-state: running;
+    -webkit-animation-timing-function: ease;
     animation-timing-function: ease;
+    -webkit-backface-visibility: visible;
     backface-visibility: visible;
     background-blend-mode: normal;
+    -webkit-box-shadow: none;
     box-shadow: none;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
-
     color: #7c7c7c;
     color-interpolation: sRGB;
     color-interpolation-filters: linearRGB;
@@ -1537,28 +1579,35 @@
     direction: ltr;
     display: inline;
     fill: #000;
-
+    -webkit-filter: none;
     filter: none;
-    
     font-size: 12px;
     font-weight: 700;
     height: auto;
+    -webkit-box-pack: start;
+    -webkit-justify-content: start;
+    -ms-flex-pack: start;
     justify-content: start;
     line-height: 8px;
     min-width: 0;
+    -o-object-position: 50% 50%;
     object-position: 50% 50%;
     opacity: 1;
-    
     outline-offset: 0;
     overflow-wrap: normal;
     overflow-y: visible;
+    -webkit-perspective: none;
     perspective: none;
+    -webkit-perspective-origin: 0 0;
     perspective-origin: 0 0;
     pointer-events: auto;
     text-align: left;
     text-rendering: auto;
     top: auto;
+    -webkit-transform: none;
+    -ms-transform: none;
     transform: none;
+    -webkit-transform-style: flat;
     transform-style: flat;
     width: auto;
     word-wrap: normal;
@@ -1580,8 +1629,12 @@
     display: block;
     fill: #000;
     height: 7px;
+    -webkit-box-pack: start;
+    -webkit-justify-content: start;
+    -ms-flex-pack: start;
     justify-content: start;
     text-align: start;
+    -webkit-transform-style: flat;
     transform-style: flat;
     width: 719px;
     word-spacing: 0;
@@ -1604,14 +1657,19 @@
     text-transform: none;
     top: auto;
     direction: ltr;
+    -webkit-filter: none;
     filter: none;
     float: none;
     font-family: Arial, sans-serif;
+    -webkit-font-kerning: auto;
+    -moz-font-kerning: auto;
     font-kerning: auto;
     font-size: 12px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
+    -webkit-font-variant-ligatures: normal;
+    -moz-font-variant-ligatures: normal;
     font-variant-ligatures: normal;
     font-weight: 400;
     left: auto;
@@ -1626,15 +1684,19 @@
     overflow-wrap: normal;
     overflow-x: visible;
     overflow-y: visible;
+    -webkit-perspective: none;
     perspective: none
 }
 
 .media-browser-modal-window #FileSearchIsRegexLabel, .media-browser-modal-window input#FileSearchIsRegex, .uploader-modal #FileSearchIsRegexLabel, .uploader-modal input#FileSearchIsRegex {
+    -webkit-transition-delay: 0s;
     transition-delay: 0s;
+    -webkit-transition-duration: 0s;
     transition-duration: 0s;
+    -webkit-transition-property: all;
     transition-property: all;
+    -webkit-transition-timing-function: ease;
     transition-timing-function: ease;
-    unicode-bidi: normal;
     visibility: visible;
     white-space: normal;
     padding: 0;
@@ -1654,12 +1716,17 @@
     border-top: 0 none #444;
     border-right: 0 none #444;
     border-left: 0 none #444;
+    -webkit-animation-play-state: running;
     animation-play-state: running;
+    -webkit-animation-timing-function: ease;
     animation-timing-function: ease;
+    -webkit-backface-visibility: visible;
     backface-visibility: visible;
     background-blend-mode: normal;
     bottom: auto;
+    -webkit-box-shadow: none;
     box-shadow: none;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
     clear: none;
 }
@@ -1674,7 +1741,11 @@
     fill: #000;
 
     height: 16px;
+    -webkit-box-pack: start;
+    -webkit-justify-content: start;
+    -ms-flex-pack: start;
     justify-content: start;
+    -webkit-transform-style: flat;
     transform-style: flat;
     vertical-align: top;
     background: 0 0;
@@ -1735,30 +1806,40 @@
     overflow-x: visible;
     overflow-y: visible;
     direction: ltr;
+    -webkit-filter: none;
     filter: none;
     float: none;
     font-family: Arial, sans-serif;
+    -webkit-font-kerning: auto;
+    -moz-font-kerning: auto;
     font-kerning: auto;
     font-size: 12px;
     font-stretch: normal;
     font-style: normal;
     font-variant: normal;
+    -webkit-font-variant-ligatures: normal;
+    -moz-font-variant-ligatures: normal;
     font-variant-ligatures: normal;
     font-weight: 400;
     left: auto;
     letter-spacing: normal;
     line-height: normal;
+    -webkit-animation-play-state: running;
     animation-play-state: running;
+    -webkit-animation-timing-function: ease;
     animation-timing-function: ease;
+    -webkit-backface-visibility: visible;
     backface-visibility: visible;
     background-blend-mode: normal;
     bottom: auto;
+    -webkit-box-shadow: none;
     box-shadow: none;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
     clear: none;
 }
 
-.media-browser-modal-window .fileActions > ul li a, 
+.media-browser-modal-window .fileActions > ul li a,
 .uploader-modal .fileActions > ul li a {
     color: #444;
     color-interpolation: sRGB;
@@ -1768,10 +1849,12 @@
     display: inline;
     fill: #000;
     height: auto;
+    -webkit-box-pack: start;
+    -webkit-justify-content: start;
+    -ms-flex-pack: start;
     justify-content: start;
     outline: none 0;
     text-align: left;
-    unicode-bidi: normal;
     vertical-align: baseline;
     visibility: visible;
     white-space: normal;
@@ -1787,9 +1870,7 @@
 }
 
 .media-browser-modal-window a {
-    -moz-transition: none;
-    -ms-transition: none;
-    -o-transition: none;
+    -webkit-transition: none;
     transition: none
 }
 
@@ -1803,4 +1884,9 @@
 
 .media-browser-modal-window .filelist td {
     font-size: 14px
+}
+
+.media-browser-modal-window tr.data-row.files td.col_2 a,
+.media-browser-modal-window a {
+    cursor: pointer;
 }
