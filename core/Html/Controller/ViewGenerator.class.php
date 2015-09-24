@@ -536,6 +536,9 @@ class ViewGenerator {
         }
         $classMethods = get_class_methods($entity);
 
+        // this array is used to store all oneToMany associated entities, because we need to persist them for doctrine,
+        // but we can not persist them before the main entity, so we need to buffer them
+        $associatedEntityToPersist = array ();
         foreach ($associationMappings as $name => $value) {
             $methodName = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
 
@@ -589,6 +592,9 @@ class ViewGenerator {
                     // save the "n" associated class data to its class
                     $this->savePropertiesToClass($associatedEntity, $associatedEntityClassMetadata, $entityData);
                     $entity->{'add' . preg_replace('/_([a-z])/', '\1', ucfirst(substr($name, 0, -1)))}($associatedEntity);
+                    
+                    // buffer entity, so we can persit it later
+                    $associatedEntityToPersist[] = $associatedEntity;
                 }
             }
         }
@@ -616,12 +622,18 @@ class ViewGenerator {
             /* We try to store the prepared em. This may fail if (for example) we have a one to many association which
                can not be null but was not set in the post request. This cases should be caught here. */
             try{
+                // persist main entity. This must be done first, otherwise saving oneToManyAssociated entities won't work
                 \Env::get('em')->persist($entity);
+                // now we can persist the associated entities. We need to do this, because otherwise it will fail,
+                // if yaml does not contain a cascade option
+                foreach ($associatedEntityToPersist as $associatedEntity) {
+                    \Env::get('em')->persist($associatedEntity);
+                }
                 \Env::get('em')->flush();
                 $showSuccessMessage = true;
             } catch(\Cx\Core\Error\Model\Entity\ShinyException $e){
                 /* Display the message from the exception. If this message is empty, we output a general message,
-                   so the user konws what to do in every case */
+                   so the user knows what to do in every case */
                 if ($e->getMessage() != "") {
                     \Message::add($e->getMessage(), \Message::CLASS_ERROR);
                 } else {
