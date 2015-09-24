@@ -152,49 +152,49 @@ class JsonHtmlController extends    \Cx\Core\Core\Model\Entity\Controller
             $qb->setFirstResult($offset)
                ->setMaxResults($limit);
         }
-        $objResult = $qb->getQuery()->getResult();
+        $entities = $qb->getQuery()->getResult();
 
-        if ($objResult) {
+        if ($entities) {
             if (    ($oldPosition > $newPosition && empty($updatedOrder))
                 || (!empty($updatedOrder) && $sortOrder == 'DESC')
             ) {
-                krsort($objResult);
+                krsort($entities);
             }
             $i = 1;
-            $recordCount = count($objResult);
+            $recordCount = count($entities);
             $orderFieldSetMethodName = 'set'.ucfirst($sortField);
             $orderFieldGetMethodName = 'get'.ucfirst($sortField);
             $primaryGetMethodName    = 'get'.ucfirst($primaryKeyName);
-            foreach ($objResult as $result) {
+            foreach ($entities as $entity) {
                 if (!empty($updatedOrder)) {
                     //If the same 'order' field value is repeated,
                     //we need to update all the entries.
-                    $id = $result->$primaryGetMethodName();
+                    $id = $entity->$primaryGetMethodName();
                     if (in_array($id, $updatedOrder)) {
                         $order   = array_search($id, $updatedOrder);
                         $orderNo = $pagingPosition + $order + 1;
                         if ($sortOrder == 'DESC') {
                             $orderNo = $recordCount - ($pagingPosition + $order);
                         }
-                        $result->$orderFieldSetMethodName($orderNo);
+                        $entity->$orderFieldSetMethodName($orderNo);
                     } else {
-                        $result->$orderFieldSetMethodName($i);
+                        $entity->$orderFieldSetMethodName($i);
                     }
                 } else {
                     //If the same 'order' field value is not repeated,
                     //we need to update all the entries between dragged and dropped position
-                    $currentOrder = $result->$orderFieldGetMethodName();
+                    $currentOrder = $entity->$orderFieldGetMethodName();
                     if ($i == 1) {
-                        $firstResult = $result;
+                        $firstResult = $entity;
                         $sortOrder   = $currentOrder;
                         $i++;
                         continue;
-                    } else if ($i == count($objResult)) {
+                    } else if ($i == count($entities)) {
                         $firstResult->$orderFieldSetMethodName($currentOrder);
-                        $result->$orderFieldSetMethodName($sortOrder);
+                        $entity->$orderFieldSetMethodName($sortOrder);
                         continue;
                     }
-                    $result->$orderFieldSetMethodName($sortOrder);
+                    $entity->$orderFieldSetMethodName($sortOrder);
                     $sortOrder = $currentOrder;
                 }
                 $i++;
