@@ -144,12 +144,13 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                     }
                     array_push($this->arrFrameTeaserIds[$frameId], $objResult->fields['id']);
                 }
-                if (!empty($objResult->fields['redirect'])) {
-                    $extUrl = substr($objResult->fields['redirect'], 7);
-                    $tmp    = explode('/', $extUrl);
-                    $extUrl = "(".$tmp[0].")";
+                if (    !empty($objResult->fields['redirect'])
+                    && preg_match('/\[\[NODE_([a-zA-Z_0-9]*)\]\]/', $objResult->fields['redirect'])
+                ) {
+                    $extUrl = $objResult->fields['redirect'];
+                    \LinkGenerator::parseTemplate($extUrl);
                 } else {
-                    $extUrl = "";
+                    $extUrl = '';
                 }
                 if ($this->administrate == false) {
                     $objFWUser = \FWUser::getFWUserObject();

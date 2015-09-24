@@ -265,16 +265,16 @@ Endtag: &lt!-- END news_image_detail --&gt;";
 $_ARRAYLANG['TXT_NEWS_IMAGE_THUMBNAIL_ROW_DESCRIPTION'] = "Optional tag to display the teaser thumbnail image.<br />
 Starttag: &lt!-- BEGIN news_image_thumbnail --&gt;<br />
 Endtag: &lt!-- END news_image_thumbnail --&gt;";
-$_ARRAYLANG['TXT_NEWS_TEASER_LINK_ROW_DESCRIPTION'] = "Optional tag to display the teaser link url.<br />
+$_ARRAYLANG['TXT_NEWS_TEASER_LINK_ROW_DESCRIPTION'] = "Optional tag to display the news container url.<br />
 Starttag: &lt!-- BEGIN teaser_link --&gt;<br />
 Endtag: &lt!-- END teaser_link --&gt;";
-$_ARRAYLANG['TXT_NEWS_TEASER_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the teaser image.<br />
+$_ARRAYLANG['TXT_NEWS_TEASER_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the news container detail image.<br />
 Starttag: &lt!-- BEGIN news_teaser_image --&gt;<br />
 Endtag: &lt!-- END news_teaser_image --&gt;";
-$_ARRAYLANG['TXT_NEWS_TEASER_IMAGE_DETAIL_ROW_DESCRIPTION'] = "Optional tag to display the teaser image.<br />
+$_ARRAYLANG['TXT_NEWS_TEASER_IMAGE_DETAIL_ROW_DESCRIPTION'] = "Optional tag to display the news container detail image.<br />
 Starttag: &lt!-- BEGIN news_teaser_image_detail --&gt;<br />
 Endtag: &lt!-- END news_teaser_image_detail --&gt;";
-$_ARRAYLANG['TXT_NEWS_TEASER_IMAGE_THUMBNAIL_ROW_DESCRIPTION'] = "Optional tag to display the teaser thumbnail image.<br />
+$_ARRAYLANG['TXT_NEWS_TEASER_IMAGE_THUMBNAIL_ROW_DESCRIPTION'] = "Optional tag to display the news container thumbnail image.<br />
 Starttag: &lt!-- BEGIN news_teaser_image_thumbnail --&gt;<br />
 Endtag: &lt!-- END news_teaser_image_thumbnail --&gt;";
 $_ARRAYLANG['TXT_NEWS_ARCHIVE_IMAGE_DETAIL_ROW_DESCRIPTION'] = "Optional tag to display the teaser image.<br />
