@@ -64,7 +64,9 @@ cx.jQuery(function(jQuery) {
                     jQuery(ui.item).find('td:first-child').addClass('sorter-loading');
                 },
                 success: function(msg) {
-                    recordCount = msg.data.recordCount;
+                    if (msg.data.status == 'success') {
+                        recordCount = msg.data.recordCount;
+                    }
                 },
                 complete: function() {
                     updateOrder(sortTd, previousIndex, currentIndex, repeat, recordCount);
