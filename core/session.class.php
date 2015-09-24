@@ -273,7 +273,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                     } else {
                         if ($this->isDirty($lockKey)) {
                             if (is_callable($sessionValue)) {
-                                \DBG::dump('Function can not be stored to session, this is not supported');
+                                \DBG::dump('Function for session index '. $lockKey .' can not be stored, saving functions in session is not supported. Please use json instead');
                                 $this->releaseLock($lockKey);
                                 continue;
                             }
@@ -860,7 +860,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                     $serializedValue = '';
                 } else {
                     if (is_callable($value)) {
-                        \DBG::dump('Function can not be stored to session, this is not supported');
+                        \DBG::dump('Function for session index '. $key .' can not be stored, saving functions in session is not supported. Please use json instead');
                         continue;
                     }
                     $serializedValue = contrexx_input2db(serialize($value));
