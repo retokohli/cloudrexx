@@ -1797,7 +1797,18 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 }
 
 .uploader-modal .uploadControl {
-    display: none;
+    max-height:0;
+    overflow:hidden;
+    -webkit-transition: 0.6s max-height ease-out;
+    -moz-transition: 0.6s max-height ease-out;
+    -ms-transition: 0.6s max-height ease-out;
+    -o-transition: 0.6s max-height ease-out;
+    transition: 0.6s max-height ease-out;
+}
+
+.uploader-modal .uploadControl.open {
+    max-height:400px;
+    overflow:hidden;
 }
 
 .uploader-modal .file-list-wrapper {

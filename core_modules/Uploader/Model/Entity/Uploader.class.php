@@ -167,6 +167,16 @@ class Uploader extends EntityBase
      */
     function getXHtml($buttonName = "Upload")
     {
+        $inline = "";
+        if ($this->options['uploader-type'] == self::UPLOADER_TYPE_INLINE){
+            $this->addClass('uploader-button-hidden');
+            $inline = $this->getContainer();
+        }
+        return '<button ' . $this->getOptionsString() . ' disabled>' . $buttonName . '</button>' .$inline;
+    }
+
+
+    function getContainer(){
         $path = $this->cx->getCodeBaseCoreModulePath() . '/Uploader/View/Template/Backend/Uploader'.$this->options['uploader-type'].'.html';
         $template = new Sigma();
         $template->loadTemplateFile($path);
@@ -178,10 +188,7 @@ class Uploader extends EntityBase
                         . '/Uploader/View/Template/Backend/Uploader.html')
             )
         );
-        if ($this->options['uploader-type'] == self::UPLOADER_TYPE_INLINE){
-            $this->addClass('uploader-button-hidden');
-        }
-        return '<button ' . $this->getOptionsString() . ' disabled>' . $buttonName . '</button>' . $template->get();
+        return $template->get();
     }
 
     /**

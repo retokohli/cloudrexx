@@ -1,3 +1,178 @@
+.media-browser-modal-window, .media-browser-modal-window *, .uploader-modal, .uploader-modal * {
+    font-family: Arial, sans-serif
+}
+
+.media-browser-modal-window .icon-refresh:before, .media-browser-modal-window .icon-upload:before {
+    content: '';
+    display: none
+}
+
+.media-browser-modal-window .modal-header .close, .uploader-modal .modal-header .close {
+    float: right;
+    height: 58px;
+    left: auto;
+    letter-spacing: normal;
+    line-height: 32px;
+    margin: -15px -15px 0 0;
+    max-height: none;
+    max-width: none;
+    min-height: 0;
+    min-width: 0;
+    opacity: 1;
+    padding: 13px 21px;
+    text-align: center;
+    text-decoration: none;
+    text-indent: 0;
+    text-shadow: none;
+    text-transform: none;
+    top: auto;
+    width: 61px;
+    word-break: normal;
+    word-spacing: 0;
+    z-index: auto;
+    zoom: 1
+}
+
+.media-browser-modal-window .mediaBrowserNavigation > ul li a, .uploader-modal .mediaBrowserNavigation > ul li a {
+    cursor: pointer;
+    line-height: normal;
+    float: none;
+    font-weight: 400;
+    text-align: left
+}
+
+.media-browser-modal-window span.fileActions-text, .uploader-modal span.fileActions-text {
+    font-size: 12px;
+    vertical-align: top;
+    display: inline-block
+}
+
+.media-browser-modal-window table.adminlist, .uploader-modal table.adminlist {
+    bottom: 1px;
+    clear: both;
+    border-spacing: 0;
+    border-collapse: collapse;
+    background: #fff
+}
+
+.media-browser-modal-window table.adminlist th, .uploader-modal table.adminlist th {
+    background: #0071bc;
+    height: 28px;
+    line-height: 28px;
+    margin: 0;
+    padding: 0 10px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: none
+}
+
+.media-browser-modal-window table.adminlist th a, .uploader-modal table.adminlist th a {
+    color: #fff
+}
+
+.media-browser-modal-window table.adminlist th a:active, .media-browser-modal-window table.adminlist th a:focus, .media-browser-modal-window table.adminlist th a:hover, .uploader-modal table.adminlist th a:active, .uploader-modal table.adminlist th a:focus, .uploader-modal table.adminlist th a:hover {
+    color: #ececec
+}
+
+.media-browser-modal-window table.adminlist tr.row0, .media-browser-modal-window table.adminlist tr.row1, .media-browser-modal-window table.adminlist tr.row2, .uploader-modal table.adminlist tr.row0, .uploader-modal table.adminlist tr.row1, .uploader-modal table.adminlist tr.row2 {
+    background: #fff
+}
+
+.media-browser-modal-window table.adminlist tr.row0:hover, .media-browser-modal-window table.adminlist tr.row1:hover, .media-browser-modal-window table.adminlist tr.row2:hover, .uploader-modal table.adminlist tr.row0:hover, .uploader-modal table.adminlist tr.row1:hover, .uploader-modal table.adminlist tr.row2:hover {
+    background: #ffffd6
+}
+
+.media-browser-modal-window table.adminlist tr.row3, .uploader-modal table.adminlist tr.row3 {
+    background: #f5f5f5;
+    font-weight: 700
+}
+
+.media-browser-modal-window table.adminlist tr.highlighted, .media-browser-modal-window table.adminlist tr.highlighted:hover, .uploader-modal table.adminlist tr.highlighted, .uploader-modal table.adminlist tr.highlighted:hover {
+    background: #ffe7e7
+}
+
+.media-browser-modal-window table.adminlist tr.highlightedGreen, .uploader-modal table.adminlist tr.highlightedGreen {
+    background: #d8ffca
+}
+
+.media-browser-modal-window table.adminlist tr.rowWarn, .media-browser-modal-window table.adminlist tr.rowwarn, .uploader-modal table.adminlist tr.rowWarn, .uploader-modal table.adminlist tr.rowwarn {
+    background: #ffe7e7 !important
+}
+
+.media-browser-modal-window table.adminlist tr.rowInactive, .media-browser-modal-window table.adminlist tr.rowinactive, .uploader-modal table.adminlist tr.rowInactive, .uploader-modal table.adminlist tr.rowinactive {
+    background: #edefef !important
+}
+
+.media-browser-modal-window table.adminlist tr.active, .uploader-modal table.adminlist tr.active {
+    background: #ffffd6
+}
+
+.media-browser-modal-window table.adminlist td, .uploader-modal table.adminlist td {
+    height: 22px;
+    line-height: 22px;
+    padding: 3px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: #e5e5e5 1px solid
+}
+
+.media-browser-modal-window table.adminlist td a:active, .media-browser-modal-window table.adminlist td a:focus, .media-browser-modal-window table.adminlist td a:hover, .uploader-modal table.adminlist td a:active, .uploader-modal table.adminlist td a:focus, .uploader-modal table.adminlist td a:hover {
+    color: #0b4c7a
+}
+
+.media-browser-modal-window table.adminlist td.options, .uploader-modal table.adminlist td.options {
+    font-size: 10px;
+    background: #fff
+}
+
+.media-browser-modal-window table.adminlist td.col3, .uploader-modal table.adminlist td.col3 {
+    font-weight: 700
+}
+
+.media-browser-modal-window table.adminlist td.number, .uploader-modal table.adminlist td.number {
+    text-align: right
+}
+
+.media-browser-modal-window table.title, .uploader-modal table.title {
+    border-bottom: #009 1px solid;
+    background: #fff
+}
+
+.media-browser-modal-window table.subnavbar, .uploader-modal table.subnavbar {
+    border-bottom: #009 0 solid;
+    background: #dde4ff
+}
+
+.media-browser-modal-window table.reset, .media-browser-modal-window table.reset td, .media-browser-modal-window table.reset th, .media-browser-modal-window table.reset tr, .uploader-modal table.reset, .uploader-modal table.reset td, .uploader-modal table.reset th, .uploader-modal table.reset tr {
+    width: auto;
+    height: auto;
+    float: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: 0 0;
+    border-collapse: collapse;
+    border-spacing: 0
+}
+
+.media-browser-modal-window table.reset td, .uploader-modal table.reset td {
+    padding: 0 10px 0 0
+}
+
+.media-browser-modal-window table tr.reset:hover, .uploader-modal table tr.reset:hover {
+    background: 0 0 !important
+}
+
+.media-browser-modal-window table tr.reset td, .uploader-modal table tr.reset td {
+    padding: 0;
+    border: 0
+}
+
 .media-browser-modal-window .btn-group-vertical > .btn-group:after, .media-browser-modal-window .btn-toolbar:after, .media-browser-modal-window .clearfix:after, .media-browser-modal-window .modal-footer:after, .uploader-modal .btn-group-vertical > .btn-group:after, .uploader-modal .btn-toolbar:after, .uploader-modal .clearfix:after, .uploader-modal .modal-footer:after {
     clear: both
 }
@@ -5,7 +180,6 @@
 .media-browser-modal-window, .uploader-modal {
     font-family: sans-serif;
     -ms-text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%;
     margin: 0
 }
 
@@ -86,7 +260,6 @@
 }
 
 .media-browser-modal-window hr, .uploader-modal hr {
-    -webkit-box-sizing: content-box;
     -moz-box-sizing: content-box;
     box-sizing: content-box;
     height: 0
@@ -116,7 +289,6 @@
 }
 
 .media-browser-modal-window button, .media-browser-modal-window html input[type=button], .media-browser-modal-window input[type=reset], .media-browser-modal-window input[type=submit], .uploader-modal button, .uploader-modal html input[type=button], .uploader-modal input[type=reset], .uploader-modal input[type=submit] {
-    -webkit-appearance: button;
     cursor: pointer
 }
 
@@ -130,25 +302,14 @@
 }
 
 .media-browser-modal-window input[type=checkbox], .media-browser-modal-window input[type=radio], .uploader-modal input[type=checkbox], .uploader-modal input[type=radio] {
-    -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     padding: 0
 }
 
-.media-browser-modal-window input[type=number]::-webkit-inner-spin-button, .media-browser-modal-window input[type=number]::-webkit-outer-spin-button, .uploader-modal input[type=number]::-webkit-inner-spin-button, .uploader-modal input[type=number]::-webkit-outer-spin-button {
-    height: auto
-}
-
 .media-browser-modal-window input[type=search], .uploader-modal input[type=search] {
-    -webkit-appearance: textfield;
-    -webkit-box-sizing: content-box;
     -moz-box-sizing: content-box;
     box-sizing: content-box
-}
-
-.media-browser-modal-window input[type=search]::-webkit-search-cancel-button, .media-browser-modal-window input[type=search]::-webkit-search-decoration, .uploader-modal input[type=search]::-webkit-search-cancel-button, .uploader-modal input[type=search]::-webkit-search-decoration {
-    -webkit-appearance: none
 }
 
 .media-browser-modal-window fieldset, .uploader-modal fieldset {
@@ -175,14 +336,12 @@
 }
 
 .media-browser-modal-window *, .media-browser-modal-window :after, .media-browser-modal-window :before, .uploader-modal *, .uploader-modal :after, .uploader-modal :before {
-    -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box
 }
 
 .media-browser-modal-window html, .uploader-modal html {
-    font-size: 10px;
-    -webkit-tap-highlight-color: transparent
+    font-size: 10px
 }
 
 .media-browser-modal-window body, .uploader-modal body {
@@ -211,7 +370,6 @@
 
 .media-browser-modal-window a:focus, .uploader-modal a:focus {
     outline: dotted thin;
-    outline: -webkit-focus-ring-color auto 5px;
     outline-offset: -2px
 }
 
@@ -228,22 +386,18 @@
     bottom: 0;
     left: 0;
     z-index: 1050;
-    -webkit-overflow-scrolling: touch;
     outline: 0
 }
 
 .media-browser-modal-window .modal.fade.uploader-modal.modal-dialog, .uploader-modal .modal.fade.uploader-modal.modal-dialog {
-    -webkit-transform: translate(0, -25%);
     -ms-transform: translate(0, -25%);
     -o-transform: translate(0, -25%);
     transform: translate(0, -25%);
-    -webkit-transition: -webkit-transform .3s ease-out;
     -o-transition: -o-transform .3s ease-out;
     transition: transform .3s ease-out
 }
 
 .media-browser-modal-window .modal.in.uploader-modal.modal-dialog, .uploader-modal .modal.in.uploader-modal.modal-dialog {
-    -webkit-transform: translate(0, 0);
     -ms-transform: translate(0, 0);
     -o-transform: translate(0, 0);
     transform: translate(0, 0)
@@ -260,10 +414,6 @@
     position: relative;
     width: auto;
     margin: 10px
-}
-
-.media-browser-modal-window .modal-content, .uploader-modal .modal-content {
-    -webkit-background-clip: padding-box
 }
 
 .media-browser-modal-window .modal-header, .uploader-modal .modal-header {
@@ -285,7 +435,6 @@
     }
 
     .media-browser-modal-window .modal-content, .uploader-modal .modal-content {
-        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
         box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
     }
 
@@ -325,7 +474,6 @@
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
-    -webkit-transition: all .2s ease-in-out;
     -o-transition: all .2s ease-in-out;
     transition: all .2s ease-in-out;
     display: inline-block;
@@ -351,7 +499,6 @@
     margin: -1px;
     padding: 0;
     overflow: hidden;
-    clip: rect(0, 0, 0, 0);
     border: 0
 }
 
@@ -361,7 +508,6 @@
     height: auto;
     margin: 0;
     overflow: visible;
-    clip: auto
 }
 
 .media-browser-modal-window [role=button], .uploader-modal [role=button] {
@@ -374,7 +520,7 @@
     background-color: transparent
 }
 
-.media-browser-modal-window caption, .uploader-modal caption {
+.media-browser-modal-window.uploader-modal{
     padding-top: 8px;
     padding-bottom: 8px;
     color: #777;
@@ -403,7 +549,7 @@
     border-bottom: 2px solid #ddd
 }
 
-.media-browser-modal-window .table > caption + thead > tr:first-child > td, .media-browser-modal-window .table > caption + thead > tr:first-child > th, .media-browser-modal-window .table > colgroup + thead > tr:first-child > td, .media-browser-modal-window .table > colgroup + thead > tr:first-child > th, .media-browser-modal-window .table > thead:first-child > tr:first-child > td, .media-browser-modal-window .table > thead:first-child > tr:first-child > th, .uploader-modal .table > caption + thead > tr:first-child > td, .uploader-modal .table > caption + thead > tr:first-child > th, .uploader-modal .table > colgroup + thead > tr:first-child > td, .uploader-modal .table > colgroup + thead > tr:first-child > th, .uploader-modal .table > thead:first-child > tr:first-child > td, .uploader-modal .table > thead:first-child > tr:first-child > th {
+.media-browser-modal-window .table >+ thead > tr:first-child > td, .media-browser-modal-window .table >+ thead > tr:first-child > th, .media-browser-modal-window .table > colgroup + thead > tr:first-child > td, .media-browser-modal-window .table > colgroup + thead > tr:first-child > th, .media-browser-modal-window .table > thead:first-child > tr:first-child > td, .media-browser-modal-window .table > thead:first-child > tr:first-child > th, .uploader-modal .table >+ thead > tr:first-child > td, .uploader-modal .table >+ thead > tr:first-child > th, .uploader-modal .table > colgroup + thead > tr:first-child > td, .uploader-modal .table > colgroup + thead > tr:first-child > th, .uploader-modal .table > thead:first-child > tr:first-child > td, .uploader-modal .table > thead:first-child > tr:first-child > th {
     border-top: 0
 }
 
@@ -542,7 +688,6 @@
     font-size: 14px;
     line-height: 1.42857143;
     border-radius: 4px;
-    -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none
@@ -550,7 +695,6 @@
 
 .media-browser-modal-window .btn.active.focus, .media-browser-modal-window .btn.active:focus, .media-browser-modal-window .btn.focus, .media-browser-modal-window .btn:active.focus, .media-browser-modal-window .btn:active:focus, .media-browser-modal-window .btn:focus, .uploader-modal .btn.active.focus, .uploader-modal .btn.active:focus, .uploader-modal .btn.focus, .uploader-modal .btn:active.focus, .uploader-modal .btn:active:focus, .uploader-modal .btn:focus {
     outline: dotted thin;
-    outline: -webkit-focus-ring-color auto 5px;
     outline-offset: -2px
 }
 
@@ -562,7 +706,6 @@
 .media-browser-modal-window .btn.active, .media-browser-modal-window .btn:active, .uploader-modal .btn.active, .uploader-modal .btn:active {
     outline: 0;
     background-image: none;
-    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125)
 }
 
@@ -570,7 +713,6 @@
     cursor: not-allowed;
     opacity: .65;
     filter: alpha(opacity=65);
-    -webkit-box-shadow: none;
     box-shadow: none
 }
 
@@ -814,7 +956,6 @@
 
 .media-browser-modal-window .btn-link, .media-browser-modal-window .btn-link.active, .media-browser-modal-window .btn-link:active, .media-browser-modal-window .btn-link[disabled], .media-browser-modal-window fieldset[disabled] .btn-link, .uploader-modal .btn-link, .uploader-modal .btn-link.active, .uploader-modal .btn-link:active, .uploader-modal .btn-link[disabled], .uploader-modal fieldset[disabled] .btn-link {
     background-color: transparent;
-    -webkit-box-shadow: none;
     box-shadow: none
 }
 
@@ -937,12 +1078,10 @@
 }
 
 .media-browser-modal-window .btn-group.open .dropdown-toggle, .uploader-modal .btn-group.open .dropdown-toggle {
-    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125)
 }
 
 .media-browser-modal-window .btn-group.open .dropdown-toggle.btn-link, .uploader-modal .btn-group.open .dropdown-toggle.btn-link {
-    -webkit-box-shadow: none;
     box-shadow: none
 }
 
@@ -1019,7 +1158,6 @@
 
 .media-browser-modal-window [data-toggle=buttons] > .btn input[type=checkbox], .media-browser-modal-window [data-toggle=buttons] > .btn input[type=radio], .media-browser-modal-window [data-toggle=buttons] > .btn-group > .btn input[type=checkbox], .media-browser-modal-window [data-toggle=buttons] > .btn-group > .btn input[type=radio], .uploader-modal [data-toggle=buttons] > .btn input[type=checkbox], .uploader-modal [data-toggle=buttons] > .btn input[type=radio], .uploader-modal [data-toggle=buttons] > .btn-group > .btn input[type=checkbox], .uploader-modal [data-toggle=buttons] > .btn-group > .btn input[type=radio] {
     position: absolute;
-    clip: rect(0, 0, 0, 0);
     pointer-events: none
 }
 
@@ -1070,15 +1208,16 @@
     position: fixed
 }
 
-.media-browser-modal-window .btn, .uploader-modal .btn, body #content .uploader-modal .btn {
+.media-browser-modal-window .btn, .media-browser-modal-window button.btn, .uploader-modal .btn, body #content .uploader-modal .btn {
     border-radius: 0;
     background-image: none;
-    text-shadow: none
+    text-shadow: none;
+    font-size: 14px;
+    border: 1px solid #adadad !important;
 }
 
 .fade.uploader-modal {
     opacity: 0;
-    -webkit-transition: opacity .15s linear;
     transition: opacity .15s linear
 }
 
@@ -1100,13 +1239,11 @@
     bottom: 0;
     left: 0;
     z-index: 1050;
-    -webkit-overflow-scrolling: touch;
     outline: 0;
     font-size: 14px
 }
 
 .modal.in.uploader-modal .modal-dialog {
-    -webkit-transform: translate(0, 0);
     -ms-transform: translate(0, 0);
     transform: translate(0, 0)
 }
@@ -1126,7 +1263,6 @@
     background-color: #fff;
     border: 1px solid #999;
     border: none;
-    -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, .5);
     box-shadow: 0 5px 30px rgba(0, 0, 0, .5);
     background-clip: padding-box;
     outline: 0;
@@ -1161,7 +1297,8 @@
 
 .media-browser-modal-window .modal-title, .uploader-modal .modal-title {
     margin: 0;
-    line-height: 1.42857143
+    line-height: 1.42857143;
+    padding: 0
 }
 
 .media-browser-modal-window .modal-body, .uploader-modal .modal-body {
@@ -1200,7 +1337,6 @@
     }
 
     .media-browser-modal-window .modal-content, .uploader-modal .modal-content {
-        -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, .5);
         box-shadow: 0 5px 30px rgba(0, 0, 0, .5)
     }
 
@@ -1230,6 +1366,32 @@
     filter: alpha(opacity=20)
 }
 
+.media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li a,
+.media-browser-modal-window input#fileSearch,
+.uploader-modal .tabMediaBrowserBreadcrumbs > ul li a,
+.uploader-modal input#fileSearch {
+    float: none;
+    font-family: Arial, sans-serif;
+    font-kerning: auto;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-variant-ligatures: normal;
+    left: auto;
+    letter-spacing: normal;
+    max-height: none;
+    max-width: none;
+    min-height: 0;
+    position: static;
+    table-layout: auto;
+    text-anchor: start;
+    text-decoration: none;
+    text-indent: 0;
+    text-shadow: none;
+    text-transform: none;
+    touch-action: auto
+}
+
 .media-browser-modal-window .close:hover, .media-browser-modal-window .modal.uploader-modal.close:focus, .uploader-modal .close:hover, .uploader-modal .modal.uploader-modal.close:focus {
     color: #000;
     text-decoration: none;
@@ -1242,8 +1404,7 @@
     padding: 0;
     cursor: pointer;
     background: 0 0;
-    border: 0;
-    -webkit-appearance: none
+    border: 0
 }
 
 #content .media-browser-modal-window.modal .modal-header button.close[type=button], #content .uploader-modal.modal .modal-header button.close[type=button], .media-browser-modal-window.modal .modal-header button.close[type=button], .uploader-modal.modal .modal-header button.close[type=button] {
@@ -1259,7 +1420,9 @@
     right: 0;
     margin-right: -15px;
     transition: .2s background;
-    filter: none
+    filter: none;
+    background: 0 0;
+    font-weight: bold;
 }
 
 #content .media-browser-modal-window.modal .modal-header button.close[type=button]:hover, #content .uploader-modal.modal .modal-header button.close[type=button]:hover, .media-browser-modal-window.modal .modal-header button.close[type=button]:hover, .uploader-modal.modal .modal-header button.close[type=button]:hover {
@@ -1269,7 +1432,7 @@
 
 .media-browser-modal-window .modal-title, .uploader-modal .modal-title {
     font-size: 20px;
-    font-weight: lighter
+    font-weight: normal;
 }
 
 .media-browser-modal-window .modal-header, .uploader-modal .modal-header {
@@ -1277,11 +1440,367 @@
     color: #fff
 }
 
-.media-browser-modal-window .btn-small,
-#content .media-browser-modal-window .btn-small,
-.uploader-modal .btn-small ,
-#content .uploader-modal .btn-small
-{
+#content .media-browser-modal-window .btn-small, #content .uploader-modal .btn-small, .media-browser-modal-window .btn-small, .uploader-modal .btn-small {
     padding: 0 5px;
+    font-size: 12px
+}
+
+.media-browser-modal-window input#fileSearch, .uploader-modal input#fileSearch {
+    border-radius: 0;
+    border: 1px solid #ccc;
+    box-shadow: rgba(0, 0, 0, .0745098) 0 1px 1px 0 inset;
+    box-sizing: content-box;
+
+    color: #555;
+    color-interpolation: sRGB;
+    color-interpolation-filters: linearRGB;
+    color-rendering: auto;
+    cursor: auto;
+    direction: ltr;
+    display: inline-block;
+    fill: #000;
+
+    filter: none;
+    
+    font-size: 14px;
+    font-weight: 400;
+    height: 16px;
+    justify-content: start;
+    line-height: normal;
+    list-style: disc;
+    margin: 20px 0 0;
+    min-width: 0;
+    opacity: 1;
+    overflow-y: visible;
+    padding: 6px 12px;
+    right: auto;
+    text-align: start;
+    text-rendering: auto;
+    top: auto;
+    transform: none;
+    transform-style: flat;
+    transition-delay: 0s, 0s;
+    transition-duration: .15s, .15s;
+    transition-property: border-color, box-shadow;
+    transition-timing-function: ease-in-out, ease-in-out;
+    unicode-bidi: normal;
+    vertical-align: baseline;
+    visibility: visible;
+    white-space: normal;
+    width: 169.75px;
+    word-break: normal;
+    word-spacing: 0;
+    z-index: auto;
+    zoom: 1
+}
+
+.media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul, .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li a, .uploader-modal .tabMediaBrowserBreadcrumbs > ul, .uploader-modal .tabMediaBrowserBreadcrumbs > ul li a {
+    vertical-align: baseline;
+    word-break: normal;
+    cursor: auto;
+    paint-order: fill
+    resize: none;
+    right: auto;
+    transition-delay: 0s;
+    transition-duration: 0s;
+    transition-property: all;
+    transition-timing-function: ease;
+    unicode-bidi: normal;
+    visibility: visible;
+    white-space: normal;
+    list-style: none
+}
+
+.media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li a, .media-browser-modal-window input#fileSearch, .uploader-modal .tabMediaBrowserBreadcrumbs > ul li a, .uploader-modal input#fileSearch {
+    border-collapse: separate;
+    border-image-outset: 0;
+    border-image-repeat: stretch;
+    border-image-slice: 100%;
+    border-image-source: none;
+    border-image-width: 1;
+    bottom: auto;
+    clear: none;
+}
+
+.media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul li a, .uploader-modal .tabMediaBrowserBreadcrumbs > ul li a {
+    animation-play-state: running;
+    animation-timing-function: ease;
+    backface-visibility: visible;
+    background-blend-mode: normal;
+    box-shadow: none;
+    box-sizing: border-box;
+
+    color: #7c7c7c;
+    color-interpolation: sRGB;
+    color-interpolation-filters: linearRGB;
+    color-rendering: auto;
+    direction: ltr;
+    display: inline;
+    fill: #000;
+
+    filter: none;
+    
     font-size: 12px;
+    font-weight: 700;
+    height: auto;
+    justify-content: start;
+    line-height: 8px;
+    min-width: 0;
+    object-position: 50% 50%;
+    opacity: 1;
+    
+    outline-offset: 0;
+    overflow-wrap: normal;
+    overflow-y: visible;
+    perspective: none;
+    perspective-origin: 0 0;
+    pointer-events: auto;
+    text-align: left;
+    text-rendering: auto;
+    top: auto;
+    transform: none;
+    transform-style: flat;
+    width: auto;
+    word-wrap: normal;
+    background: 0 0;
+    border-color: #7c7c7c;
+    border-radius: 0;
+    border-style: none;
+    border-width: 0;
+    margin: 0;
+    outline: #7c7c7c 0;
+    padding: 0
+}
+
+.media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul, .uploader-modal .tabMediaBrowserBreadcrumbs > ul {
+    color: #444;
+    color-interpolation: sRGB;
+    color-interpolation-filters: linearRGB;
+    color-rendering: auto;
+    display: block;
+    fill: #000;
+    height: 7px;
+    justify-content: start;
+    text-align: start;
+    transform-style: flat;
+    width: 719px;
+    word-spacing: 0;
+    z-index: auto;
+    zoom: 1;
+    background: 0 0;
+    margin: 12px 0;
+    outline: #444 0;
+    padding: 0 0 0 24px
+}
+
+.media-browser-modal-window #FileSearchIsRegexLabel, .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul, .uploader-modal #FileSearchIsRegexLabel, .uploader-modal .tabMediaBrowserBreadcrumbs > ul {
+    pointer-events: auto;
+    position: static;
+    table-layout: auto;
+    text-anchor: start;
+    text-decoration: none;
+    text-indent: 0;
+    text-shadow: none;
+    text-transform: none;
+    top: auto;
+    direction: ltr;
+    filter: none;
+    float: none;
+    font-family: Arial, sans-serif;
+    font-kerning: auto;
+    font-size: 12px;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-variant-ligatures: normal;
+    font-weight: 400;
+    left: auto;
+    letter-spacing: normal;
+    line-height: normal;
+    max-height: none;
+    max-width: none;
+    min-height: 0;
+    min-width: 0;
+    opacity: 1;
+    outline-offset: 0;
+    overflow-wrap: normal;
+    overflow-x: visible;
+    overflow-y: visible;
+    perspective: none
+}
+
+.media-browser-modal-window #FileSearchIsRegexLabel, .media-browser-modal-window input#FileSearchIsRegex, .uploader-modal #FileSearchIsRegexLabel, .uploader-modal input#FileSearchIsRegex {
+    transition-delay: 0s;
+    transition-duration: 0s;
+    transition-property: all;
+    transition-timing-function: ease;
+    unicode-bidi: normal;
+    visibility: visible;
+    white-space: normal;
+    padding: 0;
+    display: inline-block;
+    text-align: start;
+    list-style: disc
+}
+
+.media-browser-modal-window #FileSearchIsRegexLabel, .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul, .uploader-modal #FileSearchIsRegexLabel, .uploader-modal .tabMediaBrowserBreadcrumbs > ul {
+    border-image-outset: 0;
+    border-image-repeat: stretch;
+    border-image-slice: 100%;
+    border-image-source: none;
+    border-image-width: 1;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: 0 none #444;
+    border-right: 0 none #444;
+    border-left: 0 none #444;
+    animation-play-state: running;
+    animation-timing-function: ease;
+    backface-visibility: visible;
+    background-blend-mode: normal;
+    bottom: auto;
+    box-shadow: none;
+    box-sizing: border-box;
+    clear: none;
+}
+
+.media-browser-modal-window #FileSearchIsRegexLabel, .uploader-modal #FileSearchIsRegexLabel {
+
+    color: #444;
+    color-interpolation: sRGB;
+    color-interpolation-filters: linearRGB;
+    color-rendering: auto;
+    cursor: default;
+    fill: #000;
+
+    height: 16px;
+    justify-content: start;
+    transform-style: flat;
+    vertical-align: top;
+    background: 0 0;
+    margin: 29px 0 0 6px
+}
+
+.media-browser-modal-window input#FileSearchIsRegex, .uploader-modal input#FileSearchIsRegex {
+    border-image-outset: 0;
+    border-image-repeat: stretch;
+    border-image-slice: 100%;
+    border-image-source: none;
+    border-image-width: 1;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: 0 none #444;
+    border-right: 0 none #444;
+    border-left: 0 none #444;
+
+    color: #444;
+    color-interpolation: sRGB;
+    color-interpolation-filters: linearRGB;
+    color-rendering: auto;
+    cursor: auto;
+    fill: #000;
+
+    height: 13px;
+    vertical-align: baseline;
+    width: 13px;
+    word-break: normal;
+    word-spacing: 0;
+    word-wrap: normal;
+    z-index: auto;
+    zoom: 1;
+    background: 0 0;
+    margin: 0;
+    outline: #444 0
+}
+
+.media-browser-modal-window .fileActions > ul li a, .media-browser-modal-window input#FileSearchIsRegex, .uploader-modal .fileActions > ul li a, .uploader-modal input#FileSearchIsRegex {
+    table-layout: auto;
+    text-anchor: start;
+    text-decoration: none;
+    text-indent: 0;
+    text-shadow: none;
+    text-transform: none;
+    top: auto;
+    pointer-events: auto;
+    position: static;
+    resize: none;
+    right: auto;
+    max-height: none;
+    max-width: none;
+    min-height: 0;
+    min-width: 0;
+    opacity: 1;
+    outline-offset: 0;
+    overflow-wrap: normal;
+    overflow-x: visible;
+    overflow-y: visible;
+    direction: ltr;
+    filter: none;
+    float: none;
+    font-family: Arial, sans-serif;
+    font-kerning: auto;
+    font-size: 12px;
+    font-stretch: normal;
+    font-style: normal;
+    font-variant: normal;
+    font-variant-ligatures: normal;
+    font-weight: 400;
+    left: auto;
+    letter-spacing: normal;
+    line-height: normal;
+    animation-play-state: running;
+    animation-timing-function: ease;
+    backface-visibility: visible;
+    background-blend-mode: normal;
+    bottom: auto;
+    box-shadow: none;
+    box-sizing: border-box;
+    clear: none;
+}
+
+.media-browser-modal-window .fileActions > ul li a, 
+.uploader-modal .fileActions > ul li a {
+    color: #444;
+    color-interpolation: sRGB;
+    color-interpolation-filters: linearRGB;
+    color-rendering: auto;
+    cursor: pointer;
+    display: inline;
+    fill: #000;
+    height: auto;
+    justify-content: start;
+    outline: none 0;
+    text-align: left;
+    unicode-bidi: normal;
+    vertical-align: baseline;
+    visibility: visible;
+    white-space: normal;
+    width: auto;
+    word-break: normal;
+    word-spacing: 0;
+    z-index: auto;
+    zoom: 1;
+    background: 0 0;
+    list-style: none;
+    margin: 0;
+    padding: 0
+}
+
+.media-browser-modal-window a {
+    -moz-transition: none;
+    -ms-transition: none;
+    -o-transition: none;
+    transition: none
+}
+
+.media-browser-modal-window .mediaBrowserNavigation li {
+    margin: 0
+}
+
+.media-browser-modal-window .fileActions ul {
+    margin-top: 12px
+}
+
+.media-browser-modal-window .filelist td {
+    font-size: 14px
 }

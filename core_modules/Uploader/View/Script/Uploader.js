@@ -24,9 +24,9 @@
 
     jQuery(function () {
         jQuery('button.uploader-button').each(function () {
-            angular.bootstrap(jQuery(this).next()[0], ['Uploader']);
-            var scope = angular.element(jQuery(this).next()[0]).scope();
             var iAttrs = jQuery(this).data();
+            angular.bootstrap(jQuery("#uploader-modal-"+iAttrs.uploaderId)[0], ['Uploader']);
+            var scope = angular.element(jQuery("#uploader-modal-"+iAttrs.uploaderId)[0]).scope();
 
             if (!iAttrs.id) {
                 jQuery(this).data('id', iAttrs.uploaderId);
@@ -194,7 +194,7 @@
                 files = [];
                 $J('.upload-file').remove();
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .close-upload-modal').addClass('not-finished');
-                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .uploadControl').slideUp();
+                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .uploadControl').removeClass('open');
 
                 //Reset uploader settings
                 if (uploader.settings.max_file_count <= uploaderData.filesToUpload.length) {
@@ -265,7 +265,7 @@
                                         }
                                     }
                                     if (uploaderData.filesToUpload.length == 0) {
-                                        $J('#uploader-modal-' + iAttrs.uploaderId).find(' .uploadControl').slideUp();
+                                        $J('#uploader-modal-' + iAttrs.uploaderId).find(' .uploadControl').removeClass('open');
                                     }
                                 }
                             });
@@ -280,9 +280,13 @@
                         image.attr("src", preloader.getAsDataURL());
                     };
                     preloader.load(file.getSource());
+
+                    if (up.settings.max_file_count == 1){
+                        up.start();
+                    }
                 });
 
-                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .uploadControl').slideDown();
+                $J('#uploader-modal-' + iAttrs.uploaderId).find(' .uploadControl').addClass('open');
                 $J('#uploader-modal-' + iAttrs.uploaderId).find(' .start-upload-button').prop("disabled", false);
             });
 
