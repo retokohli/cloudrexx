@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * DefaultController
  *
- * @copyright   Comvation AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_pim
  */
 
@@ -15,9 +40,9 @@ namespace Cx\Modules\Pim\Controller;
  * 
  * DefaultController for displaying all the orders.
  *
- * @copyright   Comvation AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_pim
  */
 class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
@@ -80,17 +105,8 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         if (empty($products)) {
             $products = new \Cx\Modules\Pim\Model\Entity\Product();
         }
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($products, array(
-            'header'    => $_ARRAYLANG['TXT_MODULE_PIM_ACT_DEFAULT'],
-            'functions' => array(
-                'add'       => true,
-                'edit'      => true,
-                'delete'    => true,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-                )
-            ));
+        $options = $this->getController('Backend')->getAllViewGeneratorOptions();
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($products, $options);
         $this->template->setVariable('PRODUCTS_CONTENT', $view->render());
     }
 }

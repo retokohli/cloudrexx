@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lang
  */
 global $_ARRAYLANG;
@@ -181,7 +207,7 @@ $_ARRAYLANG['TXT_LICENSE'] = "License Management";
 $_ARRAYLANG['TXT_LICENSE_LICENSE'] = 'License';
 $_ARRAYLANG['TXT_LICENSE_UPDATED'] = 'The license was updated.';
 $_ARRAYLANG['TXT_LICENSE_SAVED'] = 'Settings saved successfully.';
-$_ARRAYLANG['TXT_LICENSE_NO_TEMPLATE'] = "Could not fetch template and none present. Please report to your system administrator or Contrexx support.";
+$_ARRAYLANG['TXT_LICENSE_NO_TEMPLATE'] = "Could not fetch template and none present. Please report to your system administrator or Cloudrexx support.";
 $_ARRAYLANG['TXT_LICENSE_OVERVIEW'] = "Overview";
 $_ARRAYLANG['TXT_LICENSE_STATE'] = "State";
 $_ARRAYLANG['TXT_LICENSE_EDITION'] = "Edition";
@@ -191,7 +217,7 @@ $_ARRAYLANG['TXT_LICENSE_VALID_TO'] = "Valid to";
 $_ARRAYLANG['TXT_LICENSE_CREATED_AT'] = "Created at";
 $_ARRAYLANG['TXT_INSTALLATION_ID'] = "Installation key";
 $_ARRAYLANG['TXT_LICENSE_KEY'] = "License key";
-$_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = "Enter here your license key to activate this Contrexx© installation.";
+$_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = "Enter here your license key to activate this Cloudrexx© installation.";
 $_ARRAYLANG['TXT_LICENSE_STATE_NOK'] = 'Invalid';
 $_ARRAYLANG['TXT_LICENSE_STATE_OK'] = 'Valid';
 $_ARRAYLANG['TXT_LICENSE_STATE_DEMO'] = 'Trial';
@@ -207,7 +233,7 @@ $_ARRAYLANG['TXT_WELCOME_MESSAGE'] = "Welcome";
 $_ARRAYLANG['TXT_ADMINISTSRATORS_ONLINE'] = "Administrators online";
 $_ARRAYLANG['TXT_LAST_LOGIN'] = "Last login";
 $_ARRAYLANG['TXT_LAST_LOGINS'] = "Last logins";
-$_ARRAYLANG['TXT_CONTREXX_NEWS'] = "Contrexx News";
+$_ARRAYLANG['TXT_CONTREXX_NEWS'] = "Cloudrexx News";
 $_ARRAYLANG['TXT_CREATING_AND_PUBLISHING'] = "Creating and publishing";
 $_ARRAYLANG['TXT_EVALUATE_AND_VIEW'] = "Evaluate and view";
 $_ARRAYLANG['TXT_MANAGE'] = "Manage";
@@ -810,7 +836,7 @@ $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auctions";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auctions";
 $_ARRAYLANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'] = "Unable to update the XML sitemap %s due it's write-protected!";
 $_ARRAYLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "The file %s can't be updated due it's write-protected! Please remove the write-protection for letting the system working properly.";
-$_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Contrexx specific directives!";
+$_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Cloudrexx specific directives!";
 $_ARRAYLANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'] = "This function depends on a system running on an Apache web server. As well does it require the Apache module mod_rewrite. The system was unable to determine if those requirements are fulfilled!";
 $_ARRAYLANG['TXT_DBM_ERROR_GETTING_TABLES_INFO'] = "Error: Could not get information about existing tables.";
 $_ARRAYLANG['TXT_DBM_CSV_FOLDER'] = "Folder: '%1\$s'";
@@ -846,7 +872,7 @@ $_ARRAYLANG['TXT_CORE_SETTINGS_ERROR_RETRIEVING'] = "Error while retrieving the 
 $_ARRAYLANG['TXT_CORE_SETTINGS_NONE_FOUND'] = "No settings found";
 $_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Primary User Group";
 $_ARRAYLANG['TXT_ECARD_MODULE_DESCRIPTION'] = "Digital Postcards";
-$_ARRAYLANG['TXT_CSRF_TITLE'] = "Contrexx security information";
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Cloudrexx security information";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = 'You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <a href="%1$s">save changes</a></li><li>after clicking a link inside an e-mail message or outside the administration interface, click <a href="%2$s">discard changes</a></li></ul>';
 $_ARRAYLANG['TXT_CSRF_ABORT'] = "discard changes";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "save changes";
@@ -925,7 +951,7 @@ $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_REDIRECT_TARGET'] = "Wollen Sie das Zielfens
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_ROBOTS'] = "Wollen Sie den Meta Robot Status wirklich für alle Seiten (%s) setzen?";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_THEMES_ID'] = "Wollen Sie die Design Vorlage %s wirklich für alle Seiten (%s) übernehmen?";
 $_ARRAYLANG['TXT_CONNECT_ACCT_EXPIRED_OR_INACTIVE'] = "Ihr Account ist abgelaufen oder wurde deaktiviert. Bitte wenden Sie sich an Ihren Administrator.";
-$_ARRAYLANG['TXT_CONNECT_DISABLED'] = "Diese Seite erlaub keine Anmeldungen über ContrexxConnect.";
+$_ARRAYLANG['TXT_CONNECT_DISABLED'] = "Diese Seite erlaub keine Anmeldungen über CloudrexxConnect.";
 $_ARRAYLANG['TXT_CONNECT_IDENTITY_NOT_REGISTERED'] = "Ihre Identität wurde von Ihrem IdP bestätigt, ist aber mit keinem Account in unserem System verbunden.";
 $_ARRAYLANG['TXT_CONNECT_IDP_RETURNED'] = "Ihr IdP hat folgende Fehlermeldung zurückgegeben: ";
 $_ARRAYLANG['TXT_CONNECT_OPENID_LOG_IN_CANCELLED'] = "Anmeldung vom Benutzer abgebrochen.";
@@ -1099,7 +1125,7 @@ $_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
 $_ARRAYLANG['TXT_ELEARNING'] = "e-Learning";
 $_ARRAYLANG['TXT_ELEARNING_ADMINISTRATION'] = "e-Learning Administration";
 $_ARRAYLANG['TXT_ELEARNING_MODULE_DESCRIPTION'] = "e-Learning";
-$_ARRAYLANG['TXT_ENABLE_CONNECT'] = "Logins über ContrexxConnect erlauben.";
+$_ARRAYLANG['TXT_ENABLE_CONNECT'] = "Logins über CloudrexxConnect erlauben.";
 $_ARRAYLANG['TXT_LANGUAGE_ANY'] = "beliebig";
 $_ARRAYLANG['TXT_LANGUAGE_BACKEND'] = "Backend";
 $_ARRAYLANG['TXT_LANGUAGE_BACKEND_COLON'] = "Backend (admin.class.php):";
@@ -1326,6 +1352,13 @@ $_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL'] ='The entry has been removed s
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_CONFIRM'] ='Please confirm to remove the selected entry.';
 $_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'] ='Edit entry';
 $_ARRAYLANG['TXT_CORE_RECORD_DELETE_TITLE'] ='Delete entry';
+$_ARRAYLANG['TXT_CORE_RECORD_FILL_OUT_AT_LEAST_ONE_FILED'] = "Couldn't save entry, please fill out at least one field!";
+$_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'] = "Couldn't save entry, validation failed";
+$_ARRAYLANG['TXT_CORE_RECORD_ONE_TO_N_ASSOCCIATION'] = "These entries will be saved/deleted as soon as the main formular is submitted.";
+$_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'] = "Couldn't save entry, no such entry";
+$_ARRAYLANG['TXT_CORE_RECORD_FUNCTION_NOT_FOUND'] = "Could not save the '%s', because the function '%s' was not found. Please contact your System-Administrator";
+$_ARRAYLANG['TXT_CORE_RECORD_CLASS_NOT_FOUND'] = "Could not save the '%s', because the class was not found. Please contact your System-Administrator";
+$_ARRAYLANG['TXT_CORE_RECORD_UNKNOWN_ERROR'] = "Couldn't save entry, please check your input and try it again";
 $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Settings have been updated.';
 $_ARRAYLANG['TXT_ACTIVATED'] = "Activated";
 $_ARRAYLANG['TXT_DEACTIVATED'] = "Deactivated";

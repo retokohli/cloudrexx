@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Data Set
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 
@@ -13,9 +39,9 @@ namespace Cx\Core_Modules\Listing\Model\Entity;
 /**
  * Data Set Exception
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 class DataSetException extends \Exception {}
@@ -23,9 +49,9 @@ class DataSetException extends \Exception {}
 /**
  * Data Set
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_listing
  */
 class DataSet implements \Iterator {
@@ -33,7 +59,17 @@ class DataSet implements \Iterator {
     protected $data = array();
     protected $dataType = 'array';
 
-// TODO: DataSet must be extended, that it can handle objects
+    /**
+     * Identifier is used as a kind of description for the DataSet. For example: If you want to save an array with
+     * frontend users in a DataSet you can name the identifier something like 'frontendUser'
+     * This is used for the ViewGenerator, so you can have separated options for all DataSets
+     *
+     * @access protected
+     * @var $identifier
+     */
+    protected $identifier = '';
+
+    // TODO: DataSet must be extended, that it can handle objects
     public function __construct($data = array(), callable $converter = null) {
         if (!count($data)) {
             return;
@@ -234,6 +270,10 @@ class DataSet implements \Iterator {
     public function getDataType() {
         return $this->dataType;
     }
+
+    public function setDataType($dataType) {
+        $this->dataType = $dataType;
+    }
     
     public function entryExists($key) {
         return isset($this->data[$key]);
@@ -378,6 +418,26 @@ class DataSet implements \Iterator {
             }
             $this->data[$key] = array_merge($sortedData, $val);
         }
+    }
+
+    /**
+     * This function returns the identifier of the DataSet
+     *
+     * @access public
+     * @return string
+     */
+    public function getIdentifier(){
+        return $this->identifier;
+    }
+
+    /**
+     * This function sets the identifier of the DataSet
+     *
+     * @access public
+     * @param $identifier
+     */
+    public function setIdentifier($identifier){
+        $this->identifier = $identifier;
     }
 }
 

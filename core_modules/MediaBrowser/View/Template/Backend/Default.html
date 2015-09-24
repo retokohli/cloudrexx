@@ -2,57 +2,18 @@
 {MB_EXAMPLE_BUTTON}
 <h3>MediaBrowser mit allen Inhalten</h3>
 
-{MEDIABROWSER_CODE1}
-<p><code>{MEDIABROWSER_CODE1_RAW}</code></p>
-<p>"mb" zu beliebigen Element hinzufügen. Der MediaBrowser öffnet sich bei Klick auf das entsprechende Element. </p>
+<!-- BEGIN mediabrowser_demo -->
+<b>Verwendete Optionen</b>
+<p><code>{MEDIABROWSER_OPTIONS}</code></p>
+{MEDIABROWSER_CODE}
+<p><code>{MEDIABROWSER_CODE_RAW}</code></p>
 <hr />
-
-<h3>Attribute data-cx-mb-startview: | default: MediaBrowserList</h3>
-<button class="mediabrowser-button button" data-cx-mb="" data-cx-mb-startview="sitestructure">MediaBrowser</button>
-<p><code>&lt;button data-cx-mb="" data-cx-mb-startview=&quot;sitestructure&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
-<p>"mb-startview" definiert das StartView des MediaBrowsers: Verfügbar sind: 'sitestructure, 'uploader' sowie 'filebrowser' </p>
-<hr />
-
-
-<h3>Attribute data-cx-mb-views: | default: all</h3>
-<button class="mediabrowser-button button" data-cx-mb="" data-cx-mb-views="sitestructure,uploader">MediaBrowser</button>
-<p><code>&lt;button data-cx-mb="" data-cx-mb-views=&quot;sitestructure,uploader&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
-<p>
-    "mb-views" definiert welche Views angezeigt werden sollen. Verfügbar sind: 'sitestructure, 'uploader' sowie 'filebrowser'. Wird nur ein View angegeben, so wird die Navigation ausgeblendet.
-</p>
-<hr />
-
-
-<h3>Attribute data-cx-mb-startmediatype | default: files</h3>
-<button class="mediabrowser-button button" data-cx-mb="" data-cx-mb-startmediatype="gallery">MediaBrowser</button>
-<p><code>&lt;button data-cx-mb="" data-cx-mb-startmediatype=&quot;gallery&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
-<p>
-    "mb-startmediatype" definiert welche Dateien vorgeladen werden.
-</p>
-<hr />
-
-<h3>Attribute data-cx-mb-mediatypes | default: all</h3>
-<button class="mediabrowser-button button" data-cx-mb="" data-cx-mb-startmediatype="gallery" data-cx-mb-mediatypes="files, gallery">MediaBrowser</button>
-
-<p><code>&lt;button data-cx-mb="" data-cx-mb-startmediatype=&quot;gallery&quot; data-cx-mb-mediatypes=&quot;files, gallery&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
-<p>
-    "mb-mediatypes" definiert welche Sources angezeigt werden sollen. Wird der Parameter nicht angegeben, so werden alle angezeigt.
-</p>
-<hr />
-
-<h3>Attribute data-cx-mb-multipleselect | default: false</h3>
-<button class="mediabrowser-button button" data-cx-mb="" data-cx-mb-cb-js-modalclosed="gallery.fancyCallback" data-cx-mb-multipleselect="true" data-cx-mb-views="filebrowser" data-cx-Mb-Cb-Js-Modalclosed="callback">MediaBrowser</button>
-<p><code>&lt;button data-cx-mb="" data-cx-mb-multipleselect=&quot;true&quot; data-cx-mb-views=&quot;filebrowser&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
-<p>
-    "mb-multipleselect": können mehrere Dateien ausgewählt werden oder nur eine?
-</p>
-<hr />
-
-
-<h3>Attribute data-cx-mb-cb-js-modalopened | default: null</h3>
-<button class="mediabrowser-button button" data-cx-mb="" data-cx-mb-cb-js-modalopened="testFunction" data-cx-mb-cb-js-modalclosed="testFunction">MediaBrowser</button>
-
+<!-- END mediabrowser_demo -->
 <script>
+    function testfunction(){
+        alert('test');
+    }
+
     var gallery = {
         fancyCallback: function(callback){
 
@@ -109,12 +70,6 @@
 </script>
 
 <p>
-    <code>
-        &lt;button data-cx-mb=&quot;&quot; data-cx-mb-cb-js-modalopened=&quot;testFunction&quot; data-cx-mb-cb-js-modalclosed=&quot;testFunction&quot;&gt;MediaBrowser&lt;/button&gt;<br /> <br />
-        &lt;script&gt;<br/>    &nbsp;&nbsp;&nbsp;&nbsp;function testFunction(data) { alert('data: ' + data);  }<br/> &lt;/script&gt;
-    </code>
-</p>
-<p>
     Neben 'modalopened' gibt es folgende Auslöser:
 </p>
 <table>
@@ -136,13 +91,6 @@
     </tr>
 </table>
 
-<hr />
-
-
-<h3>Hinweise</h3>
-<ul>
-    <li>Anstelle des "data-cx-mb" kann auch direkt "cx-mb" verwendet werden, ist jedoch in einigen älteren Browsern invalid.</li>
-</ul>
 <hr />
 <style>
     .imageList img, .imageList2 img {

@@ -11,7 +11,8 @@
 namespace Cx\Core\Html\Controller;
 
 /**
- * Main controller for Html
+ * This class is used as controller for core html. It is also a SystemComponentController
+ * Its used to handle json request to ViewGenerator and FormGenerator
  * 
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@comvation.com>
@@ -27,7 +28,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
-        return array('JsonHtml');
+        return array('JsonHtml', 'ViewGeneratorJson');
     }
 
     /**
@@ -36,6 +37,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of ComponentController classes
      */
     public function getControllersAccessableByJson() {
-        return array('JsonHtmlController');
+        return array('JsonHtmlController', 'ViewGeneratorJsonController');
     }
 }

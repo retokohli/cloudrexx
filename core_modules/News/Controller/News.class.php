@@ -1,12 +1,38 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * News
  *
  * This module will get all the news pages
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  * @todo        Edit PHP DocBlocks!
  */
@@ -18,11 +44,11 @@ namespace Cx\Core_Modules\News\Controller;
  *
  * This module will get all the news pages
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
@@ -504,7 +530,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         if (!$newsCommentActive) {
             return;
         }
-
+        
         // abort if request is unauthorized
         if (   $this->arrSettings['news_comments_anonymous'] == '0'
             && !\FWUser::getFWUserObject()->objUser->login()
@@ -512,7 +538,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $this->_objTpl->hideBlock('news_add_comment');
             return;
         }
-        
+         
         $name = '';
         $title = '';
         $message = '';
@@ -532,6 +558,8 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
         }
 
+        \JS::activate('cx');
+       
         // create submit from
         if (\FWUser::getFWUserObject()->objUser->login()) {
             $this->_objTpl->hideBlock('news_add_comment_name');
@@ -2021,7 +2049,7 @@ RSS2JSCODE;
 
         /* Prevent comment flooding from same user:
            Either user is authenticated or had to validate a CAPTCHA.
-           In either way, a Contrexx session had been initialized,
+           In either way, a Cloudrexx session had been initialized,
            therefore we are able to use the $_SESSION to log this comment */
         $_SESSION['news']['comments'][$newsMessageId] = $date;
 
@@ -2160,14 +2188,15 @@ RSS2JSCODE;
                     $author = \FWUser::getParsedUserTitle($news['author_id'], $news['author']);
                     $publisher = \FWUser::getParsedUserTitle($news['publisher_id'], $news['publisher']);
                     $objResult = $objDatabase->Execute('SELECT count(`id`) AS `countComments` FROM `'.DBPREFIX.'module_news_comments` WHERE `newsid` = '.$newsid);
+                    
                     $this->_objTpl->setVariable(array(
                        'NEWS_ARCHIVE_ID'            => $newsid,
                        'NEWS_ARCHIVE_CSS'           => 'row'.($i % 2 + 1),
                        'NEWS_ARCHIVE_TEASER'        => nl2br($news['teaser_text']),
                        'NEWS_ARCHIVE_TITLE'         => contrexx_raw2xhtml($newstitle),
-                       'NEWS_ARCHIVE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$news['newsdate']),
-                       'NEWS_ARCHIVE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $news['newsdate']),
-                       'NEWS_ARCHIVE_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $news['newsdate']),
+                       'NEWS_ARCHIVE_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$news['date']),
+                       'NEWS_ARCHIVE_DATE'          => date(ASCMS_DATE_FORMAT_DATE, $news['date']),
+                       'NEWS_ARCHIVE_TIME'          => date(ASCMS_DATE_FORMAT_TIME, $news['date']),
                        'NEWS_ARCHIVE_LINK_TITLE'    => contrexx_raw2xhtml($newstitle),
                        'NEWS_ARCHIVE_LINK'          => $htmlLink,
                        'NEWS_ARCHIVE_LINK_URL'      => contrexx_raw2xhtml($newsUrl),

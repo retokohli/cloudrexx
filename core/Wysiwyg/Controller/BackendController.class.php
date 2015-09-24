@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Sebastian Brand <sebastian.brand@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  * @version     1.0.0
  */
@@ -14,9 +40,9 @@ namespace Cx\Core\Wysiwyg\Controller;
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Sebastian Brand <sebastian.brand@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_wysiwyg
  * @version     1.0.0
  */
@@ -231,15 +257,18 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     
     /**
      * This method defines the option to generate the backend view (list and form)
-     * 
-     * @global array $_ARRAYLANG Language data
-     * @param string $entityClassName class name of the used entity
-     * @param string $classIdentifier class identifier
-     * @return array formed as needed for the view generator
+     *
+     * @access public
+     * @global $_ARRAYLANG Language data
+     * @param $entityClassName contains the FQCN from entity
+     * @return array with options
      */
-    protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
+    protected function getViewGeneratorOptions($entityClassName) {
         global $_ARRAYLANG;
-        
+
+        $classNameParts = explode('\\', $entityClassName);
+        $classIdentifier = end($classNameParts);
+
         return array(
             'header' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier)],
             'entityName' => $_ARRAYLANG['TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier) . '_ENTITY'],

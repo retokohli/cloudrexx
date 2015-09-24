@@ -1,12 +1,38 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * This is the german language file for backend mode.
- * This file is included by Contrexx and all entries are set as placeholder
+ * This file is included by Cloudrexx and all entries are set as placeholder
  * values for backend ACT template by SystemComponentBackendController
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Tobias Schmoker <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  modules_MediaBrowser
  */
 
@@ -82,7 +108,12 @@ $_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_ORIGINAL_SIZE']  = "Originale Grösse";
 
 $_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER']       = "Datei hierher ziehen";
 $_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_OR']    = "oder";
-$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK'] = "Bild vom Computer auswählen";
+$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK'] = "Datei vom Computer auswählen";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_BUTTON']          = "Hochladen";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_WATING']          = "Die Dateien werden hochgeladen...";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FINISHED']        = "Alle Dateien wurden hochgeladen.";
+$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FINISHED_HINT']   = "Die hochgeladenen Dateien befinden sich nun in der Ablage.";
+$_ARRAYLANG['TXT_FILEBROWSER_LOGGED_OUT']             = "Sie sind nicht mehr eingeloggt. Bitte laden sie die Seite neu um sich einzuloggen.";
+$_ARRAYLANG['TXT_FILEBROWSER_ERROR_HAS_HAPPEND']      = "Ein Fehler ist aufgetreten.";
+$_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_UP']      = "Zurück";
+$_ARRAYLANG['TXT_FILEBROWSER_NO_FILES_IN_DIRECTORY']      = "Es sind keine Dateien in diesem Verzeichnis vorhanden.";

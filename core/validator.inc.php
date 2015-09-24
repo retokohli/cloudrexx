@@ -1,14 +1,39 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Validator
  *
  * Global request validator
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  * @todo        Isn't this supposed to be a class?
@@ -261,9 +286,21 @@ function contrexx_raw2db($raw)
         }
         return $arr;
     }
-    return addslashes($raw);
+    
+    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+    $db = $cx->getDb(); 
+    if (!isset($db)) {
+        throw new \Cx\Core\Model\DbException('Database not yet initialized!');
+    } 
+    $pdo = $db->getPdoConnection();
+    $rawQuoted = $pdo->quote($raw);
+    //addslashes did not add quotes, but pdo:quote does
+    //we remove the quotes so we do not have to change all the queries
+    if (preg_match('/^\'.*\'$/', $rawQuoted)) {
+        $rawQuoted = substr($rawQuoted, 1, -1);
+    }
+    return $rawQuoted;
 }
-
 
 /**
  * Encodes a raw string or array thereof for use with XML

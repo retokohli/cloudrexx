@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_pim
  */
 
@@ -13,9 +39,9 @@ namespace Cx\Modules\Pim\Controller;
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_pim
  */
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
@@ -71,5 +97,86 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         }
         
         $controller->parsePage($this->template);
+    }
+
+    /**
+     * This function returns the ViewGeneration options for a given entityClass
+     *
+     * @access protected
+     * @global $_ARRAYLANG
+     * @param $entityClassName contains the FQCN from entity
+     * @return array with options
+     */
+    protected function getViewGeneratorOptions($entityClassName) {
+        global $_ARRAYLANG;
+
+        $classNameParts = explode('\\', $entityClassName);
+        $classIdentifier = end($classNameParts);
+
+        $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
+        $header = '';
+        if (isset($_ARRAYLANG[$langVarName])) {
+            $header = $_ARRAYLANG[$langVarName];
+        }
+        switch ($entityClassName) {
+            case 'Cx\Modules\Pim\Model\Entity\Product':
+                return array(
+                    'header'    => $_ARRAYLANG['TXT_MODULE_PIM_ACT_DEFAULT'],
+                    'functions' => array(
+                        'add'       => true,
+                        'edit'      => true,
+                        'delete'    => true,
+                        'sorting'   => true,
+                        'paging'    => true,
+                        'filtering' => false,
+                    )
+                );
+                break;
+            case 'Cx\Modules\Pim\Model\Entity\Price':
+                return array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_PIM_ACT_PRICE'],
+                    'validate' => function ($formGenerator) {
+                        // this validation checks whether already a price for the currency and product exists
+                        $data = $formGenerator->getData()->toArray();
+
+                        $currency = $data['currency'];
+                        $product = $data['product'];
+                        $priceRepository = \Env::get('cx')->getDb()->getEntityManager()->getRepository('Cx\Modules\Pim\Model\Entity\Price');
+                        $prices =
+                            $priceRepository->createQueryBuilder('p')
+                                ->where('p.currency = ?1')->setParameter(1, $currency)
+                                ->andWhere('p.product = ?2')->setParameter(2, $product);
+                        $prices = $prices->getQuery()->getResult();
+                        if (!empty($data['editid']) && count($prices) > 1) {
+                            return false;
+                        }
+                        if (empty($data['editid']) && count($prices) > 0) {
+                            return false;
+                        }
+                        return true;
+                    },
+                    'functions' => array(
+                        'add' => true,
+                        'edit' => true,
+                        'delete' => true,
+                        'sorting' => true,
+                        'paging' => true,
+                        'filtering' => false,
+                    ),
+                );
+                break;
+            default:
+                return array(
+                    'header' => $header,
+                    'functions' => array(
+                        'add'       => true,
+                        'edit'      => true,
+                        'delete'    => true,
+                        'sorting'   => true,
+                        'paging'    => true,
+                        'filtering' => false,
+                    ),
+                );
+        }
     }
 }

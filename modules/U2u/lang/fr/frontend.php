@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_u2u
  */
 $_ARRAYLANG['TXT_SEND_PRIVATE_MESSAGE'] = "Envoyer un message privé (U2U) à un autre utilisateur";
@@ -41,7 +67,7 @@ $_ARRAYLANG['TXT_PRIVATE_NOTIFICATION_LINK'] = "Votre notification:";
 $_ARRAYLANG['PRIVATE_MESSAGE_DELETE_SUCCESS'] = "Messaeg supprimé";
 $_ARRAYLANG['PRIVATE_MESSAGE_NO_ENTRIES'] = "Aucun message";
 $_ARRAYLANG['TXT_U2U_PREVIEW_MESSAGE'] = "Aperçu du message";
-$_ARRAYLANG['TXT_U2U_PREVIEW_WEBSITE'] = "http://www.comvation.com";
+$_ARRAYLANG['TXT_U2U_PREVIEW_WEBSITE'] = "http://www.cloudrexx.com";
 $_ARRAYLANG['TXT_U2U_INSERT_MAIL_SUBJECT'] = " \\\"[USERNAME]\\\" vous a envoyé un message";
 $_ARRAYLANG['TXT_U2U_INSERT_MAIL_BODY'] = "  \\\"[USERNAME]\\\" vous a envoyé un message\n Veuillez suivre ce lien http://ss4ugroup.comvation.com/index.php?section=U2u&cmd=notification pour lire ce message";
 $_ARRAYLANG['TXT_U2U_ADDRESS_BOOK'] = "Carnet d'adresses";

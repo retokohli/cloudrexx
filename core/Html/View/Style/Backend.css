@@ -23,7 +23,7 @@ span.functions {
     white-space: nowrap;
 }
 
-a.delete {
+a.delete, a.remove {
     background-image: url(../Media/delete.gif);
     display: inline-block;
     height: 16px;
@@ -107,6 +107,9 @@ form.cx-ui > fieldset > .group > .controls {
     min-height: 22px;
     line-height: 22px;
     margin-left: 200px;
+}
+form.cx-ui > fieldset > .group > .controls > div {
+    display: inline-block;
 }
 
 form.cx-ui > fieldset > .actions {

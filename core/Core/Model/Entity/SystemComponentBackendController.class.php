@@ -1,12 +1,38 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Backend controller to create a default backend view.
  *
  * Create a subclass of this in order to create a normal backend view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */
@@ -18,9 +44,9 @@ namespace Cx\Core\Core\Model\Entity;
  *
  * Create a subclass of this in order to create a normal backend view
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_core
  * @version     3.1.0
  */
@@ -335,15 +361,53 @@ class SystemComponentBackendController extends Controller {
         }
         $view = new \Cx\Core\Html\Controller\ViewGenerator(
             $entityClassName,
-            $this->getViewGeneratorOptions($entityClassName, $classIdentifier)
+            $this->getAllViewGeneratorOptions($entityClassName)
         );
         $renderedContent = $view->render($isSingle);
         $template->setVariable('ENTITY_VIEW', $renderedContent);
     }
-    
-    protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
+
+    /**
+     * Returns all entities of this components, which can have an autogeneratet view
+     *
+     * @access protected
+     * @return array
+     */
+    protected function getEntityClassesWithView() {
+        return $this->getEntityClasses();
+    }
+
+    /**
+     * This function returns an array which contains the vgOptions array for all entities
+     *
+     * @access public
+     * @param $dataSetIdentifier
+     * @return array
+     */
+    public function getAllViewGeneratorOptions($dataSetIdentifier = '') {
+        $vgOptions = array();
+        foreach ($this->getEntityClassesWithView() as $entityClassName) {
+            $vgOptions[$entityClassName] = $this->getViewGeneratorOptions($entityClassName, $dataSetIdentifier);
+        }
+        $vgOptions[''] = $this->getViewGeneratorOptions('', '');
+        return $vgOptions;
+    }
+
+    /**
+     * This function returns the ViewGeneration options for a given entityClass
+     *
+     * @access protected
+     * @global $_ARRAYLANG
+     * @param $entityClassName contains the FQCN from entity
+     * @param $dataSetIdentifier if $entityClassName is DataSet, this is used for better partition
+     * @return array with options
+     */
+    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '') {
         global $_ARRAYLANG;
-        
+
+        $classNameParts = explode('\\', $entityClassName);
+        $classIdentifier = end($classNameParts);
+
         $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
         $header = '';
         if (isset($_ARRAYLANG[$langVarName])) {

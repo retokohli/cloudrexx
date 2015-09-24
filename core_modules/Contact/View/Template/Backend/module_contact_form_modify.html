@@ -860,7 +860,7 @@
                         <tr id="formField_{FORM_FIELD_ID}" class="formField {ROW_CLASS_NAME}" valign="center">
                             <td><div class="sort-handle"><input type="hidden" name="contactFormFieldEditType[{FORM_FIELD_ID}]" value="{FORM_FIELD_TYPE}" id="form_field_type_{FORM_FIELD_ID}" /></div></td>
                             <td class="formFieldId">{FORM_FIELD_ID}</td>
-                            <td>
+                            <td valign="top" style="padding:6px 5px 5px;">
                                 <!-- BEGIN formFieldName -->
                                 <div style="display: {LANG_NAME_DISPLAY};"  id="fieldNameTab_{FORM_FIELD_ID}_{LANG_ID}" class="fieldNameTabs_{FORM_FIELD_ID}">
                                     <input type="text" name="contactFormFieldName[{FORM_FIELD_ID}][{LANG_ID}]" value="{FORM_FIELD_NAME}" class="formFieldElementsLang" style="width: 200px;"/>
@@ -868,7 +868,7 @@
                                 <!-- END formFieldName -->
                             </td>
                             <td valign="top" style="padding:6px 5px 5px;">{CONTACT_FORM_FIELD_TYPE_MENU}</td>
-                            <td id="contactFormFieldAttributeBox_{FORM_FIELD_ID}" class="formValueView">
+                            <td valign="top" style="padding:6px 5px 5px;" id="contactFormFieldAttributeBox_{FORM_FIELD_ID}" class="formValueView">
                                 <!-- BEGIN formFieldValue -->
                                 {CONTACT_FORM_FIELD_VALUE}
                                 <!-- END formFieldValue -->
