@@ -2,7 +2,7 @@
 ##For Cloudrexx master
 These are the instructions for the installation/setup of a clone of GitHub branch or master  
 1. 
-   Execute `git clone https://github.com/Cloudrexx/cloudrexx.git <directory name>`
+   Execute `git clone https://github.com/Cloudrexx/cloudrexx.git <directory name>`  
 2. 
    Create a new mysql database (use **utf8_unicode_ci** as collation) and import the structure (**/installer/data/contrexx_dump_structure.sql**) and data (**/installer/data/contrexx_dump_data.sql**) into the newly created database (linux command to get a gzip with all the data for import via phpmyadmin:  
 *`cat contrexx_dump_structure.sql contrexx_dump_data.sql | gzip -c > dump.gzip`*  
