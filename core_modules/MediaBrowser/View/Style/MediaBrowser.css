@@ -1312,6 +1312,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     font-size: 31px;
     font-weight: normal;
     color: #aaa;
+    line-height: normal;
 }
 
 .uploader-modal .loadingText2, .media-browser-modal-window .loadingText2, .uploader-modal .dropzoneText2, .media-browser-modal-window .dropzoneText2 {
@@ -1704,7 +1705,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 .uploader-modal .drag-zone {
     color: #cfcfcf;
     text-align: center;
-    padding: 100px 30px;
+    padding: 0;
     margin: 10px 0;
     font-size: 20px;
     overflow: hidden;
