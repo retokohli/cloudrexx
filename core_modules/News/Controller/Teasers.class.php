@@ -147,8 +147,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 $extUrl = '';
                 if (!empty($objResult->fields['redirect'])) {
                     if (preg_match('/\[\[NODE_([a-zA-Z_0-9]*)\]\]/', $objResult->fields['redirect'])) {
-                        $extUrl = $objResult->fields['redirect'];
-                        \LinkGenerator::parseTemplate($extUrl);
+                        $extUrl = '(' . $objResult->fields['redirect'] . ')';
                     } else {
                         $extUrl = substr($objResult->fields['redirect'], 7);
                         $tmp    = explode('/', $extUrl);
