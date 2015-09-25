@@ -271,7 +271,13 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                     if (is_a($sessionValue, 'Cx\Core\Model\RecursiveArrayAccess')) {
                         self::updateToDb($sessionValue);
                     } else {
-                        if ($this->isDirty($lockKey)){
+                        if ($this->isDirty($lockKey)) {
+                            // is_callable() can return true for type array, so we need to check that it is not an array
+                            if (!is_array($sessionValue) && is_callable($sessionValue)) {
+                                \DBG::dump('Function for session index '. $lockKey .' can not be stored, saving functions in session is not supported. Please use json instead');
+                                $this->releaseLock($lockKey);
+                                continue;
+                            }
                             $serializedValue = contrexx_input2db(serialize($sessionValue));
 
                             $query = 'INSERT INTO
@@ -854,6 +860,11 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                 if (is_a($value, 'Cx\Core\Model\RecursiveArrayAccess')) {
                     $serializedValue = '';
                 } else {
+                    // is_callable() can return true for type array, so we need to check that it is not an array
+                    if (!is_array($value) && is_callable($value)) {
+                        \DBG::dump('Function for session index '. $key .' can not be stored, saving functions in session is not supported. Please use json instead');
+                        continue;
+                    }
                     $serializedValue = contrexx_input2db(serialize($value));
                 }
 
