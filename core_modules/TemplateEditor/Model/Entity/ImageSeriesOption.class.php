@@ -41,6 +41,8 @@ class ImageSeriesOption extends Option
     }
 
     /**
+     * Render the option field in the backend.
+     *
      * @param Sigma $template
      */
     public function renderOptionField($template)
@@ -48,7 +50,7 @@ class ImageSeriesOption extends Option
         global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            Cx::instanciate()->getCodeBaseCoreModulePath()
+            $this->cx->getCodeBaseCoreModulePath()
             . '/TemplateEditor/View/Template/Backend/ImagesSeriesOption.html'
         );
         $subTemplate->setGlobalVariable($_ARRAYLANG);
@@ -95,6 +97,8 @@ class ImageSeriesOption extends Option
     }
 
     /**
+     * Render the option in the frontend.
+     *
      * @param Sigma $template
      */
     public function renderTheme($template)
@@ -112,6 +116,8 @@ class ImageSeriesOption extends Option
     }
 
     /**
+     * Handle a change of the option.
+     *
      * @param array $data
      *
      * @return array
@@ -119,7 +125,6 @@ class ImageSeriesOption extends Option
      */
     public function handleChange($data)
     {
-
         global $_ARRAYLANG;
         if (empty($data['id']) && $data['id'] != 0) {
             throw new OptionValueNotValidException("Needs a id to work");
@@ -138,11 +143,11 @@ class ImageSeriesOption extends Option
         $url = parse_url($data['url']);
         if (!isset($url['host'])) {
             if (!file_exists(
-                Cx::instanciate()->getWebsitePath() . $url['path']
+                $this->cx->getWebsitePath() . $url['path']
             )
             ) {
                 if (!file_exists(
-                    Cx::instanciate()->getCodeBasePath() . $url['path']
+                    $this->cx->getCodeBasePath() . $url['path']
                 )
                 ) {
                     throw new OptionValueNotValidException(
@@ -174,6 +179,11 @@ class ImageSeriesOption extends Option
         $this->urls = $urls;
     }
 
+    /**
+     * Gets the current value of the option.
+     *
+     * @return array
+     */
     public function getValue()
     {
         return array(

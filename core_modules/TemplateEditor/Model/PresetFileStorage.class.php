@@ -41,7 +41,7 @@ class PresetFileStorage implements Storable
                 ->getFilePath(
                     $this->path . '/options/presets/' . $name . '.yml'
                 )
-        )
+            )
         ) {
             throw new PresetRepositoryException(
                 'Preset ' . $name . ' not found.'
@@ -57,9 +57,10 @@ class PresetFileStorage implements Storable
             try {
                 $yaml = new Parser();
                 return $yaml->parse($file);
-            }
-            catch (ParserException $e){
-                preg_match("/line (?P<line>[0-9]+)/",$e->getMessage(),$matches);
+            } catch (ParserException $e) {
+                preg_match(
+                    "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
+                );
                 throw new ParserException($e->getMessage(), $matches['line']);
             }
         } else {
@@ -76,8 +77,8 @@ class PresetFileStorage implements Storable
     public function persist($name, YamlSerializable $data)
     {
         mkdir($this->path);
-        mkdir($this->path.'/options/');
-        mkdir($this->path.'/options/presets');
+        mkdir($this->path . '/options/');
+        mkdir($this->path . '/options/presets');
         return file_put_contents(
             $this->path . '/options/presets/' . $name . '.yml',
             Yaml::dump($data->yamlSerialize(), 5)
@@ -90,14 +91,15 @@ class PresetFileStorage implements Storable
     public function getList()
     {
         $list = $this->getPresetList($this->path);
-        $list =
-            $this->mergePreset($list,
+        $list = $this->mergePreset(
+            $list,
             $this->getPresetList(
                 \Cx\Core\Core\Controller\Cx::instanciate()
                     ->getCodeBaseThemesPath() . '/' . array_reverse(
                     explode('/', $this->path)
                 )[0]
-            ));
+            )
+        );
         // Move Default to first place
         $key = array_search('Default', $list);
         $new_value = $list[$key];
@@ -106,9 +108,10 @@ class PresetFileStorage implements Storable
         return $list;
     }
 
-    public function getPresetList($path){
+    public function getPresetList($path)
+    {
         return array_filter(
-            array_filter(glob($path. '/options/presets/*'), 'is_file'),
+            array_filter(glob($path . '/options/presets/*'), 'is_file'),
             function (&$name) {
                 return $name = pathinfo($name, PATHINFO_FILENAME);
             }
@@ -120,7 +123,9 @@ class PresetFileStorage implements Storable
      */
     public function remove($name)
     {
-        \Cx\Lib\FileSystem\FileSystem::delete_file($this->path . '/options/presets/' . $name . '.yml');
+        \Cx\Lib\FileSystem\FileSystem::delete_file(
+            $this->path . '/options/presets/' . $name . '.yml'
+        );
     }
 
     /**
@@ -132,8 +137,8 @@ class PresetFileStorage implements Storable
     private function mergePreset($list, $getPresetList)
     {
         $finalArray = $getPresetList;
-        foreach ($list as $entry){
-            if (!in_array($entry, $getPresetList)){
+        foreach ($list as $entry) {
+            if (!in_array($entry, $getPresetList)) {
                 $finalArray[] = $entry;
             }
         }
@@ -141,6 +146,7 @@ class PresetFileStorage implements Storable
     }
 }
 
-class PresetRepositoryException extends \Exception {
+class PresetRepositoryException extends \Exception
+{
 
 }

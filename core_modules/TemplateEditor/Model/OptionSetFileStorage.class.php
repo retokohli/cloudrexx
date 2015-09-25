@@ -40,21 +40,27 @@ class OptionSetFileStorage implements Storable
     public function retrieve($name)
     {
         $file = file_get_contents(
-            \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath($this->path
-                . '/' . $name . '/options/options.yml')
+            \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
+                ->getFilePath(
+                    $this->path
+                    . '/' . $name . '/options/options.yml'
+                )
         );
         if ($file) {
             try {
                 $yaml = new Parser();
                 return $yaml->parse($file);
-            }
-            catch (ParserException $e){
-                preg_match("/line (?P<line>[0-9]+)/",$e->getMessage(),$matches);
+            } catch (ParserException $e) {
+                preg_match(
+                    "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
+                );
                 throw new ParserException($e->getMessage(), $matches['line']);
             }
         } else {
-            throw new ParserException("File".       $this->path
-                . '/' . $name . '/options/options.yml not found');
+            throw new ParserException(
+                "File" . $this->path
+                . '/' . $name . '/options/options.yml not found'
+            );
         }
     }
 
@@ -66,12 +72,13 @@ class OptionSetFileStorage implements Storable
      */
     public function persist($name, YamlSerializable $data)
     {
-        mkdir($this->path . '/' . $name );
-        mkdir($this->path . '/' . $name .'/options');
+        mkdir($this->path . '/' . $name);
+        mkdir($this->path . '/' . $name . '/options');
         return file_put_contents(
             $this->path
             . '/' . $name . '/options/options.yml',
-            Yaml::dump($data->yamlSerialize(), 5));
+            Yaml::dump($data->yamlSerialize(), 5)
+        );
     }
 
     /**
@@ -85,5 +92,7 @@ class OptionSetFileStorage implements Storable
     /**
      * @param $name
      */
-    public function remove($name){}
+    public function remove($name)
+    {
+    }
 }

@@ -28,19 +28,22 @@ class AreaOption extends Option
      * @param array  $translations
      * @param array  $data
      */
-    public function __construct($name, $translations, $data) {
+    public function __construct($name, $translations, $data)
+    {
         parent::__construct($name, $translations, $data);
         $this->active = $data['active'] == 'true';
     }
 
     /**
+     * Render the option field in the backend.
+     *
      * @param Sigma $template
      */
     public function renderOptionField($template)
     {
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            Cx::instanciate()->getCodeBaseCoreModulePath()
+            $this->cx->getCodeBaseCoreModulePath()
             . '/TemplateEditor/View/Template/Backend/AreaOption.html'
         );
         $subTemplate->setVariable(
@@ -56,6 +59,8 @@ class AreaOption extends Option
     }
 
     /**
+     * Render the option in the frontend.
+     *
      * @param Sigma $template
      */
     public function renderTheme($template)
@@ -67,12 +72,15 @@ class AreaOption extends Option
     }
 
     /**
+     * Handle a change of the option.
+     *
      * @param array $data
      *
      * @return array
      * @throws OptionValueNotValidException
      */
-    public function handleChange($data) {
+    public function handleChange($data)
+    {
         if ($data != 'true' && $data != 'false') {
             throw new OptionValueNotValidException('Should be true or false.');
         }
@@ -82,19 +90,30 @@ class AreaOption extends Option
 
 
     /**
+     * Returns if area is active
+     *
      * @return boolean
      */
-    public function isActive() {
+    public function isActive()
+    {
         return $this->active;
     }
 
     /**
+     *
+     *
      * @param boolean $active
      */
-    public function setActive($active) {
+    public function setActive($active)
+    {
         $this->active = $active;
     }
 
+    /**
+     * Gets the current value of the option.
+     *
+     * @return array
+     */
     public function getValue()
     {
         return array('active' => $this->active);

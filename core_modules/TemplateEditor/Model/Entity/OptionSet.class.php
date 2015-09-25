@@ -54,11 +54,11 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
      */
     public function __construct($theme, $data)
     {
-        $this->name  = $theme->getFoldername();
-        $this->data  = $data;
-        $this->theme = $theme;
-        $presetStorage =
-            new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
+        $this->name             = $theme->getFoldername();
+        $this->data             = $data;
+        $this->theme            = $theme;
+        $presetStorage
+                                = new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
             $this->cx->getWebsiteThemesPath() . '/' . $theme->getFoldername()
         );
         $this->presetRepository = new PresetRepository($presetStorage);
@@ -66,14 +66,14 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
         if (!isset($data['activePreset'])) {
             $data['activePreset'] = 'Default';
         }
-        $activePreset       = $data['activePreset'];
+        $activePreset = $data['activePreset'];
         try {
-            $this->activePreset = $this->presetRepository->getByName($activePreset);
-        }
-        catch (PresetRepositoryException $e){
+            $this->activePreset = $this->presetRepository->getByName(
+                $activePreset
+            );
+        } catch (PresetRepositoryException $e) {
             $this->activePreset = $this->presetRepository->getByName('Default');
-        }
-        catch (ParserException $e){
+        } catch (ParserException $e) {
             $this->activePreset = $this->presetRepository->getByName('Default');
         }
 
@@ -130,7 +130,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
      */
     public function yamlSerialize()
     {
-        $yaml = array('activePreset' => $this->activePreset->getName());
+        $yaml    = array('activePreset' => $this->activePreset->getName());
         $options = array();
         foreach ($this->options as $option) {
             $options[] = $option->yamlSerialize();
@@ -208,7 +208,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     {
         $preset = $this->tmpPreset;
         foreach ($this->options as $name => $option) {
-            $preset->setOption($name,  $option->getValue());
+            $preset->setOption($name, $option->getValue());
         }
         return $preset;
     }
@@ -218,7 +218,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
         $this->tmpPreset = $preset;
         /* Saving data so later on we can reuse it
            without worrying about older applied presets */
-        $data               = $this->data;
+        $data = $this->data;
         foreach ($data['options'] as &$emptyOption) {
             if ($presetOption = $preset->getOption($emptyOption['name'])) {
                 if (!is_array($emptyOption['specific'])) {
@@ -236,8 +236,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
             if ($optionReflection->getParentClass()->getName()
                 == 'Cx\Core_Modules\TemplateEditor\Model\Entity\Option'
             ) {
-                if (Cx::instanciate()->getMode() == Cx::MODE_BACKEND
-                    || ((Cx::instanciate()->getUser()->getFWUserObject(
+                if ($this->cx->getMode() == Cx::MODE_BACKEND
+                    || (($this->cx->getUser()->getFWUserObject(
                         )->objUser->login())
                         && isset($_GET['templateEditor']))
                 ) {

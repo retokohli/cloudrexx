@@ -22,7 +22,8 @@ class TestStorage implements Storable
      *
      * @return array
      */
-    public function retrieve($name) {
+    public function retrieve($name)
+    {
         return Yaml::load(
             file_get_contents(
                 Cx::instanciate()->getCodeBaseCoreModulePath()
@@ -37,8 +38,21 @@ class TestStorage implements Storable
      *
      * @return bool
      */
-    public function persist($name, YamlSerializable $data) {
+    public function persist($name, YamlSerializable $data)
+    {
         return true;
     }
 
+    /**
+     * @return array
+     */
+    public function getList()
+    {
+        return [];
+    }
+
+    /**
+     * @param $name
+     */
+    public function remove($name) {}
 }

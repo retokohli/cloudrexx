@@ -34,7 +34,8 @@ class ColorOption extends Option
      * @param array  $translations
      * @param array  $data
      */
-    public function __construct($name, $translations, $data) {
+    public function __construct($name, $translations, $data)
+    {
         parent::__construct($name, $translations, $data);
         $this->color = $data['color'];
         if (isset($data['choice'])) {
@@ -43,6 +44,8 @@ class ColorOption extends Option
     }
 
     /**
+     * Render the option field in the backend.
+     *
      * @param Sigma $template
      */
     public function renderOptionField($template)
@@ -50,7 +53,7 @@ class ColorOption extends Option
         global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            Cx::instanciate()->getCodeBaseCoreModulePath()
+            $this->cx->getCodeBaseCoreModulePath()
             . '/TemplateEditor/View/Template/Backend/ColorOption.html'
         );
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $this->color);
@@ -77,26 +80,35 @@ class ColorOption extends Option
     }
 
     /**
+     * Render the option in the frontend.
+     *
      * @param Sigma $template
      */
-    public function renderTheme($template) {
+    public function renderTheme($template)
+    {
         $template->setVariable(
             'TEMPLATE_EDITOR_' . strtoupper($this->name), $this->color
         );
-        for ($i = -255; $i < 255; $i++){
+        for ($i = -255; $i < 255; $i++) {
             $template->setVariable(
-                'TEMPLATE_EDITOR_' . strtoupper($this->name).'_'.(($i < 0) ? 'SUBTRACT' : 'ADD').'_'.abs($i), $this->adjustBrightness($this->color,$i)
+                'TEMPLATE_EDITOR_' . strtoupper($this->name) . '_' . (($i < 0)
+                    ? 'SUBTRACT' : 'ADD') . '_' . abs($i),
+                $this->adjustBrightness($this->color, $i)
             );
         }
 
     }
+
     /**
+     * Handle a change of the option.
+     *
      * @param array $data
      *
      * @return array
      * @throws OptionValueNotValidException
      */
-    public function handleChange($data) {
+    public function handleChange($data)
+    {
         global $_ARRAYLANG;
         if (!preg_match('/^(#)?[0-9a-f]+$/', $data)) {
             throw new OptionValueNotValidException(
@@ -108,10 +120,13 @@ class ColorOption extends Option
     }
 
     /**
-     * @return string
+     * Get the data in a serializable format.
+     *
+     * @return array
      */
-    public function yamlSerialize() {
-        $option             = parent::yamlSerialize();
+    public function yamlSerialize()
+    {
+        $option = parent::yamlSerialize();
         $option['specific'] = array(
             'choice' => $this->choice
         );
@@ -121,39 +136,50 @@ class ColorOption extends Option
     /**
      * @return mixed
      */
-    public function getColor() {
+    public function getColor()
+    {
         return $this->color;
     }
 
     /**
      * @param mixed $color
      */
-    public function setColor($color) {
+    public function setColor($color)
+    {
         $this->color = $color;
     }
 
+    /**
+     * Gets the current value of the option.
+     *
+     * @return array
+     */
     public function getValue()
     {
         return array('color' => $this->color);
     }
 
-    function adjustBrightness($hex, $steps) {
+    function adjustBrightness($hex, $steps)
+    {
         // Steps should be between -255 and 255. Negative = darker, positive = lighter
         $steps = max(-255, min(255, $steps));
         // Normalize into a six character long hex string
         $hex = str_replace('#', '', $hex);
         if (strlen($hex) == 3) {
-            $hex = str_repeat(substr($hex,0,1), 2).str_repeat(substr($hex,1,1), 2).str_repeat(substr($hex,2,1), 2);
+            $hex = str_repeat(substr($hex, 0, 1), 2) . str_repeat(
+                    substr($hex, 1, 1), 2
+                ) . str_repeat(substr($hex, 2, 1), 2);
         }
         // Split into three parts: R, G and B
         $color_parts = str_split($hex, 2);
-        $return = '#';
+        $return      = '#';
         foreach ($color_parts as $color) {
-            $color   = hexdec($color); // Convert to decimal
-            $color   = max(0,min(255,$color + $steps)); // Adjust color
-            $return .= str_pad(dechex($color), 2, '0', STR_PAD_LEFT); // Make two char hex code
+            $color = hexdec($color); // Convert to decimal
+            $color = max(0, min(255, $color + $steps)); // Adjust color
+            $return .= str_pad(
+                dechex($color), 2, '0', STR_PAD_LEFT
+            ); // Make two char hex code
         }
-
         return $return;
     }
 }

@@ -29,12 +29,15 @@ class ImageOption extends Option
      * @param array  $translations
      * @param array  $data
      */
-    public function __construct($name, $translations, $data) {
+    public function __construct($name, $translations, $data)
+    {
         parent::__construct($name, $translations, $data);
         $this->url = $data['url'];
     }
 
     /**
+     * Render the option field in the backend.
+     *
      * @param Sigma $template
      */
     public function renderOptionField($template)
@@ -42,7 +45,7 @@ class ImageOption extends Option
         global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            Cx::instanciate()->getCodeBaseCoreModulePath()
+            $this->cx->getCodeBaseCoreModulePath()
             . '/TemplateEditor/View/Template/Backend/ImageOption.html'
         );
         $subTemplate->setGlobalVariable($_ARRAYLANG);
@@ -71,6 +74,8 @@ class ImageOption extends Option
     }
 
     /**
+     * Render the option in the frontend.
+     *
      * @param Sigma $template
      */
     public function renderTheme($template)
@@ -82,21 +87,24 @@ class ImageOption extends Option
     }
 
     /**
+     * Handle a change of the option.
+     *
      * @param array $data
      *
      * @return array
      * @throws OptionValueNotValidException
      */
-    public function handleChange($data) {
+    public function handleChange($data)
+    {
         global $_ARRAYLANG;
         $url = parse_url($data);
         if (!isset($url['host'])) {
             if (!file_exists(
-                Cx::instanciate()->getWebsitePath() . $url['path']
+                $this->cx->getWebsitePath() . $url['path']
             )
             ) {
                 if (!file_exists(
-                    Cx::instanciate()->getCodeBasePath() . $url['path']
+                    $this->cx->getCodeBasePath() . $url['path']
                 )
                 ) {
                     throw new OptionValueNotValidException(
@@ -113,22 +121,32 @@ class ImageOption extends Option
     }
 
     /**
+     * Get the url
+     *
      * @return mixed
      */
-    public function getUrl() {
+    public function getUrl()
+    {
         return $this->url;
     }
 
     /**
+     * Set the url
+     *
      * @param mixed $url
      */
-    public function setUrl($url) {
+    public function setUrl($url)
+    {
         $this->url = $url;
     }
 
+    /**
+     * Gets the current value of the option.
+     *
+     * @return array
+     */
     public function getValue()
     {
-        return array(
-            'url' => $this->url);
+        return array('url' => $this->url);
     }
 }

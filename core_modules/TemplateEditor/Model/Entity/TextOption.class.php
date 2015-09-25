@@ -46,22 +46,26 @@ class TextOption extends Option
      * @param array  $translations
      * @param array  $data
      */
-    public function __construct($name, $translations, $data) {
+    public function __construct($name, $translations, $data)
+    {
         parent::__construct($name, $translations, $data);
-        $this->string = isset($data['textvalue']) ? $data['textvalue'] : '';
-        $this->regex  = isset($data['regex']) ? $data['regex'] : null;
-        $this->html   = isset($data['html']) ? $data['html'] : false;
-        $this->regexError   = isset($data['regexError']) ? $data['regexError'] : '';
+        $this->string     = isset($data['textvalue']) ? $data['textvalue'] : '';
+        $this->regex      = isset($data['regex']) ? $data['regex'] : null;
+        $this->html       = isset($data['html']) ? $data['html'] : false;
+        $this->regexError = isset($data['regexError']) ? $data['regexError']
+            : '';
     }
 
     /**
+     * Render the option field in the backend.
+     *
      * @param Sigma $template
      */
     public function renderOptionField($template)
     {
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            Cx::instanciate()->getCodeBaseCoreModulePath()
+            $this->cx->getCodeBaseCoreModulePath()
             . '/TemplateEditor/View/Template/Backend/TextOption.html'
         );
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $this->string);
@@ -75,6 +79,8 @@ class TextOption extends Option
     }
 
     /**
+     * Render the option in the frontend.
+     *
      * @param Sigma $template
      */
     public function renderTheme($template)
@@ -86,23 +92,25 @@ class TextOption extends Option
     }
 
     /**
+     * Handle a change of the option.
+     *
      * @param array $data
      *
      * @return array
      * @throws OptionValueNotValidException
      */
-    public function handleChange($data) {
+    public function handleChange($data)
+    {
         global $_ARRAYLANG, $_LANGID;
         if ($this->regex && !preg_match($this->regex, $data)) {
-            if (!empty($this->regexError[$_LANGID])){
+            if (!empty($this->regexError[$_LANGID])) {
                 throw new OptionValueNotValidException(
                     sprintf(
                         $this->regexError[$_LANGID],
                         $data
                     )
                 );
-            }
-            elseif (!empty($this->regexError[2])){
+            } elseif (!empty($this->regexError[2])) {
                 throw new OptionValueNotValidException(
                     sprintf(
                         $this->regexError[2],
@@ -122,9 +130,12 @@ class TextOption extends Option
     }
 
     /**
-     * @return string
+     * Get the data in a serializable format.
+     *
+     * @return array
      */
-    public function yamlSerialize() {
+    public function yamlSerialize()
+    {
         $option             = parent::yamlSerialize();
         $option['specific'] = array(
             'regex' => $this->regex,
@@ -137,47 +148,58 @@ class TextOption extends Option
     /**
      * @return string
      */
-    public function getString() {
+    public function getString()
+    {
         return $this->string;
     }
 
     /**
      * @param string $string
      */
-    public function setString($string) {
+    public function setString($string)
+    {
         $this->string = $string;
     }
 
     /**
      * @return String
      */
-    public function getRegex() {
+    public function getRegex()
+    {
         return $this->regex;
     }
 
     /**
      * @param String $regex
      */
-    public function setRegex($regex) {
+    public function setRegex($regex)
+    {
         $this->regex = $regex;
     }
 
     /**
      * @return boolean
      */
-    public function isHtml() {
+    public function isHtml()
+    {
         return $this->html;
     }
 
     /**
      * @param boolean $html
      */
-    public function setHtml($html) {
+    public function setHtml($html)
+    {
         $this->html = $html;
     }
 
+    /**
+     * Gets the current value of the option.
+     *
+     * @return array
+     */
     public function getValue()
     {
-        return array( 'textvalue' => $this->string);
+        return array('textvalue' => $this->string);
     }
 }
