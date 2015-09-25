@@ -96,6 +96,7 @@ class BackendController extends SystemComponentBackendController
                     $_GET['preset'], FILTER_SANITIZE_STRING
                 )
             ) {
+                // If the preset has changed remove all saved options
                 $_SESSION['TemplateEditor'][$this->theme->getId()] = array();
             }
             $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
@@ -115,6 +116,12 @@ class BackendController extends SystemComponentBackendController
             $this->themeOptions = $this->themeOptionRepository->get(
                 $this->theme
             );
+            // If user opens editor use active preset as active preset.
+            if (!isset($_SESSION['TemplateEditor']
+                [$this->theme->getId()]['activePreset']) || !isset($_GET['preset'])){
+                $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
+                    = $this->themeOptions->getActivePreset()->getName();
+            }
             try {
                 $this->themeOptions->applyPreset(
                     $this->presetRepository->getByName(
@@ -124,6 +131,7 @@ class BackendController extends SystemComponentBackendController
                     )
                 );
             } catch (PresetRepositoryException $e) {
+                // If something fails fallback to the default preset.
                 $_SESSION['TemplateEditor']
                     [$this->theme->getId()]['activePreset'] = 'Default';
                 $this->themeOptions->applyPreset(
@@ -245,8 +253,7 @@ class BackendController extends SystemComponentBackendController
                 $template->setVariable('TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE',  $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE']);
                 $template->parse('save_button');
             }
-        }
-        else {
+        } else {
             $template->setVariable(
                 array(
                     'TEMPLATEOPTION_NO_OPTIONS_TEXT' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NO_OPTIONS_HELP'],
