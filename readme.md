@@ -1,5 +1,7 @@
-#Installing a clone of Cloudrexx from GitHub
-##For Cloudrexx master
+# Cloudrexx #
+Cloudrexx is an open source PHP based web customer experience management system released under the GNU AGPL.
+
+## Installation ##
 These are the instructions for the installation/setup of a clone of GitHub branch or master  
 
 1. 
@@ -15,37 +17,23 @@ These are the instructions for the installation/setup of a clone of GitHub branc
 5. 
    Open section *Administration > Global Configuration* in backend (http://your-cloudrexx-git-clone/cadmin/) so that the system can initialize the base configuration  
 
-##Bash-Script for automatic installation
-**This code is not thoroughly tested, you should review it and make sure it fits your development environment's needs and limitations before executing.**  
+## Bugtracker ##
+Bugs are tracked on [bugs.cloudrexx.com](http://bugs.cloudrexx.com).  
 
-You may need to set your mysql-connection to utf8 first in /etc/mysql/my.cnf:  
-```
-[client]
-#...
-default-character-set = utf8
-```
-Instead of changing the mysql connection setting system-wide (my.cnf) you could also just pass --default-character-set=utf8 as an argument to mysql.  
-What follows is the script. Execute this from the folder where your cloudrexx checkout lives.  
+## Development and Contribution ##
+* [Development Documentation & Guidelines](http://wiki.contrexx.com/en/index.php?title=Portal:Development)
+* [Community Platform](https://www.cloudrexx.com/community)
+* [API Documentation](http://api.cloudrexx.com)
 
-```sh
-#!/bin/bash
+## License ##
+Cloudrexx  
+http://www.cloudrexx.com  
+Cloudrexx AG 2007-2015  
+ 
+According to our dual licensing model, this program can be used either under the terms of the GNU Affero General Public License, version 3, or under a proprietary license.  
 
-mysql_user=<your root>
-mysql_pw=<your password>
-vhost=<localhost if no vhost used>
-db=$(basename $(pwd)) #db and offset default to current directories name
+The texts of the GNU Affero General Public License with an additional permission and of our proprietary license can be found at and in the LICENSE file you have received along with this program.  
 
-sed -i "s/pkg.contrexxlabs.com/$vhost/g" installer/data/contrexx_dump_data.sql
-sed -i "s/pkg.contrexxlabs.com/$vhost/g" config/settings.php
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.  
 
-mysql -u$mysql_user -p$mysql_pw -e "create database $db collate utf8_unicode_ci";
-cat installer/data/contrexx_dump_structure.sql installer/data/contrexx_dump_data.sql | mysql -u$mysql_user -p$mysql_pw $db
-sed -i "/CONTREXX_INSTALLED/c\define(\'CONTREXX_INSTALLED\', true);" config/configuration.php
-sed -i "/\\\$_DBCONFIG\\['database'\\]/c\\\\\$_DBCONFIG\\['database'\\] = '$db';" config/configuration.php
-sed -i "/\\\$_DBCONFIG\\['user'\\]/c\\\\\$_DBCONFIG\\['user'\\] = '$mysql_user';" config/configuration.php
-sed -i "/\\\$_DBCONFIG\\['password'\\]/c\\\\\$_DBCONFIG\\['password'\\] = '$mysql_pw';" config/configuration.php
-sed -i "/\\\$_DBCONFIG\\['charset'\\]/c\\\\\$_DBCONFIG\\['charset'\\] = 'utf8';" config/configuration.php
-sed -i "/\\\$_PATHCONFIG\\['ascms_root'\\]/c\\\\\$_PATHCONFIG\\['ascms_root'\\] = '/home/srz/web/root';" config/configuration.php
-sed -i "/\\\$_PATHCONFIG\\['ascms_root_offset'\\]/c\\\\\$_PATHCONFIG\\['ascms_root_offset'\\] = '/$db';" config/configuration.php
-sed -i "/\\\$_CONFIG\\['coreCharacterEncoding'\\]/c\\\\\$_CONFIG\\['coreCharacterEncoding'\\] = 'UTF-8';" config/configuration.php
-```
+"Cloudrexx" is a registered trademark of Cloudrexx AG. The licensing of the program under the AGPLv3 does not imply a trademark license. Therefore any rights, title and interest in our trademarks remain entirely with us.  
