@@ -16,7 +16,7 @@ use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class JsonController implements JsonAdapter
+class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements JsonAdapter
 {
 
 
@@ -37,14 +37,13 @@ class JsonController implements JsonAdapter
      */
     public function getAccessableMethods()
     {
-        if (\Permission::checkAccess(47, 'static', true)) {
-            return array(
-                'updateOption', 'saveOptions', 'activatePreset', 'addPreset',
-                'removePreset', 'resetPreset'
-            );
-        } else {
+        if (!\Permission::checkAccess(47, 'static', true)) {
             return array();
         }
+        return array(
+            'updateOption', 'saveOptions', 'activatePreset', 'addPreset',
+            'removePreset', 'resetPreset'
+        );
     }
 
     /**
@@ -54,7 +53,7 @@ class JsonController implements JsonAdapter
      */
     public function getMessagesAsString()
     {
-        // TODO: Implement getMessagesAsString() method.
+        return "";
     }
 
     /**
@@ -64,7 +63,7 @@ class JsonController implements JsonAdapter
      */
     public function getDefaultPermissions()
     {
-        // TODO: Implement getDefaultPermissions() method.
+        return null;
     }
 
 
@@ -75,7 +74,7 @@ class JsonController implements JsonAdapter
      */
     public function saveOptions($params)
     {
-        $themeID         = isset($_GET['tid']) ? $_GET['tid'] : 1;
+        $themeID         = isset($params['get']['tid']) ? $params['get']['tid'] : 1;
         $themeRepository = new ThemeRepository();
         $theme           = $themeRepository->findById($themeID);
         if (!isset($_SESSION['TemplateEditor'])) {
@@ -85,7 +84,7 @@ class JsonController implements JsonAdapter
             $_SESSION['TemplateEditor'][$themeID] = array();
         }
         $fileStorage           = new OptionSetFileStorage(
-            Cx::instanciate()->getWebsiteThemesPath()
+            $this->cx->getWebsiteThemesPath()
         );
         $themeOptionRepository = new OptionSetRepository($fileStorage);
 
@@ -112,7 +111,7 @@ class JsonController implements JsonAdapter
         global $_ARRAYLANG;
 
         \Env::get('init')->loadLanguageData('TemplateEditor');
-        $themeID         = isset($_GET['tid']) ? $_GET['tid'] : 1;
+        $themeID         = isset($params['get']['tid']) ? $params['get']['tid'] : 1;
         $themeRepository = new ThemeRepository();
         $theme           = $themeRepository->findById($themeID);
         if (!isset($_SESSION['TemplateEditor'])) {
@@ -122,7 +121,7 @@ class JsonController implements JsonAdapter
             $_SESSION['TemplateEditor'][$themeID] = array();
         }
         $fileStorage           = new OptionSetFileStorage(
-            Cx::instanciate()->getWebsiteThemesPath()
+            $this->cx->getWebsiteThemesPath()
         );
         $themeOptionRepository = new OptionSetRepository($fileStorage);
 
@@ -156,6 +155,11 @@ class JsonController implements JsonAdapter
         return $data;
     }
 
+    /**
+     * Activate a preset
+     *
+     * @param $params
+     */
     public function activatePreset($params)
     {
         $presetName            = filter_var(
@@ -167,7 +171,7 @@ class JsonController implements JsonAdapter
         $themeRepository       = new ThemeRepository();
         $theme                 = $themeRepository->findById($themeID);
         $fileStorage           = new OptionSetFileStorage(
-            Cx::instanciate()->getWebsiteThemesPath()
+            $this->cx->getWebsiteThemesPath()
         );
         $themeOptionRepository = new OptionSetRepository($fileStorage);
 
@@ -181,6 +185,13 @@ class JsonController implements JsonAdapter
         $themeOptionRepository->save($themeOptions);
     }
 
+    /**
+     * Add a new preset
+     *
+     * @param $params
+     *
+     * @return array
+     */
     public function addPreset($params)
     {
         global $_ARRAYLANG;
@@ -203,7 +214,7 @@ class JsonController implements JsonAdapter
         $themeRepository       = new ThemeRepository();
         $theme                 = $themeRepository->findById($themeID);
         $fileStorage           = new OptionSetFileStorage(
-            Cx::instanciate()->getWebsiteThemesPath()
+            $this->cx->getWebsiteThemesPath()
         );
         $themeOptionRepository = new OptionSetRepository($fileStorage);
         $optionSet = $themeOptionRepository->get(
@@ -218,6 +229,11 @@ class JsonController implements JsonAdapter
         return array('preset' => $presetName);
     }
 
+    /**
+     * Remove a preset
+     *
+     * @param $params
+     */
     public function removePreset($params)
     {
         global $_ARRAYLANG;
@@ -238,7 +254,7 @@ class JsonController implements JsonAdapter
         $themeRepository       = new ThemeRepository();
         $theme                 = $themeRepository->findById($themeID);
         $fileStorage           = new OptionSetFileStorage(
-            Cx::instanciate()->getWebsiteThemesPath()
+            $this->cx->getWebsiteThemesPath()
         );
         $themeOptionRepository = new OptionSetRepository($fileStorage);
         $themeOptions = $themeOptionRepository->get(
@@ -256,6 +272,11 @@ class JsonController implements JsonAdapter
         $themeOptions->getPresetRepository()->remove($preset);
     }
 
+    /**
+     * Reset a preset
+     *
+     * @param $params
+     */
     public function resetPreset($params){
         $themeID               = isset($params['post']['tid']) ? filter_var(
             $params['post']['tid'], FILTER_VALIDATE_INT

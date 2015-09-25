@@ -22,6 +22,16 @@ class ComponentController extends SystemComponentController
 {
 
     /**
+     * Returns all Controller class names for this component (except this)
+     *
+     * Be sure to return all your controller classes if you add your own
+     * @return array List of Controller class names (without namespace)
+     */
+    public function getControllerClasses() {
+        return array('Backend','Json');
+    }
+
+    /**
      * Do something before main template gets parsed
      *
      * This creates the frontend placeholders for the preview and the normal view.
@@ -32,36 +42,37 @@ class ComponentController extends SystemComponentController
      * @param \Cx\Core\Html\Sigma $template The main template
      */
     public function preFinalize(\Cx\Core\Html\Sigma $template) {
-        if ($this->cx->getMode() == Cx::MODE_FRONTEND) {
-            try {
-                $fileStorage = new OptionSetFileStorage(
-                    $this->cx->getWebsiteThemesPath()
+        if ($this->cx->getMode() != Cx::MODE_FRONTEND) {
+            return;
+        }
+        try {
+            $fileStorage = new OptionSetFileStorage(
+                $this->cx->getWebsiteThemesPath()
+            );
+            $themeOptionRepository = new OptionSetRepository($fileStorage);
+            $themeRepository = new ThemeRepository();
+            $themeID = isset($_GET['preview']) ? $_GET['preview']
+                : null;
+            $theme = $themeID ? $themeRepository->findById(
+                (int)$themeID
+            ) : $themeRepository->getDefaultTheme();
+            $themeOptions = $themeOptionRepository->get(
+                $theme
+            );
+
+            if (isset($_GET['templateEditor'])) {
+                $themeOptions->applyPreset(
+                    $themeOptions->getPresetRepository()->getByName(
+                        $_SESSION['TemplateEditor'][$themeID]['activePreset']
+                    )
                 );
-                $themeOptionRepository = new OptionSetRepository($fileStorage);
-                $themeRepository = new ThemeRepository();
-                $themeID = isset($_GET['preview']) ? $_GET['preview']
-                    : null;
-                $theme = $themeID ? $themeRepository->findById(
-                    (int)$themeID
-                ) : $themeRepository->getDefaultTheme();
-                $themeOptions = $themeOptionRepository->get(
-                    $theme
-                );
-
-                if (isset($_GET['templateEditor'])) {
-                    $themeOptions->applyPreset(
-                        $themeOptions->getPresetRepository()->getByName(
-                            $_SESSION['TemplateEditor'][$themeID]['activePreset']
-                        )
-                    );
-                }
-                $themeOptions->renderTheme($template);
-            } catch (PresetRepositoryException $e) {
-
             }
-            catch (\Symfony\Component\Yaml\ParserException $e){
+            $themeOptions->renderTheme($template);
+        } catch (PresetRepositoryException $e) {
 
-            }
+        }
+        catch (\Symfony\Component\Yaml\ParserException $e){
+
         }
     }
 
