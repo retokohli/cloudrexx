@@ -632,9 +632,18 @@ class ViewGenerator {
 
                     // save the "n" associated class data to its class
                     $this->savePropertiesToClass($associatedEntity, $associatedEntityClassMetadata, $entityData);
+
+                    // Linking 1: link the associated entity to the main entity for doctrine
                     $entity->{'add' . preg_replace('/_([a-z])/', '\1', ucfirst(substr($name, 0, -1)))}($associatedEntity);
+
+                    // Linking 2: link the main entity to its associated entity. This should normally be done by
+                    // 'Linking 1' but because not all components have implemented this, we do it here by ourselves
+                    $method = 'set' . ucfirst($value["mappedBy"]);
+                    if (method_exists($associatedEntity, $method)) {
+                        $associatedEntity->{$method}($entity);
+                    }
                     
-                    // buffer entity, so we can persit it later
+                    // buffer entity, so we can persist it later
                     $associatedEntityToPersist[] = $associatedEntity;
                 }
             }
