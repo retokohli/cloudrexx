@@ -194,9 +194,35 @@ class FormGenerator {
      */
     public function getDataElement($name, $type, $length, $value, &$options, $entityId) {
         global $_ARRAYLANG, $_CORELANG;
-        if (isset($options['formfield']) && is_callable($options['formfield'])) {
+        if (isset($options['formfield'])) {
             $formFieldGenerator = $options['formfield'];
-            $formField = $formFieldGenerator($name, $type, $length, $value, $options);
+            $formField = '';
+            /* We use json to do the callback. The 'else if' is for backwards compatibility so you can declare
+             * the function directly without using json. This is not recommended and not working over session */
+            if (
+                is_array($formFieldGenerator) &&
+                isset($formFieldGenerator['adapter']) &&
+                isset($formFieldGenerator['method'])
+            ){
+                $json = new \Cx\Core\Json\JsonData();
+                $jsonResult = $json->data(
+                    $formFieldGenerator['adapter'],
+                    $formFieldGenerator['method'],
+                    array(
+                        'name' => $name,
+                        'type' => $type,
+                        'length' => $length,
+                        'value' => $value,
+                        'options' => $options,
+                    )
+                );
+                if ($jsonResult['status'] == 'success') {
+                    $formField = $jsonResult["data"];
+                }
+            } else if (is_callable($formFieldGenerator)){
+                $formField = $formFieldGenerator($name, $type, $length, $value, $options);
+            }
+
             if (is_a($formField, 'Cx\Core\Html\Model\Entity\HtmlElement')) {
                 return $formField;
             } else {

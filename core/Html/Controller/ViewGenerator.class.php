@@ -227,15 +227,34 @@ class ViewGenerator {
             if (
                 isset($this->options['fields']) &&
                 isset($this->options['fields'][$name]) &&
-                isset($this->options['fields'][$name]['storecallback']) &&
-                is_callable($this->options['fields'][$name]['storecallback'])
+                isset($this->options['fields'][$name]['storecallback'])
             ) {
                 $storecallback = $this->options['fields'][$name]['storecallback'];
                 $postedValue = null;
                 if (isset($entityData['field'])) {
                     $postedValue = contrexx_input2raw($entityData[$name]);
                 }
-                $entityData[$name] = $storecallback($postedValue);
+                /* We use json to do the storecallback. The 'else if' is for backwards compatibility so you can declare
+                 * the function directly without using json. This is not recommended and not working over session */
+                if (
+                    is_array($storecallback) &&
+                    isset($storecallback['adapter']) &&
+                    isset($storecallback['method'])
+                ) {
+                    $json = new \Cx\Core\Json\JsonData();
+                    $jsonResult = $json->data(
+                        $storecallback['adapter'],
+                        $storecallback['method'],
+                        array(
+                            'postedValue' => $postedValue,
+                        )
+                    );
+                    if ($jsonResult['status'] == 'success') {
+                        $entityData[$name] = $jsonResult["data"];
+                    }
+                } else if (is_callable($storecallback)) {
+                    $entityData[$name] = $storecallback($postedValue);
+                }
             }
             if (isset($entityData[$name]) && $name != $primaryKeyName) {
                 $fieldDefinition = $entityClassMetadata->getFieldMapping($name);
@@ -476,9 +495,31 @@ class ViewGenerator {
         // This should be moved to FormGenerator as soon as FormGenerator
         // gets the real entity instead of $renderArray
         $additionalContent = '';
-        if (isset($this->options['preRenderDetail'])) {
-            $callback = $this->options['preRenderDetail'];
-            $additionalContent = $callback($this, $this->formGenerator, $entityId);
+        $preRender = $this->options['preRenderDetail'];
+        /* We use json to do preRender the detail. The 'else if' is for backwards compatibility so you can declare
+         * the function directly without using json. This is not recommended and not working over session */
+        if (
+            isset($preRender) &&
+            is_array($preRender) &&
+            isset($preRender['adapter']) &&
+            isset($preRender['method'])
+        ) {
+            $json = new \Cx\Core\Json\JsonData();
+            $jsonResult = $json->data(
+                $preRender['adapter'],
+                $preRender['method'],
+                array(
+                    'viewGenerator' => $this,
+                    'formGenerator' => $this->formGenerator,
+                    'entityId'  => $entityId,
+                )
+            );
+            if ($jsonResult['status'] == 'success') {
+                $additionalContent .= $jsonResult["data"];
+            }
+        } else if (is_callable($preRender)) {
+            $additionalContent = $preRender($this, $this->formGenerator, $entityId);
+
         }
         return $this->formGenerator . $additionalContent;
     }
