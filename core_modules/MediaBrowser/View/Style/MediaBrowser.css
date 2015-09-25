@@ -1572,6 +1572,12 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     width: 100%;
     max-width: 100%;
     margin-bottom: 20px;
+    will-change: height, max-height;
+}
+
+.uploader-modal .file-list-wrapper,
+.uploader-modal .uploadControl {
+    will-change:height, max-height;
 }
 
 .uploader-modal .table > thead > tr > th, .media-browser-modal-window .table > thead > tr > th, .uploader-modal .table > tbody > tr > th, .media-browser-modal-window .table > tbody > tr > th, .uploader-modal .table > tfoot > tr > th, .media-browser-modal-window .table > tfoot > tr > th, .uploader-modal .table > thead > tr > td, .media-browser-modal-window .table > thead > tr > td, .uploader-modal .table > tbody > tr > td, .media-browser-modal-window .table > tbody > tr > td, .uploader-modal .table > tfoot > tr > td, .media-browser-modal-window .table > tfoot > tr > td {
@@ -1713,6 +1719,12 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     transition: .6s color, .6s border;
 }
 
+@media (min-width: 1280px) {
+    .uploader-modal .drag-zone {
+        padding: 60px 30px;
+    }
+}
+
 .uploader-modal .drag-zone.dragover {
     color: #4eaa09;
 }
@@ -1800,15 +1812,15 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 .uploader-modal .uploadControl {
     max-height:0;
     overflow:hidden;
-    -webkit-transition: 0.6s max-height ease-out;
-    -moz-transition: 0.6s max-height ease-out;
-    -ms-transition: 0.6s max-height ease-out;
-    -o-transition: 0.6s max-height ease-out;
-    transition: 0.6s max-height ease-out;
+    -webkit-transition: 0.6s max-height ease-out, 0.6s height ease-out;
+    -moz-transition: 0.6s max-height ease-out, 0.6s height ease-out;
+    -ms-transition: 0.6s max-height ease-out, 0.6s height ease-out;
+    -o-transition: 0.6s max-height ease-out, 0.6s height ease-out;
+    transition: 0.6s max-height ease-out, 0.6s height ease-out;
 }
 
 .uploader-modal .uploadControl.open {
-    max-height:400px;
+    max-height:2000px;
     overflow:hidden;
 }
 
