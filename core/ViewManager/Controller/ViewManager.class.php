@@ -825,7 +825,7 @@ CODE;
             "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
             "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
             "html","shtml","css","js","tpl","thumb","ico",
-            "eot", "ttf", "woff", "otf", "yml"// font files
+            "eot", "ttf", "woff", "otf", "yml", "yaml"
         );
 
         if (($files = $archive->extract(PCLZIP_OPT_PATH, $this->path . $theme->getFoldername(), PCLZIP_OPT_REMOVE_PATH, $themeDirectoryFromArchive, PCLZIP_OPT_BY_PREG, '/('.implode('|', $valid_exts).')$/')) != 0){
