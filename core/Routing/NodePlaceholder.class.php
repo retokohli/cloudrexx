@@ -1,13 +1,39 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * NodePlaceholder class according to
- * http://contrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
+ * http://www.cloudrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @access      public
  * @version     3.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 
@@ -16,24 +42,24 @@ namespace Cx\Core\Routing;
 /**
  * Exception that is thrown if a NodePlaceholder cannot be initialized
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @access      public
  * @version     3.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 class NodePlaceholderException extends \Exception {}
 
 /**
  * NodePlaceholder class according to
- * http://contrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
+ * http://www.cloudrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
  * 
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @access      public
  * @version     3.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_routing
  */
 class NodePlaceholder {
@@ -346,7 +372,7 @@ class NodePlaceholder {
     
     /**
      * Returns the placeholder in the format specified in
-     * http://contrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
+     * http://www.cloudrexx.com/wiki/index.php/Development_Content#Node-URL_Notation
      * @param boolean $forceNodeId (optional) Wheter to force usage of node ID or not
      * @param boolean $parsedStyle (optional) Wheter to return template parsed format or not
      * @return string String placeholder

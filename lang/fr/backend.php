@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lang
  */
 $_ARRAYLANG['TXT_INTERNAL'] = "interne";
@@ -175,7 +201,7 @@ $_ARRAYLANG['TXT_WELCOME_MESSAGE'] = "Bienvenue";
 $_ARRAYLANG['TXT_ADMINISTSRATORS_ONLINE'] = "Administrators online";
 $_ARRAYLANG['TXT_LAST_LOGIN'] = "Last login";
 $_ARRAYLANG['TXT_LAST_LOGINS'] = "Last logins";
-$_ARRAYLANG['TXT_CONTREXX_NEWS'] = "Contrexx News";
+$_ARRAYLANG['TXT_CONTREXX_NEWS'] = "Cloudrexx News";
 $_ARRAYLANG['TXT_CREATING_AND_PUBLISHING'] = "Creating and publishing";
 $_ARRAYLANG['TXT_EVALUATE_AND_VIEW'] = "Evaluate and view";
 $_ARRAYLANG['TXT_MANAGE'] = "Gérer";
@@ -772,7 +798,7 @@ $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Enchères";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Enchères";
 $_ARRAYLANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'] = "Impossible d'actualiser le plan du site XML %s, car il est protégé contre l'écriture!";
 $_ARRAYLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "Impossible de mettre à juor le fichier %s, car il est protégé contre l'écriture! Veuillez autoriser la mise à jour de ce fichier pour assurer le fonctionnement correct du système!";
-$_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Impossible de lire le fichier HtAccess %s car il contient des commandes invalides pour Contrexx!";
+$_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Impossible de lire le fichier HtAccess %s car il contient des commandes invalides pour Cloudrexx!";
 $_ARRAYLANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'] = "Cette fonctionalité n'est disponible que sur un serveur Web Apache mettant en oeuvre le module mod_rewrite. Le système n'a pas pu déterminer si cette condition est remplie!";
 $_ARRAYLANG['TXT_DBM_ERROR_GETTING_TABLES_INFO'] = "Impossible d'obtenir les données des tables";
 $_ARRAYLANG['TXT_DBM_CSV_FOLDER'] = "Dossier: '%1\$s'";
@@ -808,7 +834,7 @@ $_ARRAYLANG['TXT_CORE_SETTINGS_ERROR_RETRIEVING'] = "Fehler bei der Abfrage der 
 $_ARRAYLANG['TXT_CORE_SETTINGS_NONE_FOUND'] = "Pas trouver des paramètres";
 $_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Groupe primaire des utilisateurs";
 $_ARRAYLANG['TXT_ECARD_MODULE_DESCRIPTION'] = "Digital Postcards";
-$_ARRAYLANG['TXT_CSRF_TITLE'] = "Contrexx security information";
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Cloudrexx security information";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = 'You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <a href="%1$s">save changes</a></li><li>after clicking a link inside an e-mail message or outside the administration interface, click <a href="%2$s">discard changes</a></li></ul>';
 $_ARRAYLANG['TXT_CSRF_ABORT'] = "discard changes";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "changements enregirstré";
@@ -824,7 +850,7 @@ $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCRIPTION'] = 'Flexible and customizable medi
 $_ARRAYLANG['TXT_CHECKOUT_MODULE'] = "Online Payment";
 $_ARRAYLANG['TXT_CHECKOUT_MODULE_DESCRIPTION'] = "Easy solution to process transactions on Yellowpay.";
 $_ARRAYLANG['TXT_LICENSE_KEY'] = 'License key';
-$_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Enter here your license key to activate this Contrexx© installation.';
+$_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Enter here your license key to activate this Cloudrexx© installation.';
 
 $_ARRAYLANG['ADD_FILES'] = "Ajouter des fichiers";
 $_ARRAYLANG['ADD_INSTRUCTIONS'] = "Ajoutez les fichiers à la queue et cliquez 'start'.";
@@ -860,7 +886,7 @@ $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_REDIRECT_TARGET'] = "Wollen Sie das Zielfens
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_ROBOTS'] = "Wollen Sie den Meta Robot Status wirklich für alle Seiten (%s) setzen?";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_THEMES_ID'] = "Wollen Sie die Design Vorlage %s wirklich für alle Seiten (%s) übernehmen?";
 $_ARRAYLANG['TXT_CONNECT_ACCT_EXPIRED_OR_INACTIVE'] = "Ihr Account ist abgelaufen oder wurde deaktiviert. Bitte wenden Sie sich an Ihren Administrator.";
-$_ARRAYLANG['TXT_CONNECT_DISABLED'] = "Diese Seite erlaub keine Anmeldungen über ContrexxConnect.";
+$_ARRAYLANG['TXT_CONNECT_DISABLED'] = "Diese Seite erlaub keine Anmeldungen über CloudrexxConnect.";
 $_ARRAYLANG['TXT_CONNECT_IDENTITY_NOT_REGISTERED'] = "Ihre Identität wurde von Ihrem IdP bestätigt, ist aber mit keinem Account in unserem System verbunden.";
 $_ARRAYLANG['TXT_CONNECT_IDP_RETURNED'] = "Ihr IdP hat folgende Fehlermeldung zurückgegeben: ";
 $_ARRAYLANG['TXT_CONNECT_OPENID_LOG_IN_CANCELLED'] = "Anmeldung vom Benutzer abgebrochen.";
@@ -1072,7 +1098,7 @@ $_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
 $_ARRAYLANG['TXT_ELEARNING'] = "e-Learning";
 $_ARRAYLANG['TXT_ELEARNING_ADMINISTRATION'] = "e-Learning Administration";
 $_ARRAYLANG['TXT_ELEARNING_MODULE_DESCRIPTION'] = "e-Learning";
-$_ARRAYLANG['TXT_ENABLE_CONNECT'] = "Logins über ContrexxConnect erlauben.";
+$_ARRAYLANG['TXT_ENABLE_CONNECT'] = "Logins über CloudrexxConnect erlauben.";
 $_ARRAYLANG['TXT_LANGUAGE_ANY'] = "quelconque";
 $_ARRAYLANG['TXT_LANGUAGE_BACKEND'] = "Backend";
 $_ARRAYLANG['TXT_LANGUAGE_BACKEND_COLON'] = "Backend (admin.class.php):";

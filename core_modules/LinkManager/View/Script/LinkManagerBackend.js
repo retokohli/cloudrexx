@@ -1,9 +1,9 @@
 /**
  * LinkManagerBackend js for ajax loading and clicking functionality for changing link status(link solved or not)  
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
 
