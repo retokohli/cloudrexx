@@ -3,6 +3,7 @@ Cloudrexx is an open source PHP based web customer experience management system 
 
 ## Installation ##
 These are the instructions for the installation/setup of a clone of GitHub branch or master  
+**Important**: it is currently impossible to install Cloudrexx in a sub-directory. We are working on this issue. If you want to stay updated please visit the Bug-Ticket [2707](http://bugs.cloudrexx.com/cloudrexx/ticket/2707). Thank you for your understanding.   
 
 1. 
    Execute `git clone https://github.com/Cloudrexx/cloudrexx.git <directory name>`  
@@ -11,9 +12,10 @@ These are the instructions for the installation/setup of a clone of GitHub branc
 *`cat contrexx_dump_structure.sql contrexx_dump_data.sql | gzip -c > dump.gzip`*  
 3. 
    Set up the configuration file (**/config/configuration.php**)  
-    - set **`$_DBCONFIG['host']`**, **`$_DBCONFIG['database']`**, **`$_DBCONFIG['user']`** and **`$_DBCONFIG['password']`** to the appropriate values  
+    - set **`$_DBCONFIG['host']`**, **`$_DBCONFIG['database']`**, **`$_DBCONFIG['user']`** and **`$_DBCONFIG['password']`** to the appropriate values
+    - set the constant **`CONTREXX_INSTALLED`** to **true**
 4. 
-   In case you did setup Cloudrexx in a subdirectory of the webserver's *DocumentRoot*, you'll have do set the option **`RewriteBase`** in the file *.htaccess* accordingly  
+   ~~In case you did setup Cloudrexx in a subdirectory of the webserver's *DocumentRoot*, you'll have do set the option **`RewriteBase`** in the file *.htaccess* accordingly~~  
 5. 
    Open section *Administration > Global Configuration* in backend (http://your-cloudrexx-git-clone/cadmin/) so that the system can initialize the base configuration  
 
