@@ -37,10 +37,10 @@ cx.jQuery(function(jQuery) {
             }
 
             var that   = this,
-                sortTd = jQuery('table.sortable tbody > tr:not(:nth-child(1), :nth-child(2), :last-child) > td.sortBy'),
+                sortTd = jQuery('table.sortable tbody > tr:not(:nth-child(1), :last-child) > td.sortBy'),
                 updatedOrder  = jQuery('.sortable tbody').sortable('serialize'), recordCount,
-                currentIndex  = ui.item.index() - 1,
-                previousIndex = jQuery(ui.item).data('pIndex') - 1,
+                currentIndex  = ui.item.index(),
+                previousIndex = jQuery(ui.item).data('pIndex'),
                 repeat = isOrderNoRepeat(sortTd, previousIndex, currentIndex),
                 data   = 'sortOrder=' + sortOrder + '&curPosition=' + currentIndex
                        + '&prePosition=' + previousIndex

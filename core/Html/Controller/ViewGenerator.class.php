@@ -82,9 +82,6 @@ class ViewGenerator {
         $this->viewId = static::$increment++;
         try {
             
-            //initialize the row sorting functionality
-            $this->getSortingOption($object);
-            
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             \JS::registerCSS($cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
             $entityWithNS = $this->findEntityClass($object);
@@ -102,6 +99,10 @@ class ViewGenerator {
             if (empty($this->options)) {
                 $this->options = $options[''];
             }
+            
+            //initialize the row sorting functionality
+            $this->getSortingOption($object);
+            
             if (
                 (!isset($_POST['vg_increment_number']) || $_POST['vg_increment_number'] != $this->viewId) &&
                 (!isset($_GET['vg_increment_number']) || $_GET['vg_increment_number'] != $this->viewId)

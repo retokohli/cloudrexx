@@ -28,7 +28,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
-        return array('JsonHtml', 'ViewGeneratorJson');
+        return array('ViewGeneratorJson');
     }
 
     /**
@@ -37,6 +37,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of ComponentController classes
      */
     public function getControllersAccessableByJson() {
-        return array('JsonHtmlController', 'ViewGeneratorJsonController');
+        return array('ViewGeneratorJsonController');
     }
 }
