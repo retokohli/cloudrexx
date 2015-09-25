@@ -88,16 +88,16 @@ jQuery(function(){
                         className: "btn-success",
                         callback: function () {
                             var preset = jQuery('.new-preset-name').val();
+                            var presetPreset = jQuery('#preset-for-preset').val();
                             jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=addPreset", {
                                 tid: cx.variables.get('themeid','TemplateEditor'),
                                 preset: preset,
-                                presetpreset: jQuery('#preset-for-preset').val()
+                                presetpreset:presetPreset
                             }, function (response) {
                                 if (response.status == 'error'){
-                                    console.log(preset);
-                                    console.log(jQuery('.new-preset-name'));
                                     jQuery('.add-preset').trigger('click');
                                     jQuery('.new-preset-name').val(preset);
+                                    jQuery('#preset-for-preset').val(presetPreset);
                                     bootbox.alert(response.message);
                                     return;
                                 }
