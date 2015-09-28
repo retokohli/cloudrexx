@@ -1,0 +1,24 @@
+Cx\Modules\Order\Model\Entity\VatRate:
+  type: entity
+  repositoryClass: Cx\Modules\Order\Model\Repository\VatRateRepository
+  table: module_order_vat_rate
+
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+
+  fields:
+    rate:
+      type: integer
+    vatClass:
+      type: string
+      length: 45
+      column: vat_class
+
+  oneToMany: # inverse side
+    products:
+      targetEntity: Cx\Modules\Pim\Model\Entity\Product
+      mappedBy: vatRate
+  

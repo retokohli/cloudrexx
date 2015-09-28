@@ -26,7 +26,7 @@
  */
 
 /**
- * Class InvoiceItem
+ * Class VatRate
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
@@ -37,46 +37,43 @@
 namespace Cx\Modules\Order\Model\Entity;
 
 /**
- * Class InvoiceItem
+ * Class VatRate
  * 
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  module_order
  */
-class InvoiceItem extends \Cx\Model\Base\EntityBase {
+class VatRate extends \Cx\Model\Base\EntityBase {
+    
     /**
      *
      * @var integer $id
      */
     protected $id;
-    /**
-     *
-     * @var decimal $price 
-     */
-    protected $price;
-    /**
-     *
-     * @var string $description
-     */
-    protected $description;
-
-    /**
-     *
-     * @var integer $vatRate
-     */
-    protected $vatRate;
-
-    /**
-     * @var \Cx\Modules\Order\Model\Entity\Invoice $invoice 
-     */
-    protected $invoice;
     
     /**
-     * Constructor
+     *
+     * @var integer $rate
      */
+    protected $rate;
+    
+    /**
+     *
+     * @var string $vatClass
+     */
+    protected $vatClass;
+    
+    /**
+     *
+     * @var Cx\Modules\Pim\Model\Entity\Product $products
+     */
+    protected $products;
+    
     public function __construct() {
+        $this->products = new \Doctrine\Common\Collections\ArrayCollection();
     }
+    
     /**
      * Get the id
      * 
@@ -94,73 +91,61 @@ class InvoiceItem extends \Cx\Model\Base\EntityBase {
     public function setId($id) {
         $this->id = $id;
     }
+    
     /**
-     * Get the price
+     * set the rate
      * 
-     * @return decimal
+     * @param integer $rate
      */
-    public function getPrice() {
-        return $this->price;
-    }
-    /**
-     * Set the price
-     * 
-     * @param decimal $price
-     */
-    public function setPrice($price) {
-        $this->price = $price;
-    }
-    /**
-     * Get the description
-     * 
-     * @return string 
-     */
-    public function getDescription() {
-        return $this->description;
-    }
-    /**
-     * Set the description
-     * 
-     * @param decimal $description
-     */
-    public function setDescription($description) {
-        $this->description = $description;
+    public function setRate($rate) {
+        $this->rate = $rate;
     }
     
     /**
-     * Get the vatRate
+     * get the rate
      * 
-     * @return integer
+     * @return integer $rate
      */
-    public function getVatRate() {
-        return $this->vatRate;
+    public function getRate() {
+        return $this->rate;
     }
     
     /**
-     * Set the vatRate
+     * set the vat class
      * 
-     * @param integer $vatRate
+     * @param string $vatClass
      */
-    public function setVatRate($vatRate) {
-        $this->vatRate = $vatRate;
+    public function setVatClass($vatClass) {
+        $this->vatClass = $vatClass;
     }
     
     /**
-     * Get the invoice
+     * get the vat class
      * 
-     * @return \Cx\Modules\Order\Model\Entity\Invoice $invoice
+     * @return string $vatClass
      */
-    public function getInvoice() {
-        return $this->invoice;
+    public function getVatClass() {
+        return $this->vatClass;
     }
     
     /**
-     * Set the invoice
+     * Get the products
      * 
-     * @param \Cx\Modules\Order\Model\Entity\Invoice $invoice
+     * @return \Doctrine\Common\Collections\ArrayCollection $products
      */
-    public function setInvoice(Invoice $invoice) {
-        $this->invoice = $invoice;
-    
+    public function getProducts()
+    {
+        return $this->products;
     }
+    
+    /**
+     * Add the product
+     * 
+     * @param \Cx\Modules\Pim\Model\Entity\Product $product
+     */
+    public function addProduct(\Cx\Modules\Pim\Model\Entity\Product $product) {
+        $this->products[] = $product;
+        $product->setVatRate($this);
+    }
+    
 }

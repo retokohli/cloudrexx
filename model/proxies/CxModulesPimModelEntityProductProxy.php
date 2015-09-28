@@ -357,6 +357,18 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getPrices();
     }
 
+    public function getVatRate()
+    {
+        $this->_load();
+        return parent::getVatRate();
+    }
+
+    public function setVatRate(\Cx\Modules\Order\Model\Entity\VatRate $vatRate)
+    {
+        $this->_load();
+        return parent::setVatRate($vatRate);
+    }
+
     public function __toString()
     {
         $this->_load();
@@ -396,7 +408,7 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'name', 'entityClass', 'entityAttributes', 'renewable', 'expirable', 'upgradable', 'expirationUnit', 'expirationQuantifier', 'cancellationUnit', 'cancellationQuantifier', 'noteEntity', 'noteRenewal', 'noteUpgrade', 'noteExpiration', 'notePrice', 'subscriptions', 'prices', 'upgrades');
+        return array('__isInitialized__', 'id', 'name', 'entityClass', 'entityAttributes', 'renewable', 'expirable', 'upgradable', 'expirationUnit', 'expirationQuantifier', 'cancellationUnit', 'cancellationQuantifier', 'noteEntity', 'noteRenewal', 'noteUpgrade', 'noteExpiration', 'notePrice', 'subscriptions', 'prices', 'vatRate', 'upgrades');
     }
 
     public function __clone()

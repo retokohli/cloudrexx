@@ -14,6 +14,9 @@ Cx\Modules\Order\Model\Entity\InvoiceItem:
       type: string
     price:
       type: decimal
+    vatRate:
+      type: integer
+      column: vat_rate
   
   manyToOne: # owning side
     invoice:

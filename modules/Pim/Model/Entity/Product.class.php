@@ -82,6 +82,12 @@ class Product extends \Cx\Model\Base\EntityBase {
      */
     protected $upgrades;
 
+    /**
+     *
+     * @var Cx\Modules\Order\Model\Entity\VatRate $vatRate
+     */
+    protected $vatRate;
+
     const UNIT_DAY = 'day';
     const UNIT_MONTH = 'month';
     const UNIT_WEEK = 'week';
@@ -437,6 +443,26 @@ class Product extends \Cx\Model\Base\EntityBase {
         return $this->prices;
     }
 
+    /**
+     * Get the VatRate
+     * 
+     * @return Cx\Modules\Order\Model\Entity\VatRate $vatRate
+     */
+    public function getVatRate()
+    {
+        return $this->vatRate;
+    }
+    
+    /**
+     * Set the VatRate
+     * 
+     * @param Cx\Modules\Order\Model\Entity\VatRate $vatRate
+     */
+    public function setVatRate(\Cx\Modules\Order\Model\Entity\VatRate $vatRate)
+    {
+        $this->vatRate = $vatRate;
+    }
+    
     public function __toString()
     {
         return $this->getName();
