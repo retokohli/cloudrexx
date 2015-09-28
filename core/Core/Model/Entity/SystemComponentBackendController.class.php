@@ -368,7 +368,7 @@ class SystemComponentBackendController extends Controller {
     }
 
     /**
-     * Returns all entities of this components, which can have an autogeneratet view
+     * Returns all entities of this component which can have an auto-generated view
      *
      * @access protected
      * @return array

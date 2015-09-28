@@ -94,7 +94,8 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         $mappedBy = $params['get']['mappedBy'];
         $options = $_SESSION['vgOptions'][$params['get']['sessionKey']];
 
-        // add must always be true, otherwise we have no change to open the view, because it is not allowed
+        // if the option 'add' is not true, there is no possibility to open the modal, because we are not allowed to add
+        // an entry. That's why we set add to true here
         $options->recursiveOffsetSet(true, $entityClass.'/functions/add');
 
         // formButtons should not be set over ViewGenerator, because they are set over modal (js) and we do not want to

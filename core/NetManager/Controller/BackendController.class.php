@@ -82,7 +82,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     }
 
     /**
-     * Returns all entities of this components, which can have an autogeneratet view
+     * Returns all entities of this component which can have an auto-generated view
      *
      * @access protected
      * @return array

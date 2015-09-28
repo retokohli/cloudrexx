@@ -74,8 +74,8 @@ class ViewGenerator {
     /**
      *
      * @param mixed $object Array, instance of DataSet, instance of EntityBase, object
-     * @param $options is functions array 
-     * @throws ViewGeneratorException 
+     * @param array $options component options
+     * @throws ViewGeneratorException if there is any error in try catch statement
      */
     public function __construct($object, $options = array()) {
         $this->componentOptions = $options;
@@ -168,9 +168,9 @@ class ViewGenerator {
     /**
      * This function is used to find the namespace of a passed object
      *
-     * @param $object object of which the namespace is needed
-     * @return String with Namespace
      * @access protected
+     * @param object $object object of which the namespace is needed
+     * @return string namespace of the passed object
      */
     protected function findEntityClass($object)
     {
@@ -202,13 +202,13 @@ class ViewGenerator {
 
     /**
      * This function saves the data of an entity to its class.
-     * This only prepares the database store, but does not stores it in database
+     * This only prepares the database store, but does not store it in database
      * To store them in database use persist and flush from doctrine
      *
-     * @param $entity object of the class we want to save
-     * @param $entityClassMetadata Doctrine\ORM\Mapping\ClassMetadata
-     * @param $entityData array with data to save to class
      * @access protected
+     * @param object $entity object of the class we want to save
+     * @param Doctrine\ORM\Mapping\ClassMetadata $entityClassMetadata MetaData for the entity
+     * @param array $entityData array with data to save to class
      */
     protected function savePropertiesToClass($entity, $entityClassMetadata, $entityData = array())
     {
@@ -322,9 +322,9 @@ class ViewGenerator {
     /**
      * This function finds out what we want to render and then renders the form
      *
-     * @param $isSingle
+     * @param boolean $isSingle if we only render one entry
      * @access public
-     * @return string
+     * @return string rendered view
      * */
     public function render(&$isSingle = false) {
         global $_ARRAYLANG;
@@ -380,8 +380,8 @@ class ViewGenerator {
      * This function will render the form for a given entry by id. If id is null, an empty form will be loaded
      *
      * @access protected
-     * @param $entityId
-     * @return string
+     * @param int $entityId id of the entity
+     * @return string rendered view
      * */
     protected function renderFormForEntry($entityId) {
         global $_CORELANG;
@@ -525,8 +525,9 @@ class ViewGenerator {
     }
 
     /**
+     * This function will return the object of the ViewGenerator
      * @access public
-     * @return object
+     * @return object the object of ViewGenerator
      */
     public function getObject() {
         return $this->object;
@@ -535,9 +536,9 @@ class ViewGenerator {
     /**
      * This function saves an entity to the database
      *
-     * @param $entityWithNS class name including namespace
+     * @param string $entityWithNS class name including namespace
      * @access protected
-     * @global $_ARRAYLANG
+     * @global array $_ARRAYLANG array containing the language variables
      */
     protected function saveEntry($entityWithNS) {
         global $_ARRAYLANG;
@@ -709,9 +710,11 @@ class ViewGenerator {
     }
     
     /**
-     * @param $entityWithNS class name including namespace
+     * This function is used to delete an entry
+     *
+     * @param string $entityWithNS class name including namespace
      * @access protected
-     * @global $_ARRAYLANG
+     * @global array $_ARRAYLANG array containing the language variables
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\TransactionRequiredException
      * @throws \Exception
@@ -764,8 +767,10 @@ class ViewGenerator {
     }
 
     /**
+     * Creates a string out of the ViewGenerator object
+     *
      * @access public
-     * @return string
+     * @return string the object ViewGenerator as string
      */
     public function __toString() {
         try {
@@ -779,18 +784,20 @@ class ViewGenerator {
      * This function checks if a post request contains any data besides csrf
      *
      * @access protected
-     * @global $_ARRAYLANG
-     * @return bool
+     * @global array $_ARRAYLANG array containing the language variables
+     * @return bool true if $_POST is empty
      */
     protected function checkBlankPostRequest() {
         global $_ARRAYLANG;
 
-        $post=$_POST;
+        $post = $_POST;
         unset($post['csrf']);
-        $blankPost=true;
+        $blankPost = true;
         if (!empty($post)) {
-            foreach($post as $value) {
-                if ($value) $blankPost=false;
+            foreach ($post as $value) {
+                if ($value) {
+                    $blankPost = false;
+                }
             }
         }
         if ($blankPost) {
@@ -804,8 +811,8 @@ class ViewGenerator {
      * This function checks if a form is valid
      *
      * @access protected
-     * @global $_ARRAYLANG
-     * @return boolean
+     * @global array $_ARRAYLANG array containing the language variables
+     * @return boolean true if form is valid
      */
     protected function validateForm() {
         global $_ARRAYLANG;
@@ -827,8 +834,10 @@ class ViewGenerator {
     }
 
     /**
-     * @param $parameterName
+     * Sets the cancel url for the given param
+     *
      * @access protected
+     * @param string $parameterName name of the param
      * */
     protected function setProperCancelUrl($parameterName){
         if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Url')) {

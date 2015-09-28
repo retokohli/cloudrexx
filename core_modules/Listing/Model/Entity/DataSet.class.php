@@ -271,6 +271,12 @@ class DataSet implements \Iterator {
         return $this->dataType;
     }
 
+    /**
+     * This function sets the DataType of an DataSet
+     *
+     * @access public
+     * @param string $dataType
+     */
     public function setDataType($dataType) {
         $this->dataType = $dataType;
     }
@@ -424,7 +430,7 @@ class DataSet implements \Iterator {
      * This function returns the identifier of the DataSet
      *
      * @access public
-     * @return string
+     * @return string the identifier
      */
     public function getIdentifier(){
         return $this->identifier;
@@ -434,7 +440,7 @@ class DataSet implements \Iterator {
      * This function sets the identifier of the DataSet
      *
      * @access public
-     * @param $identifier
+     * @param string $identifier the identifier of the DataSet
      */
     public function setIdentifier($identifier){
         $this->identifier = $identifier;

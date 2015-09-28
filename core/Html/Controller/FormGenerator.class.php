@@ -147,9 +147,11 @@ class FormGenerator {
     }
 
     /**
-     * @param $field
-     * @param $dataElement
-     * @param array $fieldOptions
+     * This function returns the elementGroup for a DataElement
+     *
+     * @param string $field name of the field
+     * @param object $dataElement the element of the field
+     * @param array $fieldOptions options for the field
      * @return \Cx\Core\Html\Model\Entity\HtmlElement
      */
     public function getDataElementGroup($field, $dataElement, $fieldOptions = array()) {
@@ -184,12 +186,14 @@ class FormGenerator {
     }
     
     /**
-     * @param $name
-     * @param $type
-     * @param $length
-     * @param $value
-     * @param $options
-     * @param $entityId
+     * This function returns the DataElement
+     *
+     * @param string $name name of the DataElement
+     * @param string $type type of the DataElement
+     * @param int $length length of the DataElement
+     * @param mixed $value value of the DataElement
+     * @param array $options options for the DataElement
+     * @param int $entityId id of the DataElement
      * @return \Cx\Core\Html\Model\Entity\DataElement
      */
     public function getDataElement($name, $type, $length, $value, &$options, $entityId) {
@@ -732,22 +736,23 @@ CODE;
     }
 
     /**
-     * This class returns a css name for a php class
+     * This method returns a css valid name for a given php class
      *
      * @access protected
-     * @param $entityClass class including namespace
-     * @return string
+     * @param string $entityClass class including namespace
+     * @return string css class
      */
     protected function createCssClassNameFromEntity ($entityClass) {
         return strtolower(str_replace('\\','_', $entityClass));
     }
+
     /**
-     * This function returns the type of a passed object/array/element as a String
+     * This function returns the value of a passed object/array/element as a string according to the type
      * At the moment only date and time formats are supported
      *
-     * @param $element
+     * @param mixed $element element of which we want to create a string
      * @access protected
-     * @return string
+     * @return string value of DataElement as string
      */
     protected function getDataElementValueAsString($element){
         if (is_object($element)) {
@@ -770,9 +775,9 @@ CODE;
     /**
      * This function returns all existing associated values
      *
-     * @param $assocMapping
-     * @param $entityClass
-     * @param $entityId
+     * @param array $assocMapping the mapping information
+     * @param string $entityClass class of the entity (including namespace)
+     * @param int $entityId id of the entity
      * @return \Cx\Core\Html\Model\Entity\TextElement
      */
     protected function getExistingValues($assocMapping, $entityClass, $entityId) {
