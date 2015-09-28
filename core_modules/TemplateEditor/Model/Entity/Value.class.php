@@ -26,6 +26,8 @@ class Value implements \Cx\Core_Modules\TemplateEditor\Model\YamlSerializable
     }
 
     /**
+     * Get the saved value.
+     *
      * @return mixed
      */
     public function getValue()
@@ -34,6 +36,8 @@ class Value implements \Cx\Core_Modules\TemplateEditor\Model\YamlSerializable
     }
 
     /**
+     * Set the saved value.
+     *
      * @param mixed $value
      */
     public function setValue($value)
@@ -42,6 +46,8 @@ class Value implements \Cx\Core_Modules\TemplateEditor\Model\YamlSerializable
     }
 
     /**
+     * Get the name.
+     *
      * @return mixed
      */
     public function getName()
@@ -50,6 +56,8 @@ class Value implements \Cx\Core_Modules\TemplateEditor\Model\YamlSerializable
     }
 
     /**
+     * Set the name.
+     *
      * @param mixed $name
      */
     public function setName($name)

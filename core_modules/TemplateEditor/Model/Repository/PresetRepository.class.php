@@ -41,6 +41,8 @@ class PresetRepository
     }
 
     /**
+     * Find all presets
+     *
      * @return array
      */
     public function findAll()

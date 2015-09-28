@@ -146,6 +146,8 @@ class TextOption extends Option
     }
 
     /**
+     * Get the string
+     *
      * @return string
      */
     public function getString()
@@ -154,6 +156,8 @@ class TextOption extends Option
     }
 
     /**
+     * Set the string
+     *
      * @param string $string
      */
     public function setString($string)
@@ -162,6 +166,8 @@ class TextOption extends Option
     }
 
     /**
+     * Get the regex
+     *
      * @return String
      */
     public function getRegex()
@@ -170,6 +176,8 @@ class TextOption extends Option
     }
 
     /**
+     * Set the regex
+     *
      * @param String $regex
      */
     public function setRegex($regex)
@@ -178,6 +186,8 @@ class TextOption extends Option
     }
 
     /**
+     * Return if is html
+     *
      * @return boolean
      */
     public function isHtml()
@@ -186,6 +196,8 @@ class TextOption extends Option
     }
 
     /**
+     * Set if is html
+     *
      * @param boolean $html
      */
     public function setHtml($html)

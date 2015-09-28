@@ -12,6 +12,11 @@ use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 
 class Preset implements YamlSerializable
 {
+    /**
+     * Name of the preset
+     *
+     * @var string
+     */
     protected $name;
 
     /**
@@ -20,6 +25,8 @@ class Preset implements YamlSerializable
     protected $optionValues = [];
 
     /**
+     * Create a preset form a raw options array.
+     *
      * @param $name
      * @param $options
      *
@@ -52,6 +59,8 @@ class Preset implements YamlSerializable
     }
 
     /**
+     * Get the name
+     *
      * @return mixed
      */
     public function getName()
@@ -60,6 +69,8 @@ class Preset implements YamlSerializable
     }
 
     /**
+     * Set the name
+     *
      * @param mixed $name
      */
     public function setName($name)
@@ -68,6 +79,8 @@ class Preset implements YamlSerializable
     }
 
     /**
+     * Set optionvalues.
+     *
      * @param mixed $optionValues
      */
     public function setOptionValues($optionValues)
@@ -76,6 +89,8 @@ class Preset implements YamlSerializable
     }
 
     /**
+     * Set a option
+     *
      * @param $name
      * @param $value
      */
@@ -84,6 +99,13 @@ class Preset implements YamlSerializable
         $this->optionValues[$name] = new Value($name, $value);
     }
 
+    /**
+     * Get a option
+     *
+     * @param $name
+     *
+     * @return Value
+     */
     public function getOption($name)
     {
         return $this->optionValues[$name];

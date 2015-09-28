@@ -164,6 +164,8 @@ class ImageSeriesOption extends Option
     }
 
     /**
+     * Get array with urls
+     *
      * @return Option[]
      */
     public function getUrls()

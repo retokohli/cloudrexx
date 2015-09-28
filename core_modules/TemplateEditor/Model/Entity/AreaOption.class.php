@@ -100,7 +100,7 @@ class AreaOption extends Option
     }
 
     /**
-     *
+     * Set is active
      *
      * @param boolean $active
      */

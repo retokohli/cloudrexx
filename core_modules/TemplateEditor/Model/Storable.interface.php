@@ -28,11 +28,15 @@ interface Storable
     public function persist($name, YamlSerializable $data);
 
     /**
+     * Get list with items.
+     *
      * @return array
      */
     public function getList();
 
     /**
+     * Remove item.
+     *
      * @param $name
      */
     public function remove($name);

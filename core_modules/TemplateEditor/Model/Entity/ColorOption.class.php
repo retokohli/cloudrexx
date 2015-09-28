@@ -134,6 +134,8 @@ class ColorOption extends Option
     }
 
     /**
+     * Get the color
+     *
      * @return mixed
      */
     public function getColor()
@@ -142,6 +144,8 @@ class ColorOption extends Option
     }
 
     /**
+     * Set the color
+     *
      * @param mixed $color
      */
     public function setColor($color)
@@ -159,6 +163,14 @@ class ColorOption extends Option
         return array('color' => $this->color);
     }
 
+    /**
+     * Adjust the brightness of a hex color
+     *
+     * @param $hex
+     * @param $steps
+     *
+     * @return string
+     */
     function adjustBrightness($hex, $steps)
     {
         // Steps should be between -255 and 255. Negative = darker, positive = lighter

@@ -105,6 +105,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      * Update the value of a option for a specific template.
      *
      * @param array $params
+     *
+     * @return array
      */
     public function updateOption($params)
     {

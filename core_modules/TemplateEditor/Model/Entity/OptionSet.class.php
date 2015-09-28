@@ -31,6 +31,11 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
      */
     protected $name;
 
+    /**
+     * Unmodified data of options.yml
+     *
+     * @var array
+     */
     protected $data;
 
     /**
@@ -45,8 +50,17 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
      */
     protected $presetRepository;
 
+    /**
+     * Active preset for frontend
+     *
+     * @var Preset
+     */
     protected $activePreset;
-    protected $tmpPreset;
+
+    /**
+     * @var Preset
+     */
+    protected $appliedPreset;
 
     /**
      * @param Theme $theme
@@ -88,6 +102,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
      * @param $name
      * @param $data
      *
+     * @return array
      * @throws ThemeOptionNotFoundException
      */
     public function handleChanges($name, $data)
@@ -140,6 +155,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     }
 
     /**
+     * Get a option
+     *
      * @param $name
      *
      * @return Option
@@ -151,6 +168,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     }
 
     /**
+     * Set a option
+     *
      * @param $name
      * @param $value
      */
@@ -160,6 +179,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     }
 
     /**
+     * Get a name
+     *
      * @return mixed
      */
     public function getName()
@@ -168,6 +189,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     }
 
     /**
+     * Set a name
+     *
      * @param mixed $name
      */
     public function setName($name)
@@ -175,17 +198,29 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
         $this->name = $name;
     }
 
+    /**
+     * Get option count
+     *
+     * @return int
+     */
     public function getOptionCount()
     {
         return count($this->options);
     }
 
+    /**
+     * Get list of presets
+     *
+     * @return array
+     */
     public function getPresets()
     {
         return $this->presetRepository->findAll();
     }
 
     /**
+     * Get the active preset
+     *
      * @return Preset
      */
     public function getActivePreset()
@@ -194,6 +229,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     }
 
     /**
+     * Get the presetrepository
+     *
      * @return PresetRepository
      */
     public function getPresetRepository()
@@ -202,20 +239,27 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     }
 
     /**
+     * Get the changed preset.
+     *
      * @return Preset
      */
     public function getChangedPreset()
     {
-        $preset = $this->tmpPreset;
+        $preset = $this->appliedPreset;
         foreach ($this->options as $name => $option) {
             $preset->setOption($name, $option->getValue());
         }
         return $preset;
     }
 
+    /**
+     * Apply a preset
+     *
+     * @param Preset $preset
+     */
     public function applyPreset(Preset $preset)
     {
-        $this->tmpPreset = $preset;
+        $this->appliedPreset = $preset;
         /* Saving data so later on we can reuse it
            without worrying about older applied presets */
         $data = $this->data;
@@ -260,6 +304,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     }
 
     /**
+     * Set the active preset.
+     *
      * @param Preset $preset
      */
     public function setActivePreset(Preset $preset)

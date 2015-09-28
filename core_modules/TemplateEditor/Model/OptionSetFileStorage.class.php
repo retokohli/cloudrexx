@@ -82,6 +82,8 @@ class OptionSetFileStorage implements Storable
     }
 
     /**
+     * Get list with optionsets
+     *
      * @return array
      */
     public function getList()

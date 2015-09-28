@@ -28,6 +28,8 @@ class PresetFileStorage implements Storable
     }
 
     /**
+     * Retrieve a preset
+     *
      * @param String $name
      *
      * @return array
@@ -69,6 +71,8 @@ class PresetFileStorage implements Storable
     }
 
     /**
+     * Save a preset to disk
+     *
      * @param                  $name
      * @param YamlSerializable $data
      *
@@ -86,6 +90,8 @@ class PresetFileStorage implements Storable
     }
 
     /**
+     * Get filtered preset list.
+     *
      * @return array
      */
     public function getList()
@@ -108,6 +114,13 @@ class PresetFileStorage implements Storable
         return $list;
     }
 
+    /**
+     * Get preset list.
+     *
+     * @param $path
+     *
+     * @return array
+     */
     public function getPresetList($path)
     {
         return array_filter(
@@ -119,6 +132,8 @@ class PresetFileStorage implements Storable
     }
 
     /**
+     * Remove a preset.
+     *
      * @param $name
      */
     public function remove($name)
@@ -129,6 +144,8 @@ class PresetFileStorage implements Storable
     }
 
     /**
+     * Merge Preset list
+     *
      * @param $list
      * @param $getPresetList
      *
