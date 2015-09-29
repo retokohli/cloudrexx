@@ -3482,6 +3482,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                                                                         \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_type','Crm')
                                                                                     .'][0]',
                     'MULTISITE_CUSTOMER_TYPE_ATTRIBUT_ID'                         => \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_type','Crm'),
+                    'MULTISITE_INDUSTRY_TYPE_ATTRIBUT_ID'                         => \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_type','Crm'),
                 ));
                 $objTemplate->_blocks['__global__'] = preg_replace('/<\/body>/', $objContactTpl->get() . '\\0', $objTemplate->_blocks['__global__']);
                 break;
