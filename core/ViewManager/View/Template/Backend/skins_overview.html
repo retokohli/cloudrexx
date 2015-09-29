@@ -332,9 +332,7 @@
         color: #fff;
     }
 
-    .themeWrapper.templateEditor:after {
-        content: '{TXT_THEME_TEMPLATEEDITOR_USABLE}';
-        background-color: #c0392b;
+    .themeWrapper:after {
         width: 100%;
         display: block;
         position: absolute;
@@ -347,6 +345,17 @@
         -ms-transform: rotate(45deg);
         text-align: center;
         z-index: 10;
+        background-color: #c0392b;
+        content: '{TXT_THEME_TEMPLATEEDITOR_UNUSABLE}';
+    }
+
+    .themeWrapper.templateEditor:after {
+        content: '{TXT_THEME_TEMPLATEEDITOR_USABLE}';
+        background-color: #4EAA09;
+    }
+
+    .newthemeWrapper:after {
+        content: none;
     }
 
     .cf:before,

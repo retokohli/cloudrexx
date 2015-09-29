@@ -345,7 +345,8 @@ class ViewManager
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
         $objTemplate->setVariable(array(
-            "TXT_THEME_TEMPLATEEDITOR_USABLE"      => $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_USABLE']
+            "TXT_THEME_TEMPLATEEDITOR_USABLE"      => $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_USABLE'],
+            "TXT_THEME_TEMPLATEEDITOR_UNUSABLE"      => $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_UNUSABLE']
         ));
 
         $supportForTemplateEditor = false;
