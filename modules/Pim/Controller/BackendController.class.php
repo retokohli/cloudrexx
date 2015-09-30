@@ -76,18 +76,14 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $this->template = $template;
         $act = $cmd[0];
 
-        /* If the act is not empty, we are not on the first tab an we can use parseEntityClassPage() from
+        /* If the act is not empty, we are not on the first tab an we can use parsePage() from
            SystemComponentBackendController to create the view.
-           If act is empty, we are on first tab where parseEntityClassPage() will not work, because ViewGenerator does
+           If act is empty, we are on first tab where parent::parsePage() will not work, because ViewGenerator does
            not support views on first tab of components.
-           Note: The function parsePage() can be removed as soon as ViewGenerator has first tab support
+           Note: This function (parsePage) can be removed as soon as ViewGenerator has first tab support
         */
         if ($act != '') {
-            $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . $act;
-            if (in_array($entityClassName, $this->getEntityClasses())) {
-                $this->parseEntityClassPage($this->template, $entityClassName, current($cmd));
-                return;
-            }
+            parent::parsePage($template, $cmd);
         } else {
             $this->connectToController('Default');
         }
