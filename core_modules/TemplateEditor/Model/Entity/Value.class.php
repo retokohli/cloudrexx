@@ -6,11 +6,28 @@
  */
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
+use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 
-
-class Value implements \Cx\Core_Modules\TemplateEditor\Model\YamlSerializable
+/**
+ * Class Value
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
+ */
+class Value implements YamlSerializable
 {
+    /**
+     * Option name
+     * @var string
+     */
     protected $name;
+
+    /**
+     * Array with values
+     * @var array
+     */
     protected $value;
 
     /**

@@ -10,6 +10,14 @@ namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
 use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 
+/**
+ * Class Preset
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
+ */
 class Preset implements YamlSerializable
 {
     /**

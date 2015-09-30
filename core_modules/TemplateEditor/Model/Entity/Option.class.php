@@ -53,8 +53,8 @@ abstract class Option extends \Cx\Model\Base\EntityBase
     protected $humanName;
 
     /**
-     * @param String $name
-     * @param        $translations
+     * @param String $name Name of the option
+     * @param array  $translations Array with translations for option.
      * @param array  $data
      */
     public function __construct($name, $translations, $data) {
@@ -69,24 +69,30 @@ abstract class Option extends \Cx\Model\Base\EntityBase
     /**
      * Render the option field in the backend.
      *
-     * @param Sigma $template
+     * @param Sigma $template The template of the backend view.
      */
     public abstract function renderOptionField($template);
 
     /**
      * Render the option in the frontend.
      *
-     * @param Sigma $template
+     * @param Sigma $template The frontend template.
      */
     public abstract function renderTheme($template);
 
     /**
      * Handle a change of the option.
      *
-     * @param array $data
+     * @param array $data Data from frontend javascript
      *
-     * @return array
-     * @throws OptionValueNotValidException
+     * @return array Changed data for the frontend javascript
+     *
+     * @throws OptionValueNotValidException If the data which the option should
+     *                                      handle is invalid this exception
+     *                                      will be thrown.
+     *                                      It gets caught by the JsonData
+     *                                      class and gets handled by the
+     *                                      javascript callback in the frontend.
      */
     public abstract function handleChange($data);
 

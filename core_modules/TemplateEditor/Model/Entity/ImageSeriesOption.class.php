@@ -108,7 +108,7 @@ class ImageSeriesOption extends Option
             foreach ($this->urls as $id => $url) {
                 $template->setVariable(
                     strtoupper('TEMPLATE_EDITOR_' . $this->name),
-                    htmlentities($url)
+                    contrexx_raw2xhtml($url)
                 );
                 $template->parse($blockName);
             }
@@ -118,10 +118,16 @@ class ImageSeriesOption extends Option
     /**
      * Handle a change of the option.
      *
-     * @param array $data
+     * @param array $data Data from frontend javascript
      *
-     * @return array
-     * @throws OptionValueNotValidException
+     * @return array Changed data for the frontend javascript
+     *
+     * @throws OptionValueNotValidException If the data which the option should
+     *                                      handle is invalid this exception
+     *                                      will be thrown.
+     *                                      It gets caught by the JsonData
+     *                                      class and gets handled by the
+     *                                      javascript callback in the frontend.
      */
     public function handleChange($data)
     {

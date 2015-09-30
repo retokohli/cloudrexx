@@ -11,6 +11,14 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\ParserException;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * Class PresetFileStorage
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
+ */
 class PresetFileStorage implements Storable
 {
     /**
