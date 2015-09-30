@@ -33,7 +33,7 @@ cx.jQuery(function(jQuery) {
 
             var that   = this,
                 sortTd = jQuery(this).find('td.sortBy' + sortField),
-                updatedOrder  = jQuery(this).sortable('serialize'), recordCount,
+                updatedOrder  = jQuery(this).sortable('serialize'), recordCount = 0,
                 currentIndex  = ui.item.index(),
                 previousIndex = jQuery(ui.item).data('pIndex'),
                 repeat = isOrderNoRepeat(sortTd, previousIndex, currentIndex),
@@ -57,7 +57,7 @@ cx.jQuery(function(jQuery) {
                     jQuery(ui.item).find('td:first-child').addClass('sorter-loading');
                 },
                 success: function(msg) {
-                    if (msg.data.status == 'success') {
+                    if (msg.data && msg.data.status == 'success') {
                         recordCount = msg.data.recordCount;
                     }
                 },
