@@ -148,9 +148,11 @@ class BackendController extends SystemComponentBackendController
                 $this->theme
             );
             // If user opens editor use active preset as active preset.
-            if (!isset($_SESSION['TemplateEditor']
-                [$this->theme->getId()]['activePreset']) || !isset($_GET['preset'])){
-                $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
+            if (
+                !isset($_SESSION['TemplateEditor'][$this->theme->getId()]
+                    ['activePreset']) 
+                || !isset($_GET['preset'])) {
+                $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset'] 
                     = $this->themeOptions->getActivePreset()->getName();
             }
             try {
