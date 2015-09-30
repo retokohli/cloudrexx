@@ -130,7 +130,7 @@ class ViewGenerator {
             // post edit
             $editId = $this->getEntryId();
             if (
-                !empty($editId) && (
+                $editId != 0 && (
                     (
                         !empty($this->options['functions']['edit']) &&
                         $this->options['functions']['edit'] != false
@@ -283,11 +283,11 @@ class ViewGenerator {
      * <id_to_edit> can be a number, string or set of both, separated by comma
      *
      * @access protected
-     * @return int|null
+     * @return int 0 if no entry was found
      */
     protected function getEntryId() {
         if (!isset($_GET['editid']) && !isset($_POST['editid'])) {
-            return null;
+            return 0;
         }
         if (isset($_GET['editid'])) {
             $edits = explode('},{', substr($_GET['editid'], 1, -1));
@@ -340,7 +340,7 @@ class ViewGenerator {
 
         // this case is used to get the right entry if we edit a existing one
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet
-            && !empty($entityId)) {
+            && $entityId != 0) {
             if ($this->object->entryExists($entityId)) {
                 $renderObject = $this->object->getEntry($entityId);
             }
@@ -402,7 +402,7 @@ class ViewGenerator {
         }
         $entityObject = \Env::get('em')->getClassMetadata($entityClassWithNS);
         $primaryKeyNames = $entityObject->getIdentifierFieldNames(); // get the name of primary key in database table
-        if (!$entityId && !empty($this->options['functions']['add'])) { // load add entry form
+        if ($entityId == 0 && !empty($this->options['functions']['add'])) { // load add entry form
             $this->setProperCancelUrl('add');
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $actionUrl->setParam('add', 1);
@@ -438,7 +438,7 @@ class ViewGenerator {
                     $renderArray[$field]= new $associationMapping['targetEntity']();
                 }
             }
-        } elseif ($entityId && $this->object->entryExists($entityId)) { // load edit entry form
+        } elseif ($entityId != 0 && $this->object->entryExists($entityId)) { // load edit entry form
             $this->setProperCancelUrl('editid');
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $actionUrl->setParam('editid', null);
@@ -562,7 +562,7 @@ class ViewGenerator {
         $associationMappings = $entityClassMetadata->getAssociationMappings();
 
         // if we have a entityId, we came from edit mode and so we try to load the existing entry
-        if($entityId) {
+        if($entityId != 0) {
             $entity = \Env::get('em')->getRepository($entityWithNS)->find($entityId);
             $entityArray = array(); // This array is used for the existing values
             if ($this->object->entryExists($entityId)) {
@@ -650,7 +650,7 @@ class ViewGenerator {
             }
         }
 
-        if($entityId) { // edit case
+        if($entityId != 0) { // edit case
             // update the main entry in doctrine so we can store it over doctrine to database later
             $this->savePropertiesToClass($entity, $entityClassMetadata);
             $param = 'editid';

@@ -333,7 +333,7 @@ class FormGenerator {
                     );
                     $_SESSION['vgOptions'] = array();
                     $_SESSION['vgOptions'][$this->entityClass] = $this->componentOptions;
-                    if (!empty($entityId) && $entityId != 0) {
+                    if ($entityId != 0) {
                         // if we edit the main form, we also want to show the existing associated values we already have
                         $existingValues = $this->getExistingValues($assocMapping, $associatedClass, $entityId);
                     }
