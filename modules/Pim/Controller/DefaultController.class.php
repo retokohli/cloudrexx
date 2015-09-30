@@ -99,14 +99,12 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     
     public function showProducts() 
     {
-        global $_ARRAYLANG;
-        
-        $products = $this->productRepository->findAll();
-        if (empty($products)) {
-            $products = new \Cx\Modules\Pim\Model\Entity\Product();
-        }
-        $options = $this->getController('Backend')->getAllViewGeneratorOptions();
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($products, $options);
+        // Create view for product. This must be done in component, because ViewGenerator don't support views in first
+        // tab. This can be delete as soon as the ViewGenerator can handle the first tab.
+        $view = new \Cx\Core\Html\Controller\ViewGenerator(
+            '\Cx\Modules\Pim\Model\Entity\Product',
+            $this->getController('Backend')->getAllViewGeneratorOptions()
+        );
         $this->template->setVariable('PRODUCTS_CONTENT', $view->render());
     }
 }
