@@ -2913,7 +2913,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                            && isset($_REQUEST['object']) && $_REQUEST['object'] == 'MultiSite'
                            && isset($_REQUEST['act'])
                                 ? '(API-call: '.$_REQUEST['act'].')'
-                                : '';
+                                : $_SERVER['REQUEST_URI'];
             \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...".$requestInfo);
             // set SERVER_NAME to BaseDN of Website
             $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite');
