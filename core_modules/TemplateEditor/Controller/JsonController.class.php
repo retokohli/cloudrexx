@@ -97,7 +97,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
     /**
      * Save the options to the component.yml file.
      *
-     * @param array $params
+     * @param array $params List of get and post parameters which were sent to
+     *                      the json adapter.
      */
     public function saveOptions($params)
     {
@@ -130,10 +131,11 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
 
     /**
      * Update the value of a option for a specific template.
+     * 
+     * @param array $params List of get and post parameters which were sent to
+     *                      the json adapter.
      *
-     * @param array $params
-     *
-     * @return array
+     * @return array Modified Data
      */
     public function updateOption($params)
     {
@@ -187,7 +189,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
     /**
      * Activate a preset
      *
-     * @param $params
+     * @param array $params List of get and post parameters which were sent to
+     *                      the json adapter.
      */
     public function activatePreset($params)
     {
@@ -217,9 +220,10 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
     /**
      * Add a new preset
      *
-     * @param $params
+     * @param array $params List of get and post parameters which were sent to
+     *                      the json adapter.
      *
-     * @return array
+     * @return array Preset name
      */
     public function addPreset($params)
     {
@@ -260,7 +264,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
     /**
      * Remove a preset
      *
-     * @param $params
+     * @param array $params List of get and post parameters which were sent to
+     *                      the json adapter.
      */
     public function removePreset($params)
     {
@@ -305,7 +310,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
     /**
      * Reset a preset
      *
-     * @param $params
+     * @param array $params List of get and post parameters which were sent to
+     *                      the json adapter.
      */
     public function resetPreset($params){
         $themeID               = isset($params['post']['tid']) ? 
