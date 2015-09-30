@@ -15,11 +15,15 @@ interface Storable
 
 
     /**
+     * Retrieve a item from the storage
+     * 
      * @param String $name
      */
     public function retrieve($name);
 
     /**
+     * Persist a item to the storage
+     * 
      * @param                  $name
      * @param YamlSerializable $data
      *
