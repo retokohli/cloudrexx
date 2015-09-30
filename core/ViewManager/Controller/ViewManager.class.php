@@ -350,11 +350,12 @@ class ViewManager
         ));
 
         $supportForTemplateEditor = false;
-        if (file_exists($cx->getClassLoader()->getFilePath(
-                            $cx->getWebsiteThemesPath(). '/'
-                            . $theme->getFoldername()
-                            . '/options/options.yml'
-                        )
+        if (file_exists(
+                $cx->getClassLoader()->getFilePath(
+                    $cx->getWebsiteThemesPath() . '/'
+                    . $theme->getFoldername()
+                    . '/options/options.yml'
+                )
             )
         ) {
             $supportForTemplateEditor = true;
