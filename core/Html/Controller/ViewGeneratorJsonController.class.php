@@ -176,9 +176,15 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         $entityNameSpace = $objComponent->getNamespace() . '\\Model\\Entity\\' . $entityName;
         //check whether the entity namespace is a valid one or not
         if (!in_array($entityNameSpace, $objComponent->getEntityClasses())) {
-            throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
+            throw new \Exception(
+                sprintf(
+                    $_ARRAYLANG['TXT_CORE_HTML_SORTING_ENTITY_NOT_FOUND_ERROR'], 
+                    $entityName, 
+                    $componentName
+                )
+            );
         }
-        
+
         $entityObject = $em->getClassMetadata($entityNameSpace);
         $classMethods = get_class_methods($entityObject->newInstance());
         $primaryKeyName = $entityObject->getSingleIdentifierFieldName();
@@ -187,9 +193,16 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
             ||  !in_array('get'.ucfirst($sortField), $classMethods)
             ||  !in_array('get'.ucfirst($primaryKeyName), $classMethods)
         ) {
-            throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
+            throw new \Exception(
+                sprintf(
+                    $_ARRAYLANG['TXT_CORE_HTML_SORTING_GETTER_SETTER_NOT_FOUND_ERROR'], 
+                    $entityName, 
+                    $sortField, 
+                    $primaryKeyName
+                )
+            );
         }
-        
+
         //update the entities order field in DB
         $oldPosition = $pagingPosition + $prePosition;
         $newPosition = $pagingPosition + $currentPosition;
@@ -210,9 +223,13 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         }
         $entities = $qb->getQuery()->getResult();
 
-        if ($entities) {
+        if (!$entities) {
+            throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_SORTING_NO_ENTITY_FOUND_ERROR']);
+        }
+            
+        try {
             if (    ($oldPosition > $newPosition && empty($updatedOrder))
-                || (!empty($updatedOrder) && $sortOrder == 'DESC')
+                ||  (!empty($updatedOrder) && $sortOrder == 'DESC')
             ) {
                 krsort($entities);
             }
@@ -256,7 +273,9 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
                 $i++;
             }
             $em->flush();
+            return array('status' => 'success', 'recordCount' => $recordCount);
+        } catch (\Exception $e) {
+            throw new \Exception($_ARRAYLANG['TXT_CORE_HTML_UPDATE_SORT_ORDER_FAILED']);
         }
-        return array('status' => 'success', 'recordCount' => $recordCount);
     }
 }

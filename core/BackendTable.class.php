@@ -63,7 +63,7 @@ class BackendTable extends HTML_Table {
             $sortingKey = !empty($sortBy) && isset($sortBy['sortingKey'])
                           ? $sortBy['sortingKey']
                           : '';
-            $sortField  = !empty($sortBy) && isset($sortBy['field'])
+            $sortField  = !empty($sortingKey) && isset($sortBy['field'])
                           ? key($sortBy['field'])
                           : '';
             foreach ($attrs as $rowname=>$rows) {
@@ -81,7 +81,7 @@ class BackendTable extends HTML_Table {
                     }
                     if (!empty($sortField) && $header === $sortField) {
                         //Add the additional attribute class, to display the updated sort order after the row sorting
-                        $this->updateColAttributes($col, array('class' => 'sortBy'));
+                        $this->updateColAttributes($col, array('class' => 'sortBy' . $sortField));
                     }
                     $encode = true;
                     if (
@@ -242,7 +242,9 @@ class BackendTable extends HTML_Table {
             }
             $attrs = array();
         }
-        parent::__construct(array_merge($attrs, array('class' => 'adminlist', 'width' => '100%')));
+        //add the class 'sortable' if the row sorting functionality is enabled
+        $className = !empty($sortField) ? '\'adminlist sortable\'' : 'adminlist';
+        parent::__construct(array_merge($attrs, array('class' => $className, 'width' => '100%')));
     }
 
     /**

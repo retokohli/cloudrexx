@@ -14,14 +14,9 @@ cx.jQuery(function(jQuery) {
         sortOrder  = cx.variables.get('sortOrder', 'ViewGenerator/sortBy'),
         jsonObject = cx.variables.get('jsonObject', 'ViewGenerator/sortBy'),
         jsonAct    = cx.variables.get('jsonAct', 'ViewGenerator/sortBy'),
-        pagingPosition = cx.variables.get('pagingPosition', 'ViewGenerator/sortBy'),
-        isSortByActive = cx.variables.get('isSortByActive', 'ViewGenerator/sortBy');
-    if (typeof(isSortByActive) === 'undefined') {
-        return;
-    }
-    
-    jQuery('.adminlist').addClass('sortable');
-    jQuery('.adminlist tbody').sortable({
+        pagingPosition = cx.variables.get('pagingPosition', 'ViewGenerator/sortBy');
+        
+    jQuery('table.sortable tbody').sortable({
         axis: "y",
         items: "> tr.row1,> tr.row2 ",
         start: function (event, ui) {
@@ -37,8 +32,8 @@ cx.jQuery(function(jQuery) {
             }
 
             var that   = this,
-                sortTd = jQuery('table.sortable tbody > tr:not(:nth-child(1), :last-child) > td.sortBy'),
-                updatedOrder  = jQuery('.sortable tbody').sortable('serialize'), recordCount,
+                sortTd = jQuery(this).find('td.sortBy' + sortField),
+                updatedOrder  = jQuery(this).sortable('serialize'), recordCount,
                 currentIndex  = ui.item.index(),
                 previousIndex = jQuery(ui.item).data('pIndex'),
                 repeat = isOrderNoRepeat(sortTd, previousIndex, currentIndex),
