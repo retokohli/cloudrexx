@@ -80,7 +80,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      */
     public function getMessagesAsString()
     {
-        return "";
+        return '';
     }
 
     /**
@@ -168,7 +168,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
             )
         ) {
             throw new \LogicException(
-                "This method needs a valid name to work."
+                'This method needs a valid name to work.'
             );
         }
         if (empty($params['post']['optionData'])) {
