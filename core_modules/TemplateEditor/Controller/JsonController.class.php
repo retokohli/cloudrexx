@@ -36,7 +36,7 @@ use Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
 
 /**
- * Class JSONTemplateEditor
+ * Class JsonController
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
