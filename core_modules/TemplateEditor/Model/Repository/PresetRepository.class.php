@@ -2,7 +2,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Repository;
 
-use Cx\Core\View\Model\Entity\Theme;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\Preset;
 use Cx\Core_Modules\TemplateEditor\Model\Storable;
 

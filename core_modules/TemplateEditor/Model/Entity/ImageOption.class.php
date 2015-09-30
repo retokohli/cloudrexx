@@ -2,7 +2,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
-use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Html\Sigma;
 use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 

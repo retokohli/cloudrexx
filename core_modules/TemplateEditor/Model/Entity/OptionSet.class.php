@@ -11,6 +11,18 @@ use Cx\Core\Html\Sigma;
 use Symfony\Component\Yaml\ParserException;
 
 /**
+ * Class ThemeOptionNotFoundException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
+ */
+class ThemeOptionNotFoundException extends \Exception
+{
+}
+
+/**
  * Class ThemeOptions
  *
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -314,6 +326,3 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     }
 }
 
-Class ThemeOptionNotFoundException extends \Exception
-{
-}

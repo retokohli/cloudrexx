@@ -18,6 +18,14 @@ use Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage;
 use Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
 
+/**
+ * Class BackendController
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
+ */
 class ComponentController extends SystemComponentController
 {
 

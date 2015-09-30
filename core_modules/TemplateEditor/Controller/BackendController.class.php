@@ -24,6 +24,14 @@ use Cx\Core\Routing\Url;
 use Cx\Core\View\Model\Repository\ThemeRepository;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository;
 
+/**
+ * Class BackendController
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
+ */
 class BackendController extends SystemComponentBackendController
 {
     /**
