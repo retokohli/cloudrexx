@@ -15,6 +15,7 @@ namespace Cx\Core_Modules\TemplateEditor\Controller;
 use Cx\Core\Html\Sigma;
 use Cx\Core\View\Model\Entity\Theme;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet;
+use Cx\Core_Modules\TemplateEditor\Model\Entity\Preset;
 use Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage;
 use Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage;
 use Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException;
@@ -98,19 +99,19 @@ class BackendController extends SystemComponentBackendController
         if (!$_SESSION['TemplateEditor'][$this->theme->getId()]) {
             $_SESSION['TemplateEditor'][$this->theme->getId()] = array();
         }
-        if (isset($_GET['preset'])) {
+        if (isset($_GET['preset'])
+            && Preset::isValidPresetName(
+                $_GET['preset']
+            )
+        ) {
             if ($_SESSION['TemplateEditor'][$this->theme->getId(
-                )]['activePreset'] != filter_var(
-                    $_GET['preset'], FILTER_SANITIZE_STRING
-                )
+                )]['activePreset'] != $_GET['preset']
             ) {
                 // If the preset has changed remove all saved options
                 $_SESSION['TemplateEditor'][$this->theme->getId()] = array();
             }
             $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
-                = isset($_GET['preset']) ? filter_var(
-                $_GET['preset'], FILTER_SANITIZE_STRING
-            ) : 'Default';
+                = isset($_GET['preset']) ? $_GET['preset'] : 'Default';
         }
 
 

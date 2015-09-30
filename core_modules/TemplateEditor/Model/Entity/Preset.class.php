@@ -119,4 +119,19 @@ class Preset implements YamlSerializable
         return $this->optionValues[$name];
     }
 
+    /**
+     * Checks if given name is a valid preset name.
+     *
+     * @param $presetName
+     *
+     * @return bool
+     */
+    public static function isValidPresetName($presetName){
+        global $_ARRAYLANG;
+        if (empty($presetName) || !preg_match("/^[a-z0-9]+$/i",$presetName)){
+            return false;
+        }
+        return true;
+    }
+
 }

@@ -5,6 +5,7 @@ namespace Cx\Core_Modules\TemplateEditor\Controller;
 use Cx\Core\Core\Controller\Cx;
 use Cx\Core\Json\JsonAdapter;
 use Cx\Core\View\Model\Repository\ThemeRepository;
+use Cx\Core_Modules\TemplateEditor\Model\Entity\Preset;
 use Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage;
 use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
 
@@ -164,12 +165,12 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      */
     public function activatePreset($params)
     {
-        $presetName            = filter_var(
-            $params['post']['preset'], FILTER_SANITIZE_STRING
-        );
-        $themeID               = isset($params['post']['tid']) ? filter_var(
-            $params['post']['tid'], FILTER_VALIDATE_INT
-        ) : 1;
+        if (!Preset::isValidPresetName( $params['post']['preset'])){
+            return;
+        }
+        $presetName            =  $params['post']['preset'];
+        $themeID               = isset($params['post']['tid']) ? 
+            intval($params['post']['tid']) : 1;
         $themeRepository       = new ThemeRepository();
         $theme                 = $themeRepository->findById($themeID);
         $fileStorage           = new OptionSetFileStorage(
@@ -199,20 +200,19 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         global $_ARRAYLANG;
 
         \Env::get('init')->loadLanguageData('TemplateEditor');
-        $presetName            = filter_var(
-            $params['post']['preset'], FILTER_SANITIZE_STRING
-        );
-        if (empty($presetName) || !preg_match("/^[a-z0-9]+$/i",$presetName)){
+        $presetName = $params['post']['preset'];
+        if (!Preset::isValidPresetName($presetName)){
             throw new \LogicException(
                 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NEW_PRESET_TEXT_NOT_ALLOWED_CHARACTERS']
             );
         }
-        $presetPresetName      = isset($params['post']['tid']) ? filter_var(
-            $params['post']['presetpreset'], FILTER_SANITIZE_STRING
-        ) : 1;
-        $themeID               = isset($params['post']['tid']) ? filter_var(
-            $params['post']['tid'], FILTER_VALIDATE_INT
-        ) : 1;
+
+        $presetPresetName = 'Default';
+        if (isset($params['post']['presetpreset']) && Preset::isValidPresetName($params['post']['presetpreset'])) {
+            $presetPresetName =  $params['post']['presetpreset'];
+        }
+        $themeID               = isset($params['post']['tid']) ? 
+            intval($params['post']['tid']) : 1;
         $themeRepository       = new ThemeRepository();
         $theme                 = $themeRepository->findById($themeID);
         $fileStorage           = new OptionSetFileStorage(
@@ -241,18 +241,20 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         global $_ARRAYLANG;
 
         \Env::get('init')->loadLanguageData('TemplateEditor');
-        $presetName            = filter_var(
-            $params['post']['preset'], FILTER_SANITIZE_STRING
-        );
+     
+        if (!Preset::isValidPresetName($params['post']['preset'])){
+            return;
+        }   
+        
+        $presetName = $params['post']['preset'];
         /**
          * Default shouldn't be deletable
          */
         if ($presetName == 'Default'){
             throw new \LogicException($_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_DEFAULT_WARNING']);
         }
-        $themeID               = isset($params['post']['tid']) ? filter_var(
-            $params['post']['tid'], FILTER_VALIDATE_INT
-        ) : 1;
+        $themeID               = isset($params['post']['tid']) ? 
+            intval($params['post']['tid']) : 1;
         $themeRepository       = new ThemeRepository();
         $theme                 = $themeRepository->findById($themeID);
         $fileStorage           = new OptionSetFileStorage(
@@ -280,9 +282,8 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      * @param $params
      */
     public function resetPreset($params){
-        $themeID               = isset($params['post']['tid']) ? filter_var(
-            $params['post']['tid'], FILTER_VALIDATE_INT
-        ) : 1;
+        $themeID               = isset($params['post']['tid']) ? 
+            intval($params['post']['tid']) : 1;
         $activePreset = $_SESSION['TemplateEditor'][$themeID]['activePreset'];
         $_SESSION['TemplateEditor'][$themeID] = array();
         $_SESSION['TemplateEditor'][$themeID]['activePreset'] = $activePreset;
