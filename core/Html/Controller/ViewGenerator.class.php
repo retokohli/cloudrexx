@@ -209,8 +209,9 @@ class ViewGenerator {
      * @param object $entity object of the class we want to save
      * @param Doctrine\ORM\Mapping\ClassMetadata $entityClassMetadata MetaData for the entity
      * @param array $entityData array with data to save to class
+     * @param string $associatedTo the class which is oneToManyAssociated if it exists
      */
-    protected function savePropertiesToClass($entity, $entityClassMetadata, $entityData = array())
+    protected function savePropertiesToClass($entity, $entityClassMetadata, $entityData = array(), $associatedTo='')
     {
 
         // if entityData is not set, we use $_POST as default, because the data are normally submitted over post
@@ -273,6 +274,27 @@ class ViewGenerator {
                 $entity->{'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name))}($newValue);
             }
         }
+        // save singleValuedAssociations
+        foreach ($entityClassMetadata->getAssociationMappings() as $associationMapping) {
+            if($entityClassMetadata->isSingleValuedAssociation($associationMapping['fieldName'])){
+                if ($associationMapping['targetEntity'] != '' && $associatedTo != $associationMapping['targetEntity']) {
+                    if (!isset($entityData)) { // main formular
+                        $id = $_POST[$associationMapping['fieldName']];
+                    } else { // if form was opeen in modal
+                        $id = $entityData[$associationMapping['fieldName']];
+                    }
+                    $this->storeSingleValuedAssociation(
+                        $associationMapping['targetEntity'],
+                        array(
+                            $associationMapping['joinColumns'][0]['referencedColumnName'] => $id
+                        ),
+                        $entity,
+                        'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
+                    );
+                }
+            }
+        }
+
     }
 
     /**
@@ -599,16 +621,9 @@ class ViewGenerator {
                because css does not support \ in class name */
             $relatedClassInputFieldName = str_replace('\\', '_', strtolower($value["targetEntity"]));
 
-            if (!empty($_POST[$name])
-                && \Env::get('em')->getClassMetadata($entityWithNS)->isSingleValuedAssociation($name)
-            ) {
-                // store single-valued-associations
-                $col = $value['joinColumns'][0]['referencedColumnName'];
-                $association = \Env::get('em')->getRepository($value['targetEntity'])->findOneBy(array($col => $_POST[$name]));
-                $entity->{$methodName}($association);
-            } else if (!empty($relatedClassInputFieldName)
-                        && !empty($_POST[$relatedClassInputFieldName])
-                        && \Env::get('em')->getClassMetadata($entityWithNS)->isCollectionValuedAssociation($name)
+            if (!empty($relatedClassInputFieldName)
+                && !empty($_POST[$relatedClassInputFieldName])
+                && \Env::get('em')->getClassMetadata($entityWithNS)->isCollectionValuedAssociation($name)
             ) {
                 // store one to many associated entries
                 $associatedEntityClassMetadata = \Env::get('em')->getClassMetadata($value["targetEntity"]);
@@ -632,7 +647,7 @@ class ViewGenerator {
                     }
 
                     // save the "n" associated class data to its class
-                    $this->savePropertiesToClass($associatedEntity, $associatedEntityClassMetadata, $entityData);
+                    $this->savePropertiesToClass($associatedEntity, $associatedEntityClassMetadata, $entityData, $entityWithNS);
 
                     // Linking 1: link the associated entity to the main entity for doctrine
                     $entity->{'add' . preg_replace('/_([a-z])/', '\1', ucfirst(substr($name, 0, -1)))}($associatedEntity);
@@ -844,5 +859,10 @@ class ViewGenerator {
             $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
         }
         $this->options['cancelUrl']->setParam($parameterName, null);
+    }
+
+    protected function storeSingleValuedAssociation($targetEntity, $criteria, $entity, $methodName){
+        $association = \Env::get('em')->getRepository($targetEntity)->findOneBy($criteria);
+        $entity->{$methodName}($association);
     }
 }
