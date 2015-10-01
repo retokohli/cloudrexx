@@ -392,6 +392,11 @@ class User extends User_Profile
     {
         global $objDatabase;
 
+        // If the last login has failed and the captcha is wrong the login must be invalid.
+        if ($_SESSION['auth']['loginLastAuthFailed'] && !$captchaCheckResult) {
+            return false;
+        }
+
         $loginByEmail = false;
 
         $arrSettings = User_Setting::getSettings();
