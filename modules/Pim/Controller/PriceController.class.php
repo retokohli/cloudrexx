@@ -109,37 +109,8 @@ class PriceController extends \Cx\Core\Core\Model\Entity\Controller
             $prices = new \Cx\Modules\Pim\Model\Entity\Price();
         }
 
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($prices, array(
-            'header' => $_ARRAYLANG['TXT_MODULE_PIM_ACT_PRICE'],
-            'validate' => function ($formGenerator) {
-                // this validation checks whether already a price for the currency and product exists
-                $data = $formGenerator->getData()->toArray();
-
-                $currency = $data['currency'];
-                $product = $data['product'];
-                $priceRepository = \Env::get('cx')->getDb()->getEntityManager()->getRepository('Cx\Modules\Pim\Model\Entity\Price');
-                $prices =
-                    $priceRepository->createQueryBuilder('p')
-                    ->where('p.currency = ?1')->setParameter(1, $currency)
-                    ->andWhere('p.product = ?2')->setParameter(2, $product);
-                $prices = $prices->getQuery()->getResult();
-                if (!empty($data['editid']) && count($prices) > 1) {
-                    return false;
-                }
-                if (empty($data['editid']) && count($prices) > 0) {
-                    return false;
-                }
-                return true;
-            },
-            'functions' => array(
-                'add' => true,
-                'edit' => true,
-                'delete' => true,
-                'sorting' => true,
-                'paging' => true,
-                'filtering' => false,
-            ),
-        ));
+        $options = $this->getController('Backend')->getAllViewGeneratorOptions();
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($prices, $options);
         $this->template->setVariable('PRICES_CONTENT', $view->render());
     }
 }

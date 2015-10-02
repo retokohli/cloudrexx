@@ -59,7 +59,17 @@ class DataSet implements \Iterator {
     protected $data = array();
     protected $dataType = 'array';
 
-// TODO: DataSet must be extended, that it can handle objects
+    /**
+     * Identifier is used as a kind of description for the DataSet. For example: If you want to save an array with
+     * frontend users in a DataSet you can name the identifier something like 'frontendUser'
+     * This is used for the ViewGenerator, so you can have separated options for all DataSets
+     *
+     * @access protected
+     * @var $identifier
+     */
+    protected $identifier = '';
+
+    // TODO: DataSet must be extended, that it can handle objects
     public function __construct($data = array(), callable $converter = null) {
         if (!count($data)) {
             return;
@@ -260,6 +270,10 @@ class DataSet implements \Iterator {
     public function getDataType() {
         return $this->dataType;
     }
+
+    public function setDataType($dataType) {
+        $this->dataType = $dataType;
+    }
     
     public function entryExists($key) {
         return isset($this->data[$key]);
@@ -404,6 +418,26 @@ class DataSet implements \Iterator {
             }
             $this->data[$key] = array_merge($sortedData, $val);
         }
+    }
+
+    /**
+     * This function returns the identifier of the DataSet
+     *
+     * @access public
+     * @return string
+     */
+    public function getIdentifier(){
+        return $this->identifier;
+    }
+
+    /**
+     * This function sets the identifier of the DataSet
+     *
+     * @access public
+     * @param $identifier
+     */
+    public function setIdentifier($identifier){
+        $this->identifier = $identifier;
     }
 }
 

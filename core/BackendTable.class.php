@@ -46,7 +46,7 @@ class BackendTable extends HTML_Table {
 
     public function __construct($attrs = array(), $options = array()) {
         global $_ARRAYLANG;
-        
+
         if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $hasMasterTableHeader = !empty($options['header']);
             // add master table-header-row
@@ -55,6 +55,17 @@ class BackendTable extends HTML_Table {
             }
             $first = true;
             $row = 1 + $hasMasterTableHeader;
+            $sortBy     = (    isset($options['functions']['sortBy'])
+                            && is_array($options['functions']['sortBy'])
+                          )
+                          ? $options['functions']['sortBy']
+                          : array();
+            $sortingKey = !empty($sortBy) && isset($sortBy['sortingKey'])
+                          ? $sortBy['sortingKey']
+                          : '';
+            $sortField  = !empty($sortingKey) && isset($sortBy['field'])
+                          ? key($sortBy['field'])
+                          : '';
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
                 $virtual = $rows['virtual'];
@@ -64,6 +75,14 @@ class BackendTable extends HTML_Table {
                     $col++;
                 }
                 foreach ($rows as $header=>$data) {
+                    if (!empty($sortingKey) && $header === $sortingKey) {
+                        //Add the additional attribute id, for getting the updated sort order after the row sorting
+                        $this->updateRowAttributes($row, array('id' => 'sortingOrder_' . $data), true);
+                    }
+                    if (!empty($sortField) && $header === $sortField) {
+                        //Add the additional attribute class, to display the updated sort order after the row sorting
+                        $this->updateColAttributes($col, array('class' => 'sortBy' . $sortField));
+                    }
                     $encode = true;
                     if (
                         isset($options['fields']) &&
@@ -223,7 +242,9 @@ class BackendTable extends HTML_Table {
             }
             $attrs = array();
         }
-        parent::__construct(array_merge($attrs, array('class' => 'adminlist', 'width' => '100%')));
+        //add the class 'sortable' if the row sorting functionality is enabled
+        $className = !empty($sortField) ? '\'adminlist sortable\'' : 'adminlist';
+        parent::__construct(array_merge($attrs, array('class' => $className, 'width' => '100%')));
     }
 
     /**
@@ -409,7 +430,7 @@ class BackendTable extends HTML_Table {
      */
     function toHtml()
     {
-        $this->altRowAttributes(2, array('class' => 'row1'), array('class' => 'row2'), true);
+        $this->altRowAttributes(1, array('class' => 'row1'), array('class' => 'row2'), true);
         $strHtml = '';
         $tabs = $this->_getTabs();
         $tab = $this->_getTab();

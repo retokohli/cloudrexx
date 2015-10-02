@@ -76,15 +76,21 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 ),
                 'regularExpression' => array(
                     'header' => $_ARRAYLANG['regularExpression'],
+                    'tooltip' => $_ARRAYLANG['TXT_CORE_ROUTING_REGULAR_EXPRESSION_TOOLTIP'],
                 ),
                 'orderNo' => array(
+                    'showDetail' => false,
                     'header' => $_ARRAYLANG['orderNo'],
                 ),
                 'rewriteStatusCode' => array(
                     'header' => $_ARRAYLANG['rewriteStatusCode'],
+                    'type' => 'select',
+                    'validValues' => array(301=>301, 302=>302),
+                    'tooltip' => $_ARRAYLANG['TXT_CORE_ROUTING_REWRITE_STATUS_CODE_TOOLTIP'],
                 ),
                 'continueOnMatch' => array(
                     'header' => $_ARRAYLANG['continueOnMatch'],
+                    'tooltip' => $_ARRAYLANG['TXT_CORE_ROUTING_CONTINUE_ON_MATCH_TOOLTIP'],
                 ),
             ),
             'functions' => array(
@@ -94,6 +100,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 'sorting'   => true,
                 'paging'    => true,
                 'filtering' => false,
+                'sortBy' => [
+                    'field' => ['orderNo' => SORT_ASC]
+                ]
             ),
         );
     }

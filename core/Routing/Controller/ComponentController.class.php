@@ -52,6 +52,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     public function preResolve(\Cx\Core\Routing\Url $url) {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
+        }
         $em = $this->cx->getDb()->getEntityManager();
         $rewriteRuleRepo = $em->getRepository($this->getNamespace() . '\\Model\\Entity\\RewriteRule');
         $rewriteRules = $rewriteRuleRepo->findAll(array(), array('order'=>'asc'));
