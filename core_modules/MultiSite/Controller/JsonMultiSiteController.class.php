@@ -961,13 +961,6 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             $objUser->setRestoreKeyTime(intval($data['multisite_user_account_restore_key_time']), true);
         }
 
-        if(isset($customerType)) {
-            // if id is null, there is no crm user, so we create one
-            if ($this->contact->id === null) {
-                \Cx\Modules\Crm\Controller\CrmLibrary::addCrmContactFromAccessUser($objUser);
-            }
-        }
-
         // set profile data
         if (isset($data['multisite_user_profile_attribute'])) {
             $objUser->setProfile(contrexx_input2raw($data['multisite_user_profile_attribute']));
