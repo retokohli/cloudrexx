@@ -98,7 +98,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 verifications.`regex` AS `pattern`,
                 types.`name` AS `type_name`,
                 types.`multi_lang` AS `type_multi_lang`,
-                types.`dynamic` AS `type_dynamic`
+                types.`dynamic` AS `type_dynamic`,
+                types.`exp_search` As `exp_search`
             FROM
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS input,
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_names AS names,
@@ -167,7 +168,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 $arrInputfield['default_value'] = $arrInputfieldDefaultValue;
                 $arrInputfield['info'] = $arrInputfieldInfo;
                 $arrInputfield['context_type'] = $objInputfields->fields['context_type'];
-
+                $arrInputfield['exp_search']   = $objInputfields->fields['exp_search'];
                 $arrInputfields[$objInputfields->fields['id']] = $arrInputfield;
                 $objInputfields->MoveNext();
             }
@@ -232,7 +233,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 foreach ($this->arrInputfields as $key => $arrInputfield) {
                     $strMustfield = $arrInputfield['required']==1 ? 'checked="checked"' : '';
                     $strExpSearch = $arrInputfield['search']==1 ? 'checked="checked"' : '';
-
+                    
                     if($arrInputfield['id'] > $intLastId) {
                         $intLastId = $arrInputfield['id'];
                     }
@@ -305,7 +306,13 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                             ));
                             $objTpl->parse($this->moduleNameLC.'InputfieldLanguagesList');
                         }
-
+                        
+                        if ($arrInputfield['exp_search'] == 0) {
+                            $objTpl->hideBlock($this->moduleNameLC . 'InputfieldAdvancedSearch');
+                        } else {
+                            $objTpl->touchBlock($this->moduleNameLC . 'InputfieldAdvancedSearch');
+                        }   
+                        
                         $objTpl->parse($this->moduleNameLC.'Inputfield');
                     } else {
                     	if(($arrInputfield['id'] == 2 && $objForms->arrForms[$this->intFormId]['formUseLevel']) || ($arrInputfield['id'] == 1 && $objForms->arrForms[$this->intFormId]['formUseCategory'])) {
@@ -928,7 +935,11 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                     ));
                     $objTpl->parse($this->moduleNameLC.'InputfieldLanguagesList');
                 }
-
+                if ($arrInputfield['exp_search'] == 0) {
+                    $objTpl->hideBlock($this->moduleNameLC . 'InputfieldAdvancedSearch');
+                } else {
+                    $objTpl->touchBlock($this->moduleNameLC . 'InputfieldAdvancedSearch');
+                }
                 $objTpl->parse($this->moduleNameLC.'Inputfield');
             } else {
             	if(($arrInputfield['id'] == 2 && $objForms->arrForms[$this->intFormId]['formUseLevel']) || ($arrInputfield['id'] == 1 && $objForms->arrForms[$this->intFormId]['formUseCategory'])) {

@@ -1759,7 +1759,7 @@ global \$_DBCONFIG, \$_PATHCONFIG, \$_FTPCONFIG, \$_CONFIG;
 * Set installation status
 * -------------------------------------------------------------------------
 */
-define('CONTEXX_INSTALLED', true);
+define('CONTREXX_INSTALLED', true);
 
 /**
 * -------------------------------------------------------------------------

@@ -179,64 +179,65 @@ function delete_coupon(index) {
     }
 }
 cx.ready(function() {
-    cx.jQuery(function($) {
-        $("#end_time_unlimited").change(function() {
-            if ($("#end_time_unlimited").is(":checked")) {
-                $("#end_date").attr("disabled", true);
-                $("#end_date").val("");
-            } else {
-                $("#end_date").attr("disabled", false);
-                $("#end_date").datepicker({
-                // TODO: Maybe have to set the default again here?
-                //        defaultDate: "'.
-                //            ($objCouponEdit->end_time()
-                //              ? date(ASCMS_DATE_FORMAT_DATE, $objCouponEdit->end_time())
-                //              : date(ASCMS_DATE_FORMAT_DATE)).'"
-                });
-            }
-        }).change();
-        $("#unlimited").change(function() {
-            if ($("#unlimited").is(":checked")) {
-                $("#uses").attr("disabled", true).val("");
-            } else {
-                $("#uses").attr("disabled", false).val("1");
-            }
-        }).change();
-        var element = $("#customer_widget").find("input[name=customer_id]");
-        var customer_id = element.val();
-        $("[name=global_or_customer]").change(function() {
-            if ($("#global").is(":checked")) {
-                customer_id = element.val();
-                element.val("0");
-                $("#customer_widget").hide();
-            } else {
-                element.val(customer_id);
-                $("#customer_widget").show();
-            }
-        }).change();
-        $(".icon_url").bind("click", function() {
-            $(this).parents("tr").first().find(".layer_url").
-            css("display", "block").find("input").focus();
-        });
-        $("#coupon_type-1").click(function() {
-            change_type("rate")
-        });
-        $("#coupon_type-2").click(function() {
-            change_type("amount")
-        });
-        function change_type(selected) {
-            var display_rate = "table-row";
-            var display_amount = "none";
-            switch (selected) {
-                case "amount":
-                    display_rate = "none";
-                    display_amount = "table-row";
-            }
-            $("#coupon_type_rate_row").css("display", display_rate);
-            $("#coupon_type_amount_row").css("display", display_amount);
-        };
-        change_type("{SHOP_DISCOUNT_COUPON_TYPE_SELECTED}");
+    var $ = cx.jQuery;
+    $("#end_time_unlimited").change(function() {
+        if ($("#end_time_unlimited").is(":checked")) {
+            $("#end_date").attr("disabled", true);
+            $("#end_date").val("");
+        } else {
+            $("#end_date").attr("disabled", false);
+            $("#end_date").datepicker({
+            // TODO: Maybe have to set the default again here?
+            //        defaultDate: "'.
+            //            ($objCouponEdit->end_time()
+            //              ? date(ASCMS_DATE_FORMAT_DATE, $objCouponEdit->end_time())
+            //              : date(ASCMS_DATE_FORMAT_DATE)).'"
+            });
+        }
+    }).change();
+    var uses = $("#uses").val();
+    $("#unlimited").change(function() {
+        if ($("#unlimited").is(":checked")) {
+            uses = $("#uses").val();
+            $("#uses").attr("disabled", true).val("");
+        } else {
+            $("#uses").attr("disabled", false).val(uses);
+        }
+    }).change();
+    var element = $("#customer_widget").find("input[name=customer_id]");
+    var customer_id = element.val();
+    $("[name=global_or_customer]").change(function() {
+        if ($("#global").is(":checked")) {
+            customer_id = element.val();
+            element.val("0");
+            $("#customer_widget").hide();
+        } else {
+            element.val(customer_id);
+            $("#customer_widget").show();
+        }
+    }).change();
+    $(".icon_url").bind("click", function() {
+        $(this).parents("tr").first().find(".layer_url").
+        css("display", "block").find("input").focus();
     });
+    $("#coupon_type-1").click(function() {
+        change_type("rate")
+    });
+    $("#coupon_type-2").click(function() {
+        change_type("amount")
+    });
+    function change_type(selected) {
+        var display_rate = "table-row";
+        var display_amount = "none";
+        switch (selected) {
+            case "amount":
+                display_rate = "none";
+                display_amount = "table-row";
+        }
+        $("#coupon_type_rate_row").css("display", display_rate);
+        $("#coupon_type_amount_row").css("display", display_amount);
+    };
+    change_type("{SHOP_DISCOUNT_COUPON_TYPE_SELECTED}");
 });
 // ]]>
 </script>

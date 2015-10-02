@@ -1,0 +1,47 @@
+<!-- BEGIN showSslCertificateForm -->
+<div class="grid-elm grid-align-1-1 grid-offset">
+  <form role="form" action="{MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL}" id="multisite_ssl_certificate_form">
+    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <h2>{TXT_CORE_MODULE_MULTISITE_DOMAIN_SSL_CERTIFICATE}</h2>
+    <fieldset>
+        <!-- BEGIN showSslCertificate -->
+      <div class="row process">
+          <p> {TXT_MULTISITE_DOMAIN_CERTIFICATE}</p><br>
+          <span>{TXT_CORE_MODULE_MULTISITE_SECURE_DOMAIN_NEW_CERTIFICATE} : </span>
+      </div>  
+        <!-- END showSslCertificate -->
+      <div class="row process">
+        <label for="certificate_name">{TXT_CORE_MODULE_MULTISITE_CERTIFICATE_NAME}:</label>
+        <input type="text" name="certificate_name" id="certificate_name" value="">
+      </div>  
+      <div class="row process">
+        <label for="private_key">{TXT_CORE_MODULE_MULTISITE_PRIVATE_KEY}:</label>
+        <textarea name="private_key" id="private_key"></textarea>
+      </div>  
+      <div class="row process">
+        <label for="certificate">{TXT_CORE_MODULE_MULTISITE_CERTIFICATE}:</label>
+        <textarea name="certificate" id="certificate"></textarea>
+      </div>  
+      <div class="row process">
+        <label for="ca_certificate">{TXT_CORE_MODULE_MULTISITE_CA_CERTIFICATE}:</label>
+        <textarea name="ca_certificate" id="ca_certificate"></textarea>
+      </div>  
+      <div class="row">
+        <button type="submit" class="save loadingProcess" data-loading-text="<img src='/lib/javascript/jquery/jstree/themes/default/throbber.gif' /> {TXT_CORE_MODULE_MULTISITE_LOADING_TEXT}">{TXT_CORE_MODULE_MULTISITE_SAVE}</button>
+        <button type="button" class="" data-dismiss="modal">{TXT_CORE_MODULE_MULTISITE_CANCEL}</button>
+      </div>
+    </fieldset>
+  </form>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    jQuery('#multisite_ssl_certificate_form').submit(function() {
+          var apiUrl = '/api/MultiSite/Website/Domains?id=' + getQueryParams(document.location.search)['id'];
+          sendApiFormRequest('#multisite_ssl_certificate_form', '#DomainSsl','#multisite_website_domains', apiUrl);
+          return false;
+    });
+});
+/* ]]> */
+</script>
+<!-- END showSslCertificateForm -->

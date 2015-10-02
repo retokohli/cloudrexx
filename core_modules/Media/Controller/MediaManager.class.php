@@ -663,6 +663,15 @@ class MediaManager extends MediaLibrary
                             $thumb   = $this->webPath . $fileName;
                         }
 
+                        if (in_array(
+                            $fileName, $this->highlightName
+                        ))
+                        {
+                            $thumb .= '?lastAccess=' . fileatime(
+                                    $this->path . $fileName
+                                );
+                        }
+
                         $this->_objTpl->setVariable(array(  // thumbnail
                             'MEDIA_FILE_NAME_SIZE'     => $tmpSize[0] . ' x ' . $tmpSize[1],
                             'MEDIA_FILE_NAME_PRE'      =>'preview_' . $fileName,

@@ -442,7 +442,6 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 }
             }
         }
-        $saveCrmContact = $this->arrForms[$_GET['cmd']]['saveDataInCRM'];
 
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) { //form submitted
             $this->checkLegacyMode();
@@ -451,15 +450,9 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
             $arrFormData = $this->_getContactFormData();
             if ($arrFormData) {
                 if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) { //validation ok
-
-                    if ($saveCrmContact) {
+                    if (!empty($arrFormData['saveDataInCRM'])) {
                         $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
-                        
-                        $arrContactData = $arrFormData;
-                        
-                        $entity = \Env::get('em')->getRepository('Cx\Core_Modules\Contact\Model\Entity\Form')->findOneBy(array('id' => $formId));
-                        $arrContactData['assigned_membreships'] = $entity ? $entity->getCrmCustomerGroups() : array();
-                        $objCrmLibrary->addCrmContact($arrContactData);
+                        $objCrmLibrary->addCrmContact($arrFormData);
                     }
                     $this->sendMail($arrFormData);
                     if (isset($arrFormData['showForm']) && !$arrFormData['showForm']) {
@@ -677,7 +670,7 @@ CODE;
         if (isset($_POST) && !empty($_POST)) {
             $arrFormData = array();
             $arrFormData['id'] = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
-            if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['mailTemplate'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'], $arrFormData['useEmailOfSender'], $arrFormData['htmlMail'], $arrFormData['sendAttachment'])) {
+            if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['mailTemplate'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'], $arrFormData['useEmailOfSender'], $arrFormData['htmlMail'], $arrFormData['sendAttachment'], $arrFormData['saveDataInCRM'], $arrFormData['crmCustomerGroups'])) {
                 $arrFormData['fields'] = $this->getFormFields($arrFormData['id']);
                 foreach ($arrFormData['fields'] as $field) {
                     $this->arrFormFields[] = $field['lang'][$_LANGID]['name'];

@@ -1574,7 +1574,7 @@ class CalendarUpdate31
      */
     public function migrateContentPages()
     {
-        $em = \Env::em();
+        $em = \Env::get('em');
         $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
         // all cmd changes of all calendar pages

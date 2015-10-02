@@ -249,6 +249,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'MULTISITE_EMAIL_URL'           => $emailUrl->toString(),
             'MULTISITE_ADDRESS_URL'         => $addressUrl->toString(),
             'MULTISITE_PAYMENT_URL'         => $paymentUrl->toString(),
+            'MULTISITE_CONVERSION_TRACK'            => !\FWValidator::isEmpty(\Cx\Core\Setting\Controller\Setting::getValue('conversionTracking', 'MultiSite')),
+            'MULTISITE_TRACK_GOOGLE_CONVERSION'     => !\FWValidator::isEmpty(\Cx\Core\Setting\Controller\Setting::getValue('trackGoogleConversion','MultiSite')),
+            'MULTISITE_GOOGLE_CONVERSION_ID'        => \Cx\Core\Setting\Controller\Setting::getValue('googleConversionId','MultiSite'),
+            'MULTISITE_TRACK_FACEBOOK_CONVERSION'   => !\FWValidator::isEmpty(\Cx\Core\Setting\Controller\Setting::getValue('trackFacebookConversion','MultiSite')),
+            'MULTISITE_FACEBOOK_CONVERSION_ID'      => \Cx\Core\Setting\Controller\Setting::getValue('facebookConversionId','MultiSite'),
             'TXT_MULTISITE_ACCEPT_TERMS'    => sprintf($_ARRAYLANG['TXT_MULTISITE_ACCEPT_TERMS'], $termsUrl),
             'TXT_MULTISITE_BUILD_WEBSITE_TITLE' => $_ARRAYLANG['TXT_MULTISITE_BUILD_WEBSITE_TITLE'],
             'TXT_MULTISITE_BUILD_WEBSITE_MSG' => $buildWebsiteMsg,
@@ -1000,6 +1005,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // hide the edit/delete icons if the domain is selected as main domain or  base domain.
                 $domainActionStatus = !$statusDisabled ? ($domain->getName() !== $mainDomainName && !$isBaseDomain) : false;
                 self::showOrHideBlock($objTemplate, 'showWebsiteDomainActions', $domainActionStatus);
+                // hide the ssl certificate icon if it is a base domain.
+                self::showOrHideBlock($objTemplate, 'showDomainWithSslCertificateAction', $domainActionStatus);
                 // hide the spf icon if the domain is the base domain.
                 $domainSpfStatus = !$statusDisabled ? (!$isBaseDomain) : false;
                 self::showOrHideBlock($objTemplate, 'showWebsiteSpfAction', $domainSpfStatus);
@@ -1165,17 +1172,37 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         );
                         break;
                     
+                    case 'Ssl':
+                        $certificateName = isset($_POST['certificate_name']) ? contrexx_input2raw($_POST['certificate_name']) : '';
+                        $privateKey      = isset($_POST['private_key']) ? contrexx_input2raw($_POST['private_key']) : '';
+                        if (empty($certificateName) || empty($privateKey)) {
+                            return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_SSL_FAILED'], false);
+                        }
+                        $command = 'linkSsl';
+                        $params = array(
+                            'domainName'      => $domainName,
+                            'certificateName' => $certificateName,
+                            'privateKey'      => $privateKey,
+                            'certificate'     => isset($_POST['certificate']) ? contrexx_input2raw($_POST['certificate']) : '',
+                            'caCertificate'   => isset($_POST['ca_certificate']) ? contrexx_input2raw($_POST['ca_certificate']) : ''
+                        );
+                        break;
+
                     default :
                         return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_UNKNOWN'], false);
                         break;
                 }
                 if (isset($command) && isset($params)) {
-                    $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite($command, $params, $website);
+                    if ($submitFormAction == 'Ssl') {
+                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer($command, $params, $website->getWebsiteServiceServer());
+                    } else {                    
+                        $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnWebsite($command, $params, $website);
+                    }
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         $message = ($submitFormAction == 'Select') 
                                     ? sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_SUCCESS_MSG'], contrexx_raw2xhtml($domainName))
                                     : $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_SUCCESS_MSG'];
-                                
+
                         return $this->parseJsonMessage($message, true);
                     } else {
                         return $this->parseJsonMessage($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_DOMAIN_'.strtoupper($submitFormAction).'_FAILED'], false);
@@ -1199,6 +1226,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $objTemplate->setVariable(array(
                         'MULTISITE_DOMAIN_NAME' => contrexx_raw2xhtml($domainName),
                         'MULTISITE_WEBSITE_DOMAIN_ALIAS_ID' => contrexx_raw2xhtml($domainId)
+                    ));
+                }
+                
+                if (($loadPageAction == 'Ssl') && $objTemplate->blockExists('showSslCertificateForm')) {
+                    $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnServiceServer('getDomainSslCertificate', array('domainName' => $domainName), $website->getWebsiteServiceServer());                    
+                    $sslCertificate = ($response && $response->status == 'success' && $response->data->status == 'success') ? implode(', ', $response->data->sslCertificate) : '';
+                    self::showOrHideBlock($objTemplate, 'showSslCertificate', $sslCertificate);                    
+                    $objTemplate->setVariable(array(                        
+                        'TXT_MULTISITE_DOMAIN_CERTIFICATE' => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DOMAIN_CERTIFICATE'], contrexx_raw2xhtml($sslCertificate)),
                     ));
                 }
                 
@@ -1229,7 +1265,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
 
             $objTemplate->setVariable(array(
-                'MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL' => '/api/MultiSite/Domain?action=' . $loadPageAction . '&website_id=' . $websiteId . '&domain_id=' . $domainId,
+                'MULTISITE_WEBSITE_DOMAIN_SUBMIT_URL' => '/api/MultiSite/Domain?action=' . $loadPageAction . '&website_id=' . $websiteId . '&domain_id=' . $domainId . '&domain_name=' . $domainName,
             ));
 
             return $objTemplate->get();
@@ -1403,11 +1439,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     if ($response && $response->status == 'success' && $response->data->status == 'success') {
                         return $this->parseJsonMessage($successMsg, true);
                     } else {
-                        if (is_object($response->message)) {
-                            return $this->parseJsonMessage($response->message->message, false);
-                        } else {
-                            return $this->parseJsonMessage($response->message, false);
+                        $message = $response->message;
+                        if (is_object($response->message) && \FWValidator::isEmpty($message)) {
+                            $message = $response->message->message;
+                        } else if(is_object($response->data) && \FWValidator::isEmpty($message)) {
+                            $message = $response->data->message;
                         }
+                        return $this->parseJsonMessage($message, false);
                     }
                 }
             } catch (\Exception $e) {
@@ -2060,6 +2098,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'PRODUCT_NOTE_EXPIRATION' => $product->getNoteExpiration(),
             'PRODUCT_NOTE_PRICE'      => $product->getNotePrice(),
             'PRODUCT_NAME'            => $product->getName(),
+            'PRODUCT_PRICE'           => $productPrice,
+            'PRODUCT_ORDER_CURRENCY'  => $currency->getName(),
             'PRODUCT_ID'              => $product->getId(),
             'RENEWAL_UNIT'            => isset($_GET['renewalOption']) ? contrexx_raw2xhtml($_GET['renewalOption']) : 'monthly',
         ));
@@ -2481,6 +2521,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'manager')) {
                    throw new MultiSiteException("Failed to add Setting entry for Affiliate System");
             }
+            if (   \Cx\Core\Setting\Controller\Setting::getValue('conversionTracking', 'MultiSite') === NULL 
+                && !\Cx\Core\Setting\Controller\Setting::add('conversionTracking', '0', 7,
+                   \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'manager')) {
+                   throw new MultiSiteException("Failed to add Setting entry for Conversion Tracking");
+            }
             
             if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(self::MODE_MANAGER, self::MODE_HYBRID))) {
                 if (!\FWValidator::isEmpty(\Env::get('db'))) {
@@ -2489,6 +2534,30 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         'MultiSite External Payment Customer ID',
                         5);
                 }
+                
+                //conversion group
+                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'conversion','FileSystem');
+                if (\Cx\Core\Setting\Controller\Setting::getValue('trackGoogleConversion','MultiSite') === NULL
+                    && !\Cx\Core\Setting\Controller\Setting::add('trackGoogleConversion', '0', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'conversion')){
+                        throw new MultiSiteException("Failed to add Setting entry for Track Google Conversion");
+                }
+                if (\Cx\Core\Setting\Controller\Setting::getValue('googleConversionId','MultiSite') === NULL
+                    && !\Cx\Core\Setting\Controller\Setting::add('googleConversionId', '', 2,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'conversion')){
+                        throw new MultiSiteException("Failed to add Setting entry for Google Conversion Id");
+                }
+                if (\Cx\Core\Setting\Controller\Setting::getValue('trackFacebookConversion','MultiSite') === NULL
+                    && !\Cx\Core\Setting\Controller\Setting::add('trackFacebookConversion', '0', 3,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:Activated, 0:Deactivated', 'conversion')){
+                        throw new MultiSiteException("Failed to add Setting entry for Track Facebook Conversion");
+                }
+                if (\Cx\Core\Setting\Controller\Setting::getValue('facebookConversionId','MultiSite') === NULL
+                    && !\Cx\Core\Setting\Controller\Setting::add('facebookConversionId', '', 4,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'conversion')){
+                        throw new MultiSiteException("Failed to add Setting entry for Facebook Conversion Id");
+                }
+
                 //affiliate group
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'affiliate','FileSystem');
                 if (   \Cx\Core\Setting\Controller\Setting::getValue('affiliateIdQueryStringKey','MultiSite') === NULL
@@ -2593,6 +2662,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $this->registerOrderPaymentEventListener();
                 $this->registerWebsiteCollectionEventListener();
                 $this->registerOrderSubscriptionEventListener();
+                $this->registerOrderOrderEventListener();
                 break;
 
             case self::MODE_HYBRID:
@@ -2604,6 +2674,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $this->registerOrderPaymentEventListener();
                 $this->registerWebsiteCollectionEventListener();
                 $this->registerOrderSubscriptionEventListener();
+                $this->registerOrderOrderEventListener();
                 break;
 
             case self::MODE_SERVICE:
@@ -2673,6 +2744,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
         $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\User', $accessUserEventListener);
+
+// TODO: should we sync changes on Cx\Core\User\Model\Entity\User?
+        /*
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core\\User\\Model\\Entity\\User', $accessUserEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core\\User\\Model\\Entity\\User', $accessUserEventListener);
+        }*/
     }
 
     protected function registerCronMailEventListener() {
@@ -2722,6 +2799,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm = \Env::get('cx')->getEvents();
         $evm->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Modules\\Order\\Model\\Entity\\Payment', $orderPaymentEventListener);
         
+    }
+    
+    protected function registerOrderOrderEventListener() {
+        $orderOrderEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\OrderOrderEventListener();
+        $evm = \Env::get('cx')->getEvents();
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Modules\\Order\\Model\\Entity\\Order', $orderOrderEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postFlush, 'Cx\\Modules\\Order\\Model\\Entity\\Order', $orderOrderEventListener);
     }
     
     protected function registerOrderSubscriptionEventListener() {
@@ -2865,7 +2949,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                            && isset($_REQUEST['object']) && $_REQUEST['object'] == 'MultiSite'
                            && isset($_REQUEST['act'])
                                 ? '(API-call: '.$_REQUEST['act'].')'
-                                : '';
+                                : $_SERVER['REQUEST_URI'];
             \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...".$requestInfo);
             // set SERVER_NAME to BaseDN of Website
             $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite');
@@ -2916,6 +3000,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         if (in_array($plainCmd, array('MultiSite', 'JsonData'))) {
+            return;
+        }
+
+        // do not set main-domain to customer-panel-domain when having requested the backend
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             return;
         }
 
@@ -3156,8 +3245,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $adminUsers = array();
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
             case ComponentController::MODE_WEBSITE:
-
-                $userRepo = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\User');
+                $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+                $userRepo = $em->getRepository('Cx\Core\User\Model\Entity\User');
                 $users = $userRepo->findBy(array('isAdmin' => '1'));
 
                 
@@ -3165,7 +3254,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $adminUsers[$user->getId()] = $user;
                 }
 
-                $groupRepo = \Env::get('em')->getRepository('Cx\Core\User\Model\Entity\Group');
+                $groupRepo = $em->getRepository('Cx\Core\User\Model\Entity\Group');
                 $groups = $groupRepo->findBy(array('type' => 'backend'));
 
                 foreach ($groups as $group) {
@@ -3429,6 +3518,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                                                                         \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_type','Crm')
                                                                                     .'][0]',
                     'MULTISITE_CUSTOMER_TYPE_ATTRIBUT_ID'                         => \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_customer_type','Crm'),
+                    'MULTISITE_INDUSTRY_TYPE_ATTRIBUT_ID'                         => \Cx\Core\Setting\Controller\Setting::getValue('user_profile_attribute_industry_type','Crm'),
                 ));
                 $objTemplate->_blocks['__global__'] = preg_replace('/<\/body>/', $objContactTpl->get() . '\\0', $objTemplate->_blocks['__global__']);
                 break;

@@ -99,8 +99,8 @@ class FileSystemWebsiteRepository {
         try{
             
             foreach ($domainContent as $domainValue) {
-                $domainName = preg_split('/\s+/', $domainValue); 
-                if ($name == $domainName[0]) {
+                $domainName = preg_split('/\s+/', strtolower($domainValue)); 
+                if (strtolower($name) == $domainName[0]) {
                     $websitePath = preg_split('/\\//', $domainName[1]);
                     return $this->findByName($basePath, end($websitePath));
                 }

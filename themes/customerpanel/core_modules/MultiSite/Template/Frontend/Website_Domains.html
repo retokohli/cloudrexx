@@ -19,6 +19,9 @@
             <!-- END showWebsiteMainDomain -->
             </td>
             <td class="actions">
+              <!-- BEGIN showDomainWithSslCertificateAction -->
+              <a class="ssl-certificate-link domainModal" data-remote="/api/MultiSite/Domain/Ssl?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="DomainSsl" ></a>&nbsp;
+              <!-- END showDomainWithSslCertificateAction -->
               <!-- BEGIN showWebsiteSpfAction -->
               <a class="entypo-help domainModal" data-remote="/api/MultiSite/Domain/Spf?website_id={MULTISITE_WEBSITE_ID}&domain_name={MULTISITE_WEBSITE_DOMAIN}&domain_id={MULTISITE_WEBSITE_DOMAIN_ID}" data-target="DomainSpf" ></a>&nbsp;
               <!-- END showWebsiteSpfAction -->
@@ -52,6 +55,11 @@
     </div>
 </div>
 <div aria-hidden="true" class="modal fade" id="DomainSpf" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content"></div>
+    </div>
+</div>
+<div aria-hidden="true" class="modal fade" id="DomainSsl" role="dialog" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content"></div>
     </div>

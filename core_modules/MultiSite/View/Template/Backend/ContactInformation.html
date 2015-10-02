@@ -67,7 +67,7 @@
             </div>
             <!-- END multisite_user_profile_attribute_country -->
             <div class="row">
-              <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_INDUSTRY_TYPE}</label><br />
+              <label>{TXT_CORE_MODULE_MULTISITE_USER_ACCOUNT_INDUSTRY_TYPE}</label> <font color="red">*</font><br />
                 <select name="{MULTISITE_INDUSTRY_TYPE_POST_NAME}" id="industryType">
                 <option value="">{TXT_CORE_MODULE_MULTISITE_PLEASE_SELECT}</option>
                 {CRM_INDUSTRY_DROPDOWN}
@@ -109,13 +109,10 @@
         jQuery('#multisite_contact_information_form').submit(function () {
             jQuery('input, select').removeClass('input_error');
             // MULTISITE_CUSTOMER_TYPE_ATTRIBUT_ID = Id of field where we store the customer type from crm
-            var validationFields = ['firstname','lastname','address','zip','city','country', '{MULTISITE_CUSTOMER_TYPE_ATTRIBUT_ID}'];
+            var validationFields = ['firstname','lastname','address','zip','city','country', '{MULTISITE_CUSTOMER_TYPE_ATTRIBUT_ID}', '{MULTISITE_INDUSTRY_TYPE_ATTRIBUT_ID}'];
             var error = false;
             jQuery.each(validationFields, function (key, value) {
-              var inputFieldName = value;
-              if(value != 'customer_type'){
-                  var inputFieldName = 'multisite_user_profile_attribute[' + value + '][0]';
-              }
+              var inputFieldName = 'multisite_user_profile_attribute[' + value + '][0]';
               var inputField = jQuery('#multisite_contact_information_form [name="' + inputFieldName + '"]');
               if (inputField.val() == '' || inputField.val() == '0') {
                 inputField.addClass('input_error').scroll();

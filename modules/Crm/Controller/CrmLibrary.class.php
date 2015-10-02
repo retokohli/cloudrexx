@@ -1385,7 +1385,7 @@ class CrmLibrary
                             OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_social_network` WHERE c.id = contact_id AND MATCH (url) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
                             OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_phone` WHERE c.id = contact_id AND MATCH (phone) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
                             OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_comment` WHERE c.id = customer_id AND MATCH (comment) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
-                            OR MATCH (cur.name) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) OR MATCH (t.label) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
+                            OR MATCH (t.label) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
                             OR (select 1 FROM `".DBPREFIX."module_{$this->moduleNameLC}_customer_membership` as m JOIN `".DBPREFIX."module_{$this->moduleNameLC}_membership_local` As ml ON (ml.entry_id=m.membership_id AND ml.lang_id = '".$_LANGID."') WHERE c.id = m.contact_id AND MATCH (ml.value) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
                             OR MATCH (Inloc.value) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
                             OR MATCH (lang.name) AGAINST ('".contrexx_raw2db($filter['term'])."*' IN BOOLEAN MODE) 
@@ -2579,14 +2579,20 @@ class CrmLibrary
                 }
 
                 //insert address
-                if (!empty ($fieldValues['access_address']) || !empty ($fieldValues['access_city']) || !empty ($fieldValues['access_zip']) || !empty ($fieldValues['access_country'])) {
+                $accessAddress = !empty ($fieldValues['access_address']) ? contrexx_input2db($fieldValues['access_address']) : '';
+                $accessCity    = !empty ($fieldValues['access_city']) ? contrexx_input2db($fieldValues['access_city']) : '';
+                $accessZip     = !empty ($fieldValues['access_zip']) ? contrexx_input2db($fieldValues['access_zip']) : '';
+                $accessCountry = !empty ($fieldValues['access_country']) ? contrexx_input2db($fieldValues['access_country']) : '';
+                $accessState   = !empty ($fieldValues['access_state']) ? contrexx_input2db($fieldValues['access_state']) : '';
+                
+                if ($accessAddress || $accessCity || $accessZip || $accessCountry) {
 
                     $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleNameLC}_customer_contact_address` SET
-                                    address      = '". contrexx_input2db($fieldValues['access_address']) ."',
-                                    city         = '". contrexx_input2db($fieldValues['access_city']) ."',
-                                    state        = '". contrexx_input2db($fieldValues['access_state']) ."',
-                                    zip          = '". contrexx_input2db($fieldValues['access_zip']) ."',
-                                    country      = '". contrexx_input2db($fieldValues['access_country']) ."',
+                                    address      = '". $accessAddress ."',
+                                    city         = '". $accessCity ."',
+                                    state        = '". $accessState ."',
+                                    zip          = '". $accessZip ."',
+                                    country      = '". $accessCountry ."',
                                     Address_Type = '2',
                                     is_primary   = '1',
                                     contact_id   = '{$this->contact->id}'";
@@ -2633,8 +2639,8 @@ class CrmLibrary
                     $query .= implode(",", $values);
                     $objDatabase->Execute($query);
                 }
-                if (!empty($arrFormData['assigned_membreships'])) {
-                    $this->updateCustomerMemberships($arrFormData['assigned_membreships'], $this->contact->id);
+                if (!empty($arrFormData['crmCustomerGroups'])) {
+                    $this->updateCustomerMemberships($arrFormData['crmCustomerGroups'], $this->contact->id);
                 }
                 // notify the staff's
                 $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName, $this->contact->family_name, $this->contact->contact_gender);

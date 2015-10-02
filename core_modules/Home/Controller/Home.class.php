@@ -60,7 +60,7 @@ class Home {
 
     function getPage()
     {
-        global $_CORELANG, $_CONFIG, $objTemplate;
+        global $objTemplate;
 
         if (!isset($_GET['act'])) {
             $_GET['act']='';
@@ -138,8 +138,7 @@ class Home {
         $message = $license->getMessage(true, \FWLanguage::getLanguageCodeById(BACKEND_LANG_ID), $_CORELANG);
         if ($message instanceof \Cx\Core_Modules\License\Message && strlen($message->getText()) && $message->showInDashboard()) {
             $licenseManager = new \Cx\Core_Modules\License\LicenseManager('', null, $_CORELANG, $_CONFIG, $objDatabase);
-            //$objTemplate->setVariable('MESSAGE_TITLE', contrexx_raw2xhtml($licenseManager->getReplacedMessageText($message)));
-            $objTemplate->setVariable('MESSAGE_TITLE', $licenseManager->getReplacedMessageText($message));
+            $objTemplate->setVariable('MESSAGE_TITLE', contrexx_raw2xhtml($licenseManager->getReplacedMessageText($message)));
             $licenseType = $message->getType();
             switch ($licenseType) {
                 case '--this case is not defined by license --':

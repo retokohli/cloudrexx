@@ -135,7 +135,7 @@ $_ARRAYLANG['TXT_CONTACT_FILE_TOO_LARGE'] = "Die Datei %s wurde nicht hinauf gel
 $_ARRAYLANG['TXT_CONTACT_FILE_CORRUPT'] = "Die Datei %s wurde nicht komplet hinauf geladen!";
 $_ARRAYLANG['TXT_CONTACT_FILE_NOT_UPLOADED'] = "Eine Datei wurde nicht hinauf geladen!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'] = "CAPTCHA-Schutz";
-$_ARRAYLANG['TXT_CONTACT_SAVE_DATA_IN_CRM']   = "Daten im CRM speichern";
+$_ARRAYLANG['TXT_CONTACT_SAVE_DATA_IN_CRM']   = "Neuer CRM Kontakt von Kontaktanfrage erstellen";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Tippen Sie bitte die Zeichenfolge im dargestellten Bild in das Textfeld ein. Dies ist notwendig, damit das System Sie von einem Spambot unterscheiden kann.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'] = "Durch das Aktivieren dieser Option, wird zusätzlich eine Kopie der angegebenen Formulardaten an den Absender geschickt.";
 $_ARRAYLANG['TXT_CONTACT_SEND_COPY'] = "Kopie an Absender";
@@ -201,4 +201,6 @@ $_ARRAYLANG['TXT_CONTACT_XLS_TOOLTIP'] = "CSV-Export in ISO-8859-1<br /><i>(opti
 $_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM'] = "Die Anfragen dieses Formulars werden automatisch ins CRM als neue Kontaktpersonen übertragen.";
 $_ARRAYLANG['TXT_CONTACT_DATETIME'] = "Datum & Zeit";
 $_ARRAYLANG['TXT_CONTACT_CHOOSE_MEMBERSHIPS']  = "Kundengruppe wählen";
+$_ARRAYLANG['TXT_CONTACT_ASSIGN_TO_CRM_CUSTOMER_GROUP']  = "Zuordnung zu CRM Kundengruppe";
+$_ARRAYLANG['TXT_CONTACT_ASSIGN_CRM_CUSTOMER_GROUP_DESCRIPTION'] = "Wählen Sie die Kundengruppen, zu welchen der neue CRM Kontakt hinzugefügt werden soll.";
 ?>
