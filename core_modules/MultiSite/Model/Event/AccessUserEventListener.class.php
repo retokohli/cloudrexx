@@ -125,7 +125,7 @@ class AccessUserEventListener implements \Cx\Core\Event\Model\Entity\EventListen
                             throw new \Exception('Diese Funktion ist noch nicht freigeschalten. Aus Sicherheitsgründen bitten wir Sie, Ihre Anmeldung &uuml;ber den im Willkommens-E-Mail hinterlegten Link zu best&auml;tigen. Anschliessend wird Ihnen diese Funktion zur Verf&uuml;gung stehen. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                         }
 
-                        if (\FWUser::getFWUserObject()->objUser->login() && ($objUser->getId() != \FWUser::getFWUserObject()->objUser->getId())) {
+                        if (\FWUser::getFWUserObject()->objUser->isLoggedIn() && ($objUser->getId() != \FWUser::getFWUserObject()->objUser->getId())) {
                             throw new \Exception('Das Benutzerkonto des Websitebetreibers kann nicht ge&auml;ndert werden. <a href="javascript:window.history.back()">Zur&uuml;ck</a>');
                         }
                         
