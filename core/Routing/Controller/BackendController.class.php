@@ -79,6 +79,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     'tooltip' => $_ARRAYLANG['TXT_CORE_ROUTING_REGULAR_EXPRESSION_TOOLTIP'],
                 ),
                 'orderNo' => array(
+                    'showOverview' => false,
                     'showDetail' => false,
                     'header' => $_ARRAYLANG['orderNo'],
                 ),
