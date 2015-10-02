@@ -353,7 +353,7 @@ class ViewGenerator {
         //Register the script Backend.js and activate the jqueryui and cx for the row sorting
         \JS::activate('cx');
         \JS::activate('jqueryui');
-        \JS::registerJS($cx->getCoreFolderName() . '/Html/View/Script/Backend.js');
+        \JS::registerJS(substr($cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
     }
 
     /**
