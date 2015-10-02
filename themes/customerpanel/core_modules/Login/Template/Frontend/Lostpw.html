@@ -1,5 +1,7 @@
-<div class="grid-elm grid-align-1-1 grid-offset-bottom">   
-    <p>{LOGIN_STATUS_MESSAGE}</p>
+<div class="grid-elm grid-align-1-1 grid-offset-bottom">
+    <!-- BEGIN login_lost_password_message -->
+    <div class="{LOGIN_STATUS_MESSAGE_TYPE}">{LOGIN_STATUS_MESSAGE}</div>
+    <!-- END login_lost_password_message -->
     <form class="resetForm" role="form" method="post" action="{NODE_LOGIN_LOSTPW}">
         <!-- BEGIN login_lost_password -->
         <fieldset>   
