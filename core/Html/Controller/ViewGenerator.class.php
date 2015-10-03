@@ -223,13 +223,26 @@ class ViewGenerator {
         if (empty($entityData)) {
             $entityData = $_POST;
         }
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
         $primaryKeyName = $entityClassMetadata->getSingleIdentifierFieldName(); //get primary key name
         $entityColumnNames = $entityClassMetadata->getColumnNames(); //get the names of all fields
+
+        //If the view is sortable, get the 'sortBy' field name and store it to the variable
+        $sortByFieldName = (    isset($this->options['functions']['sortBy'])
+                            &&  isset($this->options['functions']['sortBy']['field'])
+                            &&  !empty($this->options['functions']['sortBy']['field'])
+                           )
+                           ? key($this->options['functions']['sortBy']['field'])
+                           : '';
 
         // Foreach possible attribute in the database we try to find the matching entry in the $entityData array and add it
         // as property to the object
         foreach($entityColumnNames as $column) {
             $name = $entityClassMetadata->getFieldName($column);
+            $fieldSetMethodName = 'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
+            $fieldGetMethodName = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
             if (
                 isset($this->options['fields']) &&
                 isset($this->options['fields'][$name]) &&
@@ -257,7 +270,25 @@ class ViewGenerator {
                     $newValue = contrexx_input2raw($entityData[$name]);
                 }
                 // set the value as property of the current object, so it is ready to be stored in the database
-                $entity->{'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name))}($newValue);
+                $entity->$fieldSetMethodName($newValue);
+            }
+
+            //While adding a new entity, if the view is sortable 
+            //then the new entity sort order gets automatically adjusted.
+            if (    !empty($sortByFieldName)
+                &&  ($sortByFieldName === $name)
+                &&  !$entity->$fieldGetMethodName()
+            ) {
+                $qb = $em->createQueryBuilder();
+                $qb ->select('e')
+                    ->from(get_class($entity), 'e')
+                    ->orderBy('e.' . $name, 'DESC')
+                    ->setMaxResults(1);
+                $result   = $qb->getQuery()->getResult();
+                $newValue = isset($result[0]) ? ($result[0]->$fieldGetMethodName() + 1) : 1;
+                // set the value as property of the current object, 
+                // so it is ready to be stored in the database
+                $entity->$fieldSetMethodName($newValue);
             }
         }
     }
