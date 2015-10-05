@@ -3375,6 +3375,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
+        // Don't show account verification notice when in templateeditor
         if (isset($_GET['templateEditor'])) {
             return;
         }
@@ -3415,6 +3416,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
         
+        // Don't show powered by footer when viewing template in templateeditor
         if (isset($_GET['templateEditor'])) {
             return;
         }
