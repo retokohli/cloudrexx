@@ -164,10 +164,10 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         $prePosition     = isset($post['prePosition']) 
                            ? contrexx_input2int($post['prePosition'])
                            : 0;
-        $updatedOrder    = (    isset($post['sortingOrder']) 
-                            &&  is_array($post['sortingOrder'])
+        $updatedOrder    = (    isset($post['sorting'.$entityName]) 
+                            &&  is_array($post['sorting'.$entityName])
                            )
-                           ? array_map('contrexx_input2int', $post['sortingOrder'])
+                           ? array_map('contrexx_input2int', $post['sorting'.$entityName])
                            : array();
 
         $em = $this->cx->getDb()->getEntityManager();

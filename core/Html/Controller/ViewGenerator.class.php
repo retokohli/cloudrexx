@@ -236,7 +236,14 @@ class ViewGenerator {
                            )
                            ? key($this->options['functions']['sortBy']['field'])
                            : '';
-
+        //check the 'sortBy' field is self-healing or not
+        $isSortSelfHealing = (    isset($this->options['fields'])
+                              &&  isset($this->options['fields'][$sortByFieldName])
+                              &&  isset($this->options['fields'][$sortByFieldName]['showDetail'])
+                              &&  !$this->options['fields'][$sortByFieldName]['showDetail']
+                             )
+                             ? true 
+                             : false;
         // Foreach possible attribute in the database we try to find the matching entry in the $entityData array and add it
         // as property to the object
         foreach($entityColumnNames as $column) {
@@ -273,9 +280,10 @@ class ViewGenerator {
                 $entity->$fieldSetMethodName($newValue);
             }
 
-            //While adding a new entity, if the view is sortable 
+            //While adding a new entity, if the view is sortable and 'sortBy' field is disabled in the edit view
             //then the new entity sort order gets automatically adjusted.
-            if (    !empty($sortByFieldName)
+            if (    $isSortSelfHealing  
+                &&  !empty($sortByFieldName)
                 &&  ($sortByFieldName === $name)
                 &&  !$entity->$fieldGetMethodName()
             ) {
