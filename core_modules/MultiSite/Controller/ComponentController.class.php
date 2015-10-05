@@ -3375,6 +3375,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
 
+        // Don't show account verification notice when in templateeditor
+        if (isset($_GET['templateEditor'])) {
+            return;
+        }
+
         JsonMultiSiteController::loadLanguageData();
         $objTemplate = $this->cx->getTemplate();
         $warning = new \Cx\Core\Html\Sigma($this->cx->getCodeBaseCoreModulePath() . '/MultiSite/View/Template/Backend');
@@ -3408,6 +3413,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $_ARRAYLANG;
         
         if (!($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND)) {
+            return;
+        }
+        
+        // Don't show powered by footer when viewing template in templateeditor
+        if (isset($_GET['templateEditor'])) {
             return;
         }
         
