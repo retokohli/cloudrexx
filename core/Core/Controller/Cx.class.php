@@ -1954,8 +1954,8 @@ namespace Cx\Core\Core\Controller {
 
             if ($this->mode == self::MODE_FRONTEND) {
                 // parse system
-                $time = $this->stopTimer();
-                $this->template->setVariable('PARSING_TIME', $time);
+                $parsingTime = $this->stopTimer();
+                $this->template->setVariable('PARSING_TIME', $parsingTime);
 
                 $this->parseGlobalPlaceholders($themesPages['sidebar']);
 
@@ -2146,6 +2146,8 @@ namespace Cx\Core\Core\Controller {
 
                 echo $endcode;
             }
+
+            \DBG::log("(Cx: {$this->id}) Request parsing completed after $parsingTime");
         }
 
         /**

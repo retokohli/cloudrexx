@@ -392,6 +392,11 @@ class User extends User_Profile
     {
         global $objDatabase;
 
+        // If the last login has failed and the captcha is wrong the login must be invalid.
+        if ($_SESSION['auth']['loginLastAuthFailed'] && !$captchaCheckResult) {
+            return false;
+        }
+
         $loginByEmail = false;
 
         $arrSettings = User_Setting::getSettings();
@@ -2156,8 +2161,12 @@ class User extends User_Profile
         return false;
     }
 
-
-    private function isLoggedIn()
+    /**
+     * Returns true if the User is logged in
+     * @return  boolean       True if the User is logged in,
+     *                        false otherwise
+     */
+    public function isLoggedIn()
     {
         return $this->loggedIn;
     }

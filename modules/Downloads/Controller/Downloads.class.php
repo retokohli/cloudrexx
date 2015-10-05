@@ -1182,6 +1182,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_SIZE'                => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
                 'DOWNLOADS_FILE_SIZE'               => $this->getFormatedFileSize($objDownload->getSize())
             ));
+            $this->objTemplate->touchBlock('download_size_information');
+            $this->objTemplate->touchBlock('download_size_list');
+        } else {
+            $this->objTemplate->hideBlock('download_size_information');
+            $this->objTemplate->hideBlock('download_size_list');
         }
 
         // parse license
@@ -1190,6 +1195,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_LICENSE'             => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
                 'DOWNLOADS_FILE_LICENSE'            => htmlentities($objDownload->getLicense(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            $this->objTemplate->touchBlock('download_license_information');
+            $this->objTemplate->touchBlock('download_license_list');
+        } else {
+            $this->objTemplate->hideBlock('download_license_information');
+            $this->objTemplate->hideBlock('download_license_list');
         }
 
         // parse version
@@ -1198,6 +1208,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_VERSION'             => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
                 'DOWNLOADS_FILE_VERSION'            => htmlentities($objDownload->getVersion(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            $this->objTemplate->touchBlock('download_version_information');
+            $this->objTemplate->touchBlock('download_version_list');
+        } else {
+            $this->objTemplate->hideBlock('download_version_information');
+            $this->objTemplate->hideBlock('download_version_list');
         }
 
         // parse author
@@ -1206,6 +1221,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_AUTHOR'              => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
                 'DOWNLOADS_FILE_AUTHOR'             => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            $this->objTemplate->touchBlock('download_author_information');
+            $this->objTemplate->touchBlock('download_author_list');
+        } else {
+            $this->objTemplate->hideBlock('download_author_information');
+            $this->objTemplate->hideBlock('download_author_list');
         }
 
         // parse website
@@ -1215,6 +1235,11 @@ JS_CODE;
                 'DOWNLOADS_FILE_WEBSITE'            => $this->getHtmlLinkTag(htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET)),
                 'DOWNLOADS_FILE_WEBSITE_SRC'        => htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            $this->objTemplate->touchBlock('download_website_information');
+            $this->objTemplate->touchBlock('download_website_list');
+        } else {
+            $this->objTemplate->hideBlock('download_website_information');
+            $this->objTemplate->hideBlock('download_website_list');
         }
     }
 

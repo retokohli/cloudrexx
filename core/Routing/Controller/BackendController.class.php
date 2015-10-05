@@ -62,7 +62,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
         global $_ARRAYLANG;
-
+        
         $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
         $header = '';
         if (isset($_ARRAYLANG[$langVarName])) {
@@ -71,20 +71,27 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         return array(
             'header' => $header,
             'fields' => array(
-                'orderNo' => array(
-                    'header' => $_ARRAYLANG['orderNo'],
-                ),
                 'id' => array(
                     'showOverview' => false,
                 ),
                 'regularExpression' => array(
                     'header' => $_ARRAYLANG['regularExpression'],
+                    'tooltip' => $_ARRAYLANG['TXT_CORE_ROUTING_REGULAR_EXPRESSION_TOOLTIP'],
+                ),
+                'orderNo' => array(
+                    'showOverview' => false,
+                    'showDetail' => false,
+                    'header' => $_ARRAYLANG['orderNo'],
                 ),
                 'rewriteStatusCode' => array(
                     'header' => $_ARRAYLANG['rewriteStatusCode'],
+                    'type' => 'select',
+                    'validValues' => array(301=>301, 302=>302),
+                    'tooltip' => $_ARRAYLANG['TXT_CORE_ROUTING_REWRITE_STATUS_CODE_TOOLTIP'],
                 ),
                 'continueOnMatch' => array(
                     'header' => $_ARRAYLANG['continueOnMatch'],
+                    'tooltip' => $_ARRAYLANG['TXT_CORE_ROUTING_CONTINUE_ON_MATCH_TOOLTIP'],
                 ),
             ),
             'functions' => array(
