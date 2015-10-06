@@ -101,7 +101,7 @@ class ViewGenerator {
             }
             
             //initialize the row sorting functionality
-            $this->getSortingOption($object);
+            $this->getSortingOption($entityWithNS);
             
             if (
                 (!isset($_POST['vg_increment_number']) || $_POST['vg_increment_number'] != $this->viewId) &&
@@ -223,13 +223,26 @@ class ViewGenerator {
         if (empty($entityData)) {
             $entityData = $_POST;
         }
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
         $primaryKeyName = $entityClassMetadata->getSingleIdentifierFieldName(); //get primary key name
         $entityColumnNames = $entityClassMetadata->getColumnNames(); //get the names of all fields
+
+        //If the view is sortable, get the 'sortBy' field name and store it to the variable
+        $sortByFieldName = (    isset($this->options['functions']['sortBy'])
+                            &&  isset($this->options['functions']['sortBy']['field'])
+                            &&  !empty($this->options['functions']['sortBy']['field'])
+                           )
+                           ? key($this->options['functions']['sortBy']['field'])
+                           : '';
 
         // Foreach possible attribute in the database we try to find the matching entry in the $entityData array and add it
         // as property to the object
         foreach($entityColumnNames as $column) {
             $name = $entityClassMetadata->getFieldName($column);
+            $fieldSetMethodName = 'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
+            $fieldGetMethodName = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
             if (
                 isset($this->options['fields']) &&
                 isset($this->options['fields'][$name]) &&
@@ -257,7 +270,25 @@ class ViewGenerator {
                     $newValue = contrexx_input2raw($entityData[$name]);
                 }
                 // set the value as property of the current object, so it is ready to be stored in the database
-                $entity->{'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name))}($newValue);
+                $entity->$fieldSetMethodName($newValue);
+            }
+
+            //While adding a new entity, if the view is sortable 
+            //then the new entity sort order gets automatically adjusted.
+            if (    !empty($sortByFieldName)
+                &&  ($sortByFieldName === $name)
+                &&  !$entity->$fieldGetMethodName()
+            ) {
+                $qb = $em->createQueryBuilder();
+                $qb ->select('e')
+                    ->from(get_class($entity), 'e')
+                    ->orderBy('e.' . $name, 'DESC')
+                    ->setMaxResults(1);
+                $result   = $qb->getQuery()->getResult();
+                $newValue = isset($result[0]) ? ($result[0]->$fieldGetMethodName() + 1) : 1;
+                // set the value as property of the current object, 
+                // so it is ready to be stored in the database
+                $entity->$fieldSetMethodName($newValue);
             }
         }
     }
@@ -265,12 +296,17 @@ class ViewGenerator {
     /**
      * Initialize the row sorting functionality
      * 
-     * @param mixed $object Array, instance of DataSet, instance of EntityBase, object
+     * @param string $entityNameSpace entity namespace
      * 
      * @return boolean
      */
-    protected function getSortingOption($object)
+    protected function getSortingOption($entityNameSpace)
     {
+        //If the entity namespace is empty or an array then disable the row sorting
+        if (empty($entityNameSpace) && $entityNameSpace === 'array') {
+            return;
+        }
+
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $em = $cx->getDb()->getEntityManager();
         $sortBy = (     isset($this->options['functions']['sortBy']) 
@@ -284,15 +320,9 @@ class ViewGenerator {
             return;
         }
         
-        //If 'sorting' is applied and sorting field is not equal to
-        //'sortBy' => 'field' then disable the row sorting.
-        $sortField = key($this->options['functions']['sortBy']['field']);
-        if (isset($_GET['order']) && stripos($_GET['order'], $sortField) === false) {
-            return;
-        }
-
         //If the function array has 'order' option and the order by field 
         //is not equal to 'sortBy' => 'field' then disable the row sorting
+        $sortField   = key($this->options['functions']['sortBy']['field']);
         $orderOption = (    isset($this->options['functions']['order']) 
                         &&  is_array($this->options['functions']['order'])
                        ) 
@@ -301,78 +331,60 @@ class ViewGenerator {
             return;
         }
 
-        //we need to get the entity namespace for updating the sorting order in database
-        $entityNameSpace = '';
-        switch (true) {
-            case is_array($object):
-                foreach($object as $entity) {
-                    if (is_object($entity)) {
-                        $entityNameSpace = get_class($entity);
-                        break;
-                    }
-                }
-                break;
-            case (is_object($object) &&  $object instanceof \Cx\Model\Base\EntityBase):
-                $entityNameSpace = get_class($object);
-                break;
-            case (stripos($object, 'Cx') !== false):
-                $entityNameSpace = $object;
-                break;
-            default :
-                break;
-        }
-
-        //If the entity namespace is empty then disable the row sorting
-        if (empty($entityNameSpace)) {
-            return;
-        }
-
         //get the primary key name
         $entityObject   = $em->getClassMetadata($entityNameSpace);
         $primaryKeyName = $entityObject->getSingleIdentifierFieldName();
-        $this->options['functions']['sortBy']['sortingKey'] = $primaryKeyName;
 
+        //If the 'sortBy' option does not have 'jsonadapter', 
+        //we need to get the component name and entity name for updating the sorting order in db
         $componentName = '';
         $entityName    = '';
-        $jsonObject    = 'Html';
-        $jsonAct       = 'updateOrder';
-        if (    isset($sortBy['jsonadapter'])
-            &&  !empty($sortBy['jsonadapter']['object'])
-            &&  !empty($sortBy['jsonadapter']['act'])
+        if (    !isset($sortBy['jsonadapter']) 
+            ||  (    isset($sortBy['jsonadapter'])
+                 &&  (    empty($sortBy['jsonadapter']['object'])
+                      ||  empty($sortBy['jsonadapter']['act'])
+                    )
+                )
         ) {
-            $jsonObject = $sortBy['jsonadapter']['object'];
-            $jsonAct    = $sortBy['jsonadapter']['act'];
-        } else {
-            //If the 'sortBy' option does not have 'jsonadapter', 
-            //we need to get the component name and entity name for updating the sorting order in db
             $split          = explode('\\', $entityNameSpace);
             $componentName  = isset($split[2]) ? $split[2] : '';
             $entityName     = isset($split) ? end($split) : '';
         }
 
+        //If 'sorting' is applied and sorting field is not equal to
+        //'sortBy' => 'field' then disable the row sorting.
+        $orderParamName = $entityName . 'Order';
+        if (    isset($_GET[$orderParamName]) 
+            &&  stripos($_GET[$orderParamName], $sortField) === false
+        ) {
+            return;
+        }
+
         //Get the current sorting order
-        $order     = isset($_GET['order']) ? explode('/', $_GET['order']) : '';
+        $order     = isset($_GET[$orderParamName]) ? explode('/', $_GET[$orderParamName]) : '';
         $sortOrder = ($sortBy['field'][$sortField] == SORT_ASC) ? 'ASC' : 'DESC';
         if ($order) {
             $sortOrder = !empty($order[1]) ? $order[1] : 'ASC';
         }
 
-        //Register the CX variables
-        \ContrexxJavascript::getInstance()->setVariable(array(
-            'isSortByActive' => 1,
-            'component'      => $componentName,
-            'entity'         => $entityName,
-            'jsonObject'     => $jsonObject,
-            'jsonAct'        => $jsonAct,
-            'sortOrder'      => $sortOrder,
-            'sortField'      => $sortField,
-            'pagingPosition' => isset($_GET['pos']) ? contrexx_input2int($_GET['pos']) : 0
-        ), 'ViewGenerator/sortBy');
+        //Get the paging position value
+        $pagingPosName  = $entityName . 'Pos';
+        $pagingPosition = isset($_GET[$pagingPosName]) 
+                          ? contrexx_input2int($_GET[$pagingPosName]) 
+                          : 0;
 
+        //set the sorting parameters in the functions 'sortBy' array and 
+        //it should be used in the Backend::constructor
+        $this->options['functions']['sortBy']['sortingKey'] = $primaryKeyName;
+        $this->options['functions']['sortBy']['component']  = $componentName;
+        $this->options['functions']['sortBy']['entity']     = $entityName;
+        $this->options['functions']['sortBy']['sortOrder']  = $sortOrder;
+        $this->options['functions']['sortBy']['pagingPosition'] = $pagingPosition;
+        
         //Register the script Backend.js and activate the jqueryui and cx for the row sorting
         \JS::activate('cx');
         \JS::activate('jqueryui');
-        \JS::registerJS($cx->getCoreFolderName() . '/Html/View/Script/Backend.js');
+        \JS::registerJS(substr($cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
     }
 
     /**

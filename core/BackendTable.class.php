@@ -66,6 +66,18 @@ class BackendTable extends HTML_Table {
             $sortField  = !empty($sortingKey) && isset($sortBy['field'])
                           ? key($sortBy['field'])
                           : '';
+            $component  = !empty($sortBy) && isset($sortBy['component'])
+                          ? $sortBy['component']
+                          : '';
+            $entity     = !empty($sortBy) && isset($sortBy['entity'])
+                          ? $sortBy['entity']
+                          : '';
+            $sortOrder  = !empty($sortBy) && isset($sortBy['sortOrder'])
+                          ? $sortBy['sortOrder']
+                          : '';
+            $pagingPos  = !empty($sortBy) && isset($sortBy['pagingPosition'])
+                          ? $sortBy['pagingPosition']
+                          : '';
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
                 $virtual = $rows['virtual'];
@@ -114,8 +126,9 @@ class BackendTable extends HTML_Table {
                         ) {
                             $order = '';
                             $img = '&uarr;&darr;';
-                            if (isset($_GET['order'])) {
-                                $supOrder = explode('/', $_GET['order']);
+                            $sortParamName = !empty($sortBy) ? $entity . 'Order' : 'order';
+                            if (isset($_GET[$sortParamName])) {
+                                $supOrder = explode('/', $_GET[$sortParamName]);
                                 if (current($supOrder) == $origHeader) {
                                     $order = '/DESC';
                                     $img = '&darr;';
@@ -125,7 +138,7 @@ class BackendTable extends HTML_Table {
                                     }
                                 }
                             }
-                            $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&order=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
+                            $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&' . $sortParamName . '=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
                         }
                         if ($hasMasterTableHeader) {
                             $this->setCellContents(1, $col, $header, 'td', 0);
@@ -242,8 +255,36 @@ class BackendTable extends HTML_Table {
             }
             $attrs = array();
         }
-        //add the class 'sortable' if the row sorting functionality is enabled
-        $className = !empty($sortField) ? '\'adminlist sortable\'' : 'adminlist';
+        //add the sorting parameters as table attribute 
+        //if the row sorting functionality is enabled
+        $className = 'adminlist';
+        if (!empty($sortField)) {
+            $className = '\'adminlist sortable\'';
+            if (!empty($component)) {
+                $attrs['data-component'] = $component;
+            }
+            if (!empty($entity)) {
+                $attrs['data-entity'] = $entity;
+            }
+            if (!empty($sortOrder)) {
+                $attrs['data-order'] = $sortOrder;
+            }
+            if (!empty($sortField)) {
+                $attrs['data-field'] = $sortField;
+            }
+            if (isset($pagingPos)) {
+                $attrs['data-pos'] = $pagingPos;
+            }
+            $attrs['data-object'] = 'Html';
+            $attrs['data-act'] = 'updateOrder';
+            if (    isset($sortBy['jsonadapter']) 
+                &&  !empty($sortBy['jsonadapter']['object'])
+                &&  !empty($sortBy['jsonadapter']['act'])
+            ) {
+                $attrs['data-object'] = $sortBy['jsonadapter']['object'];
+                $attrs['data-act']    = $sortBy['jsonadapter']['act'];
+            }
+        }
         parent::__construct(array_merge($attrs, array('class' => $className, 'width' => '100%')));
     }
 
