@@ -60,7 +60,7 @@ class LocalFileSystem implements FileSystem
         return new self($path);
     }
 
-    public function getFileList($directory, $recursive = false) {
+    public function getFileList($directory, $recursive = false, $readonly = false) {
         $recursiveIteratorIterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator(
@@ -113,6 +113,7 @@ class LocalFileSystem implements FileSystem
                 }
             }
 
+            $size = \FWSystem::getLiteralSizeFormat($file->getSize());
             $fileInfos = array(
                 'filepath' => mb_strcut(
                     $file->getPath() . '/' . $file->getFilename(),
@@ -120,7 +121,7 @@ class LocalFileSystem implements FileSystem
                 ),
                 // preselect in mediabrowser or mark a folder
                 'name' => $file->getFilename(),
-                'size' => \FWSystem::getLiteralSizeFormat($file->getSize()),
+                'size' => $size ? $size : '0 B',
                 'cleansize' => $file->getSize(),
                 'extension' => ucfirst(mb_strtolower($extension)),
                 'preview' => $preview,
@@ -129,6 +130,10 @@ class LocalFileSystem implements FileSystem
                 'type' => $file->getType(),
                 'thumbnail' => $thumbnails
             );
+            
+            if ($readonly){
+                $fileInfos['readonly'] = true;
+            }
 
             // filters
             if (

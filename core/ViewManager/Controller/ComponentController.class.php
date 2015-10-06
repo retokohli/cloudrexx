@@ -35,6 +35,8 @@
  */
 
 namespace Cx\Core\ViewManager\Controller;
+use Cx\Core\ContentManager\Model\Entity\Page;
+use Cx\Core\ViewManager\Model\Event\ViewManagerEventListener;
 
 /**
  * Main controller for View Manager
@@ -51,9 +53,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array();
     }
 
-    public function getControllersAccessableByJson() { 
+    public function getControllersAccessableByJson() {
         return array('JsonViewManager');
     }
+    
      /**
      * Load your component.
      * 
@@ -72,5 +75,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objViewManager->getPage();
                 
         $this->cx->getTemplate()->setRoot($cachedRoot);        
+    }
+
+    /**
+     * Do something before a module is loaded
+     *
+     * This method is called only if any module
+     * gets loaded for content parsing
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     */
+    public function preContentParse(Page $page) {
+        $this->cx->getEvents()->addEventListener(
+            'mediasource.load', new ViewManagerEventListener($this->cx)
+        );
     }
 }
