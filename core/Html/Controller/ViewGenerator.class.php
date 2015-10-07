@@ -38,6 +38,7 @@ class ViewGeneratorException extends \Exception {}
  *
  * @author ritt0r
  * @todo    Refactor
+ * @todo Currently, composite primary keys cannot be handled
  */
 class ViewGenerator {
 
@@ -110,6 +111,12 @@ class ViewGenerator {
                 // do not make any changes to entities of other view generator instances!
                 \DBG::msg('Omitting changes, my ID is #' . $this->viewId . ', supplied viewId was ' . $vgIncrementNo);
                 return;
+            }
+            
+            // this is a temporary "workaround" for combined keys, see todo
+            $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
+            if (count($entityClassMetadata->getIdentifierFieldNames() > 1)) {
+                throw new \Exception('Currently, view generator is not able to handle composite keys...');
             }
 
             // execute add if entry is a doctrine entity (or execute callback if specified in configuration)
