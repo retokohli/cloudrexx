@@ -72,7 +72,8 @@ function openDialogForAssociation(content, className, existingData)
     });
     jQuery.each(existingData.split('&'), function(index, value){
         property = value.split('=');
-        dialog.getElement().find('[name='+property[0]+']').val(property[1]);
+        dialog.getElement().find('[name='+property[0]+']').not('[type=button]').val(property[1]);
+        dialog.getElement().find('[type=button].mappedAssocciationButton').prop("disabled", true);
         if (property[0] == 'id') {
             jQuery('<input>').attr({
                 value: property[1],
