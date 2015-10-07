@@ -80,7 +80,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
      * @var array
      */
     protected $validAccessIds   = array();
-
+    
     /**
      * Allowed group users
      * 
@@ -125,7 +125,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
      * 
      * @return boolean
      */
-    public function hasAccess(array $params = array()) {        
+    public function hasAccess(array $params = array()) {
         $protocol = $this->cx->getRequest() ? \Env::get('cx')->getRequest()->getUrl()->getProtocol() : '';
         $method = $this->cx->getRequest()->getHttpRequestMethod();
         if (php_sapi_name() === 'cli') {

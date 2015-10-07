@@ -89,7 +89,7 @@ class JsonData {
      * @author Michael Ritter <michael.ritter@comvation.com>
      */
     public function __construct() {
-            foreach (self::$adapter_classes as $ns=>$adapters) {
+        foreach (self::$adapter_classes as $ns=>$adapters) {
             foreach ($adapters as $adapter) {
                 $this->loadAdapter($adapter, $ns);
             }
@@ -177,6 +177,7 @@ class JsonData {
         } else {
             $object = new $adapter();
         }
+        \Env::get('init')->loadLanguageData($object->getName());
         $this->adapters[$object->getName()] = $object;
     }
 

@@ -300,8 +300,6 @@ class CrmManager extends CrmLibrary
      * @param boolean $return boolean
      *
      * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     *
      * @return true
      */
     public function checkCustomerIdentity($return = false)
@@ -1301,35 +1299,9 @@ class CrmManager extends CrmLibrary
 
         $this->_pageTitle = $custDetails['contact_type'] == 1 ? $_ARRAYLANG['TXT_CRM_CUSTOMER_DETAILS'] : $_ARRAYLANG['TXT_CRM_CONTACT_DETAILS'];
     }
-
-    /**
-     * parse required blocks for multisite contact modal
-     *
-     * @param int $crmContactId
-     * @param object $objTpl
-     * @param int $selectedIdCustomerType
-     * @param int $selectedIdCompanySize
-     * @return empty
-     */
-    function parseCrmForMultiSite($crmContactId, $objTpl, $selectedIdCustomerType = 0, $selectedIdCompanySize = 0){
-        $crmContact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
-        $crmContact->load($crmContactId);
-        $customerTypeId = $crmContact->__get("customerType");
-
-        $objTpl->setGlobalVariable(array(
-            'CRM_INDUSTRY_DROPDOWN'     => $this->listIndustryTypes($this->_objTpl, 2, $selectedIdCustomerType),//$this->contact->industryType
-            'TXT_CRM_PLEASE_SELECT'     => $_ARRAYLANG['TXT_CRM_COMMENT_DESCRIPTION'],
-        ));
-        $this->getCompanySizeDropDown($objTpl, $selectedIdCompanySize);
-        $this->getCustomerTypeDropDown($objTpl, $customerTypeId);
-
-    }
+    
     /**
      * remove the styles sheet on shadow box page
-     *
-     * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     * @return true
      */
     function pmRemoveStylesAddcustomer()
     {
@@ -1347,10 +1319,6 @@ END;
 
     /**
      * remove the styles sheet on shadow box page
-     *
-     * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     * @return true
      */
     function pmRemoveStylesShowcustomers()
     {
@@ -1369,12 +1337,10 @@ END;
      * delete customer related details
      *
      * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     * @return true
      */
     function deleteCustomers()
     {
-        global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG;
         $id = intval($_GET['id']);
         $contact = new \Cx\Modules\Crm\Model\Entity\CrmContact();
         if (!empty($id)) {
@@ -1493,8 +1459,6 @@ END;
      * get settings submenu
      *
      * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     * @return true
      */
     function settingsSubmenu()
     {
@@ -5913,7 +5877,7 @@ END;
     public static function proPhotoUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
     {
 
-        global $objDatabase, $objFWUser;
+        global $objDatabase;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $depositionTarget = $cx->getWebsiteImagesCrmProfilePath().'/'; //target folder
         $h = opendir($tempPath);
@@ -5975,6 +5939,7 @@ END;
                         $objDatabase->Execute($sql);
                         $accountId = $objDatabase->getOne("SELECT user_account FROM `".DBPREFIX."module_crm_contacts` WHERE id = {$data[0]}");
                         if (!empty ($accountId) && !empty ($imageName)) {
+                            $objFWUser = \FWUser::getFWUserObject();
                             $objUser  = $objFWUser->objUser->getUser($accountId);
                             if (!file_exists($cx->getWebsiteImagesAccessProfilePath().'/'.$imageName)) {
                                 $file = $cx->getWebsiteImagesCrmProfilePath().'/';
@@ -6023,8 +5988,6 @@ END;
      */
     public static function taskUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
     {
-
-        global $objDatabase, $objFWUser;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $depositionTarget = $cx->getWebsiteImagesCrmPath() . '/'; //target folder
         $h = opendir($tempPath);
@@ -6098,8 +6061,6 @@ END;
      */
     public static function notesUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
     {
-
-        global $objDatabase, $objFWUser;
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $depositionTarget = $cx->getWebsiteImagesCrmPath().'/'; //target folder
         $h = opendir($tempPath);
@@ -6161,19 +6122,16 @@ END;
     /**
      * check the account id
      * 
-     * @global object $objFWUser
-     *
      * @return json
      */
     function checkAccountId()
     {
-        global $objFWUser;
-
         $accountId    = isset ($_GET['id']) ? (int) $_GET['id'] : '';
         $accountEmail = isset ($_GET['email']) ? trim($_GET['email']) : '';
         $show         = !empty ($accountId) || !empty ($accountEmail) ? true : false;
 
         if (!empty($accountId)) {
+            $objFWUser = \FWUser::getFWUserObject();
             $objUsers  = $objFWUser->objUser->getUsers($filter = array('id' => intval($accountId)));
             if ($objUsers) {
                 $email = $objUsers->getEmail();
