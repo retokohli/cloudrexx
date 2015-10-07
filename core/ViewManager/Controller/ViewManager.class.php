@@ -325,7 +325,7 @@ class ViewManager
      * @param type $theme
      */
     private function parseThemesData($theme, $subType) {
-        global $objTemplate;
+        global $objTemplate,$_ARRAYLANG;
         
         $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
         
@@ -338,18 +338,49 @@ class ViewManager
             $objTemplate->parse('activatedLangCode'. ucfirst($subType));
 
             $objTemplate->setVariable(array(
-                "TXT_THEME_STANDARD_DISPLAY"      => "default_active"
+                'TXT_THEME_STANDARD_DISPLAY'      => 'default_active'
             ));
         }
 
-        $objTemplate->setVariable(array(
-            'THEME_PREVIEW'                      => $theme->getPreviewImage(),
-            'THEME_ID'                           => $theme->getId(),
-            'THEME_FOLDER_NAME'                  => $theme->getFoldername(),
-            'THEME_ACTIVATE_DISABLED'            => count($frontendLanguages) == count($activeLanguages) ? 'disabled' : '' ,
-            'THEME_NAME'                         => contrexx_raw2xhtml($theme->getThemesname()),
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
+        $objTemplate->setVariable(array(
+            'TXT_THEME_TEMPLATEEDITOR_USABLE'      => $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_USABLE'],
+            'TXT_THEME_TEMPLATEEDITOR_UNUSABLE'      => $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_UNUSABLE']
         ));
+
+        $supportForTemplateEditor = false;
+        if (file_exists(
+                $cx->getClassLoader()->getFilePath(
+                    $cx->getWebsiteThemesPath() . '/'
+                    . $theme->getFoldername()
+                    . '/options/options.yml'
+                )
+            )
+        ) {
+            $supportForTemplateEditor = true;
+        }
+
+        $objTemplate->setVariable(
+            array(
+                'THEME_PREVIEW' => $theme->getPreviewImage(),
+                'THEME_ID' => $theme->getId(),
+                'THEME_ACTION' => $supportForTemplateEditor
+                    ? 'cmd=TemplateEditor&tid=' . $theme->getId()
+                    : 'cmd=ViewManager&act=templates&themes='
+                    . $theme->getFoldername(),
+                'THEME_FOLDER_NAME' => $theme->getFoldername(),
+                'THEME_TEMPLATEEDITOR' => $supportForTemplateEditor
+                    ? 'templateEditor' : '',
+                'TXT_EDIT' => $supportForTemplateEditor
+                    ? $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_EDIT']
+                    : $_ARRAYLANG['TXT_SETTINGS_MODFIY'],
+                'THEME_ACTIVATE_DISABLED' => count($frontendLanguages) == count(
+                    $activeLanguages
+                ) ? 'disabled' : '',
+                'THEME_NAME' => contrexx_raw2xhtml($theme->getThemesname()),
+            )
+        );
 
         $objTemplate->parse('themes'. ucfirst($subType));
                 
@@ -806,7 +837,7 @@ CODE;
             "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
             "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
             "html","shtml","css","js","tpl","thumb","ico",
-            "eot", "ttf", "woff", "otf", // font files
+            "eot", "ttf", "woff", "otf", "yml", "yaml"
         );
 
         if (($files = $archive->extract(PCLZIP_OPT_PATH, $this->path . $theme->getFoldername(), PCLZIP_OPT_REMOVE_PATH, $themeDirectoryFromArchive, PCLZIP_OPT_BY_PREG, '/('.implode('|', $valid_exts).')$/')) != 0){
@@ -1066,7 +1097,6 @@ CODE;
         if (is_dir($this->codeBaseThemesFilePath) || is_dir($this->websiteThemesFilePath)) {
             $archive    = new \PclZip($this->_archiveTempPath . $themeFolder . '.zip');
             $themeFiles = $this->getThemesFiles();
-            
             \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
             $this->createZipFolder($themeFiles, '', $archive);
             \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath . $themeFolder . '.zip');
@@ -2403,6 +2433,7 @@ CODE;
         // write component.yml file
         // this line will create a default component.yml file    
         try {
+            $this->themeRepository->loadComponentData($theme);
             $this->themeRepository->convertThemeToComponent($theme);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());

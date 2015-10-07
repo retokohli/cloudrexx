@@ -1,0 +1,110 @@
+<script id="active-preset" type="text/template">
+    {TXT_CORE_MODULE_TEMPLATEEDITOR_ACTIVATE_PRESET_TEXT}
+</script>
+<script id="remove-preset" type="text/template">
+    {TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT}
+
+    <!-- BEGIN presetTextActive -->
+    <div class="bs-callout bs-callout-info">{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_TEXT_IS_ACTIVE}</div>
+    <!-- END presetTextActive -->
+</script>
+<script id="reset-preset" type="text/template">
+    {TXT_CORE_MODULE_TEMPLATEEDITOR_RESET_PRESET_TEXT}
+</script>
+<script id="new-preset" type="text/template">
+
+{TXT_CORE_MODULE_TEMPLATEEDITOR_NEW_PRESET_TEXT}
+    <br><br>
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="new-preset-name">{TXT_CORE_MODULE_TEMPLATEEDITOR_NEW_PRESET_NAME}</label>
+
+        <div class="col-md-4">
+            <input id="new-preset-name" name="new-preset-name" type="text"
+                   class="form-control input-md new-preset-name">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="preset-for-preset">{TXT_CORE_MODULE_TEMPLATEEDITOR_NEW_PRESET_PRESET}</label>
+
+        <div class="col-md-4">
+            <select id="preset-for-preset" name="preset-for-preset" class="form-control">
+                <!-- BEGIN presetsForPresets -->
+                <option value="{TEMPLATEEDITOR_PRESET_FOR_PRESETS_ID}">{TEMPLATEEDITOR_PRESET_FOR_PRESETS_NAME}</option>
+                <!-- END presetsForPresets -->
+            </select>
+        </div>
+    </div>
+</script>
+<div class="sidebar">
+    <a href="{TEMPLATEEDITOR_BACKURL}" class="back-to-layoutmanager">&larr;
+        {TXT_CORE_MODULE_TEMPLATEEDITOR_BACK_TO_LAYOUTMANAGER}</a>
+    <button class="button help">?</button>
+    <div class="options">
+        <div class="option layout">
+            <label for="layout">{TXT_CORE_MODULE_TEMPLATEEDITOR_LAYOUT}</label>
+            <select name="layout" id="layout">
+                <!-- BEGIN layouts -->
+                <option value="{TEMPLATEEDITOR_LAYOUT_ID}" {TEMPLATEEDITOR_LAYOUT_ACTIVE}>{TEMPLATEEDITOR_LAYOUT_NAME}
+                </option>
+                <!-- END layouts -->
+            </select>
+        </div>
+
+        <!-- BEGIN presetBlock -->
+        <div class="option preset">
+            <label for="preset">{TXT_CORE_MODULE_TEMPLATEEDITOR_PRESET}</label>
+            <select name="preset" id="preset">
+                <!-- BEGIN presets -->
+                <option value="{TEMPLATEEDITOR_PRESET_ID}" {TEMPLATEEDITOR_PRESET_ACTIVE}>{TEMPLATEEDITOR_PRESET_NAME}
+                </option>
+                <!-- END presets -->
+            </select>
+
+            <div class="buttons">
+                <button class="button activate-preset" title="{TXT_CORE_MODULE_TEMPLATEEDITOR_ACTIVATE_PRESET_MORE}" {TEMPLATEDITOR_PRESET_IS_ALREADY_ACTIVE}>{TXT_CORE_MODULE_TEMPLATEEDITOR_ACTIVATE_PRESET}</button>
+                <button class="button remove-preset" title="{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_MORE}" {TEMPLATEDITOR_PRESET_IS_DEFAULT}>{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET}</button>
+                <button class="button add-preset" title="{TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PRESET_MORE}">{TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PRESET}</button>
+                <button class="button reset-preset" title="{TXT_CORE_MODULE_TEMPLATEEDITOR_RESET_PRESET_MORE}">{TXT_CORE_MODULE_TEMPLATEEDITOR_RESET_PRESET}</button>
+            </div>
+
+
+        </div>
+        <!-- END presetBlock -->
+
+        <div class="option view">
+            <label>{TXT_CORE_MODULE_TEMPLATEEDITOR_VIEW}</label>
+
+            <div class="buttons">
+                <button class="button" data-size="375px">{TXT_CORE_MODULE_TEMPLATEEDITOR_VIEW_PHONE}</button>
+                <button class="button" data-size="966px">{TXT_CORE_MODULE_TEMPLATEEDITOR_VIEW_TABLET}</button>
+                <button class="button" data-size="1280px">{TXT_CORE_MODULE_TEMPLATEEDITOR_VIEW_DESKTOP}</button>
+                <button class="button active" data-size="100%">{TXT_CORE_MODULE_TEMPLATEEDITOR_VIEW_FULL}</button>
+            </div>
+        </div>
+
+        <div class="option-list">
+        <!-- BEGIN option -->
+        <div class="option {TEMPLATEEDITOR_OPTION_TYPE}">
+            {TEMPLATEEDITOR_OPTION}
+        </div>
+        <!-- END option -->
+        </div>
+        <!-- BEGIN no_options -->
+        <div class="option">
+            {TEMPLATEOPTION_NO_OPTIONS_TEXT}
+            <br/>
+            <br/>
+            <a target="_blank"
+               href="http://wiki.contrexx.com/en/index.php?title=Development_TemplateEditor#How_to_add_a_option_to_your_template">{TEMPLATEOPTION_NO_OPTIONS_LINKNAME}</a>
+        </div>
+        <!-- END no_options -->
+    </div>
+
+    <!-- BEGIN save_button -->
+    <button type="submit" class="save" id="saveOptionsButton">{TXT_CORE_MODULE_TEMPLATEEDITOR_SAVE}</button>
+    <!-- END save_button -->
+
+</div>
+<div class="preview">
+    <iframe id="preview-template-editor" src="{TEMPLATEEDITOR_IFRAME_URL}" frameborder="0"></iframe>
+</div>
