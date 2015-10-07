@@ -58,7 +58,7 @@ function openDialogForAssociation(content, className, existingData)
             }
         }
     ];
-    cx.ui.dialog({
+    var dialog = cx.ui.dialog({
         width: 600,
         height: 300,
         autoOpen: true,
@@ -72,7 +72,7 @@ function openDialogForAssociation(content, className, existingData)
     });
     jQuery.each(existingData.split('&'), function(index, value){
         property = value.split('=');
-        jQuery('[name='+property[0]+']').val(property[1]);
+        dialog.getElement().find('[name='+property[0]+']').val(property[1]);
         if (property[0] == 'id') {
             jQuery('<input>').attr({
                 value: property[1],
