@@ -331,7 +331,9 @@ class FormGenerator {
                         'cssName:'.$this->createCssClassNameFromEntity($associatedClass).';'.
                         'sessionKey:'.$this->entityClass
                     );
-                    $_SESSION['vgOptions'] = array();
+                    if (!isset($_SESSION['vgOptions'])) {
+                        $_SESSION['vgOptions'] = array();
+                    }
                     $_SESSION['vgOptions'][$this->entityClass] = $this->componentOptions;
                     if ($entityId != 0) {
                         // if we edit the main form, we also want to show the existing associated values we already have
