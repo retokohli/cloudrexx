@@ -209,8 +209,9 @@ class ViewGenerator {
      * @param object $entity object of the class we want to save
      * @param Doctrine\ORM\Mapping\ClassMetadata $entityClassMetadata MetaData for the entity
      * @param array $entityData array with data to save to class
+     * @param string $associatedTo the class which is oneToManyAssociated if it exists
      */
-    protected function savePropertiesToClass($entity, $entityClassMetadata, $entityData = array())
+    protected function savePropertiesToClass($entity, $entityClassMetadata, $entityData = array(), $associatedTo='')
     {
 
         // if entityData is not set, we use $_POST as default, because the data are normally submitted over post
@@ -271,6 +272,58 @@ class ViewGenerator {
                 }
                 // set the value as property of the current object, so it is ready to be stored in the database
                 $entity->{'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name))}($newValue);
+            }
+        }
+        // save singleValuedAssociations
+        foreach ($entityClassMetadata->getAssociationMappings() as $associationMapping) {
+            // we're only interested in single valued associations here, so skip others
+            if (!$entityClassMetadata->isSingleValuedAssociation($associationMapping['fieldName'])) {
+                continue;
+            }
+            // we're only interested if there's a target entity other than $associatedTo, so skip others
+            if (
+                $associationMapping['targetEntity'] == '' ||
+                $associatedTo == $associationMapping['targetEntity']
+            ) {
+                continue;
+            }
+            
+            // save it:
+            
+            // case a) was open in form directly
+            $firstOffset = str_replace('\\', '_', strtolower($associationMapping['sourceEntity']));
+            $secondOffset = $associationMapping['fieldName'];
+            if (isset($entityData[$secondOffset])) {
+                $this->storeSingleValuedAssociation(
+                    $associationMapping['targetEntity'],
+                    array(
+                        $associationMapping['joinColumns'][0]['referencedColumnName'] => $entityData[$secondOffset],
+                    ),
+                    $entity,
+                    'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
+                );
+                continue;
+            }
+            
+            // base b) was open in a modal form
+            foreach ($_POST[$firstOffset] as $foreignEntityDataEncoded) {
+                $foreignEntityData = array();
+                parse_str($foreignEntityDataEncoded, $foreignEntityData);
+                
+                if (!isset($foreignEntityData[$secondOffset])) {
+                    // todo: remove entity!
+                    continue;
+                }
+                
+                // todo: add/save entity
+                $this->storeSingleValuedAssociation(
+                    $associationMapping['targetEntity'],
+                    array(
+                        $associationMapping['joinColumns'][0]['referencedColumnName'] => $foreignEntityData[$secondOffset],
+                    ),
+                    $entity,
+                    'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
+                );
             }
         }
     }
@@ -495,31 +548,33 @@ class ViewGenerator {
         // This should be moved to FormGenerator as soon as FormGenerator
         // gets the real entity instead of $renderArray
         $additionalContent = '';
-        $preRender = $this->options['preRenderDetail'];
-        /* We use json to do preRender the detail. The 'else if' is for backwards compatibility so you can declare
-         * the function directly without using json. This is not recommended and not working over session */
-        if (
-            isset($preRender) &&
-            is_array($preRender) &&
-            isset($preRender['adapter']) &&
-            isset($preRender['method'])
-        ) {
-            $json = new \Cx\Core\Json\JsonData();
-            $jsonResult = $json->data(
-                $preRender['adapter'],
-                $preRender['method'],
-                array(
-                    'viewGenerator' => $this,
-                    'formGenerator' => $this->formGenerator,
-                    'entityId'  => $entityId,
-                )
-            );
-            if ($jsonResult['status'] == 'success') {
-                $additionalContent .= $jsonResult["data"];
-            }
-        } else if (is_callable($preRender)) {
-            $additionalContent = $preRender($this, $this->formGenerator, $entityId);
+        if (isset($this->options['preRenderDetail'])) {
+            $preRender = $this->options['preRenderDetail'];
+            /* We use json to do preRender the detail. The 'else if' is for backwards compatibility so you can declare
+             * the function directly without using json. This is not recommended and not working over session */
+            if (
+                isset($preRender) &&
+                is_array($preRender) &&
+                isset($preRender['adapter']) &&
+                isset($preRender['method'])
+            ) {
+                $json = new \Cx\Core\Json\JsonData();
+                $jsonResult = $json->data(
+                    $preRender['adapter'],
+                    $preRender['method'],
+                    array(
+                        'viewGenerator' => $this,
+                        'formGenerator' => $this->formGenerator,
+                        'entityId'  => $entityId,
+                    )
+                );
+                if ($jsonResult['status'] == 'success') {
+                    $additionalContent .= $jsonResult["data"];
+                }
+            } else if (is_callable($preRender)) {
+                $additionalContent = $preRender($this, $this->formGenerator, $entityId);
 
+            }
         }
         return $this->formGenerator . $additionalContent;
     }
@@ -599,16 +654,9 @@ class ViewGenerator {
                because css does not support \ in class name */
             $relatedClassInputFieldName = str_replace('\\', '_', strtolower($value["targetEntity"]));
 
-            if (!empty($_POST[$name])
-                && \Env::get('em')->getClassMetadata($entityWithNS)->isSingleValuedAssociation($name)
-            ) {
-                // store single-valued-associations
-                $col = $value['joinColumns'][0]['referencedColumnName'];
-                $association = \Env::get('em')->getRepository($value['targetEntity'])->findOneBy(array($col => $_POST[$name]));
-                $entity->{$methodName}($association);
-            } else if (!empty($relatedClassInputFieldName)
-                        && !empty($_POST[$relatedClassInputFieldName])
-                        && \Env::get('em')->getClassMetadata($entityWithNS)->isCollectionValuedAssociation($name)
+            if (!empty($relatedClassInputFieldName)
+                && !empty($_POST[$relatedClassInputFieldName])
+                && \Env::get('em')->getClassMetadata($entityWithNS)->isCollectionValuedAssociation($name)
             ) {
                 // store one to many associated entries
                 $associatedEntityClassMetadata = \Env::get('em')->getClassMetadata($value["targetEntity"]);
@@ -632,7 +680,7 @@ class ViewGenerator {
                     }
 
                     // save the "n" associated class data to its class
-                    $this->savePropertiesToClass($associatedEntity, $associatedEntityClassMetadata, $entityData);
+                    $this->savePropertiesToClass($associatedEntity, $associatedEntityClassMetadata, $entityData, $entityWithNS);
 
                     // Linking 1: link the associated entity to the main entity for doctrine
                     $entity->{'add' . preg_replace('/_([a-z])/', '\1', ucfirst(substr($name, 0, -1)))}($associatedEntity);
@@ -844,5 +892,18 @@ class ViewGenerator {
             $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
         }
         $this->options['cancelUrl']->setParam($parameterName, null);
+    }
+    
+    /**
+     * Adds/sets a foreign entity (1:1 or n:1)
+     * 
+     * @param string $targetEntity FQCN of foreign entity
+     * @param array $criteria Criteria to fetch the entity to set
+     * @param object $entity Entity to set foreign entity of
+     * @param string $methodName Name of method to set entity
+     */
+    protected function storeSingleValuedAssociation($targetEntity, $criteria, $entity, $methodName) {
+        $association = \Env::get('em')->getRepository($targetEntity)->findOneBy($criteria);
+        $entity->$methodName($association);
     }
 }
