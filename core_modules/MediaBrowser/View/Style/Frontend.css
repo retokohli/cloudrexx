@@ -38,7 +38,10 @@
     line-height: normal;
     float: none;
     font-weight: 400;
-    text-align: left
+    text-align: left;
+    display: block;
+    width: 100%;
+    margin: 0;
 }
 
 .media-browser-modal-window span.fileActions-text, .uploader-modal span.fileActions-text {
@@ -1823,13 +1826,17 @@
     padding: 0
 }
 
-.media-browser-modal-window a {
+.media-browser-modal-window a, 
+.media-browser-modal-window a:hover, 
+.media-browser-modal-window a:focus  {
     -webkit-transition: none;
     transition: none
 }
 
 .media-browser-modal-window .mediaBrowserNavigation li {
-    margin: 0
+    margin: 0;
+    display: block;
+    float: none;
 }
 
 .media-browser-modal-window .fileActions ul {

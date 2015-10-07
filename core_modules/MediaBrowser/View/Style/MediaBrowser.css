@@ -1150,6 +1150,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     vertical-align: top;
     display: inline-block;
     height: 585px;
+    float:none;
 }
 
 .uploader-modal .mediaBrowserNavigation, .media-browser-modal-window .mediaBrowserNavigation {
@@ -1277,7 +1278,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 .uploader-modal .tabMediaBrowserFooter, .media-browser-modal-window .tabMediaBrowserFooter {
     border-top: 1px solid #e5e5e5;
     vertical-align: bottom;
-    padding: 13px;
+    padding: 13px 0 0 13px;
     background: #fff;
 }
 
@@ -1973,7 +1974,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     border-bottom-color: #000;
 }
 
-#thumbnailSelector .image,  {
+#thumbnailSelector .image {
     width: 100%;
     max-width: 100%;
     height: auto;
@@ -2092,6 +2093,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 .media-browser-modal-window .successfulUpload p {
     font-size: 16px;
     margin: 5px 0 0;
+    color: #fff;
 }
 
 .media-browser-modal-window .successfulUpload.finished {
@@ -2105,6 +2107,10 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 
 .media-browser-modal-window, .bootbox {
     z-index: 10050 !important;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .uploader-modal .upload-limit-tooltip, .media-browser-modal-window .upload-limit-tooltip {
