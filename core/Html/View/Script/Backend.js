@@ -58,7 +58,7 @@ function openDialogForAssociation(content, className, existingData)
             }
         }
     ];
-    cx.ui.dialog({
+    var dialog = cx.ui.dialog({
         width: 600,
         height: 300,
         autoOpen: true,
@@ -72,7 +72,7 @@ function openDialogForAssociation(content, className, existingData)
     });
     jQuery.each(existingData.split('&'), function(index, value){
         property = value.split('=');
-        jQuery('input[name='+property[0]+']').attr('value', property[1]);
+        dialog.getElement().find('[name='+property[0]+']').val(property[1]);
         if (property[0] == 'id') {
             jQuery('<input>').attr({
                 value: property[1],
@@ -119,11 +119,9 @@ function saveToMappingForm(element, className)
         current = jQuery('.oneToManyEntryRow').children('.current');
         if(jQuery(current).is(':empty')){
             jQuery(current).attr('value', element.serialize());
-            jQuery(current).parent().children('span').html(valuesAsString);
             jQuery(current).removeClass('current');
         } else {
             jQuery('.add_'+className+'').before('<div class=\'oneToManyEntryRow\'>'
-                + '<span>' + valuesAsString + '</span>'
                 + '<input type=\'hidden\' name=\'' + className + '[]\' value=\'' + element.serialize() + '\'>'
                 + '<a onclick=\'editAssociation(this)\' class=\'edit\' title=\'' + cx.variables.get('TXT_EDIT', 'Html/lang') + '\'></a>'
                 + '<a onclick=\'deleteAssociationMappingEntry(this)\' class=\'remove\' title=\'' + cx.variables.get('TXT_DELETE', 'Html/lang') + '\'></a>'
