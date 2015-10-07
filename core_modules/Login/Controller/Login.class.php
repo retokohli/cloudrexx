@@ -131,16 +131,20 @@ class Login
 
             if (($objFWUser->restorePassword($email))) {
                 $statusMessage = str_replace("%EMAIL%", $email, $_CORELANG['TXT_LOST_PASSWORD_MAIL_SENT']);
+                $type = "success";
                 if ($this->_objTpl->blockExists('login_lost_password')) {
                     $this->_objTpl->hideBlock('login_lost_password');
                 }
             } else {
                 $statusMessage = $objFWUser->getErrorMsg();
+                $type = "danger";
             }
 
             $this->_objTpl->setVariable(array(
-                'LOGIN_STATUS_MESSAGE'        => $statusMessage
+                'LOGIN_STATUS_MESSAGE'        => $statusMessage,
+                'LOGIN_STATUS_MESSAGE_TYPE'        => 'alert alert-'.$type
             ));
+            $this->_objTpl->parse('login_lost_password_message');
         }
 
         return $this->_objTpl->get();

@@ -1,0 +1,120 @@
+<?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+
+/**
+ * Class ComponentController
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
+ */
+
+namespace Cx\Core_Modules\TemplateEditor\Controller;
+
+use Cx\Core\Core\Controller\Cx;
+use Cx\Core\Core\Model\Entity\SystemComponentController;
+use Cx\Core\View\Model\Repository\ThemeRepository;
+use Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage;
+use Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException;
+use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
+
+/**
+ * Class BackendController
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_templateeditor
+ */
+class ComponentController extends SystemComponentController
+{
+
+    /**
+     * Returns all Controller class names for this component (except this)
+     *
+     * Be sure to return all your controller classes if you add your own
+     * @return array List of Controller class names (without namespace)
+     */
+    public function getControllerClasses() {
+        return array('Backend','Json');
+    }
+
+    /**
+     * Do something before main template gets parsed
+     *
+     * This creates the frontend placeholders for the preview and the normal view.
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
+     *
+     * @param \Cx\Core\Html\Sigma $template The main template
+     */
+    public function preFinalize(\Cx\Core\Html\Sigma $template) {
+        if ($this->cx->getMode() != Cx::MODE_FRONTEND) {
+            return;
+        }
+        try {
+            $fileStorage = new OptionSetFileStorage(
+                $this->cx->getWebsiteThemesPath()
+            );
+            $themeOptionRepository = new OptionSetRepository($fileStorage);
+            $themeRepository = new ThemeRepository();
+            $themeID = isset($_GET['preview']) ? $_GET['preview']
+                : null;
+            $theme = $themeID ? $themeRepository->findById(
+                (int)$themeID
+            ) : $themeRepository->getDefaultTheme();
+            $themeOptions = $themeOptionRepository->get(
+                $theme
+            );
+
+            if (isset($_GET['templateEditor'])) {
+                $themeOptions->applyPreset(
+                    $themeOptions->getPresetRepository()->getByName(
+                        $_SESSION['TemplateEditor'][$themeID]['activePreset']
+                    )
+                );
+            }
+            $themeOptions->renderTheme($template);
+        } catch (PresetRepositoryException $e) {
+
+        }
+        catch (\Symfony\Component\Yaml\ParserException $e){
+
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getControllersAccessableByJson() {
+        return array('JsonController');
+    }
+
+}

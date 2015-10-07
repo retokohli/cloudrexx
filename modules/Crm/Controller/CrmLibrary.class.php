@@ -2784,11 +2784,18 @@ class CrmLibrary
                     if(isset($arrFormData["phone_office"])){
                         $crmCompany->phone = $arrFormData["phone_office"];
                     }
-                    if($this->contact->email != $crmCompany->email){
+
+                    // store/update the company profile
+                    $crmCompany->save();
+
+                    // setting & storing the primary email address must be done after
+                    // the company has been saved for the case where the company is
+                    // being added as a new object without having an ID yet
+                    if (empty($crmCompany->email)) {
                         $crmCompany->email = $this->contact->email;
                         $crmCompany->storeEMail();
                     }
-                    $crmCompany->save();
+
                     $this->contact->contact_customer = $crmCompany->id;
                 }
 
