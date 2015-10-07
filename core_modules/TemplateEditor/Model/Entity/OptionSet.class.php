@@ -172,6 +172,11 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     {
         foreach ($this->options as $option) {
             $option->renderTheme($template);
+            \ContrexxJavascript::getInstance()->setVariable(
+                    $option->getName(),
+                    $option->getValue(),
+                    'TemplateEditor'
+            );
         }
     }
 
@@ -315,8 +320,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
 //        $this->options = array();
         foreach ($data['options'] as $option) {
             $optionReflection = new \ReflectionClass($option['type']);
-            if ($optionReflection->getParentClass()->getName()
-                == 'Cx\Core_Modules\TemplateEditor\Model\Entity\Option'
+            if ($optionReflection->isSubclassOf('Cx\Core_Modules\TemplateEditor\Model\Entity\Option')
             ) {
                 if ($this->cx->getMode() == Cx::MODE_BACKEND
                     || (($this->cx->getUser()->getFWUserObject(
