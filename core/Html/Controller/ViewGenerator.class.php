@@ -276,25 +276,56 @@ class ViewGenerator {
         }
         // save singleValuedAssociations
         foreach ($entityClassMetadata->getAssociationMappings() as $associationMapping) {
-            if($entityClassMetadata->isSingleValuedAssociation($associationMapping['fieldName'])){
-                if ($associationMapping['targetEntity'] != '' && $associatedTo != $associationMapping['targetEntity']) {
-                    if (!isset($entityData)) { // main formular
-                        $id = $_POST[$associationMapping['fieldName']];
-                    } else { // if form was opeen in modal
-                        $id = $entityData[$associationMapping['fieldName']];
-                    }
-                    $this->storeSingleValuedAssociation(
-                        $associationMapping['targetEntity'],
-                        array(
-                            $associationMapping['joinColumns'][0]['referencedColumnName'] => $id
-                        ),
-                        $entity,
-                        'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
-                    );
+            // we're only interested in single valued associations here, so skip others
+            if (!$entityClassMetadata->isSingleValuedAssociation($associationMapping['fieldName'])) {
+                continue;
+            }
+            // we're only interested if there's a target entity other than $associatedTo, so skip others
+            if (
+                $associationMapping['targetEntity'] == '' ||
+                $associatedTo == $associationMapping['targetEntity']
+            ) {
+                continue;
+            }
+            
+            // save it:
+            
+            // case a) was open in form directly
+            $firstOffset = str_replace('\\', '_', strtolower($associationMapping['sourceEntity']));
+            $secondOffset = $associationMapping['fieldName'];
+            if (isset($entityData[$secondOffset])) {
+                $this->storeSingleValuedAssociation(
+                    $associationMapping['targetEntity'],
+                    array(
+                        $associationMapping['joinColumns'][0]['referencedColumnName'] => $entityData[$secondOffset],
+                    ),
+                    $entity,
+                    'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
+                );
+                continue;
+            }
+            
+            // base b) was open in a modal form
+            foreach ($_POST[$firstOffset] as $foreignEntityDataEncoded) {
+                $foreignEntityData = array();
+                parse_str($foreignEntityDataEncoded, $foreignEntityData);
+                
+                if (!isset($foreignEntityData[$secondOffset])) {
+                    // todo: remove entity!
+                    continue;
                 }
+                
+                // todo: add/save entity
+                $this->storeSingleValuedAssociation(
+                    $associationMapping['targetEntity'],
+                    array(
+                        $associationMapping['joinColumns'][0]['referencedColumnName'] => $foreignEntityData[$secondOffset],
+                    ),
+                    $entity,
+                    'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $associationMapping['fieldName'])))
+                );
             }
         }
-
     }
 
     /**
@@ -860,9 +891,17 @@ class ViewGenerator {
         }
         $this->options['cancelUrl']->setParam($parameterName, null);
     }
-
-    protected function storeSingleValuedAssociation($targetEntity, $criteria, $entity, $methodName){
+    
+    /**
+     * Adds/sets a foreign entity (1:1 or n:1)
+     * 
+     * @param string $targetEntity FQCN of foreign entity
+     * @param array $criteria Criteria to fetch the entity to set
+     * @param object $entity Entity to set foreign entity of
+     * @param string $methodName Name of method to set entity
+     */
+    protected function storeSingleValuedAssociation($targetEntity, $criteria, $entity, $methodName) {
         $association = \Env::get('em')->getRepository($targetEntity)->findOneBy($criteria);
-        $entity->{$methodName}($association);
+        $entity->$methodName($association);
     }
 }
