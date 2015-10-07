@@ -257,8 +257,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     
     /**
      * This method defines the option to generate the backend view (list and form)
-     *
-     * @access public
+     * 
      * @global array $_ARRAYLANG Language data
      * @param string $entityClassName contains the FQCN from entity
      * @return array array containing the options
