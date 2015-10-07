@@ -548,31 +548,33 @@ class ViewGenerator {
         // This should be moved to FormGenerator as soon as FormGenerator
         // gets the real entity instead of $renderArray
         $additionalContent = '';
-        $preRender = $this->options['preRenderDetail'];
-        /* We use json to do preRender the detail. The 'else if' is for backwards compatibility so you can declare
-         * the function directly without using json. This is not recommended and not working over session */
-        if (
-            isset($preRender) &&
-            is_array($preRender) &&
-            isset($preRender['adapter']) &&
-            isset($preRender['method'])
-        ) {
-            $json = new \Cx\Core\Json\JsonData();
-            $jsonResult = $json->data(
-                $preRender['adapter'],
-                $preRender['method'],
-                array(
-                    'viewGenerator' => $this,
-                    'formGenerator' => $this->formGenerator,
-                    'entityId'  => $entityId,
-                )
-            );
-            if ($jsonResult['status'] == 'success') {
-                $additionalContent .= $jsonResult["data"];
-            }
-        } else if (is_callable($preRender)) {
-            $additionalContent = $preRender($this, $this->formGenerator, $entityId);
+        if (isset($this->options['preRenderDetail'])) {
+            $preRender = $this->options['preRenderDetail'];
+            /* We use json to do preRender the detail. The 'else if' is for backwards compatibility so you can declare
+             * the function directly without using json. This is not recommended and not working over session */
+            if (
+                isset($preRender) &&
+                is_array($preRender) &&
+                isset($preRender['adapter']) &&
+                isset($preRender['method'])
+            ) {
+                $json = new \Cx\Core\Json\JsonData();
+                $jsonResult = $json->data(
+                    $preRender['adapter'],
+                    $preRender['method'],
+                    array(
+                        'viewGenerator' => $this,
+                        'formGenerator' => $this->formGenerator,
+                        'entityId'  => $entityId,
+                    )
+                );
+                if ($jsonResult['status'] == 'success') {
+                    $additionalContent .= $jsonResult["data"];
+                }
+            } else if (is_callable($preRender)) {
+                $additionalContent = $preRender($this, $this->formGenerator, $entityId);
 
+            }
         }
         return $this->formGenerator . $additionalContent;
     }
