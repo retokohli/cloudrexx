@@ -207,7 +207,7 @@ class FormGenerator {
                 is_array($formFieldGenerator) &&
                 isset($formFieldGenerator['adapter']) &&
                 isset($formFieldGenerator['method'])
-            ){
+            ) {
                 $json = new \Cx\Core\Json\JsonData();
                 $jsonResult = $json->data(
                     $formFieldGenerator['adapter'],
@@ -315,7 +315,7 @@ class FormGenerator {
                         $select->setAttributes($options['attributes']);
                     }
                     return $select;
-                }else{
+                } else {
                     // this case is used to list all existing values and show an add button for 1 to many associations
                     $closeMetaData = \Env::get('em')->getClassMetadata($this->entityClass);
                     $assocMapping = $closeMetaData->getAssociationMapping($name);
@@ -335,7 +335,7 @@ class FormGenerator {
                     $_SESSION['vgOptions'][$this->entityClass] = $this->componentOptions;
                     if ($entityId != 0) {
                         // if we edit the main form, we also want to show the existing associated values we already have
-                        $existingValues = $this->getExistingValues($assocMapping, $associatedClass, $entityId);
+                        $existingValues = $this->getIdentifyingDisplayValue($assocMapping, $associatedClass, $entityId);
                     }
                     if (!empty($existingValues)) {
                         foreach ($existingValues as $existingValue) {
@@ -754,13 +754,13 @@ CODE;
      * @access protected
      * @return string value of DataElement as string
      */
-    protected function getDataElementValueAsString($element){
+    protected function getDataElementValueAsString($element) {
         if (is_object($element)) {
             $type = get_class($element);
         } else {
             $type = 'string';
         }
-       switch ($type) {
+        switch ($type) {
             case 'DateTime':
             case 'datetime':
             case 'date':
@@ -773,97 +773,107 @@ CODE;
     }
 
     /**
-     * This function returns all existing associated values
+     * This function returns the HtmlElements to display for 1:n relations
      *
-     * @param array $assocMapping the mapping information
-     * @param string $entityClass class of the entity (including namespace)
-     * @param int $entityId id of the entity
-     * @return \Cx\Core\Html\Model\Entity\TextElement
+     * @todo this only works with single valued identifiers named 'id'!
+     * @param array $assocMapping Mapping information for this relation
+     * @param string $entityClass FQCN of the foreign entity
+     * @param int $entityId ID of the local entity
+     * @return array Set of \Cx\Core\Html\Model\Entity\HtmlElement instances
      */
-    protected function getExistingValues($assocMapping, $entityClass, $entityId) {
+    protected function getIdentifyingDisplayValue($assocMapping, $entityClass, $entityId) {
         global $_CORELANG;
-
-        $foreignMetaData = \Env::get('em')->getClassMetadata($entityClass);
-        $pageRepo = \Env::get('em')->getRepository($this->entityClass);
-        $entity = $pageRepo->find($entityId);
-        $values = $entity->{'get'.preg_replace('/_([a-z])/', '\1', ucfirst($assocMapping["fieldName"]))}();
-
-        $primaryKeyName = $foreignMetaData->getSingleIdentifierFieldName();
-        $arrEntities = array();
-        if (!\Env::get('em')->getClassMetadata($assocMapping['sourceEntity'])->isCollectionValuedAssociation($assocMapping['fieldName'])) {
-            foreach ($values as $value) {
-                $arrEntities[\Env::get('em')->getClassMetadata($entityClass)->getFieldValue($value, $primaryKeyName)] = $value;
-            }
+        
+        $localEntityRepo = \Env::get('em')->getRepository($this->entityClass);
+        $localEntity = $localEntityRepo->find($entityId);
+        if (!$localEntity) {
+            throw new \Exception('Entity not found');
         }
-        foreach ($values as $value) {
-            $primaryKeyId = \Env::get('em')->getClassMetadata($entityClass)->getFieldValue($value, $primaryKeyName);
-            foreach ($foreignMetaData->fieldNames as $field) {
-                $arrEntities[$primaryKeyId][$field] = \Env::get('em')->getClassMetadata($entityClass)->getFieldValue($value, $field);
+        
+        $foreignEntityGetter = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($assocMapping["fieldName"]));
+        $foreignEntities = $localEntity->$foreignEntityGetter();
+        
+        $htmlElements = array();
+        foreach ($foreignEntities as $index=>$foreignEntity) {
+            // entity base implements __toString()
+            $displayValue = (string) $foreignEntity;
+            
+            $foreignEntityMetadata = \Env::get('em')->getClassMetadata(get_class($foreignEntity));
+            $entityValueSerialized = 'vg_increment_number=' . $this->formId;
+            $fieldsToParse = $foreignEntityMetadata->fieldNames;
+            foreach ($fieldsToParse as $dbColName=>$fieldName) {
+                $entityValueSerialized .= '&' . $fieldName . '=' . $this->getDataElementValueAsString(
+                    $foreignEntityMetadata->getFieldValue(
+                        $foreignEntity,
+                        $fieldName
+                    )
+                );
             }
-        }
-        if (!empty($arrEntities)) {
-            $valuesArray = array();
-            foreach ($arrEntities as $mappedEntity) {
-                $associatedValuesDiv = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
-                $associatedValuesDiv->setAttribute('class', 'oneToManyEntryRow');
-                $entityValueString = '';
-                $entityValueSerialized = 'vg_increment_number=0';
-                $mappedEntityDiv = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
-                $mappedEntityDiv->setAttribute('class', 'oneToManyEntryRow');
-                foreach ($mappedEntity as $key=>$entityVariable) {
-                    $entityVariable = $this->getDataElementValueAsString($entityVariable);
-
-                    if (!is_string($entityVariable) && !is_bool($entityVariable) && !is_int($entityVariable)) {
-                        continue;
-                    }
-                    if ($key != 'id' ) {
-                        $entityValueString .= $entityVariable . ' / ';
-                    }
-                    $entityValueSerialized .= '&'.$key.'='.$entityVariable;
-                }
-
-                if ($entityValueString === '') {
+            
+            // add relations
+            foreach ($foreignEntityMetadata->associationMappings as $foreignAssocMapping) {
+                if (!$foreignAssocMapping['isOwningSide']) {
                     continue;
                 }
-                $val = new \Cx\Core\Html\Model\Entity\HtmlElement('span');
-                $val->addChild(new \Cx\Core\Html\Model\Entity\TextElement(substr($entityValueString, 0, -3)));
-                $val->allowDirectClose(false);
-                $hiddenInput = new \Cx\Core\Html\Model\Entity\DataElement('input');
-                $hiddenInput->setAttributes(
-                    array(
-                        'type'        => 'hidden',
-                        'name'        => $this->createCssClassNameFromEntity($entityClass).'[]',
-                        'value'       => $entityValueSerialized
-                    )
+                $joinColumns = reset($foreignAssocMapping['joinColumns']);
+                
+                // if the association is a backreference to our main entity we skip it
+                if (
+                    $foreignAssocMapping['targetEntity'] == $this->entityClass &&
+                    $joinColumns['referencedColumnName'] == 'id'
+                ) {
+                    continue;
+                }
+                
+                $foreignForeignEntity = $foreignEntityMetadata->getFieldValue(
+                    $foreignEntity,
+                    $foreignAssocMapping['fieldName']
                 );
-                $editLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
-                $editLink->setAttributes(
-                    array(
-                        'class'       => 'edit',
-                        'title'       => $_CORELANG['TXT_EDIT']
-                    )
-                );
-                $editLink->allowDirectClose(false);
-
-                $deleteLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
-                $deleteLink->setAttributes(
-                    array(
-                        'onclick'     => 'deleteAssociationMappingEntry(this)',
-                        'class'       => 'remove existing',
-                        'title'       => $_CORELANG['TXT_DELETE']
-                    )
-                );
-                $deleteLink->allowDirectClose(false);
-
-                $associatedValuesDiv->addChild($val);
-                $associatedValuesDiv->addChild($hiddenInput);
-                $associatedValuesDiv->addChild($editLink);
-                $associatedValuesDiv->addChild($deleteLink);
-                $valuesArray[] = $associatedValuesDiv;
+                if (!$foreignForeignEntity) {
+                    continue;
+                }
+                $entityValueSerialized .= '&' . $foreignAssocMapping['fieldName'] . '=' . $foreignForeignEntity->getId();
             }
-            return $valuesArray;
+            
+            $sorroundingDiv = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+            $sorroundingDiv->setAttribute('class', 'oneToManyEntryRow');
+            $displaySpan = new \Cx\Core\Html\Model\Entity\HtmlElement('span');
+            $displaySpan->addChild(new \Cx\Core\Html\Model\Entity\TextElement($displayValue));
+            $displaySpan->allowDirectClose(false);
+            $hiddenInput = new \Cx\Core\Html\Model\Entity\DataElement('input');
+            $hiddenInput->setAttributes(
+                array(
+                    'type'        => 'hidden',
+                    'name'        => $this->createCssClassNameFromEntity($entityClass).'[]',
+                    'value'       => $entityValueSerialized
+                )
+            );
+            $editLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+            $editLink->setAttributes(
+                array(
+                    'class'       => 'edit',
+                    'title'       => $_CORELANG['TXT_EDIT']
+                )
+            );
+            $editLink->allowDirectClose(false);
+
+            $deleteLink = new \Cx\Core\Html\Model\Entity\HtmlElement('a');
+            $deleteLink->setAttributes(
+                array(
+                    'onclick'     => 'deleteAssociationMappingEntry(this)',
+                    'class'       => 'remove existing',
+                    'title'       => $_CORELANG['TXT_DELETE']
+                )
+            );
+            $deleteLink->allowDirectClose(false);
+
+            $sorroundingDiv->addChild($displaySpan);
+            $sorroundingDiv->addChild($hiddenInput);
+            $sorroundingDiv->addChild($editLink);
+            $sorroundingDiv->addChild($deleteLink);
+            $htmlElements[] = $sorroundingDiv;
         }
-        return null;
+        return $htmlElements;
     }
 
 
