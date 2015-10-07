@@ -775,7 +775,7 @@ CODE;
     /**
      * This function returns the HtmlElements to display for 1:n relations
      *
-     * @todo this only works with single valued identifiers named 'id'!
+     * @todo this only works with single valued identifiers
      * @param array $assocMapping Mapping information for this relation
      * @param string $entityClass FQCN of the foreign entity
      * @param int $entityId ID of the local entity
@@ -784,6 +784,8 @@ CODE;
     protected function getIdentifyingDisplayValue($assocMapping, $entityClass, $entityId) {
         global $_CORELANG;
         
+        $localEntityMetadata = \Env::get('em')->getClassMetadata($this->entityClass);
+        $localEntityIdentifierField = $localEntityMetadata->getSingleIdentifierFieldName();
         $localEntityRepo = \Env::get('em')->getRepository($this->entityClass);
         $localEntity = $localEntityRepo->find($entityId);
         if (!$localEntity) {
@@ -799,6 +801,7 @@ CODE;
             $displayValue = (string) $foreignEntity;
             
             $foreignEntityMetadata = \Env::get('em')->getClassMetadata(get_class($foreignEntity));
+            $foreignEntityIdentifierField = $foreignEntityMetadata->getSingleIdentifierFieldName();
             $entityValueSerialized = 'vg_increment_number=' . $this->formId;
             $fieldsToParse = $foreignEntityMetadata->fieldNames;
             foreach ($fieldsToParse as $dbColName=>$fieldName) {
@@ -820,7 +823,7 @@ CODE;
                 // if the association is a backreference to our main entity we skip it
                 if (
                     $foreignAssocMapping['targetEntity'] == $this->entityClass &&
-                    $joinColumns['referencedColumnName'] == 'id'
+                    $joinColumns['referencedColumnName'] == $localEntityIdentifierField
                 ) {
                     continue;
                 }
@@ -832,7 +835,8 @@ CODE;
                 if (!$foreignForeignEntity) {
                     continue;
                 }
-                $entityValueSerialized .= '&' . $foreignAssocMapping['fieldName'] . '=' . $foreignForeignEntity->getId();
+                $foreignEntityIdentifierGetter = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($foreignEntityIdentifierField));
+                $entityValueSerialized .= '&' . $foreignAssocMapping['fieldName'] . '=' . $foreignForeignEntity->$foreignEntityIdentifierGetter();
             }
             
             $sorroundingDiv = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
