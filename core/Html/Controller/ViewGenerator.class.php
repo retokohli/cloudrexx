@@ -115,7 +115,7 @@ class ViewGenerator {
             
             // this is a temporary "workaround" for combined keys, see todo
             $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
-            if (count($entityClassMetadata->getIdentifierFieldNames() > 1)) {
+            if (count($entityClassMetadata->getIdentifierFieldNames()) > 1) {
                 throw new \Exception('Currently, view generator is not able to handle composite keys...');
             }
 
