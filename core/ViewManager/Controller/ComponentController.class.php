@@ -76,17 +76,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 
         $this->cx->getTemplate()->setRoot($cachedRoot);        
     }
-
+    
     /**
-     * Do something before a module is loaded
+     * Register your event listeners here
      *
-     * This method is called only if any module
-     * gets loaded for content parsing
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
-     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
-    public function preContentParse(Page $page) {
+    public function registerEventListeners() {
         $this->cx->getEvents()->addEventListener(
             'mediasource.load', new ViewManagerEventListener($this->cx)
         );

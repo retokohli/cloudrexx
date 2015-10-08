@@ -68,13 +68,14 @@ class ComponentController extends
      * {@inheritdoc }
      */
     public function getControllerClasses() {
-        if (in_array(
+        if (
+            in_array(
             'Workbench',
-            \Cx\Core\ModuleChecker::getInstance(
-                $this->cx->getDb()->getEntityManager(),
-                $this->cx->getDb()->getAdoDb(),
-                $this->cx->getClassLoader()
-            )->getCoreModules()
+                \Cx\Core\ModuleChecker::getInstance(
+                    $this->cx->getDb()->getEntityManager(),
+                    $this->cx->getDb()->getAdoDb(),
+                    $this->cx->getClassLoader()
+                )->getCoreModules()
             )
         ) {
             return array('Backend');
@@ -98,12 +99,18 @@ class ComponentController extends
             'JsonMediaBrowser',
         );
     }
-
-
+    
     /**
-     * {@inheritdoc }
+     * Register your event listeners here
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
-    public function preContentParse(Page $page) {
+    public function registerEventListeners() {
         $this->cx->getEvents()->addEventListener(
             'mediasource.load', new MediaBrowserEventListener($this->cx)
         );

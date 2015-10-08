@@ -180,15 +180,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'bodyId' => !empty($ymlOption['bodyId'])?$ymlOption['bodyId']:'',
         );
     }
-    
+
     /**
-     * Add the event listener
-     * 
-     * This method is called only if any module
-     * gets loaded for content parsing
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     * Register your event listeners here
+     *
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
-    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function registerEventListeners() {
         $eventListener = new WysiwygEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
     }

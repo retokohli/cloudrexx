@@ -34,9 +34,6 @@
 
 namespace Cx\Core\MediaSource\Controller;
 
-
-use Cx\Core\Core\Controller\Cx;
-use Cx\Core\Core\Model\Entity\SystemComponent;
 use Cx\Core\Core\Model\Entity\SystemComponentController;
 
 /**
@@ -50,9 +47,14 @@ use Cx\Core\Core\Model\Entity\SystemComponentController;
 class ComponentController
     extends SystemComponentController
 {
-    public function __construct(SystemComponent $systemComponent, Cx $cx) {
-        parent::__construct($systemComponent, $cx);
-        $eventHandlerInstance = $cx->getEvents();
+    /**
+     * Register your events here
+     *
+     * Do not do anything else here than list statements like
+     * $this->cx->getEvents()->addEvent($eventName);
+     */
+    public function registerEvents() {
+        $eventHandlerInstance = $this->cx->getEvents();
         $eventHandlerInstance->addEvent('mediasource.load');
     }
 
@@ -61,5 +63,4 @@ class ComponentController
         // does not exist a backend, nor a frontend controller of this component.
         return array();
     }
-
 }
