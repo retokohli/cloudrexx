@@ -38,6 +38,7 @@ class FontOption extends SelectOption
 {
 
     /**
+     * List with Google Fonts
      * @var array
      */
     protected $fonts
@@ -64,7 +65,8 @@ class FontOption extends SelectOption
             'Anton' => array(), 'Arapey' => array(), 'Arbutus' => array(),
             'Arbutus Slab' => array(), 'Architects Daughter' => array(),
             'Archivo Black' => array(), 'Archivo Narrow' => array(),
-            'Arial' => array(), 'Arimo' => array(), 'Arizonia' => array(), 'Armata' => array(),
+            'Arial' => array(), 'Arimo' => array(), 'Arizonia' => array(),
+            'Armata' => array(),
             'Artifika' => array(), 'Arvo' => array(), 'Arya' => array(),
             'Asap' => array(), 'Asar' => array(), 'Asset' => array(),
             'Astloch' => array(), 'Asul' => array(), 'Atomic Age' => array(),

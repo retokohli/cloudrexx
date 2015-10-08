@@ -31,7 +31,7 @@ use Cx\Core\Html\Sigma;
 
 /**
  * class SelectOption
- * 
+ *
  * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
@@ -60,8 +60,9 @@ class SelectOption extends Option
     public function __construct($name, $translations, $data)
     {
         parent::__construct($name, $translations, $data);
-        $this->activeChoice     = isset($data['activeChoice']) ? $data['activeChoice'] : '';
-        $this->choice     = isset($data['choice']) ? $data['choice'] : '';
+        $this->activeChoice = isset($data['activeChoice'])
+            ? $data['activeChoice'] : '';
+        $this->choice       = isset($data['choice']) ? $data['choice'] : '';
     }
 
     /**
@@ -77,18 +78,22 @@ class SelectOption extends Option
             $this->cx->getCodeBaseCoreModulePath()
             . '/TemplateEditor/View/Template/Backend/SelectOption.html'
         );
-        foreach ($this->choice as $value => $choice){
-            $subTemplate->setVariable('CHOICE_NAME',
-            isset($choice[$_LANGID])
-                ? $choice[$_LANGID]
-                : (isset($choice[2]) ? $choice[2] : $value));
+        foreach ($this->choice as $value => $choice) {
+            $subTemplate->setVariable(
+                'CHOICE_NAME',
+                isset($choice[$_LANGID])
+                    ? $choice[$_LANGID]
+                    : (isset($choice[2]) ? $choice[2] : $value)
+            );
             $subTemplate->setVariable('CHOICE_VALUE', $value);
-            if ($value == $this->activeChoice){
+            if ($value == $this->activeChoice) {
                 $subTemplate->setVariable('CHOICE_ACTIVE', 'selected');
             }
             $subTemplate->parse('choices');
         }
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $this->activeChoice);
+        $subTemplate->setVariable(
+            'TEMPLATEEDITOR_OPTION_VALUE', $this->activeChoice
+        );
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
         $subTemplate->setVariable(
             'TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName
@@ -106,7 +111,7 @@ class SelectOption extends Option
     public function renderTheme($template)
     {
         $template->setVariable(
-            'TEMPLATE_EDITOR_' . strtoupper($this->name),$this->activeChoice 
+            'TEMPLATE_EDITOR_' . strtoupper($this->name), $this->activeChoice
         );
     }
 
@@ -126,7 +131,7 @@ class SelectOption extends Option
      */
     public function handleChange($data)
     {
-        if (!is_string($data) || !isset($this->choice[$data])){
+        if (!is_string($data) || !isset($this->choice[$data])) {
             throw new OptionValueNotValidException('Not a option!');
         }
         $this->activeChoice = $data;
@@ -140,7 +145,7 @@ class SelectOption extends Option
      */
     public function yamlSerialize()
     {
-        $option             = parent::yamlSerialize();
+        $option = parent::yamlSerialize();
         $option['specific'] = array(
             'choice' => $this->choice
         );
