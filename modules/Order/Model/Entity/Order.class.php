@@ -226,6 +226,8 @@ class Order extends \Cx\Model\Base\EntityBase {
             $invoiceItem->setDescription($subscription->getProduct()->getName() . ' (' . $subscription->getProductEntity() . ')');
             //Add InvoiceItem::$price to Subscription::getPaymentAmount()
             $invoiceItem->setPrice($subscription->getPaymentAmount());
+            //Add InvoiceItem::$vatRate from product vat rate
+            $invoiceItem->setVatRate($subscription->getProduct()->getVatRate()->getRate());
             
             \Env::get('em')->persist($invoiceItem);
             //Attached to the created invoice

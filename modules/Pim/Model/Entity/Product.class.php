@@ -456,9 +456,9 @@ class Product extends \Cx\Model\Base\EntityBase {
     /**
      * Set the VatRate
      * 
-     * @param Cx\Modules\Order\Model\Entity\VatRate $vatRate
+     * @param mixed $vatRate Cx\Modules\Order\Model\Entity\VatRate | null
      */
-    public function setVatRate(\Cx\Modules\Order\Model\Entity\VatRate $vatRate)
+    public function setVatRate($vatRate)
     {
         $this->vatRate = $vatRate;
     }
