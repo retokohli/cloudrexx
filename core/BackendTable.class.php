@@ -114,15 +114,35 @@ class BackendTable extends HTML_Table {
                             $this->setCellContents(0, $col, $header, 'th', 0);
                         }
                     }
+                    /* We use json to do parse the field function. The 'else if' is for backwards compatibility so you can declare
+                    * the function directly without using json. This is not recommended and not working over session */
                     if (
                         isset($options['fields']) &&
                         isset($options['fields'][$origHeader]) &&
                         isset($options['fields'][$origHeader]['table']) &&
-                        isset($options['fields'][$origHeader]['table']['parse']) &&
-                        is_callable($options['fields'][$origHeader]['table']['parse'])
+                        isset($options['fields'][$origHeader]['table']['parse'])
                     ) {
                         $callback = $options['fields'][$origHeader]['table']['parse'];
-                        $data = $callback($data, $rows);
+                        if (
+                            is_array($callback) &&
+                            isset($callback['adapter']) &&
+                            isset($callback['method'])
+                        ) {
+                            $json = new \Cx\Core\Json\JsonData();
+                            $jsonResult = $json->data(
+                                $callback['adapter'],
+                                $callback['method'],
+                                array(
+                                    'data' => $data,
+                                    'rows' => $rows,
+                                )
+                            );
+                            if ($jsonResult['status'] == 'success') {
+                                $data = $jsonResult["data"];
+                            }
+                        } else if(is_callable($callback)){
+                            $data = $callback($data, $rows);
+                        }
                         $encode = false; // todo: this should be set by callback
                     } else if (is_object($data) && get_class($data) == 'DateTime') {
                         $data = $data->format(ASCMS_DATE_FORMAT);
@@ -271,7 +291,7 @@ class BackendTable extends HTML_Table {
         if ($virtual) {
             return false;
         }
-        if (isset($functions['actions']) && is_callable($functions['actions'])) {
+        if (isset($functions['actions'])) {
             return true;
         }
         if (isset($functions['edit']) && $functions['edit']) {
@@ -297,7 +317,28 @@ class BackendTable extends HTML_Table {
             }
             $editId .= '{' . $functions['vg_increment_number'] . ',' . $rowname . '}';
 
-            if (isset($functions['actions']) && is_callable($functions['actions'])) {
+            /* We use json to do the action callback. So all callbacks are functions in the json controller of the
+            * corresponding component. The 'else if' is for backwards compatibility so you can declare the function
+            * directly without using json. This is not recommended and not working over session */
+            if (
+                isset($functions['actions']) &&
+                is_array($functions['actions']) &&
+                isset($functions['actions']['adapter']) &&
+                isset($functions['actions']['method'])
+            ){
+                $json = new \Cx\Core\Json\JsonData();
+                $jsonResult = $json->data(
+                    $functions['actions']['adapter'],
+                    $functions['actions']['method'],
+                    array(
+                        'rowData' => $rowData,
+                        'editId' => $editId,
+                    )
+                );
+                if ($jsonResult['status'] == 'success') {
+                    $code .= $jsonResult["data"];
+                }
+            } else if (isset($functions['actions']) && is_callable($functions['actions'])) {
                 $code .= $functions['actions']($rowData, $editId);
             }
             

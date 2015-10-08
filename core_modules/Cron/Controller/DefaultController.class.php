@@ -114,60 +114,9 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         if (empty($cronJob)) {
             $cronJob = new \Cx\Core_Modules\Cron\Model\Entity\Job();
         }
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($cronJob, array(
-            'header'    => $_ARRAYLANG['TXT_CORE_MODULE_CRON_ACT_DEFAULT'],
-            'functions' => array(
-                'add'       => true,
-                'edit'      => true,
-                'delete'    => true,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-            ),
-            'fields' => array(
-                'id' => array(
-                    'showOverview' => false,
-                ),
-                'active' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_CRON_ACTIVE'],
-                ),
-                'expression' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_CRON_EXPRESSION'],
-                ),
-                'command' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_CRON_COMMAND'],
-                    'storecallback' => function ($value) {
-                        return $value['command'] . ' ' . $value['arguments'];
-                    },
-                    'formfield' => function ($name, $type, $length, $value, $options) {
-                        $field = new \Cx\Core\Html\Model\Entity\HtmlElement('span');
-                        $commandSelectOptions = array_keys($this->cx->getCommands());
-                        $value = explode(' ', $value, 2);
-                        $commandSelect = new \Cx\Core\Html\Model\Entity\DataElement(
-                            $name . '[command]',
-                            \Html::getOptions(
-                                array_combine(
-                                    array_values($commandSelectOptions),
-                                    array_values($commandSelectOptions)
-                                ),
-                                isset($value[0]) ? $value[0] : ''
-                            ),
-                            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
-                        );
-                        $commandArguments = new \Cx\Core\Html\Model\Entity\DataElement(
-                            $name . '[arguments]',
-                            isset($value[1]) ? $value[1] : ''
-                        );
-                        $field->addChild($commandSelect);
-                        $field->addChild($commandArguments);
-                        return $field;
-                    },
-                ),
-                'lastRan' => array(
-                    'header' => $_ARRAYLANG['TXT_CORE_MODULE_CRON_LAST_RUN'],
-                ),
-            )
-        ));
+
+        $options = $this->getController('Backend')->getAllViewGeneratorOptions();
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($cronJob, $options);
         $this->template->setVariable('CRON_CONTENT', $view->render());
     }
 }
