@@ -63,7 +63,7 @@ class InvoiceItem extends \Cx\Model\Base\EntityBase {
 
     /**
      *
-     * @var integer $vatRate
+     * @var decimal $vatRate
      */
     protected $vatRate;
 
@@ -130,7 +130,7 @@ class InvoiceItem extends \Cx\Model\Base\EntityBase {
     /**
      * Get the vatRate
      * 
-     * @return integer
+     * @return decimal
      */
     public function getVatRate() {
         return $this->vatRate;
@@ -139,7 +139,7 @@ class InvoiceItem extends \Cx\Model\Base\EntityBase {
     /**
      * Set the vatRate
      * 
-     * @param integer $vatRate
+     * @param decimal $vatRate
      */
     public function setVatRate($vatRate) {
         $this->vatRate = $vatRate;

@@ -11,7 +11,10 @@ Cx\Modules\Order\Model\Entity\VatRate:
 
   fields:
     rate:
-      type: integer
+      type: decimal
+      precision: 5
+      scale: 2
+      unsigned: true
     vatClass:
       type: string
       length: 45

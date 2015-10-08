@@ -54,7 +54,7 @@ class VatRate extends \Cx\Model\Base\EntityBase {
     
     /**
      *
-     * @var integer $rate
+     * @var decimal $rate
      */
     protected $rate;
     
@@ -95,7 +95,7 @@ class VatRate extends \Cx\Model\Base\EntityBase {
     /**
      * set the rate
      * 
-     * @param integer $rate
+     * @param decimal $rate
      */
     public function setRate($rate) {
         $this->rate = $rate;
@@ -104,7 +104,7 @@ class VatRate extends \Cx\Model\Base\EntityBase {
     /**
      * get the rate
      * 
-     * @return integer $rate
+     * @return decimal $rate
      */
     public function getRate() {
         return $this->rate;

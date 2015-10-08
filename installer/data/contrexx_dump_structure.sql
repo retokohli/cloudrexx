@@ -3608,3 +3608,15 @@ CREATE TABLE `contrexx_voting_system` (
   `additional_comment` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_order_vat_rate` (
+    `id` INT(11) AUTO_INCREMENT NOT NULL,
+    `rate` decimal(5,2) unsigned NOT NULL DEFAULT '0.00',
+    `vat_class` VARCHAR(45) NOT NULL,
+    PRIMARY KEY(`id`)
+) ENGINE = InnoDB;
+ALTER TABLE `contrexx_module_pim_product` ADD `vat_rate_id` INT DEFAULT NULL;
+ALTER TABLE `contrexx_module_pim_product` ADD FOREIGN KEY (`vat_rate_id`)
+    REFERENCES `contrexx_module_order_vat_rate`(`id`);
+CREATE INDEX IDX_6DFE203243897540 ON `contrexx_module_pim_product` (`vat_rate_id`);
+ALTER TABLE `contrexx_module_order_invoice_item` ADD
+    `vat_rate` decimal(5,2) unsigned NOT NULL DEFAULT '0.00';
