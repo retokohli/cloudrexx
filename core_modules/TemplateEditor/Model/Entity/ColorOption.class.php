@@ -55,8 +55,8 @@ class ColorOption extends Option
     protected $choice;
 
     /**
-     * @param String $name
-     * @param array  $translations
+     * @param String $name Name of the option
+     * @param array  $translations Array with translations for option.
      * @param array  $data
      */
     public function __construct($name, $translations, $data)
