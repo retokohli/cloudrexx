@@ -28,7 +28,6 @@
 
 namespace Cx\Core\ViewManager\Model\Entity;
 
-use Cx\Core\Core\Controller\Cx;
 use Cx\Core\MediaSource\Model\Entity\LocalFileSystem;
 
 /**
@@ -46,7 +45,7 @@ class ViewManagerFileSystem extends LocalFileSystem
     {
         parent::__construct($path);
         $this->codeBaseFileSystem
-            = new LocalFileSystem(Cx::instanciate()->getCodeBaseThemesPath());
+            = new LocalFileSystem($this->cx->getCodeBaseThemesPath());
     }
 
     /**

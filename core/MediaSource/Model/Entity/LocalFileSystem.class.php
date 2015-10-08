@@ -34,15 +34,14 @@
 namespace Cx\Core\MediaSource\Model\Entity;
 
 
-class LocalFileSystem implements FileSystem
-{
+use Cx\Model\Base\EntityBase;
 
-    private $cx;
+class LocalFileSystem extends EntityBase implements FileSystem
+{
 
     private $rootPath;
 
     function __construct($path) {
-        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if (!$path) {
             throw new \InvalidArgumentException(
                 "Path shouldn't be empty: Given: " . $path
