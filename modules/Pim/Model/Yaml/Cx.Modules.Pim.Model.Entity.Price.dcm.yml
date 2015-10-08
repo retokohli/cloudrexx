@@ -23,5 +23,6 @@ Cx\Modules\Pim\Model\Entity\Price:
       targetEntity: Cx\Modules\Pim\Model\Entity\Product
       joinColumn:
         name: product_id
+        nullable: false
         referencedColumnName: id
         cascade: [remove]
