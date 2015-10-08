@@ -32,8 +32,8 @@ use Cx\Core\Html\Sigma;
 /**
  * class SelectOption
  * 
- * @copyright   Comvation AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   Cloudrexx AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  */
 class SelectOption extends Option

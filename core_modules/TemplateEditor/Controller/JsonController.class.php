@@ -38,8 +38,8 @@ use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
 /**
  * Class JsonController
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */

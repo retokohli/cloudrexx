@@ -30,8 +30,8 @@ namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 /**
  * class FontOption
  *
- * @copyright   Comvation AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   Cloudrexx AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  */
 class FontOption extends SelectOption
@@ -64,7 +64,7 @@ class FontOption extends SelectOption
             'Anton' => array(), 'Arapey' => array(), 'Arbutus' => array(),
             'Arbutus Slab' => array(), 'Architects Daughter' => array(),
             'Archivo Black' => array(), 'Archivo Narrow' => array(),
-            'Arimo' => array(), 'Arizonia' => array(), 'Armata' => array(),
+            'Arial' => array(), 'Arimo' => array(), 'Arizonia' => array(), 'Armata' => array(),
             'Artifika' => array(), 'Arvo' => array(), 'Arya' => array(),
             'Asap' => array(), 'Asar' => array(), 'Asset' => array(),
             'Astloch' => array(), 'Asul' => array(), 'Atomic Age' => array(),
