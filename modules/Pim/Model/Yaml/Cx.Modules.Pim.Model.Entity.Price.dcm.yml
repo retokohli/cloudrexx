@@ -18,6 +18,7 @@ Cx\Modules\Pim\Model\Entity\Price:
       targetEntity: Cx\Modules\Crm\Model\Entity\Currency
       joinColumn:
         name: currency_id
+        nullable: false
         referencedColumnName: id
     product:
       targetEntity: Cx\Modules\Pim\Model\Entity\Product
