@@ -1231,7 +1231,6 @@ class JsonPage implements JsonAdapter {
 
         if (isset($arguments['get']['pageRedirectPlaceholder'])) {
             $filePath = \Env::get('cx')->getClassLoader()->getFilePath($arguments['get']['pageRedirectPlaceholder']);
-            //the "fromPlaceholder if" break the page for us, if the file not exist
             if (is_file($filePath)) {
                 return false;
             }
