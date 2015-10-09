@@ -1,4 +1,31 @@
 <?php
+
+/**
+ * Contrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Comvation AG 2007-2015
+ * @version   Contrexx 4.0
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Contrexx" is a registered trademark of Comvation AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * This file is used for the ViewGeneratorJsonController of the core html
  *
@@ -95,7 +122,8 @@ class ViewGeneratorJsonController extends \Cx\Core\Core\Model\Entity\Controller 
         $mappedBy = $params['get']['mappedBy'];
         $options = $_SESSION['vgOptions'][$params['get']['sessionKey']];
 
-        // add must always be true, otherwise we have no change to open the view, because it is not allowed
+        // if the option 'add' is not true, there is no possibility to open the modal, because we are not allowed to add
+        // an entry. That's why we set add to true here
         $options->recursiveOffsetSet(true, $entityClass.'/functions/add');
 
         // formButtons should not be set over ViewGenerator, because they are set over modal (js) and we do not want to

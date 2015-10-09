@@ -64,11 +64,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         }
         
         if (\Permission::checkAccess(ComponentController::INVOICE_ACCESS_ID, 'static', true)) {
-            $commands[] = 'invoice';
+            $commands[] = 'Invoice';
         }
         
         if (\Permission::checkAccess(ComponentController::PAYMENT_ACCESS_ID, 'static', true)) {
-            $commands[] = 'payment';
+            $commands[] = 'Payment';
         }
         
         return $commands;
@@ -89,9 +89,22 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $this->cx;
         $this->template = $template;
         $act = $cmd[0];
-        
-        $this->connectToController($act);
-        
+
+        //Check whether the page has the permission to access
+        $this->checkAccessPermission($act);
+
+        /* If the act is not empty, we are not on the first tab an we can use parsePage() from
+           SystemComponentBackendController to create the view.
+           If act is empty, we are on first tab where parent::parsePage() will not work, because ViewGenerator does
+           not support views on first tab of components.
+           We use a own controller for subscriptions because we have an filter there.
+         */
+
+        if ( $act != '' && $act != 'subscription') {
+            parent::parsePage($this->template, $cmd);
+        } else {
+            $this->connectToController($act);
+        }
         \Message::show();
     }
     
@@ -102,8 +115,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function connectToController($act)
     {
-        //Check whether the page has the permission to access
-        $this->checkAccessPermission($act);
         
         $act = ucfirst($act);
         if (!empty($act)) {
@@ -207,10 +218,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                         $result = array();
                                         foreach ($subscriptions as $subscription) {
                                             $productEntity     = $subscription->getProductEntity();
-                                            $productEntityName = $subscription->getProduct()->getName();
                                             if(!$productEntity) {
                                                 continue;
                                             }
+                                            $productEntityName = $subscription->getProduct()->getName();
                                             $productEditLink = $productEntity;
                                             if (method_exists($productEntity, 'getEditLink')) {
                                                 $productEditLink = $productEntity->getEditLink();

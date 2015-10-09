@@ -664,21 +664,45 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $objResult = $objDatabase->Execute("
             SELECT
-                `area_id`,
-                `area_name`,
-                `access_id`,
-                `is_active`,
-                `type`,
-                `scope`,
-                `parent_area_id`
-            FROM `".DBPREFIX."backend_areas`
-            WHERE `is_active` = 1 AND `access_id` != '0'
-            ORDER BY `parent_area_id`, `order_id`
-            ");
+                `areas`.`area_id`,
+                `areas`.`area_name`,
+                `areas`.`access_id`,
+                `areas`.`is_active`,
+                `areas`.`type`,
+                `areas`.`scope`,
+                `areas`.`parent_area_id`,
+                `modules`.`name` AS `module_name`
+            FROM
+                `".DBPREFIX."backend_areas` AS `areas`
+            INNER JOIN
+                `".DBPREFIX."modules` AS `modules`
+            ON
+                `modules`.`id` = `areas`.`module_id`
+            WHERE
+                `areas`.`is_active` = 1 AND
+                `areas`.`access_id` != '0'
+            ORDER BY
+                `areas`.`parent_area_id`,
+                `areas`.`order_id`
+        ");
         if ($objResult) {
             while (!$objResult->EOF) {
+
+                if (isset($_CORELANG[$objResult->fields['area_name']])) {
+                    $areaName = $_CORELANG[$objResult->fields['area_name']];
+                } else {
+                    // load language file
+                    $objInit = \Env::get('init');
+                    $moduleLanguageData = $objInit->getComponentSpecificLanguageData($objResult->fields['module_name'], false, $objInit->backendLangId);
+                    if (isset($moduleLanguageData[$objResult->fields['area_name']])) {
+                        $areaName = $moduleLanguageData[$objResult->fields['area_name']];
+                    } else {
+                        $areaName = $objResult->fields['area_name'];
+                    }
+                }
+
                 $arrAreas[$objResult->fields['area_id']] = array(
-                    'name'      => $objResult->fields['area_name'],
+                    'name'      => $areaName,
                     'access_id' => $objResult->fields['access_id'],
                     'status'    => $objResult->fields['is_active'],
                     'type'      => $objResult->fields['type'],
