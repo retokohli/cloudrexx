@@ -83,20 +83,13 @@ class Uploader extends EntityBase
         if (!isset($_SESSION['uploader']['handlers'])) {
             $_SESSION['uploader']['handlers'] = array();
         }
-
         $i       = self::generateId();
-//
-//        $lastKey = count($_SESSION['uploader']['handlers']);
-//        $i       = $lastKey++;
-
         $_SESSION['uploader']['handlers'][$i] = array('active' => true);
-
         $this->id = $i;
-
         $this->options = array(
             'data-pl-upload',
             'data-uploader-id' => $this->id,
-            'class' => "uploader-button button",
+            'class' => 'uploader-button button',
             'uploader-type' => self::UPLOADER_TYPE_MODAL
         );
     }
@@ -166,7 +159,7 @@ class Uploader extends EntityBase
      */
     function getOptionsString()
     {
-        $optionsString = "";
+        $optionsString = '';
         foreach ($this->options as $key => $value) {
             if (is_int($key)) {
                 $optionsString .= $value . ' ';
@@ -179,7 +172,7 @@ class Uploader extends EntityBase
                 if (is_array($value)) {
                     $value = json_encode($value);
                 }
-                $optionsString .= $key . "='" . $value . "' ";
+                $optionsString .= $key . '="' . $value . '"';
             }
         }
         return $optionsString;
@@ -190,9 +183,9 @@ class Uploader extends EntityBase
      *
      * @return string
      */
-    function getXHtml($buttonName = "Upload")
+    function getXHtml($buttonName = 'Upload')
     {
-        $inline = "";
+        $inline = '';
         if ($this->options['uploader-type'] == self::UPLOADER_TYPE_INLINE){
             $this->addClass('uploader-button-hidden');
             $inline = $this->getContainer();
@@ -259,7 +252,10 @@ class Uploader extends EntityBase
 
     /**
      * Add additional data for the uploader
+     *
      * @param $data
+     *
+     * @return $this
      */
     public function setData($data)
     {
