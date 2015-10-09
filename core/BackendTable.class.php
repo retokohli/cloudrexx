@@ -406,6 +406,11 @@ class BackendTable extends HTML_Table {
             
             if (isset($functions['edit']) && $functions['edit']) {
                 $editUrl->setParam('editid', $editId);
+                //remove the parameter 'vg_increment_number' from editUrl 
+                //if the baseUrl contains the parameter 'vg_increment_number'
+                if (isset($params['vg_increment_number'])) {
+                    \Html::stripUriParam($editUrl, 'vg_increment_number');
+                }
                 $code .= '<a href="' . $editUrl . '" class="edit" title="'.$_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'].'"></a>';
             }
             if (isset($functions['delete']) && $functions['delete']) {
