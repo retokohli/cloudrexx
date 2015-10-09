@@ -121,6 +121,14 @@ $arrOperatingSystems = array(
         'regExp' => '=Windows NT 6\.2=',
         'name' => 'Windows 8'
     ),
+    array(
+        'regExp' => '=Windows NT 6\.3=',
+        'name' => 'Windows 8.1'
+    ),
+    array(
+        'regExp' => '=Windows NT 10\.0=',
+        'name' => 'Windows 10'
+    ),
     // attention: iPhone/iPad/iPod can be missinterpreted as OS/2
     //            therefore, OS/2 must be the last option in this list
     array(
