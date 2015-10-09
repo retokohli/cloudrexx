@@ -731,6 +731,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (104,'SysLog','co
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (105,'NetManager','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (106,'Wysiwyg','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (107,'User','core');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (108,'Html','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (905,'MediaSource','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (108, 'Html', 'core');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
