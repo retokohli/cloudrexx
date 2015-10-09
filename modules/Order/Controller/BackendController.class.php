@@ -70,7 +70,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if (\Permission::checkAccess(ComponentController::PAYMENT_ACCESS_ID, 'static', true)) {
             $commands[] = 'payment';
         }
-        
+
+        if (\Permission::checkAccess(ComponentController::VAT_RATE_ACCESS_ID, 'static', true)) {
+            $commands[] = 'VatRate';
+        }
+
         return $commands;
     }
     
@@ -136,6 +140,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 break;
             case 'payment':
                 \Permission::checkAccess(ComponentController::PAYMENT_ACCESS_ID, 'static');
+                break;
+            case 'VatRate':
+                \Permission::checkAccess(ComponentController::VAT_RATE_ACCESS_ID, 'static');
                 break;
             default :
                 \Permission::checkAccess(ComponentController::ORDER_ACCESS_ID, 'static');

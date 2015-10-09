@@ -57,6 +57,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     const SUBSCRIPTION_ACCESS_ID  = 185;
     const INVOICE_ACCESS_ID       = 186;
     const PAYMENT_ACCESS_ID      = 187;
+    const VAT_RATE_ACCESS_ID     = 200;
 
     /*
      * Constructor
@@ -66,7 +67,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     
     public function getControllerClasses() {
-        return array('Backend', 'Default', 'Invoice', 'Payment', 'Subscription');
+        return array('Backend', 'Default', 'Invoice', 'Payment', 'Subscription', 'VatRate');
     }
     
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
