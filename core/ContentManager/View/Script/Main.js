@@ -182,6 +182,14 @@ cx.ready(function() {
         cx.jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
         cx.jQuery('#page_target, #page_target_backup').val(url);
       }
+      else if (data.type == "file") {
+        cx.jQuery('#page_target_wrapper').hide();
+        cx.jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + data.data[0].datainfo.filepath.substr(1)).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('#page_target_text_wrapper').show();
+        cx.jQuery('#page_target_protocol > option').removeAttr('selected');
+        cx.jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
+        cx.jQuery('#page_target, #page_target_backup').val(data.data[0].datainfo.filepath);
+      }
     }
     
     cx.jQuery('#page_target').keyup(function() {
