@@ -193,7 +193,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
             $thumbnails[$thumbnail['size']] = preg_replace(
                 '/\.' . lcfirst($extension) . '$/',
                 $thumbnail['value'] . '.' . lcfirst($extension),
-                $this->cx->getWebsiteOffsetPath() . str_replace(
+                 str_replace(
                     $this->cx->getWebsitePath(), '',
                     $file->getRealPath()
                 )
