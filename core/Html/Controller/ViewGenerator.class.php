@@ -722,9 +722,9 @@ class ViewGenerator {
         if ($entity instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
             // Save the yaml entities
             $entityRepository = \Env::get('em')->getRepository($entityWithNS);
-            try {
+            if (!$entityRepository->isManaged($entity)) {
                 $entityRepository->add($entity);
-            } catch (\Cx\Core\Model\Controller\YamlRepositoryException $e) {}
+            }
             $entityRepository->flush();
             $showSuccessMessage = true;
         } else if ($entity instanceof \Cx\Model\Base\EntityBase) {
