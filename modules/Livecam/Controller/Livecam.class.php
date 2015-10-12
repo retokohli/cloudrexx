@@ -270,7 +270,7 @@ class Livecam extends LivecamLibrary
                 if (!empty($_GET['cmd'])) {
                     $cmd = '&amp;cmd='.intval($_GET['cmd']);
                 }
-                $imageLink = "[[NODE_LIVECAM$cam]]?act=today";
+                $imageLink = '[[NODE_LIVECAM]]?act=today';
             }
         }
 
