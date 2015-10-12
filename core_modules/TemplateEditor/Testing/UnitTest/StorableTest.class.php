@@ -66,7 +66,7 @@ class StorableTest extends ContrexxTestCase
     {
         $themeOption = $this->themeOptionRepository->get(new Theme(null, null, 'standard_3_0'));
         $this->assertTrue($themeOption instanceof OptionSet);
-        if ($themeOption instanceof OptionSet){
+        if ($themeOption instanceof OptionSet) {
             $this->assertTrue($themeOption->getOption('main_color') instanceof ColorOption);
         }
     }

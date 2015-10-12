@@ -90,7 +90,7 @@ class PresetRepository
     /**
      * @param $entity
      */
-    public function remove($entity){
+    public function remove($entity) {
         return $this->storage->remove($entity->getName());
     }
 

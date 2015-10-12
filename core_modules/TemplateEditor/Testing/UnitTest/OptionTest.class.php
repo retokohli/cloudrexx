@@ -93,7 +93,7 @@ class OptionTest extends ContrexxTestCase
         $this->assertTrue((strpos($renderedTemplate, 'checked') !== 0));
     }
 
-    public function testColorOption(){
+    public function testColorOption() {
         $color            = '#efefef';
         $choice            = array('#ededed', '#fefefe');
         $colorOption      = new ColorOption(
@@ -107,13 +107,13 @@ class OptionTest extends ContrexxTestCase
         $backendTemplate->setTemplate($this->template);
         $colorOption->renderOptionField($backendTemplate);
         $renderedTemplate = $backendTemplate->get();
-        foreach ($choice as $colorChoice){
+        foreach ($choice as $colorChoice) {
             $this->assertTrue((strpos($renderedTemplate, $colorChoice) !== 0));
         }
         $this->assertTrue((strpos($renderedTemplate, $color) !== 0));
     }
 
-    public function testImageOption(){
+    public function testImageOption() {
         $url = 'https://placekitten.com/1500/300';
         $imageOption = new ImageOption( 'test', array(1 => 'Unit-Test'),
             array(
@@ -126,7 +126,7 @@ class OptionTest extends ContrexxTestCase
         $this->assertTrue((strpos($renderedTemplate, $url) !== 0));
     }
 
-    public function testImageSeriesOption(){
+    public function testImageSeriesOption() {
         $urls = array('https://placekitten.com/1500/300');
         $imageOption = new ImageSeriesOption( 'test', array(1 => 'Unit-Test'),
             array(
