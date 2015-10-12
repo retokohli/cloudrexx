@@ -22,6 +22,7 @@ Cx\Modules\Pim\Model\Entity\Price:
         referencedColumnName: id
     product:
       targetEntity: Cx\Modules\Pim\Model\Entity\Product
+      inversedBy: prices
       joinColumn:
         name: product_id
         nullable: false
