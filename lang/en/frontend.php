@@ -214,6 +214,7 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "The chosen username is alread
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "visit website";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Website";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "ZIP";
+$_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'] = 'Choose file';
 $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partners";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "U2U messaging";
 $_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Add new entry";
@@ -312,3 +313,4 @@ $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "The file extension is not allow
 $_ARRAYLANG['TXT_ACCESS_UNKNOWN'] = "unknown";
 
 $_ARRAYLANG['TXT_LOGIN_WELCOME_PAGE'] = 'Forward to the <a href="%s" title="Website">Website</a>';
+$_ARRAYLANG['TXT_BROWSE'] = 'Browse';

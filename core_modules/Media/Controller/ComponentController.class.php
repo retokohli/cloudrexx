@@ -78,13 +78,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
-
     /**
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page
+     * Register your event listeners here
      *
-     * @throws \Cx\Core\Event\Controller\EventManagerException
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * Keep in mind, that you can also register your events later.
+     * Do not do anything else here than initializing your event listeners and
+     * list statements like
+     * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
-    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function registerEventListeners() {
         $this->cx->getEvents()->addEventListener('mediasource.load', new \Cx\Core_Modules\Media\Model\Event\MediaEventListener($this->cx));
     }
 }

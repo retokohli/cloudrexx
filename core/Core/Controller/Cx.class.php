@@ -523,11 +523,13 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesPodcastPath;
         protected $websiteImagesBlogPath;
         protected $websiteImagesDataPath;
+        protected $websiteMediaForumUploadPath;
         protected $websiteMediaarchive1Path;
         protected $websiteMediaarchive2Path;
         protected $websiteMediaarchive4Path;
         protected $websiteMediaarchive3Path;
         protected $websiteMediaFileSharingPath;
+        protected $websiteMediaMarketPath;
         protected $websiteImagesContentWebPath;
         protected $websiteImagesAttachWebPath;
         protected $websiteImagesShopWebPath;
@@ -539,11 +541,13 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesPodcastWebPath;
         protected $websiteImagesBlogWebPath;
         protected $websiteImagesDataWebPath;
+        protected $websiteMediaForumUploadWebPath;
         protected $websiteMediaarchive1WebPath;
         protected $websiteMediaarchive2WebPath;
         protected $websiteMediaarchive3WebPath;
         protected $websiteMediaarchive4WebPath;
         protected $websiteMediaFileSharingWebPath;
+        protected $websiteMediaMarketWebPath;
         protected $websiteImagesPath;
         protected $websiteImagesWebPath;
         protected $websitePublicTempPath;
@@ -553,9 +557,12 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesCrmProfilePath;
         protected $websiteImagesCrmProfileWebPath;
         protected $websiteMediaCrmPath;
+        protected $websiteMediaDirectoryPath;
+        protected $websiteMediaDirectoryWebPath;
         protected $websiteImagesAccessProfilePath;
         protected $websiteImagesAccessProfileWebPath;
         protected $websiteImagesAccessPhotoPath;
+        protected $websiteImagesAccessPhotoWebPath;
         
         /**
          * @var \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
@@ -2554,12 +2561,15 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesCrmProfilePath  = $this->websiteImagesCrmPath . '/profile';
             $this->websiteImagesAccessProfilePath = $this->websiteImagesAccessPath .'/profile';
             $this->websiteImagesAccessPhotoPath = $this->websiteImagesAccessPath .'/photo';
+            $this->websiteMediaForumUploadPath  = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Forum/upload';
             $this->websiteMediaarchive1Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive1';
             $this->websiteMediaarchive2Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive2';
             $this->websiteMediaarchive3Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive3';
             $this->websiteMediaarchive4Path     = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/archive4';
             $this->websiteMediaFileSharingPath  = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
+            $this->websiteMediaMarketPath       = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Market';
             $this->websiteMediaCrmPath          = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Crm';
+            $this->websiteMediaDirectoryPath    = $this->websiteDocumentRootPath . self::FOLDER_NAME_MEDIA . '/Directory';
             
             $this->websiteImagesContentWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/content';
             $this->websiteImagesAttachWebPath   = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/attach';
@@ -2575,11 +2585,15 @@ namespace Cx\Core\Core\Controller {
             $this->websiteImagesDataWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_IMAGES . '/Data';
             $this->websiteImagesCrmProfileWebPath = $this->websiteImagesCrmWebPath . '/profile';
             $this->websiteImagesAccessProfileWebPath = $this->websiteImagesAccessWebPath . '/profile';
+            $this->websiteImagesAccessPhotoWebPath   = $this->websiteImagesAccessWebPath . '/photo';
+            $this->websiteMediaForumUploadWebPath    = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Forum/upload';
             $this->websiteMediaarchive1WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive1';
             $this->websiteMediaarchive2WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive2';
             $this->websiteMediaarchive3WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive3';
             $this->websiteMediaarchive4WebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/archive4';
             $this->websiteMediaFileSharingWebPath=$this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/FileSharing';
+            $this->websiteMediaMarketWebPath     = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Market';
+            $this->websiteMediaDirectoryWebPath  = $this->websiteOffsetPath . self::FOLDER_NAME_MEDIA . '/Directory';
                         
             $this->websitePublicTempPath        = $this->websiteTempPath    . self::FOLDER_NAME_PUBLIC_TEMP;
             $this->websitePublicTempWebPath     = $this->websiteTempWebPath . self::FOLDER_NAME_PUBLIC_TEMP;
@@ -2893,6 +2907,22 @@ namespace Cx\Core\Core\Controller {
         /**
          * @return string
          */
+        public function getWebsiteMediaForumUploadPath()
+        {
+            return $this->websiteMediaForumUploadPath;
+        }
+
+        /**
+         * @return string
+         */
+        public function getWebsiteMediaForumUploadWebPath()
+        {
+            return $this->websiteMediaForumUploadWebPath;
+        }
+
+        /**
+         * @return string
+         */
         public function getWebsiteMediaarchive2Path()
         {
             return $this->websiteMediaarchive2Path;
@@ -2963,6 +2993,30 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Return the absolute path to the media Market location (/Market)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_MARKET_MEDIA_PATH.
+         *
+         * @return string
+         */
+        public function getWebsiteMediaMarketPath()
+        {
+            return $this->websiteMediaMarketPath;
+        }
+
+        /**
+         * Return the offset path to the media Market location (/Market)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_MARKET_MEDIA_WEB_PATH.
+         *
+         * @return string
+         */
+        public function getWebsiteMediaMarketWebPath()
+        {
+            return $this->websiteMediaMarketWebPath;
+        }
+
+        /**
          * @return string
          */
         public function getWebsiteImagesPath()
@@ -3030,11 +3084,20 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Return the absolute path from the website's data repository to the
-         * location of the /madia/Crm
+         * location of the /media/Crm
          * @return string
          */
         public function getWebsiteMediaCrmPath() {
             return $this->websiteMediaCrmPath;
+        }
+
+        /**
+         * Return the absolute path from the website's data repository to the
+         * location of the /media/Directory
+         * @return string
+         */
+        public function getWebsiteMediaDirectoryPath() {
+            return $this->websiteMediaDirectoryPath;
         }
 
         /**
@@ -3063,7 +3126,24 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteImagesAccessPhotoPath() {
             return $this->websiteImagesAccessPhotoPath;
         }
+        
+        /**
+         * Return the offset path to the data repository of the access photo.
+         * Formerly known as ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.
+         * @return string
+         */
+        public function getWebsiteImagesAccessPhotoWebPath() {
+            return $this->websiteImagesAccessPhotoWebPath;
+        }
 
+        /**
+         * Return the offset path from the website's data repository to the
+         * location of the /media/Downloads
+         * @return string
+         */
+        public function getWebsiteMediaDirectoryWebPath() {
+            return $this->websiteMediaDirectoryWebPath;
+        }
 
         /**
          * @return int

@@ -51,8 +51,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // does not exist a backend, nor a frontend controller of this component.
         return array();
     }
-
-    public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page)
+    
+    /**
+     * Register your events here
+     *
+     * Do not do anything else here than list statements like
+     * $this->cx->getEvents()->addEvent($eventName);
+     */
+    public function registerEvents()
     {
         $eventHandlerInstance = $this->cx->getEvents();
         $eventHandlerInstance->addEvent('SearchFindContent');

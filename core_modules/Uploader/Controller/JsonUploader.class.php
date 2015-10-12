@@ -124,7 +124,7 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
         }
         $allowedExtensions = false;
         if (isset($_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'])) {
-            $allowedExtensions = $_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions'];
+            $allowedExtensions = $_SESSION['uploader']['handlers'][$id]['config']['allowed-extensions']->toArray();
         }
         $uploader = UploaderController::handleRequest(
             array(
@@ -210,18 +210,16 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                 throw new UploaderException(PLUPLOAD_TMPDIR_ERR);
             }
             \Cx\Lib\FileSystem\FileSystem::move(
-                $file, $fileLocation[0] . pathinfo( $file, PATHINFO_BASENAME),
+                $file,  rtrim($fileLocation[0], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME),
                 true
             );
-
-            \Cx\Lib\FileSystem\FileSystem::delete_file($file);
 
             if (isset($fileLocation[2])){
                 $uploader['name'] = $fileLocation[2];
             }
             $fileLocation = array(
-                $fileLocation[0] . pathinfo( $file, PATHINFO_BASENAME),
-                $fileLocation[1] . pathinfo( $file, PATHINFO_BASENAME)
+                rtrim($fileLocation[0], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME),
+                rtrim($fileLocation[1], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME)
             );
         }
 

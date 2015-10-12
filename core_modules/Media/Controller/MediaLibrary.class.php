@@ -340,7 +340,7 @@ class MediaLibrary
             }
          } else {
             if ($this->_isImage($this->path.$file)) {
-                $thumb_name = \ImageManager::getThumbnailFilename($file);
+                $thumb_name = basename(\ImageManager::getThumbnailFilename($this->path . $file));
                 if (file_exists($this->path.$thumb_name)) {
                     $this->dirLog=$obj_file->delFile($this->path, $this->webPath, $thumb_name);
                 }
@@ -1206,75 +1206,87 @@ END;
      * 
      * @return string the directory to move to
      */
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response){
-        $path = $data['path'];
+    public static function uploadFinished(
+        $tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response
+    ) {
+        $path    = $data['path'];
         $webPath = $data['webPath'];
 
         //we remember the names of the uploaded files here. they are stored in the session afterwards,
         //so we can later display them highlighted.
-        $arrFiles = array(); 
-        
+        $arrFiles = array();
+
         //rename files, delete unwanted
         $arrFilesToRename = array(); //used to remember the files we need to rename
-        $h = opendir($tempPath);
+        $h                = opendir($tempPath);
         if ($h) {
-            while(false !== ($file = readdir($h))) {
+            while (false !== ($file = readdir($h))) {
                 //delete potentially malicious files
 // TODO: this is probably an overhead, because the uploader might already to this. doesn't it?
-                if(!\FWValidator::is_file_ending_harmless($file)) {
+                if (!\FWValidator::is_file_ending_harmless($file)) {
                     @unlink($file);
                     continue;
                 }
-                
+
                 if (self::isIllegalFileName($file)) {
                     $response->addMessage(
                         \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
                         "You are not able to create the requested file."
                     );
-                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
+                    \Cx\Lib\FileSystem\FileSystem::delete_file(
+                        $tempPath . '/' . $file
+                    );
                     continue;
                 }
-                
-                //skip . and ..           
-                if($file == '.' || $file == '..')
+
+                //skip . and ..
+                if ($file == '.' || $file == '..') {
                     continue;
+                }
 
                 //clean file name
                 $newName = $file;
                 \Cx\Lib\FileSystem\FileSystem::clean_path($newName);
 
                 //check if file needs to be renamed
-                if (file_exists($path.$newName)) {
-                    $info     = pathinfo($newName);
-                    $exte     = $info['extension'];
-                    $exte     = (!empty($exte)) ? '.'.$exte : '';
-                    $part1    = $info['filename'];
-                    if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
-                        $newName = $part1.'_'.time().$exte;
+                if (file_exists($path . $newName)) {
+                    $info  = pathinfo($newName);
+                    $exte  = $info['extension'];
+                    $exte  = (!empty($exte)) ? '.' . $exte : '';
+                    $part1 = $info['filename'];
+                    if (empty($_REQUEST['uploadForceOverwrite'])
+                        || !intval(
+                            $_REQUEST['uploadForceOverwrite'] > 0
+                        )
+                    ) {
+                        $newName = $part1 . '_' . time() . $exte;
                     }
                 }
-     
+
                 //if the name has changed, the file needs to be renamed afterwards
-                if($newName != $file)
+                if ($newName != $file) {
                     $arrFilesToRename[$file] = $newName;
+                }
 
                 array_push($arrFiles, $newName);
             }
         }
 
         //rename files where needed
-        foreach($arrFilesToRename as $oldName => $newName){
-            rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);
+        foreach ($arrFilesToRename as $oldName => $newName) {
+            rename($tempPath . '/' . $oldName, $tempPath . '/' . $newName);
         }
 
         //remeber the uploaded files
-        $files = $_SESSION["media_upload_files_$uploadId"];
-        $_SESSION["media_upload_files_$uploadId"] = array_merge($arrFiles, ($files ? $files->toArray() : []));
+        $files                                    = $_SESSION["media_upload_files_$uploadId"];
+        $_SESSION["media_upload_files_$uploadId"] = array_merge(
+            $arrFiles, ($files ? $files->toArray() : [])
+        );
         /* unwanted files have been deleted, unallowed filenames corrected.
            we can now simply return the desired target path, as only valid
            files are present in $tempPath                                   */
-	 
-        return array($data['path'],$data['webPath']);
+
+        return array($data['path'], $data['webPath']);
     }
     
     /**
