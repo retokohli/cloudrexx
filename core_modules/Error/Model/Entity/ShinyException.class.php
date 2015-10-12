@@ -52,7 +52,7 @@ class ShinyException extends \Exception
     protected $templatePlaceholders = array();
 
     public function __construct($message = null, $code = 0, \Exception $previous = null) {
-        $this->templateFile = \Env::get('cx')->getCodeBaseCorePath() . '/Error/View/Template/Backend/ShinyException.html';
+        $this->templateFile = \Env::get('cx')->getCodeBaseCoreModulePath() . '/Error/View/Template/Backend/ShinyException.html';
         parent::__construct($message, $code, $previous);
 
         $this->templatePlaceholders = array(
