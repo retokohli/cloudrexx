@@ -35,8 +35,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         $evm = $this->cx->getEvents();
 
-        $evm->addEvent('csrfDestroy');
-        $evm->addEventListener('csrfDestroy', $this);
+        $evm->addEvent('sessionDestroy');
+        $evm->addEventListener('sessionDestroy', $this);
     }
 
     /**

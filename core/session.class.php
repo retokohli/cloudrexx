@@ -177,7 +177,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
             
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             $evm = $cx->getEvents();
-            $evm->triggerEvent('csrfDestroy', array('sessionId' => $aKey));
+            $evm->triggerEvent('sessionDestroy', array('sessionId' => $aKey));
             
             if ($destroyCookie) {
                 setcookie("PHPSESSID", '', time() - 3600, '/');
@@ -574,7 +574,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
             while (!$objResult->EOF) {
                 $sessionId = $objResult->fields['sessionId'];
                 array_push($sessoinIds, $sessionId);
-                $evm->triggerEvent('csrfDestroy', array('sessionId' => $sessionId));
+                $evm->triggerEvent('sessionDestroy', array('sessionId' => $sessionId));
                 $objResult->MoveNext();
             }
         }

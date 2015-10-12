@@ -433,12 +433,14 @@ class Csrf extends \Cx\Core\Core\Model\Entity\Controller
      * Get the specified token
      * 
      * @param string $key
-     * @return string
+     *
+     * @return mixed token | null
      */
     private static function __getkey($key)
     {
         self::initCsrf();
-        return self::$csrfRepo->findBy(array('sessionId' => $_SESSION->getId(), 'token' => $key));
+        $csrfEntity = self::$csrfRepo->findBy(array('sessionId' => $_SESSION->getId(), 'token' => $key));
+        return $csrfEntity ? $csrfEntity[0]->getToken() : null;
     }
 
     /**
