@@ -1034,11 +1034,7 @@ UPLOADER;
      */
     protected function getUploaderCode($fieldKey, $fieldName, $uploadCallBack = "uploadFinished", $allowImageOnly = true)
     {
-        global $sessionObj;
-
-        if (!isset($sessionObj)) {
-            $sessionObj = \cmsSession::getInstance();
-        }
+        \cmsSession::getInstance();
         $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
         try {
             $uploader      = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
@@ -1084,7 +1080,7 @@ function {$fieldName}JsCallback(callback) {
 </script>
 JAVASCRIPT;
             return $strJs;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             \DBG::msg('<!-- failed initializing uploader -->');
             throw new \Exception("failed initializing uploader");
         }
