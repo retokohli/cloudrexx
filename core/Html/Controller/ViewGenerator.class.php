@@ -386,7 +386,7 @@ class ViewGenerator {
      * @param boolean $isSingle if we only render one entry
      * @access public
      * @return string rendered view
-     * */
+     */
     public function render(&$isSingle = false) {
         global $_ARRAYLANG;
 
@@ -443,7 +443,7 @@ class ViewGenerator {
      * @access protected
      * @param int $entityId id of the entity
      * @return string rendered view
-     * */
+     */
     protected function renderFormForEntry($entityId) {
         global $_CORELANG;
 
@@ -469,7 +469,9 @@ class ViewGenerator {
             $actionUrl->setParam('add', 1);
             $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
             $entityColumnNames = $entityObject->getColumnNames(); // get all database field names
-            if (empty($entityColumnNames)) return false;
+            if (empty($entityColumnNames)) {
+                return false;
+            }
             foreach($entityColumnNames as $column) {
                 $field = $entityObject->getFieldName($column);
                 if (in_array($field, $primaryKeyNames)) {
@@ -507,7 +509,9 @@ class ViewGenerator {
 
             // get data of all fields of the entry, except associated fields
             $renderObject = $this->object->getEntry($entityId);
-            if (empty($renderObject)) return false;
+            if (empty($renderObject)) {
+                return false;
+            }
 
             // get doctrine field name, database field name and type for each field
             foreach($renderObject as $name => $value) {
@@ -539,7 +543,10 @@ class ViewGenerator {
                 }
             }
         } else {
-            return false;
+            //var_dump($entityId);
+            //var_dump($this->options['functions']['add']);
+            //var_dump($this->object->entryExists($entityId));
+            throw new ViewGeneratorException('Tried to show form but neither add nor edit view can be shown');
         }
         
         //sets the order of the fields
@@ -645,16 +652,11 @@ class ViewGenerator {
         // but we can not persist them before the main entity, so we need to buffer them
         $associatedEntityToPersist = array ();
         foreach ($associationMappings as $name => $value) {
-            $methodName = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
 
             /* if we can not find the class name or the function to save the association we skip the entry, because there
                is now way to store it without these information */
-            if (empty($value["targetEntity"])) {
+            if (empty($value['targetEntity'])) {
                 \Message::add(sprintf($_ARRAYLANG['TXT_CORE_RECORD_CLASS_NOT_FOUND'], $name), \Message::CLASS_ERROR);
-                continue;
-            }
-            if (!in_array($methodName, $classMethods)) {
-                \Message::add(sprintf($_ARRAYLANG['TXT_CORE_RECORD_FUNCTION_NOT_FOUND'], $name, $methodName), \Message::CLASS_ERROR);
                 continue;
             }
 
@@ -691,7 +693,12 @@ class ViewGenerator {
                     $this->savePropertiesToClass($associatedEntity, $associatedEntityClassMetadata, $entityData, $entityWithNS);
 
                     // Linking 1: link the associated entity to the main entity for doctrine
-                    $entity->{'add' . preg_replace('/_([a-z])/', '\1', ucfirst(substr($name, 0, -1)))}($associatedEntity);
+                    $methodName = 'add' . str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+                    if (!in_array($methodName, $classMethods)) {
+                        \Message::add(sprintf($_ARRAYLANG['TXT_CORE_RECORD_FUNCTION_NOT_FOUND'], $name, $methodName), \Message::CLASS_ERROR);
+                        continue;
+                    }
+                    $entity->$methodName($associatedEntity);
 
                     // Linking 2: link the main entity to its associated entity. This should normally be done by
                     // 'Linking 1' but because not all components have implemented this, we do it here by ourselves
@@ -879,9 +886,12 @@ class ViewGenerator {
             // cannot save, no such entry
             \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
             return false;
-        } else if (!$this->formGenerator->isValid()
-                   || (isset($this->options['validate']) 
-                   && !$this->options['validate']($this->formGenerator))
+        } else if (
+            !$this->formGenerator->isValid() ||
+            (
+                isset($this->options['validate']) &&
+                !$this->options['validate']($this->formGenerator)
+            )
         ) {
             // data validation failed
             \Message::add($_ARRAYLANG['TXT_CORE_RECORD_VALIDATION_FAILED'], \Message::CLASS_ERROR);
@@ -896,7 +906,7 @@ class ViewGenerator {
      *
      * @access protected
      * @param string $parameterName name of the param
-     * */
+     */
     protected function setProperCancelUrl($parameterName){
         if (!isset($this->options['cancelUrl']) || !is_a($this->options['cancelUrl'], 'Cx\Core\Routing\Url')) {
             $this->options['cancelUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
