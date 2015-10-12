@@ -1006,6 +1006,7 @@ $_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPING'] = "Domain-Mappings";
 $_ARRAYLANG['TXT_ACCESS_GROUP_NAME_INVALID'] = "Der gewählte Gruppenname ist nicht gültig! Wählen Sie bitte einen anderen Namen für die Gruppe.";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNTS_ACTIVATED'] = "Benutzerkonten aktiviert";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNTS_DEACTIVATED'] = "Benutzerkonten aktiviert";
+$_ARRAYLANG['TXT_CORE_HTML_FORM_VALIDATION_ERROR'] = 'Die Validierung mindestens eines Feldes ist fehlgeschlagen!';
 
 // core Image/Imagetype
 $_ARRAYLANG['TXT_CORE_CLEAR_IMAGE'] = "Bild entfernen";

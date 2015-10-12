@@ -51,8 +51,10 @@ function openDialogForAssociation(content, className, existingData)
         {
             text: cx.variables.get('TXT_SUBMIT', 'Html/lang'),
             click: function() {
-
                 var element = jQuery(this).closest('.ui-dialog').children('.ui-dialog-content').children('form');
+                if (!cx.ui.forms.validate(element)) {
+                    return false;
+                }
                 saveToMappingForm(element, className);
                 jQuery(this).dialog('close');
             }
@@ -64,6 +66,7 @@ function openDialogForAssociation(content, className, existingData)
         autoOpen: true,
         content: content,
         modal: true,
+        dialogClass: "cx-ui",
         resizable: false,
         buttons:buttons,
         close: function() {
