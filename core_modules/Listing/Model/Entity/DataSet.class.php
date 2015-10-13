@@ -360,13 +360,14 @@ class DataSet implements \Iterator {
     public function sort($order) {
         $data = $this->data;
         
-        uasort($data, function($a, $b) use($order) {
+        $dateTimeTools = new \DateTimeTools();
+        uasort($data, function($a, $b) use($order, $dateTimeTools) {
             $diff = 1;
             $orderMultiplier = 1;
             foreach ($order as $sortField => $sortOrder) {
                 $orderMultiplier = $sortOrder == SORT_ASC ? 1 : -1;
-                $termOne = $this->isValidDate($a[$sortField]) ? strtotime($a[$sortField]) : $a[$sortField];
-                $termTwo = $this->isValidDate($b[$sortField]) ? strtotime($b[$sortField]) : $b[$sortField];
+                $termOne = $dateTimeTools->isValidDate($a[$sortField]) ? strtotime($a[$sortField]) : $a[$sortField];
+                $termTwo = $dateTimeTools->isValidDate($b[$sortField]) ? strtotime($b[$sortField]) : $b[$sortField];
                 $diff    = $termOne < $termTwo;
                 if ($termOne !== $termTwo) {
                     return ($diff ? -1 : 1) * $orderMultiplier;
@@ -376,20 +377,6 @@ class DataSet implements \Iterator {
         });
         
         return new static($data);
-    }
-    
-    /**
-     * Check the given value is in valid date format(d.M.Y H:i:s) or not
-     * 
-     * @param string $value input value
-     * 
-     * @return boolean true|false
-     */
-    public function isValidDate($value) {
-        if (empty($value)) {
-            return false;
-        }
-        return preg_match('/\d{2}\.\D{3}.\d{4}\s\d{2}:\d{2}:\d{2}/i', $value);
     }
     
     /**
