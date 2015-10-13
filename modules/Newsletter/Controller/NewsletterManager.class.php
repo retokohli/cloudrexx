@@ -594,6 +594,7 @@ class NewsletterManager extends NewsletterLib
         $arrAttachment = array();
         $attachmentNr = 0;
         $arrAssociatedLists = array();
+        $crmMembershipFilter = array();
         $arrAssociatedGroups = array();
         $status = true;
 
@@ -786,6 +787,13 @@ class NewsletterManager extends NewsletterLib
             }
         }
 
+        // get the Crm membership filter
+        if (isset($_POST['newsletter_mail_crm_filter_memberships'])) {
+            foreach ($_POST['newsletter_mail_crm_filter_memberships'] as $crmMembershipId) {
+                $crmMembershipFilter[] = intval($crmMembershipId);
+            }
+        }
+
         // get the associated groups from the post variables in case the form was already sent
         if (isset($_POST['newsletter_mail_associated_group'])) {
             foreach ($_POST['newsletter_mail_associated_group']
@@ -841,6 +849,7 @@ class NewsletterManager extends NewsletterLib
                 // prepare every link of HTML body for tracking function
                 $this->_prepareNewsletterLinksForStore($mailId);
                 $this->_setMailLists($mailId, $arrAssociatedLists, $mailSendDate);
+                $this->setCrmMembershipFilter($mailId, $crmMembershipFilter, $mailSendDate);
                 $this->setMailGroups($mailId, $arrAssociatedGroups, $mailSendDate);
 
                 foreach ($arrNewAttachments as $attachment) {
@@ -891,6 +900,9 @@ class NewsletterManager extends NewsletterLib
                         }
 
                     }
+
+                    $crmMembershipFilter =
+                        $this->emailEditGetCrmMembershipFilter($mailId);
 
                     $arrAssociatedGroups =
                         $this->emailEditGetAssociatedGroups($mailId);
@@ -943,6 +955,17 @@ class NewsletterManager extends NewsletterLib
 
         $this->_objTpl->setVariable('TXT_NEWSLETTER_HTML_UC', $_ARRAYLANG['TXT_NEWSLETTER_HTML_UC']);
         $this->_objTpl->touchBlock('newsletter_mail_html_content');
+
+        // parse Crm membership filter
+        $objCrmLibrary = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
+        $crmMemberships = array_keys($objCrmLibrary->getMemberships());
+        $objCrmLibrary->getMembershipDropdown($this->_objTpl, $crmMemberships, 'contactMembership', $crmMembershipFilter);
+        $this->_objTpl->setVariable(array(
+            'TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER'          => $_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER'],
+            'TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER_TOOLTIP'  => sprintf($_ARRAYLANG['TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER_TOOLTIP'], '<em>'.$_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_LISTS'].'</em>'),
+        ));
+        \JS::registerCSS("lib/javascript/chosen/chosen.css");
+        \JS::registerJS("lib/javascript/chosen/chosen.jquery.js");
 
         $this->emailEditParseLists($arrAssociatedLists);
         $this->emailEditParseGroups($arrAssociatedGroups);
@@ -1112,6 +1135,31 @@ class NewsletterManager extends NewsletterLib
         }
     }
 
+    /**
+     * Return the Crm membership filter of an email
+     * @param       int $mail
+     * @return      array
+     */
+    protected function emailEditGetCrmMembershipFilter($mail)
+    {
+        global $objDatabase;
+
+        $query = sprintf('
+            SELECT `membership_id`
+              FROM `%1$smodule_newsletter_rel_crm_membership_newsletter`
+             WHERE `newsletter_id`=%2$s',
+            DBPREFIX, $mail
+        );
+        $data = $objDatabase->Execute($query);
+        $list = array();
+        if ($data !== false) {
+            while (!$data->EOF) {
+                $list[] =  $data->fields['membership_id'];
+                $data->MoveNext();
+            }
+        }
+        return $list;
+    }
 
     /**
      * Return the associated access groups of an email
@@ -1585,6 +1633,65 @@ class NewsletterManager extends NewsletterLib
         return true;
     }
 
+    /**
+     * Associate the user groups with the mail
+     *
+     * Associate the access user groups with the
+     * newsletter email.
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $mailID
+     * @param       array $groups
+     * @param       string $mailSentDate sent date
+     */
+    private function setCrmMembershipFilter($mailID, $membershipFilter, $mailSentDate) {
+        global $objDatabase;
+
+        if ($mailSentDate > 0) {
+            return false;
+        }
+
+        foreach ($membershipFilter as $membershipId) {
+            $objDatabase->Execute(
+                sprintf('
+                    REPLACE INTO
+                        `%smodule_newsletter_rel_crm_membership_newsletter`
+                        (`newsletter_id`, `membership_id`)
+                    VALUES
+                        (%s, %s)
+                    ', DBPREFIX, $mailID, intval($membershipId)
+                )
+            );
+        }
+        if (count($membershipFilter) > 0) {
+            $delString = implode(',', $membershipFilter);
+
+            $query = sprintf('
+                DELETE FROM
+                    `%smodule_newsletter_rel_crm_membership_newsletter`
+                WHERE
+                    `membership_id` NOT IN (%s)
+                AND
+                    `newsletter_id` = %s
+                ',
+                DBPREFIX,
+                $delString,
+                $mailID
+            );
+            $objDatabase->Execute($query);
+        } else {
+            // no groups were selected -> remove all group associations
+            $query = sprintf('
+                DELETE FROM
+                    `%smodule_newsletter_rel_crm_membership_newsletter`
+                WHERE
+                    `newsletter_id` = %s
+                ',
+                DBPREFIX,
+                $mailID
+            );
+            $objDatabase->Execute($query);
+        }
+    }
 
     /**
      * Associate the user groups with the mail
@@ -2600,35 +2707,56 @@ class NewsletterManager extends NewsletterLib
     {
         global $objDatabase;
 
+        // fetch CRM membership filter
+        $crmMembershipFilter = $this->emailEditGetCrmMembershipFilter($mailId);
+
         $query = sprintf('
             SELECT COUNT(*) AS `recipientCount`
             FROM (
               SELECT `email`
+                FROM `%1$saccess_users` AS `cu`
+          INNER JOIN `%1$smodule_newsletter_access_user` AS `cnu`
+                  ON `cnu`.`accessUserID`=`cu`.`id`
+          INNER JOIN `%1$smodule_newsletter_rel_cat_news` AS `crn`
+                  ON `cnu`.`newsletterCategoryID`=`crn`.`category`
+
+                      '.(
+                      // optionally filter recipients by CRM membership
+                      !$crmMembershipFilter ? '' :
+                      'INNER JOIN `%1$smodule_crm_contacts` AS `crm_contact`
+                              ON `crm_contact`.`user_account` = `cu`.`id`
+                      INNER JOIN `%1$smodule_crm_customer_membership` AS `crm_membership`
+                              ON `crm_membership`.`contact_id` = `crm_contact`.`id`'
+                      ).'
+
+                WHERE `crn`.`newsletter`=%2$s
+                  AND `cu`.`active` = 1
+
+                      '.(
+                          // optionally filter recipients by CRM membership
+                          !$crmMembershipFilter ? '' :
+                          'AND `crm_contact`.`contact_type` = 2
+                           AND `crm_membership`.`membership_id` IN ('.join(',', $crmMembershipFilter).')'
+                      ).'
+
+            UNION DISTINCT
+              SELECT `email`
                 FROM `%1$smodule_newsletter_user` AS `nu`
-                LEFT JOIN `%1$smodule_newsletter_rel_user_cat` AS `rc`
+          INNER JOIN `%1$smodule_newsletter_rel_user_cat` AS `rc`
                   ON `rc`.`user`=`nu`.`id`
-                LEFT JOIN `%1$smodule_newsletter_rel_cat_news` AS `nrn`
+          INNER JOIN `%1$smodule_newsletter_rel_cat_news` AS `nrn`
                   ON `nrn`.`category`=`rc`.`category`
                WHERE `nrn`.`newsletter`=%2$s
                  AND `nu`.`status` = 1
             UNION DISTINCT
               SELECT `email`
                 FROM `%1$saccess_users` AS `au`
-                LEFT JOIN `%1$saccess_rel_user_group` AS `rg`
+          INNER JOIN `%1$saccess_rel_user_group` AS `rg`
                   ON `rg`.`user_id`=`au`.`id`
-                LEFT JOIN `%1$smodule_newsletter_rel_usergroup_newsletter` AS `arn`
+          INNER JOIN `%1$smodule_newsletter_rel_usergroup_newsletter` AS `arn`
                   ON `arn`.`userGroup`=`rg`.`group_id`
                WHERE `arn`.`newsletter`=%2$s
                  AND `au`.`active` = 1
-            UNION DISTINCT
-              SELECT `email`
-                FROM `%1$saccess_users` AS `cu`
-                LEFT JOIN `%1$smodule_newsletter_access_user` AS `cnu`
-                  ON `cnu`.`accessUserID`=`cu`.`id`
-                LEFT JOIN `%1$smodule_newsletter_rel_cat_news` AS `crn`
-                  ON `cnu`.`newsletterCategoryID`=`crn`.`category`
-                WHERE `crn`.`newsletter`=%2$s
-                  AND `cu`.`active` = 1
             ) AS `subquery`',
             DBPREFIX, $mailId
         );
@@ -2936,6 +3064,10 @@ class NewsletterManager extends NewsletterLib
         global $objDatabase;
 
         $mailID = intval($mailID);
+
+        // fetch CRM membership filter
+        $crmMembershipFilter = $this->emailEditGetCrmMembershipFilter($mailID);
+
         // this query selects the recipients in the following order
         // 1. access users that have subscribed to one of the selected recipient-lists
         // 2. newsletter recipients of one of the selected recipient-lists
@@ -2947,8 +3079,26 @@ class NewsletterManager extends NewsletterLib
                 ON `cnu`.`accessUserID`=`cu`.`id`
         INNER JOIN `%1$smodule_newsletter_rel_cat_news` AS `crn`
                 ON `cnu`.`newsletterCategoryID`=`crn`.`category`
+
+                    '.(
+                    // optionally filter recipients by CRM membership
+                    !$crmMembershipFilter ? '' :
+                    'INNER JOIN `%1$smodule_crm_contacts` AS `crm_contact`
+                            ON `crm_contact`.`user_account` = `cu`.`id`
+                    INNER JOIN `%1$smodule_crm_customer_membership` AS `crm_membership`
+                            ON `crm_membership`.`contact_id` = `crm_contact`.`id`'
+                    ).'
+
              WHERE `crn`.`newsletter`=%2$s
                AND `cu`.`active` = 1
+
+                    '.(
+                        // optionally filter recipients by CRM membership
+                        !$crmMembershipFilter ? '' :
+                        'AND `crm_contact`.`contact_type` = 2
+                         AND `crm_membership`.`membership_id` IN ('.join(',', $crmMembershipFilter).')'
+                    ).'
+
     UNION DISTINCT
             SELECT `email`, "'.self::USER_TYPE_NEWSLETTER.'" AS `type`
               FROM `%1$smodule_newsletter_user` AS `nu`
