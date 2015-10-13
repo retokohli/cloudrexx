@@ -421,7 +421,7 @@ class FileSystem
                 && strpos($path, '../')  === false
                 && strpos($path, '..\\') === false
                 && strpos($path, '/..')  === false
-                && strpos($path, '\..')  === false ? trim($_GET['path']) : false;
+                && strpos($path, '\..')  === false ? trim($path) : false;
 
         return $path;
     }
