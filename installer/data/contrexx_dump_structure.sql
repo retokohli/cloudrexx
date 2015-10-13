@@ -2793,6 +2793,7 @@ CREATE TABLE `contrexx_module_order_invoice_item` (
   `invoice_id` int(11) DEFAULT NULL,
   `description` varchar(255) NOT NULL,
   `price` decimal(10,0) NOT NULL,
+  `vat_rate` decimal(5,2) unsigned NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`),
   KEY `IDX_ED28B9B52989F1FD` (`invoice_id`),
   CONSTRAINT `contrexx_module_order_invoice_item_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `contrexx_module_order_invoice` (`id`)
@@ -2854,6 +2855,7 @@ CREATE TABLE `contrexx_module_pim_price` (
 CREATE TABLE `contrexx_module_pim_product` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
+  `vat_rate_id` int(11) DEFAULT NULL,
   `entity_class` varchar(255) NOT NULL,
   `entity_attributes` text NOT NULL,
   `renewable` tinyint(1) NOT NULL,
@@ -2868,6 +2870,7 @@ CREATE TABLE `contrexx_module_pim_product` (
   `note_price` text NOT NULL,
   `cancellation_unit` varchar(5) NOT NULL,
   `cancellation_quantifier` int(11) NOT NULL,
+  INDEX IDX_6DFE203243897540 (vat_rate_id),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_pim_product_upgrade` (
@@ -3608,15 +3611,11 @@ CREATE TABLE `contrexx_voting_system` (
   `additional_comment` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_order_vat_rate` (
+CREATE TABLE `contrexx_module_pim_vat_rate` (
     `id` INT(11) AUTO_INCREMENT NOT NULL,
     `rate` decimal(5,2) unsigned NOT NULL DEFAULT '0.00',
     `vat_class` VARCHAR(45) NOT NULL,
     PRIMARY KEY(`id`)
 ) ENGINE = InnoDB;
-ALTER TABLE `contrexx_module_pim_product` ADD `vat_rate_id` INT DEFAULT NULL;
 ALTER TABLE `contrexx_module_pim_product` ADD FOREIGN KEY (`vat_rate_id`)
-    REFERENCES `contrexx_module_order_vat_rate`(`id`);
-CREATE INDEX IDX_6DFE203243897540 ON `contrexx_module_pim_product` (`vat_rate_id`);
-ALTER TABLE `contrexx_module_order_invoice_item` ADD
-    `vat_rate` decimal(5,2) unsigned NOT NULL DEFAULT '0.00';
+    REFERENCES `contrexx_module_pim_vat_rate`(`id`);

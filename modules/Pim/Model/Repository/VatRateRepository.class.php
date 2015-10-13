@@ -31,10 +31,10 @@
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  module_order
+ * @subpackage  module_pim
  */
 
-namespace Cx\Modules\Order\Model\Repository;
+namespace Cx\Modules\Pim\Model\Repository;
 
 /**
  * Class VatRateRepository
@@ -42,6 +42,6 @@ namespace Cx\Modules\Order\Model\Repository;
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  module_order
+ * @subpackage  module_pim
  */
 class VatRateRepository extends \Doctrine\ORM\EntityRepository {}

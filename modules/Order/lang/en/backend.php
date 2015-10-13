@@ -39,12 +39,10 @@ $_ARRAYLANG['TXT_MODULE_ORDER_ORDERS']      = 'Orders';
 $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTIONS']      = 'Subscriptions';
 $_ARRAYLANG['TXT_MODULE_ORDER_INVOICES']      = 'Invoices';
 $_ARRAYLANG['TXT_MODULE_ORDER_PAYMENTS']      = 'Payments';
-$_ARRAYLANG['TXT_MODULE_ORDER_VATRATE']       = 'VAT Rates';
 $_ARRAYLANG['TXT_MODULE_ORDER_ACT_DEFAULT']      = 'Orders';
 $_ARRAYLANG['TXT_MODULE_ORDER_ACT_SUBSCRIPTION'] = 'Subscriptions';
 $_ARRAYLANG['TXT_MODULE_ORDER_ACT_INVOICE']      = 'Invoices';
 $_ARRAYLANG['TXT_MODULE_ORDER_ACT_PAYMENT']      = 'Payments';
-$_ARRAYLANG['TXT_MODULE_ORDER_ACT_VATRATE']      = 'VAT Rates';
 $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PAYREXX_CANCEL_FAILED'] = 'Unable to Cancel the Subscription in payrexx';
 $_ARRAYLANG['TXT_MODULE_ORDER_DELETE_USER_ERROR_MSG'] = 'The customer can not be removed because orders are available from this yet.';
 

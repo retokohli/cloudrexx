@@ -1,7 +1,7 @@
-Cx\Modules\Order\Model\Entity\VatRate:
+Cx\Modules\Pim\Model\Entity\VatRate:
   type: entity
-  repositoryClass: Cx\Modules\Order\Model\Repository\VatRateRepository
-  table: module_order_vat_rate
+  repositoryClass: Cx\Modules\Pim\Model\Repository\VatRateRepository
+  table: module_pim_vat_rate
 
   id:
     id:

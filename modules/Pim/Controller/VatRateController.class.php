@@ -31,10 +31,10 @@
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  module_order
+ * @subpackage  module_pim
  */
 
-namespace Cx\Modules\Order\Controller;
+namespace Cx\Modules\Pim\Controller;
 
 /**
  * 
@@ -43,7 +43,7 @@ namespace Cx\Modules\Order\Controller;
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  module_order
+ * @subpackage  module_pim
  */
 class VatRateController extends \Cx\Core\Core\Model\Entity\Controller {
     
@@ -61,7 +61,7 @@ class VatRateController extends \Cx\Core\Core\Model\Entity\Controller {
     
     /**
      * VatRateRepository instance 
-     * @var \Cx\Modules\Order\Model\Repository\VatRateRepository $vatRateRepository
+     * @var \Cx\Modules\Pim\Model\Repository\VatRateRepository $vatRateRepository
      */
     protected $vatRateRepository;
 
@@ -76,7 +76,7 @@ class VatRateController extends \Cx\Core\Core\Model\Entity\Controller {
         parent::__construct($systemComponentController, $cx);
         
         $this->em                = $this->cx->getDb()->getEntityManager();
-        $this->vatRateRepository = $this->em->getRepository('Cx\Modules\Order\Model\Entity\VatRate');
+        $this->vatRateRepository = $this->em->getRepository('Cx\Modules\Pim\Model\Entity\VatRate');
     }
     
     /**
@@ -96,10 +96,10 @@ class VatRateController extends \Cx\Core\Core\Model\Entity\Controller {
         
         $vatRates = $this->vatRateRepository->findAll();
         if (empty($vatRates)) {
-            $vatRates = new \Cx\Modules\Order\Model\Entity\VatRate();
+            $vatRates = new \Cx\Modules\Pim\Model\Entity\VatRate();
         }
         $view = new \Cx\Core\Html\Controller\ViewGenerator($vatRates, array(
-            'header' => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_VATRATE'],
+            'header' => $_ARRAYLANG['TXT_MODULE_PIM_ACT_VATRATE'],
             'fields' => array(
                 'products'    => array(
                     'showOverview' => false,
