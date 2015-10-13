@@ -3608,3 +3608,5 @@ CREATE TABLE `contrexx_voting_system` (
   `additional_comment` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+ALTER TABLE `contrexx_module_crm_company_size` ADD FULLTEXT(`company_size`);
+ALTER TABLE `contrexx_module_crm_currency` ADD FULLTEXT(`name`);
