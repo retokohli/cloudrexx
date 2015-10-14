@@ -858,6 +858,7 @@ class NewsletterManager extends NewsletterLib
             if ($status) {
                 // prepare every link of HTML body for tracking function
                 $this->_prepareNewsletterLinksForStore($mailId);
+
                 $this->_setMailLists($mailId, $arrAssociatedLists, $mailSendDate);
                 $this->setCrmMembershipFilter($mailId, $crmMembershipFilter['include'], 'include', $mailSendDate);
                 $this->setCrmMembershipFilter($mailId, $crmMembershipFilter['exclude'], 'exclude', $mailSendDate);
