@@ -78,7 +78,8 @@ function mediaBrowserCallback(data) {
 }
 
 $J(document).ready(function() {
-    $J("#newsletter_mail_crm_filter_memberships").chosen();
+    $J("#newsletter_mail_crm_filter_memberships_include").chosen();
+    $J("#newsletter_mail_crm_filter_memberships_exclude").chosen();
 });
 
 // ]]>
@@ -116,6 +117,8 @@ $J(document).ready(function() {
     <td>{TXT_NEWSLETTER_PRIORITY}</td>
     <td colspan="3">{NEWSLETTER_MAIL_PRIORITY_MENU}</td>
   </tr>
+
+  <!-- dirty workaround by placing the placeholder {NEWSLETTER_LIST_DISABLED} into a comment to prevent parsing one of the blocks newsletter_mail_associated_list_n or newsletter_mail_associated_group_n once too many  -->
 
   <tr class="row1" style="vertical-align:top;">
     <td width="15%">
@@ -158,17 +161,6 @@ $J(document).ready(function() {
   </tr>
 
   <tr class="row2" style="vertical-align:top;">
-    <td width="15%">{TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER} <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER_TOOLTIP}</span></td>
-    <td width="85%" colspan="3">
-        <select tabindex="7" data-placeholder="{TXT_CRM_CHOOSE_MEMBERSHIPS}" name="newsletter_mail_crm_filter_memberships[]" id="newsletter_mail_crm_filter_memberships" size="1" multiple>
-            <!-- BEGIN contactMembership -->
-            <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
-            <!-- END contactMembership -->
-        </select>
-    </td>
-  </tr>
-
-  <tr class="row1" style="vertical-align:top;">
     <td width="15%">        
         {TXT_NEWSLETTER_ASSOCIATED_GROUPS}
         <!-- BEGIN associatedGroupToolTipBeforeSend --><span class="icon-warning tooltip-trigger"></span><span class="tooltip-message">{TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND}</span><!-- END associatedGroupToolTipBeforeSend -->
@@ -208,6 +200,35 @@ $J(document).ready(function() {
 <!-- END newsletter_mail_associated_group_2 -->
     </td>
   </tr>
+
+  <tr class="row1" style="vertical-align:top;">
+    <td width="15%">{TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER}
+        <span class="tooltip-trigger icon-info"></span>
+        <span class="tooltip-message">
+            <!-- BEGIN crmMembershipFilterToolTipBeforeSend -->{TXT_NEWSLETTER_CRM_MEMBERSHIP_FILTER_TOOLTIP}<!-- END crmMembershipFilterToolTipBeforeSend -->
+            <!-- BEGIN crmMembershipFilterToolTipAfterSent -->{TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS}<!-- END crmMembershipFilterToolTipAfterSent -->
+       </span>
+    </td>
+    <td width="85%" colspan="3">
+        <div>
+            {TXT_NEWSLETTER_CRM_MEMBERSHIP_INCLUDE_TXT}<br />
+            <select tabindex="7" data-placeholder="{TXT_NEWSLETTER_CHOOSE_CRM_MEMBERSHIPS}" name="newsletter_mail_crm_filter_memberships[include][]" id="newsletter_mail_crm_filter_memberships_include" size="1" multiple autocomplete="off" {NEWSLETTER_LIST_DISABLED}>
+                <!-- BEGIN crmMembershipFilterInclude -->
+                <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
+                <!-- END crmMembershipFilterInclude -->
+            </select>
+        </div>
+        <div>
+            {TXT_NEWSLETTER_CRM_MEMBERSHIP_EXCLUDE_TXT}<br />
+            <select tabindex="7" data-placeholder="{TXT_NEWSLETTER_CHOOSE_CRM_MEMBERSHIPS}" name="newsletter_mail_crm_filter_memberships[exclude][]" id="newsletter_mail_crm_filter_memberships_exclude" size="1" multiple autocomplete="off" {NEWSLETTER_LIST_DISABLED}>
+                <!-- BEGIN crmMembershipFilterExclude -->
+                <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
+                <!-- END crmMembershipFilterExclude -->
+            </select>
+        </div>
+    </td>
+  </tr>
+
 
   <tr class="row2" style="vertical-align:top;">
     <td valign="top">{TXT_NEWSLETTER_ATTACH}</td>

@@ -2710,8 +2710,9 @@ CREATE TABLE `contrexx_module_newsletter_rel_cat_news` (
 CREATE TABLE `contrexx_module_newsletter_rel_crm_membership_newsletter` (
   `membership_id` int(10) unsigned NOT NULL,
   `newsletter_id` int(10) unsigned NOT NULL,
-  UNIQUE KEY `uniq` (`membership_id`,`newsletter_id`)
-) ENGINE=MyISAM;
+  `type` enum('include', 'exclude') NOT NULL,
+  UNIQUE KEY `uniq` (`membership_id`,`newsletter_id`,`type`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_newsletter_rel_user_cat` (
   `user` int(11) NOT NULL DEFAULT '0',
   `category` int(11) NOT NULL DEFAULT '0',
