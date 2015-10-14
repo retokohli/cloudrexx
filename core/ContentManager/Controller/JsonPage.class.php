@@ -1230,7 +1230,13 @@ class JsonPage implements JsonAdapter {
         }
 
         if (isset($arguments['get']['pageRedirectPlaceholder'])) {
+            $filePath = \Env::get('cx')->getClassLoader()->getFilePath($arguments['get']['pageRedirectPlaceholder']);
+            //do not break the page, if the redirection shows to a valid file
+            if (is_file($filePath)) {
+                return false;
+            }
             try {
+                //break the page, when the file or the placeholder does not exist
                 if (!\Cx\Core\Routing\NodePlaceholder::fromPlaceholder($arguments['get']['pageRedirectPlaceholder'])->getPage()) {
                     return true;
                 }
