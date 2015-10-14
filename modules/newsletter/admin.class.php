@@ -2829,8 +2829,11 @@ class newsletter extends NewsletterLib
     function _setTmpSending($mailId)
     {
         $mailAddresses = $this->getAllRecipientEmails($mailId);
-        foreach ($mailAddresses as $mail) {
+        $mailAddresses->rewind();
+        while ($mailAddresses->valid()) {
+            $mail = $mailAddresses->current();
             $this->insertTmpEmail($mailId, $mail['email'], $mail['type']);
+            $mailAddresses->next();
         }
         $this->updateNewsletterRecipientCount($mailId);
     }
@@ -5870,7 +5873,7 @@ function MultiAction() {
                     'NEWSLETTER_LINK_ROW_CLASS' => $rowNr % 2 == 1 ? 'row1' : 'row2',
                     'NEWSLETTER_LINK_TITLE'     => $objResult->fields['title'],
                     'NEWSLETTER_LINK_URL'       => $objResult->fields['url'],
-                    'NEWSLETTER_MAIL_USERS'     => $objResult->fields['feedback_count'], // number of users, who have clicked the link
+                    'NEWSLETTER_MAIL_USERS'     => (int) $objResult->fields['feedback_count'], // number of users, who have clicked the link
                     'NEWSLETTER_LINK_FEEDBACK'  => $objResult->fields['count'] > 0 ? round(100 /  $objResult->fields['count'] * $objResult->fields['feedback_count']) : 0
                 ));
 
@@ -6323,7 +6326,7 @@ if (!class_exists('DBIterator')) {
          * @param       object (adodb result object)
          */
         public function __construct($obj) {
-            $this->empty = !($obj instanceof ADORecordSet);
+            $this->empty = (!($obj instanceof \ADORecordSet_pdo) && empty($obj->fields));
 
             $this->obj = $obj;
         }
