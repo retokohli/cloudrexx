@@ -2383,14 +2383,17 @@ class DownloadsManager extends DownloadsLibrary
                 ));
                 $this->objTemplate->parse('downloads_download_orderbox');
                 $this->objTemplate->hideBlock('downloads_download_no_orderbox');
+                $this->objTemplate->parse('downloads_download_no_save_button');
             } else {
                 // select checkbox
                 $this->objTemplate->hideBlock('downloads_download_checkbox');
+                $this->objTemplate->hideBlock('downloads_download_action_dropdown');
 
                 // order box
                 $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ORDER', $objCategory->getId() ? $arrDownloadOrder[$objDownload->getId()] : $objDownload->getOrder());
                 $this->objTemplate->parse('downloads_download_no_orderbox');
                 $this->objTemplate->hideBlock('downloads_download_orderbox');
+                $this->objTemplate->hideBlock('downloads_download_no_save_button');
             }
 
             // parse status link and modify button
