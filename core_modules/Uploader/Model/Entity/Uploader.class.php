@@ -172,7 +172,7 @@ class Uploader extends EntityBase
                 if (is_array($value)) {
                     $value = json_encode($value);
                 }
-                $optionsString .= $key . '="' . $value . '"';
+                $optionsString .= $key . "='" . $value . "'";
             }
         }
         return $optionsString;
