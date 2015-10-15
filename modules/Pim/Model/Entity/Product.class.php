@@ -390,10 +390,12 @@ class Product extends \Cx\Model\Base\EntityBase {
      * @param string $unit
      * @param integer $quantifier
      * @param \Cx\Modules\Crm\Model\Entity\Currency $currency
+     * @param boolean $withVat if it is true, return the product price with VAT
+     *                otherwise return the product price without VAT
      *
      * @return \Cx\Core\Core\Controller\Cx|float|int
      */
-    public function getPaymentAmount($unit = self::UNIT_MONTH, $quantifier = 1, $currency = null) {
+    public function getPaymentAmount($unit = self::UNIT_MONTH, $quantifier = 1, $currency = null, $withVat = false) {
         $paymentAmount = 0;
         $prices = $this->getPrices();
         $amount = 0;
@@ -420,6 +422,11 @@ class Product extends \Cx\Model\Base\EntityBase {
                 }
                 break;
         }
+        //if $withVat is true, calculate the product price with VAT
+        if ($withVat) {
+            $paymentAmount = $paymentAmount + ($paymentAmount * $this->getVatRate()->getRate() * 0.01);
+        }
+
         return $paymentAmount;
     }
 
