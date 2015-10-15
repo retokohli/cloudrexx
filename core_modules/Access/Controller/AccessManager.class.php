@@ -1256,6 +1256,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         if (isset($_POST['access_save_user'])) {
+            $arrSettings = \User_Setting::getSettings();
+
             // only administrators are allowed to change a users account. or users may be allowed to change their own account
             if (!\Permission::hasAllAccess() && ($objUser->getId() != $objFWUser->objUser->getId() || !\Permission::checkAccess(31, 'static', true))) {
                 \Permission::noAccess();
@@ -1307,7 +1309,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     (!isset($_POST['access_user_validity']) || $_REQUEST['access_user_validity'] == 'current' || $objUser->setValidityTimePeriod(intval($_POST['access_user_validity'])))
                 )) &&
                 // administrators aren't forced to fill out all mandatory profile attributes
-                (\Permission::hasAllAccess() || $objUser->checkMandatoryCompliance()) &&
+                (\Permission::hasAllAccess() || !$arrSettings['user_account_verification']['value'] || $objUser->checkMandatoryCompliance()) &&
                 $objUser->store()
             ) {
                 self::$arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];

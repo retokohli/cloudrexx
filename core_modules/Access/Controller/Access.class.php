@@ -314,7 +314,15 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $objFWUser->objUser->setSubscribedNewsletterListIDs(isset($_POST['access_user_newsletters']) && is_array($_POST['access_user_newsletters']) ? $_POST['access_user_newsletters'] : array());
 
             if ($status) {
-                if ($objFWUser->objUser->checkMandatoryCompliance()
+                $arrSettings = \User_Setting::getSettings();
+                if (
+                    // if user_account_verification is false (0), then we do not need to do checkMandatoryCompliance(), because
+                    // the required fields do not need to be set. This means its not necessary in signup that the required fields are already set
+                    // this is a setting which you can set in the user management backend
+                    (
+                        !$arrSettings['user_account_verification']['value']
+                        || $objFWUser->objUser->checkMandatoryCompliance()
+                    )
                     && $objFWUser->objUser->store()
                 ) {
                     $msg = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];
@@ -580,7 +588,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 // the required fields do not need to be set. This means its not necessary in signup that the required fields are already set
                 // this is a setting which you can set in the user management backend
                 (
-                    $arrSettings['user_account_verification']['value'] === 0
+                    !$arrSettings['user_account_verification']['value']
                     || $objUser->checkMandatoryCompliance()
                 )
                 && $this->checkCaptcha()
