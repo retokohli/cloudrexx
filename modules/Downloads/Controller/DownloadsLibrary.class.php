@@ -105,13 +105,9 @@ class DownloadsLibrary
 
     protected function initDefaultCategoryImage()
     {
-        $this->defaultCategoryImage['src'] = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/no_picture.gif';
-        if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$this->defaultCategoryImage['src'])) {
-            $imageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$this->defaultCategoryImage['src']);
-        } else {
-            $imageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseDocumentRootPath().$this->defaultCategoryImage['src']);
-        }
-
+        $this->defaultCategoryImage['src'] = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(\Cx\Core\Core\Controller\Cx::instanciate()->getModuleFolderName() . '/Downloads/View/Media/no_picture.gif');
+        $imageSize = getimagesize($this->defaultCategoryImage['src']);
+        
         $this->defaultCategoryImage['width'] = $imageSize[0];
         $this->defaultCategoryImage['height'] = $imageSize[1];
     }
