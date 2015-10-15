@@ -462,9 +462,13 @@ class Downloads extends DownloadsLibrary
                 //move file from temp path into target folder
                 $objImage = new \ImageManager();
                 foreach ($uploadFiles as $fileName) {
-                    $objFile = new \Cx\Lib\FileSystem\File($tempPath . '/' . $fileName);
+                    $objFile = new \Cx\Lib\FileSystem\File(
+                        $tempPath . '/' . $fileName
+                    );
                     $objFile->move($path . '/' . $fileName, false);
-                    $objImage->_createThumb($path . '/', $webPath . '/', $fileName);
+                    \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getMediaSourceManager()->getThumbnailGenerator()
+                        ->createThumbnailFromPath($path . '/' . $fileName);
                 }
             } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 \DBG::msg($e->getMessage());
@@ -525,7 +529,12 @@ class Downloads extends DownloadsLibrary
         $objDownload->setActiveStatus(true);
         $objDownload->setMimeType($fileMimeType);
         if ($objDownload->getMimeType() == 'image') {
-            $objDownload->setImage($cx->getWebsiteImagesDownloadsWebPath().'/'.$fileName.$suffix.'.'.$fileExtension);
+            $objDownload->setImage(
+                substr(
+                    $cx->getWebsiteImagesDownloadsWebPath(),
+                    strlen($cx->getCodeBaseOffsetPath()) + 1
+                ) . '/' . $fileName . $suffix . '.' . $fileExtension
+            );
         }
         $objDownloads->arrConfig['use_attr_size'] ? $objDownload->setSize(filesize($cx->getWebsiteImagesDownloadsPath().'/'.$fileName.$suffix.'.'.$fileExtension)) : null;
         $objDownload->setVisibility(true);
@@ -533,6 +542,7 @@ class Downloads extends DownloadsLibrary
         $objDownload->setGroups(array());
         $objDownload->setCategories(array($objCategory->getId()));
         $objDownload->setDownloads(array());
+        
 
         if (!$objDownload->store($objCategory)) {
             $objDownloads->arrStatusMsg['error'] = array_merge($objDownloads->arrStatusMsg['error'], $objDownload->getErrorMsg());
@@ -1151,10 +1161,11 @@ JS_CODE;
             $shortDescription = $description;
         }
 
-        $imageSrc = $objDownload->getImage();
-        if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$imageSrc)) {
+        $imageSrc = $objDownload->getImage(); 
+        var_dump($imageSrc);
+        if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$imageSrc)) {
             $thumb_name = \ImageManager::getThumbnailFilename($imageSrc);
-            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$thumb_name)) {
                 $thumbnailSrc = $thumb_name;
             } else {
                 $thumbnailSrc = \ImageManager::getThumbnailFilename(

@@ -206,21 +206,20 @@ class JsonUploader extends SystemComponentController implements JsonAdapter
                     break;
                 }
             }
-            if (!$file){
-                throw new UploaderException(PLUPLOAD_TMPDIR_ERR);
+            if ($file){
+                \Cx\Lib\FileSystem\FileSystem::move(
+                    $file,  rtrim($fileLocation[0], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME),
+                    true
+                );
+    
+                if (isset($fileLocation[2])){
+                    $uploader['name'] = $fileLocation[2];
+                }
+                $fileLocation = array(
+                    rtrim($fileLocation[0], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME),
+                    rtrim($fileLocation[1], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME)
+                );
             }
-            \Cx\Lib\FileSystem\FileSystem::move(
-                $file,  rtrim($fileLocation[0], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME),
-                true
-            );
-
-            if (isset($fileLocation[2])){
-                $uploader['name'] = $fileLocation[2];
-            }
-            $fileLocation = array(
-                rtrim($fileLocation[0], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME),
-                rtrim($fileLocation[1], '/') .'/'. pathinfo( $file, PATHINFO_BASENAME)
-            );
         }
 
         if ($response->getWorstStatus()) {
