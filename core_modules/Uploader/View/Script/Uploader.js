@@ -62,6 +62,10 @@
                     .html(cx.variables.get('TXT_CORE_MODULE_UPLOADER_MAX_LIMIT', 'mediabrowser').replace('%s', iAttrs.uploadLimit))
                     .show();
             }
+            if (iAttrs.uploadLimit == 1) {
+                $J('#uploader-modal-' + iAttrs.uploaderId)
+                    .find('.start-upload-button').hide();
+            }
 
             var uploaderData = {
                 filesToUpload: [],
