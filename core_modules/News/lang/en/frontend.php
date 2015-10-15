@@ -105,6 +105,7 @@ $_ARRAYLANG['TXT_NEWS_RELATED_AUTHOR'] = "Related News from %s as Author";
 $_ARRAYLANG['TXT_NEWS_PUBLISHER'] = "Publisher";
 $_ARRAYLANG['TXT_NEWS_AUTHOR'] = "Author";
 $_ARRAYLANG['TXT_NEWS_ADD_COMMENT'] = "Add comment";
+$_ARRAYLANG['TXT_NEWS_WRITE_COMMENT'] = "Write comment";
 $_ARRAYLANG['TXT_NEWS_NAME'] = "Name";
 $_ARRAYLANG['TXT_NEWS_TITLE'] = "Title";
 $_ARRAYLANG['TXT_NEWS_COMMENT'] = "Comment";
