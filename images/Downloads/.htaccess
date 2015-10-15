@@ -1,5 +1,5 @@
 Order Deny,Allow
 Deny from all
-<FilesMatch "\.thumb$">
+<FilesMatch "(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$">
 	Allow from all
 </FilesMatch>

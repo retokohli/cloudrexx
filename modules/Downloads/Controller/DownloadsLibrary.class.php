@@ -105,7 +105,7 @@ class DownloadsLibrary
 
     protected function initDefaultCategoryImage()
     {
-        $this->defaultCategoryImage['src'] = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(\Cx\Core\Core\Controller\Cx::instanciate()->getModuleFolderName() . '/Downloads/View/Media/no_picture.gif');
+        $this->defaultCategoryImage['src'] = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getWebFilePath(\Cx\Core\Core\Controller\Cx::instanciate()->getModuleFolderName() . '/Downloads/View/Media/no_picture.gif');
         $imageSize = getimagesize($this->defaultCategoryImage['src']);
         
         $this->defaultCategoryImage['width'] = $imageSize[0];
