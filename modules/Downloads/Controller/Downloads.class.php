@@ -1161,8 +1161,7 @@ JS_CODE;
             $shortDescription = $description;
         }
 
-        $imageSrc = $objDownload->getImage(); 
-        var_dump($imageSrc);
+        $imageSrc = $objDownload->getImage();
         if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$imageSrc)) {
             $thumb_name = \ImageManager::getThumbnailFilename($imageSrc);
             if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$thumb_name)) {
