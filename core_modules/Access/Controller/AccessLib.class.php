@@ -323,7 +323,7 @@ class AccessLib
             if (!$edit || file_exists($imageRepoPath .'/'. $image)) {
                 $arrPlaceholders['_VALUE'] = htmlentities($objUser->getProfileAttribute($objAttribute->getId(), $historyId), ENT_QUOTES, CONTREXX_CHARSET);
             }
-            $arrPlaceholders['_SRC'] = $imageRepoWeb
+            $arrPlaceholders['_SRC'] = $imageRepoWeb.'/'
                 .(!empty($arrPlaceholders['_VALUE']) ?
                     $arrPlaceholders['_VALUE']
                     : ($attributeId == 'picture' ?

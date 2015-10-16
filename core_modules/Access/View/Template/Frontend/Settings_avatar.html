@@ -30,7 +30,7 @@
                         <a 
                             title="Bild l&ouml;schen" 
                             style="display:none;" 
-                            class="uploader_rel_field_remove_icon"
+                            class="btn btn-default"
                             onclick="
                                 var imageContainer = $J(this).closest('.access_image_uploader_container');
                                     imageContainer.find('.uploader_rel_field').val('');
@@ -41,28 +41,25 @@
                             <img width="17" height="17" style="vertical-align: bottom;" alt="Bild l&ouml;schen" src="core_modules/Access/View/Media/delete.gif" />
                         </a>
                         <br />
-                        <br />
                         <em>Maximal erlaubte Dateigr&ouml;sse: {ACCESS_PROFILE_ATTRIBUTE_PICTURE_MAX_FILE_SIZE}<br />Maximale Gr&ouml;&szlig;e {ACCESS_PROFILE_ATTRIBUTE_PICTURE_MAX_WIDTH}&times;{ACCESS_PROFILE_ATTRIBUTE_PICTURE_MAX_HEIGHT} Pixel, gr&ouml;&szlig;ere Bilder werden verkleinert.
                         </em>
-                        <br />
-                        <br />
-                        <a 
-                            title="Bild l&ouml;schen" 
-                            onclick="
-                                var imageContainer = $J(this).closest('.access_image_uploader_container');
-                                    imageContainer.find('.image_uploader_source_image')
-                                        .attr('src', '/images/Access/profile/0_noavatar.gif')
-                                        .css({width : '121px', height: '160px'});
-                                    imageContainer.find('.image_uploader_source').val('');
-                                    $J(this).hide();" 
-                            href="javascript:void(0)">
-                            <img width="17" height="17" alt="Bild l&ouml;schen" src="core_modules/Access/View/Media/delete.gif" />
-                        </a>
+                        
                     </span>
                 </p>
             </fieldset> 
             <!-- END access_profile_attribute_picture -->
-            <p>{ACCESS_STORE_BUTTON}</p>
+            <p>{ACCESS_STORE_BUTTON}<a class="btn btn-danger"
+                                       title="Bild l&ouml;schen"
+                                       onclick="
+                                var imageContainer = $J('.access_image_uploader_container');
+                                    imageContainer.find('.image_uploader_source_image')
+                                        .attr('src', cx.variables.get('basePath', 'contrexx')+'/images/Access/profile/0_noavatar.gif')
+                                        .css({width : '121px', height: '160px'});
+                                    imageContainer.find('.image_uploader_source').val('');
+                                    $J(this).hide();"
+                                       href="javascript:void(0)">
+                Bild l&ouml;schen
+            </a></p>
         </form>
     </div>
     <!-- END access_settings --> 
