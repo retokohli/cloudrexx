@@ -99,6 +99,12 @@ class CxModulesOrderModelEntityInvoiceProxy extends \Cx\Modules\Order\Model\Enti
         return parent::getPaid();
     }
 
+    public function isReseller()
+    {
+        $this->_load();
+        return parent::isReseller();
+    }
+
     public function __get($name)
     {
         $this->_load();

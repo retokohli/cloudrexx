@@ -339,10 +339,16 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::addUpgrade($upgrade);
     }
 
-    public function getPaymentAmount($unit = 'month', $quantifier = 1, $currency = NULL)
+    public function getPaymentAmount($unit = 'month', $quantifier = 1, $currency = NULL, $withVat = false)
     {
         $this->_load();
-        return parent::getPaymentAmount($unit, $quantifier, $currency);
+        return parent::getPaymentAmount($unit, $quantifier, $currency, $withVat);
+    }
+
+    public function getAmountWithVat($productPrice)
+    {
+        $this->_load();
+        return parent::getAmountWithVat($productPrice);
     }
 
     public function addPrices(\Cx\Modules\Pim\Model\Entity\Price $prices)

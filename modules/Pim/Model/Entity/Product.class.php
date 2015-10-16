@@ -424,10 +424,26 @@ class Product extends \Cx\Model\Base\EntityBase {
         }
         //if $withVat is true, calculate the product price with VAT
         if ($withVat) {
-            $paymentAmount = $paymentAmount + ($paymentAmount * $this->getVatRate()->getRate() * 0.01);
+            $paymentAmount = $this->getAmountWithVat($paymentAmount);
         }
 
         return $paymentAmount;
+    }
+
+    /**
+     * get the product amount with VAT
+     *
+     * @param decimal $productPrice
+     *
+     * @return decimal
+     */
+    public function getAmountWithVat($productPrice)
+    {
+        if (empty($productPrice)) {
+            return 0.00;
+        }
+
+        return $productPrice + ($productPrice * $this->getVatRate()->getRate() * 0.01);
     }
 
     /**
