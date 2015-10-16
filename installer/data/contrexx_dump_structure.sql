@@ -882,7 +882,8 @@ CREATE TABLE `contrexx_module_crm_company_size` (
   `company_size` varchar(100) NOT NULL,
   `sorting` int(11) NOT NULL,
   `status` tinyint(4) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `company_size` (`company_size`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_crm_contacts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -923,7 +924,8 @@ CREATE TABLE `contrexx_module_crm_currency` (
   `hourly_rate` text NOT NULL,
   `default_currency` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `name` (`name`(255))
+  KEY `name` (`name`(255)),
+  FULLTEXT KEY `name_2` (`name`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_crm_customer_comment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -3608,5 +3610,3 @@ CREATE TABLE `contrexx_voting_system` (
   `additional_comment` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
-ALTER TABLE `contrexx_module_crm_company_size` ADD FULLTEXT(`company_size`);
-ALTER TABLE `contrexx_module_crm_currency` ADD FULLTEXT(`name`);

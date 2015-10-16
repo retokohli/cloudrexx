@@ -1389,9 +1389,14 @@ class CrmLibrary
             case (preg_match('/(\w+[+-.]\w+[\w]+[^ \,\"\n\r\t<]*)/is', $filter['term'])):
                 $filter['term'] = preg_replace('/(\w+[+-.]\w+[\w]+[^ \,\"\n\r\t<]*)/is', '+"$0"', $filter['term']);
                 break;
-            case (preg_match('/[^a-z0-9 _]+/i', $filter['term'])):
+            case preg_match('/[\*|\?]/', $filter['term']):
+                $filter['term'] = preg_replace('/[\*|\?]/', '*', $filter['term']);
+                break;
+            case (preg_match('/[^a-z0-9 _~]+/i', $filter['term'])):
                 $filter['term'] = '"'.$filter['term'].'*"';
                 break;
+            case preg_match('/[\~]/', $filter['term']):
+                $filter['term'] = preg_replace('/[\~]/', '', $filter['term']);
             case (!preg_match('/[\+|\-]/', $filter['term'])):
                 $filter['term'] = preg_replace('/\s+/', ' +', "+".$filter['term']) . '*';
                 break;
