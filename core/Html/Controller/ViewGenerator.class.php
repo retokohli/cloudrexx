@@ -82,10 +82,16 @@ class ViewGenerator {
         $this->componentOptions = $options;
         $this->viewId = static::$increment++;
         try {
-            
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             \JS::registerCSS($cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
-            $entityWithNS = $this->findEntityClass($object);
+            $entityWithNS = preg_replace('/^\\\/', '', $this->findEntityClass($object));
+
+            // this is a temporary "workaround" for combined keys, see todo
+            $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
+            if (count($entityClassMetadata->getIdentifierFieldNames()) > 1) {
+                throw new \Exception('Currently, view generator is not able to handle composite keys...');
+            }
+
             $this->options = array();
             if (isset($options[$entityWithNS]) && is_array($options[$entityWithNS])) {
                     $this->options = $options[$entityWithNS];
@@ -117,12 +123,6 @@ class ViewGenerator {
                 // do not make any changes to entities of other view generator instances!
                 \DBG::msg('Omitting changes, my ID is #' . $this->viewId . ', supplied viewId was ' . $vgIncrementNo);
                 return;
-            }
-            
-            // this is a temporary "workaround" for combined keys, see todo
-            $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
-            if (count($entityClassMetadata->getIdentifierFieldNames() > 1)) {
-                throw new \Exception('Currently, view generator is not able to handle composite keys...');
             }
 
             // execute add if entry is a doctrine entity (or execute callback if specified in configuration)
