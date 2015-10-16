@@ -506,7 +506,7 @@ class Downloads extends DownloadsLibrary
             $arrNames[$langId] = $sourceName;
             $arrMetakeys[$langId] = '';
             $arrDescriptions[$langId] = '';
-            $arrSourcePaths[$langId] = $cx->getWebsiteImagesDownloadsWebPath().'/'.$fileName.$suffix.'.'.$fileExtension;
+            $arrSourcePaths[$langId] = \Cx\Core\Core\Controller\Cx::FOLDER_NAME_IMAGES . '/Downloads/'.$fileName.$suffix.'.'.$fileExtension;
             $arrSourceNames[$langId] = $sourceName;
         }
 
