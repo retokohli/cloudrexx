@@ -105,6 +105,21 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected $reason = '';
 
     /**
+     * @var string httpCode The http code which is used for the error page
+     */
+    protected $httpCode = '404 Not Found';
+    
+    /**
+     * @var string title custom title from the error message
+     */
+    protected $title = '';
+    
+    /**
+     * @var string message custom message from the error message
+     */
+    protected $message = '';
+    
+    /**
      * Resolves all events which the error-component has been registered as handler.
      *
      * @param string $eventName The name of the Event
@@ -151,6 +166,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $this->section = $eventArgs['section'];
         $this->resolver = $eventArgs['resolver'];
         $this->reason = $eventArgs['reason'];
+        $this->httpCode = $eventArgs['httpCode'];
+        $this->title = $eventArgs['title'];
+        $this->message = $eventArgs['message'];
 
         // Load the content of the error-page
         $pageRepo = $this->cx->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -170,7 +188,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $this->cx->setPage($errorPage);
 
         // set 404 page not found http-header
-        header("HTTP/1.0 404 Not Found");
+        header("HTTP/1.0 " . $this->httpCode);
 
         // only throw the SkipResolverException when whe are resolving or postResolving
         if ($this->reason == $this::ERROR_REASON_PAGE_NOT_FOUND || $this->reason == $this::ERROR_REASON_NOT_LICENSED) {
@@ -201,11 +219,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         // Default content
         $template->touchBlock('error_default_explanation');
         $template->setVariable(array(
-            'ERROR_DEFAULT_TITLE'       => $_ARRAYLANG['TXT_ERROR_DEFAULT_TITLE'],
+            'ERROR_DEFAULT_TITLE'       => !empty($this->title) ? $this->title : $_ARRAYLANG['TXT_ERROR_DEFAULT_TITLE'],
             'ERROR_SEARCH_NAME'         => $_ARRAYLANG['TXT_ERROR_SEARCH_NAME'],
             'ERROR_HOME_PAGE_NAME'      => $_ARRAYLANG['TXT_ERROR_HOME_PAGE_NAME'],
-            'ERROR_EXPLANATION_GERMAN'  => $_ARRAYLANG['TXT_ERROR_EXPLANATION_GERMAN'],
-            'ERROR_EXPLANATION_ENGLISH' => $_ARRAYLANG['TXT_ERROR_EXPLANATION_ENGLISH']
+            'ERROR_EXPLANATION_GERMAN'  => !empty($this->message) ? $this->message : $_ARRAYLANG['TXT_ERROR_EXPLANATION_GERMAN'],
+            'ERROR_EXPLANATION_ENGLISH' => !empty($this->message) ? $this->message : $_ARRAYLANG['TXT_ERROR_EXPLANATION_ENGLISH']
         ));
 
         // is a component-page

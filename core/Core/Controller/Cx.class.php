@@ -720,7 +720,20 @@ namespace Cx\Core\Core\Controller {
                 if ($this->mode == self::MODE_MINIMAL) {
                     return;
                 }
-                $this->loadContrexx();
+                
+                try {
+                    $this->loadContrexx();
+                } catch (\Cx\Core_Modules\Error\Model\Entity\ShinyException $e) {
+                    if ($this->mode == self::MODE_FRONTEND) {
+                        \Cx\Core\Core\Controller\Cx::instanciate()->getEvents()->triggerEvent('Routing/PageNotFound', array(
+                            'resolver'  => $this,
+                            'httpCode'  => $e->getHttpCode(),
+                            'title'     => $e->getTitle(),
+                            'message'   => $e->getMessage(),
+                        ));
+                    }
+                    $this->setDefaultShinyExceptionHandler($e);
+                }
             }
 
             /**
@@ -747,15 +760,7 @@ namespace Cx\Core\Core\Controller {
              * aware of such a check and won't handly it therefore.
              */
             catch (\Cx\Core_Modules\Error\Model\Entity\ShinyException $e) {
-                if ($this->mode != self::MODE_BACKEND) {
-                    throw new \Exception($e->getMessage());
-                }
-                // reset root of Cx\Core\Html\Sigma to backend template path
-                $this->template->setRoot($this->codeBaseAdminTemplatePath);
-                $this->template->setVariable('ADMIN_CONTENT', $e->getBackendViewMessage());
-                $this->setPostContentLoadPlaceholders();
-                $this->finalize();
-                die;
+                $this->setDefaultShinyExceptionHandler($e);
             }
 
             /**
@@ -1158,6 +1163,18 @@ namespace Cx\Core\Core\Controller {
                     ini_set('memory_limit', '48M');
                 }
             }
+        }
+        
+        protected function setDefaultShinyExceptionHandler(\Cx\Core_Modules\Error\Model\Entity\ShinyException $e) {
+            if ($this->mode != self::MODE_BACKEND) {
+                throw new \Exception($e->getMessage());
+            }
+            // reset root of Cx\Core\Html\Sigma to backend template path
+            $this->template->setRoot($this->codeBaseAdminTemplatePath);
+            $this->template->setVariable('ADMIN_CONTENT', $e->getBackendViewMessage());
+            $this->setPostContentLoadPlaceholders();
+            $this->finalize();
+            die;
         }
 
         /**

@@ -50,9 +50,13 @@ class ShinyException extends \Exception
 {
     protected $templateFile = null;
     protected $templatePlaceholders = array();
+    protected $title;
+    protected $httpCode;
 
-    public function __construct($message = null, $code = 0, \Exception $previous = null) {
+    public function __construct($message = null, $code = 0, \Exception $previous = null, $title = '', $httpCode = '') {
         $this->templateFile = \Env::get('cx')->getCodeBaseCoreModulePath() . '/Error/View/Template/Backend/ShinyException.html';
+        $this->title = $title;
+        $this->httpCode = $httpCode;
         parent::__construct($message, $code, $previous);
 
         $this->templatePlaceholders = array(
@@ -80,6 +84,14 @@ class ShinyException extends \Exception
         $template->setVariable($this->templatePlaceholders);
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($template);
         return $template->get();
+    }
+    
+    public function getHttpCode() {
+        return $this->httpCode;
+    }
+    
+    public function getTitle() {
+        return $this->title;
     }
 }
 
