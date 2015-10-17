@@ -412,9 +412,7 @@ CODE
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
-
+            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
             $objMail->Subject = $subject;
             $objMail->Body = $objTemplate->get();
             foreach($emails as $email){

@@ -1445,8 +1445,7 @@ CODE;
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $senderName;
+            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $senderName);
             if (!empty($replyAddress)) {
                 $objMail->AddReplyTo($replyAddress);
 
@@ -1455,7 +1454,7 @@ CODE;
                 }
 
                 if ($arrFormData['useEmailOfSender'] == 1) {
-                    $objMail->From = $replyAddress;
+                    $objMail->SetFrom($replyAddress);
                 }
             }
             $objMail->Subject = $arrFormData['subject'];

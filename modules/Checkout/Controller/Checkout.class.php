@@ -736,8 +736,7 @@ class Checkout extends CheckoutLibrary {
         $objPHPMailer->CharSet = CONTREXX_CHARSET;
         $objPHPMailer->IsHTML(true);
         $objPHPMailer->Subject = $arrMail['title'];
-        $objPHPMailer->From = $_CONFIG['contactFormEmail'];
-        $objPHPMailer->FromName = $_CONFIG['domainUrl'];
+        $objPHPMailer->SetFrom($_CONFIG['contactFormEmail'], $_CONFIG['domainUrl']);
         $objPHPMailer->AddAddress($recipient);
         $objPHPMailer->Body = $arrMail['content'];
         $objPHPMailer->Send();

@@ -583,8 +583,7 @@ class Blog extends \Cx\Modules\Blog\Controller\BlogLibrary  {
                     $strMailBody    = str_replace('[COMMENT]', $strComment, $strMailBody);
 
                     $objMail->CharSet = CONTREXX_CHARSET;
-                    $objMail->From = $_CONFIG['coreAdminEmail'];
-                    $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
+                    $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
                     $objMail->AddAddress($_CONFIG['coreAdminEmail']);
                     $objMail->Subject   = $strMailSubject;
                     $objMail->IsHTML(false);

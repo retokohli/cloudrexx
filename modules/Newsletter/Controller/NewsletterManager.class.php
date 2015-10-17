@@ -3044,8 +3044,7 @@ class NewsletterManager extends NewsletterLib
             }
         }
         $mail->CharSet  = CONTREXX_CHARSET;
-        $mail->From     = $sender_email;
-        $mail->FromName = $sender_name;
+        $mail->SetFrom($sender_email, $sender_name);
         $mail->AddReplyTo($return_path);
         $mail->Subject  = $subject;
         $mail->Priority = $priority;
@@ -3234,8 +3233,7 @@ class NewsletterManager extends NewsletterLib
             }
         }
         $mail->CharSet      = CONTREXX_CHARSET;
-        $mail->From         = $newsletterValues['sender_email'];
-        $mail->FromName     = $newsletterValues['sender_name'];
+        $mail->SetFrom($newsletterValues['sender_email'], $newsletterValues['sender_name']);
         $mail->AddReplyTo($newsletterValues['return_path']);
         $mail->Subject      = $newsletterValues['subject'];
         $mail->Priority     = $newsletterValues['priority'];

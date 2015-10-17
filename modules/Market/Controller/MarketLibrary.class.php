@@ -309,8 +309,7 @@ class MarketLibrary
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $fromMail;
-            $objMail->FromName = $fromName;
+            $objMail->SetFrom($fromMail, $fromName);
             $objMail->AddReplyTo($fromMail);
             $objMail->Subject = $subject;
             $objMail->IsHTML(false);
@@ -423,8 +422,7 @@ class MarketLibrary
                 }
 
                 $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = $fromMail;
-                $objMail->FromName = $fromName;
+                $objMail->SetFrom($fromMail, $fromName);
                 $objMail->AddReplyTo($fromMail);
                 $objMail->Subject = $subject;
                 $objMail->IsHTML(false);
