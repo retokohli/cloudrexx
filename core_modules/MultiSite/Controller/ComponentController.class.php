@@ -2951,6 +2951,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 ? '(API-call: '.$_REQUEST['act'].')'
                                 : $_SERVER['REQUEST_URI'];
             \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...".$requestInfo);
+            \DBG::setLogPrefix($website->getName());
             // set SERVER_NAME to BaseDN of Website
             $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite');
             \Cx\Core\Core\Controller\Cx::instanciate($cx->getMode(), true, $configFile, true);
