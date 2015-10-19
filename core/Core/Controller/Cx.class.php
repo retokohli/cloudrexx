@@ -724,16 +724,7 @@ namespace Cx\Core\Core\Controller {
                 try {
                     $this->loadContrexx();
                 } catch (\Cx\Core_Modules\Error\Model\Entity\ShinyException $e) {
-                    //var_dump(\Env::get('Resolver'));
-                    if ($this->mode == self::MODE_FRONTEND) {
-                        \Cx\Core\Core\Controller\Cx::instanciate()->getEvents()->triggerEvent('Routing/PageNotFound', array(
-                            'resolver'  => \Env::get('Resolver'),
-                            'httpCode'  => $e->getHttpCode(),
-                            'title'     => $e->getTitle(),
-                            'message'   => $e->getMessage(),
-                        ));
-                    }
-                    $this->setDefaultShinyExceptionHandler($e);
+                    $this->setDefaultShinyExceptionHandler($e, true);
                 }
             }
 
@@ -1166,16 +1157,28 @@ namespace Cx\Core\Core\Controller {
             }
         }
         
-        protected function setDefaultShinyExceptionHandler(\Cx\Core_Modules\Error\Model\Entity\ShinyException $e) {
-            if ($this->mode != self::MODE_BACKEND) {
+        protected function setDefaultShinyExceptionHandler(\Cx\Core_Modules\Error\Model\Entity\ShinyException $e, $frontendException = false) {
+            if ($this->mode == self::MODE_FRONTEND && $frontendException) {
+                \Cx\Core\Core\Controller\Cx::instanciate()->getEvents()->triggerEvent('Routing/PageNotFound', array(
+                    'resolver'  => $this->resolver,
+                    'httpCode'  => $e->getHttpCode(),
+                    'title'     => $e->getTitle(),
+                    'message'   => $e->getMessage(),
+                ));
+                var_dump('XOXOX');
+            } else if ($this->mode != self::MODE_BACKEND) {
                 throw new \Exception($e->getMessage());
             }
             // reset root of Cx\Core\Html\Sigma to backend template path
-            $this->template->setRoot($this->codeBaseAdminTemplatePath);
+            $this->template->setRoot($this->websiteThemesPath);
             $this->template->setVariable('ADMIN_CONTENT', $e->getBackendViewMessage());
+            $this->loadContent();
             $this->setPostContentLoadPlaceholders();
             $this->finalize();
+            var_dump($this->template->getBlockList());
             die;
+            /*
+$this->template->addBlock('CONTENT_FILE', 'page_template', $page_template);             */
         }
 
         /**
