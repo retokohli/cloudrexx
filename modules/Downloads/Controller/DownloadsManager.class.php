@@ -923,9 +923,11 @@ class DownloadsManager extends DownloadsLibrary
             'DOWNLOADS_CATEGORY_MENU'       => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
             'TXT_DOWNLOADS_SEARCH'          => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
         ));
-
-        $filter = array('category_id' => $objCategory->getId());
-
+        
+        if($objCategory->getId() > 0) {
+            $filter = array('category_id' => $objCategory->getId());
+        }
+        
         $objDownload = new Download();
         $objDownload->loadDownloads(
             $filter, $searchTerm, $arrOrder, null,

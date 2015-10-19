@@ -1174,12 +1174,6 @@ class Category
             if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_downloads_rel_download_category` WHERE `category_id` = ".$this->id." AND `download_id` = ".$downloadId) === false) {
                 $status = false;
             }
-            $objResult = $objDatabase->Execute("SELECT COUNT(*) AS `count` FROM `".DBPREFIX."module_downloads_rel_download_category` WHERE `download_id` = ".$downloadId);
-            if($objResult->fields['count']==0) {
-                if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_rel_download_category` (`category_id`, `download_id`, `order`) VALUES (0, ".$downloadId.", ( SELECT `order` FROM `".DBPREFIX."module_downloads_download` WHERE `id` = ".$downloadId."))") === false) {
-                    $status = false;
-                }
-            }
         }
         if (!$status) {
             $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_DOWNLOAD_ASSOCIATIONS'];
