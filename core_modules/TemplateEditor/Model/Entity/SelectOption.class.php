@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,29 +24,33 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
 use Cx\Core\Html\Sigma;
 
 /**
- * Class AreaOption
+ * class SelectOption
  *
- * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
- * @subpackage  core_module_templateeditor
  */
-class AreaOption extends Option
+class SelectOption extends Option
 {
 
     /**
-     * Shows whether the area should be shown
+     * The text value of the option.
      *
-     * @var bool
+     * @var string
      */
-    protected $active;
+    protected $activeChoice = '';
+
+    /**
+     * @var array
+     */
+    protected $choice;
+
 
     /**
      * @param String $name Name of the option
@@ -56,7 +60,9 @@ class AreaOption extends Option
     public function __construct($name, $translations, $data)
     {
         parent::__construct($name, $translations, $data);
-        $this->active = $data['active'] == 'true';
+        $this->activeChoice = isset($data['activeChoice'])
+            ? $data['activeChoice'] : '';
+        $this->choice       = isset($data['choice']) ? $data['choice'] : '';
     }
 
     /**
@@ -66,20 +72,34 @@ class AreaOption extends Option
      */
     public function renderOptionField($template)
     {
+        global $_LANGID;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
             $this->cx->getCodeBaseCoreModulePath()
-            . '/TemplateEditor/View/Template/Backend/AreaOption.html'
+            . '/TemplateEditor/View/Template/Backend/SelectOption.html'
         );
+        foreach ($this->choice as $value => $choice) {
+            $subTemplate->setVariable(
+                'CHOICE_NAME',
+                isset($choice[$_LANGID])
+                    ? $choice[$_LANGID]
+                    : (isset($choice[2]) ? $choice[2] : $value)
+            );
+            $subTemplate->setVariable('CHOICE_VALUE', $value);
+            if ($value == $this->activeChoice) {
+                $subTemplate->setVariable('CHOICE_ACTIVE', 'selected');
+            }
+            $subTemplate->parse('choices');
+        }
         $subTemplate->setVariable(
-            'TEMPLATEEDITOR_OPTION_VALUE', ($this->active) ? 'checked' : ''
+            'TEMPLATEEDITOR_OPTION_VALUE', $this->activeChoice
         );
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
         $subTemplate->setVariable(
             'TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName
         );
         $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
-        $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'area');
+        $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'select');
         $template->parse('option');
     }
 
@@ -90,10 +110,9 @@ class AreaOption extends Option
      */
     public function renderTheme($template)
     {
-        $blockName = strtolower('TEMPLATE_EDITOR_' . $this->name);
-        if ($template->blockExists($blockName) && $this->active) {
-            $template->touchBlock($blockName);
-        }
+        $template->setVariable(
+            'TEMPLATE_EDITOR_' . strtoupper($this->name), $this->activeChoice
+        );
     }
 
     /**
@@ -112,32 +131,25 @@ class AreaOption extends Option
      */
     public function handleChange($data)
     {
-        if ($data != 'true' && $data != 'false') {
-            throw new OptionValueNotValidException('Should be true or false.');
+        if (!is_string($data) || !isset($this->choice[$data])) {
+            throw new OptionValueNotValidException('Not a option!');
         }
-        $this->active = $data;
-        return array('active' => $data);
-    }
-
-
-    /**
-     * Returns if area is active
-     *
-     * @return boolean
-     */
-    public function isActive()
-    {
-        return $this->active;
+        $this->activeChoice = $data;
+        return array('activeChoice' => $this->activeChoice);
     }
 
     /**
-     * Set is active
+     * Get the data in a serializable format.
      *
-     * @param boolean $active
+     * @return array
      */
-    public function setActive($active)
+    public function yamlSerialize()
     {
-        $this->active = $active;
+        $option = parent::yamlSerialize();
+        $option['specific'] = array(
+            'choice' => $this->choice
+        );
+        return $option;
     }
 
     /**
@@ -147,6 +159,6 @@ class AreaOption extends Option
      */
     public function getValue()
     {
-        return array('active' => $this->active);
+        return array('activeChoice' => $this->activeChoice);
     }
 }
