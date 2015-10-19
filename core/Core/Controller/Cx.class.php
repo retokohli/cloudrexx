@@ -1165,20 +1165,17 @@ namespace Cx\Core\Core\Controller {
                     'title'     => $e->getTitle(),
                     'message'   => $e->getMessage(),
                 ));
-                var_dump('XOXOX');
+                $this->loadContentTemplateOfPage();
+                $this->loadContent();
             } else if ($this->mode != self::MODE_BACKEND) {
                 throw new \Exception($e->getMessage());
             }
             // reset root of Cx\Core\Html\Sigma to backend template path
             $this->template->setRoot($this->websiteThemesPath);
             $this->template->setVariable('ADMIN_CONTENT', $e->getBackendViewMessage());
-            $this->loadContent();
             $this->setPostContentLoadPlaceholders();
             $this->finalize();
-            var_dump($this->template->getBlockList());
             die;
-            /*
-$this->template->addBlock('CONTENT_FILE', 'page_template', $page_template);             */
         }
 
         /**
