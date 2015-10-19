@@ -818,7 +818,7 @@ CODE;
 
                 //move all files
                 if (empty($tmpUploadDir) || !\Cx\Lib\FileSystem\FileSystem::exists($tmpUploadDir)) {
-                   return $arrFiles;
+                   continue;
                 }
                 
                 $h = opendir(\Env::get('cx')->getWebsitePath().$tmpUploadDir);
