@@ -724,9 +724,10 @@ namespace Cx\Core\Core\Controller {
                 try {
                     $this->loadContrexx();
                 } catch (\Cx\Core_Modules\Error\Model\Entity\ShinyException $e) {
+                    //var_dump(\Env::get('Resolver'));
                     if ($this->mode == self::MODE_FRONTEND) {
                         \Cx\Core\Core\Controller\Cx::instanciate()->getEvents()->triggerEvent('Routing/PageNotFound', array(
-                            'resolver'  => $this,
+                            'resolver'  => \Env::get('Resolver'),
                             'httpCode'  => $e->getHttpCode(),
                             'title'     => $e->getTitle(),
                             'message'   => $e->getMessage(),
