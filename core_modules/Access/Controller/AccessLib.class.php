@@ -1758,8 +1758,7 @@ JS
 
     private function isImageWithinAllowedSize($size, $profilePic)
     {
-        $arrSettings = \User_Setting::getSettings();
-        return $size <= $arrSettings['max_'.($profilePic ? 'profile_' : '').'pic_size']['value'];
+        return true;
     }
 
 
