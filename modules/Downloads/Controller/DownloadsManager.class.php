@@ -924,6 +924,7 @@ class DownloadsManager extends DownloadsLibrary
             'TXT_DOWNLOADS_SEARCH'          => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
         ));
         
+        $filter = null;
         if($objCategory->getId() > 0) {
             $filter = array('category_id' => $objCategory->getId());
         }
