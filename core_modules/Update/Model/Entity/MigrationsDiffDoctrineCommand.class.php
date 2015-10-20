@@ -74,7 +74,10 @@ You can optionally specify a <comment>--editor-cmd</comment> option to open the 
     <info>%command.full_name% --editor-cmd=mate</info>
 EOT
                 )
-                ->addOption('filter-expression', null, InputOption::VALUE_OPTIONAL, 'Tables which are filtered by Regular Expression.');
+                ->addOption('filter-expression', null, InputOption::VALUE_OPTIONAL, 'Tables which are filtered by Regular Expression.')
+                ->addOption('filter', null, InputOption::VALUE_OPTIONAL, 'The components which are filtered by Name Space.')
+                ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Version file where to be created.')
+                ->addOption('version-name', null, InputOption::VALUE_REQUIRED, 'Version file name.');
     }
 
     /**
@@ -88,26 +91,47 @@ EOT
      */
     public function execute(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output) 
     {
-            $isDbalOld = (DbalVersion::compare('2.2.0') > 0);
-            $configuration = $this->getMigrationConfiguration($input, $output);
+        $isDbalOld = (DbalVersion::compare('2.2.0') > 0);
+        $em        = $this->getHelper('em')->getEntityManager();
+        $conn      = $em->getConnection();
 
-            $em = $this->getHelper('em')->getEntityManager();
-            $conn = $em->getConnection();
-            $platform = $conn->getDatabasePlatform();
-            $metadata = $em->getMetadataFactory()->getAllMetadata();
-
-            if (empty($metadata)) {
-                $output->writeln('No mapping information to process.', 'ERROR');
-                return;
+        if ($filterExpr = $input->getOption('filter-expression')) {
+            if ($isDbalOld) {
+                throw new \InvalidArgumentException('The "--filter-expression" option can only be used as of Doctrine DBAL 2.2');
             }
 
-            if ($filterExpr = $input->getOption('filter-expression')) {
-                if ($isDbalOld) {
-                    throw new \InvalidArgumentException('The "--filter-expression" option can only be used as of Doctrine DBAL 2.2');
-                }
+            $conn->getConfiguration()
+                 ->setFilterSchemaAssetsExpression($filterExpr);
+        }
 
-                $conn->getConfiguration()
-                        ->setFilterSchemaAssetsExpression($filterExpr);
+        $configuration = $this->getMigrationConfiguration($input, $output);
+        $drivers       = $em->getConfiguration()->getMetadataDriverImpl();
+        $components    = array();
+        $filter        = $input->getOption('filter');
+        // Get all components and its entities
+        foreach ($drivers->getAllClassNames() as $className) {
+            $componentClassName = explode('\\', $className);
+            $component          = !empty($componentClassName[2]) ? $componentClassName[2] : '';
+            $componentName      = (!$filter)
+                                   ? $component
+                                   : ((strpos($className, $filter) !== false)
+                                      ? $component
+                                      : '');
+            if ($componentName) {
+                $components[$componentName][] = $className;
+            }
+        }
+
+        foreach ($components as $componentName => $entities) {
+            $metadata = array();
+            foreach ($entities as $entity) {
+                $metadata[] = $em->getMetadataFactory()->getMetadataFor($entity);
+            }
+
+            $platform = $conn->getDatabasePlatform();
+
+            if (empty($metadata)) {
+                continue;
             }
 
             $tool = new SchemaTool($em);
@@ -133,18 +157,30 @@ EOT
                 }
             }
 
-            $up = $this->buildCodeFromSql($configuration, $fromSchema->getMigrateToSql($toSchema, $platform));
+            $up   = $this->buildCodeFromSql($configuration, $fromSchema->getMigrateToSql($toSchema, $platform));
             $down = $this->buildCodeFromSql($configuration, $fromSchema->getMigrateFromSql($toSchema, $platform));
 
             if (!$up && !$down) {
-                $output->writeln('No changes detected in your mapping information.', 'ERROR');
-                return;
+                continue;
             }
 
-            $version = date('YmdHis');
-            $path = $this->generateMigration($configuration, $input, $version, $up, $down);
+            $component       = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent')->findOneBy(array('name' => $componentName));
+            $migrationFolder = $input->getOption('path') . '/' . str_replace("\\", "/", $component->getNamespace()) . '/Data/Migrations/';
+            try {
+                if (!\Cx\Lib\FileSystem\FileSystem::exists($migrationFolder)) {
+                    \Cx\Lib\FileSystem\FileSystem::make_folder($migrationFolder, true);
+                }
+            } catch (\Exception $e) {
+                $output->writeln($e->getMessage(), 'ERROR');
+            }
+            //migration configuration
+            $configuration->setMigrationsDirectory($migrationFolder);
+            $configuration->setMigrationsNamespace($component->getNamespace().'\\Data\\Migrations');
 
+            // Generate the migration
+            $path = $this->generateMigration($configuration, $input, $input->getOption('version-name'), $up, $down);
             $output->writeln(sprintf('Generated new migration class to "<info>%s</info>" from schema differences.', $path));
+        }
     }
 
     /**
@@ -156,6 +192,9 @@ EOT
      * @return string
      */
     private function buildCodeFromSql(Configuration $configuration, array $sql) {
+        if (empty($sql)) {
+            return '';
+        }
         $currentPlatform = $configuration->getConnection()->getDatabasePlatform()->getName();
         $code = array(
             "\$this->abortIf(\$this->connection->getDatabasePlatform()->getName() != \"$currentPlatform\");", "",

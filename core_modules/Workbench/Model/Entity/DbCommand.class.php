@@ -119,7 +119,7 @@ class DbCommand extends Command {
                 }
                 
                 // move entities to component directory and add .class extension
-                $modelMovedCompletely = $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath());
+                $modelMovedCompletely = $this->moveFiles($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath());
                 
                 // if all files could be moved, cleanup
                 // if not: ask if moving should be forced (CAUTION!)
@@ -127,7 +127,7 @@ class DbCommand extends Command {
                     echo "\r\n".'Not all entity files could be moved to their correct location. This is probably because there\'s an existing file there. ';
                     echo 'I can overwrite these files for you, but it is recommended, that you diff the changes manually. ';
                     if ($this->interface->yesNo('Would you like me to overwrite the files?')) {
-                        $modelMovedCompletely = $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath(), true);
+                        $modelMovedCompletely = $this->moveFiles($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath(), true);
                     }
                 }
                 
@@ -142,7 +142,7 @@ class DbCommand extends Command {
                 }
                 
                 // move repositories to component directory and add .class extension
-                $modelMovedCompletely = $modelMovedCompletely && $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath());
+                $modelMovedCompletely = $modelMovedCompletely && $this->moveFiles($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath());
                 
                 // if all files could be moved, cleanup
                 // if not: ask if moving should be forced (CAUTION!)
@@ -150,7 +150,7 @@ class DbCommand extends Command {
                     echo "\r\n".'Not all model files could be moved to their correct location. This is probably because there\'s an existing file there. ';
                     echo 'I can overwrite these files for you, but it is recommended, that you diff the changes manually. ';
                     if ($this->interface->yesNo('Would you like me to overwrite the files?')) {
-                        $modelMovedCompletely = $this->moveModel($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath(), true);
+                        $modelMovedCompletely = $this->moveFiles($this->cx->getWebsiteTempPath().'/workbench/Cx', $this->cx->getWebsiteDocumentRootPath(), true);
                     }
                     if (!$modelMovedCompletely) {
                         if ($this->interface->yesNo('There are remaining files in tmp/workbench. Should I remove them?')) {
@@ -161,6 +161,12 @@ class DbCommand extends Command {
                     $this->cleanup();
                 }
                 
+                $versionFileMovedCompletely = $this->generateMigrationVersionFile($componentFilter);
+                if (!$versionFileMovedCompletely || !$modelMovedCompletely) {
+                    if ($this->interface->yesNo("\r\n".'There are remaining files in tmp/workbench. Should I remove them?')) {
+                        $this->cleanup();
+                    }
+                }
                 // doctrine orm:schema-tool:create --dump-sql
                 // print queries and ask if those should be executed (CAUTION!)
                 $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->cx->getDb()->getEntityManager());
@@ -211,8 +217,10 @@ class DbCommand extends Command {
         $cli = new \Symfony\Component\Console\Application('Doctrine Command Line Interface', \Doctrine\Common\Version::VERSION);
         $cli->setCatchExceptions(true);
         $helperSet = $cli->getHelperSet();
+        $em = $this->cx->getDb()->getEntityManager();
         $helpers = array(
-            'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($this->cx->getDb()->getEntityManager()),
+            'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em),
+            'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
         );
         foreach ($helpers as $name => $helper) {
             $helperSet->set($helper, $name);
@@ -237,6 +245,7 @@ class DbCommand extends Command {
             new \Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand(),
             new \Doctrine\ORM\Tools\Console\Command\RunDqlCommand(),
             new \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(),
+            new \Cx\Core_Modules\Update\Model\Entity\MigrationsDiffDoctrineCommand()
 
         ));
         $cli->setAutoExit(false);
@@ -248,7 +257,7 @@ class DbCommand extends Command {
         \Cx\Lib\FileSystem\FileSystem::make_folder($this->cx->getWebsiteTempPath().'/workbench');
     }
     
-    protected function moveModel($sourceFolder, $destinationFolder, $force = false) {
+    protected function moveFiles($sourceFolder, $destinationFolder, $force = false) {
         $sourceDirectory = new \RecursiveDirectoryIterator($sourceFolder);
         $sourceDirectoryIterator = new \RecursiveIteratorIterator($sourceDirectory);
         $sourceDirectoryRegexIterator = new \RegexIterator($sourceDirectoryIterator, '/^.+\.php$/i', \RegexIterator::GET_MATCH);
@@ -323,5 +332,49 @@ class DbCommand extends Command {
         }
         return $exit;
     }
+
+   /**
+    * Generate the migration version file.
+    *
+    * @param string $componentFilter components which are filtered by Name Space
+    *
+    * @return boolean true | false
+    */
+   public function generateMigrationVersionFile($componentFilter)
+   {
+        //create version file from the yml files.
+        $doctrineArgs = array('', 'doctrine', 'migrations:diff', '--path=' . $this->cx->getWebsiteTempPath() . '/workbench/Migration');
+        if (!empty($componentFilter)) {
+            $doctrineArgs[] = $componentFilter;
+        }
+        //get current coreCmsVersion to set the migration version file name.
+        \Cx\Core\Setting\Controller\Setting::init('Config', '', 'Yaml');
+        $cmsVersion = str_replace('.', '', \Cx\Core\Setting\Controller\Setting::getValue('coreCmsVersion', 'Config'));
+        //get the migration version file name from user
+        $version = $this->interface->input(
+            'The version file name will be the current codebase, ' .
+            'Do you want to change the version? Please enter codeBase version without dot', str_pad($cmsVersion, 4, '0', STR_PAD_RIGHT)
+        );
+        $doctrineArgs[] = '--version-name=' . str_pad($version, 4, '0', STR_PAD_RIGHT);
+        //execute the migrations:diff command
+        if ($this->executeDoctrine($doctrineArgs) != 0) {
+            return;
+        }
+
+        // move migrations to component directory and add .class extension
+        $versionFileMovedCompletely = $this->moveFiles($this->cx->getWebsiteTempPath() . '/workbench/Migration', $this->cx->getWebsiteDocumentRootPath());
+
+        if (!$versionFileMovedCompletely) {
+            $this->interface->show(
+                 "\r\n" .'Not all version files could be moved to their correct location. This is probably because there\'s an existing file there. '.
+                'I can overwrite these files for you, but it is recommended, that you diff the changes manually.'
+            );
+            if ($this->interface->yesNo('Would you like me to overwrite the files?')) {
+                $versionFileMovedCompletely = $this->moveFiles($this->cx->getWebsiteTempPath() . '/workbench/Migration', $this->cx->getWebsiteDocumentRootPath(), true);
+            }
+        }
+        return $versionFileMovedCompletely;
+    }
+
 }
 
