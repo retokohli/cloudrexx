@@ -3573,7 +3573,7 @@ class NewsletterManager extends NewsletterLib
     /**
      * Get the URL to the page to unsubscribe
      */
-    function GetUnsubscribeURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
+    public function GetUnsubscribeURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
     {
         global $_ARRAYLANG, $_CONFIG;
 

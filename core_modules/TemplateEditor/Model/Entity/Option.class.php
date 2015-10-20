@@ -34,8 +34,8 @@ use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 /**
  * Class OptionValueNotValidException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -46,8 +46,8 @@ class OptionValueNotValidException extends \Exception
 /**
  * Class Option
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */

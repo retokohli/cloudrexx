@@ -239,7 +239,7 @@ cx.ready(function() {
             // no need to get the whole tree twice
             cx.cm.all_opened = true;
             cx.cm.is_opening = true;
-            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
+            cx.ui.messages.showLoad();
             cx.jQuery("#site-tree").hide();
             // get complete tree
             cx.trigger("loadingStart", "contentmanager", {});
@@ -1702,7 +1702,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
     })
     .ajaxStart(function(){
         if (!cx.cm.is_opening) {
-            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery("#loading").html() + "</div>");
+            cx.ui.messages.showLoad();
         }
     })
     .ajaxError(function(event, request, settings) {

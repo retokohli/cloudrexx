@@ -35,8 +35,8 @@ use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 /**
  * Class ImageSeriesOption
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -51,10 +51,9 @@ class ImageSeriesOption extends Option
     protected $urls;
 
     /**
-     * @param String $name
-     * @param array  $translations
+     * @param String $name Name of the option
+     * @param array  $translations Array with translations for option.
      * @param array  $data
-     *
      */
     public function __construct($name, $translations, $data)
     {

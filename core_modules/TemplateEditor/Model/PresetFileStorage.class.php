@@ -26,8 +26,8 @@
  */
  
 /**
- * @copyright   Comvation AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   Cloudrexx AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  */
 
@@ -40,8 +40,8 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Class PresetFileStorage
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
