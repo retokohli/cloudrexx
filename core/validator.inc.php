@@ -296,7 +296,7 @@ function contrexx_raw2db($raw)
     $rawQuoted = $pdo->quote($raw);
     //addslashes did not add quotes, but pdo:quote does
     //we remove the quotes so we do not have to change all the queries
-    if (substr($rawQuoted,0,1)==="'" && substr($rawQuoted,-1)==="'") {
+    if (strpos($rawQuoted, '\'') === 0 && substr($rawQuoted, -1) === '\'') {
         $rawQuoted = substr($rawQuoted, 1, -1);
     }
     return $rawQuoted;
