@@ -222,8 +222,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             'ERROR_DEFAULT_TITLE'       => !empty($this->title) ? $this->title : $_ARRAYLANG['TXT_ERROR_DEFAULT_TITLE'],
             'ERROR_SEARCH_NAME'         => $_ARRAYLANG['TXT_ERROR_SEARCH_NAME'],
             'ERROR_HOME_PAGE_NAME'      => $_ARRAYLANG['TXT_ERROR_HOME_PAGE_NAME'],
+            //show the error message only once, because the message is not available in various languages
             'ERROR_EXPLANATION_GERMAN'  => !empty($this->message) ? $this->message : $_ARRAYLANG['TXT_ERROR_EXPLANATION_GERMAN'],
-            'ERROR_EXPLANATION_ENGLISH' => !empty($this->message) ? $this->message : $_ARRAYLANG['TXT_ERROR_EXPLANATION_ENGLISH']
+            'ERROR_EXPLANATION_ENGLISH' => !empty($this->message) ? '' : $_ARRAYLANG['TXT_ERROR_EXPLANATION_ENGLISH']
         ));
 
         // is a component-page
