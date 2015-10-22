@@ -264,7 +264,7 @@ class ContentManager extends \Module
         $mediaBrowser->setOptions(array('type' => 'button'));
         $mediaBrowser->setCallback('setWebPageUrlCallback');
         $mediaBrowser->setOptions(array(
-            'data-cx-mb-views' => 'sitestructure',
+            'data-cx-mb-startview' => 'sitestructure',
             'id' => 'page_target_browse'
         ));
         $this->template->setVariable(array(

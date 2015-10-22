@@ -165,7 +165,7 @@ INPUT;
         
         $strImagePreview = null;
         if(!empty($value) && file_exists($cx->getWebsitePath().$value.".thumb")) {
-            $strImagePreview = '<img src="'.$value.'.thumb" alt="" style="border: 1px solid rgb(10, 80, 161); margin: 0px 0px 3px;"  width="'.intval($this->arrSettings['settingsThumbSize']).'" />&nbsp;
+            $strImagePreview = '<img id="'. $this->moduleNameLC . 'Inputfield_' . $id .'_'. $langId.'_preview" src="'.$value.'.thumb" alt="" style="border: 1px solid rgb(10, 80, 161); margin: 0px 0px 3px;"  width="'.intval($this->arrSettings['settingsThumbSize']).'" />&nbsp;
                                 <input 
                                     data-id="'.$id.'"
                                     type="checkbox" 
@@ -184,28 +184,26 @@ INPUT;
         
         $mode = $cx->getMode();
         if ($mode == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
-            $mediaBrowseBtn = $this->getMediaBrowserButton(
-                $_ARRAYLANG['TXT_BROWSE'],
-                array(
-                    'data-cx-mb-views' => 'filebrowser',
-                    'data-cx-mb-startmediatype' => $this->moduleNameLC,
-                    'type' => 'button',
-                    'data-input-id' => $this->moduleNameLC . 'Inputfield_'. $id .'_'. $langId
-                ),
-                'mediaBrowserCallback'
-            );
             $strInputfield = <<<INPUT
             $strImagePreview
             <input type="text" name="{$this->moduleNameLC}Inputfield[$id][$langId]"
                 value="$value" 
                 data-id="$id"
+                data-is-image="true"
                 class="$inputDefaultClass"
                 id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
                 style="$inputStyle" 
                 autocomplete="off"
                 onfocus="this.select();" />
             &nbsp;
-            $mediaBrowseBtn
+            <input type="button" 
+                onClick="getMediaBrowser(\$J(this));"
+                data-is-image="true"
+                data-input-id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
+                data-views="filebrowser"
+                data-startmediatype="{$this->moduleNameLC}"
+                value="{$_ARRAYLANG['TXT_BROWSE']}"
+            />
 INPUT;
         } else {
             if (empty($value) || $value == "new_image") {
@@ -216,11 +214,22 @@ INPUT;
             }
             $strInputfield = <<<INPUT
             $strImagePreview
-            <input type="file" name="imageUpload_{$id}[$langId]"                
+            <input type="text" name="{$this->moduleNameLC}InputfieldSource[$id][$langId]"
+                value="$value" 
+                data-id="$id"
+                data-is-image="true"
+                class="$inputDefaultClass"
                 id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
-                class="{$this->moduleNameLC}InputfieldImage"                        
-                value="{$value}"
+                style="$inputStyle" 
+                autocomplete="off"
                 onfocus="this.select();" />
+            &nbsp;
+            <input type="button"
+                onClick="getUploader(\$J(this));"
+                data-is-image="true"
+                data-input-id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
+                value="{$_ARRAYLANG['TXT_BROWSE']}"
+            />
             <input id="{$this->moduleNameLC}Inputfield_{$id}_{$langId}_hidden"
                 name="{$this->moduleNameLC}Inputfield[$id][$langId]"
                 value="{$strValueHidden}" type="hidden" />
@@ -237,8 +246,10 @@ INPUT;
     function saveInputfield($intInputfieldId, $strValue, $langId = 0)
     {
         global $objInit;
-        static $strNewDefault = null;
         
+        static $strNewDefault = null;
+        static $objImage      = null;               
+
         $deleteMedia = !empty($_POST["deleteMedia"]) && !empty($_POST["deleteMedia"][$intInputfieldId]);
         if($objInit->mode == 'backend') {
             if (   !$deleteMedia
@@ -249,19 +260,31 @@ INPUT;
                 $strValue = null;
             }
         } else {
-            $inputFiles  = !empty($_FILES['imageUpload_'.$intInputfieldId]) ? $_FILES['imageUpload_'.$intInputfieldId] : array();
+            $inputFiles  = !empty($_POST['mediadirInputfieldSource'][$intInputfieldId]) ? $_POST['mediadirInputfieldSource'][$intInputfieldId] : array();
             
             if ($deleteMedia && $_POST["deleteMedia"][$intInputfieldId][$langId] == 1) {
                 $strValue = null;
                 $this->deleteImage($strValue);
-            } elseif (!empty($inputFiles) && !empty($inputFiles['name'][$langId])) {
+            } elseif (!empty($inputFiles) && !empty($inputFiles[$langId])) {
+                $objImage      = new \ImageManager();
+                $uploaderId = !empty($_POST['uploaderId']) ? $_POST['uploaderId'] : '';                
+                $imagePath  = $this->getUploadedFilePath($uploaderId, $inputFiles[$langId]);
+
+                if (!$imagePath || !$objImage->loadImage($imagePath)) {
+                    return null;
+                }
+
                 $intFilsize = intval($this->arrSettings['settingsImageFilesize']*1024);
-                if($inputFiles['size'][$langId] < $intFilsize) {
+                if(filesize($imagePath) < $intFilsize) {
                     //delete image & thumb
                     $this->deleteImage($strValue);
                     //upload image
-                    $strValue = $this->uploadMedia($intInputfieldId, $langId);                    
+                    $strValue = $this->uploadMedia($imagePath);
                 } else {
+                    if (!isset($_SESSION[$this->moduleNameLC])) {
+                        $_SESSION[$this->moduleNameLC] = array();
+                    }
+                    $_SESSION[$this->moduleNameLC]['bolFileSizesStatus'] = false;
                     $strValue = null;
                 }
             } else {
@@ -304,21 +327,22 @@ INPUT;
         }
     }
 
-
-    function uploadMedia($intInputfieldId, $langId)
+    /**
+     * Copy the Upload the image to the path
+     * Note: validation should be done before calling this function
+     * 
+     * @param string $imagePath Temp path of the uploaded media
+     * 
+     * @return boolean|string relative path of the uploaded file, false otherwise
+     */
+    function uploadMedia($imagePath)
     {
-        if (empty($_FILES)) {
+        if ($imagePath == '' || !\FWValidator::is_file_ending_harmless($imagePath)) {
             return false;
         }
         
-        $tmpImage   = $_FILES['imageUpload_'.$intInputfieldId]['tmp_name'][$langId];
-        $imageName  = $_FILES['imageUpload_'.$intInputfieldId]['name'][$langId];
-//        $imageType  = $_FILES['imageUpload_'.$intInputfieldId]['type'];
-//        $imageSize  = $_FILES['imageUpload_'.$intInputfieldId]['size'];
-        if ($imageName == '') {
-            return false;
-        }
         // get extension
+        $imageName      = basename($imagePath);
         $arrImageInfo   = pathinfo($imageName);
         $imageExtension = !empty($arrImageInfo['extension']) ? '.'.$arrImageInfo['extension'] : '';
         $imageBasename  = $arrImageInfo['filename'];
@@ -332,7 +356,7 @@ INPUT;
             $imageName = $imageBasename.'_'.time().$imageExtension;
         }
         // upload file
-        if (!move_uploaded_file($tmpImage, $this->imagePath.'images/'.$imageName)) {
+        if (\Cx\Lib\FileSystem\FileSystem::copy_file($imagePath, $this->imagePath.'images/'.$imageName) === false) {
             return false;
         }
         $imageDimension = getimagesize($this->imagePath.'images/'.$imageName);
@@ -367,8 +391,6 @@ INPUT;
 
     function createThumbnail($strPathImage)
     {
-        global $objDatabase;
-
         $arrImageInfo = getimagesize(\Env::get('cx')->getWebsitePath().$strPathImage);
 
         if (   $arrImageInfo['mime'] == "image/gif"
