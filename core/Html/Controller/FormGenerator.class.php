@@ -291,6 +291,12 @@ class FormGenerator {
                 break;
             case 'Cx\Model\Base\EntityBase':
                 $associatedClass = get_class($value);
+                \JS::registerJS('core/Html/View/Script/Backend.js');
+                \ContrexxJavascript::getInstance()->setVariable(
+                    'Form/Error',
+                    $_ARRAYLANG['TXT_CORE_HTML_FORM_VALIDATION_ERROR'],
+                    'core/Html/lang'
+                );
                 if (\Env::get('em')->getClassMetadata($this->entityClass)->isSingleValuedAssociation($name)) {
                     // this case is used to create a select field for 1 to 1 associations
                     $entities = \Env::get('em')->getRepository($associatedClass)->findAll();
@@ -300,8 +306,11 @@ class FormGenerator {
                     $arrEntities = array();
                     $closeMetaData = \Env::get('em')->getClassMetadata($this->entityClass);
                     $assocMapping = $closeMetaData->getAssociationMapping($name);
+                    $validator = null;
                     if (!isset($assocMapping['joinColumns'][0]['nullable']) || $assocMapping['joinColumns'][0]['nullable']) {
                         $arrEntities['NULL'] = $_ARRAYLANG['TXT_CORE_NONE'];
+                    } else {
+                        $validator = new \Cx\Core\Validate\Model\Entity\RegexValidator('/^(?!null$|$)/');
                     }
                     foreach ($entities as $entity) {
                         $arrEntities[\Env::get('em')->getClassMetadata($associatedClass)->getFieldValue($entity, $primaryKeyName)] = $entity;
@@ -309,7 +318,8 @@ class FormGenerator {
                     $select = new \Cx\Core\Html\Model\Entity\DataElement(
                         $name,
                         \Html::getOptions($arrEntities, $selected),
-                        \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                        \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT,
+                        $validator
                     );
                     if (isset($options['attributes'])) {
                         $select->setAttributes($options['attributes']);
@@ -354,7 +364,6 @@ class FormGenerator {
                             $options['tooltip'] = $_ARRAYLANG['TXT_CORE_RECORD_ONE_TO_N_ASSOCIATION'];
                         }
                     }
-                    \JS::registerJS('core/Html/View/Script/Backend.js');
                     $cxjs = \ContrexxJavascript::getInstance();
                     $cxjs->setVariable('TXT_CANCEL', $_CORELANG['TXT_CANCEL'], 'Html/lang');
                     $cxjs->setVariable('TXT_SUBMIT', $_CORELANG['TXT_SUBMIT'], 'Html/lang');
