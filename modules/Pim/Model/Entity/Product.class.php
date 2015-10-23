@@ -443,7 +443,8 @@ class Product extends \Cx\Model\Base\EntityBase {
             return 0.00;
         }
 
-        return $productPrice + ($productPrice * $this->getVatRate()->getRate() * 0.01);
+        $vatAmount = $this->getVatRate() ? ($productPrice * $this->getVatRate()->getRate() * 0.01) : 0.00;
+        return $productPrice + $vatAmount;
     }
 
     /**
