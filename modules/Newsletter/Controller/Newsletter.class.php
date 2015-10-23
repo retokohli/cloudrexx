@@ -962,7 +962,7 @@ class Newsletter extends NewsletterLib
         
         // Get newsletter content and template.
         $query = '
-                SELECT `n`.`content`, `t`.`html`, `n`.`date_sent`
+                SELECT `n`.`content`, `n`.`subject`, `t`.`html`, `n`.`date_sent`
                   FROM `'.DBPREFIX.'module_newsletter` as `n`
             INNER JOIN `'.DBPREFIX.'module_newsletter_template` as `t`
                     ON `n`.`template` = `t`.`id`
@@ -973,7 +973,9 @@ class Newsletter extends NewsletterLib
         if ($objResult->RecordCount()) {
             $html    = $objResult->fields['html'];
             $content = $objResult->fields['content'];
-            $date    = date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date_sent']);
+            $subject = contrexx_raw2xhtml($objResult->fields['subject']);
+            $dateSent= $objResult->fields['date_sent'] ? $objResult->fields['date_sent'] : time();
+            $date    = date(ASCMS_DATE_FORMAT_DATE, $dateSent);
         } else {
             // newsletter not found > redirect to homepage
             \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromDocumentRoot());
@@ -1066,6 +1068,7 @@ class Newsletter extends NewsletterLib
             '[[email]]',
             '[[date]]',
             '[[display_in_browser_url]]',
+            '[[subject]]',
 
             // subscription
             // unsubscribe and profile links have been removed from browser-view - 12/20/12 TD
@@ -1098,6 +1101,7 @@ class Newsletter extends NewsletterLib
             $email,
             $date,
             ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=Newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$email.'&id='.$id,
+            $subject,
 
             // subscription
             // unsubscribe and profile links have been removed from browser-view - 12/20/12 TD

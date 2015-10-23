@@ -1041,6 +1041,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW'],
             'TXT_NEWSLETTER_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
             'TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK' => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK'],
+            'TXT_NEWSLETTER_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
             'TXT_NEWSLETTER_SAVE' => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
             'TXT_NEWSLETTER_BACK' => $_ARRAYLANG['TXT_NEWSLETTER_BACK'],
             'TXT_NEWSLETTER_CONFIRM_EMPTY_TEXT' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_EMPTY_TEXT']
@@ -2163,6 +2164,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW'],
             'TXT_NEWSLETTER_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
             'TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK' => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK'],
+            'TXT_NEWSLETTER_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
 			'TXT_NEWSLETTER_NEWS_IMPORT' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_IMPORT'],
             'TXT_NEWSLETTER_NEWS_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_DATE'],
             'TXT_NEWSLETTER_NEWS_LONG_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_LONG_DATE'],
@@ -3400,13 +3402,15 @@ class NewsletterManager extends NewsletterLib
             '[[display_in_browser_url]]',
             '[[profile_setup]]',
             '[[unsubscribe]]',
-            '[[date]]'
+            '[[date]]',
+            '[[subject]]',
         );
         $replace = array(
             $browserViewUrl,
             $this->GetProfileURL($userData['code'], $TargetEmail, $userData['type']),
             $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $userData['type']),
-            date(ASCMS_DATE_FORMAT_DATE)
+            date(ASCMS_DATE_FORMAT_DATE),
+            $subject,
         );
 
         // Replace the links in the content
@@ -3433,7 +3437,6 @@ class NewsletterManager extends NewsletterLib
             $i++;
         }
 
-        $NewsletterBody = str_replace("[[subject]]", $subject, $TemplateSource);
         $NewsletterBody = str_replace("[[content]]", $content_text, $TemplateSource);
         return $NewsletterBody;
     }
