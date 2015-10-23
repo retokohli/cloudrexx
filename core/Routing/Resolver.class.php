@@ -686,6 +686,9 @@ class Resolver {
                 return;
             }
 
+            // make legacy-requests case insensitive works only if database-collation is case insensitive as well
+            $this->setSection($this->page->getModule(), $this->page->getCmd());
+            
             $this->checkPageFrontendProtection($this->page);
 
             $this->handleFallbackContent($this->page);
