@@ -216,7 +216,11 @@ abstract class PageTree {
                 });
             }
             
-            if (!$page) {
+            if (
+                !$page || 
+                ($this->skipInvisible && !$page->isVisible()) ||
+                ($this->skipInactive && !$page->isActive())
+            ) {
                 continue;
             }
             
