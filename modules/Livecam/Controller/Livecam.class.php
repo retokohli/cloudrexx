@@ -398,7 +398,7 @@ class Livecam extends LivecamLibrary
 
                 if(!\Cx\Lib\FileSystem\FileSystem::exists($thumb)){
                     if (!$chmoded) {
-                        \Cx\Lib\FileSystem\FileSystem::chmod($this->camSettings['thumbnailPath'], '777');
+                        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->camSettings['thumbnailPath']);
                         $chmoded = true;
                     }
 
