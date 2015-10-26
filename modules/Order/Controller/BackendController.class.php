@@ -70,7 +70,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         if (\Permission::checkAccess(ComponentController::PAYMENT_ACCESS_ID, 'static', true)) {
             $commands[] = 'payment';
         }
-        
+
         return $commands;
     }
     

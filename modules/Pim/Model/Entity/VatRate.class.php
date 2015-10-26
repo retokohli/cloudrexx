@@ -31,10 +31,10 @@
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  module_order
+ * @subpackage  module_pim
  */
 
-namespace Cx\Modules\Order\Model\Entity;
+namespace Cx\Modules\Pim\Model\Entity;
 
 /**
  * Class VatRate
@@ -42,7 +42,7 @@ namespace Cx\Modules\Order\Model\Entity;
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  module_order
+ * @subpackage  module_pim
  */
 class VatRate extends \Cx\Model\Base\EntityBase {
     
@@ -54,7 +54,7 @@ class VatRate extends \Cx\Model\Base\EntityBase {
     
     /**
      *
-     * @var integer $rate
+     * @var decimal $rate
      */
     protected $rate;
     
@@ -95,7 +95,7 @@ class VatRate extends \Cx\Model\Base\EntityBase {
     /**
      * set the rate
      * 
-     * @param integer $rate
+     * @param decimal $rate
      */
     public function setRate($rate) {
         $this->rate = $rate;
@@ -104,7 +104,7 @@ class VatRate extends \Cx\Model\Base\EntityBase {
     /**
      * get the rate
      * 
-     * @return integer $rate
+     * @return decimal $rate
      */
     public function getRate() {
         return $this->rate;

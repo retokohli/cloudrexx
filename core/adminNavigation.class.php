@@ -248,8 +248,9 @@ class adminMenu
                                     continue 2;
                                 }
                                 break;
-                            case 'Order';
-                                if ( $this->activeCmd == 'Order'
+                            case 'Order':
+                            case 'Pim':
+                                if ( $this->activeCmd == $linkCmd
                                     && (empty($_REQUEST['act']) && !empty($linkCmdSection)
                                         || !empty($_REQUEST['act']) && empty($linkCmdSection))
                                 ) {

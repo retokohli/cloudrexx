@@ -5615,3 +5615,4 @@ INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, ex
 INSERT INTO contrexx_access_user_profile (user_id, gender, title, firstname, lastname, company, address, city, zip, country, phone_office, phone_private, phone_mobile, phone_fax, birthday,
 website, profession, interests, signature, picture) VALUES (1,'gender_undefined',2,'CMS','System Benutzer','','','','',0,'','','','','','','','','','');
 INSERT INTO contrexx_access_user_attribute_value (attribute_id, user_id, history_id, value) VALUES (0,1,0,'');
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (NULL, '217', 'navigation', 'backend', 'TXT_MODULE_PIM_VATRATE', '1', 'index.php?cmd=Pim&act=VatRate', '_self', '94', '2', '200');

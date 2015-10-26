@@ -15,7 +15,10 @@ Cx\Modules\Order\Model\Entity\InvoiceItem:
     price:
       type: decimal
     vatRate:
-      type: integer
+      type: decimal
+      precision: 5
+      scale: 2
+      unsigned: true
       column: vat_rate
   
   manyToOne: # owning side
