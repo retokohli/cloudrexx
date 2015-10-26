@@ -134,7 +134,38 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'sorting'   => true,
                         'paging'    => true,
                         'filtering' => false,
-                    )
+                    ),
+                    'fields'    => array(
+                        'vatRate'  => array(
+                            'table' => array(
+                                'parse' => function($value) {
+                                    if (empty($value)) {
+                                        return;
+                                    }
+                                    $vatRate = $this->em->getRepository('Cx\Modules\Order\Model\Entity\VatRate')->findOneBy(array('id' => $value ));
+                                    return $vatRate->getRate(). '%';
+                                },
+                            ),
+                            'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
+                                global $_ARRAYLANG;
+
+                                $vatRates        = $this->em->getRepository('Cx\Modules\Order\Model\Entity\VatRate')->findAll();
+                                $arrOptions['0'] = $_ARRAYLANG['TXT_MODULE_PIM_PLEASE_SELECT'];
+                                foreach ( $vatRates as $vatRate) {
+                                    $arrOptions[$vatRate->getId()] = $vatRate->getVatClass().' '. $vatRate->getRate() .'%';
+                                }
+                                $selectOption = new \Cx\Core\Html\Model\Entity\DataElement(
+                                    $fieldname,
+                                    \Html::getOptions(
+                                        $arrOptions,
+                                        $fieldvalue
+                                    ),
+                                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                                );
+                                return $selectOption;
+                            },
+                        ),
+                    ),
                 );
                 break;
             case 'Cx\Modules\Pim\Model\Entity\Price':
