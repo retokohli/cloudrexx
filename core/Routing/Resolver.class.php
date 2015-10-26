@@ -679,6 +679,7 @@ class Resolver {
             }
 
             $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            // If the database uses a case insensitive collation, $section needn't be the exact component name to find a page
             $this->page = $pageRepo->findOneByModuleCmdLang($section, $command, FRONTEND_LANG_ID);
 
             //fallback content
