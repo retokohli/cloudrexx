@@ -40,6 +40,8 @@ $cx = init('minimal');
 $bc = new BackupCreator($cx);
 $bc->createBackup();
 
+class BackupCreationException extends \Exception {}
+
 /**
  * Used to create a Cloudrexx compatible
  * backup package of the current installation of Cloudrexx.
@@ -110,14 +112,14 @@ class BackupCreator {
     protected $tempDirPath;
     
     /**
-     * @var string Absolute path to database structure dump
+     * @var string Absolute path to database dump info file
      */
-    protected $structureDumpFile;
+    protected $databaseDumpInfoFile;
     
     /**
-     * @var string Absolute path to database data dump
+     * @var string Absolute path to database dump file
      */
-    protected $dataDumpFile;
+    protected $databaseDumpFile;
     
     /**
      * @var string Absolute path to zip package
@@ -203,16 +205,16 @@ class BackupCreator {
      */
     protected function initPackage() {
         $this->tempDirPath = $this->cx->getWebsiteTempPath() . '/Backup';
-        $this->structureDumpFile = $this->tempDirPath . '/database/structure_dump.sql';
-        $this->dataDumpFile = $this->tempDirPath . '/database/data_dump.sql';
+        $this->databaseDumpInfoFile = $this->tempDirPath . '/database/dumpInfo.dat';
+        $this->databaseDumpFile = $this->tempDirPath . '/database/database.sql';
         $this->metaDataFile = $this->tempDirPath . '/info/meta.yml';
         $this->filename = $this->tempDirPath . '/CloudrexxBackup.zip';
         
         $this->package = new \PclZip($this->filename);
         
         $this->generatedFiles = array(
-            $this->structureDumpFile,
-            $this->dataDumpFile,
+            $this->databaseDumpInfoFile,
+            $this->databaseDumpFile,
             $this->metaDataFile,
         );
         $files = $this->generatedFiles + array(
@@ -226,7 +228,7 @@ class BackupCreator {
                 }
             }
             if (!\Cx\Lib\FileSystem\FileSystem::touch($file, true)) {
-                throw new BackupCreationException('Could not create touch "' . $file . '"');
+                throw new BackupCreationException('Could not touch "' . $file . '"');
             }
         }
         $this->state++;
@@ -244,8 +246,48 @@ class BackupCreator {
         
         // get all tables
         $tables = $this->getTables($adoDb);
-        $dataDumpOffset = $this->getLineCount($this->dataDumpFile);
+        $dumpInfo = new DumpInfo($this->databaseDumpInfoFile);
+        $dumpInfo->cleanup($this->databaseDumpFile);
         
+        $f = fopen($this->databaseDumpFile, 'w');
+        
+        if (!$this->getLineCount($this->databaseDumpFile)) {
+            fwrite($f, "SET TIME_ZONE = '+00:00';\nSET FOREIGN_KEY_CHECKS = 0;\n");
+        }
+        $adoDb->query('SET TIME_ZONE = \'+00:00\'');
+        
+        foreach ($tables as $table) {
+            if ($dumpInfo->isTableDone($table)) {
+                continue;
+            }
+            
+            if (!$dumpInfo->isTableStructureDone($table)) {
+                // create structure dump
+                $result = $adoDb->query('SHOW CREATE TABLE `' . $table . '`'); // 0.03s
+                $createStatement = end($result->fields);
+                
+                // write to structure dump
+                fwrite($f, $createStatement . ";\n\n");
+                $dumpInfo->setTableStructureDone($table, $this->getLineCount($this->databaseDumpFile));
+            }
+            
+            if (!$dumpInfo->isTableDataDone($table)) {
+die('not impl. yet');
+                // fetch num rows
+                $result = $adoDb->query('SELECT COUNT(*) FROM `' . $table . '`'); // 0.05s
+                $currentTableRowOffset = current($result->fields);
+                
+                for ($i = 0; $i < $currentTableRowOffset; $i++) {
+                    $result = $adoDb->query('SELECT * FROM `' . $table . '` LIMIT ' . $i . ',1'); // 0.3s
+                    $insertStatement = $this->createInsertStatement($pdo, $table, $result->fields);
+                    // write to data file for this table
+                    fwrite($f, $insertStatement . ";\n");
+                }
+            }
+        }
+        
+        $this->state++;
+        return;
         // create structure dump
         if (!$dataDumpOffset) {
             $f = fopen($this->structureDumpFile, 'w');
@@ -491,6 +533,111 @@ class BackupCreator {
     protected function log($msg) {
         //echo $msg . '<br />';
         \DBG::log($msg);
+    }
+}
+
+/**
+ * @todo implement cleanup() method
+ */
+class DumpInfo {
+    protected $infoFile;
+    protected $tables;
+    protected $data;
+    
+    public function __construct($infoFilePath, $tables) {
+        $this->tables = $tables;
+        $this->infoFile = new \Cx\Lib\FileSystem\File($infoFilePath);
+        $this->data = unserialize($this->infoFile->getData());
+        if (!is_array($this->data) || count($this->data) != 4) {
+            $this->data = array(
+                'currentTable' => null,
+                'currentDataOffset' => 0,
+                'currentFileOffset' => 0,
+                'currentOperation' => 'done',
+            );
+            $this->write();
+        }
+    }
+    
+    /**
+     * Resets the dump file to the latest state we know of (in case writing to
+     * file was cancelled by timeout)
+     */
+    public function cleanup($dumpFilePath) {
+        // calculate highest offset
+        $lastKnownOffset = $this->data['currentFileOffset'];
+        
+        // clear everything after last offset we know of
+        
+    }
+    
+    public function isTableDone($tableName) {
+        if ($tableName == $this->getCurrentTable()) {
+            return $this->data['currentOperation'] == 'done';
+        }
+        if (array_search($tableName, $this->tables) < array_search($this->getCurrentTable(), $this->tables)) {
+            return true;
+        }
+        return false;
+    }
+    
+    public function getCurrentTable() {
+        return $this->data['currentTable'];
+    }
+    
+    public function isTableStructureDone($tableName) {
+        if ($tableName == $this->getCurrentTable()) {
+            return $this->data['currentOperation'] == 'done' || $this->data['currentOperation'] == 'data';
+        }
+        if (array_search($tableName, $this->tables) < array_search($this->getCurrentTable(), $this->tables)) {
+            return true;
+        }
+        return false;
+    }
+    
+    public function setTableStructureDone($tableName, $fileOffset) {
+        $this->data = array(
+            'currentTable' => $tableName,
+            'currentDataOffset' => 0,
+            'currentFileOffset' => $fileOffset,
+            'currentOperation' => 'data',
+        );
+        $this->write();
+    }
+    
+    public function isTableDataDone($tableName) {
+        return $this->isTableDone($tableName);
+    }
+    
+    public function getTableDataOffset($tableName) {
+        if ($tableName != $this->data['currentTable']) {
+            return 0;
+        }
+        return $this->data['currentDataOffset'];
+    }
+    
+    public function setTableDataOffset($tableName, $dataOffset, $fileOffset) {
+        $this->data = array(
+            'currentTable' => $tableName,
+            'currentDataOffset' => $dataOffset,
+            'currentFileOffset' => $fileOffset,
+            'currentOperation' => 'data',
+        );
+        $this->write();
+    }
+    
+    public function setTableDone($tableName, $fileOffset) {
+        $this->data = array(
+            'currentTable' => $tableName,
+            'currentDataOffset' => $this->data['currentDataOffset'],
+            'currentFileOffset' => $fileOffset,
+            'currentOperation' => 'done',
+        );
+        $this->write();
+    }
+    
+    protected function write() {
+        $this->infoFile->write(serialize($this->data));
     }
 }
 
