@@ -82,15 +82,16 @@ class ViewGenerator {
         $this->componentOptions = $options;
         $this->viewId = static::$increment++;
         try {
-            \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+            \JS::registerCSS($cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
             $entityWithNS = preg_replace('/^\\\/', '', $this->findEntityClass($object));
-            
+
             // this is a temporary "workaround" for combined keys, see todo
             $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
             if (count($entityClassMetadata->getIdentifierFieldNames()) > 1) {
                 throw new \Exception('Currently, view generator is not able to handle composite keys...');
             }
-            
+
             $this->options = array();
             if (isset($options[$entityWithNS]) && is_array($options[$entityWithNS])) {
                     $this->options = $options[$entityWithNS];
@@ -105,6 +106,10 @@ class ViewGenerator {
             if (empty($this->options)) {
                 $this->options = $options[''];
             }
+            
+            //initialize the row sorting functionality
+            $this->getSortingOption($entityWithNS);
+            
             if (
                 (!isset($_POST['vg_increment_number']) || $_POST['vg_increment_number'] != $this->viewId) &&
                 (!isset($_GET['vg_increment_number']) || $_GET['vg_increment_number'] != $this->viewId)
@@ -226,13 +231,33 @@ class ViewGenerator {
         if (empty($entityData)) {
             $entityData = $_POST;
         }
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
         $primaryKeyName = $entityClassMetadata->getSingleIdentifierFieldName(); //get primary key name
         $entityColumnNames = $entityClassMetadata->getColumnNames(); //get the names of all fields
 
+        //If the view is sortable, get the 'sortBy' field name and store it to the variable
+        $sortByFieldName = (    isset($this->options['functions']['sortBy'])
+                            &&  isset($this->options['functions']['sortBy']['field'])
+                            &&  !empty($this->options['functions']['sortBy']['field'])
+                           )
+                           ? key($this->options['functions']['sortBy']['field'])
+                           : '';
+        //check the 'sortBy' field is self-healing or not
+        $isSortSelfHealing = (    isset($this->options['fields'])
+                              &&  isset($this->options['fields'][$sortByFieldName])
+                              &&  isset($this->options['fields'][$sortByFieldName]['showDetail'])
+                              &&  !$this->options['fields'][$sortByFieldName]['showDetail']
+                             )
+                             ? true 
+                             : false;
         // Foreach possible attribute in the database we try to find the matching entry in the $entityData array and add it
         // as property to the object
         foreach($entityColumnNames as $column) {
             $name = $entityClassMetadata->getFieldName($column);
+            $fieldSetMethodName = 'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
+            $fieldGetMethodName = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
             if (
                 isset($this->options['fields']) &&
                 isset($this->options['fields'][$name]) &&
@@ -279,7 +304,26 @@ class ViewGenerator {
                     $newValue = contrexx_input2raw($entityData[$name]);
                 }
                 // set the value as property of the current object, so it is ready to be stored in the database
-                $entity->{'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name))}($newValue);
+                $entity->$fieldSetMethodName($newValue);
+            }
+
+            //While adding a new entity, if the view is sortable and 'sortBy' field is disabled in the edit view
+            //then the new entity sort order gets automatically adjusted.
+            if (    $isSortSelfHealing  
+                &&  !empty($sortByFieldName)
+                &&  ($sortByFieldName === $name)
+                &&  !$entity->$fieldGetMethodName()
+            ) {
+                $qb = $em->createQueryBuilder();
+                $qb ->select('e')
+                    ->from(get_class($entity), 'e')
+                    ->orderBy('e.' . $name, 'DESC')
+                    ->setMaxResults(1);
+                $result   = $qb->getQuery()->getResult();
+                $newValue = isset($result[0]) ? ($result[0]->$fieldGetMethodName() + 1) : 1;
+                // set the value as property of the current object, 
+                // so it is ready to be stored in the database
+                $entity->$fieldSetMethodName($newValue);
             }
         }
         // save singleValuedAssociations
@@ -334,6 +378,100 @@ class ViewGenerator {
                 );
             }
         }
+    }
+
+    /**
+     * Initialize the row sorting functionality
+     * 
+     * @param string $entityNameSpace entity namespace
+     * 
+     * @return boolean
+     */
+    protected function getSortingOption($entityNameSpace)
+    {
+        //If the entity namespace is empty or an array then disable the row sorting
+        if (empty($entityNameSpace) && $entityNameSpace === 'array') {
+            return;
+        }
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $sortBy = (     isset($this->options['functions']['sortBy']) 
+                    &&  is_array($this->options['functions']['sortBy'])
+                  )
+                  ? $this->options['functions']['sortBy']
+                  : array();
+        //If the option 'sortBy' is not set in the function array
+        // then disable the row sorting.
+        if (empty($sortBy)) {
+            return;
+        }
+        
+        //If the function array has 'order' option and the order by field 
+        //is not equal to 'sortBy' => 'field' then disable the row sorting
+        $sortField   = key($this->options['functions']['sortBy']['field']);
+        $orderOption = (    isset($this->options['functions']['order']) 
+                        &&  is_array($this->options['functions']['order'])
+                       ) 
+                       ? key($this->options['functions']['order']) : array();
+        if (!empty($orderOption) && stripos($orderOption, $sortField) === false) {
+            return;
+        }
+
+        //get the primary key name
+        $entityObject   = $em->getClassMetadata($entityNameSpace);
+        $primaryKeyName = $entityObject->getSingleIdentifierFieldName();
+
+        //If the 'sortBy' option does not have 'jsonadapter', 
+        //we need to get the component name and entity name for updating the sorting order in db
+        $componentName = '';
+        $entityName    = '';
+        if (    !isset($sortBy['jsonadapter']) 
+            ||  (    isset($sortBy['jsonadapter'])
+                 &&  (    empty($sortBy['jsonadapter']['object'])
+                      ||  empty($sortBy['jsonadapter']['act'])
+                    )
+                )
+        ) {
+            $split          = explode('\\', $entityNameSpace);
+            $componentName  = isset($split[2]) ? $split[2] : '';
+            $entityName     = isset($split) ? end($split) : '';
+        }
+
+        //If 'sorting' is applied and sorting field is not equal to
+        //'sortBy' => 'field' then disable the row sorting.
+        $orderParamName = $entityName . 'Order';
+        if (    isset($_GET[$orderParamName]) 
+            &&  stripos($_GET[$orderParamName], $sortField) === false
+        ) {
+            return;
+        }
+
+        //Get the current sorting order
+        $order     = isset($_GET[$orderParamName]) ? explode('/', $_GET[$orderParamName]) : '';
+        $sortOrder = ($sortBy['field'][$sortField] == SORT_ASC) ? 'ASC' : 'DESC';
+        if ($order) {
+            $sortOrder = !empty($order[1]) ? $order[1] : 'ASC';
+        }
+
+        //Get the paging position value
+        $pagingPosName  = $entityName . 'Pos';
+        $pagingPosition = isset($_GET[$pagingPosName]) 
+                          ? contrexx_input2int($_GET[$pagingPosName]) 
+                          : 0;
+
+        //set the sorting parameters in the functions 'sortBy' array and 
+        //it should be used in the Backend::constructor
+        $this->options['functions']['sortBy']['sortingKey'] = $primaryKeyName;
+        $this->options['functions']['sortBy']['component']  = $componentName;
+        $this->options['functions']['sortBy']['entity']     = $entityName;
+        $this->options['functions']['sortBy']['sortOrder']  = $sortOrder;
+        $this->options['functions']['sortBy']['pagingPosition'] = $pagingPosition;
+        
+        //Register the script Backend.js and activate the jqueryui and cx for the row sorting
+        \JS::activate('cx');
+        \JS::activate('jqueryui');
+        \JS::registerJS(substr($cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
     }
 
     /**
@@ -416,6 +554,12 @@ class ViewGenerator {
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             if (!empty($this->options['functions']['add'])) {
                 $actionUrl->setParam('add', 1);
+                //remove the parameter 'vg_increment_number' from actionUrl
+                //if the baseUrl contains the parameter 'vg_increment_number'
+                $params = $actionUrl->getParamArray();
+                if (isset($params['vg_increment_number'])) {
+                    \Html::stripUriParam($actionUrl, 'vg_increment_number');
+                }
                 $addBtn = '<br /><br /><input type="button" name="addEtity" value="'.$_ARRAYLANG['TXT_ADD'].'" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />'; 
             }
             if (!count($renderObject) || !count(current($renderObject))) {
@@ -428,7 +572,7 @@ class ViewGenerator {
             $renderObject = $listingController->getData();
             $this->options['functions']['vg_increment_number'] = $this->viewId;
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
-
+            
             return $backendTable.$addBtn;
         }
 
@@ -613,6 +757,8 @@ class ViewGenerator {
     protected function saveEntry($entityWithNS) {
         global $_ARRAYLANG;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
         // if entityId is a number the user edited an existing entry. If it is null we create a new one
         $entityId = contrexx_input2raw($this->getEntryId());
         $this->renderFormForEntry($entityId);
@@ -628,12 +774,12 @@ class ViewGenerator {
             return;
         }
 
-        $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
+        $entityClassMetadata = $em->getClassMetadata($entityWithNS);
         $associationMappings = $entityClassMetadata->getAssociationMappings();
 
         // if we have a entityId, we came from edit mode and so we try to load the existing entry
         if($entityId != 0) {
-            $entity = \Env::get('em')->getRepository($entityWithNS)->find($entityId);
+            $entity = $em->getRepository($entityWithNS)->find($entityId);
             $entityArray = array(); // This array is used for the existing values
             if ($this->object->entryExists($entityId)) {
                 $entityArray = $this->object->getEntry($entityId);
@@ -666,10 +812,10 @@ class ViewGenerator {
 
             if (!empty($relatedClassInputFieldName)
                 && !empty($_POST[$relatedClassInputFieldName])
-                && \Env::get('em')->getClassMetadata($entityWithNS)->isCollectionValuedAssociation($name)
+                && $em->getClassMetadata($entityWithNS)->isCollectionValuedAssociation($name)
             ) {
                 // store one to many associated entries
-                $associatedEntityClassMetadata = \Env::get('em')->getClassMetadata($value["targetEntity"]);
+                $associatedEntityClassMetadata = $em->getClassMetadata($value["targetEntity"]);
 
                 foreach ($_POST[$relatedClassInputFieldName] as $relatedPostData) {
                     $entityData = array();
@@ -678,7 +824,7 @@ class ViewGenerator {
                     // if we have already an entry (on update) we take the existing one and update it.
                     // Otherwise we create a new one
                     if (isset($entityData['id']) && $entityData['id'] != 0) { // update/edit case
-                        $associatedClassRepo = \Env::get('em')->getRepository($value["targetEntity"]);
+                        $associatedClassRepo = $em->getRepository($value["targetEntity"]);
                         $associatedEntity = $associatedClassRepo->find($entityData['id']);
                     } else { // add case
                         $associatedEntity = $associatedEntityClassMetadata->newInstance();
@@ -686,7 +832,7 @@ class ViewGenerator {
 
                     // if there are any entries which the user wants to delete, we delete them here
                     if (isset($entityData['delete']) && $entityData['delete'] == 1) {
-                        \Env::get('em')->remove($associatedEntity);
+                        $em->remove($associatedEntity);
                     }
 
                     // save the "n" associated class data to its class
@@ -728,7 +874,7 @@ class ViewGenerator {
         $showSuccessMessage = false;
         if ($entity instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
             // Save the yaml entities
-            $entityRepository = \Env::get('em')->getRepository($entityWithNS);
+            $entityRepository = $em->getRepository($entityWithNS);
             if (!$entityRepository->isManaged($entity)) {
                 $entityRepository->add($entity);
             }
@@ -739,13 +885,13 @@ class ViewGenerator {
                can not be null but was not set in the post request. This cases should be caught here. */
             try{
                 // persist main entity. This must be done first, otherwise saving oneToManyAssociated entities won't work
-                \Env::get('em')->persist($entity);
+                $em->persist($entity);
                 // now we can persist the associated entities. We need to do this, because otherwise it will fail,
                 // if yaml does not contain a cascade option
                 foreach ($associatedEntityToPersist as $associatedEntity) {
-                    \Env::get('em')->persist($associatedEntity);
+                    $em->persist($associatedEntity);
                 }
-                \Env::get('em')->flush();
+                $em->flush();
                 $showSuccessMessage = true;
             } catch(\Cx\Core\Error\Model\Entity\ShinyException $e){
                 /* Display the message from the exception. If this message is empty, we output a general message,
@@ -769,7 +915,7 @@ class ViewGenerator {
             \Message::add($successMessage);
         }
         // get the proper action url and redirect the user
-        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+        $actionUrl = clone $cx->getRequest()->getUrl();
         $actionUrl->setParam($param, null);
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
@@ -787,18 +933,20 @@ class ViewGenerator {
     protected function removeEntry($entityWithNS) {
         global $_ARRAYLANG;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
         $deleteId = !empty($_GET['deleteid']) ? contrexx_input2raw($_GET['deleteid']) : '';
         $entityObject = $this->object->getEntry($deleteId);
         if (empty($entityObject)) {
             \Message::add($_ARRAYLANG['TXT_CORE_RECORD_NO_SUCH_ENTRY'], \Message::CLASS_ERROR);
             return;
         }
-        $entityObj = \Env::get('em')->getClassMetadata($entityWithNS);
+        $entityObj = $em->getClassMetadata($entityWithNS);
         $id = $entityObject[$entityObj->getSingleIdentifierFieldName()]; //get primary key value
 
         // delete all n associated entries, because the are not longer used and we can delete the main entry only if we
         // have no more n associated entries
-        $pageRepo = \Env::get('em')->getRepository($entityWithNS);
+        $pageRepo = $em->getRepository($entityWithNS);
         $associationMappings = $entityObj->getAssociationMappings();
         foreach ($associationMappings as $mapping => $value) {
             // we only need to delete the n associated values, the single associated will be handled by doctrine itself
@@ -808,25 +956,25 @@ class ViewGenerator {
             $mainEntity = $pageRepo->find($id);
             $associatedEntities = $mainEntity->{'get'.preg_replace('/_([a-z])/', '\1', ucfirst($mapping))}();
             foreach ($associatedEntities as $associatedEntity) {
-                \Env::get('em')->remove($associatedEntity);
+                $em->remove($associatedEntity);
             }
         }
 
         if (!empty($id)) {
-            $entityObj = \Env::get('em')->getRepository($entityWithNS)->find($id);
+            $entityObj = $em->getRepository($entityWithNS)->find($id);
             if (!empty($entityObj)) {
                 if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
-                    $ymlRepo = \Env::get('em')->getRepository($entityWithNS);
+                    $ymlRepo = $em->getRepository($entityWithNS);
                     $ymlRepo->remove($entityObj);;
                     $ymlRepo->flush();
                 } else {
-                    \Env::get('em')->remove($entityObj);
-                    \Env::get('em')->flush();
+                    $em->remove($entityObj);
+                    $em->flush();
                 }
                 \Message::add($_ARRAYLANG['TXT_CORE_RECORD_DELETED_SUCCESSFUL']);
             }
         }
-        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+        $actionUrl = clone $cx->getRequest()->getUrl();
         $actionUrl->setParam('deleteid', null);
         \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
     }
