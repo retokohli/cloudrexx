@@ -369,7 +369,7 @@ class CxModulesPimModelEntityProductProxy extends \Cx\Modules\Pim\Model\Entity\P
         return parent::getVatRate();
     }
 
-    public function setVatRate(\Cx\Modules\Order\Model\Entity\VatRate $vatRate)
+    public function setVatRate($vatRate)
     {
         $this->_load();
         return parent::setVatRate($vatRate);

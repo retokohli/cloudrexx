@@ -84,7 +84,7 @@ class Product extends \Cx\Model\Base\EntityBase {
 
     /**
      *
-     * @var Cx\Modules\Order\Model\Entity\VatRate $vatRate
+     * @var Cx\Modules\Pim\Model\Entity\VatRate $vatRate
      */
     protected $vatRate;
 
@@ -470,7 +470,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     /**
      * Get the VatRate
      * 
-     * @return Cx\Modules\Order\Model\Entity\VatRate $vatRate
+     * @return Cx\Modules\Pim\Model\Entity\VatRate $vatRate
      */
     public function getVatRate()
     {
@@ -480,7 +480,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     /**
      * Set the VatRate
      * 
-     * @param mixed $vatRate Cx\Modules\Order\Model\Entity\VatRate | null
+     * @param mixed $vatRate Cx\Modules\Pim\Model\Entity\VatRate | null
      */
     public function setVatRate($vatRate)
     {
