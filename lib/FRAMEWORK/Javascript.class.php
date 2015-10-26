@@ -436,22 +436,28 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         'mediabrowser' => array(
             'jsfiles' => array(
                 'lib/javascript/jquery/1.9.1/js/jquery.min.js',
-                'lib/plupload/js/moxie.min.js',
-                'lib/plupload/js/plupload.full.min.js',
-                'lib/javascript/angularjs/angular.js',
-                'lib/javascript/angularjs/angular-route.js',
-                'lib/javascript/angularjs/angular-animate.js',
+                'lib/plupload/js/moxie.min.js?v=2',
+                'lib/plupload/js/plupload.full.min.js?v=2',
+                'lib/javascript/angularjs/angular.js?v=2',
+                'lib/javascript/angularjs/angular-route.js?v=2',
+                'lib/javascript/angularjs/angular-animate.js?v=2',
                 'lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js',
                 'lib/javascript/angularjs/ui-bootstrap-tpls-0.11.2.min.js',
                 'lib/javascript/bootbox.min.js'
             ),
             'cssfiles' => array(
-                'core_modules/MediaBrowser/View/Style/MediaBrowser.css'
+                'core_modules/MediaBrowser/View/Style/MediaBrowser.css?v=2',
+                'core_modules/MediaBrowser/View/Style/Frontend.css?v=2'
             ),
             'dependencies' => array('twitter-bootstrap' => '3.2.0', 'cx'),
             'specialcode' => 'if (typeof cx.variables.get(\'jquery\', \'mediabrowser\') == \'undefined\'){
     cx.variables.set({"jquery": jQuery.noConflict(true)},\'mediabrowser\');
 }'
+        ),
+        'intro.js' => array(
+            'jsfiles' => array(
+                'lib/javascript/intro/intro.min.js',
+            )
         ),
     );
 

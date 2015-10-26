@@ -9,6 +9,18 @@
 </style>
 <script type="text/javascript">
 // <![CDATA[
+
+function getThemesZipFileUploader() {
+    $J('#local-archive-uploader').trigger('click');
+}
+
+function themesZipFileUploaderCallback(callback) {
+    if (typeof callback[0] !== 'undefined') {
+        var data       = callback[0].split('/'),
+            fileName   = data.pop();
+        $J('#localarchive').val(fileName);
+    }
+}
 var init = function() {	
     form 	=	document.getElementById("manageform");
     dweb 	=	document.getElementById("web");
@@ -109,7 +121,9 @@ $J(document).ready(function() {
             <td>{TXT_VIEWMANAGER_THEME}</td>
             <td>
                 <div id="local" style="display: block; float: left;">
-                    <input style="width:300px;" type="file" id="localarchive" name="importlocal" accept="application/zip" value="{TXT_SELECT_FILE}" />
+                    <input type="hidden" value="{THEMES_UPLOADER_ID}" name="importUploaderId" />
+                    <input type="text" name="importlocal" id="localarchive" style="width:300px;"  />&nbsp;
+                    <input type="button" value="{TXT_SELECT_FILE}"  onclick="getThemesZipFileUploader();"/>
                 </div>
 
                 <div id="web" style="display: none; float: left;">
@@ -125,3 +139,4 @@ $J(document).ready(function() {
     <br />
     <input type="submit" name="import" onclick="return importArchive();" value="{TXT_THEME_DO_IMPORT}" style="float: left;" />
 </form>
+{THEMES_UPLOADER_CODE}

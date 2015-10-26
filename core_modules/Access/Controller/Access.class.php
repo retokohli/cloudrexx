@@ -300,9 +300,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             if (isset($_POST['access_profile_attribute']) && is_array($_POST['access_profile_attribute'])) {
                 $arrProfile = $_POST['access_profile_attribute'];
 
-                if (isset($_FILES['access_profile_attribute_images'])
-                    && is_array($_FILES['access_profile_attribute_images'])
-                    && ($result = $this->addUploadedImagesToProfile($objFWUser->objUser, $arrProfile, $_FILES['access_profile_attribute_images'])) !== true
+                if (   !empty($_POST['access_image_uploader_id'])
+                    && isset($_POST['access_profile_attribute_images'])
+                    && is_array($_POST['access_profile_attribute_images'])
+                    && ($result = $this->addUploadedImagesToProfile($objFWUser->objUser, $arrProfile, $_POST['access_profile_attribute_images'], $_POST['access_image_uploader_id'])) !== true
                 ) {
                     $status = false;
                 }
@@ -313,7 +314,15 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $objFWUser->objUser->setSubscribedNewsletterListIDs(isset($_POST['access_user_newsletters']) && is_array($_POST['access_user_newsletters']) ? $_POST['access_user_newsletters'] : array());
 
             if ($status) {
-                if ($objFWUser->objUser->checkMandatoryCompliance()
+                $arrSettings = \User_Setting::getSettings();
+                if (
+                    // if user_account_verification is false (0), then we do not need to do checkMandatoryCompliance(), because
+                    // the required fields do not need to be set. This means its not necessary in signup that the required fields are already set
+                    // this is a setting which you can set in the user management backend
+                    (
+                        !$arrSettings['user_account_verification']['value']
+                        || $objFWUser->objUser->checkMandatoryCompliance()
+                    )
                     && $objFWUser->objUser->store()
                 ) {
                     $msg = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];
@@ -337,6 +346,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             exit;
         }
 
+        $uploader = $this->getImageUploader();
+        
         $this->parseAccountAttributes($objFWUser->objUser, true);
         $this->parseNewsletterLists($objFWUser->objUser);
 
@@ -361,6 +372,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_STORE_BUTTON'           => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
             'ACCESS_CHANGE_PASSWORD_BUTTON' => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
+            'ACCESS_IMAGE_UPLOADER_ID'      => $uploader->getId(),
+            'ACCESS_IMAGE_UPLOADER_CODE'    => $uploader->getXHtml(),
         ));
 
         $arrSettings = \User_Setting::getSettings();
@@ -554,10 +567,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                         ($arrProfile = $_POST['access_profile_attribute'])
                         && (
                             // either no profile images are set
-                            (!isset($_FILES['access_profile_attribute_images']) || !is_array($_FILES['access_profile_attribute_images']))
+                            (!isset($_POST['access_profile_attribute_images']) || !is_array($_POST['access_profile_attribute_images']))
                             ||
                             // otherwise try to upload them
-                            ($uploadImageError = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_FILES['access_profile_attribute_images'])) === true
+                            ($uploadImageError = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_POST['access_profile_attribute_images'], $_POST['access_image_uploader_id'])) === true
                         )
                         && $objUser->setProfile($arrProfile)
                     )
@@ -575,7 +588,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                 // the required fields do not need to be set. This means its not necessary in signup that the required fields are already set
                 // this is a setting which you can set in the user management backend
                 (
-                    $arrSettings['user_account_verification']['value'] === 0
+                    !$arrSettings['user_account_verification']['value']
                     || $objUser->checkMandatoryCompliance()
                 )
                 && $this->checkCaptcha()
@@ -632,9 +645,12 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $this->attachJavaScriptFunction('accessSetWebsite');
 
+        $uploader = $this->getImageUploader();
         $this->_objTpl->setVariable(array(
             'ACCESS_SIGNUP_BUTTON'          => '<input type="submit" name="access_signup" value="'.$_ARRAYLANG['TXT_ACCESS_CREATE_ACCOUNT'].'" />',
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
+            'ACCESS_IMAGE_UPLOADER_ID'      => $uploader->getId(),
+            'ACCESS_IMAGE_UPLOADER_CODE'    => $uploader->getXHtml(),
             'ACCESS_SIGNUP_MESSAGE'         => implode("<br />\n", $this->arrStatusMsg['error'])
         ));
 

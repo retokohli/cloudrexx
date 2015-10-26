@@ -530,13 +530,11 @@ cx.ready(function() {
 EOF;
         
         if ($showFrom) {
-            try {                                
-                \JS::registerJS('core_modules/Upload/js/uploaders/exposedCombo/extendedFileInput.js');
-                
+            try {
                 $javascript .= <<< UPLOADER
-                {$this->getUploaderCode($this->handleUniqueId(self::PICTURE_FIELD_KEY), 'pictureUpload')}
-                {$this->getUploaderCode($this->handleUniqueId(self::MAP_FIELD_KEY), 'mapUpload')}
-                {$this->getUploaderCode($this->handleUniqueId(self::ATTACHMENT_FIELD_KEY), 'attachmentUpload', 'uploadFinished', false)}
+                {$this->getUploaderCode(self::PICTURE_FIELD_KEY, 'pictureUpload')}
+                {$this->getUploaderCode(self::MAP_FIELD_KEY, 'mapUpload')}
+                {$this->getUploaderCode(self::ATTACHMENT_FIELD_KEY, 'attachmentUpload', 'uploadFinished', false)}
 UPLOADER;
             } catch(Exception $e) {
                 \DBG::msg("Error in initializing uploader");
@@ -1022,62 +1020,67 @@ UPLOADER;
             return;
         }
     }
-        
-    protected function getUploaderCode($submissionId, $fieldName, $uploadCallBack = "uploadFinished", $allowImageOnly = true)
+    
+    /**
+     * Get uploader code
+     * 
+     * @param string  $fieldKey       uploadFieldKey
+     * @param string  $fieldName      uploadFieldName
+     * @param string  $uploadCallBack upload callback function
+     * @param boolean $allowImageOnly allow only images files
+     * 
+     * @return string uploaderCode
+     * @throws \Exception
+     */
+    protected function getUploaderCode($fieldKey, $fieldName, $uploadCallBack = "uploadFinished", $allowImageOnly = true)
     {
-        try {                        
-            //init the uploader
-            \JS::activate('cx'); //the uploader needs the framework
-            $f = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance();
-                                   
-            //retrieve temporary location for uploaded files
-            $tup = self::getTemporaryUploadPath($fieldName, $submissionId);
-
-            //create the folder
-            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tup[1].'/'.$tup[2])) {
-                throw new \Exception("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
-            }
-
-            if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
-                //some hosters have problems with ftp and file system sync.
-                //this is a workaround that seems to somehow show php that
-                //the directory was created. clearstatcache() sadly doesn't
-                //work in those cases.
-                @closedir(@opendir($tup[0]));
-
-                if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
-                    throw new \Exception("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
-                }
+        \cmsSession::getInstance();
+        $cx  = \Cx\Core\Core\Controller\Cx::instanciate();
+        try {
+            $uploader      = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+            $uploaderId    = $uploader->getId();
+            $uploadOptions = array(
+                'id'     => 'calendarUploader_'.$uploaderId, 
+                'style'  => 'display: none'
+            );
+            if ($allowImageOnly) {
+                $uploadOptions['allowed-extensions'] = array('gif', 'jpg', 'png', 'jpeg');
             }
             
-            /**
-            * Name of the upload instance
-            */
-            $uploaderInstanceName = "exposed_combo_uploader_{$fieldName}_{$submissionId}";
+            $uploader->setCallback($fieldName.'JsCallback');
+            $uploader->setUploadLimit(1);
+            $uploader->setOptions($uploadOptions);
+            $uploader->setFinishedCallback(array(
+                $cx->getCodeBaseModulePath().'/Calendar/Controller/Calendar.class.php',
+                '\Cx\Modules\Calendar\Controller\Calendar',
+                $uploadCallBack
+            ));
+
+            $folderWidget = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($_SESSION->getTempPath().'/'.$uploaderId);
+            $this->_objTpl->setVariable( array(
+                strtoupper($fieldName).'_WIDGET_CODE'            => $folderWidget->getXHtml(),
+                "{$this->moduleLangVar}_". strtoupper($fieldKey) => $uploaderId
+            ));
             
-            //initialize the widget displaying the folder contents
-            $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
-         
-            $uploader = $f->newUploader('exposedCombo', $submissionId, true);
-            $uploader->setJsInstanceName($uploaderInstanceName);
-            $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Calendar/Controller/Calendar.class.php','\Cx\Modules\Calendar\Controller\Calendar', $uploadCallBack));
-            $uploader->setData(array('submission_id' => $submissionId, 'field_name' => $fieldName, 'allowImageOnly' => $allowImageOnly));
-            
-            $strJs  = $uploader->getXHtml();
-        $strJs .= $folderWidget->getXHtml("#{$fieldName}_uploadWidget", "uploadWidget".$submissionId);
-            $strJs .= <<<JAVASCRIPT
+            $strJs = <<<JAVASCRIPT
+{$uploader->getXHtml()}
 <script type="text/javascript">
     cx.ready(function() {
-            var ef = new ExtendedFileInput({
-                    field:  cx.jQuery('#{$fieldName}'),
-                    instance: '{$uploaderInstanceName}',
-                    widget: 'uploadWidget{$submissionId}'
-            });
+        //called if user clicks on the field
+        jQuery('#$fieldName').bind('click', function() {
+            jQuery('#calendarUploader_$uploaderId').trigger('click');
+            return false;
+        });
     });
+
+//uploader javascript callback function
+function {$fieldName}JsCallback(callback) {
+        angular.element('#mediaBrowserfolderWidget_{$folderWidget->getId()}').scope().refreshBrowser();
+}
 </script>
 JAVASCRIPT;
-            return $strJs;        
-        } catch (Exception $e) {
+            return $strJs;
+        } catch (\Exception $e) {
             \DBG::msg('<!-- failed initializing uploader -->');
             throw new \Exception("failed initializing uploader");
         }
@@ -1093,63 +1096,21 @@ JAVASCRIPT;
      * @param array   $fileInfos   file infos
      * @param object  $response    Upload api response object
      * 
-     * @return array path and webpath
+     * @return array $tempPath and $tempWebPath
      */
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response) {
-        global $objInit;
-        
-        $lang     = $objInit->loadLanguageData('Calendar');
-        $tup      = self::getTemporaryUploadPath($data['field_name'], $uploadId);
-        $path     = $tup[0].'/'.$tup[2];
-        $webPath  = $tup[1].'/'.$tup[2];
-        $arrFiles = array();
-        
-        //get allowed file types
-        $arrAllowedFileTypes = array();
-        if (imagetypes() & IMG_GIF) { $arrAllowedFileTypes[] = 'gif'; }
-        if (imagetypes() & IMG_JPG) { $arrAllowedFileTypes[] = 'jpg'; $arrAllowedFileTypes[] = 'jpeg'; }
-        if (imagetypes() & IMG_PNG) { $arrAllowedFileTypes[] = 'png'; }
-
-        $h = opendir($tempPath);
-        if ($h) {            
-            
-            while(false != ($file = readdir($h))) {
-
-                $info = pathinfo($file);                
-
-                //skip . and ..
-                if($file == '.' || $file == '..') { continue; }
-                
-                //delete unwanted files
-                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes) && $data['allowImageOnly']) {
-                    $response->addMessage(
-                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
-                        $lang["TXT_CALENDAR_IMAGE_UPLOAD_ERROR"],
-                        $file
-                    );
-                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
-                    continue;
-                }   
-                
-                $arrFiles[] = $file;
-            }
-            closedir($h);
-            
-        }
-                
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response) 
+    {
         // Delete existing files because we need only one file to upload
-        if (!empty($arrFiles)) {
-            $h = opendir($path);
-            if ($h) {
-                while(false != ($file = readdir($h))) {
-                    //skip . and ..
-                    if($file == '.' || $file == '..') { continue; }
-                    \Cx\Lib\FileSystem\FileSystem::delete_file($path.'/'.$file);
+        if (\Cx\Lib\FileSystem\FileSystem::exists($tempPath)) {
+            foreach (glob($tempPath.'/*') as $file) {
+                if (basename($file) == $fileInfos['name']) {
+                    continue;
                 }
+                \Cx\Lib\FileSystem\FileSystem::delete_file($file);
             }
         }
         
-        return array($path, $webPath);
+        return array($tempPath, $tempWebPath);
     }
      
     /**

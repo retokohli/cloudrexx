@@ -1,5 +1,7 @@
 <div id="login">
-    <p class="text-danger">{LOGIN_STATUS_MESSAGE}</p>
+    <!-- BEGIN login_lost_password_message -->
+    <div class="{LOGIN_STATUS_MESSAGE_TYPE}">{LOGIN_STATUS_MESSAGE}</div>
+    <!-- END login_lost_password_message -->
     <form class="resetForm" role="form" method="post" action="{NODE_LOGIN_LOSTPW}">
         <!-- BEGIN login_lost_password -->
         <p><label for="email">{TXT_EMAIL}</label><input id="email" name="email" value="" type="text"></p>

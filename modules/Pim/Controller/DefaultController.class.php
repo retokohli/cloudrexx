@@ -99,54 +99,12 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     
     public function showProducts() 
     {
-        global $_ARRAYLANG;
-        
-        $products = $this->productRepository->findAll();
-        if (empty($products)) {
-            $products = new \Cx\Modules\Pim\Model\Entity\Product();
-        }
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($products, array(
-            'header'    => $_ARRAYLANG['TXT_MODULE_PIM_ACT_DEFAULT'],
-            'functions' => array(
-                'add'       => true,
-                'edit'      => true,
-                'delete'    => true,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-                ),
-            'fields'    => array(
-                'vatRate'  => array(
-                    'table' => array(
-                        'parse' => function($value) {
-                            if (empty($value)) {
-                                return;
-                            }
-                            $vatRate = $this->em->getRepository('Cx\Modules\Order\Model\Entity\VatRate')->findOneBy(array('id' => $value ));
-                            return $vatRate->getRate(). '%';
-                        },
-                    ),
-                    'formfield' => function($fieldname, $fieldtype, $fieldlength, $fieldvalue, $fieldoptions) {
-                        global $_ARRAYLANG;
-
-                        $vatRates        = $this->em->getRepository('Cx\Modules\Order\Model\Entity\VatRate')->findAll();
-                        $arrOptions['0'] = $_ARRAYLANG['TXT_MODULE_PIM_PLEASE_SELECT'];
-                        foreach ( $vatRates as $vatRate) {
-                            $arrOptions[$vatRate->getId()] = $vatRate->getVatClass().' '. $vatRate->getRate() .'%';
-                        }
-                        $selectOption = new \Cx\Core\Html\Model\Entity\DataElement(
-                            $fieldname,
-                            \Html::getOptions(
-                                $arrOptions,
-                                $fieldvalue
-                            ),
-                            \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
-                        );
-                        return $selectOption;
-                    },
-                ),
-            )
-        ));
+        // Create view for product. This must be done in component, because ViewGenerator don't support views in first
+        // tab. This can be delete as soon as the ViewGenerator can handle the first tab.
+        $view = new \Cx\Core\Html\Controller\ViewGenerator(
+            '\Cx\Modules\Pim\Model\Entity\Product',
+            $this->getController('Backend')->getAllViewGeneratorOptions()
+        );
         $this->template->setVariable('PRODUCTS_CONTENT', $view->render());
     }
 }
