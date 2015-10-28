@@ -882,7 +882,8 @@ CREATE TABLE `contrexx_module_crm_company_size` (
   `company_size` varchar(100) NOT NULL,
   `sorting` int(11) NOT NULL,
   `status` tinyint(4) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `company_size` (`company_size`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_crm_contacts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -923,7 +924,8 @@ CREATE TABLE `contrexx_module_crm_currency` (
   `hourly_rate` text NOT NULL,
   `default_currency` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `name` (`name`(255))
+  KEY `name` (`name`(255)),
+  FULLTEXT KEY `name_2` (`name`)
 ) ENGINE=InnoDB ;
 CREATE TABLE `contrexx_module_crm_customer_comment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -2793,7 +2795,6 @@ CREATE TABLE `contrexx_module_order_invoice_item` (
   `invoice_id` int(11) DEFAULT NULL,
   `description` varchar(255) NOT NULL,
   `price` decimal(10,0) NOT NULL,
-  `vat_rate` decimal(5,2) unsigned NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`),
   KEY `IDX_ED28B9B52989F1FD` (`invoice_id`),
   CONSTRAINT `contrexx_module_order_invoice_item_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `contrexx_module_order_invoice` (`id`)
@@ -2855,7 +2856,6 @@ CREATE TABLE `contrexx_module_pim_price` (
 CREATE TABLE `contrexx_module_pim_product` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `vat_rate_id` int(11) DEFAULT NULL,
   `entity_class` varchar(255) NOT NULL,
   `entity_attributes` text NOT NULL,
   `renewable` tinyint(1) NOT NULL,
@@ -2870,7 +2870,6 @@ CREATE TABLE `contrexx_module_pim_product` (
   `note_price` text NOT NULL,
   `cancellation_unit` varchar(5) NOT NULL,
   `cancellation_quantifier` int(11) NOT NULL,
-  INDEX IDX_6DFE203243897540 (vat_rate_id),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_pim_product_upgrade` (
