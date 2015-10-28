@@ -58,6 +58,7 @@ abstract class PageTree {
     protected $pageRepo = null;
     protected $skipInvisible = true;
     protected $considerLogin = true;
+    protected $skipInactive;
 
     /**
      * @param $entityManager the doctrine em
@@ -69,7 +70,7 @@ abstract class PageTree {
      * @param bool $skipInvisible value to skip invisible pages
      * @param bool $considerLogin value to consider whether the user is logged in or not
      */
-    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null, $skipInvisible = true, $considerLogin = true) {
+    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null, $skipInvisible = true, $considerLogin = true, $skipInactive = true) {
         $this->lang = $lang;
         $this->depth = $maxDepth;
         $this->em = $entityManager;
@@ -78,6 +79,7 @@ abstract class PageTree {
         $this->currentPage = $currentPage;
         $this->skipInvisible = $skipInvisible;
         $this->considerLogin = $considerLogin;
+        $this->skipInactive = $skipInactive;
         $pageI = $currentPage;
         while ($pageI) {
             $this->pageIdsAtCurrentPath[] = $pageI->getId();
@@ -173,7 +175,7 @@ abstract class PageTree {
                     }
                 }
             } else {
-                if (!$page || $page->isActive()) {
+                if (!$page || (!$this->skipInactive || $page->isActive())) {
                     foreach ($children as $child) {
                         $childPage = $child->getPage($this->lang);
                         if ($childPage && $childPage->isActive()) {
@@ -213,8 +215,12 @@ abstract class PageTree {
                     return $pageTree->preRenderLevel($level, $lang, $node);
                 });
             }
-
-            if (!$page || !$page->isActive() || !$page->isVisible()) {
+            
+            if (
+                !$page || 
+                ($this->skipInvisible && !$page->isVisible()) ||
+                ($this->skipInactive && !$page->isActive())
+            ) {
                 continue;
             }
             
@@ -222,7 +228,10 @@ abstract class PageTree {
                 $parentPage = $page->getParent();
                 // if parent is invisible or unpublished and parent node is not start node
                 if ($parentPage &&
-                    (!$parentPage->isVisible() || !$parentPage->isActive()) &&
+                    (
+                        ($this->skipInvisible && !$parentPage->isVisible()) ||
+                        ($this->skipInactive && !$parentPage->isActive())
+                    ) &&
                     $page->getNode()->getParent()->getId() != $this->rootNode->getId()
                 ) {
                     continue;
@@ -230,6 +239,8 @@ abstract class PageTree {
             } catch (\Cx\Core\ContentManager\Model\Entity\PageException $e) {
                 // if parent page does not exist, parent is root
             }
+
+            
             // if page is protected, user has not sufficent permissions and protected pages are hidden
             if ($page->isFrontendProtected() && $_CONFIG['coreListProtectedPages'] != 'on' &&
                 !(

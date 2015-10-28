@@ -1889,3 +1889,21 @@
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
 }
+
+.media-browser-modal-window .uploadlist .fileName {
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
+.media-browser-modal-window .filelist .fileName {
+    overflow: hidden;
+    word-wrap: break-word;
+    width: 500px;
+    white-space: pre;
+}
+
+.uploader-modal .fileInfos {
+    max-width: 340px;
+    overflow: hidden;
+    word-wrap: break-word;
+}
