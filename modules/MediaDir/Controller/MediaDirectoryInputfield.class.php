@@ -454,7 +454,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 	                        $strInputfield .= '<br />';
 	                        $strInputfield .= '<input class="btn btn-default" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.entryModfyForm.elements[\''.$strSelectedOptionsName.'\'],document.entryModfyForm.elements[\''.$strNotSelectedOptionsName.'\'],removeElement,addElement);" type="button">';
 	                        $strInputfield .= '</div>';
-	                        $strInputfield .= '<div class="col-md-4 col-sm-12 col-xs-12"><div class="row"><select id="'.$strSelectedOptionsName.'" name="'.$strSelectedOptionsName.'[]" size="12" multiple="multiple">';
+	                        $strInputfield .= '<div class="col-md-4 col-sm-12 col-xs-12 mediadirSelectorRight"><div class="row"><select id="'.$strSelectedOptionsName.'" name="'.$strSelectedOptionsName.'[]" size="12" multiple="multiple">';
 	                        $strInputfield .= $arrSelectorOptions['selected'];
 	                        $strInputfield .= '</select></div></div>';
 	                        $strInputfield .= '</div></div></div>';
