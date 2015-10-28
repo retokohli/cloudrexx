@@ -6,7 +6,8 @@
 /**
  * Script for initializing the row sorting functionality in ViewGenerator 
  */
-cx.jQuery(function(jQuery) {
+cx.ready(function() {
+    var jQuery = cx.jQuery;
     var cadminPath = cx.variables.get('cadminPath', 'contrexx'),
         sortable = {
             ajaxCall : function(opt) {
@@ -183,6 +184,7 @@ function openDialogForAssociation(content, className, existingData)
             text: cx.variables.get('TXT_CANCEL', 'Html/lang'),
             click: function() {
                 jQuery(this).dialog('close');
+                cx.tools.StatusMessage.removeAllDialogs();
                 jQuery('.oneToManyEntryRow').children('.current').removeClass('current');
             }
         },
