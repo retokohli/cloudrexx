@@ -788,3 +788,4 @@ function DBG_log_adodb($msg)
     $sql = preg_replace('#^\(mysql\):\s*#', '', $msg);
     DBG::logSQL($sql);
 }
+
