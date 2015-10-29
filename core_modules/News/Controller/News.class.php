@@ -590,6 +590,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_TITLE'        => $_ARRAYLANG['TXT_NEWS_TITLE'],
             'TXT_NEWS_COMMENT'      => $_ARRAYLANG['TXT_NEWS_COMMENT'],
             'TXT_NEWS_ADD'          => $_ARRAYLANG['TXT_NEWS_ADD'],
+            'TXT_NEWS_WRITE_COMMENT'=> $_ARRAYLANG['TXT_NEWS_WRITE_COMMENT']
         ));
 
         $this->_objTpl->parse('news_add_comment');

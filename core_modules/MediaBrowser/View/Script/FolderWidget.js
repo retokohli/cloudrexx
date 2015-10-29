@@ -22,7 +22,7 @@ folderWidgetApp.factory('mediabrowserFiles', function ($http, $q) {
   return {
       get: function (type) {
           var deferred = $q.defer();
-          $http.get(cx.variables.get("cadminPath", "contrexx") + 'index.php?cmd=jsondata&object=MediaBrowser&act=' + type + '&csrf=' + cx.variables.get('csrf')).success(function (jsonadapter) {
+          $http.get(cx.variables.get("cadminPath", "contrexx") + 'index.php?cmd=JsonData&object=MediaBrowser&act=' + type + '&csrf=' + cx.variables.get('csrf')).success(function (jsonadapter) {
               if (jsonadapter.data instanceof Object) {
                   deferred.resolve(jsonadapter.data);
               }
@@ -60,7 +60,10 @@ folderWidgetApp.controller('MediaBrowserFolderWidgetCtrl', ['$scope', 'mediabrow
             $scope.refreshBrowser();
         }
     );
-  };  
+  };
+  $scope.isEmpty = function () {
+      return $scope.files.length === 0;
+  };
 }]);
 
 jQuery(function () {

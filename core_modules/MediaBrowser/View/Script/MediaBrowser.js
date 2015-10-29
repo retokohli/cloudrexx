@@ -31,6 +31,10 @@
         $httpProvider.defaults.headers.common["Check-CSRF"] = 'false';
     }]);
 
+    mediaBrowserApp.config(['$compileProvider', function ($compileProvider) {
+        $compileProvider.debugInfoEnabled(false);
+    }]);
+
     mediaBrowserApp.factory('mediabrowserFiles', function ($http, $q) {
         return {
             get: function (type) {
@@ -158,6 +162,7 @@
                         else {
                             console.error(reason);
                             bootbox.dialog({
+                                className: "media-browser-modal-window",
                                 title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser'),
                                 message: reason
                             });
@@ -166,10 +171,12 @@
                 );
             };
 
-            $scope.initialize = function(){
-                $scope.loadSites();
-                $scope.loadSources();
-            }();
+            setTimeout(function () {
+                $scope.initialize = function(){
+                    $scope.loadSites();
+                    $scope.loadSources();
+                }();
+            },400);
 
             $scope.ok = function () {
                 $modalInstance.close();
@@ -582,10 +589,10 @@
                     '<div class="file-dot">.</div>' +
                     '<div class="file-extension"><input type="text" class="form-control" value="' + fileExtension + '" disabled/></div>  </div>';
                 var renameDialog = bootbox.dialog({
+                    className: "media-browser-modal-window",
                     title: cx.variables.get('TXT_FILEBROWSER_FILE_RENAME', 'mediabrowser'),
                     message: renameForm,
                     buttons: {
-
                         danger: {
                             label: cx.variables.get('TXT_FILEBROWSER_CANCEL', 'mediabrowser'),
                             className: "btn-danger",
@@ -615,11 +622,17 @@
 
                                     }).success(function (jsonadapter) {
                                         if (!jsonadapter.message) {
-                                            bootbox.alert(cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser'));
+                                            bootbox.alert({
+                                                className: "media-browser-modal-window",
+                                                title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
+                                             });
                                         }
                                         $scope.updateSource();
                                     }).error(function () {
-                                        bootbox.alert(cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser'));
+                                        bootbox.alert({
+                                            className: "media-browser-modal-window",
+                                            title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
+                                        });
                                     });
                                 }
                             }
@@ -640,6 +653,7 @@
 
             $scope.removeFile = function (file, index) {
                 var removeDialog = bootbox.dialog({
+                    className: "media-browser-modal-window",
                     title: cx.variables.get('TXT_FILEBROWSER_FILE_REMOVE_FILE', 'mediabrowser'),
                     message: cx.variables.get('TXT_FILEBROWSER_ARE_YOU_SURE', 'mediabrowser'),
                     buttons: {
@@ -667,7 +681,10 @@
                                 }).success(function (jsonadapter) {
                                     $scope.updateSource();
                                 }).error(function () {
-                                    bootbox.alert(cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser'));
+                                    bootbox.alert({
+                                        className: "media-browser-modal-window",
+                                        title:cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
+                                    });
                                 });
 
                                 $scope.refreshBrowser();
@@ -689,22 +706,31 @@
             };
 
             $scope.createFolder = function () {
-                bootbox.prompt(cx.variables.get('TXT_FILEBROWSER_DIRECTORY_NAME', 'mediabrowser'), function (dirName) {
-                    if (dirName === null) {
+                bootbox.prompt(
+                    {
+                        className: "media-browser-modal-window",
+                        title: cx.variables.get('TXT_FILEBROWSER_DIRECTORY_NAME', 'mediabrowser'),
+                        callback: function (dirName) {
+                            if (dirName === null) {
 
-                    } else {
-                        $http({
-                            method: 'POST',
-                            url: 'cadmin/index.php?cmd=jsondata&object=MediaBrowser&act=createDir&path=' + encodeURI($scope.getPathAsString())  + '&csrf=' + cx.variables.get('csrf'),
-                            data: $.param({dir: dirName}),
-                            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                        }).success(function (jsonadapter) {
-                            $scope.updateSource();
-                        }).error(function () {
-                            bootbox.alert(cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser'));
-                        });
+                            } else {
+                                $http({
+                                    method: 'POST',
+                                    url: 'cadmin/index.php?cmd=jsondata&object=MediaBrowser&act=createDir&path=' + encodeURI($scope.getPathAsString()) + '&csrf=' + cx.variables.get('csrf'),
+                                    data: $.param({dir: dirName}),
+                                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                                }).success(function (jsonadapter) {
+                                    $scope.updateSource();
+                                }).error(function () {
+                                    bootbox.alert({
+                                        className: "media-browser-modal-window",
+                                        title: cx.variables.get('TXT_FILEBROWSER_ERROR_HAS_HAPPEND', 'mediabrowser')
+                                    });
+                                });
+                            }
+                        }
                     }
-                });
+                );
             };
 
             $scope.choosePictures = function () {

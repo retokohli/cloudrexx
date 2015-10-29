@@ -772,6 +772,7 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "Der gewählte Benutzername wi
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "Webseite besuchen";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Webseite";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "PLZ";
+$_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'] = 'Datei wählen';
 $_ARRAYLANG['CONTENT_ALIAS_HELPTEXT'] = "Mit einem Alias können Sie der Seite eine URL zuweisen, die für Suchmaschinen sowie für das menschliche Auge angenehmer ist. Anstelle von z.B. <b>www.ihredomain.com/index.php?page=9234<\\/b> kann eine URL in der Form <b>www.ihredomain.com/dienstleistung<\\/b> benutzt werden.";
 $_ARRAYLANG['TXT_ERROR_NO_TITLE'] = "Diese Seite hat keinen Linknamen und konnte deshalb nicht gespeichert werden.";
 $_ARRAYLANG['TXT_CREATE_BACKUPS'] = "Backup erstellen";
@@ -1008,6 +1009,7 @@ $_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPING'] = "Domain-Mappings";
 $_ARRAYLANG['TXT_ACCESS_GROUP_NAME_INVALID'] = "Der gewählte Gruppenname ist nicht gültig! Wählen Sie bitte einen anderen Namen für die Gruppe.";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNTS_ACTIVATED'] = "Benutzerkonten aktiviert";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNTS_DEACTIVATED'] = "Benutzerkonten aktiviert";
+$_ARRAYLANG['TXT_CORE_HTML_FORM_VALIDATION_ERROR'] = 'Die Validierung mindestens eines Feldes ist fehlgeschlagen!';
 
 // core Image/Imagetype
 $_ARRAYLANG['TXT_CORE_CLEAR_IMAGE'] = "Bild entfernen";

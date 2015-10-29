@@ -38,8 +38,8 @@ use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
 /**
  * Class JsonController
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -194,7 +194,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      */
     public function activatePreset($params)
     {
-        if (!Preset::isValidPresetName( $params['post']['preset'])){
+        if (!Preset::isValidPresetName( $params['post']['preset'])) {
             return;
         }
         $presetName            =  $params['post']['preset'];
@@ -231,7 +231,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
 
         \Env::get('init')->loadLanguageData('TemplateEditor');
         $presetName = $params['post']['preset'];
-        if (!Preset::isValidPresetName($presetName)){
+        if (!Preset::isValidPresetName($presetName)) {
             throw new \LogicException(
                 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NEW_PRESET_TEXT_NOT_ALLOWED_CHARACTERS']
             );
@@ -273,7 +273,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
 
         \Env::get('init')->loadLanguageData('TemplateEditor');
      
-        if (!Preset::isValidPresetName($params['post']['preset'])){
+        if (!Preset::isValidPresetName($params['post']['preset'])) {
             return;
         }   
         
@@ -281,7 +281,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         /**
          * Default shouldn't be deletable
          */
-        if ($presetName == 'Default'){
+        if ($presetName == 'Default') {
             throw new \LogicException($_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PRESET_DEFAULT_WARNING']);
         }
         $themeID               = isset($params['post']['tid']) ? 
@@ -298,7 +298,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
         $preset = $themeOptions->getPresetRepository()->getByName(
             $presetName
         );
-        if ($themeOptions->getActivePreset()->getName() == $preset->getName()){
+        if ($themeOptions->getActivePreset()->getName() == $preset->getName()) {
             $themeOptions->setActivePreset($themeOptions->getPresetRepository()->getByName(
                 'Default'
             ));
@@ -313,7 +313,7 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
      * @param array $params List of get and post parameters which were sent to
      *                      the json adapter.
      */
-    public function resetPreset($params){
+    public function resetPreset($params) {
         $themeID               = isset($params['post']['tid']) ? 
             intval($params['post']['tid']) : 1;
         $activePreset = $_SESSION['TemplateEditor'][$themeID]['activePreset'];

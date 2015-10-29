@@ -34,15 +34,14 @@
 namespace Cx\Core\MediaSource\Model\Entity;
 
 
-class LocalFileSystem implements FileSystem
-{
+use Cx\Model\Base\EntityBase;
 
-    private $cx;
+class LocalFileSystem extends EntityBase implements FileSystem
+{
 
     private $rootPath;
 
     function __construct($path) {
-        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if (!$path) {
             throw new \InvalidArgumentException(
                 "Path shouldn't be empty: Given: " . $path
@@ -60,7 +59,7 @@ class LocalFileSystem implements FileSystem
         return new self($path);
     }
 
-    public function getFileList($directory, $recursive = false) {
+    public function getFileList($directory, $recursive = false, $readonly = false) {
         $recursiveIteratorIterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator(
@@ -113,6 +112,7 @@ class LocalFileSystem implements FileSystem
                 }
             }
 
+            $size = \FWSystem::getLiteralSizeFormat($file->getSize());
             $fileInfos = array(
                 'filepath' => mb_strcut(
                     $file->getPath() . '/' . $file->getFilename(),
@@ -120,7 +120,7 @@ class LocalFileSystem implements FileSystem
                 ),
                 // preselect in mediabrowser or mark a folder
                 'name' => $file->getFilename(),
-                'size' => \FWSystem::getLiteralSizeFormat($file->getSize()),
+                'size' => $size ? $size : '0 B',
                 'cleansize' => $file->getSize(),
                 'extension' => ucfirst(mb_strtolower($extension)),
                 'preview' => $preview,
@@ -129,6 +129,10 @@ class LocalFileSystem implements FileSystem
                 'type' => $file->getType(),
                 'thumbnail' => $thumbnails
             );
+            
+            if ($readonly){
+                $fileInfos['readonly'] = true;
+            }
 
             // filters
             if (
@@ -189,7 +193,7 @@ class LocalFileSystem implements FileSystem
             $thumbnails[$thumbnail['size']] = preg_replace(
                 '/\.' . lcfirst($extension) . '$/',
                 $thumbnail['value'] . '.' . lcfirst($extension),
-                $this->cx->getWebsiteOffsetPath() . str_replace(
+                 str_replace(
                     $this->cx->getWebsitePath(), '',
                     $file->getRealPath()
                 )
