@@ -184,7 +184,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      *
      * If the faulty page is a normal page, no component-information are shown.
      * If the user has not sufficient permissions to install a component, he won't see the instructions to do so.
-     * A description of a component is only shown when the description could be found.
+     * A description of a component is only shown when the description could be found and the user is logged in.
      *
      * @param \Cx\Core\Html\Sigma $template Template containing content of resolved page
      * @param string $cmd The cmd of the resolved page
@@ -194,8 +194,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     {
         global $_ARRAYLANG;
 
-        if (!empty($_REQUEST['initialModule'])) {
-            $this->section = $_REQUEST['initialModule'];
+        if (!empty($_REQUEST['initialComponent'])) {
+            $this->section = $_REQUEST['initialComponent'];
         }
 
         // Default content
@@ -208,15 +208,21 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             'ERROR_EXPLANATION_ENGLISH' => $_ARRAYLANG['TXT_ERROR_EXPLANATION_ENGLISH']
         ));
 
-        // is a component-page
+        // Check if the user is logged in to the frontend
+        $loggedIn = \FWUser::getFWUserObject()->objUser->login();
+
+        // display only the default component if no section is given or the given section is not a valid component
+        // or the user is not logged in (at least frontend) to be able to see the component information
         $systemComponentRepo = $this->cx->getDb()->getEntityManager()->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
-        if (empty($this->section) || empty($systemComponentRepo->findOneBy(array('name' => ucfirst($this->section))))) {
+        if (empty($this->section) || empty($systemComponentRepo->findOneBy(array('name' => $this->section))) || !$loggedIn) {
             $template->hideBlock('error_module_information');
-            $template->hideBlock('error_module_description');
             $template->hideBlock('error_module_name');
+            $template->hideBlock('error_module_description');
             $template->hideBlock('error_module_installation_instructions');
             return;
         }
+
+        // is a component-page
 
         // load language data of the core to display Component information
         $coreLang = \Env::get('init')->getComponentSpecificLanguageData('Core', false, FRONTEND_LANG_ID);
@@ -227,29 +233,53 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $noAccess = !(\FWUser::getFWUserObject()->objUser->login(true) && \Permission::checkAccess(52, 'static', true));
 
         // prepare the template
-        $template->touchBlock('error_module_information');
-        $template->touchBlock('error_module_name');
 
         // only parse the description-block if a description is available
+        $blocks = array(
+            'error_module_information'                  => 'set',
+            'error_module_description'                  => 'set',
+            'error_module_installation_instructions'    => 'set',
+        );
+
+        // We wouldn't be here if there wasn't a component name
+        $template->touchBlock('error_module_name');
+
+        // get the actual name of the component
+        $this->section = $systemComponentRepo->findOneBy(array('name' => $this->section))->getSystemComponent()->getName();
+
+        // replace the variable to list the name
+        $template->setVariable(array(
+            'ERROR_MODULE_NAME' => $this->section
+        ));
+
+        // hide the description block if no description is available
         if ($noDescription) {
-            $template->hideBlock('error_module_description');
-        } else {
-            $template->touchBlock('error_module_description');
-        }
-        if ($noAccess || $this->reason == $this::ERROR_REASON_PAGE_NOT_FOUND) {
-            $template->hideBlock('error_module_installation_instructions');
-        } else {
-            $template->touchBlock('error_module_installation_instructions');
+            $blocks['error_module_description'] = 'unset';
         }
 
-        // only replace the description if one exists
-        if(!$noDescription) {
+        // only display installation instruction if the page was not found and the user has access
+        if ($noAccess || $this->reason == $this::ERROR_REASON_PAGE_NOT_FOUND) {
+            $blocks['error_module_installation_instructions'] = 'unset';
+        }
+
+        // hide or touch the blocks
+        foreach ($blocks as $name => $set) {
+            if ($set === 'unset') {
+                $template->hideBlock($name);
+                continue;
+            }
+
+            $template->touchBlock($name);
+        }
+
+        // only replace the description if one exists and the user is logged in
+        if(!$noDescription && $loggedIn) {
             $template->setVariable(array(
                 'ERROR_MODULE_DESCRIPTION' => $coreLang['TXT_' . strtoupper($this->section) . '_MODULE_DESCRIPTION']
             ));
         }
 
-        // only show installation instructions when the user has the permissions to and the component was not found
+        // only show installation instructions when the user has the permissions to
         if(!$noAccess) {
             $template->setVariable(array(
                 'ERROR_MODULE_INSTALLATION_GUIDE_TITLE' => $_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_TITLE'],
@@ -266,12 +296,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
                 );
             }
         }
-
-        // replace the variables
-        $template->setVariable(array(
-            'ERROR_MODULE_NAME' => $this->section
-        ));
-
     }
 
     /**
