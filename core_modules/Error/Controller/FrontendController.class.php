@@ -143,7 +143,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     private function pageNotFound(array $eventArgs) {
         global $page, $plainSection;
 
-        // display a sexy message in the stacktrace
+        // display a message in the stacktrace
         \DBG::stack();
 
         // get the information about missing or deactivated component / page
@@ -158,7 +158,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
 
         // @TODO: Remove this as soon as global $page is no longer in use! Update global $page to the error-page
         $page = $errorPage;
-        // @TODO: Remove this as soon as global $plainSection is no longer in use! Update global $plainSectino to Error
+        // @TODO: Remove this as soon as global $plainSection is no longer in use! Update global $plainSection to Error
         $plainSection = $errorPage->getModule();
 
         // setup the corresponding template
@@ -283,9 +283,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         if(!$noAccess) {
             $template->setVariable(array(
                 'ERROR_MODULE_INSTALLATION_GUIDE_TITLE' => $_ARRAYLANG['TXT_ERROR_MODULE_INSTALLATION_GUIDE_TITLE'],
-                'ERROR_BACKEND_URL' => $this->getBackendUrl(),
+                'ERROR_BACKEND_URL' => $this->getBackendUrl(false),
                 'ERROR_BACKEND_NAME' => $_ARRAYLANG['TXT_ERROR_BACKEND_NAME'],
-                'ERROR_COMPONENT_MANAGER_URL' => $this->getBackendUrl('ComponentManager', 'edit'),
+                'ERROR_COMPONENT_MANAGER_URL' => $this->getBackendUrl(true, 'ComponentManager', 'edit'),
                 'ERROR_COMPONENT_CONTROLLER_NAME' => $_ARRAYLANG['TXT_ERROR_COMPONENT_MANAGER_NAME']
             ));
 
@@ -304,20 +304,31 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * Creates a Url using {@link \Cx\Core\Routing\Url::fromDocumentRoot()} and sets the url-params for component, cmd
      * and csrf.
      *
+     * @param boolean $setParams
      * @param string $component Name of the component needs to be the formatted value (CamelCase)
-     * @param string $cmd
+     * @param string $act
      * @return string The absolute URL
      */
-    private function getBackendUrl($component = '', $cmd = '') {
+    private function getBackendUrl($setParams = true, $component = '', $act = '' ) {
+        // create new url from documentroot
         $backendUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+        // set mode to backend
         $backendUrl->setMode('backend');
-        $backendUrl->setPath($this->cx->getBackendFolderName() . '/');
-        $backendUrl->setParams(array(
-            'module' => isset($component) ? $component : '',
-            'cmd' => isset($cmd) ? $cmd : '',
-            \Cx\Core\Csrf\Controller\Csrf::key() => \Cx\Core\Csrf\Controller\Csrf::code(),
-        ));
+        // get the backend folder name and remove the leading slash (if there is one)
+        $backendFolderName = ltrim($this->cx->getBackendFolderName(), '/');
+        // set the path to the backend folder
+        $backendUrl->setPath($backendFolderName . '/');
 
+        // check if params shall be added (if empty cmd is set for loading the dashboard, it crashes)
+        if ($setParams) {
+            // add the params
+            $backendUrl->setParams(array(
+                'cmd' => isset($component) ? $component : '',
+                'act' => isset($act) ? $act : '',
+            ));
+        }
+
+        // return the absolute url to the backend folder
         return $backendUrl->toString();
     }
 }
