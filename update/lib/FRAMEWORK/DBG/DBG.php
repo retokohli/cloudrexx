@@ -630,8 +630,8 @@ class DBG
                 case E_NOTICE:
                     $type = 'NOTICE';
                     break;
-                case E_CORE_MODULE_ERROR:
-                    $type = 'E_CORE_MODULE_ERROR';
+                case E_CORE_ERROR:
+                    $type = 'E_CORE_ERROR';
                     break;
                 case E_CORE_WARNING:
                     $type = 'E_CORE_WARNING';
@@ -788,4 +788,3 @@ function DBG_log_adodb($msg)
     $sql = preg_replace('#^\(mysql\):\s*#', '', $msg);
     DBG::logSQL($sql);
 }
-
