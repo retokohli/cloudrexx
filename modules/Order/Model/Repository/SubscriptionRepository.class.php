@@ -132,7 +132,7 @@ class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
      * 
      * @return array
      */
-    function getSubscriptionsByCriteria($criteria, $order) {
+    function getSubscriptionsByCriteria($criteria, $order = array()) {
         if (empty($criteria) && empty($order)) {
             return array();
         }

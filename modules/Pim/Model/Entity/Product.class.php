@@ -91,12 +91,12 @@ class Product extends \Cx\Model\Base\EntityBase {
      * @var integer $expirationQuantifier
      */
     protected $expirationQuantifier = null;
-    
+
     /**
      * @var string $cancellationUnit
      */
     protected $cancellationUnit = null;
-    
+
     /**
      * @var integer $cancellationQuantifier
      */
@@ -135,7 +135,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     /**
      * @var Cx\Modules\Pim\Model\Entity\Price
      */
-	protected $prices;
+    protected $prices;
 
     /**
      * @var Cx\Modules\Pim\Model\Entity\Product
@@ -160,7 +160,7 @@ class Product extends \Cx\Model\Base\EntityBase {
         $this->initRenewalConfig();
         $this->subscriptions = new \Doctrine\Common\Collections\ArrayCollection();
         $this->prices = new \Doctrine\Common\Collections\ArrayCollection();
-    	$this->upgrades = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->upgrades = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -337,7 +337,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     {
         $this->cancellationUnit = $cancellationUnit;
     }
-    
+
     /**
      * Get cancellationUnit
      * 
@@ -347,7 +347,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     {
         return $this->cancellationUnit;
     }
-    
+
     /**
      * Set cancellationQuantifier
      * 
@@ -357,7 +357,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     {
         $this->cancellationQuantifier = $cancellationQuantifier;
     }
-    
+
     /**
      * Get cancellationQuantifier
      * 
@@ -367,7 +367,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     {
         return $this->cancellationQuantifier;
     }
-    
+
     /**
      * Set noteEntity
      * 
@@ -430,7 +430,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     public function setNoteExpiration($noteExpiration) {
         $this->noteExpiration = $noteExpiration;
     }
-    
+
     /**
      * Get noteExpiration
      *
@@ -448,7 +448,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     public function setNotePrice($notePrice) {
         $this->notePrice = $notePrice;
     }
-    
+
     /**
      * Get notePrice
      *
@@ -467,7 +467,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     {
         $this->subscriptions[] = $subscriptions;
     }
-    
+
     /**
      * Get subscriptions
      *
@@ -486,7 +486,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     {
         $this->prices[] = $prices;
     }
-    
+
     /**
      * Get prices
      *
@@ -506,7 +506,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     {
         $this->upgrades[] = $upgrades;
     }
-    
+
     /**
      * Get the available upgrades
      * 
@@ -532,7 +532,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     public function setDefaultRenewalOption($defaultRenewalOption) {
         return $this->defaultRenewalOption = $defaultRenewalOption;
     }
-    
+
     public function getNewEntityForSale($saleOptions) {
         return \Env::get('em')->getRepository($this->entityClass)->findOneForSale($this->entityAttributes, $saleOptions);
     }
@@ -666,7 +666,7 @@ class Product extends \Cx\Model\Base\EntityBase {
     {
         return $this->vatRate;
     }
-    
+
     /**
      * Set the VatRate
      * 

@@ -2871,7 +2871,7 @@ CREATE TABLE `contrexx_module_pim_product` (
   `note_price` text NOT NULL,
   `cancellation_unit` varchar(5) NOT NULL,
   `cancellation_quantifier` int(11) NOT NULL,
-  INDEX IDX_6DFE203243897540 (vat_rate_id),
+  INDEX vat_rate_id_idx (vat_rate_id),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_pim_product_upgrade` (
