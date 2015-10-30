@@ -85,13 +85,13 @@ class ViewGenerator {
             $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             \JS::registerCSS($cx->getCoreFolderName() . '/Html/View/Style/Backend.css');
             $entityWithNS = preg_replace('/^\\\/', '', $this->findEntityClass($object));
-
+            
             // this is a temporary "workaround" for combined keys, see todo
             $entityClassMetadata = \Env::get('em')->getClassMetadata($entityWithNS);
             if (count($entityClassMetadata->getIdentifierFieldNames()) > 1) {
                 throw new \Exception('Currently, view generator is not able to handle composite keys...');
             }
-
+            
             $this->options = array();
             if (isset($options[$entityWithNS]) && is_array($options[$entityWithNS])) {
                     $this->options = $options[$entityWithNS];
@@ -469,8 +469,6 @@ class ViewGenerator {
         $this->options['functions']['sortBy']['pagingPosition'] = $pagingPosition;
         
         //Register the script Backend.js and activate the jqueryui and cx for the row sorting
-        \JS::activate('cx');
-        \JS::activate('jqueryui');
         \JS::registerJS(substr($cx->getCoreFolderName() . '/Html/View/Script/Backend.js', 1));
     }
 
@@ -572,7 +570,7 @@ class ViewGenerator {
             $renderObject = $listingController->getData();
             $this->options['functions']['vg_increment_number'] = $this->viewId;
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
-            
+
             return $backendTable.$addBtn;
         }
 
