@@ -2280,7 +2280,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfield_names` (
   `form_id` int(7) NOT NULL,
   `field_id` int(10) NOT NULL,
   `field_name` varchar(255) NOT NULL,
-  `field_DEFAULT_value` mediumtext NOT NULL,
+  `field_default_value` mediumtext NOT NULL,
   `field_info` mediumtext NOT NULL,
   KEY `field_id` (`field_id`),
   KEY `lang_id` (`lang_id`)

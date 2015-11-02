@@ -777,7 +777,7 @@ class InitCMS
         }
         return $_CORELANG;
     }
-
+    
     /**
      * Get component specific language data
      * State of the init will be backedup and restored while loading the language

@@ -945,3 +945,4 @@ function DBG_log_adodb($msg)
     $sql = preg_replace('#^\([^\)]+\):\s*#', '', $msg);
     DBG::logSQL($sql);
 }
+
