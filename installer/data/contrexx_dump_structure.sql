@@ -373,7 +373,7 @@ CREATE TABLE `contrexx_languages` (
   `app_themes_id` int(2) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `lang` (`lang`),
-  KEY `DEFAULTstatus` (`is_DEFAULT`),
+  KEY `defaultstatus` (`is_default`),
   KEY `name` (`name`),
   FULLTEXT KEY `name_2` (`name`)
 ) ENGINE=MyISAM ;
@@ -652,14 +652,14 @@ CREATE TABLE `contrexx_module_calendar_mail` (
   `recipients` mediumtext NOT NULL,
   `lang_id` int(1) NOT NULL,
   `action_id` int(1) NOT NULL,
-  `is_DEFAULT` int(1) NOT NULL,
+  `is_default` int(1) NOT NULL,
   `status` int(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_calendar_mail_action` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `DEFAULT_recipient` enum('empty','admin','author') NOT NULL,
+  `default_recipient` enum('empty','admin','author') NOT NULL,
   `need_auth` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
@@ -699,7 +699,7 @@ CREATE TABLE `contrexx_module_calendar_registration_form_field_name` (
   `form_id` int(11) NOT NULL,
   `lang_id` int(1) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `DEFAULT` mediumtext NOT NULL
+  `default` mediumtext NOT NULL
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_calendar_registration_form_field_value` (
   `reg_id` int(7) NOT NULL,
@@ -2337,7 +2337,7 @@ CREATE TABLE `contrexx_module_mediadir_levels` (
 CREATE TABLE `contrexx_module_mediadir_mail_actions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `DEFAULT_recipient` enum('admin','author') NOT NULL,
+  `default_recipient` enum('admin','author') NOT NULL,
   `need_auth` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
@@ -2348,7 +2348,7 @@ CREATE TABLE `contrexx_module_mediadir_mails` (
   `recipients` mediumtext NOT NULL,
   `lang_id` int(1) NOT NULL,
   `action_id` int(1) NOT NULL,
-  `is_DEFAULT` int(1) NOT NULL,
+  `is_default` int(1) NOT NULL,
   `active` int(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;

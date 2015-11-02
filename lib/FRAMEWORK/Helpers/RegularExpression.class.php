@@ -41,6 +41,7 @@ namespace Cx\Lib\Helpers;
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_helpers
  */
 class RegularExpression

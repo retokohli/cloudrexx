@@ -205,15 +205,6 @@ class Group extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Remove the User
-     * 
-     * @param \Cx\Core\User\Model\Entity\User $user
-     */
-    public function removeUser(\Cx\Core\User\Model\Entity\User $user) {
-        $this->user->removeElement($user);
-    }
-    
-    /**
      * Get user
      *
      * @return Doctrine\Common\Collections\Collection $user
