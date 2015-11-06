@@ -61,13 +61,81 @@
                 });
             });
         </script>
+        <style>
+            .navigationColor {
+                background-color : {TEMPLATE_EDITOR_MAIN_COLOR};
+            }
+            .divider-color,
+            .portfolio-navigation div a,
+            #commentform input#submit,
+            .tagcloud a, 
+            .lightbox-photo a,
+            .hlp-description,
+            table th,
+            button,
+            input[type="submit"],
+            input[type="button"],
+            input[type="reset"],
+            #shop button.add-to-cart,
+            #shop button.details-button, 
+            #page-right h3,
+            #contactForm input.contactFormClass_button,
+            #shop figure a h3,
+            .flexslider-wrapper .flexslider:hover .flex-next:hover,
+            .flexslider:hover .flex-prev:hover,
+            .flex-carousel .flex-direction-nav .flex-next:hover,
+            .flex-carousel .flex-direction-nav .flex-prev:hover,
+            .flexslider-portfolio .flex-direction-nav .flex-next:hover,
+            .flexslider-portfolio .flex-direction-nav .flex-prev:hover,
+            .divider-color,
+            .lightbox-photo a,
+            .flex-control-paging li a.flex-active,
+            .cs-slidecontrols li:hover,
+            .portfolio-item-description,
+            #portfolio-filters li:hover a,
+            #portfolio-filters li.current a,
+            .widget .lp-image a:hover img,
+            #flickr_badges ul li a:hover img,
+            .button, button,
+            .wpcf7-form input[type="submit"],
+            .portfolio-navigation div a,
+            #commentform input#submit {
+                background-color : {TEMPLATE_EDITOR_SECONDARY_COLOR};
+            }
+            .sf-menu ul a:hover:before,
+            .sf-menu ul a:hover,
+            .sf-menu > li:hover > a,
+            .sf-menu > li.parent:hover > a,
+            .sf-menu > li.current-menu-item a:hover {
+                border-left-color: {TEMPLATE_EDITOR_SECONDARY_COLOR}; 
+            }
+            h1, h2, h3, h4, h5, h6,
+            .testimonial-author,
+            .team-member h5,
+            .sidebar-block,
+            .sixteen.columns > h6,
+            .sixteen.columns h1,
+            .page-content.with-sidebar.content,
+            .page-content.with-sidebar.content h3,
+            .page-content.with-sidebar.content #news h3 a,
+            .page-content.with-sidebar.content #news-content h2 a,
+            #shop table {
+                color: {TEMPLATE_EDITOR_FONT_COLOR};
+            }
+            .flex-caption {
+                display: none;
+            }
+            ul.slides li:nth-child(2) .flex-caption {
+                display: block;
+            }
+        </style>
     </head>
     <body class="responsive">
         <div class="top-wrapper clearfix">
             <div class="logo-wrapper">
                 <div class="logo">
                     <a href="{NODE_HOME}">
-                        <img alt="logo" src="themes/acumulo/images/logo.png">
+                        <img alt="logo" src="{TEMPLATE_EDITOR_LOGO}">
                     </a>
                 </div>
             </div><!-- END .logo-wrapper -->

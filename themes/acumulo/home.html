@@ -1,7 +1,7 @@
 <div class="slogan-wrapper clearfix">
     <div class="container">
         <div class="sixteen columns">
-            <h1>Welcome to <img alt="logo" src="themes/acumulo/images/logo.png"> - lorem ipsum dummy<br>sit lorem ipsum dummy lorem</h1>
+            <h1>Welcome to <img alt="logo" src="{TEMPLATE_EDITOR_LOGO}"> - lorem ipsum dummy<br>sit lorem ipsum dummy lorem</h1>
         </div>
     </div>
 </div>
@@ -10,15 +10,14 @@
         <div class="flexslider-wrapper">
             <div id="slider" class="flexslider">
                 <ul class="slides">
+                    <!-- BEGIN template_editor_slider_images -->
                     <li>
-                        <img src="themes/acumulo/images/slide1.jpg" alt="photo" />
+                        <img alt="Slider" src="{TEMPLATE_EDITOR_SLIDER_IMAGES}" />
                         <div class="flex-caption">
                             <p>Lorem ipsum dolor sit Lorem ipsum dolor sit Lorem ipsum dolor sit Lorem ipsum dolor sit Lorem ipsum dolor sit</p>
                         </div>
                     </li>
-                    <li><img src="themes/acumulo/images/slide2.jpg" alt="photo" /></li>
-                    <li><img src="themes/acumulo/images/slide3.jpg" alt="photo" /></li>
-                    <li><img src="themes/acumulo/images/slide4.jpg" alt="photo" /></li>
+                    <!-- END template_editor_slider_images -->
                 </ul>
             </div>
         </div><!-- END .flexslider-wrapper -->
@@ -38,6 +37,7 @@
                     });
                 });
             </script>
+            <!-- BEGIN template_editor_events_area -->
             <div class="sixteen columns">
                 <h6>Latest Posts</h6>
                 <div id="hlb-flex-carousel" class="flexslider flex-carousel">
@@ -108,7 +108,9 @@
                         </li>
                     </ul>
                 </div><!-- END .flex-carousel -->
-            </div><!-- END .sixteen.columns -->
+            </div>
+            <!-- END template_editor_events_area -->
+            <!-- END .sixteen.columns -->
         </div><!-- END .latest-posts -->
         <div class="latest-projects clearfix">
             <script type="text/javascript">
@@ -124,6 +126,7 @@
                     });
                 });
             </script>
+            <!-- BEGIN template_editor_news_area -->
             <div class="sixteen columns">
                 <h6>Latest Projects</h6>
                 <div id="hlp-flex-carousel" class="flexslider flex-carousel">
@@ -219,7 +222,9 @@
                         </li>
                     </ul>
                 </div><!-- END .flexslider -->
-            </div><!-- END .sixteen columns -->
+            </div>
+            <!-- END template_editor_news_area -->
+            <!-- END .sixteen columns -->
         </div><!-- END .latest-projects -->
         <div class="clear"></div>
     </div>

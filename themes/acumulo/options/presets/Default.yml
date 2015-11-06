@@ -1,0 +1,50 @@
+options:
+  -
+    name: main_title
+    specific:
+      textvalue: 'Template Editor Test'
+  -
+    name: subtitle
+    specific:
+      textvalue: 'Testing the templateditor sfdsfs'
+  -
+    name: main_color
+    specific:
+      color: '#555555'
+  -
+    name: secondary_color
+    specific:
+      color: '#ff6d11'
+  -
+    name: font_color
+    specific:
+      color: '#555555'
+  -
+    name: news_area
+    specific:
+      active: true
+  -
+    name: events_area
+    specific:
+      active: true
+  -
+    name: newsletter_area
+    specific:
+      active: true
+  -
+    name: logo
+    specific:
+      url: /themes/acumulo/images/logo.png
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption
+    translation:
+        1: logo
+        2: logo
+  -
+    name: slider_images
+    specific:
+      urls:
+        1: /themes/acumulo/images/slide1.jpg
+        2: /themes/acumulo/images/slide2.jpg
+        3: /themes/acumulo/images/slide3.jpg
+        4: /themes/acumulo/images/slide4.jpg
+      type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageSeriesOption
