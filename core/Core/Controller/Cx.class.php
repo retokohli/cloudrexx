@@ -1230,6 +1230,11 @@ namespace Cx\Core\Core\Controller {
                 $configOption = 'forceProtocolBackend';
             }
 
+            // don't adjust protocol on websitePreview of templateEditor
+            if ($this->mode == self::MODE_FRONTEND && !empty($_GET['templateEditor'])) {
+                return null;
+            }
+
             if (!isset($_CONFIG[$configOption]) || $_CONFIG[$configOption] == 'none') {
                 return null;
             }
