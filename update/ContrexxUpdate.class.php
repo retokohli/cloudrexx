@@ -547,14 +547,21 @@ class ContrexxUpdate
                         }
                     }
                     if ($result !== false) {
-                        DBG::msg('-------------------------------------------------------------');
-                        DBG::msg('CLOUDREXX UPDATE - NEW REQUEST');
-                        DBG::msg('Date: ' . date('d.m.Y H:i:s'));
-                        DBG::msg('Get-Params:');
-                        DBG::dump($_GET);
-                        DBG::msg('User: ' . $_SESSION['contrexx_update']['username']);
-                        DBG::msg('-------------------------------------------------------------');
-                        $result = executeContrexxUpdate();
+                        if (!isset($_REQUEST['executeUpdate'])) {
+                            setUpdateMsg('Der Updatevorgang wure unterbrochen', 'title');
+                            setUpdateMsg('Der Updatevorgang ist noch nicht abgeschlossen. Bitte betätigen Sie die Schaltfläche <strong>Update fortzsetzen</strong>, um den Updatevorgang fortzusetzen.', 'msg');
+                            setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="executeUpdate" />', 'button');
+                            $result = false;
+                        } else {
+                            DBG::msg('-------------------------------------------------------------');
+                            DBG::msg('CLOUDREXX UPDATE - NEW REQUEST');
+                            DBG::msg('Date: ' . date('d.m.Y H:i:s'));
+                            DBG::msg('Get-Params:');
+                            DBG::dump($_GET);
+                            DBG::msg('User: ' . $_SESSION['contrexx_update']['username']);
+                            DBG::msg('-------------------------------------------------------------');
+                            $result = executeContrexxUpdate();
+                        }
                     }
                 }
             }

@@ -660,6 +660,7 @@ function executeContrexxUpdate() {
                     }
 
                     $_SESSION['contrexx_update']['update']['done'][] = $file;
+                    DBG::msg("$file done -> force request reload");
                     setUpdateMsg(1, 'timeout');
                     return false;
                 }
@@ -673,8 +674,11 @@ function executeContrexxUpdate() {
         closedir($dh);
     }
 
+    DBG::dump(ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']));
     if (!in_array('coreSettings', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        DBG::msg('Execute _updateSettings()');
         $result = _updateSettings();
+        DBG::dump($result);
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_BASIC_CONFIGURATION']), 'title');
@@ -697,7 +701,9 @@ function executeContrexxUpdate() {
     }
 
     if (!in_array('coreModules', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        DBG::msg('Execute _updateModules()');
         $result = _updateModules();
+        DBG::dump($result);
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULES']), 'title');
@@ -709,7 +715,9 @@ function executeContrexxUpdate() {
     }
 
     if (!in_array('coreBackendAreas', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        DBG::msg('Execute _updateBackendAreas()');
         $result = _updateBackendAreas();
+        DBG::dump($result);
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_SECURITY_SYSTEM']), 'title');
@@ -721,7 +729,9 @@ function executeContrexxUpdate() {
     }
 
     if (!in_array('coreModuleRepository', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        DBG::msg('Execute _updateModuleRepository()');
         $result = _updateModuleRepository();
+        DBG::dump($result);
         if ($result === false) {
             DBG::msg('unable to update module repository');
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -734,7 +744,9 @@ function executeContrexxUpdate() {
     }
 
     if (!in_array('convertTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        DBG::msg('Execute _convertThemes2Component()');
         $result = _convertThemes2Component();
+        DBG::dump($result);
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 DBG::msg('unable to convert themes to component');                
@@ -747,6 +759,7 @@ function executeContrexxUpdate() {
     }
     
     if (!in_array('moduleTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        DBG::msg('Execute _updateModulePages()');
         if (_updateModulePages($viewUpdateTable) === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 DBG::msg('unable to update module templates');
@@ -759,6 +772,7 @@ function executeContrexxUpdate() {
     }
 
     if (!in_array('moduleStyles', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        DBG::msg('Execute _updateCssDefinitions()');
         if (_updateCssDefinitions($viewUpdateTable, $objUpdate) === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
@@ -770,6 +784,7 @@ function executeContrexxUpdate() {
     }
     
     if (!in_array('navigations', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        DBG::msg('Execute _updateNavigations()');
         if (_updateNavigations() === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_NAVIGATIONS']), 'title');

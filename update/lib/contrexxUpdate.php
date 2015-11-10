@@ -25,7 +25,7 @@
  * our trademarks remain entirely with us.
  */
 
-define('UPDATE_PATH', dirname(__FILE__));@include_once(UPDATE_PATH.'/../config/configuration.php');@header('content-type: text/html; charset='.(UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1'));?>
+define('UPDATE_PATH', dirname(__FILE__));@include_once(UPDATE_PATH.'/../config/configuration.php');@header('content-type: application/javascript; charset='.(UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1'));?>
 
 var request_active = false;
 var getDebugInfo = false;
@@ -80,7 +80,7 @@ function doUpdate(goBack, viaPost, debug, timeout)
         jQuery.ajax({
             url: 'index.php',
             type: type,
-            data: {'ajax': formData, 'debug_update': getDebugInfo},
+            data: {'ajax': formData, 'debug_update': getDebugInfo, 'executeUpdate': true},
             success: parseResponse,
             error: cxUpdateErrorHandler,
         });
