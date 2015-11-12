@@ -51,7 +51,9 @@ function _crmUpdate() {
                 'datasource'             => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'user_account'),
                 'profile_picture'        => array('type' => 'VARCHAR(256)', 'after' => 'datasource'),
                 'status'                 => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '1', 'after' => 'profile_picture'),
-                'added_date'             => array('type' => 'date', 'after' => 'status')
+                'added_date'             => array('type' => 'date', 'after' => 'status'),
+                'email_delivery'         => array('type' => 'TINYINT(2)', 'notnull' => false, 'default' => '1', 'after' => 'added_date'),
+                'company_size'           => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_addedby'),
             ),
             array(
                 'contact_customer'       => array('fields' => array('contact_customer')),
@@ -74,7 +76,6 @@ function _crmUpdate() {
             ),
             array(
                 'name'                   => array('fields' => array('name' => 333)),
-                'name_2'                 => array('fields' => array('name'), 'type' => 'FULLTEXT')
             )
         );
         \Cx\Lib\UpdateUtil::table(

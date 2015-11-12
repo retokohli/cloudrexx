@@ -656,6 +656,13 @@ function _updateSettings()
         }
     }
 
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        try {
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'settings');
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
 
     return true;
 }

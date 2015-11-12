@@ -45,7 +45,7 @@ function _accessUpdate()
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'access_user_mail',
             array(
-                'type'           => array('type' => 'ENUM(\'reg_confirm\',\'reset_pw\',\'user_activated\',\'user_deactivated\',\'new_user\')', 'notnull' => true, 'default' => 'reg_confirm'),
+                'type'           => array('type' => 'ENUM(\'reg_confirm\',\'reset_pw\',\'user_activated\',\'user_deactivated\',\'new_user\',\'user_account_invitation\')', 'notnull' => true, 'default' => 'reg_confirm'),
                 'lang_id'        => array('type' => 'TINYINT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'sender_mail'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'sender_name'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
@@ -604,7 +604,7 @@ function _accessUpdate()
             DBPREFIX.'access_user_attribute',
             array(
                 'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'parent_id'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                'parent_id'          => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'after' => 'id'),
                 'type'               => array('type' => 'ENUM(\'text\',\'textarea\',\'mail\',\'uri\',\'date\',\'image\',\'checkbox\',\'menu\',\'menu_option\',\'group\',\'frame\',\'history\')', 'notnull' => true, 'default' => 'text', 'after' => 'parent_id'),
                 'mandatory'          => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'type'),
                 'sort_type'          => array('type' => 'ENUM(\'asc\',\'desc\',\'custom\')', 'notnull' => true, 'default' => 'asc', 'after' => 'mandatory'),
@@ -761,7 +761,10 @@ function _accessUpdate()
                 'profile_access'         => array('type' => 'ENUM(\'everyone\',\'members_only\',\'nobody\')', 'notnull' => true, 'default' => 'members_only', 'after' => 'primary_group'),
                 'restore_key'            => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'profile_access'),
                 'restore_key_time'       => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'restore_key'),
-                'u2u_active'             => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '1', 'after' => 'restore_key_time')
+                'u2u_active'             => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '1', 'after' => 'restore_key_time'),
+                'auth_token'             => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'password'),
+                'auth_token_timeout'     => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'auth_token'),
+                'verified'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'active'),
             ),
             array(
                 'username'               => array('fields' => array('username'))
@@ -935,6 +938,20 @@ function _accessUpdate()
         }
     }
 
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'access_id',
+            array(
+                'id'                 => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'entity_class_name'  => array('type' => 'CHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                'entity_class_id'    => array('type' => 'CHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'entity_class_name'),
+            ),
+            array(),
+            'InnoDB'
+        );
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
     /************************************************
 	* BUGFIX:	Set write access to the upload dir  *
 	************************************************/

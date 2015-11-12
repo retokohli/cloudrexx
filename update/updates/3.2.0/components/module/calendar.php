@@ -434,6 +434,10 @@ function _calendarUpdate()
         }
     }
 
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'. DBPREFIX .'module_calendar_event` MODIFY `startdate` timestamp NULL DEFAULT "0000-00-00 00:00:00"');
+        \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'. DBPREFIX .'module_calendar_event` MODIFY `enddate` timestamp NULL DEFAULT "0000-00-00 00:00:00"');
+    }
 
     return true;
 }

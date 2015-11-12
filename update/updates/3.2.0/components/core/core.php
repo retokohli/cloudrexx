@@ -161,7 +161,8 @@ function _coreUpdate()
                 'is_required'                => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'status'),
                 'is_core'                    => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'is_required'),
                 'is_active'                  => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'is_core'),
-                'is_licensed'                => array('type' => 'TINYINT(1)', 'after' => 'is_active')
+                'is_licensed'                => array('type' => 'TINYINT(1)', 'after' => 'is_active'),
+                'additional_data'            => array('type' => 'TEXT', 'notnull' => false, 'after' => 'is_licensed'),
             ),
             array(
                 'id'                         => array('fields' => array('id'), 'type' => 'UNIQUE')
@@ -226,7 +227,44 @@ function _coreUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    /**********************************************
+     * Settings thumbnail                         *
+     *********************************************/
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'settings_thumbnail',
+            array(
+                'id'   => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name' => array('type' => 'VARCHAR(100)', 'notnull' => true),
+                'size' => array('type' => 'INT(11)', 'notnull' => true),
+            ),
+            array(),
+            'InnoDB'
+        );
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
 
+    /**********************************************
+     * System log                                 *
+     *********************************************/
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'syslog',
+            array(
+                'id'        => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'timestamp' => array('type' => 'datetime', 'notnull' => true),
+                'severity'  => array('type' => 'ENUM(\'INFO\',\'WARNING\',\'FATAL\')', 'notnull' => true),
+                'message'   => array('type' => 'VARCHAR(255)', 'notnull' => true),
+                'data'      => array('type' => 'TEXT', 'notnull' => true),
+                'logger'    => array('type' => 'VARCHAR(255)', 'notnull' => true),
+            ),
+            array(),
+            'InnoDB'
+        );
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
 
 
 
