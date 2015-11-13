@@ -843,6 +843,20 @@ function executeContrexxUpdate() {
         }
     }
 
+    // Update DBPREFIX_component-table
+    if (!in_array('coreComponent', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))
+        || !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        $result = _updateComponent();
+        if ($result === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_COMPONENT_TABLE']), 'title');
+            }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'coreComponent';
+        }
+    }
+
     ////////////////
     // END UPDATE //
     ////////////////
