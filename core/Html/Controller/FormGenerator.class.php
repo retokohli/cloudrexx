@@ -690,6 +690,9 @@ class FormGenerator {
                 
                 //create div and add all stuff
                 $div = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
+                //     required for the Ace editor to work. Otherwise
+                //     it won't be visible as the DIV does have a width of 0px.
+                $div->setAttribute('style','display:block;');
                 $div->addChild($textarea);
                 $div->addChild($pre);
                 
