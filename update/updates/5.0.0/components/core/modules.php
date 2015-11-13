@@ -70,7 +70,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 2,
-			'name'					=> 'stats',
+			'name'					=> 'Stats',
 			'description_variable'	=> 'TXT_STATS_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 0,
@@ -79,7 +79,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 3,
-			'name'					=> 'gallery',
+			'name'					=> 'Gallery',
 			'description_variable'	=> 'TXT_GALLERY_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -88,7 +88,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 4,
-			'name'					=> 'newsletter',
+			'name'					=> 'Newsletter',
 			'description_variable'	=> 'TXT_NEWSLETTER_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -97,7 +97,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 5,
-			'name'					=> 'search',
+			'name'					=> 'Search',
 			'description_variable'	=> 'TXT_SEARCH_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -106,7 +106,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 6,
-			'name'					=> 'contact',
+			'name'					=> 'Contact',
 			'description_variable'	=> 'TXT_CONTACT_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
@@ -115,7 +115,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 7,
-			'name'					=> 'block',
+			'name'					=> 'Block',
 			'description_variable'	=> 'TXT_BLOCK_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 0,
@@ -124,7 +124,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 8,
-			'name'					=> 'news',
+			'name'					=> 'News',
 			'description_variable'	=> 'TXT_NEWS_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
@@ -133,7 +133,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 9,
-			'name'					=> 'media1',
+			'name'					=> 'Media1',
 			'description_variable'	=> 'TXT_MEDIA_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -142,7 +142,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 10,
-			'name'					=> 'guestbook',
+			'name'					=> 'GuestBook',
 			'description_variable'	=> 'TXT_GUESTBOOK_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -151,7 +151,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 11,
-			'name'					=> 'sitemap',
+			'name'					=> 'Sitemap',
 			'description_variable'	=> 'TXT_SITEMAP_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -160,7 +160,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 12,
-			'name'					=> 'directory',
+			'name'					=> 'Directory',
 			'description_variable'	=> 'TXT_LINKS_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -169,7 +169,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 13,
-			'name'					=> 'ids',
+			'name'					=> 'Ids',
 			'description_variable'	=> 'TXT_IDS_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
@@ -178,7 +178,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 14,
-			'name'					=> 'error',
+			'name'					=> 'Error',
 			'description_variable'	=> 'TXT_ERROR_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
@@ -187,7 +187,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 15,
-			'name'					=> 'home',
+			'name'					=> 'Home',
 			'description_variable'	=> 'TXT_HOME_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
@@ -196,7 +196,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 16,
-			'name'					=> 'shop',
+			'name'					=> 'Shop',
 			'description_variable'	=> 'TXT_SHOP_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -205,7 +205,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 17,
-			'name'					=> 'voting',
+			'name'					=> 'Voting',
 			'description_variable'	=> 'TXT_VOTING_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -214,7 +214,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 18,
-			'name'					=> 'login',
+			'name'					=> 'Login',
 			'description_variable'	=> 'TXT_LOGIN_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
@@ -223,7 +223,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 19,
-			'name'					=> 'docsys',
+			'name'					=> 'DocSys',
 			'description_variable'	=> 'TXT_DOC_SYS_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -232,7 +232,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 20,
-			'name'					=> 'forum',
+			'name'					=> 'Forum',
 			'description_variable'	=> 'TXT_FORUM_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -241,7 +241,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 21,
-			'name'					=> 'calendar',
+			'name'					=> 'Calendar',
 			'description_variable'	=> 'TXT_CALENDAR_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -250,7 +250,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 22,
-			'name'					=> 'feed',
+			'name'					=> 'Feed',
 			'description_variable'	=> 'TXT_FEED_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -259,7 +259,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 23,
-			'name'					=> 'access',
+			'name'					=> 'Access',
 			'description_variable'	=> 'TXT_COMMUNITY_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -268,7 +268,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 24,
-			'name'					=> 'media2',
+			'name'					=> 'Media2',
 			'description_variable'	=> 'TXT_MEDIA_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -277,7 +277,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 25,
-			'name'					=> 'media3',
+			'name'					=> 'Media3',
 			'description_variable'	=> 'TXT_MEDIA_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -286,7 +286,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 26,
-			'name'					=> 'fileBrowser',
+			'name'					=> 'FileBrowser',
 			'description_variable'	=> 'TXT_FILEBROWSER_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 1,
@@ -295,7 +295,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 27,
-			'name'					=> 'recommend',
+			'name'					=> 'Recommend',
 			'description_variable'	=> 'TXT_RECOMMEND_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -304,7 +304,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 30,
-			'name'					=> 'livecam',
+			'name'					=> 'Livecam',
 			'description_variable'	=> 'TXT_LIVECAM_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -313,7 +313,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 31,
-			'name'					=> 'memberdir',
+			'name'					=> 'MemberDir',
 			'description_variable'	=> 'TXT_MEMBERDIR_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -322,7 +322,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 32,
-			'name'					=> 'nettools',
+			'name'					=> 'NetTools',
 			'description_variable'	=> 'TXT_NETTOOLS_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 0,
@@ -331,7 +331,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 33,
-			'name'					=> 'market',
+			'name'					=> 'Market',
 			'description_variable'	=> 'TXT_MARKET_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -340,7 +340,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 35,
-			'name'					=> 'podcast',
+			'name'					=> 'Podcast',
 			'description_variable'	=> 'TXT_PODCAST_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -349,7 +349,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 38,
-			'name'					=> 'egov',
+			'name'					=> 'Egov',
 			'description_variable'	=> 'TXT_EGOVERNMENT_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -358,7 +358,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 39,
-			'name'					=> 'media4',
+			'name'					=> 'Media4',
 			'description_variable'	=> 'TXT_MEDIA_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -367,7 +367,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 41,
-			'name'					=> 'alias',
+			'name'					=> 'Alias',
 			'description_variable'	=> 'TXT_ALIAS_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 0,
@@ -376,7 +376,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 44,
-			'name'					=> 'imprint',
+			'name'					=> 'Imprint',
 			'description_variable'	=> 'TXT_IMPRINT_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
@@ -385,7 +385,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 45,
-			'name'					=> 'agb',
+			'name'					=> 'Agb',
 			'description_variable'	=> 'TXT_AGB_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
@@ -394,7 +394,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 46,
-			'name'					=> 'privacy',
+			'name'					=> 'Privacy',
 			'description_variable'	=> 'TXT_PRIVACY_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
@@ -403,7 +403,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 47,
-			'name'					=> 'blog',
+			'name'					=> 'Blog',
 			'description_variable'	=> 'TXT_BLOG_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -412,7 +412,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 48,
-			'name'					=> 'data',
+			'name'					=> 'Data',
 			'description_variable'	=> 'TXT_DATA_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -421,7 +421,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 49,
-			'name'					=> 'ecard',
+			'name'					=> 'Ecard',
 			'description_variable'	=> 'TXT_ECARD_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -430,7 +430,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 52,
-			'name'					=> 'upload',
+			'name'					=> 'Upload',
 			'description_variable'	=> 'TXT_FILEUPLOADER_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 0,
@@ -439,7 +439,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 53,
-			'name'					=> 'downloads',
+			'name'					=> 'Downloads',
 			'description_variable'	=> 'TXT_DOWNLOADS_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -448,7 +448,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 54,
-			'name'					=> 'u2u',
+			'name'					=> 'U2u',
 			'description_variable'	=> 'TXT_U2U_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -457,7 +457,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 56,
-			'name'					=> 'knowledge',
+			'name'					=> 'Knowledge',
 			'description_variable'	=> 'TXT_KNOWLEDGE_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -466,7 +466,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 57,
-			'name'					=> 'jobs',
+			'name'					=> 'Jobs',
 			'description_variable'	=> 'TXT_JOBS_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -475,7 +475,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 60,
-			'name'					=> 'mediadir',
+			'name'					=> 'MediaDir',
 			'description_variable'	=> 'TXT_MEDIADIR_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -484,7 +484,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 61,
-			'name'					=> 'captcha',
+			'name'					=> 'Captcha',
 			'description_variable'	=> 'Catpcha Module',
 			'status'				=> 'n',
 			'is_required'			=> 1,
@@ -493,7 +493,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 62,
-			'name'					=> 'checkout',
+			'name'					=> 'Checkout',
 			'description_variable'	=> 'TXT_CHECKOUT_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -502,7 +502,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 63,
-			'name'					=> 'jsondata',
+			'name'					=> 'JsonData',
 			'description_variable'	=> 'Json Adapter',
 			'status'				=> 'n',
 			'is_required'			=> 1,
@@ -511,7 +511,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 64,
-			'name'					=> 'language',
+			'name'					=> 'LanguageManager',
 			'description_variable'	=> 'TXT_LANGUAGE_SETTINGS',
 			'status'				=> 'n',
 			'is_required'			=> 1,
@@ -529,7 +529,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 66,
-			'name'					=> 'license',
+			'name'					=> 'License',
 			'description_variable'	=> 'TXT_LICENSE',
 			'status'				=> 'n',
 			'is_required'			=> 1,
@@ -538,7 +538,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 67,
-			'name'					=> 'logout',
+			'name'					=> 'Logout',
 			'description_variable'	=> 'TXT_LOGIN_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 1,
@@ -547,7 +547,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 68,
-			'name'					=> 'filesharing',
+			'name'					=> 'FileSharing',
 			'description_variable'	=> 'TXT_FILESHARING_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
@@ -556,7 +556,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 69,
-			'name'					=> 'crm',
+			'name'					=> 'Crm',
 			'description_variable'	=> 'TXT_CRM_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 1,
