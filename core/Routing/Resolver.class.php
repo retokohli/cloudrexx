@@ -325,6 +325,11 @@ class Resolver {
                         // Backwards compatibility for code pre Contrexx 3.0 (update)
                         $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $command;
                         $_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
+                        // the system should directly use $this->url->getParamArray() instead of using the super globals
+                        $qsArr = $this->url->getParamArray();
+                        foreach ($qsArr as $qsParam => $qsArgument) {
+                            $_GET[$qsParam] = $_REQUEST[$qsParam] = $qsArgument;
+                        }
 
                         // To clone any module, use an optional integer cmd suffix.
                         // E.g.: "shop2", "gallery5", etc.
