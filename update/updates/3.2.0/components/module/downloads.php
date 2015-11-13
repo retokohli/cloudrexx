@@ -293,6 +293,28 @@ function _downloadsUpdate()
                 DROP COLUMN `source_name`
             ');
         }
+        /**********************************************************
+        * Migrate downloads file type                             *
+        **********************************************************/
+        if (   $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')
+            && !isset($arrColumns['file_type'])
+        ) {
+            \Cx\Lib\UpdateUtil::sql('
+                ALTER TABLE `'. DBPREFIX .'module_downloads_download_locale`
+                    ADD `file_type` VARCHAR( 10 ) NULL DEFAULT NULL AFTER `source_name`
+            ');
+            \Cx\Lib\UpdateUtil::sql('
+                UPDATE
+                    `'. DBPREFIX .'module_downloads_download_locale` AS downloadlocale
+                LEFT JOIN
+                    `'. DBPREFIX .'module_downloads_download` AS download
+                ON (download.`id` = downloadlocale.`download_id`)
+                SET downloadlocale.`file_type` = download.`icon`
+            ');
+            \Cx\Lib\UpdateUtil::sql('
+                ALTER TABLE `'. DBPREFIX .'module_downloads_download` DROP `icon`
+            ');
+        }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }

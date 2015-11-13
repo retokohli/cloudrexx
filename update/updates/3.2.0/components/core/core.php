@@ -241,6 +241,11 @@ function _coreUpdate()
             array(),
             'InnoDB'
         );
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'settings_thumbnail` (`id`, `name`, `size`) VALUES (1,\'thumbnail\',150)');
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'settings_thumbnail` (`id`, `name`, `size`) VALUES (2,\'medium\',300)');
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'settings_thumbnail` (`id`, `name`, `size`) VALUES (3,\'large\',640)');
+        }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }

@@ -439,6 +439,61 @@ function _newsUpdate() {
         );
 
         \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_rel_news',
+            array(
+                'news_id'         => array('type' => 'INT(11)', 'notnull' => true),
+                'related_news_id' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'news_id'),
+            ),
+            array(
+                'related_news' => array('fields' => array('news_id', 'related_news_id'), 'type' => 'UNIQUE'),
+            ),
+            'InnoDB'
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_rel_tags',
+            array(
+                'news_id' => array('type' => 'INT(11)', 'notnull' => true),
+                'tag_id'  => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'news_id'),
+            ),
+            array(
+                'NewsTagsRelation' => array('fields' => array('news_id', 'tag_id'), 'type' => 'UNIQUE'),
+            ),
+            'InnoDB'
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_tags',
+            array(
+                'id'           => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                'tag'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'id'),
+                'viewed_count' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'tag'),
+            ),
+            array(
+                'tag' => array('fields' => array('tag'), 'type' => 'UNIQUE'),
+            ),
+            'InnoDB'
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_rel_categories',
+            array(
+                'news_id'     => array('type' => 'INT(11)', 'notnull' => true),
+                'category_id' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'news_id'),
+            ),
+            array(
+                'NewsTagsRelation'   => array('fields' => array('news_id', 'category_id'), 'type' => 'UNIQUE'),
+            ),
+            'InnoDB'
+        );
+
+        $arrColumnsNews = $objDatabase->MetaColumnNames(DBPREFIX.'module_news');
+        if ($arrColumnsNews === false) {
+            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_news'));
+            return false;
+        }
+
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0') && isset($arrColumnsNews['CATID'])) {
+            \Cx\Lib\UpdateUtil::sql('INSERT INTO `'. DBPREFIX .'module_news_rel_categories` (`news_id`,`category_id`) SELECT `id`, `catid` FROM `'. DBPREFIX .'module_news`');
+        }
+        \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_news',
             array(
                 'id'                             => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
@@ -449,7 +504,6 @@ function _newsUpdate() {
                 'source'                         => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'redirect'),
                 'url1'                           => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'source'),
                 'url2'                           => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'url1'),
-                'catid'                          => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'url2'),
                 'lang'                           => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'catid'),
                 'typeid'                         => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'lang'),
                 'publisher'                      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'typeid'),
@@ -470,19 +524,15 @@ function _newsUpdate() {
                 'teaser_image_path'              => array('type' => 'text', 'notnull' => true, 'after' => 'teaser_show_link'),
                 'teaser_image_thumbnail_path'    => array('type' => 'text', 'notnull' => true, 'after' => 'teaser_image_path'),
                 'changelog'                      => array('type' => 'INT(14)', 'notnull' => true, 'default' => '0', 'after' => 'teaser_image_thumbnail_path'),
-                'allow_comments'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'changelog')
+                'allow_comments'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'changelog'),
+                'enable_related_news'            => array('type' => 'TINYINT(1)', 'notnull' => false, 'default' => '0', 'after' => 'allow_comments'),
+                'enable_tags'                    => array('type' => 'TINYINT(1)', 'notnull' => false, 'default' => '0', 'after' => 'enable_related_news'),
             ),
             array(
                 'newsindex'                      => array('fields' => array('text','title','teaser_text'), 'type' => 'FULLTEXT')
             )
         );
 
-
-        $arrColumnsNews = $objDatabase->MetaColumnNames(DBPREFIX.'module_news');
-        if ($arrColumnsNews === false) {
-            setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_news'));
-            return false;
-        }
         if (isset($arrColumnsNews['TITLE']) && isset($arrColumnsNews['TEXT']) && isset($arrColumnsNews['TEASER_TEXT']) && isset($arrColumnsNews['LANG'])) {
             \Cx\Lib\UpdateUtil::sql('
                 INSERT INTO `'.DBPREFIX.'module_news_locale` (`news_id`, `lang_id`, `title`, `text`, `teaser_text`)
