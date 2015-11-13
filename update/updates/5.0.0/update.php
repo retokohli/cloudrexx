@@ -111,7 +111,7 @@ function executeContrexxUpdate() {
             'dependencies'  => array (),
         ),
     );
-            
+    
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
 
     // Copy cx files to the root directory
@@ -213,17 +213,16 @@ function executeContrexxUpdate() {
     /////////////////////////////
     // Session Table MIGRATION //
     /////////////////////////////
-    $isSessionVariableTableExists = \Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable');
-    if ($isSessionVariableTableExists) {
-        createOrAlterSessionVariableTable();
-    }
-    if (!$isSessionVariableTableExists && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
-        if (!migrateSessionTable()) {
-            setUpdateMsg('Error in updating session table', 'error');
+    if (!in_array('session', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        $isSessionVariableTableExists = \Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable');
+        if (!$isSessionVariableTableExists || $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '4.0.0')) {
+            if (!migrateSessionTable()) {
+                setUpdateMsg('Error in updating session table', 'error');
+                return false;
+            }
+            setUpdateMsg(1, 'timeout');
             return false;
         }
-        setUpdateMsg(1, 'timeout');
-        return false;
     }
 
     // Load Doctrine (this must be done after the UTF-8 Migration, because we'll need $_DBCONFIG['charset'] to be set)
@@ -418,13 +417,16 @@ function executeContrexxUpdate() {
             return false;
         } else {
             try {
-                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry` 
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry`
                     SET `object_class` = \'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Entity\\\\Page\'
                     WHERE object_class = \'Cx\\\\Model\\\\ContentManager\\\\Page\'');
             } catch (\Cx\Lib\UpdateException $e) {
                 return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             }
 
+            \Cx\Lib\UpdateUtil::sql('
+                ALTER TABLE `' . DBPREFIX . 'content_node` ENGINE = INNODB
+            ');
 
             // before an update of module page can be done, the db changes have to be done
             \Cx\Lib\UpdateUtil::table(
@@ -484,11 +486,11 @@ function executeContrexxUpdate() {
 
             if (_convertThemes2Component() === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
-                    DBG::msg('unable to convert themes to component');                
+                    DBG::msg('unable to convert themes to component');
                     setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
                 }
                 return false;
-            }            
+            }
             
             if (_updateModulePages($viewUpdateTable) === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -538,165 +540,284 @@ function executeContrexxUpdate() {
             setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
             return false;
         }
-
-        return true;
-        /////////////////////////////////////////
-        // END: UPDATE FOR CONTREXX 3 OR NEWER //
-        /////////////////////////////////////////
     }
 
-
-    ///////////////////////////////////////////
-    // CONTINUE UPDATE FOR NON CX 3 VERSIONS //
-    ///////////////////////////////////////////
-
-    $arrDirs = array('core_module', 'module');
-    $updateStatus = true;
-
-    if (!include_once(dirname(__FILE__) . '/components/core/backendAreas.php')) {
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/backendAreas.php'));
-        return false;
-    } elseif (!include_once(dirname(__FILE__) . '/components/core/modules.php')) {
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/modules.php'));
-        return false;
-    } elseif (!include_once(dirname(__FILE__) . '/components/core/settings.php')) {
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/settings.php'));
-        return false;
-    }
-
-    if (!in_array('coreUpdate', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-        $result = _coreUpdate();
-        if ($result === false) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CORE_SYSTEM']), 'title');
-            }
-            return false;
-        } else {
-            $_SESSION['contrexx_update']['update']['done'][] = 'coreUpdate';
-        }
-    }
-
-
-    $missedModules = array();
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-        $missedModules = getMissedModules();
-        $conflictedModules = getConflictedModules($missedModules);
-        if (!empty($conflictedModules)) {
-            $conflictedModulesList = '';
-            foreach ($conflictedModules as $moduleName => $moduleTables) {
-                $conflictedModulesList = '<li><strong>'.$moduleName.':</strong> '.implode(', ', $moduleTables).'</li>';
-            }
-            setUpdateMsg($_CORELANG['TXT_CONFLICTED_MODULES_TITLE'], 'title');
-            setUpdateMsg($_CORELANG['TXT_CONFLICTED_MODULES_DESCRIPTION'].'<ul>'.$conflictedModulesList.'</ul>', 'msg');
-            setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_TRY_AGAIN'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+        ///////////////////////////////////////////
+        // CONTINUE UPDATE FOR NON CX 3 VERSIONS //
+        ///////////////////////////////////////////
+
+        $arrDirs = array('core_module', 'module');
+        $updateStatus = true;
+
+        if (!include_once(dirname(__FILE__) . '/components/core/backendAreas.php')) {
+            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/backendAreas.php'));
+            return false;
+        } elseif (!include_once(dirname(__FILE__) . '/components/core/modules.php')) {
+            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/modules.php'));
+            return false;
+        } elseif (!include_once(dirname(__FILE__) . '/components/core/settings.php')) {
+            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/settings.php'));
             return false;
         }
-    }
-    foreach ($arrDirs as $dir) {
-        $dh = opendir(dirname(__FILE__).'/components/'.$dir);
-        if ($dh) {
-            while (($file = readdir($dh)) !== false) {
-                if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-                    $fileInfo = pathinfo(dirname(__FILE__).'/components/'.$dir.'/'.$file);
 
-                    if ($fileInfo['extension'] == 'php') {
-                        DBG::msg("--------- updating $file ------");
-
-                        if (!include_once(dirname(__FILE__).'/components/'.$dir.'/'.$file)) {
-                            setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
-                            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__).'/components/'.$dir.'/'.$file));
-                            return false;
-                        }
-
-                        if (!in_array($fileInfo['filename'], $missedModules)) {
-                            $function = '_'.$fileInfo['filename'].'Update';
-                            if (function_exists($function)) {
-                                $result = $function();
-                                if ($result === false) {
-                                    if (empty($objUpdate->arrStatusMsg['title'])) {
-                                        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
-                                    }
-                                    return false;
-                                } elseif ($result === 'timeout') {
-                                    setUpdateMsg(1, 'timeout');
-                                    return false;
-                                }
-                            } else {
-                                setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
-                                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], '.'.$fileInfo['filename'], $file));
-                                return false;
-                            }
-                        } else {
-                            $function = '_'.$fileInfo['filename'].'Install';
-                            if (function_exists($function)) {
-                                $result = $function();
-                                if ($result === false) {
-                                    if (empty($objUpdate->arrStatusMsg['title'])) {
-                                        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
-                                    }
-                                    return false;
-                                } elseif ($result === 'timeout') {
-                                    setUpdateMsg(1, 'timeout');
-                                    return false;
-                                } else {
-                                    // fetch module info from components/core/module.php
-                                    $arrModule = getModuleInfo($fileInfo['filename']);
-                                    if ($arrModule) {
-                                        try {
-                                            \Cx\Lib\UpdateUtil::sql("INSERT INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$arrModule['id']." , '".$arrModule['name']."', '".$arrModule['description_variable']."', '".$arrModule['status']."', '".$arrModule['is_required']."', '".$arrModule['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
-                                        } catch (\Cx\Lib\UpdateException $e) {
-                                            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-                                        }
-                                    } else {
-                                        DBG::msg('unable to register module '.$fileInfo['filename']);
-                                    }
-                                }
-                            } else {
-                                setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
-                                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], '.'.$fileInfo['filename'], $file));
-                                return false;
-                            }
-                        }
-                    }
-
-                    $_SESSION['contrexx_update']['update']['done'][] = $file;
-                    setUpdateMsg(1, 'timeout');
-                    return false;
+        if (!in_array('coreUpdate', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            $result = _coreUpdate();
+            if ($result === false) {
+                if (empty($objUpdate->arrStatusMsg['title'])) {
+                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CORE_SYSTEM']), 'title');
                 }
+                return false;
+            } else {
+                $_SESSION['contrexx_update']['update']['done'][] = 'coreUpdate';
             }
-        } else {
-            setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
-            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_DIR_COMPONENTS'], dirname(__FILE__).'/components/'.$dir));
-            return false;
         }
 
-        closedir($dh);
-    }
 
-    if (!in_array('coreSettings', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-        $result = _updateSettings();
-        if ($result === false) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_BASIC_CONFIGURATION']), 'title');
-            }
-            return false;
-        } else {
-            // update configuration.php (migrate to new format)
-            if (!_writeNewConfigurationFile()) {
+        $missedModules = array();
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+            $missedModules = getMissedModules();
+            $conflictedModules = getConflictedModules($missedModules);
+            if (!empty($conflictedModules)) {
+                $conflictedModulesList = '';
+                foreach ($conflictedModules as $moduleName => $moduleTables) {
+                    $conflictedModulesList = '<li><strong>'.$moduleName.':</strong> '.implode(', ', $moduleTables).'</li>';
+                }
+                setUpdateMsg($_CORELANG['TXT_CONFLICTED_MODULES_TITLE'], 'title');
+                setUpdateMsg($_CORELANG['TXT_CONFLICTED_MODULES_DESCRIPTION'].'<ul>'.$conflictedModulesList.'</ul>', 'msg');
+                setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_TRY_AGAIN'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
                 return false;
             }
-            $_SESSION['contrexx_update']['update']['done'][] = 'coreSettings';
+        }
+        foreach ($arrDirs as $dir) {
+            $dh = opendir(dirname(__FILE__).'/components/'.$dir);
+            if ($dh) {
+                while (($file = readdir($dh)) !== false) {
+                    if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+                        $fileInfo = pathinfo(dirname(__FILE__).'/components/'.$dir.'/'.$file);
 
-            // till this point the file config/version.php was still loaded upon a request,
-            // therefore we must force a new page request here, to ensure that the file config/version.php
-            // will not be loaded anylonger. This is essential here, otherwise the old values of config/version.php
-            // would screw up the update process
-            setUpdateMsg(1, 'timeout');
+                        if ($fileInfo['extension'] == 'php') {
+                            DBG::msg("--------- updating $file ------");
+
+                            if (!include_once(dirname(__FILE__).'/components/'.$dir.'/'.$file)) {
+                                setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
+                                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__).'/components/'.$dir.'/'.$file));
+                                return false;
+                            }
+
+                            if (!in_array($fileInfo['filename'], $missedModules)) {
+                                $function = '_'.$fileInfo['filename'].'Update';
+                                if (function_exists($function)) {
+                                    $result = $function();
+                                    if ($result === false) {
+                                        if (empty($objUpdate->arrStatusMsg['title'])) {
+                                            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
+                                        }
+                                        return false;
+                                    } elseif ($result === 'timeout') {
+                                        setUpdateMsg(1, 'timeout');
+                                        return false;
+                                    }
+                                } else {
+                                    setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
+                                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], '.'.$fileInfo['filename'], $file));
+                                    return false;
+                                }
+                            } else {
+                                $function = '_'.$fileInfo['filename'].'Install';
+                                if (function_exists($function)) {
+                                    $result = $function();
+                                    if ($result === false) {
+                                        if (empty($objUpdate->arrStatusMsg['title'])) {
+                                            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
+                                        }
+                                        return false;
+                                    } elseif ($result === 'timeout') {
+                                        setUpdateMsg(1, 'timeout');
+                                        return false;
+                                    } else {
+                                        // fetch module info from components/core/module.php
+                                        $arrModule = getModuleInfo($fileInfo['filename']);
+                                        if ($arrModule) {
+                                            try {
+                                                \Cx\Lib\UpdateUtil::sql("INSERT INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$arrModule['id']." , '".$arrModule['name']."', '".$arrModule['description_variable']."', '".$arrModule['status']."', '".$arrModule['is_required']."', '".$arrModule['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
+                                            } catch (\Cx\Lib\UpdateException $e) {
+                                                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+                                            }
+                                        } else {
+                                            DBG::msg('unable to register module '.$fileInfo['filename']);
+                                        }
+                                    }
+                                } else {
+                                    setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
+                                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], '.'.$fileInfo['filename'], $file));
+                                    return false;
+                                }
+                            }
+                        }
+
+                        $_SESSION['contrexx_update']['update']['done'][] = $file;
+                        setUpdateMsg(1, 'timeout');
+                        return false;
+                    }
+                }
+            } else {
+                setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_DIR_COMPONENTS'], dirname(__FILE__).'/components/'.$dir));
+                return false;
+            }
+
+            closedir($dh);
+        }
+
+        if (!in_array('coreSettings', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            $result = _updateSettings();
+            if ($result === false) {
+                if (empty($objUpdate->arrStatusMsg['title'])) {
+                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_BASIC_CONFIGURATION']), 'title');
+                }
+                return false;
+            } else {
+                // update configuration.php (migrate to new format)
+                if (!_writeNewConfigurationFile()) {
+                    return false;
+                }
+                $_SESSION['contrexx_update']['update']['done'][] = 'coreSettings';
+
+                // till this point the file config/version.php was still loaded upon a request,
+                // therefore we must force a new page request here, to ensure that the file config/version.php
+                // will not be loaded anylonger. This is essential here, otherwise the old values of config/version.php
+                // would screw up the update process
+                setUpdateMsg(1, 'timeout');
+                return false;
+            }
+        }
+
+        if (!in_array('coreModuleRepository', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            $result = _updateModuleRepository();
+            if ($result === false) {
+                DBG::msg('unable to update module repository');
+                if (empty($objUpdate->arrStatusMsg['title'])) {
+                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY']), 'title');
+                }
+                return false;
+            } else {
+                $_SESSION['contrexx_update']['update']['done'][] = 'coreModuleRepository';
+            }
+        }
+
+        if (!in_array('convertTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            $result = _convertThemes2Component();
+            if ($result === false) {
+                if (empty($objUpdate->arrStatusMsg['title'])) {
+                    DBG::msg('unable to convert themes to component');
+                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
+                }
+                return false;
+            } else {
+                $_SESSION['contrexx_update']['update']['done'][] = 'convertTemplates';
+            }
+        }
+
+        if (!in_array('moduleTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            if (_updateModulePages($viewUpdateTable) === false) {
+                if (empty($objUpdate->arrStatusMsg['title'])) {
+                    DBG::msg('unable to update module templates');
+                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
+                }
+                return false;
+            } else {
+                $_SESSION['contrexx_update']['update']['done'][] = 'moduleTemplates';
+            }
+        }
+
+        if (!in_array('moduleStyles', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            if (_updateCssDefinitions($viewUpdateTable, $objUpdate) === false) {
+                if (empty($objUpdate->arrStatusMsg['title'])) {
+                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
+                }
+                return false;
+            } else {
+                $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
+            }
+        }
+
+        if (!in_array('navigations', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            if (_updateNavigations() === false) {
+                if (empty($objUpdate->arrStatusMsg['title'])) {
+                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_NAVIGATIONS']), 'title');
+                }
+                return false;
+            } else {
+                $_SESSION['contrexx_update']['update']['done'][] = 'navigations';
+            }
+        }
+
+        if (!createHtAccess()) {
+            $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
+            $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
+
+            setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
             return false;
+        }
+
+        if (file_exists(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
+            \DBG::msg('/cadmin/index.php still exists...');
+            // move cadmin index.php if its customized
+            if (!loadMd5SumOfOriginalCxFiles()) {
+                return false;
+            }
+            if (!verifyMd5SumOfFile(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php', '', false)) {
+                \DBG::msg('...and it\'s customized, so let\'s move it to customizing directory');
+                // changes, backup modified file
+                if (!backupModifiedFile(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
+                    setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht kopiert werden.');
+                    return false;
+                }
+            } else {
+                \DBG::msg('...but it\'s not customized');
+            }
+            // no non-backupped changes, can delete
+            try {
+                \DBG::msg('So let\'s remove it...');
+                $cadminIndex = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php');
+                $cadminIndex->delete();
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht gelöscht werden.');
+                return false;
+            }
+        }
+
+        $arrUpdate = $objUpdate->getLoadedVersionInfo();
+        $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
+
+        if (!in_array('coreLicense', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            $lupd = new License();
+            try {
+                $result = $lupd->update();
+            } catch (\Cx\Lib\UpdateException $e) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
+                return false;
+            }
+            // ignore error to allow offline installations
+            /*if ($result === false) {
+                if (empty($objUpdate->arrStatusMsg['title'])) {
+                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
+                }
+                return false;
+            } else {*/
+            $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
+            //}
         }
     }
 
-    if (!in_array('coreModules', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+    ///////////////////////////////////////////////////
+    // Changes which need to be done in all versions //
+    ///////////////////////////////////////////////////
+
+    // Update DBPREFIX_modules-table
+    if (!in_array('coreModules', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))
+        || !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         $result = _updateModules();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -708,7 +829,9 @@ function executeContrexxUpdate() {
         }
     }
 
-    if (!in_array('coreBackendAreas', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+    // Update DBPREFIX_backend_areas-table
+    if (!in_array('coreBackendAreas', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))
+        || !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         $result = _updateBackendAreas();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -720,122 +843,9 @@ function executeContrexxUpdate() {
         }
     }
 
-    if (!in_array('coreModuleRepository', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-        $result = _updateModuleRepository();
-        if ($result === false) {
-            DBG::msg('unable to update module repository');
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY']), 'title');
-            }
-            return false;
-        } else {
-            $_SESSION['contrexx_update']['update']['done'][] = 'coreModuleRepository';
-        }
-    }
-
-    if (!in_array('convertTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-        $result = _convertThemes2Component();
-        if ($result === false) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                DBG::msg('unable to convert themes to component');                
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
-            }
-            return false;
-        } else {
-            $_SESSION['contrexx_update']['update']['done'][] = 'convertTemplates';
-        }
-    }
-    
-    if (!in_array('moduleTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-        if (_updateModulePages($viewUpdateTable) === false) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                DBG::msg('unable to update module templates');
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
-            }
-            return false;
-        } else {
-            $_SESSION['contrexx_update']['update']['done'][] = 'moduleTemplates';
-        }
-    }
-
-    if (!in_array('moduleStyles', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-        if (_updateCssDefinitions($viewUpdateTable, $objUpdate) === false) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
-            }
-            return false;
-        } else {
-            $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
-        }
-    }
-    
-    if (!in_array('navigations', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-        if (_updateNavigations() === false) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_NAVIGATIONS']), 'title');
-            }
-            return false;
-        } else {
-            $_SESSION['contrexx_update']['update']['done'][] = 'navigations';
-        }
-    }
-    
-    if (!createHtAccess()) {
-        $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
-        $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
-
-        setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
-        return false;
-    }
-
-    if (file_exists(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
-        \DBG::msg('/cadmin/index.php still exists...');
-        // move cadmin index.php if its customized
-        if (!loadMd5SumOfOriginalCxFiles()) {
-            return false;
-        }
-        if (!verifyMd5SumOfFile(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php', '', false)) {
-            \DBG::msg('...and it\'s customized, so let\'s move it to customizing directory');
-            // changes, backup modified file
-            if (!backupModifiedFile(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
-                setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht kopiert werden.');
-                return false;
-            }
-        } else {
-            \DBG::msg('...but it\'s not customized');
-        }
-        // no non-backupped changes, can delete
-        try {
-            \DBG::msg('So let\'s remove it...');
-            $cadminIndex = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php');
-            $cadminIndex->delete();
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht gelöscht werden.');
-            return false;
-        }
-    }
-
-    $arrUpdate = $objUpdate->getLoadedVersionInfo();
-    $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
-
-    if (!in_array('coreLicense', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-        $lupd = new License();
-        try {
-            $result = $lupd->update();
-        } catch (\Cx\Lib\UpdateException $e) {
-            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
-            return false;
-        }
-        // ignore error to allow offline installations
-        /*if ($result === false) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
-            }
-            return false;
-        } else {*/
-        $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
-        //}
-    }
+    ////////////////
+    // END UPDATE //
+    ////////////////
 
     return true;
 }
@@ -1647,7 +1657,7 @@ function loadMd5SumOfOriginalCxFiles()
 function backupModifiedFile($file)
 {
     global $_CONFIG;
-            
+    
     $cxFilePath = dirname(substr($file, strlen(ASCMS_DOCUMENT_ROOT)));
     if ($cxFilePath == '/') {
         $cxFilePath = '';
@@ -1665,7 +1675,7 @@ function backupModifiedFile($file)
             $idx++;
             $suffix = '_'.$idx;
         }
-    
+        
         $customizingFile .= $suffix;
     }
 
@@ -1792,7 +1802,7 @@ function copyCxFilesToRoot($src, $dst)
                 if (!renameCustomizingFile($dstPath)) {
                     return false;
                 }
-                    
+                
                 if (!verifyMd5SumOfFile($dstPath, $srcPath)) {
                     if (!backupModifiedFile($dstPath)) {
                         return false;
@@ -1817,7 +1827,7 @@ function copyCxFilesToRoot($src, $dst)
     return true;
 }
 
-function renameCustomizingFile($file) 
+function renameCustomizingFile($file)
 {
     global $_CONFIG;
     
@@ -1839,7 +1849,7 @@ function renameCustomizingFile($file)
             $idx++;
             $suffix = '_'.$idx;
         }
-    
+        
         $customizingFile .= $suffix;
     } else {
         return true;
@@ -1847,7 +1857,7 @@ function renameCustomizingFile($file)
 
     try {
         $objFile = new \Cx\Lib\FileSystem\File($file);
-        $objFile->move($customizingFile);        
+        $objFile->move($customizingFile);
     } catch (\Exception $e) {
         setUpdateMsg('Error on renaming customizing file:<br />' . $file);
         setUpdateMsg('Error: ' . $e->getMessage());
@@ -1920,51 +1930,34 @@ function getHtAccessTemplate()
     return $htAccessTemplate;
 }
 
-function createOrAlterSessionVariableTable()
-{
-    \Cx\Lib\UpdateUtil::table(
-        DBPREFIX.'session_variable',
-        array(
-            'id'        => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' =>true),
-            'parent_id' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'id'),
-            'sessionid' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'parent_id'),
-            'lastused'  => array('type' => 'TIMESTAMP', 'notnull' => true, 'default_expr' => 'CURRENT_TIMESTAMP', 'on_update' => 'CURRENT_TIMESTAMP', 'after' => 'sessionid'),
-            'key'       => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'lastused'),
-            'value'     => array('type' => 'TEXT', 'notnull' => false, 'default' => '', 'after' => 'key')
-        ),
-        array(
-            'key_index' => array('fields' => array('parent_id', 'key', 'sessionid'), 'type' => 'UNIQUE')
-        )
-    );
-}
-
+/**
+ * This will migrate the session tables by keeping the current session
+ * (but only the current one) alive
+ */
 function migrateSessionTable()
 {
     global $sessionObj;
     
     try {
-        createOrAlterSessionVariableTable();
+        // update and empty session_variable table
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'session_variable',
+            array(
+                'id'        => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' =>true),
+                'parent_id' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'id'),
+                'sessionid' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'parent_id'),
+                'lastused'  => array('type' => 'TIMESTAMP', 'notnull' => true, 'default_expr' => 'CURRENT_TIMESTAMP', 'on_update' => 'CURRENT_TIMESTAMP', 'after' => 'sessionid'),
+                'key'       => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => '', 'after' => 'lastused'),
+                'value'     => array('type' => 'TEXT', 'notnull' => false, 'default' => '', 'after' => 'key')
+            ),
+            array(
+                'key_index' => array('fields' => array('parent_id', 'key', 'sessionid'), 'type' => 'UNIQUE')
+            ),
+            'InnoDB'
+        );
         \Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `'. DBPREFIX .'session_variable`');
-
-        $objResult = \Cx\Lib\UpdateUtil::sql('SELECT 
-                                                `sessionid`,
-                                                `datavalue`
-                                              FROM
-                                                 `' . DBPREFIX . 'sessions`');        
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $sessionId = $objResult->fields['sessionid'];
-                
-                if ($sessionId == $sessionObj->sessionid) {
-                    $sessionArray = $_SESSION; // migrate the current state into database.
-                } else {
-                    $sessionArray = unserializesession($objResult->fields['datavalue']);
-                }
-                
-                insertSessionArray($sessionId, $sessionArray);
-                $objResult->MoveNext();
-            }
-        }
+        
+        // update and empty sessions table
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'sessions',
             array(
@@ -1973,72 +1966,65 @@ function migrateSessionTable()
                 'startdate'      => array('type' => 'VARCHAR(14)', 'notnull' => true, 'default' => '', 'after' => 'remember_me'),
                 'lastupdated'    => array('type' => 'VARCHAR(14)', 'notnull' => true, 'default' => '', 'after' => 'startdate'),
                 'status'         => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'lastupdated'),
-                'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'status'),                
+                'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'status'),
             ),
             array(
                 'LastUpdated'    => array('fields' => array('lastupdated')),
-            )
+            ),
+            'InnoDB'
         );
-    } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
+        \Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `'. DBPREFIX .'sessions`');
         
+        // migrate the current session into database
+        $_SESSION['contrexx_update']['update']['done'][] = 'session';
+        $sessionArray = $_SESSION;
+        insertSessionArray(session_id(), $sessionArray);
+        
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
     return true;
 }
 
+/**
+ * This inserts a session into the new session structure
+ * Make sure that the session tables are empty before calling this
+ */
 function insertSessionArray($sessionId, $sessionArr, $parentId = 0)
 {
     global $objDatabase;
 
+    if ($parentId == 0) {
+        \Cx\Lib\UpdateUtil::sql('
+            INSERT INTO
+                '. DBPREFIX .'sessions
+            SET
+                `sessionid` = \''. $sessionId .'\',
+                `remember_me` = 0,
+                `startdate` = \'' . time() . '\',
+                `lastupdated` = \'' . time() . '\',
+                `status` = \'backend\',
+                `user_id` = \'' . \FWUser::getFWUserObject()->objUser->getId() . '\'
+        ');
+    }
     foreach ($sessionArr as $key => $value) {
-        \Cx\Lib\UpdateUtil::sql('INSERT INTO 
-                                    '. DBPREFIX .'session_variable
-                                SET 
-                                `parent_id` = "'. intval($parentId) .'",
-                                `sessionid` = "'. $sessionId .'",
-                                `key` = "'. contrexx_input2db($key) .'",
-                                `value` = "'. (is_array($value) ? '' : contrexx_input2db(serialize($value)))  .'"
-                              ON DUPLICATE KEY UPDATE 
-                                `value` = "'. (is_array($value) ? '' : contrexx_input2db(serialize($value))) .'"');
+        \Cx\Lib\UpdateUtil::sql('
+            INSERT INTO
+                '. DBPREFIX .'session_variable
+            SET
+                `parent_id` = "'. intval($parentId) .'",
+                `sessionid` = "'. $sessionId .'",
+                `key` = "'. contrexx_input2db($key) .'",
+                `value` = "'. (is_array($value) ? '' : contrexx_input2db(serialize($value)))  .'"
+            ON DUPLICATE KEY UPDATE
+                `value` = "'. (is_array($value) ? '' : contrexx_input2db(serialize($value))) .'"
+        ');
         $insertId = $objDatabase->Insert_ID();
         
         if (is_array($value)) {
             insertSessionArray($sessionId, $value, $insertId);
         }
     }
-}
-
-function unserializesession( $data )
-{
-    if(  strlen( $data) == 0)
-    {
-        return array();
-    }
-    
-    // match all the session keys and offsets
-    preg_match_all('/(^|;|\})([a-zA-Z0-9_]+)\|/i', $data, $matchesarray, PREG_OFFSET_CAPTURE);
-
-    $returnArray = array();
-
-    $lastOffset = null;
-    $currentKey = '';
-    foreach ( $matchesarray[2] as $value )
-    {
-        $offset = $value[1];
-        if(!is_null( $lastOffset))
-        {
-            $valueText = substr($data, $lastOffset, $offset - $lastOffset );
-            $returnArray[$currentKey] = unserialize($valueText);
-        }
-        $currentKey = $value[0];
-
-        $lastOffset = $offset + strlen( $currentKey )+1;
-    }
-
-    $valueText = substr($data, $lastOffset );
-    $returnArray[$currentKey] = unserialize($valueText);
-    
-    return $returnArray;
 }
 
 function _convertThemes2Component()
@@ -2055,7 +2041,7 @@ function _convertThemes2Component()
     $errorMessages = '';
     $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
     while (!$result->EOF) {
-        $themePath = ASCMS_THEMES_PATH . '/' . $result->fields['foldername']; 
+        $themePath = ASCMS_THEMES_PATH . '/' . $result->fields['foldername'];
         if (!is_dir($themePath)) {
             \DBG::msg('Skipping theme "' . $result->fields['themesname'] . '"; No such folder!');
             $errorMessages .= '<div class="message-warning">' . sprintf($_CORELANG['TXT_CSS_UPDATE_MISSING_FOLDER'], $result->fields['themesname']) . '</div>';

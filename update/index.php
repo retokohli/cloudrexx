@@ -117,7 +117,7 @@ if (!isset($_CONFIG['coreCmsVersion']) && file_exists(ASCMS_DOCUMENT_ROOT . '/co
     require_once(ASCMS_DOCUMENT_ROOT . '/config/version.php');
 }
 
-// Check if the system is installed
+// Check if the system is installed 
 if (!defined('CONTREXX_INSTALLED') || !CONTREXX_INSTALLED) {
     header('Location: ../installer/index.php');
     exit;
@@ -162,7 +162,9 @@ if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable')) {
     $sessionObj = \cmsSession::getInstance();
 }
 $sessionObj->cmsSessionStatusUpdate('backend');
-
+if (!isset($_SESSION['contrexx_update'])) {
+    $_SESSION['contrexx_update'] = array();
+}
 // Initialize base system
 $objInit = new InitCMS('update', \Env::get('em'));
 Env::set('init', $objInit);
@@ -188,7 +190,7 @@ try {
 require_once(UPDATE_CORE . '/cache/cache.class.php');
 global $objCache;
 
-$objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
+$objCache = new \Cache();
 
 // Start update
 $objUpdate = new ContrexxUpdate();
