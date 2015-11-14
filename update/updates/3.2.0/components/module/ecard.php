@@ -117,5 +117,48 @@ function _ecardUpdate() {
         }
     }
 
+    //Update script for moving the folders
+    $imgModulesfolderPath = ASCMS_DOCUMENT_ROOT . '/images/modules/ecard';
+    $mediafolderPath      = ASCMS_DOCUMENT_ROOT . '/media/Ecard';
+
+    $sourceEcardOptimized = $imgModulesfolderPath . '/ecards_optimized';
+    $targetEcardOptimized = $mediafolderPath . '/ecards_optimized';
+    try {
+        \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceEcardOptimized, $targetEcardOptimized);
+    } catch (\Exception $e) {
+        \DBG::log($e->getMessage());
+        setUpdateMsg(sprintf(
+            $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+            $sourceEcardOptimized, $targetEcardOptimized
+        ));
+        return false;
+    }
+
+    $sourceEcardSend = $imgModulesfolderPath . '/send_ecards';
+    $targetEcardSend = $mediafolderPath . '/send_ecards';
+    try {
+        \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceEcardSend, $targetEcardSend);
+    } catch (\Exception $e) {
+        \DBG::log($e->getMessage());
+        setUpdateMsg(sprintf(
+            $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+            $sourceEcardSend, $targetEcardSend
+        ));
+        return false;
+    }
+
+    $sourceEcardThumbs = $imgModulesfolderPath . '/thumbnails';
+    $targetEcardThumbs = $mediafolderPath . '/thumbnails';
+    try {
+        \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceEcardThumbs, $targetEcardThumbs);
+    } catch (\Exception $e) {
+        \DBG::log($e->getMessage());
+        setUpdateMsg(sprintf(
+            $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+            $sourceEcardThumbs, $targetEcardThumbs
+        ));
+        return false;
+    }
+
     return true;
 }
