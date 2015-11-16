@@ -76,8 +76,13 @@ class FormUploader extends Uploader
                 // remember the "raw" file name, we want to store all original
                 // file names in the session.
                 $originalFileName = $name;
+
                 // Clean the fileName for security reasons
-                $name = preg_replace('/[^\w\._]+/', '', $name);
+                // we're using a-zA-Z0-9 instead of \w because of the umlauts.
+                // linux excludes them from \w, windows includes them. we do not want different
+                // behaviours on different operating systems.
+                $name = preg_replace('/[^a-zA-Z0-9\._-]+/', '', $name);
+
                 $originalFileNames = array();
                 if(isset($_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames']))
                     $originalFileNames = $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'];
