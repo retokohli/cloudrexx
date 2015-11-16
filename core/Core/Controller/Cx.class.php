@@ -1899,14 +1899,14 @@ namespace Cx\Core\Core\Controller {
                                                             var js, fjs = d.getElementsByTagName(s)[0];
                                                             if (d.getElementById(id)) return;
                                                             js = d.createElement(s); js.id = id;
-                                                            js.src = "//connect.facebook.net/de_DE/all.js#xfbml=1";
+                                                            js.src = "//connect.facebook.net/'.\FWLanguage::getLanguageCodeById(LANG_ID).'_'.strtoupper(\FWLanguage::getLanguageCodeById(LANG_ID)).'/all.js#xfbml=1";
                                                             fjs.parentNode.insertBefore(js, fjs);
                                                         }(document, \'script\', \'facebook-jssdk\'));
                                                     </script>
                                                     <div class="fb-like" data-href="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'" data-send="false" data-layout="button_count" data-show-faces="false" data-font="segoe ui"></div>',
                 'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'"></div>
                                                     <script type="text/javascript">
-                                                        window.___gcfg = {lang: \'de\'};
+                                                        window.___gcfg = {lang: \''.\FWLanguage::getLanguageCodeById(LANG_ID).'\'};
 
                                                         (function() {
                                                             var po = document.createElement(\'script\'); po.type = \'text/javascript\'; po.async = true;
@@ -1915,9 +1915,9 @@ namespace Cx\Core\Core\Controller {
                                                         })();
                                                     </script>',
                 'TWITTER_SHARE'                  => '<a href="https://twitter.com/share" class="twitter-share-button"
-                                                    data-url="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'" data-lang="de">Twittern</a>
+                                                    data-url="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'" data-lang="'.\FWLanguage::getLanguageCodeById(LANG_ID).'">Twittern</a>
                                                     <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+\'://platform.twitter.com/widgets.js\';fjs.parentNode.insertBefore(js,fjs);}}(document, \'script\', \'twitter-wjs\');</script>',
-                'XING_SHARE'                     => '<div data-type="XING/Share" data-counter="right"></div>
+                'XING_SHARE'                     => '<div data-type="XING/Share" data-counter="right" data-lang="'.\FWLanguage::getLanguageCodeById(LANG_ID).'"></div>
                                                     <script>
                                                         ;(function (d, s) {
                                                             var x = d.createElement(s),
