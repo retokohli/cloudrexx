@@ -3596,8 +3596,20 @@ class NewsletterManager extends NewsletterLib
                 break;
         }
 
+        \Cx\Core\Setting\Controller\Setting::init(
+            'Config',
+            null,
+            'Yaml',
+            null,
+            \Cx\Core\Setting\Controller\Setting::POPULATE
+        );
         $port = '';
-        if (\Cx\Core\Setting\Controller\Setting::getValue('port' . \Env::get('cx')->getMode() . strtoupper(ASCMS_PROTOCOL)) != 80) {
+        $settingsPort = \Cx\Core\Setting\Controller\Setting::getValue(
+            'port' . \Env::get('cx')->getMode() . strtoupper(ASCMS_PROTOCOL)
+        );
+        if ($settingsPort
+            && $settingsPort != getservbyname(ASCMS_PROTOCOL, 'tcp')
+        ) {
             $port = ':' . intval($_SERVER['SERVER_PORT']);
         }
         $uri =
@@ -3626,8 +3638,20 @@ class NewsletterManager extends NewsletterLib
         }
 
         $profileURI = '?section=Newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
+        \Cx\Core\Setting\Controller\Setting::init(
+            'Config',
+            null,
+            'Yaml',
+            null,
+            \Cx\Core\Setting\Controller\Setting::POPULATE
+        );
         $port = '';
-        if (\Cx\Core\Setting\Controller\Setting::getValue('port' . \Env::get('cx')->getMode() . strtoupper(ASCMS_PROTOCOL)) != 80) {
+        $settingsPort = \Cx\Core\Setting\Controller\Setting::getValue(
+            'port' . \Env::get('cx')->getMode() . strtoupper(ASCMS_PROTOCOL)
+        );
+        if ($settingsPort
+            && $settingsPort != getservbyname(ASCMS_PROTOCOL, 'tcp')
+        ) {
             $port = ':' . intval($_SERVER['SERVER_PORT']);
         }
         $uri =
