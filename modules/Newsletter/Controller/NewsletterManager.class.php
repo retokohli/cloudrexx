@@ -3596,11 +3596,14 @@ class NewsletterManager extends NewsletterLib
                 break;
         }
 
+        $port = '';
+        if (\Cx\Core\Setting\Controller\Setting::getValue('port' . \Env::get('cx')->getMode() . strtoupper(ASCMS_PROTOCOL)) != 80) {
+            $port = ':' . intval($_SERVER['SERVER_PORT']);
+        }
         $uri =
             ASCMS_PROTOCOL.'://'.
             $_CONFIG['domainUrl'].
-            ($_SERVER['SERVER_PORT'] == 80
-              ? '' : ':'.intval($_SERVER['SERVER_PORT'])).
+            $port.
             ASCMS_PATH_OFFSET.
 // TODO: use the recipient's language instead of the default language
             '/'.\FWLanguage::getLanguageParameter(\FWLanguage::getDefaultLangId(), 'lang').
@@ -3623,11 +3626,14 @@ class NewsletterManager extends NewsletterLib
         }
 
         $profileURI = '?section=Newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
+        $port = '';
+        if (\Cx\Core\Setting\Controller\Setting::getValue('port' . \Env::get('cx')->getMode() . strtoupper(ASCMS_PROTOCOL)) != 80) {
+            $port = ':' . intval($_SERVER['SERVER_PORT']);
+        }
         $uri =
             ASCMS_PROTOCOL.'://'.
             $_CONFIG['domainUrl'].
-            ($_SERVER['SERVER_PORT'] == 80
-              ? NULL : ':'.intval($_SERVER['SERVER_PORT'])).
+            $port.
             ASCMS_PATH_OFFSET.
 // TODO: use the recipient's language instead of the default language
             '/'.\FWLanguage::getLanguageParameter(\FWLanguage::getDefaultLangId(), 'lang').
