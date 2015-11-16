@@ -120,6 +120,15 @@ function executeContrexxUpdate() {
             return false;
         }
 
+        // backup and remove old component directories
+        $backupAndRemoved = backupAndRemove(ASCMS_DOCUMENT_ROOT, array('core', 'core_modules', 'modules'));
+        if ($backupAndRemoved !== true) {
+            if ($backupAndRemoved === 'timeout') {
+                setUpdateMsg(1, 'timeout');
+            }
+            return false;
+        }
+
         $copyFilesStatus = copyCxFilesToRoot(dirname(__FILE__) . '/cx_files', ASCMS_PATH . ASCMS_PATH_OFFSET);
         if ($copyFilesStatus !== true) {
             if ($copyFilesStatus === 'timeout') {
@@ -2078,6 +2087,145 @@ function _convertThemes2Component()
         $_SESSION['contrexx_update']['update']['done'][] = 'convertTemplates';
         return false;
     }
+    return true;
+}
+
+/**
+ * Backup the components which have been renamed and remove the old ones to ensure compatibility with windows servers
+ *
+ * @param $src string path to source-files without trailing slash
+ * @param $directories array with name(s) of the directories which shall be backed up and removed if not directly under
+ *                     source-path, path without source-path is needed
+ * @return bool|string
+ */
+function backupAndRemove($src, $directories) {
+    $folderStructure = array();
+    foreach($directories as $directory) {
+        $folderStructure[$directory] = getFolderStructure($src . '/' . $directory);
+
+        // set last checked file-index to 0
+        if (empty($_SESSION['contrexx_update']['validatedComponentFiles'][$directory])) {
+            $_SESSION['contrexx_update']['validatedComponentFiles'][$directory] = 0;
+        }
+    }
+
+    // Backup any changes in the old components
+    foreach ($folderStructure as $rootFolder => $files) {
+        for ($i = $_SESSION['contrexx_update']['validatedComponentFiles'][$rootFolder]; $i < count($files); $i++) {
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                $_SESSION['contrexx_update']['validatedComponentFiles'][$rootFolder] = $i;
+                return 'timeout';
+            }
+            $newFile = dirname(__FILE__) . '/cx_files/'. substr($files[$i], strlen(ASCMS_DOCUMENT_ROOT.'/'));
+
+            if (!verifyMd5SumOfFile($files[$i], $newFile)) {
+                backupModifiedFile($files[$i]);
+            }
+        }
+    }
+
+    // Remove the old component directories
+    if (!removeOldComponents($directories)) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Get the structure of a directory with all the subdirectories and files
+ *
+ * @param $folder string path to the desired folder
+ * @param bool $foldersOnly
+ * @param bool $subdirectories
+ * @return array all the files and directories in the desired folder
+ */
+function getFolderStructure($folder, $foldersOnly = false, $subdirectories = true) {
+    $files = array();
+    $dirs = array($folder);
+    $folders = array();
+
+    while (($dir = array_pop($dirs)) !== NULL) {
+        if ($dh = opendir($dir)) {
+            while (($file = readdir($dh)) !== false) {
+                if ($file == '.' || $file == '..') {
+                    continue;
+                }
+
+                $path = $dir . '/' . $file;
+                if (is_dir($path)) {
+                    // add current dir if subdirectories shall be listed as well
+                    if ($subdirectories) {
+                        $dirs[] = $path;
+                    }
+                    // add current dir to folders-array if folders only is desired
+                    if ($foldersOnly) {
+                        $folders[] = $path;
+                    }
+                } else {
+                    $files[] = $path;
+                }
+            }
+            closedir($dh);
+        }
+    }
+
+    if ($foldersOnly) {
+        return $folders;
+    }
+    return $files;
+}
+
+/**
+ * Removes the old component-folders
+ *
+ * @param $folders array root folders which shall be checked for new versions and remvoed
+ * @return bool true on success false otherwise
+ */
+function removeOldComponents($folders) {
+    $newComponents = array();
+    foreach ($folders as $componentFolder) {
+        $newComponents[$componentFolder] = getFolderStructure(dirname(__FILE__) . '/cx_files' . $componentFolder, true, false);
+        if (empty($_SESSION['contrexx_update']['removedComponents'][$componentFolder])) {
+            $_SESSION['contrexx_update']['removedComponents'][$componentFolder] = 0;
+        }
+    }
+
+    $componentList = \Cx\lib\UpdateUtil::getNewComponentNames();
+
+    foreach ($newComponents as $componentFolder => $newComponentNames) {
+        // load the removedComponent index stored in the session
+        $removedComponents = $_SESSION['contrexx_update']['removedComponents'][$componentFolder];
+        for ($i = $removedComponents; $i < count($newComponentNames); $i++) {
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                $_SESSION['contrexx_update']['removedComponents'][$componentFolder] = $i;
+                return 'timeout';
+            }
+            // remove the update-path from the component name
+            $newComponentName = substr($newComponentNames[$i], strlen(dirname(__FILE__) . '/cx_files' . $componentFolder . '/'));
+            // check if the component has been renamed
+            if (!array_key_exists($newComponentName, $componentList)) {
+                // No change? No need to remove it
+                continue;
+            }
+
+            // get old component name
+            $oldComponentName = $componentList[$newComponentName];
+            // create the paths to the current component
+            $path = ASCMS_DOCUMENT_ROOT . '/' . $componentFolder;
+            $webPath = ASCMS_INSTANCE_OFFSET . '/' . $componentFolder;
+
+            $componentDir = new \Cx\lib\FileSystem\FileSystem();
+
+            // make sure that current path is a directory and it can be removed
+            if (!is_dir($path . '/' . $oldComponentName) || !$componentDir->delDir($path, $webPath, $oldComponentName)) {
+                // failed to remove folder
+                setUpdateMsg('Das Verzeichnis \'' . $path . $oldComponentName . '\' konnte nicht gelöscht werden.');
+                return false;
+            }
+        }
+    }
+
     return true;
 }
 
