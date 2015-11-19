@@ -261,7 +261,7 @@ class Resolver {
                                         // page might only be inactive
                                         'history'   => $history,
                                         'resolver'  => $this,
-                                        'reason'    => \Cx\Core_Modules\Error\Controller\FrontendController::ERROR_REASON_PAGE_NOT_FOUND
+                                        'state'    => \Cx\Core_Modules\Error\Controller\FrontendController::ERROR_STATE_RESOLVE
                                     ));
                                 }
                             }

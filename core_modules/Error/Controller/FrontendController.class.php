@@ -82,12 +82,12 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     /**
      * @var string
      */
-    const ERROR_REASON_PAGE_NOT_FOUND = 'page not found';
+    const ERROR_STATE_RESOLVE = 'resolve';
 
     /**
      * @var string
      */
-    const ERROR_REASON_NOT_LICENSED = 'not licensed';
+    const ERROR_STATE_POST_RESOLVE = 'postResolve';
 
     /**
      * @var \Cx\Core\Routing\Resolver Resolver which triggered the event
@@ -102,7 +102,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     /**
      * @var string reason why the event was triggered
      */
-    protected $reason = '';
+    protected $state = '';
 
     /**
      * Resolves all events which the error-component has been registered as handler.
@@ -129,14 +129,14 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
-     * Handles the event of a missing, deactivated or not licensed component or page respectively.
+     * Handles the event of a missing, deactivated or not licensed component or
+     * page respectively.
      *
-     * Loads the page-not-found-page and sets it as resolvedPage (see \Cx\Core\Core\Controller\Cx::setPage($page))
+     * Loads the page-not-found-page and sets it as resolvedPage(see \Cx\Core\Core\Controller\Cx::setPage($page))
      * Swaps the missing, deactivated or not licensed component with the error-component
      * Sets the HTTP/1.0 404-header
      *
      * @TODO: Check what happens when this is called in load or preContentLoad $eventArgs might need a stage-value to abort this method if it is already too late
-     * @example "../../core/Routing/Resolver.class.php" 234 6
      * @param array $eventArgs The arguments supplied while triggering the event
      * @throws \Cx\Core_Modules\Error\Controller\SkipResolverException to stop resolving the faulty page or component
      */
@@ -150,7 +150,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $history = $eventArgs['history'];
         $this->section = $eventArgs['section'];
         $this->resolver = $eventArgs['resolver'];
-        $this->reason = $eventArgs['reason'];
+        $this->state = $eventArgs['state'];
 
         // Load the content of the error-page
         $pageRepo = $this->cx->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
@@ -173,8 +173,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         header("HTTP/1.0 404 Not Found");
 
         // only throw the SkipResolverException when whe are resolving or postResolving
-        if ($this->reason == $this::ERROR_REASON_PAGE_NOT_FOUND || $this->reason == $this::ERROR_REASON_NOT_LICENSED) {
-            // throw exception so that the resolver stops resolving gets caught in \Cx\Core\Core\Controller\Cx.class.php
+        if ($this->state == $this::ERROR_STATE_RESOLVE ||
+            $this->state == $this::ERROR_STATE_POST_RESOLVE
+        ) {
+            // throw exception so that the resolver stops resolving! Gets caught
+            // in \Cx\Core\Core\Controller\Cx.class.php
             throw new \Cx\Core_Modules\Error\Controller\SkipResolverException();
         }
     }
@@ -194,6 +197,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     {
         global $_ARRAYLANG;
 
+        // LinkParser replaced a component-node with the page-not-found-url and
+        // added the initial component as GET param
         if (!empty($_REQUEST['initialComponent'])) {
             $this->section = $_REQUEST['initialComponent'];
         }
@@ -211,10 +216,14 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         // Check if the user is logged in to the frontend
         $loggedIn = \FWUser::getFWUserObject()->objUser->login();
 
-        // display only the default component if no section is given or the given section is not a valid component
-        // or the user is not logged in (at least frontend) to be able to see the component information
+        // display only the default component if no section is given, the given
+        // section is not a valid component or the user is not logged in
+        // (at least frontend) to be able to see the component information
         $systemComponentRepo = $this->cx->getDb()->getEntityManager()->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
-        if (empty($this->section) || empty($systemComponentRepo->findOneBy(array('name' => $this->section))) || !$loggedIn) {
+        if (empty($this->section)
+            || empty($systemComponentRepo->findOneBy(array('name' => $this->section)))
+            || !$loggedIn
+        ) {
             $template->hideBlock('error_module_information');
             $template->hideBlock('error_module_name');
             $template->hideBlock('error_module_description');
@@ -222,10 +231,14 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             return;
         }
 
-        // is a component-page
+        // is a component-page and the user is logged in
 
         // load language data of the core to display Component information
-        $coreLang = \Env::get('init')->getComponentSpecificLanguageData('Core', false, FRONTEND_LANG_ID);
+        $coreLang = \Env::get('init')->getComponentSpecificLanguageData(
+            'Core',
+            false,
+            FRONTEND_LANG_ID
+        );
 
         // check if a description is available
         $noDescription = !isset($coreLang['TXT_' . strtoupper($this->section) . '_MODULE_DESCRIPTION']) ? true : false;
@@ -233,8 +246,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $noAccess = !(\FWUser::getFWUserObject()->objUser->login(true) && \Permission::checkAccess(52, 'static', true));
 
         // prepare the template
-
-        // only parse the description-block if a description is available
         $blocks = array(
             'error_module_information'                  => 'set',
             'error_module_description'                  => 'set',
@@ -245,7 +256,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $template->touchBlock('error_module_name');
 
         // get the actual name of the component
-        $this->section = $systemComponentRepo->findOneBy(array('name' => $this->section))->getSystemComponent()->getName();
+        $component = $systemComponentRepo->findOneBy(array('name' => $this->section))->getSystemComponent();
+        $this->section = $component->getName();
 
         // replace the variable to list the name
         $template->setVariable(array(
@@ -257,8 +269,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
             $blocks['error_module_description'] = 'unset';
         }
 
-        // only display installation instruction if the page was not found and the user has access
-        if ($noAccess || $this->reason == $this::ERROR_REASON_PAGE_NOT_FOUND) {
+        // hide the installation instruction if the component isn't licensed or
+        // the user hasn't enough rights to add new components
+        if ($noAccess || !$component->isActive()) {
             $blocks['error_module_installation_instructions'] = 'unset';
         }
 
@@ -299,14 +312,14 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     }
 
     /**
-     * Get the backend URL
+     * Get the backend URL with the
      *
-     * Creates a Url using {@link \Cx\Core\Routing\Url::fromDocumentRoot()} and sets the url-params for component, cmd
-     * and csrf.
+     * Creates an url using {@link \Cx\Core\Routing\Url::fromDocumentRoot()} and
+     * sets the url-params for cmd and act
      *
-     * @param boolean $setParams
+     * @param boolean $setParams If the cmd and act params shall be added
      * @param string $component Name of the component needs to be the formatted value (CamelCase)
-     * @param string $act
+     * @param string $act The act-param value
      * @return string The absolute URL
      */
     private function getBackendUrl($setParams = true, $component = '', $act = '' ) {

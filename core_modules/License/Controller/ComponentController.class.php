@@ -144,7 +144,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     \Env::get('Resolver')->redirectToCorrectLanguageDir();
                 }
 
-                if (!empty($section) && !$license->isInLegalFrontendComponents($section)) {
+                $systemComponentRepo = $this->cx->getDb()->getEntityManager()->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
+                if (empty($systemComponentRepo->findONeBy(array('name' => $section)))) {
+                    break;
+                }
+
+                $section = $systemComponentRepo->findONeBy(array('name' => $section))->getSystemComponent()->getName();
+
+                if (!empty($section)
+                    && !$license->isInLegalFrontendComponents($section)) {
                     if ($section == 'Error') {
                         // If the error module is not installed, show this
                         die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -154,7 +162,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'section'   => $section,
                             'history'   => isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0,
                             'resolver'  => \Env::get('Resolver'),
-                            'reason'    => \Cx\Core_Modules\Error\Controller\FrontendController::ERROR_REASON_NOT_LICENSED
+                            'state'    => \Cx\Core_Modules\Error\Controller\FrontendController::ERROR_STATE_POST_RESOLVE
                         ));
                     }
                 }
