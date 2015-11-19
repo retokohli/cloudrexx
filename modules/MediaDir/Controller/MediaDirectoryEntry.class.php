@@ -1485,6 +1485,120 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             return time();
         }
     }
-}
+    
+    /**
+     * Searches the content and returns an array that is built as needed by the search module.
+     * 
+     * @param string $searchTerm
+     * 
+     * @return array
+     */
+    public function searchResultsForSearchModule($searchTerm) 
+    {
+        $em = \Env::get('cx')->getDb()->getEntityManager();
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
-?>
+        // only list results in case the associated page of the module is active
+        $page = $pageRepo->findOneBy(array(
+            'module' => 'MediaDir',
+            'lang'   => FRONTEND_LANG_ID,
+            'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,            
+        ));
+
+        //If page is not exists or page is inactive then return empty result
+        if (!$page || !$page->isActive()) {
+            return array();
+        }
+
+        //get the config site values
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml');
+        $coreListProtectedPages   = \Cx\Core\Setting\Controller\Setting::getValue('coreListProtectedPages','Config');
+        $searchVisibleContentOnly = \Cx\Core\Setting\Controller\Setting::getValue('searchVisibleContentOnly','Config');
+
+        $hasPageAccess = true;
+        $isNotVisible = ($searchVisibleContentOnly == 'on') && !$page->isVisible();
+        if ($coreListProtectedPages == 'off' && $page->isFrontendProtected()) {
+            $hasPageAccess = \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true);
+        }
+
+        //If the page is invisible and frontend access is denied then return empty result
+        if ($isNotVisible || !$hasPageAccess) {
+            return array();
+        }
+
+        //get the media directory entry by the search term
+        $entries = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry($this->moduleName);
+        $entries->getEntries(null, null, null, $searchTerm);
+
+        //if no entries found then return empty result
+        if (empty($entries->arrEntries)) {
+            return array();
+        }
+
+        $results            = array();
+        $formEntries        = array();
+        $defaultEntries     = null;
+        $objForm            = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, $this->moduleName);
+        $numOfEntries       = intval($entries->arrSettings['settingsPagingNumEntries']);
+        foreach ($entries->arrEntries as $entry) {
+            $pageUrlResult = null;
+            $entryForm     = $objForm->arrForms[$entry['entryFormId']];
+            //Get the entry's link url
+            //check the entry's form detail view exists if not, 
+            //check the entry's form overview exists if not,
+            //check the default overview exists if not, dont show the corresponding entry in entry
+            switch (true) {
+                case $entries->checkPageCmd('detail' . $entry['entryFormId']):
+                    $pageUrlResult = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                        $entries->moduleName, 
+                                        'detail' . $entry['entryFormId'], 
+                                        FRONTEND_LANG_ID, 
+                                        array('eid' => $entry['entryId']));
+                    break;
+                case $pageCmdExists = $entries->checkPageCmd($entryForm['formCmd']):
+                case $entries->checkPageCmd(''):
+                    if ($pageCmdExists && !isset($formEntries[$entryForm['formCmd']])) {
+                        $formEntries[$entryForm['formCmd']] = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry($entries->moduleName);
+                        $formEntries[$entryForm['formCmd']]->getEntries(null, null, null, null, null, null, 1, null, 'n', null, null, $entryForm['formId']);
+                    }
+                    if (!$pageCmdExists && !isset($defaultEntries)) {
+                        $defaultEntries = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry($entries->moduleName);
+                        $defaultEntries->getEntries();
+                    }
+                    //get entry's form overview / default page paging position
+                    $entriesPerPage = $numOfEntries;
+                    if ($pageCmdExists) {
+                        $entriesPerPage = !empty($entryForm['formEntriesPerPage']) ? $entryForm['formEntriesPerPage'] : $numOfEntries;
+                    }
+                    $pageCmd   = $pageCmdExists ? $entryForm['formCmd'] : '';
+                    $entryKeys = $pageCmdExists ? array_keys($formEntries[$entryForm['formCmd']]->arrEntries) : array_keys($defaultEntries->arrEntries);
+                    $entryPos  = array_search($entry['entryId'], $entryKeys) + 1;
+                    $position  = round($entryPos / $entriesPerPage);
+
+                    $pageUrlResult = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                        $entries->moduleName, 
+                                        $pageCmd, 
+                                        FRONTEND_LANG_ID,
+                                        array('pos' => !empty($position) 
+                                                        ? ($position - 1) * $entriesPerPage 
+                                                        : $position * $entriesPerPage));
+                    break;
+                default:
+                    break;
+            }
+
+            //If page url is empty then dont show it in the result
+            if (!$pageUrlResult) {
+                continue;
+            }
+
+            $results[] = array(
+                'Score'   => 100,
+                'Title'   => current($entry['entryFields']),
+                'Content' => '',
+                'Link'    => $pageUrlResult->toString()
+            );
+        }
+        return $results;
+    }
+}
