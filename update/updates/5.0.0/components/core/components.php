@@ -27,9 +27,6 @@
 
 /**
  * Update the component table and fill it with the new values
- * @param $objDatabase
- * @param $objUpdate
- * @param $_CONFIG
  * @return bool true on success false otherwise
  */
 function _updateComponent() {
@@ -46,9 +43,13 @@ function _updateComponent() {
             }
 
             $componentType = 'module';
-            if ($component['is_required'] === 1 && $component['is_core'] === 1) {
+            if ($component['is_required'] === 1
+                && $component['is_core'] === 1
+            ) {
                 $componentType = 'core';
-            } else if ($component['is_required'] === 0 && $component['is_core'] === 1) {
+            } else if ($component['is_required'] === 0
+                && $component['is_core'] === 1
+            ) {
                 $componentType = 'core_module';
             }
 
