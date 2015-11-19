@@ -100,7 +100,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
     protected $section = '';
 
     /**
-     * @var string reason why the event was triggered
+     * @var string state in which the event was triggered
      */
     protected $state = '';
 
