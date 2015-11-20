@@ -1572,16 +1572,13 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                     }
                     $pageCmd   = $pageCmdExists ? $entryForm['formCmd'] : '';
                     $entryKeys = $pageCmdExists ? array_keys($formEntries[$entryForm['formCmd']]->arrEntries) : array_keys($defaultEntries->arrEntries);
-                    $entryPos  = array_search($entry['entryId'], $entryKeys) + 1;
-                    $position  = round($entryPos / $entriesPerPage);
-
+                    $entryPos  = array_search($entry['entryId'], $entryKeys);
+                    $position  = floor($entryPos / $entriesPerPage);
                     $pageUrlResult = \Cx\Core\Routing\Url::fromModuleAndCmd(
                                         $entries->moduleName, 
                                         $pageCmd, 
                                         FRONTEND_LANG_ID,
-                                        array('pos' => !empty($position) 
-                                                        ? ($position - 1) * $entriesPerPage 
-                                                        : $position * $entriesPerPage));
+                                        array('pos' => $position * $entriesPerPage));
                     break;
                 default:
                     break;
