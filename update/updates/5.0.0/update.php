@@ -849,11 +849,24 @@ function executeContrexxUpdate() {
         $result = _updateComponent();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_COMPONENT_TABLE']), 'title');
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_TABLE'], DBPREFIX), 'title');
             }
             return false;
         } else {
             $_SESSION['contrexx_update']['update']['done'][] = 'coreComponent';
+        }
+    }
+
+    // Migrate page logs
+    if(!in_array('pageLogs', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))
+        || !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        $result = _migratePageLogs();
+        if ($result === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg($_CORELANG['TXT_UPDATE_PAGE_LOG'], 'title');
+            }
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'pageLogs';
         }
     }
 
@@ -2078,6 +2091,42 @@ function _convertThemes2Component()
         $_SESSION['contrexx_update']['update']['done'][] = 'convertTemplates';
         return false;
     }
+    return true;
+}
+
+/**
+ * Migrate the page logs to the new naming convention (component names CamelCase)
+ *
+ * @return boolean true on success false on failure
+ */
+function _migrateLogs() {
+    $componentNames = array (
+        'Access', 'Agb', 'Blog', 'Calendar', 'Checkout', 'Contact', 'Cron',
+        'Data', 'Directory', 'DocSys', 'Downloads', 'Ecard', 'Egov', 'Error',
+        'Feed', 'FileSharing', 'Forum', 'Gallery', 'GuestBook', 'Home', 'Html',
+        'Ids', 'Imprint', 'Jobs', 'Knowledge', 'LinkManager', 'Livecam', 'Login',
+        'Market', 'Media', 'Media1', 'Media2', 'Media3', 'Media4', 'MediaBrowser',
+        'MediaDir', 'MemberDir', 'NetManager', 'News', 'Newsletter', 'Order',
+        'Pim', 'Podcast', 'Privacy', 'Recommend', 'Search', 'Shell', 'Shop',
+        'Sitemap', 'Survey', 'SysLog', 'U2u', 'Uploader', 'User', 'Voting', 'Wysiwyg',
+    );
+    foreach ($componentNames as $componentName) {
+        $nameLength = strlen($componentName);
+        $nameLower = strtolower($componentName);
+
+        $result = \Cx\lib\UpdateUtil::sql(
+            'UPDATE `' . DBPREFIX . 'log_entry
+             SET `data` = REPLACE(`data`, \'"module";s:'. $nameLength . ':"' . $nameLower . '"\', \'"module";s:'. $nameLength . ':"' . $componentName . '"\')
+             WHERE `data` LIKE \'%"module";s' . $nameLength . ':' . $nameLower . '"%\''
+        );
+
+        if ($result === false) {
+            \DBG::log('Update::_migrateLogs(): Failed to Migrate logs for' .
+                      ' Component ' . $componentName);
+            return false;
+        }
+    }
+
     return true;
 }
 
