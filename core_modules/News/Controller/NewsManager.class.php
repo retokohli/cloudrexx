@@ -3110,7 +3110,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                             WHERE       tblNews.status=1
                                 AND     tblLocale.is_active = 1
                                 AND     tblLocale.lang_id = " . $LangId . "                                
-                                AND     (tblNews.startdate <= '".date('Y-m-d')." 59:59:59' OR tblNews.startdate = '0000-00-00 00:00:00')
+                                AND     (tblNews.startdate <= '".date('Y-m-d')." 23:59:59' OR tblNews.startdate = '0000-00-00 00:00:00')
                                 AND     (tblNews.enddate >= '".date('Y-m-d')." 00:00:00' OR tblNews.enddate = '0000-00-00 00:00:00')"
                                 .($this->arrSettings['news_message_protection'] == '1' ? " AND tblNews.frontend_access_id=0 " : '')
                                         ."ORDER BY tblNews.date DESC";
