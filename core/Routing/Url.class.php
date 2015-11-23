@@ -773,9 +773,16 @@ class Url {
      */
     public function toString($absolute = true, $forcePort = false) {
         if(!$absolute) {
-            return \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()  . '/' .
-                ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '') . 
-                $this->path;
+            $relativeUrl = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() .
+                '/';
+            if (
+                $this->getMode() != 'backend' &&
+                $this->isVirtualLanguageDirsActive()
+            ) {
+                $relativeUrl .= $this->getLangDir() . '/';
+            }
+            $relativeUrl .= $this->path;
+            return $relativeUrl;
         }
         $defaultPort = getservbyname($this->protocol, 'tcp');
         $portPart = '';
@@ -788,9 +795,17 @@ class Url {
             $this->toString(false);
     }
 
+    protected function isVirtualLanguageDirsActive() {
+        // if only 1 lang active and virtual lang dirs deactivated, return false
+        return false;
+    }
+
     public function getLangDir() {
         $lang_dir = '';
 
+        if (!$this->isVirtualLanguageDirsActive()) {
+            return \FWLanguage::getLanguageCodeById(\FWLanguage::getDefaultLangId());
+        }
         if ($this->langDir == '' && defined('FRONTEND_LANG_ID')) {
             $lang_dir = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
         } else {
