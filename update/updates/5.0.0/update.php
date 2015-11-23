@@ -2191,7 +2191,34 @@ function removeOldComponents($folders) {
         }
     }
 
-    $componentList = \Cx\lib\UpdateUtil::getNewComponentNames();
+    $componentList = array(
+        'Config' => 'settings', 'ComponentManager' => 'modulemanager',
+        'ContentWorkflow' => 'workflow', 'Country' => 'country',
+        'Csrf' => 'CSRF', 'DatabaseManager' => 'dbm', 'Error' => 'error',
+        'ImageType' => 'Imagetype', 'JavaScript' => 'JavaScript',
+        'JsonData' => 'jsondata', 'MailTemplate' => 'MailTemplate',
+        'LanguageManager' => 'language', 'Message' => 'Message',
+        'Security' => 'Security', 'Session' => 'session',
+        'SystemInfo' => 'server', 'SystemLog' => 'log',
+        'ViewManager' => 'skins', 'Access' => 'access', 'Agb' => 'agb',
+        'Alias' => 'alias', 'Cache' => 'cache', 'Captcha' => 'captcha',
+        'Contact' => 'contact', 'FileBrowser' => 'fileBrowser',
+        'Home' => 'home', 'Ids' => 'ids', 'Imprint' => 'imprint',
+        'Login' => 'login', 'Media' => 'media', 'NetTools' => 'nettools',
+        'News' => 'news', 'Privacy' => 'privacy', 'Search' => 'search',
+        'Sitemap' => 'sitemap', 'Stats' => 'stats', 'Block' => 'block',
+        'Blog' => 'blog', 'Calendar' => 'calendar', 'Checkout' => 'checkout',
+        'Crm' => 'crm', 'Data' => 'data', 'Directory' => 'directory',
+        'DocSys' => 'docsys', 'Downloads' => 'downloads', 'Ecard' => 'ecard',
+        'Egov' => 'egov', 'Feed' => 'feed', 'FileSharing' => 'filesharing',
+        'Forum' => 'forum', 'Gallery' => 'gallery',
+        'GuestBook' => 'guestbook', 'Jobs' => 'jobs',
+        'Knowledge' => 'knowledge', 'Livecam' => 'livecam',
+        'Market' => 'market', 'MediaDir' => 'mediadir',
+        'MemberDir' => 'memberdir', 'Newsletter' => 'newsletter',
+        'Podcast' => 'podcast', 'Recommend' => 'recommend', 'Shop' => 'shop',
+        'U2u' => 'u2u', 'Voting' => 'voting',
+    );
 
     foreach ($newComponents as $componentFolder => $newComponentNames) {
         // load the removedComponent index stored in the session
@@ -2201,11 +2228,16 @@ function removeOldComponents($folders) {
                 $_SESSION['contrexx_update']['removedComponents'][$componentFolder] = $i;
                 return 'timeout';
             }
-            // remove the update-path from the component name
-            $newComponentName = substr($newComponentNames[$i], strlen(dirname(__FILE__) . '/cx_files' . $componentFolder . '/'));
-            // check if the component has been renamed
-            if (!array_key_exists($newComponentName, $componentList)) {
-                // No change? No need to remove it
+            // get the component name out of the path
+            $newComponentName = end(explode(DIRECTORY_SEPARATOR, $newComponentNames[$i]));
+            // check if the component has been renamed, backed up or if the directory exists in cx_files/
+            if (
+                !array_key_exists($newComponentName, $componentList)
+                || !file_exists(ASCMS_CUSTOMIZING_PATH . '/' . $componentFolder . '/' . $componentList[$newComponentName])
+                || !file_exists('./cx_files/' . $componentFolder . '/' . $componentList[$newComponentName])
+            ) {
+                // Componentname didn't change or component hasn't been backed up
+                // or component doesn't exist in cx_files => No need to remove it
                 continue;
             }
 
@@ -2215,7 +2247,7 @@ function removeOldComponents($folders) {
             $path = ASCMS_DOCUMENT_ROOT . '/' . $componentFolder;
             $webPath = ASCMS_INSTANCE_OFFSET . '/' . $componentFolder;
 
-            $componentDir = new \Cx\lib\FileSystem\FileSystem();
+            $componentDir = new \Cx\Lib\FileSystem\FileSystem();
 
             // make sure that current path is a directory and it can be removed
             if (!is_dir($path . '/' . $oldComponentName) || !$componentDir->delDir($path, $webPath, $oldComponentName)) {
