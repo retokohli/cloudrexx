@@ -165,7 +165,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $history = $eventArgs['history'];
         $this->section = $eventArgs['section'];
         $this->resolver = $eventArgs['resolver'];
-        $this->reason = $eventArgs['state'];
+        $this->state = $eventArgs['state'];
         $this->httpCode = $eventArgs['httpCode'];
         $this->title = $eventArgs['title'];
         $this->message = $eventArgs['message'];
