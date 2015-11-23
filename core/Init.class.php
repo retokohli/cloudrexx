@@ -705,6 +705,7 @@ class InitCMS
                         case 'NetManager':
                         case 'Wysiwyg':
                         case 'Routing':
+                        case 'Html':
                             $this->arrModulePath[$objResult->fields['name']] = ASCMS_CORE_PATH.'/'. $objResult->fields['name'] . '/lang/';
                             break;
                         default:
@@ -776,7 +777,7 @@ class InitCMS
         }
         return $_CORELANG;
     }
-
+    
     /**
      * Get component specific language data
      * State of the init will be backedup and restored while loading the language
@@ -795,12 +796,23 @@ class InitCMS
         if ($componentName == 'Core') {
             $componentName = lcfirst($componentName);
         }
+        
+        if (!isset($this->moduleSpecificLanguageData[$languageId])) {
+            $this->moduleSpecificLanguageData[$languageId] = array();
+        }
+        if (!isset($this->moduleSpecificLanguageData[$languageId][$frontend])) {
+            $this->moduleSpecificLanguageData[$languageId][$frontend] = array();
+        }
+        
+        if (isset($this->moduleSpecificLanguageData[$languageId][$frontend][$componentName])) {
+            return $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName];
+        }
 
         // save init state
         $langBackup = $_ARRAYLANG;
         $modeBackup = $this->mode;
         $frontentLangIdBackup = $this->frontendLangId;
-        $backendLangIdBackup = $this->backupLangId;
+        $backendLangIdBackup = $this->backendLangId;
 
         // set custom init state
         $this->mode = $mode;
@@ -808,8 +820,7 @@ class InitCMS
         $this->backendLangId = $languageId;
 
         // load language data
-        $this->loadLanguageData($componentName);
-        $moduleSpecificLanguageData = $_ARRAYLANG;
+        $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName] = $this->loadLanguageData($componentName);
 
         // restore init state
         $_ARRAYLANG = $langBackup;
@@ -817,7 +828,7 @@ class InitCMS
         $this->frontendLangId = $frontentLangIdBackup;
         $this->backendLangId = $backendLangIdBackup;
 
-        return $moduleSpecificLanguageData;
+        return $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName];
     }
 
     protected function getLangFilePath($module, $langId) {

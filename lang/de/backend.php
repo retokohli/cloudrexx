@@ -197,6 +197,7 @@ $_ARRAYLANG['TXT_DOC_SYS_MODULE_DESCRIPTION'] = "Mit dem Modul Linkverzeichnis k
 $_ARRAYLANG['TXT_SHOP_MODULE_DESCRIPTION'] = "B2B und B2C Online Shop Lösung";
 $_ARRAYLANG['TXT_SITEMAP_MODULE_DESCRIPTION'] = "Das Modul Sitemap stellt automatisch anhand der Seiten-Struktur eine Sitemap im Windows Explorer Stil zur Verfügung. ";
 $_ARRAYLANG['TXT_LINKS_MODULE_DESCRIPTION'] = "Verzeichnis";
+$_ARRAYLANG['TXT_LINKS'] = "Verzeichnis";
 $_ARRAYLANG['TXT_IDS_MODULE_DESCRIPTION'] = "Integriertes Abwehrschutz System ( IDS )";
 $_ARRAYLANG['TXT_ERROR_MODULE_DESCRIPTION'] = "Fehleranzeige System";
 $_ARRAYLANG['TXT_HOME_MODULE_DESCRIPTION'] = "CMS Startseiten Module";
@@ -513,6 +514,7 @@ $_ARRAYLANG['TXT_CACHE_FOLDER_EMPTY'] = "Cache-Ordner wurde geleert.";
 $_ARRAYLANG['TXT_IMPORT'] = "Importieren";
 $_ARRAYLANG['TXT_CHOOSE_FILE'] = "Wählen Sie die Datei";
 $_ARRAYLANG['TXT_ADD_PAIR'] = "Paar hinzufügen";
+$_ARRAYLANG['TXT_MARKET'] = 'Inserate';
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Mit dem Modul Kleinanzeigenmarkt können Inserate kategorisiert und zeitlich begrenzt veröffentlicht werden.";
 $_ARRAYLANG['TXT_CORE_MARKET_TITLE'] = "Inserate";
 $_ARRAYLANG['TXT_SEPARATOR'] = "Begrenzungszeichen";
@@ -770,6 +772,7 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "Der gewählte Benutzername wi
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "Webseite besuchen";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Webseite";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "PLZ";
+$_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'] = 'Datei wählen';
 $_ARRAYLANG['CONTENT_ALIAS_HELPTEXT'] = "Mit einem Alias können Sie der Seite eine URL zuweisen, die für Suchmaschinen sowie für das menschliche Auge angenehmer ist. Anstelle von z.B. <b>www.ihredomain.com/index.php?page=9234<\\/b> kann eine URL in der Form <b>www.ihredomain.com/dienstleistung<\\/b> benutzt werden.";
 $_ARRAYLANG['TXT_ERROR_NO_TITLE'] = "Diese Seite hat keinen Linknamen und konnte deshalb nicht gespeichert werden.";
 $_ARRAYLANG['TXT_CREATE_BACKUPS'] = "Backup erstellen";
@@ -1006,6 +1009,7 @@ $_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPING'] = "Domain-Mappings";
 $_ARRAYLANG['TXT_ACCESS_GROUP_NAME_INVALID'] = "Der gewählte Gruppenname ist nicht gültig! Wählen Sie bitte einen anderen Namen für die Gruppe.";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNTS_ACTIVATED'] = "Benutzerkonten aktiviert";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNTS_DEACTIVATED'] = "Benutzerkonten aktiviert";
+$_ARRAYLANG['TXT_CORE_HTML_FORM_VALIDATION_ERROR'] = 'Die Validierung mindestens eines Feldes ist fehlgeschlagen!';
 
 // core Image/Imagetype
 $_ARRAYLANG['TXT_CORE_CLEAR_IMAGE'] = "Bild entfernen";

@@ -264,7 +264,7 @@ class ContentManager extends \Module
         $mediaBrowser->setOptions(array('type' => 'button'));
         $mediaBrowser->setCallback('setWebPageUrlCallback');
         $mediaBrowser->setOptions(array(
-            'data-cx-mb-views' => 'sitestructure',
+            'data-cx-mb-startview' => 'sitestructure',
             'id' => 'page_target_browse'
         ));
         $this->template->setVariable(array(
@@ -390,7 +390,6 @@ class ContentManager extends \Module
         $this->template->setVariable('LANGUAGE_DISPLAY', $languageDisplay);
 
         // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
-        $this->template->setVariable('CXJS_INIT_JS', \ContrexxJavascript::getInstance()->initJs());
         $this->template->setVariable('SKIN_OPTIONS', $this->getSkinOptions());
         $this->template->setVariable('LANGSWITCH_OPTIONS', $this->getLangOptions());
         $this->template->setVariable('LANGUAGE_ARRAY', json_encode($this->getLangArray()));

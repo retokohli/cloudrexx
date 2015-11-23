@@ -98,6 +98,7 @@ class DBG
     private static $mode         = 0;
     private static $sql_query_cache = null;
     private static $memory_logs = array();
+    protected static $logPrefix = '';
 
 
     public function __construct()
@@ -732,7 +733,7 @@ class DBG
                     $type = 'NOTICE';
                     break;
                 case E_CORE_ERROR:
-                    $type = 'E_CORE_MODULE_ERROR';
+                    $type = 'E_CORE_ERROR';
                     break;
                 case E_CORE_WARNING:
                     $type = 'E_CORE_WARNING';
@@ -785,6 +786,10 @@ class DBG
     private static function _log($text, $firephp_action='log', $additional_args=null)
     {
         if (!self::isLogWorthy($text)) return;
+
+        if (self::$logPrefix !== '') {
+            $text = '(' . self::$logPrefix . ') ' . $text;
+        }
 
         if (self::$log_firephp
             && method_exists(self::$firephp, $firephp_action)) {
@@ -910,6 +915,22 @@ class DBG
         if (!$forceOutput && self::$mode & DBG_DB_TRACE) {
             self::stack();
         }
+    }
+
+    /**
+     * Set a text that will be put in front of all log messages
+     *
+     * @param   string  $prefix The text that shall be put in front of log messages
+     */
+    public static function setLogPrefix($prefix = '') {
+        self::$logPrefix = $prefix;
+    }
+
+    /**
+     * Reset the text that is being put in front of log messags
+     */
+    public static function resetLogPrefix() {
+        self::$setLogPrefix();
     }
 }
 

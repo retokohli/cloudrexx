@@ -496,87 +496,73 @@ class DirectoryLibrary
         return $platforms;
     }
 
-
-
     /**
-    * upload media
-    *
-    * upload added media
-    *
-    * @access   public
-    * @return   string  $fileName
-    */
-    function uploadMedia($name, $path)
+     * Upload the media files
+     * 
+     * @param string $fileName   name of the media file
+     * @param string $path       folder path
+     * @param string $uploaderId uploader id
+     * 
+     * @return string $status name of the uploaded file / error
+     */
+    function uploadMedia($fileName, $path, $uploaderId)
     {
-        //check file array
-        if (isset($_FILES) && !empty($_FILES)) {
-            //get file info
-            $status = "";
-            $tmpFile = $_FILES[$name]['tmp_name'];
-            $fileName = $_FILES[$name]['name'];
-            $fileType = $_FILES[$name]['type'];
-            $this->fileSize = $_FILES[$name]['size'];
-
-            if ($fileName != "" && \FWValidator::is_file_ending_harmless($fileName)) {
-
-                //check extension
-                $info = pathinfo($fileName);
-                $exte = $info['extension'];
-                $exte = (!empty($exte)) ? '.' . $exte : '';
-                $part1 = substr($fileName, 0, strlen($fileName) - strlen($exte));
-                $rand = rand(10, 99);
-                $arrSettings = $this->getSettings();
-
-                if ($arrSettings['encodeFilename']['value'] == 1) {
-                    $fileName = md5($rand.$part1).$exte;
-                }
-
-                   //check file
-                if (file_exists($this->mediaPath.$path.$fileName)) {
-// TODO: $x is never set!
-//                    $fileName = $part1 . '_' . (time() + $x) . $exte;
-                    $fileName = $part1 . '_' . time() . $exte;
-                }
-
-                //check extension
-                $info = pathinfo($fileName);
-                $exte = $info['extension'];
-                $exte = (!empty($exte)) ? '.' . $exte : '';
-                $part1 = substr($fileName, 0, strlen($fileName) - strlen($exte));
-                $rand = rand(10, 99);
-                $arrSettings = $this->getSettings();
-
-                if ($arrSettings['encodeFilename']['value'] == 1) {
-                    $fileName = md5($rand.$part1).$exte;
-                }
-
-                   //check file
-                if (file_exists($this->mediaPath.$path.$fileName)) {
-// TODO: $x is never set!
-//                    $fileName = $part1 . '_' . (time() + $x) . $exte;
-                    $fileName = $part1 . '_' . time() . $exte;
-                }
-
-                //upload file
-                if (@move_uploaded_file($tmpFile, $this->mediaPath.$path.$fileName)) {
-                    $obj_file = new \File();
-                    $obj_file->setChmod($this->mediaPath, $this->mediaWebPath, $path.$fileName);
-                    $status = $fileName;
-                } else {
-                    $status = "error";
-                }
-
-                //make thumb
-                if (($fileType == "image/gif" || $fileType == "image/jpeg" || $fileType == "image/jpg" || $fileType == "image/png") && $path != "uploads/") {
-                    $this->createThumb($fileName, $path);
-                }
-            } else {
-                $status = "error";
-            }
+        if (empty($uploaderId) || empty($fileName)) {
+            return 'error';
         }
+        
+        $objSession = \cmsSession::getInstance();
+        $tempPath   = $objSession->getTempPath() .'/' . $uploaderId . '/' . $fileName;
+        //Check the uploaded file exists in /tmp folder
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($tempPath)) {
+            //If the file still exists in the mediaPath then return the filename 
+            if (\Cx\Lib\FileSystem\FileSystem::exists($this->mediaPath.$path.$fileName)) {
+                return $fileName;
+            }
+            return 'error';
+        }
+        
+        $info = pathinfo($fileName);
+        $exte = $info['extension'];
+        $extension = !empty($exte) ? '.' . $exte : '';
+        $file = substr($fileName, 0, strlen($fileName) - strlen($extension));
+        $rand = rand(10, 99);
+        $arrSettings = $this->getSettings();
+
+        if ($arrSettings['encodeFilename']['value'] == 1) {
+            $fileName = md5($rand.$file).$extension;
+        }
+        
+        //Rename the file if the filename already exists
+        while (\Cx\Lib\FileSystem\FileSystem::exists($this->mediaPath.$path.$fileName)) {
+            $fileName = $file . '_' . time() . $extension;
+        }
+        
+        $filePath = $this->mediaPath.$path.$fileName;
+        if (!\FWValidator::is_file_ending_harmless($filePath)) {
+            return 'error';
+        }
+        
+        //Move the file from /tmp folder into mediaPath and set the permission
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($tempPath);
+            if ($objFile->move($filePath, false)) {
+                $fileObj = new \File();
+                $fileObj->setChmod($this->mediaPath, $this->mediaWebPath, $path.$fileName);
+                $status = $fileName;
+            }
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
+            $status = 'error';
+        }
+        
+        //make the thumb
+        if (($exte == "gif" || $exte == "jpeg" || $exte == "jpg" || $exte == "png") && $path != "uploads/") {
+            $this->createThumb($fileName, $path);
+        }
+        
         return $status;
     }
-
 
     /**
     * Create a thumbnail image
@@ -800,6 +786,12 @@ class DirectoryLibrary
 // TODO: $file is never set; always true.
 //        if ($file != "error") {
 // See below!
+            $imgUploadId = isset($_POST['imgUploaderId']) 
+                           ? contrexx_input2raw($_POST['imgUploaderId']) 
+                           : '';
+            $fileUploadId = isset($_POST['fileUploaderId']) 
+                           ? contrexx_input2raw($_POST['fileUploaderId']) 
+                           : '';
 
             $query = "INSERT INTO ".DBPREFIX."module_directory_dir SET ";
 
@@ -854,7 +846,8 @@ class DirectoryLibrary
                     $inputName == "spez_field_19" ||
                     $inputName == "spez_field_20") {
 
-                    $inputValue = $this->uploadMedia($inputName, "images/");
+                    $fileName   = isset($_POST[$inputName]) ? contrexx_input2raw($_POST[$inputName]) : '';
+                    $inputValue = $this->uploadMedia($fileName, 'images/', $imgUploadId);
 
                     if ($inputValue == "error") {
                         $inputValue = "";
@@ -869,8 +862,8 @@ class DirectoryLibrary
                     $inputName == "spez_field_28" ||
                     $inputName == "spez_field_29") {
 
-                    $inputValue = $this->uploadMedia($inputName, "uploads/");
-
+                    $fileName   = isset($_POST[$inputName]) ? contrexx_input2raw($_POST[$inputName]) : '';
+                    $inputValue = $this->uploadMedia($fileName, 'uploads/', $fileUploadId);
                     if ($inputValue == "error") {
                         $inputValue = "";
                     }
@@ -1538,6 +1531,8 @@ function CheckFields() {
 ';
         }
 
+        $initImgUploader  = false;
+        $initFileUploader = false;
         foreach($arrInputfieldsActive['name'] as $inputKey => $inputName) {
             $disabled = "";
             $inputValueField = "";
@@ -1613,17 +1608,16 @@ function CheckFields() {
                         }
                     }
                     if ($action !== "confirm") {
+                        $initImgUploader = true;
                         $inputValueField .=
-                            "<input type=\"file\" name=\"".$inputName.
-                            "\" size=\"37\" style=\"width:".$width."px;\" />";
-
-                        if (empty($arrInputfieldsValue[$inputName])) {
-                            $arrInputfieldsValue[$inputName] = "no_picture.gif";
-                        }
-
+                            "<input type=\"text\" name=\"{$inputName}\" id=\"input_{$inputName}\" value style=\"width:".$width."px;\" />";
+                        $inputValueField .=
+                            "&nbsp;&nbsp;<input type=\"button\" data-id=\"input_{$inputName}\" class=\"imgUpload\" 
+                            size=\"37\" value=\"Choose File\" />";
+                            
                         $inputValueField .=
                             "<input type=\"hidden\" name=\"inputValue[".
-                            $inputName."]\" value='".
+                            $inputName."]\" class=\"input_{$inputName}\" value='".
                             $arrInputfieldsValue[$inputName]."' />";
                     }
                     break;
@@ -1666,17 +1660,16 @@ function CheckFields() {
                         }
                     }
                     if ($action !== "confirm") {
+                        $initImgUploader  = true;
                         $inputValueField .=
-                            "<input type=\"file\" name=\"".$inputName.
-                            "\" size=\"37\" style=\"width:".$width."px;\" />";
-
-                        if (empty($arrInputfieldsValue[$inputName])) {
-                            $arrInputfieldsValue[$inputName] = "no_picture.gif";
-                        }
-
+                            "<input type=\"text\" name=\"$inputName\" id=\"input_{$inputName}\" value style=\"width:".$width."px;\" />";
+                        $inputValueField .=
+                            "&nbsp;&nbsp;<input type=\"button\" data-id=\"input_{$inputName}\" class=\"imgUpload\" 
+                            size=\"37\" value=\"Choose File\" />";
+                            
                         $inputValueField .=
                             "<input type=\"hidden\" name=\"inputValue[".
-                            $inputName."]\" value='".
+                            $inputName."]\" class=\"input_{$inputName}\" value='".
                             $arrInputfieldsValue[$inputName]."' />";
                     }
                     $fieldName = $arrInputfieldsActive['title'][$inputKey];
@@ -1719,16 +1712,17 @@ function CheckFields() {
                         }
                     }
                     if ($action !== "confirm") {
+                        $initFileUploader = true;
                         $inputValueField .=
-                            "<input type=\"file\" name=\"".$inputName.
-                            "\" size=\"37\" style=\"width:".$width."px;\" />";
-
-                        if (empty($arrInputfieldsValue[$inputName])) {
-                            $arrInputfieldsValue[$inputName] = "no_picture.gif";
-                        }
+                            "<input type=\"text\" name=\"{$inputName}\" 
+                            id=\"input_{$inputName}\" value style=\"width:".$width."px;\" />";
+                        $inputValueField .=
+                            "&nbsp;&nbsp;<input type=\"button\" data-id=\"input_{$inputName}\" class=\"fileUpload\" 
+                            size=\"37\" value=\"Choose File\" />";
+                            
                         $inputValueField .=
                             "<input type=\"hidden\" name=\"inputValue[".
-                            $inputName."]\" value='".
+                            $inputName."]\" class=\"input_{$inputName}\" value='".
                             $arrInputfieldsValue[$inputName]."' />";
                     }
                     $fieldName = $arrInputfieldsActive['title'][$inputKey];
@@ -1758,16 +1752,17 @@ function CheckFields() {
                     }
 
                     if ($action !== "confirm") {
+                        $initFileUploader = true;
                         $inputValueField .=
-                            "<input type=\"file\" name=\"".$inputName.
-                            "\" size=\"37\" style=\"width:".$width."px;\" />";
-
-                        if (empty($arrInputfieldsValue[$inputName])) {
-                            $arrInputfieldsValue[$inputName] = "no_picture.gif";
-                        }
+                            "<input type=\"text\" name=\"{$inputName}\" 
+                            id=\"input_{$inputName}\" value style=\"width:".$width."px;\" />";
+                        $inputValueField .=
+                            "&nbsp;&nbsp;<input type=\"button\" data-id=\"input_{$inputName}\" class=\"fileUpload\" 
+                            size=\"37\" value=\"Choose File\" />";
+                            
                         $inputValueField .=
                             "<input type=\"hidden\" name=\"inputValue[".
-                            $inputName."]\" value='".
+                            $inputName."]\" class=\"input_{$inputName}\" value='".
                             $arrInputfieldsValue[$inputName]."' />";
                     }
                     break;
@@ -1837,15 +1832,83 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
       return true;
   }
 }
+    var currentUploadObj;
+    $J(document).ready(function(){
+       $J(\'.imgUpload\').live(\'click\', function(){
+          currentUploadObj = $J(this);
+          $J(\'#imageUploader\').trigger(\'click\');
+       });
+       $J(\'.fileUpload\').live(\'click\', function(){
+          currentUploadObj = $J(this);
+          $J(\'#fileUploader\').trigger(\'click\');
+       });
+    });
+    function uploaderCallbackJs(path) {
+        if (typeof path[0] !== \'undefined\') {
+            var data     = path[0].split(\'/\'),
+                fileName = data.pop(),
+                className = currentUploadObj.attr(\'data-id\');
+            $J(\'#\' + className + \'\').val(fileName);
+            if ($J(\'.\' + className + \'\').val() == \'\') {
+                $J(\'.\' + className + \'\').val(fileName);
+            }
+        }
+    }
 /* ]]> */
 </script>';
 
+        //initialize the uploader
+        if ($initImgUploader) {
+            $options = array(
+                'id'    => 'imageUploader',
+                'style' => 'display:none',
+                'allowed-extensions' => array('jpg', 'jpeg', 'png', 'gif'),
+                'data-upload-limit'  => 1
+            );
+            $imgUploaderObj = $this->getUploader('uploaderCallbackJs', $options);
+            $this->_objTpl->setVariable(array(
+                'DIRECTORY_IMAGE_UPLOADER_CODE' => $imgUploaderObj->getXHtml(),
+                'DIRECTORY_IMAGE_UPLOADER_ID'   => $imgUploaderObj->getId()
+            ));
+        }
+        if ($initFileUploader) {
+            $options = array(
+                'id'    => 'fileUploader',
+                'style' => 'display:none',
+                'data-upload-limit'  => 1
+            );
+            $fileUploaderObj = $this->getUploader('uploaderCallbackJs', $options);
+            $this->_objTpl->setVariable(array(
+                'DIRECTORY_FILE_UPLOADER_CODE' => $fileUploaderObj->getXHtml(),
+                'DIRECTORY_FILE_UPLOADER_ID'   => $fileUploaderObj->getId()
+            ));
+        }
         // initialize variables
         $this->_objTpl->setVariable(
             'DIRECTORY_JAVASCRIPT', $javascript
         );
     }
 
+    /**
+     * Get the uploader
+     * 
+     * @param string $callbackJs callback javascript function name
+     * @param array  $options    uploader options
+     * 
+     * @return \Cx\Core_Modules\Uploader\Model\Entity\Uploader
+     */
+    public function getUploader($callbackJs, $options = array())
+    {
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        //set instance name so we are able to catch the instance with js
+        if (!empty($callbackJs)) {
+            $uploader->setCallback($callbackJs);
+        }
+        if (!empty($options)) {
+            $uploader->setOptions($options);
+        }
+        return $uploader;
+    }
 
     /**
      * check if googlemap is enabled
@@ -2103,9 +2166,9 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                     $inputName == "spez_field_19" ||
                     $inputName == "spez_field_20") {
 
-                    if (!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1) {
+                    $fileName = isset($_POST[$inputName]) ? contrexx_input2raw($_POST[$inputName]) : '';
+                    if (!empty($fileName) || $_POST['deleteMedia'][$inputName] == 1) {
                         $obj_file = new \File();
-
                         //thumb
                         if (file_exists($this->mediaPath."thumbs/".$_POST["inputValue"][$inputName])) {
                             $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "thumbs/".$_POST["inputValue"][$inputName]);
@@ -2116,11 +2179,11 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                             $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "images/".$_POST["inputValue"][$inputName]);
                         }
 
-
-
-                        if ($_POST["deleteMedia"][$inputName] != 1) {
-                            $inputValue = $this->uploadMedia($inputName, "images/");
-
+                        if ($_POST['deleteMedia'][$inputName] != 1) {
+                            $imgUploadId = isset($_POST['imgUploaderId']) 
+                                           ? contrexx_input2raw($_POST['imgUploaderId']) 
+                                           : '';
+                            $inputValue = $this->uploadMedia($fileName, 'images/', $imgUploadId);
                             if ($inputValue == "error") {
                                 $inputValue = "";
                             }
@@ -2133,18 +2196,19 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                 //check uploads
                 $arrSpezialUploadFields = array('attachment', 'spez_field_25', 'spez_field_26', 'spez_field_27', 'spez_field_28', 'spez_field_29');
                 if (in_array($inputName, $arrSpezialUploadFields)) {
-
-                    if (!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1) {
+                    $fileName = isset($_POST[$inputName]) ? contrexx_input2raw($_POST[$inputName]) : '';
+                    if (!empty($fileName) || $_POST['deleteMedia'][$inputName] == 1) {
                         $obj_file = new \File();
-
                         //upload
                         if (file_exists($this->mediaPath."uploads/".$_POST["inputValue"][$inputName])) {
                             $obj_file->delFile($this->mediaPath, $this->mediaWebPath, "uploads/".$_POST["inputValue"][$inputName]);
                         }
 
                         if ($_POST["deleteMedia"][$inputName] != 1) {
-                            $inputValue = $this->uploadMedia($inputName, "uploads/");
-
+                            $fileUploadId = isset($_POST['fileUploaderId']) 
+                                           ? contrexx_input2raw($_POST['fileUploaderId']) 
+                                           : '';
+                            $inputValue = $this->uploadMedia($fileName, 'uploads/', $fileUploadId);
                             if ($inputValue == "error") {
                                 $inputValue = "";
                             }
@@ -2162,7 +2226,7 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                  */
                 if (!in_array($inputName, $arrSpezialUploadFields)) {
                     $query .= contrexx_addslashes($inputName)." ='".contrexx_strip_tags(contrexx_addslashes($inputValue))."', ";
-                } else if (in_array($inputName, $arrSpezialUploadFields) && (!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1)) {
+                } else if (in_array($inputName, $arrSpezialUploadFields) && (!empty($_POST[$inputName]) || $_POST['deleteMedia'][$inputName] == 1)) {
                     $query .= contrexx_addslashes($inputName)." ='".contrexx_strip_tags(contrexx_addslashes($inputValue))."', ";
                 }
             }

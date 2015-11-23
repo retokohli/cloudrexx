@@ -45,77 +45,52 @@ namespace Cx\Modules\FileSharing\Controller;
 abstract class FileSharingLib
 {
     /**
-     * init the pl uploader which is directly included in the webpage
+     * Init the uploader which is directly included in the webpage
      *
      * @return integer the uploader id
      */
     protected function initUploader()
     {
         \JS::activate('cx'); // the uploader needs the framework
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        \Env::get('ClassLoader')->loadFile($cx->getCodeBaseCoreModulePath() . '/Upload/Controller/UploadFactory.class.php');
 
-        /**
-         * Name of the upload instance
-         */
-        $uploaderInstanceName = 'exposed_combo_uploader';
-        $uploaderWidgetName = 'uploadWidget';
-
-        /**
-         * jQuery selector of the HTML-element where the upload folder-widget shall be put in
-         */
-        $uploaderFolderWidgetContainer = '#uploadFormField_uploadWidget';
-
-        // create an exposedCombo uploader
-        $uploader = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
-
-        //set instance name so we are able to catch the instance with js
-        $uploader->setJsInstanceName($uploaderInstanceName);
-
-        // specifies the function to call when upload is finished. must be a static function
-        $uploader->setFinishedCallback(array($cx->getCodeBaseModulePath() . '/FileSharing/Controller/FileSharing.class.php', '\Cx\Modules\FileSharing\Controller\FileSharing', 'uploadFinished'));
-
-        //insert the uploader into the HTML-template
-        $this->objTemplate->setVariable(array(
-            'UPLOADER_CODE' => $uploader->getXHtml(),
-            'EXTENDED_FILE_INPUT_CODE' => <<<CODE
-<script type="text/javascript">
-cx.include(
-[
-'core_modules/Upload/js/uploaders/exposedCombo/extendedFileInput.js'
-],
-function() {
-        var ef = new ExtendedFileInput({
-                field: \$J('#file_upload'),
-                instance: '$uploaderInstanceName',
-                widget: '$uploaderWidgetName'
-        });
-}
-);
-cx.jQuery(document).ready(function($) {
-    \$J('a.toggle').click(function() {
-        \$J('div.toggle').toggle();
-        return false;
-    });
-});
-</script>
-CODE
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); //create an uploader
+        $uploadId = $uploader->getId();
+        $uploader->setCallback('fileSharingUploader');
+        $uploader->setOptions(array(
+            'id'    => 'fileSharing_'.$uploadId,
+            'style' => 'display:none;'
         ));
 
-        // optional: initialize the widget displaying the folder contents
-        $uploadId = $uploader->getUploadId();
-        $tempPaths = self::getTemporaryFilePaths($uploadId);
-        if (!is_dir($tempPaths[0] . '/' . $tempPaths[2])) {
-            \Cx\Lib\FileSystem\FileSystem::make_folder($tempPaths[0] . '/' . $tempPaths[2]);
-            //mkdir($tempPaths[0] . '/' . $tempPaths[2]);
-            \Cx\Lib\FileSystem\FileSystem::makeWritable($tempPaths[0] . '/' . $tempPaths[2]);
-            //chmod($tempPaths[0] . '/' . $tempPaths[2], 0777);
-        }
+        $folderWidget   = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($_SESSION->getTempPath() . '/' . $uploadId, true);
+        $folderWidgetId = $folderWidget->getId();
+        $extendedFileInputCode = <<<CODE
+<script type="text/javascript">
+    cx.ready(function() {
+            var field = jQuery('#contactForm #file_upload');
+            //called if user clicks on the field
+            var inputClicked = function() {
+                jQuery('#fileSharing_$uploadId').trigger('click');
+                return false;
+            };
 
-        $folderWidget = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newFolderWidget($tempPaths[0] . '/' . $tempPaths[2], $uploaderInstanceName);
-        $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE', $folderWidget->getXHtml($uploaderFolderWidgetContainer, 'uploadWidget'));
-        // return the upload id
-        return $uploadId;
+            jQuery('#fileSharing_$uploadId').hide();
+            field.bind('click', inputClicked).removeAttr('disabled');
+    });
+
+    //uploader javascript callback function
+    function fileSharingUploader(callback) {
+            angular.element('#mediaBrowserfolderWidget_$folderWidgetId').scope().refreshBrowser();
+    }
+</script>
+CODE;
+
+        $this->objTemplate->setVariable(array(
+            'UPLOADER_CODE'      => $uploader->getXHtml(),
+            'FILE_INPUT_CODE'    => $extendedFileInputCode,
+            'FOLDER_WIDGET_CODE' => $folderWidget->getXHtml(),
+        ));
+
+        return $uploadId; // return the upload id
     }
 
     /**
@@ -130,76 +105,8 @@ CODE
         return array(
             $_SESSION->getTempPath() . '/',
             $_SESSION->getWebTempPath() . '/',
-            'filesharing_' . $uploadId,
+            $uploadId,
         );
-    }
-
-    /**
-     * the upload is finished
-     * rewrite the names
-     * write the uploaded files to the database
-     *
-     * @static
-     * @param string $tempPath the temporary file path
-     * @param string $tempWebPath the temporary file path which is accessable by web browser
-     * @param array $data the data which are attached by uploader init method
-     * @param integer $uploadId the upload id
-     * @param $fileInfos
-     * @param $response
-     * @return array the target paths
-     */
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
-    {
-
-        global $objDatabase;
-
-        // the directory which will be made from the given cmd
-        $directory = $data["directory"];
-
-        if (!$directory) {
-            $directory = '';
-        }
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        // get target path
-        // if the cmd is "downloads" add these files to the digital asset management module directory
-        if ($directory == 'Downloads') {
-            $targetPath = $cx->getWebsiteImagesDownloadsPath();
-            $targetPathWeb = $cx->getWebsiteImagesDownloadsWebPath();
-        } else {
-            $targetPath = $cx->getWebsiteMediaFileSharingPath() . (!empty($directory) ? '/' . $directory : '');
-            $targetPathWeb = $cx->getWebsiteMediaFileSharingWebPath() . (!empty($directory) ? '/' . $directory : '');
-        }
-
-        // create target folder if the directory does not exist
-        if (!is_dir($targetPath)) {
-            \Cx\Lib\FileSystem\FileSystem::make_folder($targetPath);
-            \Cx\Lib\FileSystem\FileSystem::makeWritable($targetPath);
-        }
-
-        // write the uploaded files into database
-        $path = str_replace($cx->getWebsiteOffsetPath(), '', $targetPathWeb);
-        foreach ($fileInfos["originalFileNames"] as $rawName => $cleanedName) {
-            $file = $cleanedName;
-            $source = $path . '/' . $rawName;
-
-            $hash = self::createHash();
-            $check = self::createCheck($hash);
-
-            $objDatabase->Execute("INSERT INTO " . DBPREFIX . "module_filesharing (`file`, `source`, `cmd`, `hash`, `check`, `upload_id`)
-                                    VALUES (
-                                        '" . contrexx_raw2db($file) . "',
-                                        '" . contrexx_raw2db($source) . "',
-                                        '" . contrexx_raw2db($directory) . "',
-                                        '" . contrexx_raw2db($hash) . "',
-                                        '" . contrexx_raw2db($check) . "',
-                                        '" . intval($uploadId) . "'
-                                    )");
-        }
-
-        $tempPaths = self::getTemporaryFilePaths($uploadId);
-
-        // return web- and filesystem path. files will be moved there.
-        return array($tempPaths[0] . '/' . $tempPaths[2], $tempPaths[1] . '/' . $tempPaths[2]);
     }
 
     /**

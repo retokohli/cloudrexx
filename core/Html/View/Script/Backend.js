@@ -3,6 +3,145 @@
  *
  */
 
+/**
+ * Script for initializing the row sorting functionality in ViewGenerator 
+ */
+cx.ready(function() {
+    var jQuery = cx.jQuery;
+    var cadminPath = cx.variables.get('cadminPath', 'contrexx'),
+        sortable = {
+            ajaxCall : function(opt) {
+                var data = 'sortOrder=' + opt.sortOrder + '&curPosition=' + opt.curIndex
+                            + '&prePosition=' + opt.preIndex + '&sortField=' + opt.sortField 
+                            + '&pagingPosition=' + opt.position,
+                    recordCount = 0;
+                if (opt.component && opt.entity) {
+                    data += '&component=' + opt.component + '&entity=' + opt.entity;
+                }
+                if (opt.repeat) {
+                    data += '&' + opt.updatedOrder;
+                }
+                jQuery.ajax({
+                    type: 'POST',
+                    data: data,
+                    url:  cadminPath + 'index.php&cmd=JsonData&object=' + opt.jsonObject + '&act=' + opt.jsonAct,
+                    beforeSend: function() {
+                        jQuery('body').addClass('loading');
+                        opt.that.sortable("disable");
+                        opt.uiItem.find('td:first-child').addClass('sorter-loading');
+                    },
+                    success: function(msg) {
+                        if (msg.data && msg.data.status === 'success') {
+                            recordCount = msg.data.recordCount;
+                        }
+                    },
+                    complete: function() {
+                        sortable.updateOrder(opt, recordCount);
+                        opt.that.sortable("enable");
+                        jQuery('body').removeClass('loading');
+                        opt.uiItem.find('td:first-child').removeClass('sorter-loading');
+                    }
+                });
+            },
+            //Check the same 'order' field value is repeated or not
+            isOrderNoRepeat : function(options) {
+                var orderArray = [], currentval, obj = options.sortTd,
+                    condition = options.curIndex > options.preIndex,
+                    min       = condition ? options.preIndex : options.curIndex,
+                    max       = condition ? options.curIndex : options.preIndex;
+                while (min <= max) {
+                    currentval = condition ? obj.eq(min - 1).text() : obj.eq(max - 1).text();
+                    if (jQuery.inArray(currentval, orderArray) === -1) {
+                        orderArray.push(currentval);
+                        condition ? min++ : max--;
+                        continue;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            //Update the sorted order in the 'order' field
+            updateOrder : function(options, recordCnt) {
+                var currentObj, currentOrder, order, firstObj, obj = options.sortTd,
+                    condition = options.curIndex > options.preIndex,
+                    min       = condition ? options.preIndex : options.curIndex,
+                    max       = condition ? options.curIndex : options.preIndex,
+                    isDescOrder = (options.sortOrder === 'DESC'), first = true;
+
+                //If the same 'order' field value is repeated,
+                //we need to update all the entries.
+                if (options.repeat) {
+                    var pagingCnt = isDescOrder 
+                                    ? (recordCnt - options.position) + 1
+                                    : options.position;
+                    obj.each(function() {
+                        isDescOrder ? pagingCnt-- : pagingCnt++;
+                        jQuery(this).text(pagingCnt);
+                    });
+                    return;
+                }
+
+                //If the same 'order' field value is not repeated,
+                //we need to update all the entries between dragged and dropped position
+                while (min <= max) {
+                    currentObj = condition ? obj.eq(min - 1) : obj.eq(max - 1);
+                    currentOrder = currentObj.text();
+                    if (first) {
+                        first = false;
+                        order = currentOrder;
+                        firstObj = currentObj;
+                        continue;
+                    } else if (min === max) {
+                        firstObj.text(currentOrder);
+                        currentObj.text(order);
+                    }
+                    currentObj.text(order);
+                    order = currentOrder;
+                    condition ? min++ : max--;
+                }
+            }
+        };
+    
+    jQuery('table.sortable tbody').sortable({
+        axis: "y",
+        items: "> tr.row1,> tr.row2 ",
+        start: function (event, ui) {
+            jQuery(ui.item).data('pIndex', ui.item.index());
+        },
+        update: function (event, ui) {
+            var obj    = jQuery(this).closest('table.sortable'),
+                params = {
+                    that       : jQuery(this),
+                    uiItem     : jQuery(ui.item),
+                    jsonObject : obj.data('object'),
+                    jsonAct    : obj.data('act'),
+                    sortField  : obj.data('field'),
+                    sortOrder  : obj.data('order'),
+                    component  : obj.data('component'),
+                    entity     : obj.data('entity'),
+                    position   : parseInt(obj.data('pos')),
+                    curIndex   : parseInt(ui.item.index()),
+                    preIndex   : parseInt(jQuery(ui.item).data('pIndex')),
+                    updatedOrder : jQuery(this).sortable('serialize')
+                };
+            params['sortTd'] = params.that.find('td.sortBy' + params.sortField);
+            params['repeat'] = sortable.isOrderNoRepeat(params);
+
+            //If jsonObject and jsonAct values are empty, stop the update process
+            if (    typeof(params.jsonObject) === 'undefined'
+                ||  typeof(params.jsonAct) === 'undefined'
+                ||  !params.jsonObject
+                ||  !params.jsonAct
+            ) {
+                return;
+            }
+            
+            params.uiItem.removeData('pIndex');
+            sortable.ajaxCall(params);
+        }
+    });
+});
+
 jQuery(document).ready(function(){
     jQuery('.mappedAssocciationButton, .edit').click(function() {
         editAssociation(jQuery(this));
@@ -45,14 +184,17 @@ function openDialogForAssociation(content, className, existingData)
             text: cx.variables.get('TXT_CANCEL', 'Html/lang'),
             click: function() {
                 jQuery(this).dialog('close');
+                cx.tools.StatusMessage.removeAllDialogs();
                 jQuery('.oneToManyEntryRow').children('.current').removeClass('current');
             }
         },
         {
             text: cx.variables.get('TXT_SUBMIT', 'Html/lang'),
             click: function() {
-
                 var element = jQuery(this).closest('.ui-dialog').children('.ui-dialog-content').children('form');
+                if (!cx.ui.forms.validate(element)) {
+                    return false;
+                }
                 saveToMappingForm(element, className);
                 jQuery(this).dialog('close');
             }
@@ -64,6 +206,7 @@ function openDialogForAssociation(content, className, existingData)
         autoOpen: true,
         content: content,
         modal: true,
+        dialogClass: "cx-ui",
         resizable: false,
         buttons:buttons,
         close: function() {

@@ -46,7 +46,7 @@ class BackendTable extends HTML_Table {
 
     public function __construct($attrs = array(), $options = array()) {
         global $_ARRAYLANG;
-        
+
         if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $hasMasterTableHeader = !empty($options['header']);
             // add master table-header-row
@@ -55,6 +55,29 @@ class BackendTable extends HTML_Table {
             }
             $first = true;
             $row = 1 + $hasMasterTableHeader;
+            $sortBy     = (    isset($options['functions']['sortBy'])
+                            && is_array($options['functions']['sortBy'])
+                          )
+                          ? $options['functions']['sortBy']
+                          : array();
+            $sortingKey = !empty($sortBy) && isset($sortBy['sortingKey'])
+                          ? $sortBy['sortingKey']
+                          : '';
+            $sortField  = !empty($sortingKey) && isset($sortBy['field'])
+                          ? key($sortBy['field'])
+                          : '';
+            $component  = !empty($sortBy) && isset($sortBy['component'])
+                          ? $sortBy['component']
+                          : '';
+            $entity     = !empty($sortBy) && isset($sortBy['entity'])
+                          ? $sortBy['entity']
+                          : '';
+            $sortOrder  = !empty($sortBy) && isset($sortBy['sortOrder'])
+                          ? $sortBy['sortOrder']
+                          : '';
+            $pagingPos  = !empty($sortBy) && isset($sortBy['pagingPosition'])
+                          ? $sortBy['pagingPosition']
+                          : '';
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
                 $virtual = $rows['virtual'];
@@ -64,6 +87,10 @@ class BackendTable extends HTML_Table {
                     $col++;
                 }
                 foreach ($rows as $header=>$data) {
+                    if (!empty($sortingKey) && $header === $sortingKey) {
+                        //Add the additional attribute id, for getting the updated sort order after the row sorting
+                        $this->updateRowAttributes($row, array('id' => 'sorting' . $entity . '_' . $data), true);
+                    }
                     $encode = true;
                     if (
                         isset($options['fields']) &&
@@ -74,6 +101,10 @@ class BackendTable extends HTML_Table {
                         continue;
                     }
                     
+                    if (!empty($sortField) && $header === $sortField) {
+                        //Add the additional attribute class, to display the updated sort order after the row sorting
+                        $this->updateColAttributes($col, array('class' => 'sortBy' . $sortField));
+                    }
                     $origHeader = $header;
                     if(isset($options['fields'][$header]['sorting'])) {
                         $sorting = $options['fields'][$header]['sorting'];
@@ -95,8 +126,9 @@ class BackendTable extends HTML_Table {
                         ) {
                             $order = '';
                             $img = '&uarr;&darr;';
-                            if (isset($_GET['order'])) {
-                                $supOrder = explode('/', $_GET['order']);
+                            $sortParamName = !empty($sortBy) ? $entity . 'Order' : 'order';
+                            if (isset($_GET[$sortParamName])) {
+                                $supOrder = explode('/', $_GET[$sortParamName]);
                                 if (current($supOrder) == $origHeader) {
                                     $order = '/DESC';
                                     $img = '&darr;';
@@ -106,7 +138,7 @@ class BackendTable extends HTML_Table {
                                     }
                                 }
                             }
-                            $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&order=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
+                            $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&' . $sortParamName . '=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
                         }
                         if ($hasMasterTableHeader) {
                             $this->setCellContents(1, $col, $header, 'td', 0);
@@ -243,7 +275,37 @@ class BackendTable extends HTML_Table {
             }
             $attrs = array();
         }
-        parent::__construct(array_merge($attrs, array('class' => 'adminlist', 'width' => '100%')));
+        //add the sorting parameters as table attribute 
+        //if the row sorting functionality is enabled
+        $className = 'adminlist';
+        if (!empty($sortField)) {
+            $className = '\'adminlist sortable\'';
+            if (!empty($component)) {
+                $attrs['data-component'] = $component;
+            }
+            if (!empty($entity)) {
+                $attrs['data-entity'] = $entity;
+            }
+            if (!empty($sortOrder)) {
+                $attrs['data-order'] = $sortOrder;
+            }
+            if (!empty($sortField)) {
+                $attrs['data-field'] = $sortField;
+            }
+            if (isset($pagingPos)) {
+                $attrs['data-pos'] = $pagingPos;
+            }
+            $attrs['data-object'] = 'Html';
+            $attrs['data-act'] = 'updateOrder';
+            if (    isset($sortBy['jsonadapter']) 
+                &&  !empty($sortBy['jsonadapter']['object'])
+                &&  !empty($sortBy['jsonadapter']['act'])
+            ) {
+                $attrs['data-object'] = $sortBy['jsonadapter']['object'];
+                $attrs['data-act']    = $sortBy['jsonadapter']['act'];
+            }
+        }
+        parent::__construct(array_merge($attrs, array('class' => $className, 'width' => '100%')));
     }
 
     /**
@@ -344,6 +406,11 @@ class BackendTable extends HTML_Table {
             
             if (isset($functions['edit']) && $functions['edit']) {
                 $editUrl->setParam('editid', $editId);
+                //remove the parameter 'vg_increment_number' from editUrl 
+                //if the baseUrl contains the parameter 'vg_increment_number'
+                if (isset($params['vg_increment_number'])) {
+                    \Html::stripUriParam($editUrl, 'vg_increment_number');
+                }
                 $code .= '<a href="' . $editUrl . '" class="edit" title="'.$_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'].'"></a>';
             }
             if (isset($functions['delete']) && $functions['delete']) {
@@ -450,7 +517,7 @@ class BackendTable extends HTML_Table {
      */
     function toHtml()
     {
-        $this->altRowAttributes(2, array('class' => 'row1'), array('class' => 'row2'), true);
+        $this->altRowAttributes(1, array('class' => 'row1'), array('class' => 'row2'), true);
         $strHtml = '';
         $tabs = $this->_getTabs();
         $tab = $this->_getTab();

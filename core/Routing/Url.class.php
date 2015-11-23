@@ -322,8 +322,8 @@ class Url {
                 unset($params[$key]);
                 $this->removeAllParams();
                 $this->addParamsToPath($params);
-                return;
             }
+            return;
         }
         if (!empty($key)) {
             $this->setParams(array($key => $value));
@@ -593,7 +593,7 @@ class Url {
         // return the URL to the error page
         if (!$page && $returnErrorPageOnError && $module != 'Error') {
             $page = $pageRepo->findOneByModuleCmdLang('Error', '', $lang);
-            $parameters['initialModule'] = $module;
+            $parameters['initialComponent'] = $module;
         }
 
         // In case we were unable to locate the requested page
