@@ -79,6 +79,7 @@ $_ARRAYLANG['TXT_NEWS_NAME'] = "Name";
 $_ARRAYLANG['TXT_NEWS_TITLE'] = "Titel";
 $_ARRAYLANG['TXT_NEWS_COMMENT'] = "Kommentar";
 $_ARRAYLANG['TXT_NEWS_ADD_COMMENT'] = "Kommentar hinzufügen";
+$_ARRAYLANG['TXT_NEWS_WRITE_COMMENT'] = "Kommentar schreiben";
 $_ARRAYLANG['TXT_NEWS_ADD'] = "Hinzufügen";
 $_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_SUBJECT'] = "Neuer Kommentar zur News Meldung \"%s\"";
 $_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_BODY'] = "Auf %1\$s wurde ein neuer Kommentar erfasst.\n\nNews Meldung: %2\$s\n\nErfasser: %3\$s\nTitel: %4\$s\nKommentar: %5\$s\n\n%6\$s-- \nDies ist eine automatisch generierte Nachricht";

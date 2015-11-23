@@ -1200,9 +1200,10 @@ class NewsLibrary
         $image = '';
         $imageLink = '';
         $source = '';
+        $cx     = \Cx\Core\Core\Controller\Cx::instanciate();
         if (!empty($thumbnailSource)) {
             $source = $thumbnailSource;
-        } elseif (!empty($imageSource) && file_exists(ASCMS_PATH.\ImageManager::getThumbnailFilename($imageSource))) {
+        } elseif (!empty($imageSource) && file_exists(\ImageManager::getThumbnailFilename($cx->getWebsitePath() .'/' .$imageSource))) {
             $source = \ImageManager::getThumbnailFilename($imageSource);
         } elseif (!empty($imageSource)) {
             $source = $imageSource;

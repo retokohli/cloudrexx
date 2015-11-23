@@ -882,8 +882,9 @@ CREATE TABLE `contrexx_module_crm_company_size` (
   `company_size` varchar(100) NOT NULL,
   `sorting` int(11) NOT NULL,
   `status` tinyint(4) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB ;
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `company_size` (`company_size`)
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_crm_contacts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` varchar(256) DEFAULT NULL,

@@ -667,64 +667,6 @@ EOF;
     }
     
     /**
-     * generates an unique id for each form and user.
-     * 
-     * @see Calendar::$submissionId
-     * 
-     * @return $id  integer
-     */
-    protected function handleUniqueId($key) {
-        global $sessionObj;
-        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
-        
-        $id = 0;
-        if (isset($_REQUEST[$key])) { //an id is specified - we're handling a page reload
-            $id = intval($_REQUEST[$key]);
-        } else { //generate a new id
-            if (!isset($_SESSION['calendar_last_id'])) {
-                $_SESSION['calendar_last_id'] = 1;
-            } else {
-                $_SESSION['calendar_last_id'] += 1;
-            }
-                
-            $id = $_SESSION['calendar_last_id'];
-        }
-        
-        $this->_objTpl->setVariable("{$this->moduleLangVar}_".  strtoupper($key), $id);   
-        
-        return $id;
-    }
-    
-    /**
-     * Gets the temporary upload location for files.
-     * 
-     * @param string  $fieldName    Uploader field name and id
-     * @param integer $submissionId     
-     * 
-     * @throws Exeception
-     * 
-     * @return array('path','webpath', 'dirname')
-     */
-    public static function getTemporaryUploadPath($fieldName, $submissionId) {        
-        global $sessionObj;
-
-        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
-        
-        $tempPath = $_SESSION->getTempPath();
-        $tempWebPath = $_SESSION->getWebTempPath();
-        if($tempPath === false || $tempWebPath === false)
-            throw new \Exception('could not get temporary session folder');
-
-        $dirname = "event_files_{$fieldName}_{$submissionId}";
-        $result = array(
-            $tempPath,
-            $tempWebPath,
-            $dirname
-        );
-        return $result;
-    }
-        
-    /**
      * Returns all series dates based on the given post data
      *       
      * @return array Array of dates

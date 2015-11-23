@@ -101,12 +101,13 @@ class Directory extends DirectoryLibrary
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $this->path = ASCMS_DIR_PATH . '/';
         $this->webPath = ASCMS_DIR_WEB_PATH . '/';
         $this->imagePath = ASCMS_DIR_PATH . '/View/Media';
         $this->imageWebPath = ASCMS_DIR_WEB_PATH . '/View/Media';
-        $this->mediaPath = ASCMS_MODULE_MEDIA_PATH . '/';
-        $this->mediaWebPath = ASCMS_MODULE_MEDIA_WEB_PATH . '/';
+        $this->mediaPath = $cx->getWebsiteMediaDirectoryPath() . '/';
+        $this->mediaWebPath = $cx->getWebsiteMediaDirectoryWebPath() . '/';
         $this->rssPath = ASCMS_DIRECTORY_FEED_PATH . '/';
         $this->rssWebPath = ASCMS_DIRECTORY_FEED_WEB_PATH. '/';
 

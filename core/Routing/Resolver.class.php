@@ -325,6 +325,11 @@ class Resolver {
                         // Backwards compatibility for code pre Contrexx 3.0 (update)
                         $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $command;
                         $_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
+                        // the system should directly use $this->url->getParamArray() instead of using the super globals
+                        $qsArr = $this->url->getParamArray();
+                        foreach ($qsArr as $qsParam => $qsArgument) {
+                            $_GET[$qsParam] = $_REQUEST[$qsParam] = $qsArgument;
+                        }
 
                         // To clone any module, use an optional integer cmd suffix.
                         // E.g.: "shop2", "gallery5", etc.
@@ -679,6 +684,7 @@ class Resolver {
             }
 
             $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            // If the database uses a case insensitive collation, $section needn't be the exact component name to find a page
             $this->page = $pageRepo->findOneByModuleCmdLang($section, $command, FRONTEND_LANG_ID);
 
             //fallback content
@@ -686,6 +692,9 @@ class Resolver {
                 return;
             }
 
+            // make legacy-requests case insensitive works only if database-collation is case insensitive as well
+            $this->setSection($this->page->getModule(), $this->page->getCmd());
+            
             $this->checkPageFrontendProtection($this->page);
 
             $this->handleFallbackContent($this->page);

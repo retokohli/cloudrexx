@@ -717,23 +717,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             } else {
                 //save entry data
                 if(isset($_POST['submitEntryModfyForm'])) {
-                	if(isset($_FILES)) {
-                		$bolFileSizesStatus = true;
-                		$intFilsize = intval($this->arrSettings['settingsImageFilesize']*1024);
-                        foreach ($_FILES as $strInputfieldName => $arrFile) {
-                        	if ($arrFile['type'] == "image/gif" || $arrFile['type'] == "image/jpeg" || $arrFile['type'] == "image/jpg" || $arrFile['type'] == "image/png") {
-                                if($arrFile['size'] > $intFilsize) {
-                                    $bolFileSizesStatus = false;
-                                }
-                        	} else {
-                        		//other File
-                        	}
-                        }
-
-                	} else {
-                		$bolFileSizesStatus = true;
-                	}
-                	
                     $objEntry = new MediaDirectoryEntry($this->moduleName);     
                     $strStatus = $objEntry->saveEntry($_POST, intval($_POST['entryId']));  
                 	
@@ -869,8 +852,9 @@ class MediaDirectory extends MediaDirectoryLibrary
                 }
             }
 
-            if(!$bolFileSizesStatus) {
+            if (!empty($_SESSION[$this->moduleNameLC]) && empty($_SESSION[$this->moduleNameLC]['bolFileSizesStatus'])) {
                 $strFileMessage = '<div class="'.$this->moduleNameLC.'FileErrorMessage">'.$_ARRAYLANG['TXT_MEDIADIR_IMAGE_ERROR_MESSAGE'].'</div>';
+                unset($_SESSION[$this->moduleNameLC]['bolFileSizesStatus']);
             } else {
             	$strFileMessage = '';
             }

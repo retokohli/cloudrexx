@@ -118,69 +118,11 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
         } else {
             $orders = $this->orderRepository->getAllByDesc();
         }
-        
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($orders, array(
-            'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_DEFAULT'],
-            'functions' => array(
-                'add'       => true,
-                'edit'      => true,
-                'delete'    => true,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-            ),
-            'fields' => array(
-                'contactId' => array(
-                    'header' => 'contactId',
-                    'table' => array(
-                        'parse' => function($value) {
-                            global $_ARRAYLANG;
-                            $userId   = \Cx\Modules\Crm\Controller\CrmLibrary::getUserIdByCrmUserId($value);
-                            $userName = \FWUser::getParsedUserTitle($userId);
-                            $crmDetailLink = "<a href='index.php?cmd=Crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={$value}' 
-                                                    title='{$_ARRAYLANG['TXT_MODULE_ORDER_CRM_CONTACT']}'>
-                                                    <img 
-                                                        src='".\Env::get('cx')->getCodeBaseCoreWebPath()."/Core/View/Media/navigation_level_1_189.png' 
-                                                        width='16' height='16' 
-                                                        alt='{$_ARRAYLANG['TXT_MODULE_ORDER_CRM_CONTACT']}'
-                                                    />
-                                                </a>";
-                                                        
-                            $url = "<a href='index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id={$userId}'
-                                       title='{$_ARRAYLANG['TXT_MODULE_ORDER_MODIY_USER_ACCOUNT']}'>" .
-                                       $userName .
-                                    "</a>" . 
-                                    $crmDetailLink;
-                            return $url;
-                        },
-                    ),
-                ),
-                'subscriptions' => array(
-                    'header' => 'subscriptions',
-                    'table'  => array(
-                        'parse' => function ($subscriptions) {
-                            $result = array();
-                            foreach ($subscriptions as $subscription) {
-                                $productEntity     = $subscription->getProductEntity();
-                                $productEntityName = $subscription->getProduct()->getName();
-                                if(!$productEntity) {
-                                    continue;
-                                }
-                                $productEditLink = $productEntity;
-                                if (method_exists($productEntity, 'getEditLink')) {
-                                    $productEditLink = $productEntity->getEditLink();
-                                }
-                                $subscriptionEditUrl = '<a href=​index.php?cmd=Order&act=subscription&editid='. $subscription->getId() .'>' . $productEntityName . '</a>';
-                                
-                                $result[] = $subscriptionEditUrl . ' (' . $productEditLink . ')';
-                            }
-                            
-                            return implode(', ', $result);
-                        }
-                    )
-                ),
-            ),
-        ));
+        $orders = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($orders);
+        // setDataType is used to make the ViewGenerator load the proper options if $orders is empty
+        $orders->setDataType('Cx\Modules\Order\Model\Entity\Order');
+        $options = $this->getController('Backend')->getAllViewGeneratorOptions();
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($orders, $options);
 
         if ((isset($_GET['editid']) && !empty($_GET['editid'])) || (isset($_GET['add']) && !empty($_GET['add']))) {
             $this->template->hideBlock("order_filter");

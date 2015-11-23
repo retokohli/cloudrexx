@@ -65,7 +65,7 @@ $cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/refe
 $cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/banned.inc.php');
 
 
-$counter = new \Cx\Core_Modules\Stats\Controller\Counter($arrRobots, $arrBannedWords);
+$counter = new \Cx\Core_Modules\Stats\Controller\Counter($arrRobots, $arrBannedWords, $cx);
 
 /**
  * Counter
@@ -111,6 +111,8 @@ class Counter
     public $searchTerm = "";
     public $mobilePhone = "";
 
+    protected $cx;
+    
     /**
     * Constructor
     *
@@ -119,13 +121,12 @@ class Counter
      * @param array $arrRobots
      * @param array $arrBannedWords
     */
-    public function __construct($arrRobots,$arrBannedWords)
+    public function __construct($arrRobots, $arrBannedWords, $cx)
     {
         global $_GET;
 
+        $this->cx = $cx;
         $this->_initConfiguration();
-
-
 
         // make statistics only if they were activated
         if ($this->arrConfig['make_statistics']['status']) {
@@ -585,8 +586,7 @@ class Counter
         $arrBrowserRegExps = array();
         $arrBrowserNames = array();
         $arrBrowser = array();
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/useragents.inc.php');        
+        $this->cx->getClassLoader()->loadFile($this->cx->getCoreModuleFolderName().'/Stats/Data/useragents.inc.php');        
         
         if (!empty($arrBrowserRegExps)) {
             foreach ($arrBrowserRegExps as $browserRegExp) {
@@ -635,8 +635,7 @@ class Counter
         $operationgSystem = '';
         $userAgent = $this->arrClient['useragent'];        
         $arrOperatingSystems = array();
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $cx->getClassLoader()->loadFile($cx->getCoreModuleFolderName().'/Stats/Data/operatingsystems.inc.php');
+        $this->cx->getClassLoader()->loadFile($this->cx->getCoreModuleFolderName().'/Stats/Data/operatingsystems.inc.php');
         
         if (!empty($arrOperatingSystems)) {
             foreach ($arrOperatingSystems as $arrOperatingSystem) {
