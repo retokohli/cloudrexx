@@ -78,26 +78,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (!empty($arguments[0])) {
             $subcommand = $arguments[0];
         }
-        $pageCmd = $subcommand;
-        if (!empty($arguments[1])) {
-            $pageCmd .= '_'.$arguments[1];
-        }
-        if (!empty($arguments[2])) {
-            $pageCmd .= '_'.$arguments[2];
-        }
 
-        // load application template
-        $page = new \Cx\Core\ContentManager\Model\Entity\Page();
-        $page->setVirtual(true);
-        $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
-        $page->setCmd($pageCmd);
-        $page->setModule('News');
-        $pageContent = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
-        \LinkGenerator::parseTemplate($pageContent);
-        $objTemplate = new \Cx\Core\Html\Sigma();
-        $objTemplate->setTemplate($pageContent);
-        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-
+        // define frontend language
+        if (!defined('FRONTEND_LANG_ID')) {
+            define('FRONTEND_LANG_ID', 1);
+        }
+        
         switch ($command) {
             case 'News':
                 switch ($subcommand) {
