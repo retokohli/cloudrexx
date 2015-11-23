@@ -53,8 +53,8 @@ class CalendarEventListener extends DefaultEventListener {
         $term_db = $search->getTerm();
         $query = \Cx\Modules\Calendar\Controller\CalendarEvent::getEventSearchQuery($term_db);
         $pageUrl = function($pageUri, $searchData) {
-                        return $pageUri . '?id=' . $searchData['id'] . '&date=' . intval($searchData['startdate']);
-                   };
+            return $pageUri . '?id=' . $searchData['id'] . '&date=' . strtotime($searchData['startdate']);
+        };
         $result = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($search->getResultArray($query, 'Calendar', 'detail', $pageUrl, $search->getTerm()));
         $search->appendResult($result);
     }
