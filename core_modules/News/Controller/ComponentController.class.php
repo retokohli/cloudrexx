@@ -58,7 +58,47 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array('JsonNews');
     }
     
-     /**
+    /**
+     * Returns a list of command mode commands provided by this component
+     * 
+     * @return array List of command names
+     */
+    public function getCommandsForCommandMode() {
+        return array('News');
+    }
+
+    /**
+     * Execute api command
+     * 
+     * @param string $command Name of command to execute
+     * @param array  $arguments List of arguments for the command
+     */
+    public function executeCommand($command, $arguments) {
+        $subcommand = null;
+        if (!empty($arguments[0])) {
+            $subcommand = $arguments[0];
+        }
+
+        // define frontend language
+        if (!defined('FRONTEND_LANG_ID')) {
+            define('FRONTEND_LANG_ID', 1);
+        }
+        
+        switch ($command) {
+            case 'News':
+                switch ($subcommand) {
+                    case 'Cron':
+                        $objNews = new NewsManager();
+                        $objNews->createRSS();
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
      * Load your component.
      * 
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
