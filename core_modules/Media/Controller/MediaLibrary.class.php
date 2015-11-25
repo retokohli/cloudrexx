@@ -370,12 +370,17 @@ class MediaLibrary
             $oldName  = $_POST['oldName'];
         } else {
             $oldName  = $_POST['oldName'].'.'.$_POST['oldExt'];
-            $ext      = (   !empty($_POST['renExt'])
-                         && \FWValidator::is_file_ending_harmless(
-                            $_POST['renName'].'.'.$_POST['renExt'])
-                            ? $_POST['renExt'] : 'txt');
+        }
+
+        if (!is_dir($this->path . $oldName)) {
+            $ext      =
+                (   !empty($_POST['renExt'])
+                && \FWValidator::is_file_ending_harmless(
+                   $_POST['renName'].'.'.$_POST['renExt'])
+                   ? $_POST['renExt'] : 'txt');
             $fileName = $fileName.'.'.$ext;
         }
+
         \Cx\Lib\FileSystem\FileSystem::clean_path($fileName);
 
         if (!isset($_POST['mediaInputAsCopy']) || $_POST['mediaInputAsCopy'] != 1) {
