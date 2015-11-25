@@ -1012,7 +1012,7 @@ cx.cm = function(target) {
             cx.jQuery("#site-language").show();
             cx.jQuery(".adminlist ").removeClass("margin0");
         }
-        if (cx.jQuery.getUrlVar('act') == 'new') {
+        if (cx.jQuery('#pageId').val() == 'new') {
             // make sure history tab is hidden
             cx.jQuery('.tab.page_history').hide();
             // load selected tab
