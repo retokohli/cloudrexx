@@ -34,7 +34,7 @@
  *
  * The FrontendController parses the page-not-found-page
  *
- * @copyright CLOUDREXX *MS - CLOUDREXX AG
+ * @copyright CLOUDREXX CMS - CLOUDREXX AG
  * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
  * @package cloudrexx
@@ -50,7 +50,7 @@ namespace Cx\Core_Modules\Error\Controller;
  * The Event-listener changes the resolved page and component to be the error-component and the page-not-found-page.
  * Therefore the resolver must stop resolving after triggering the event
  *
- * @copyright CLOUDREXX *MS - CLOUDREXX AG
+ * @copyright CLOUDREXX CMS - CLOUDREXX AG
  * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
  * @package cloudrexx
@@ -69,7 +69,7 @@ class SkipResolverException extends \Exception {}
  *
  * The FrontendController parses the page-not-found-page
  *
- * @copyright CLOUDREXX *MS - CLOUDREXX AG
+ * @copyright CLOUDREXX CMS - CLOUDREXX AG
  * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
  * @package cloudrexx
