@@ -645,17 +645,18 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         $activatedLibraries = preg_grep('/^'.$name.'-version-/', self::$active);
         foreach ($activatedLibraries as $activatedLibrary) {
             $activatedLibraryVersion = str_replace($name.'-version-', '', $activatedLibrary);
-            if (preg_match('/'.$version.'/', $activatedLibraryVersion)) {
-                if ($name == 'jquery') {
-                    if ($dependencyOf) {
-                        $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
-                    } else {
-                        $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$activatedLibraryVersion': jQuery.noConflict()}};";
-                    }
-                }
-                return true;
-                break;
+            if (!preg_match('/'.$version.'/', $activatedLibraryVersion)) {
+                continue;
             }
+
+            if ($name != 'jquery' || !$dependencyOf) {
+                return true;
+            }
+
+            $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
+            $customAvailableLibrary = $name.'-version-'.$activatedLibraryVersion;
+            self::$available[$customAvailableLibrary]['specialcode'] .= $libraryVersionData;
+            return true;
         }
 
         // abort in case the library does not specify particular versions
@@ -665,23 +666,24 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 
         // try to load a matching version of the library
         foreach ($library['versions'] as $libraryVersion => $libraryVersionData) {
-            if (preg_match('/'.$version.'/', $libraryVersion)) {
-                // register specific version of the library
-                $customAvailableLibrary = $name.'-version-'.$libraryVersion;
-                if ($name == 'jquery') {
-                    if ($dependencyOf) {
-                        $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
-                    } else {
-                        $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$libraryVersion': jQuery.noConflict()}};";
-                    }
-                }
-                self::$available[$customAvailableLibrary] = $libraryVersionData;
-
-                // activate the specific version of the library
-                self::activate($customAvailableLibrary);
-                return true;
-                break;
+            if (!preg_match('/'.$version.'/', $libraryVersion)) {
+                continue;
             }
+
+            // register specific version of the library
+            $customAvailableLibrary = $name.'-version-'.$libraryVersion;
+            if ($name == 'jquery') {
+                if ($dependencyOf) {
+                    $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
+                } else {
+                    $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$libraryVersion': jQuery.noConflict()}};";
+                }
+            }
+            self::$available[$customAvailableLibrary] = $libraryVersionData;
+
+            // activate the specific version of the library
+            self::activate($customAvailableLibrary);
+            return true;
         }
 
         // no library by the specified version found
