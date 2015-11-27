@@ -152,6 +152,7 @@ class NewsletterLib
         
         $userLanguage = \FWLanguage::getDefaultLangId();
         switch ($type) {
+            case self::USER_TYPE_CORE:
             case self::USER_TYPE_ACCESS:
                 // get user's language by email
                 $user = \FWUser::getFWUserObject()->objUser->getUsers(
