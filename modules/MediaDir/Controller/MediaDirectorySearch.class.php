@@ -388,6 +388,11 @@ EOF;
                                 $checkboxSearch[] = ' FIND_IN_SET("'. $value .'",' . $strTableName . '.`value`) <> 0';
                             }
                             $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND ('. implode(' AND ', $checkboxSearch) .'))';                        
+                        } else if ($intInputfieldType == '31') {
+                            // Range Slider
+                            $intMin = (int)$strExpTerm[0];
+                            $intMax = (int)$strExpTerm[1];
+                            $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND '.$strTableName.'.`value` BETWEEN '.$intMin.' AND '.$intMax.')';
                         } else {
                             $arrExpWhere[] = '('.$strTableName.'.`field_id` = '.intval($intInputfieldId).' AND '.$strTableName.'.`value` LIKE "%'.$strExpTerm.'%")';
                         }
