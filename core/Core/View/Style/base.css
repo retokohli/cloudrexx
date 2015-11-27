@@ -1911,16 +1911,6 @@ a.cke_dialog_ui_button_ok:hover {
 }
 
 /* ModuleManager */
-.description > div {
-    min-height: 22px;
-    height: 0;
-    overflow: hidden;
-    -webkit-transition: height .2s linear 0s;
-    -moz-transition: height .2s linear 0s;
-    -ms-transition: height .2s linear 0s;
-    -o-transition: height .2s linear 0s;
-    transition: height .2s linear 0s;
-}
 .description:hover {
     cursor: pointer;
 }
@@ -1945,15 +1935,5 @@ a.cke_dialog_ui_button_ok:hover {
 }
 
 .desc-extended {
-    display: block;
-    opacity: 0;
-    -webkit-transition: opacity .1s linear 0s;
-    -moz-transition: opacity .1s linear 0s;
-    -ms-transition: opacity .1s linear 0s;
-    -o-transition: opacity .1s linear 0s;
-    transition: opacity .1s linear 0s;
-}
-
-.showText > span {
-    opacity: 1;
+    display: none;
 }
