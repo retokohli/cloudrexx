@@ -307,8 +307,8 @@ function _calendarUpdate()
                 array(
                     'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                     'type'                               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
-                    'startdate'                          => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'type'),
-                    'enddate'                            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate'),
+                    'startdate'                          => array('type' => 'timestamp', 'notnull' => false, 'default' => '0000-00-00 00:00:00', 'after' => 'type'),
+                    'enddate'                            => array('type' => 'timestamp', 'notnull' => false, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate'),
                     'startdate_timestamp'                => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'enddate'),
                     'enddate_timestamp'                  => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate_timestamp'),
                     'use_custom_date_display'            => array('type' => 'TINYINT(1)', 'after' => 'enddate_timestamp'),
@@ -432,11 +432,6 @@ function _calendarUpdate()
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-    }
-
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
-        \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'. DBPREFIX .'module_calendar_event` MODIFY `startdate` timestamp NULL DEFAULT "0000-00-00 00:00:00"');
-        \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'. DBPREFIX .'module_calendar_event` MODIFY `enddate` timestamp NULL DEFAULT "0000-00-00 00:00:00"');
     }
 
     return true;
