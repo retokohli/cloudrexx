@@ -299,10 +299,12 @@ function _downloadsUpdate()
         if (   $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')
             && !isset($arrColumns['file_type'])
         ) {
-            \Cx\Lib\UpdateUtil::sql('
-                ALTER TABLE `'. DBPREFIX .'module_downloads_download_locale`
-                    ADD `file_type` VARCHAR( 10 ) NULL DEFAULT NULL AFTER `source_name`
-            ');
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX .'module_downloads_download_locale',
+                array(
+                    'file_type' => array('type' => 'VARCHAR(10)', 'notnull' => false, 'default' => null, 'after' => 'source_name')
+                )
+            );
             \Cx\Lib\UpdateUtil::sql('
                 UPDATE
                     `'. DBPREFIX .'module_downloads_download_locale` AS downloadlocale
