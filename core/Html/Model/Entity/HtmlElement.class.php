@@ -34,7 +34,7 @@ namespace Cx\Core\Html\Model\Entity;
 /**
  * 
  */
-class HtmlElement {
+class HtmlElement extends \Cx\Model\Base\EntityBase {
     private $name;
     private $classes = array();
     private $attributes = array();
