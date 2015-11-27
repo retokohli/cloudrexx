@@ -62,6 +62,15 @@ class HtmlElement {
         $this->name = $elementName;
     }
     
+    /**
+     * Sets an attribute
+     *
+     * If value is not specified, value will be the same as $name (for cases
+     * like checked="checked"). If you want to unset an attribute, use
+     * unsetAttribute() or setAttributes(..., true)
+     * @param string $name Name of the attribute
+     * @param string $value (optional) Value of the attribute
+     */
     public function setAttribute($name, $value = null) {
         if ($name == 'class') {
             return $this->setClass($value);
@@ -73,13 +82,40 @@ class HtmlElement {
         $this->attributes[$name] = $value;
     }
     
-    public function setAttributes($attributes) {
-        if (isset($attributes['class'])) {
-            $this->setClass($attributes['class']);
-            unset($attributes['class']);
+    /**
+     * Unsets an attribute
+     * @param string $name Name of the attribute
+     */
+    public function unsetAttribute($name) {
+        if (!isset($this->attributes[$name])) {
+            return;
+        }
+        unset($this->attributes[$name]);
+    }
+    
+    /**
+     * Sets a list of attributes
+     *
+     * Provide an array with attribute name as key and attribute value as value
+     * (see setAttribute() for possibilities).
+     * @param array $attributes List of attributes to set
+     * @param boolean $removeOthers Wheter to remove all not specified attributes or not
+     */
+    public function setAttributes($attributes, $removeOthers = false) {
+        $presentAttributes = $this->attributes;
+        foreach ($attributes as $name=>$value) {
+            $this->setAttribute($name, $value);
+            if (isset($presentAttributes[$name])) {
+                unset($presentAttributes[$name]);
+            }
         }
         $this->output = null;
-        $this->attributes = array_merge($this->attributes, $attributes);
+        if (!$override) {
+            return;
+        }
+        foreach ($presentAttributes as $name=>$value) {
+            $this->unsetAttribute($name);
+        }
     }
     
     public function getAttribute($name) {
