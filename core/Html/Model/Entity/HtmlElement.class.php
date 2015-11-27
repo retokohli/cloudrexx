@@ -110,7 +110,7 @@ class HtmlElement {
             }
         }
         $this->output = null;
-        if (!$override) {
+        if (!$removeOthers) {
             return;
         }
         foreach ($presentAttributes as $name=>$value) {
