@@ -637,12 +637,10 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         foreach ($activatedLibraries as $activatedLibrary) {
             $activatedLibraryVersion = str_replace($name.'-version-', '', $activatedLibrary);
             if (preg_match('/'.$version.'/', $activatedLibraryVersion)) {
-                if ($name == 'jquery') {
-                    if ($dependencyOf) {
-                        $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
-                    } else {
-                        $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$activatedLibraryVersion': jQuery.noConflict()}};";
-                    }
+                if ($name == 'jquery' && $dependencyOf) {
+                    $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
+                    $customAvailableLibrary = $name.'-version-'.$activatedLibraryVersion;
+                    self::$available[$customAvailableLibrary]['specialcode'] .= $libraryVersionData;
                 }
                 return true;
                 break;
