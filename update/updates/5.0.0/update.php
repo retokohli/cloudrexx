@@ -1999,12 +1999,18 @@ function _convertThemes2Component()
 }
 
 function _migrateComponents($components, $objUpdate, $missedModules) {
-    global $_CORELANG;
+    global $_CORELANG, $_CONFIG;
 
     if (!is_array($components) || empty($components)) {
         setUpdateMsg('Keine Komponenten angegeben.');
         return false;
     }
+
+    // Only these files introduce changes for all versions
+    $essentialFiles = array('core', 'settings', 'access', 'contact', 'contentmanager',
+        'news', 'blog', 'calendar', 'crm', 'data', 'downloads', 'filesharing',
+        'mediadir', 'podcast', 'shop'
+    );
 
     foreach ($components as $dir) {
         $dh = opendir(dirname(__FILE__).'/components/'.$dir);
@@ -2014,6 +2020,13 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
                     $fileInfo = pathinfo(dirname(__FILE__).'/components/'.$dir.'/'.$file);
 
                     if ($fileInfo['extension'] == 'php') {
+                        // skip all files that don't introduce changes for versions 3.0 and up
+                        if (
+                            !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0') &&
+                            !in_array($fileInfo['filename'], $essentialFiles)
+                        ) {
+                            continue;
+                        }
                         DBG::msg("--------- updating $file ------");
 
                         if (!include_once(dirname(__FILE__).'/components/'.$dir.'/'.$file)) {
