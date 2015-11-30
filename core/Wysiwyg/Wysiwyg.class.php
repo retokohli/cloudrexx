@@ -289,11 +289,12 @@ class Wysiwyg
     /**
      * Extracting the Data urls into the filesystem
      * 
-     * @param string $content
-     * @param mixed  $path
-     * @param mixed  $namePrefix
+     * @param string $content     Html content to extract data urls.
+     * @param mixed  $path        Abosulte path to store images or callable function which returns path to store the images
+     * @param mixed  $namePrefix  Prefix for image or callable function which returns complete filename of image
      * 
-     * @return array $movedFiles
+     * @return array $movedFiles Array of moved files
+     * @throws \Exception
      */
     public function extractDataUrlsToFileSystem(&$content, $path, $namePrefix = 'image')
     {
@@ -301,48 +302,54 @@ class Wysiwyg
             return array();
         }
 
-        //Get the file path and filename prefix
-        $filePath   = is_callable($path) ? call_user_func($path) : $path;
-        $filePrefix = is_callable($namePrefix) ? call_user_func($namePrefix) : $namePrefix;
+        try {
+            //Get the file path and filename prefix
+            $filePath   = is_callable($path) ? call_user_func($path) : $path;
+            $filePrefix = is_callable($namePrefix) ? call_user_func($namePrefix) : $namePrefix;
 
-        if (!file_exists($filePath)) {
-            return array();
-        }
-
-        //Convert the string content into html dom
-        $html = new \simple_html_dom($content);
-        if (!$html) {
-            return array();
-        }
-
-        //Find the relative path for setting it as img src instead of data url
-        $documentPath = \Env::get('cx')->getWebsiteDocumentRootPath();
-        $relativePath = \Env::get('cx')->getWebsiteOffsetPath() . str_replace($documentPath, '', $filePath);
-
-        //Find all the occurrence of img src and store it into the location given in $filePath
-        $movedFiles = array();
-        foreach ($html->find('img') As $element) {
-            if (!preg_match('/^data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)(.*)/i', $element->src, $matches)) {
-                continue;
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
+                return array();
             }
-            $fileName = $this->checkFileAvailability($filePath, $filePrefix . '.' . $matches[2]);
-            try {
-                $file = new \Cx\Lib\FileSystem\File($filePath . '/' . $fileName);
-                $file->touch();
-                $file->write(base64_decode($matches[4]));
-                $element->src = $relativePath . '/' . $fileName;
-                $movedFiles[] = $filePath . '/' . $fileName;
-            } catch (\Exception $e) {
-                \DBG::log($e->getMessage());
-                continue;
-            }
-            //Check the memory overflow and timeout limit
-            $this->checkMemoryLimit();
-            $this->checkTimeoutLimit();
-        }
-        $content = $html->__toString();
 
-        return $movedFiles;
+            //Convert the string content into html dom
+            $html = new \simple_html_dom($content);
+            if (!$html) {
+                return array();
+            }
+
+            //Find the relative path for setting it as img src instead of data url
+            $documentPath = \Env::get('cx')->getWebsiteDocumentRootPath();
+            $relativePath = \Env::get('cx')->getWebsiteOffsetPath() . str_replace($documentPath, '', $filePath);
+
+            //Find all the occurrence of img src and store it into the location given in $filePath
+            $movedFiles = array();
+            foreach ($html->find('img') As $element) {
+                $matches = null;
+                if (!preg_match('/^data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)(.*)/i', $element->src, $matches)) {
+                    continue;
+                }
+                $fileName = $this->checkFileAvailability($filePath, $filePrefix . '.' . $matches[2]);
+                try {
+                    $file = new \Cx\Lib\FileSystem\File($filePath . '/' . $fileName);
+                    $file->touch();
+                    $file->write(base64_decode($matches[4]));
+                    $element->src = $relativePath . '/' . $fileName;
+                    $movedFiles[] = $filePath . '/' . $fileName;
+                } catch (\Exception $e) {
+                    \DBG::log($e->getMessage());
+                    continue;
+                }
+                //Check the memory overflow and timeout limit
+                $this->checkMemoryLimit();
+                $this->checkTimeoutLimit();
+            }
+            $content = $html->__toString();
+
+            return $movedFiles;
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            throw new \Exception('Wysiwyg::extractDataUrlsToFileSystem(): Failed to extract the data urls into filesystem.');
+        }
     }
 
     /**
@@ -362,7 +369,7 @@ class Wysiwyg
         //check the file availability
         $i = 1;
         $fileInfo = pathinfo($fileName);
-        while (file_exists($filePath . '/' . $fileName)) {
+        while (\Cx\Lib\FileSystem\FileSystem::exists($filePath . '/' . $fileName)) {
             $fileName = $fileInfo['filename'] . '_' . $i++ . '.' . $fileInfo['extension'];
         }
 
@@ -376,6 +383,7 @@ class Wysiwyg
      * @staticvar integer $MiB2
      * 
      * @return boolean
+     * @throws \Exception
      */
     function checkMemoryLimit()
     {
@@ -405,6 +413,7 @@ class Wysiwyg
      * @staticvar integer $timeLimit
      * 
      * @return boolean
+     * @throws \Exception
      */
     function checkTimeoutLimit()
     {
