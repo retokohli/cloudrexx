@@ -366,5 +366,18 @@ function _downloadsUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        //following queries for changing the path from images/downloads into images/Downloads
+        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_downloads_download`
+                                 SET `image` = REPLACE(`image`, 'images/downloads', 'images/Downloads')
+                                 WHERE `image` LIKE ('".ASCMS_PATH_OFFSET."/images/downloads%')");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_downloads_category`
+                                 SET `image` = REPLACE(`image`, 'images/downloads', 'images/Downloads')
+                                 WHERE `image` LIKE ('".ASCMS_PATH_OFFSET."/images/downloads%')");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_downloads_download_locale`
+                                 SET `source` = REPLACE(`source`, 'images/downloads', 'images/Downloads')
+                                 WHERE `source` LIKE ('".ASCMS_PATH_OFFSET."/images/downloads%')");
+    }
+
     return true;
 }

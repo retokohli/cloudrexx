@@ -581,6 +581,32 @@ function _mediadirUpdate()
             tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_settings_perm_group_forms` VALUES (5,18,1),(4,18,1),(3,18,1);");
         }
     }
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        //update class name
+        \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_inputfield_types` SET `name` = 'linkGroup' WHERE `name` = 'link_group'");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_inputfield_types` SET `name` = 'googleMap' WHERE `name` = 'google_map'");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_inputfield_types` SET `name` = 'addStep' WHERE `name` = 'add_step'");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_inputfield_types` SET `name` = 'fieldGroup' WHERE `name` = 'field_group'");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_inputfield_types` SET `name` = 'productAttributes' WHERE `name` = 'product_attributes'");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_inputfield_types` SET `name` = 'googleWeather' WHERE `name` = 'google_weather'");
+//following queries for changing the path from images/mediadir into images/MediaDir
+        \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_categories`
+                                 SET `picture` = REPLACE(`picture`, 'images/mediadir', 'images/MediaDir')
+                                 WHERE `picture` LIKE ('" . ASCMS_PATH_OFFSET . "/images/mediadir%')");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_forms`
+                                 SET `picture` = REPLACE(`picture`, 'images/mediadir', 'images/MediaDir')
+                                 WHERE `picture` LIKE ('" . ASCMS_PATH_OFFSET . "/images/mediadir%')");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_levels`
+                                 SET `picture` = REPLACE(`picture`, 'images/mediadir', 'images/MediaDir')
+                                 WHERE `picture` LIKE ('" . ASCMS_PATH_OFFSET . "/images/mediadir%')");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_rel_entry_inputfields`
+                                 SET `value` = REPLACE(`value`, 'images/mediadir', 'images/MediaDir')
+                                 WHERE `value` LIKE ('" . ASCMS_PATH_OFFSET . "/images/mediadir%')");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_rel_entry_inputfields_clean1`
+                                 SET `value` = REPLACE(`value`, 'images/mediadir', 'images/MediaDir')
+                                 WHERE `value` LIKE ('" . ASCMS_PATH_OFFSET . "/images/mediadir%')");
+    }
     return true;
 }
 

@@ -385,6 +385,12 @@ function _calendarUpdate()
                     'fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1' => array('fields' => array('catid'))
                 )
             );
+
+            //following queries for changing the path from images/calendar into images/Calendar
+            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_calendar_event` SET `pic` = REPLACE(`pic`, 'images/calendar', 'images/Calendar'),
+                                     `attach` = REPLACE(`attach`, 'images/calendar', 'images/Calendar'),
+                                     `place_map` = REPLACE(`place_map`, 'images/calendar', 'images/Calendar')
+                                     WHERE `pic` LIKE ('" . ASCMS_PATH_OFFSET . "/images/calendar%') ");
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }

@@ -343,6 +343,14 @@ function _crmUpdate() {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        //update module name for email templates
+        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_mail_template` SET `section` = 'Crm' WHERE `section` = 'crm'");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_text` SET `section` = 'Crm' WHERE `section` = 'crm'");
+        //update module name for crm core settings
+        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_setting` SET `section` = 'Crm' WHERE `section` = 'crm'");
+    }
     return true;
 }
 

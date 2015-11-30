@@ -1084,6 +1084,9 @@ function _accessUpdate()
             \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO`'. DBPREFIX .'access_id` (`id`, `entity_class_name`, `entity_class_id`) VALUES (182,\'\',\'\')');
             \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO`'. DBPREFIX .'access_id` (`id`, `entity_class_name`, `entity_class_id`) VALUES (556,\'\',\'\')');
             \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO`'. DBPREFIX .'access_id` (`id`, `entity_class_name`, `entity_class_id`) VALUES (557,\'\',\'\')');
+
+            //update module name for crm core settings
+            \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_setting` SET `section` = 'Access' WHERE `section` = 'access' AND `name` = 'providers' AND `group` = 'sociallogin'");
         }  catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
