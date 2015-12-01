@@ -38,6 +38,17 @@ namespace Cx\Core\Wysiwyg;
 use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 
 /**
+ * Class WysiwygException
+ *
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Project Team SS4U <info@comvation.com>
+ * @version     3.0.0
+ * @package     cloudrexx
+ * @subpackage  core_wysiwyg
+ */
+class WysiwygException extends \Exception {}
+
+/**
  * Wysiqyg class
  * 
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
@@ -106,6 +117,21 @@ class Wysiwyg
      * @var array array of extra plugins added for the wysiwyg editor
      */
     private $extraPlugins;
+
+    /**
+     * @var int
+     */
+    protected $memoryLimit;
+
+    /**
+     * @var int
+     */
+    protected $timeLimit;
+
+    /**
+     * constant MiB2 2megabytes
+     */
+    const MiB2 = 2097152;
 
     /**
      * Initialize WYSIWYG editor
@@ -303,6 +329,8 @@ class Wysiwyg
         }
 
         try {
+            //Store the process started time
+            $processTime = time();
             //Get the file path and filename prefix
             $filePath   = is_callable($path) ? call_user_func($path) : $path;
             $filePrefix = is_callable($namePrefix) ? call_user_func($namePrefix) : $namePrefix;
@@ -340,13 +368,13 @@ class Wysiwyg
                     continue;
                 }
                 //Check the memory overflow and timeout limit
-                $this->checkMemoryLimit();
-                $this->checkTimeoutLimit();
+                $this->checkMemoryLimit(self::MiB2);
+                $this->checkTimeoutLimit($processTime);
             }
             $content = $html->__toString();
 
             return $movedFiles;
-        } catch (\Exception $e) {
+        } catch(WysiwygException $e){
             \DBG::log($e->getMessage());
             throw new \Exception('Wysiwyg::extractDataUrlsToFileSystem(): Failed to extract the data urls into filesystem.');
         }
@@ -379,62 +407,50 @@ class Wysiwyg
     /**
      * Checking memory limit
      * 
-     * @staticvar integer $memoryLimit
-     * @staticvar integer $MiB2
+     * @param integer $requiredMemoryLimit required memory limit
      * 
      * @return boolean
-     * @throws \Exception
+     * @throws WysiwygException
      */
-    function checkMemoryLimit()
+    function checkMemoryLimit($requiredMemoryLimit)
     {
-        static $memoryLimit, $MiB2;
-
-        if (!isset($memoryLimit)) {
+        if (empty($this->memoryLimit)) {
             $memoryLimit = \FWSystem::getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
-            if (empty($memoryLimit)) {
-                // set default php memory limit of 8MiBytes
-                $memoryLimit = 8*pow(1024, 2);
-            }
-            $MiB2 = 2 * pow(1024, 2);
+            //if memory limit is empty then set default php memory limit of 8MiBytes
+            $this->memoryLimit = !empty($memoryLimit) ? $memoryLimit : self::MiB2 * 4;
         }
-        $potentialRequiredMemory = memory_get_usage() + $MiB2;
-        if ($potentialRequiredMemory > $memoryLimit) {
+
+        $potentialRequiredMemory = memory_get_usage() + $requiredMemoryLimit;
+        if ($potentialRequiredMemory > $this->memoryLimit) {
             // try to set a higher memory_limit
             if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
-                throw new \Exception('The extracting data url is interrupted due to insufficient memory is available.');
+                throw new WysiwygException('Memory limit could not allocated to required memory.');
             }
         }
+
         return true;
     }
 
     /**
      * Checking the timeout limit
      * 
-     * @staticvar integer $timeLimit
+     * @param integer $processStartTime process started time
      * 
      * @return boolean
-     * @throws \Exception
+     * @throws WysiwygException
      */
-    function checkTimeoutLimit()
+    function checkTimeoutLimit($processStartTime)
     {
-        static $timeLimit, $processTime;
-
-        if (!$timeLimit) {
-            $timeLimit = ini_get('max_execution_time');
+        if (empty($this->timeLimit)) {
+            $this->timeLimit = ini_get('max_execution_time');
         }
 
-        if (!$processTime) {
-            $processTime = time();
-        }
-
-        if (!empty($timeLimit)) {
-            $timeoutTime = $processTime + $timeLimit;
-        }
+        $timeoutTime = $processStartTime + $this->timeLimit;
 
         if ($timeoutTime > time()) {
             return true;
-        } else {
-            throw new \Exception('The extracting data url was interrupted because the maximum allowable script execution time has been reached.');
         }
+
+        throw new WysiwygException('Timeout limit exceeded.');
     }
 }
