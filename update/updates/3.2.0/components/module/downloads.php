@@ -305,8 +305,21 @@ function _downloadsUpdate()
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX .'module_downloads_download_locale',
                 array(
-                    'file_type' => array('type' => 'VARCHAR(10)', 'notnull' => false, 'default' => null, 'after' => 'source_name')
-                )
+                    'lang_id'     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'download_id' => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'lang_id'),
+                    'name'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'download_id'),
+                    'source'      => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'default' => null, 'after' => 'name'),
+                    'source_name' => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'default' => null, 'after' => 'source'),
+                    'file_type'   => array('type' => 'VARCHAR(10)', 'notnull' => false, 'default' => null, 'after' => 'source_name'),
+                    'description' => array('type' => 'TEXT', 'notnull' => true, 'after' => 'file_type'),
+                    'metakeys'    => array('type' => 'TEXT', 'notnull' => true, 'after' => 'description'),
+                ),
+                array(
+                    array('fields' => array('lang_id', 'download_id'), 'type' => 'UNIQUE'),
+                    array('fields' => array('name'), 'type' => 'FULLTEXT'),
+                    array('fields' => array('description'), 'type' => 'FULLTEXT'),
+                ),
+                'MyISAM'
             );
             \Cx\Lib\UpdateUtil::sql('
                 UPDATE
