@@ -315,11 +315,10 @@ function _downloadsUpdate()
                     'metakeys'    => array('type' => 'TEXT', 'notnull' => true, 'after' => 'description'),
                 ),
                 array(
-                    array('fields' => array('lang_id', 'download_id'), 'type' => 'UNIQUE'),
-                    array('fields' => array('name'), 'type' => 'FULLTEXT'),
-                    array('fields' => array('description'), 'type' => 'FULLTEXT'),
-                ),
-                'MyISAM'
+                    'PRIMARY'     => array('fields' => array('lang_id', 'download_id'), 'type' => 'PRIMARY'),
+                    'name'        => array('fields' => array('name'), 'type' => 'FULLTEXT'),
+                    'description' => array('fields' => array('description'), 'type' => 'FULLTEXT'),
+                )
             );
             \Cx\Lib\UpdateUtil::sql('
                 UPDATE
