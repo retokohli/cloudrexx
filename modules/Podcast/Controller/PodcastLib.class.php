@@ -182,7 +182,7 @@ class PodcastLib
         if ($objMedium != false) {
             while (!$objMedium->EOF) {
                 if(!empty($objMedium->fields['youtube_id'])){
-                    $mediumSource = 'http://youtube.com/v/'.$objMedium->fields['youtube_id'];
+                    $mediumSource = 'https://youtube.com/v/'.$objMedium->fields['youtube_id'];
                 }else{
                     $mediumSource = str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']);
                 }
@@ -233,7 +233,7 @@ class PodcastLib
             ($isActive ? " AND status=1" : ""), 1);
         if ($objMedium !== false && $objMedium->RecordCount() == 1) {
             if(!empty($objMedium->fields['youtube_id'])){
-                $mediumSource = 'http://youtube.com/v/'.$objMedium->fields['youtube_id'];
+                $mediumSource = 'https://youtube.com/v/'.$objMedium->fields['youtube_id'];
             }else{
                 $mediumSource = str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']);
             }
@@ -1197,7 +1197,7 @@ EOF;
                     }
                 } elseif ($_POST['podcast_medium_source_type'] == 'youtube') {
                     $mediumYoutubeID = contrexx_addslashes(trim($_POST['youtubeID']));
-                    $mediumSource = 'http://youtube.com/v/'.$mediumYoutubeID;
+                    $mediumSource = 'https://youtube.com/v/'.$mediumYoutubeID;
                 } elseif (isset($_POST['podcast_medium_remote_source'])) {
                     $mediumSource = $_POST['podcast_medium_remote_source'];
                 }
