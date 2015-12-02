@@ -3633,9 +3633,14 @@ class NewsletterManager extends NewsletterLib
             $_CONFIG['domainUrl'].
             ($_SERVER['SERVER_PORT'] == 80
               ? NULL : ':'.intval($_SERVER['SERVER_PORT'])).
-            ASCMS_PATH_OFFSET.
-// TODO: use the recipient's language instead of the default language
-            '/'.\FWLanguage::getLanguageParameter(\FWLanguage::getDefaultLangId(), 'lang').
+            ASCMS_PATH_OFFSET.'/'.
+            \FWLanguage::getLanguageParameter(
+                $this->getUsersPreferredLanguageId(
+                    $email,
+                    $type
+                ),
+                'lang'
+            ).
             '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
         return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
     }
