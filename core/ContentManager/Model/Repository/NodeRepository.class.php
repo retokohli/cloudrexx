@@ -381,7 +381,11 @@ class NodeRepository extends NestedTreeRepository {
     {
         $result = false;
         $meta = $this->getClassMetadata();
-        if ($node instanceof $meta->name) {
+        if (!$node instanceof $meta->name) {
+            throw new InvalidArgumentException("Node is not related to this repository");
+        }
+        $this->_em->getConnection()->beginTransaction();
+        try {
             $config = $this->listener->getConfiguration($this->_em, $meta->name);
             $nextSiblings = $this->getNextSiblings($node, false, $skipAliasNodes);
             if ($numSiblings = count($nextSiblings)) {
@@ -395,8 +399,10 @@ class NodeRepository extends NestedTreeRepository {
                     ->getStrategy($this->_em, $meta->name)
                     ->updateNode($this->_em, $node, $nextSiblings[$number - 1], Nested::NEXT_SIBLING);
             }
-        } else {
-            throw new InvalidArgumentException("Node is not related to this repository");
+            $this->_em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $this->_em->getConnection()->rollback();
+            throw $e;
         }
         return $result;
     }
@@ -415,7 +421,11 @@ class NodeRepository extends NestedTreeRepository {
     {
         $result = false;
         $meta = $this->getClassMetadata();
-        if ($node instanceof $meta->name) {
+        if (!$node instanceof $meta->name) {
+            throw new InvalidArgumentException("Node is not related to this repository");
+        }
+        $this->_em->getConnection()->beginTransaction();
+        try {
             $config = $this->listener->getConfiguration($this->_em, $meta->name);
             $prevSiblings = array_reverse($this->getPrevSiblings($node, false, $skipAliasNodes));
             if ($numSiblings = count($prevSiblings)) {
@@ -429,8 +439,10 @@ class NodeRepository extends NestedTreeRepository {
                     ->getStrategy($this->_em, $meta->name)
                     ->updateNode($this->_em, $node, $prevSiblings[$number - 1], Nested::PREV_SIBLING);
             }
-        } else {
-            throw new InvalidArgumentException("Node is not related to this repository");
+            $this->_em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $this->_em->getConnection()->rollback();
+            throw $e;
         }
         return $result;
     }
