@@ -111,7 +111,7 @@ class Navigation
 
         if ($boolShop) {
             $themesPages = \Env::get('init')->getTemplates($this->page);
-            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', \Cx\Modules\Shop\Controller\Shop::getNavbar());
+            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', \Cx\Modules\Shop\Controller\Shop::getNavbar($themesPages['shopnavbar']));
             $this->_objTpl->setVariable('SHOPNAVBAR2_FILE', \Cx\Modules\Shop\Controller\Shop::getNavbar($themesPages['shopnavbar2']));
             $this->_objTpl->setVariable('SHOPNAVBAR3_FILE', \Cx\Modules\Shop\Controller\Shop::getNavbar($themesPages['shopnavbar3']));
         }
