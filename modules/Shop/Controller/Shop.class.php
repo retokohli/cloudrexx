@@ -477,12 +477,16 @@ die("Failed to get Customer for ID $customer_id");
                 }
                 $objProduct = Product::getById($product_id);
                 if ($objProduct) {
-                    $selectedCatId = $objProduct->category_id();
-                    $selectedCatId = preg_replace('/,.+$/', '', $selectedCatId);
+                    $productCatIds = $objProduct->category_id();
+                    if (isset($_SESSION['shop']['previous_category_id']) && in_array($_SESSION['shop']['previous_category_id'], array_map('intval', explode(',', $productCatIds)))) {
+                        $selectedCatId = $_SESSION['shop']['previous_category_id'];
+                    } else {
+                        $selectedCatId = preg_replace('/,.+$/', '', $productCatIds);
+                    }
                 }
             }
             // If there is no distinct Category ID, use the previous one, if any
-            if (is_numeric($selectedCatId)) {
+            if (is_numeric($selectedCatId) && !empty($selectedCatId)) {
                 $_SESSION['shop']['previous_category_id'] = $selectedCatId;
             } else {
                 if (isset($_SESSION['shop']['previous_category_id']))
