@@ -607,9 +607,11 @@ die("Failed to get Customer for ID $customer_id");
      */
     static function setNavbar()
     {
-        global $objTemplate;
+        global $objTemplate, $themesPages;
 
-        $objTemplate->setVariable('SHOPNAVBAR_FILE', self::getNavbar());
+        $objTemplate->setVariable('SHOPNAVBAR_FILE', self::getNavbar($themesPages['shopnavbar']));
+        $objTemplate->setVariable('SHOPNAVBAR2_FILE', self::getNavbar($themesPages['shopnavbar2']));
+        $objTemplate->setVariable('SHOPNAVBAR3_FILE', self::getNavbar($themesPages['shopnavbar3']));
     }
 
 
