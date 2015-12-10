@@ -488,7 +488,16 @@ die("Failed to get Customer for ID $customer_id");
             }
         }
         // If there is no distinct Category ID, use the previous one, if any
-        if (is_numeric($selectedCatId) && !empty($selectedCatId)) {
+        // NOTE: when switching to the cart, the previous_category_id is being reset
+        //       as we are not checking if $selectedCatId is greater than 0.
+        //       We need to accept the value of $selectedCatId as 0, otherwise
+        //       when we navigate away from the Shop or if we open the overview
+        //       section, the shopNavbar and/or shop_breadcrumb will sill display
+        //       the last visited category as currently active. The latter would
+        //       be wrong.
+        //       A possible solution would be to check for all section/cmd cases
+        //       that won't allow $selectedCatId to be empty.
+        if (is_numeric($selectedCatId)/* && !empty($selectedCatId)*/) {
             $_SESSION['shop']['previous_category_id'] = $selectedCatId;
         } else {
             if (isset($_SESSION['shop']['previous_category_id']))
