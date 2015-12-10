@@ -130,6 +130,7 @@ class Newsletter extends NewsletterLib
                     $userFirstname    = $objResult->fields['firstname'];
                     $userLastname    = $objResult->fields['lastname'];
                     $userTitle        = $objResult->fields['salutation'];
+                    $userEmail        = $objResult->fields['email'];
                     $userSex = $objResult->fields['sex'];
 
 // TODO: use FWUSER
@@ -151,73 +152,29 @@ class Newsletter extends NewsletterLib
                             break;
                     }
 
-                    $query_conf         = "SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setid=1";
-                    $objResult_conf     = $objDatabase->Execute($query_conf);
-                    if ($objResult_conf !== false) {
-                        $value_sender_emailDEF     = $objResult_conf->fields['setvalue'];
-                    }
+                    $arrSettings = $this->_getSettings();
 
-                    $query_conf         = "SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setid=2";
-                    $objResult_conf     = $objDatabase->Execute($query_conf);
-                    if ($objResult_conf !== false) {
-                        $value_sender_nameDEF     = $objResult_conf->fields['setvalue'];
-                    }
-
-                    $query_conf         = "SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setid=3";
-                    $objResult_conf     = $objDatabase->Execute($query_conf);
-                    if ($objResult_conf !== false) {
-                        $value_reply_mailDEF     = $objResult_conf->fields['setvalue'];
-                    }
-
-                    $query_content         = "SELECT title, content FROM ".DBPREFIX."module_newsletter_confirm_mail WHERE id='2'";
-                    $objResult_content      = $objDatabase->Execute($query_content );
-                    if ($objResult_content !== false) {
-                        $subject     = $objResult_content->fields['title'];
-                        $content     = $objResult_content->fields['content'];
-                    }
-
-                    require_once ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php';
-
-                    $url            = $_SERVER['SERVER_NAME'];
-                    $now             = date(ASCMS_DATE_FORMAT);
-
-
-
-                    //replase placeholder
-                    $array_1 = array('[[sex]]', '[[title]]', '[[firstname]]', '[[lastname]]', '[[url]]', '[[date]]');
-                    $array_2 = array($userSex, $userTitle, $userFirstname, $userLastname, $url, $now);
-
-                    $mailTitle = str_replace($array_1, $array_2, $subject);
-                    $mailContent = str_replace($array_1, $array_2, $content);
-
-
-                    $mail = new \phpmailer();
-
-                    if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                        if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                            $mail->IsSMTP();
-                            $mail->Host = $arrSmtp['hostname'];
-                            $mail->Port = $arrSmtp['port'];
-                            $mail->SMTPAuth = true;
-                            $mail->Username = $arrSmtp['username'];
-                            $mail->Password = $arrSmtp['password'];
-                        }
-                    }
-
-                    $mail->CharSet = CONTREXX_CHARSET;
-                    $mail->From             = $value_sender_emailDEF;
-                    $mail->FromName         = $value_sender_nameDEF;
-                    $mail->AddReplyTo($value_reply_mailDEF);
-                    $mail->Subject             = $mailTitle;
-                    $mail->Priority         = 3;
-                    $mail->IsHTML(false);
-                    $mail->Body             = $mailContent;
-                    $mail->AddAddress($_GET['email']);
-                    $mail->Send();
-
+                    $url = $_SERVER['SERVER_NAME'];
+                    $arrMailTemplate = array(
+                        'key'          => 'newsletter_confirm_email',
+                        'lang_id'      => FRONTEND_LANG_ID,
+                        'substitution' => array(
+                            'NEWSLETTER_USER_SEX'       => $userSex,
+                            'NEWSLETTER_USER_TITLE'     => $userTitle,
+                            'NEWSLETTER_USER_FIRSTNAME' => $userFirstname,
+                            'NEWSLETTER_USER_LASTNAME'  => $userLastname,
+                            'NEWSLETTER_USER_EMAIL'     => $userEmail,
+                            'NEWSLETTER_DOMAIN_URL'     => $url,
+                            'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
+                            'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
+                            'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
+                            'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue']
+                        ),
+                    );
+                    \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate);
                 }
             }
-        }else{
+        } else {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", '<span class="text-danger">'.$_ARRAYLANG['TXT_NOT_VALID_EMAIL'].'</span>');
         }
     }
@@ -738,18 +695,25 @@ class Newsletter extends NewsletterLib
         }
     }
 
-// TODO: add validation CODE!!!
+    /**
+     * Send notification mail to the user
+     *
+     * @param string $recipientEmail      E-mail
+     * @param string $recipientSex        Sex
+     * @param string $recipientTitle      User title
+     * @param string $recipientFirstname  First name
+     * @param string $recipientLastname   Last name
+     *
+     * @return boolean true when notification send false otherwise
+     */
     function _sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientTitle, $recipientFirstname, $recipientLastname)
     {
-        global $_CONFIG, $_ARRAYLANG, $objDatabase;
+        global $_CONFIG, $_ARRAYLANG;
 
-        if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-            return false;
-        }
-
-// TODO: use FWUSER
-        $arrRecipientTitles = &$this->_getRecipientTitles();
-        $recipientTitleTxt = $arrRecipientTitles[$recipientTitle];
+        // TODO: add validation CODE!!!
+        // TODO: use FWUSER
+        $arrRecipientTitles = $this->_getRecipientTitles();
+        $recipientTitleTxt  = $arrRecipientTitles[$recipientTitle];
 
         switch ($recipientSex) {
              case 'm':
@@ -763,49 +727,45 @@ class Newsletter extends NewsletterLib
              default:
                  $recipientSexTxt = '';
                  break;
-         }
-
-        if (!($objConfirmMail = $objDatabase->SelectLimit("SELECT title, content FROM ".DBPREFIX."module_newsletter_confirm_mail WHERE id='1'", 1)) || $objConfirmMail->RecordCount() == 0) {
-            return false;
         }
 
-        $arrParsedTxts = str_replace(
-            array('[[sex]]', '[[title]]', '[[firstname]]', '[[lastname]]', '[[code]]', '[[url]]', '[[date]]'),
-            array($recipientSexTxt, $recipientTitleTxt, $recipientFirstname, $recipientLastname, ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Newsletter&cmd=confirm&email='.$recipientEmail, $_CONFIG['domainUrl'], date(ASCMS_DATE_FORMAT)),
-            array($objConfirmMail->fields['title'], $objConfirmMail->fields['content'])
+        $arrSettings = $this->_getSettings();
+
+        $url = $_SERVER['SERVER_NAME'];
+        $now = date(ASCMS_DATE_FORMAT);
+
+        $arrMailTemplate = array(
+            'key'          => 'newsletter_activation_email',
+            'lang_id'      => FRONTEND_LANG_ID,
+            'substitution' => array(
+                'NEWSLETTER_USER_SEX'       => $recipientSexTxt,
+                'NEWSLETTER_USER_TITLE'     => $recipientTitleTxt,
+                'NEWSLETTER_USER_FIRSTNAME' => $recipientFirstname,
+                'NEWSLETTER_USER_LASTNAME'  => $recipientLastname,
+                'NEWSLETTER_USER_EMAIL'     => $recipientEmail,
+                'NEWSLETTER_CONFIRM_CODE'   => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Newsletter&cmd=confirm&email='.$recipientEmail,
+                'NEWSLETTER_DOMAIN_URL'     => $url,
+                'NEWSLETTER_CURRENT_DATE'   => $now,
+                'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
+                'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
+                'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue']
+            ),
         );
-
-        $arrSettings = &$this->_getSettings();
-
-        $objMail = new \phpmailer();
-
-        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-            if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                $objMail->IsSMTP();
-                $objMail->Host = $arrSmtp['hostname'];
-                $objMail->Port = $arrSmtp['port'];
-                $objMail->SMTPAuth = true;
-                $objMail->Username = $arrSmtp['username'];
-                $objMail->Password = $arrSmtp['password'];
-            }
-        }
-
-        $objMail->CharSet = CONTREXX_CHARSET;
-        $objMail->From = $arrSettings['sender_mail']['setvalue'];
-        $objMail->FromName = $arrSettings['sender_name']['setvalue'];
-        $objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);
-        $objMail->Subject = $arrParsedTxts[0];
-        $objMail->Priority = 3;
-        $objMail->IsHTML(false);
-        $objMail->Body = $arrParsedTxts[1];
-        $objMail->AddAddress($recipientEmail);
-        if ($objMail->Send()) {
-            return true;
-        } else {
+        if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
             return false;
         }
+
+        return true;
     }
 
+    /**
+     * Send notification mail
+     *
+     * @param integer $action      1 = subscribe | 2 = unsubscribe
+     * @param integer $recipientId Id of the recipient
+     *
+     * @return boolean True when notification mail send successfully, false otherwise
+     */
     function _sendNotificationEmail($action, $recipientId)
     {
         global $_CONFIG, $_ARRAYLANG, $objDatabase;
@@ -820,11 +780,9 @@ class Newsletter extends NewsletterLib
         }
 
         if (   ($arrSettings['notificationSubscribe'] == 1 && $action == 1)
-            || ($arrSettings['notificationUnsubscribe'] == 1 && $action == 2)) {
+            || ($arrSettings['notificationUnsubscribe'] == 1 && $action == 2)
+        ) {
 
-            if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-                return false;
-            }
             $objRecipient = $objDatabase->SelectLimit("SELECT sex, salutation, lastname, firstname, email FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
             if ($objRecipient !== false) {
                 $arrRecipient['sex'] = $objRecipient->fields['sex'];
@@ -839,8 +797,6 @@ class Newsletter extends NewsletterLib
                 $arrRecipientTitle = $objRecipientTitle->fields['title'];
             }
 
-            $objNotificationMail = $objDatabase->SelectLimit("SELECT title, content, recipients FROM ".DBPREFIX."module_newsletter_confirm_mail WHERE id='3'", 1);
-
             if($action == 1) {
                 $txtAction = $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SUBSCRIBE'];
             } else {
@@ -849,10 +805,10 @@ class Newsletter extends NewsletterLib
                                                                         INNER JOIN '.DBPREFIX.'module_newsletter_rel_user_cat AS r ON r.category = c.id
                                                                         WHERE r.user = '.contrexx_addslashes($recipientId));
                 $notifyMails = array();
-                if($objNotificationAdressesFromLists !== false) {
-                    while(!$objNotificationAdressesFromLists->EOF) {
-                        foreach(explode(',', $objNotificationAdressesFromLists->fields['notification_email']) as $mail) {
-                            if(!in_array($mail, $notifyMails)) {
+                if ($objNotificationAdressesFromLists !== false) {
+                    while (!$objNotificationAdressesFromLists->EOF) {
+                        foreach (explode(',', $objNotificationAdressesFromLists->fields['notification_email']) as $mail) {
+                            if (!in_array($mail, $notifyMails)) {
                                 array_push($notifyMails, trim($mail));
                             }
                         }
@@ -861,47 +817,30 @@ class Newsletter extends NewsletterLib
                 }
             }
 
-            $arrParsedTxts = str_replace(
-                array('[[action]]', '[[url]]', '[[date]]', '[[sex]]', '[[title]]', '[[lastname]]', '[[firstname]]', '[[e-mail]]'),
-                array($txtAction, $_CONFIG['domainUrl'], date(ASCMS_DATE_FORMAT), $arrRecipient['sex'], $arrRecipientTitle, $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['email']),
-                array($objNotificationMail->fields['title'], $objNotificationMail->fields['content'])
+            $arrSettings = $this->_getSettings();
+
+            $arrMailTemplate = array(
+                'key'          => 'newsletter_notification_email',
+                'lang_id'      => FRONTEND_LANG_ID,
+                'substitution' => array(
+                    'NEWSLETTER_NOTIFICATION_ACTION'    => $txtAction,
+                    'NEWSLETTER_NOTIFICATION_RECIPIENT' => implode(',', $notifyMails),
+                    'NEWSLETTER_USER_SEX'       => $arrRecipient['sex'],
+                    'NEWSLETTER_USER_TITLE'     => $arrRecipientTitle,
+                    'NEWSLETTER_USER_FIRSTNAME' => $arrRecipient['firstname'],
+                    'NEWSLETTER_USER_LASTNAME'  => $arrRecipient['lastname'],
+                    'NEWSLETTER_USER_EMAIL'     => $arrRecipient['email'],
+                    'NEWSLETTER_DOMAIN_URL'     => $_CONFIG['domainUrl'],
+                    'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
+                    'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
+                    'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
+                    'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue'],
+                ),
             );
-
-            $arrRecipients = explode(',', $objNotificationMail->fields['recipients']);
-
-            $arrSettings = &$this->_getSettings();
-
-            $objMail = new \phpmailer();
-
-            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
+            if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
+                return false;
             }
-
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $arrSettings['sender_mail']['setvalue'];
-            $objMail->FromName = $arrSettings['sender_name']['setvalue'];
-            $objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);
-            $objMail->Subject = $arrParsedTxts[0];
-            $objMail->Priority = 3;
-            $objMail->IsHTML(false);
-            $objMail->Body = $arrParsedTxts[1];
-
-            foreach ($arrRecipients as $key => $recipientEmail) {
-                $objMail->AddAddress($recipientEmail);
-            }
-            foreach($notifyMails as $mail) {
-                $objMail->AddAddress($mail);
-            }
-            if ($objMail->Send()) {
-                return true;
-            }
+            return true;
         }
 // TODO: This used to return *nothing* when notifications were turned off.
 // Probably true should be returned in this case instead.

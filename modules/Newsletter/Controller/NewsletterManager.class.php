@@ -94,7 +94,7 @@ class NewsletterManager extends NewsletterLib
                 .(\Permission::checkAccess(172, 'static', true) ? "<a href='index.php?cmd=Newsletter&amp;act=lists' class='".($this->act == 'lists' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_LISTS']."</a>" : '')
                 .(\Permission::checkAccess(174, 'static', true) ? "<a href='index.php?cmd=Newsletter&amp;act=users' class='".($this->act == 'users' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS']."</a>" : '')
                 .(\Permission::checkAccess(175, 'static', true) ? "<a href='index.php?cmd=Newsletter&amp;act=news' class='".($this->act == 'news' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_NEWS']."</a>" : '')
-                .(\Permission::checkAccess(176, 'static', true) ? "<a href='index.php?cmd=Newsletter&amp;act=dispatch' class='".(in_array($this->act, array('dispatch', 'templates', 'interface', 'confightml', 'activatemail', 'confirmmail', 'notificationmail', 'system', 'tpledit')) ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>" : ''));
+                .(\Permission::checkAccess(176, 'static', true) ? "<a href='index.php?cmd=Newsletter&amp;act=dispatch' class='".(in_array($this->act, array('dispatch', 'templates', 'interface', 'confightml', 'EmailTemplates', 'mailtemplate_edit', 'mailtemplate_overview', 'system', 'tpledit')) ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>" : ''));
         }
         $months = explode(',', $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY']);
         $i = 0;
@@ -219,17 +219,11 @@ class NewsletterManager extends NewsletterLib
                 $this->delTemplate();
                 $this->_templates();
                 break;
-            case "confirmmail":
+            case 'mailtemplate_overview':
+            case 'mailtemplate_edit':
+            case 'EmailTemplates':
                 \Permission::checkAccess(176, 'static');
-                $this->ConfirmMail();
-                break;
-            case "notificationmail":
-                \Permission::checkAccess(176, 'static');
-                $this->NotificationMail();
-                break;
-            case "activatemail":
-                \Permission::checkAccess(176, 'static');
-                $this->ActivateMail();
+                $this->emailTemplates();
                 break;
             case "update":
                 \Permission::checkAccess(171, 'static');
@@ -1682,6 +1676,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
             'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
             'TXT_SYSTEM_SETINGS' => "System",
+            'TXT_NEWSLETTER_EMAIL_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'],
         ));
     }
 
@@ -1834,6 +1829,8 @@ class NewsletterManager extends NewsletterLib
             'TXT_SAVE'                      => $_ARRAYLANG['TXT_SAVE'],
             'TXT_ACTIVE'                    => $_ARRAYLANG['TXT_ACTIVE'],
             'TXT_NEWSLETTER_MANDATORY_FIELD' => $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD'],
+            'TXT_NEWSLETTER_EMAIL_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'],
+            'TXT_SYSTEM_SETINGS'             => $_ARRAYLANG['TXT_NEWSLETTER_SYSTEM'],
         ));
 
 
@@ -1902,6 +1899,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
             'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
             'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
+            'TXT_NEWSLETTER_EMAIL_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'],
             'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
             'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
             'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
@@ -1981,6 +1979,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
             'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
             'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
+            'TXT_NEWSLETTER_EMAIL_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'],
         ));
 
         $this->_objTpl->setGlobalVariable(array(
@@ -2184,6 +2183,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
             'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
             'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
+            'TXT_NEWSLETTER_EMAIL_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'],
         ));
 
         $this->_objTpl->setVariable(array(
@@ -2226,207 +2226,145 @@ class NewsletterManager extends NewsletterLib
         return false;
     }
 
-
-    function ActivateMail()
+    /**
+     * Parse Settings E-mail templates section
+     */
+    function emailTemplates()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('newsletter_config_activatemail.html');
-        $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_DISPATCH_SETINGS']);
+        $this->_objTpl->loadTemplateFile('newsletter_config_email_templates.html');
+        $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES']);
 
-        if (isset($_POST["update"])) {
-            if ($objDatabase->Execute("
-                UPDATE ".DBPREFIX."module_newsletter_confirm_mail
-                   SET title='".contrexx_addslashes($_POST["mailSubject"])."',
-                       content='".contrexx_addslashes($_POST["mailContent"])."'
-                 WHERE id=1")) {
-                self::$strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'];
+        //Update settings
+        if (isset($_POST["saveSettings"])) {
+            $queryUpdateSetting = '
+                UPDATE
+                    `'. DBPREFIX .'module_newsletter_settings`
+                SET `setvalue` = CASE `setname`
+                                 WHEN "notificationSubscribe" THEN "'. contrexx_input2int($_POST["mailSendSubscribe"]) .'"
+                                 WHEN "notificationUnsubscribe" THEN "'. contrexx_input2int($_POST["mailSendUnsubscribe"]) .'"
+                                 END
+                WHERE `setname` IN("notificationSubscribe", "notificationUnsubscribe")';
+            if ($objDatabase->Execute($queryUpdateSetting) !== false) {
+                self::$strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SETTING_UPDATED_SUCCESSFULLY'];
             } else {
-                self::$strErrMessage = $_ARRAYLANG['TXT_DATABASE_ERROR'];
+                self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_NOTIFICATION_SETTING'];
             }
         }
 
-        $query         = "SELECT id, title, content FROM ".DBPREFIX."module_newsletter_confirm_mail WHERE id='1'";
-        $objResult     = $objDatabase->Execute($query);
-        if ($objResult !== false) {
-            $subject = $objResult->fields['title'];
-            $content = $objResult->fields['content'];
-        }
-
-        $this->_objTpl->setVariable(array(
-            'TXT_LASTNAME' => $_ARRAYLANG['TXT_LASTNAME'],
-            'TXT_WILDCART_INFOS' => $_ARRAYLANG['TXT_WILDCART_INFOS'],
-            'TXT_NEWSLETTER_SEX' => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
-            'TXT_U_TITLE' => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
-            'TXT_FIRSTNAME' => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
-            'TXT_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_REGISTRATION_DATE'],
-            'TXT_CONTENT' => $_ARRAYLANG['TXT_NEWSLETTER_CONTENT'],
-            'TXT_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
-            'TXT_TEXT' => $_ARRAYLANG['TXT_NEWSLETTER_TEXT'],
-            'TXT_URL' => $_ARRAYLANG['TXT_NEWSLETTER_URL'],
-            'TXT_CONFIRMMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
-            'TXT_CODE' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_CODE'],
-            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
-            'MAIL_SUBJECT' => $subject,
-            'MAIL_CONTENT' => $content,
-            'TXT_CONFIRM_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
-            'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
-            'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
-            'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
-            'TXT_SYSTEM_SETINGS' => "System",
-            'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
-            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
-            'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
-        ));
-    }
-
-
-    function ConfirmMail() {
-        global $objDatabase, $_ARRAYLANG;
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('newsletter_config_confirmmail.html');
-        $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_DISPATCH_SETINGS']);
-
-        //Update
-        if (isset($_POST["update"])) {
-            if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_confirm_mail SET title='".contrexx_addslashes($_POST["mailSubject"])."', content='".contrexx_addslashes($_POST["mailContent"])."' WHERE id=2") !== false) {
-                self::$strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_MAIL_UPDATED_SUCCESSFULLY'];
-            } else {
-                self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_CONFIRM_MAIL'];
-            }
-        }
-
-        $query         = "SELECT id, title, content FROM ".DBPREFIX."module_newsletter_confirm_mail WHERE id='2'";
-        $objResult     = $objDatabase->Execute($query);
-        if ($objResult !== false) {
-            $subject = $objResult->fields['title'];
-            $content = $objResult->fields['content'];
-        }
-
-        $this->_objTpl->setVariable(array(
-            'TXT_LASTNAME' => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
-            'TXT_WILDCART_INFOS' => $_ARRAYLANG['TXT_WILDCART_INFOS'],
-            'TXT_U_TITLE' => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
-            'TXT_NEWSLETTER_SEX' => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
-            'TXT_FIRSTNAME' => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
-            'TXT_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
-            'TXT_CONTENT' => $_ARRAYLANG['TXT_NEWSLETTER_CONTENT'],
-            'TXT_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
-            'TXT_TEXT' => $_ARRAYLANG['TXT_NEWSLETTER_TEXT'],
-            'TXT_URL' => $_ARRAYLANG['TXT_NEWSLETTER_URL'],
-            'TXT_CONFIRMMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
-            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
-            'MAIL_SUBJECT' => $subject,
-            'MAIL_CONTENT' => $content,
-            'TXT_CONFIRM_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
-            'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
-            'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
-            'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
-            'TXT_SYSTEM_SETINGS' => "System",
-            'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
-            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
-            'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
-        ));
-    }
-
-
-    function NotificationMail()
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('newsletter_config_notificationmail.html');
-        $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_DISPATCH_SETINGS']);
-
-        //Update
-        if (isset($_POST["update"])) {
-            if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_confirm_mail SET title='".contrexx_addslashes($_POST["mailSubject"])."', content='".contrexx_addslashes($_POST["mailContent"])."', recipients='".contrexx_addslashes($_POST["mailRecipients"])."' WHERE id=3") !== false) {
-                 if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST["mailSendSubscribe"])."' WHERE setname='notificationSubscribe'") !== false) {
-                    if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST["mailSendUnsubscribe"])."' WHERE setname='notificationUnsubscribe'") !== false) {
-                        self::$strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_MAIL_UPDATED_SUCCESSFULLY'];
-                    } else {
-                        self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_CONFIRM_MAIL'];
-                    }
-                } else {
-                    self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_CONFIRM_MAIL'];
+        $query    = 'SELECT
+                        `setname`,
+                        `setvalue`
+                     FROM
+                        `'. DBPREFIX .'module_newsletter_settings`
+                     WHERE
+                        `setname` IN ("notificationSubscribe", "notificationUnsubscribe")';
+        $settings = $objDatabase->Execute($query);
+        $sendBySubscribe = $sendByUnsubscribe = false;
+        if ($settings !== false) {
+            while (!$settings->EOF) {
+                switch ($settings->fields['setname']) {
+                    case 'notificationSubscribe':
+                        $sendBySubscribe   = ($settings->fields['setvalue'] == 1);
+                        break;
+                    case 'notificationUnsubscribe':
+                        $sendByUnsubscribe = ($settings->fields['setvalue'] == 1);
+                        break;
                 }
-            } else {
-                self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_CONFIRM_MAIL'];
+                $settings->MoveNext();
             }
         }
 
-        $query         = "SELECT id, title, content, recipients FROM ".DBPREFIX."module_newsletter_confirm_mail WHERE id='3'";
-        $objResult     = $objDatabase->Execute($query);
-        if ($objResult !== false) {
-            $subject = $objResult->fields['title'];
-            $content = $objResult->fields['content'];
-            $recipients = $objResult->fields['recipients'];
+        $_REQUEST['active_tab'] = 1;
+        if (   isset($_REQUEST['act'])
+            && $_REQUEST['act'] == 'mailtemplate_edit'
+        ) {
+            $_REQUEST['active_tab'] = 2;
         }
-
-        $query         = "SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notificationSubscribe'";
-        $objResult     = $objDatabase->Execute($query);
-        if ($objResult !== false) {
-            if ($objResult->fields['setvalue'] == 1) {
-                $sendBySubscribeOn = 'checked="checked"';
-                $sendBySubscribeOff = '';
-            } else {
-                $sendBySubscribeOn = '';
-                $sendBySubscribeOff = 'checked="checked"';
-            }
+        \Cx\Core\MailTemplate\Controller\MailTemplate::deleteTemplate('Newsletter');
+        // If there is anything to be stored, and if that fails, return to
+        // the edit view in order to save the posted form content
+        $resultStore = \Cx\Core\MailTemplate\Controller\MailTemplate::storeFromPost('Newsletter');
+        if ($resultStore === false) {
+            $_REQUEST['active_tab'] = 2;
         }
-
-        $query         = "SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notificationUnsubscribe'";
-        $objResult     = $objDatabase->Execute($query);
-        if ($objResult !== false) {
-            if ($objResult->fields['setvalue'] == 1) {
-                $sendByUnsubscribeOn = 'checked="checked"';
-                $sendByUnsubscribeOff = '';
-            } else {
-                $sendByUnsubscribeOn = '';
-                $sendByUnsubscribeOff = 'checked="checked"';
-            }
-        }
-
+        $objTemplate = null;
+        \Cx\Core\Setting\Controller\Setting::show_external(
+            $objTemplate,
+            $_CORELANG['TXT_CORE_MAILTEMPLATES'],
+            \Cx\Core\MailTemplate\Controller\MailTemplate::overview('Newsletter', 'config')->get()
+        );
+        \Cx\Core\Setting\Controller\Setting::show_external(
+            $objTemplate,
+            (empty($_REQUEST['key'])
+              ? $_CORELANG['TXT_CORE_MAILTEMPLATE_ADD']
+              : $_CORELANG['TXT_CORE_MAILTEMPLATE_EDIT']),
+            \Cx\Core\MailTemplate\Controller\MailTemplate::edit('Newsletter')->get()
+        );
+        \Cx\Core\Setting\Controller\Setting::show_external(
+            $objTemplate,
+            $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDERS'],
+            $this->getNewsletterPlaceHoldersList()
+        );
         $this->_objTpl->setVariable(array(
-            'TXT_WILDCART_INFOS' => $_ARRAYLANG['TXT_WILDCART_INFOS'],
-            'TXT_RECIPIENTS' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS'],
-            'TXT_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
-            'TXT_CONTENT' => $_ARRAYLANG['TXT_NEWSLETTER_CONTENT'],
-            'TXT_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
-            'TXT_TEXT' => $_ARRAYLANG['TXT_NEWSLETTER_TEXT'],
-            'TXT_URL' => $_ARRAYLANG['TXT_NEWSLETTER_URL'],
-            'TXT_CONFIRMMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
-            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
-            'MAIL_SUBJECT' => $subject,
-            'MAIL_CONTENT' => $content,
-            'MAIL_RECIPIENTS' => $recipients,
-            'SEND_BY_SUBSCRIBE_ON' => $sendBySubscribeOn,
-            'SEND_BY_SUBSCRIBE_OFF' => $sendBySubscribeOff,
-            'SEND_BY_UNSUBSCRIBE_ON' => $sendByUnsubscribeOn,
-            'SEND_BY_UNSUBSCRIBE_OFF' => $sendByUnsubscribeOff,
-            'TXT_CONFIRM_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
-            'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
-            'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
-            'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
-            'TXT_SYSTEM_SETINGS' => "System",
-            'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
-            'TXT_NOTIFICATION_SETTINGS' => $_ARRAYLANG['TXT_SETTINGS'],
-            'TXT_SEND_BY_SUBSCRIBE' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SEND_BY_SUBSCRIBE'],
-            'TXT_SEND_BY_UNSUBSCRIBE' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SEND_BY_UNSUBSCRIBE'],
-            'TXT_ACTION' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_ACTION'],
-            'TXT_NOTIFICATION_ACTIVATE' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATE'],
-            'TXT_NOTIFICATION_DEACTIVATE' => $_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE'],
-            'TXT_SEX' => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
-            'TXT_TITLE' => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
-            'TXT_FIRSTNAME' => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
-            'TXT_LASTNAME' => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
-            'TXT_E-MAIL' => $_ARRAYLANG['TXT_EMAIL'],
-            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
-            'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
+            'NEWSLETTER_MAIL_TEMPLATE_SETTINGS'  => $objTemplate->get(),
+            'NEWSLETTER_SEND_BY_SUBSCRIBE_ON'    => $sendBySubscribe ? 'checked="checked"' : '',
+            'NEWSLETTER_SEND_BY_SUBSCRIBE_OFF'   => !$sendBySubscribe ? 'checked="checked"' : '',
+            'NEWSLETTER_SEND_BY_UNSUBSCRIBE_ON'  => $sendByUnsubscribe? 'checked="checked"' : '',
+            'NEWSLETTER_SEND_BY_UNSUBSCRIBE_OFF' => !$sendByUnsubscribe ? 'checked="checked"' : '',
+
+            'TXT_CONFIRM_MAIL'               => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
+            'TXT_ACTIVATE_MAIL'              => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
+            'TXT_DISPATCH_SETINGS'           => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
+            'TXT_GENERATE_HTML'              => $_ARRAYLANG['TXT_GENERATE_HTML'],
+            'TXT_SYSTEM_SETINGS'             => $_ARRAYLANG['TXT_NEWSLETTER_SYSTEM'],
+            'TXT_NOTIFICATION_MAIL'          => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
+            'TXT_NEWSLETTER_TEMPLATES'       => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
+            'TXT_NEWSLETTER_INTERFACE'       => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
+            'TXT_NEWSLETTER_EMAIL_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'],
+            'TXT_NEWSLETTER_NOTIFICATION_ACTIVATE'   => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATE'],
+            'TXT_NEWSLETTER_NOTIFICATION_DEACTIVATE' => $_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE'],
+            'TXT_NEWSLETTER_SEND_BY_SUBSCRIBE'       => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SEND_BY_SUBSCRIBE'],
+            'TXT_NEWSLETTER_SEND_BY_UNSUBSCRIBE'     => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SEND_BY_UNSUBSCRIBE'],
+            'TXT_NEWSLETTER_SAVE'                    => $_ARRAYLANG['TXT_SAVE'],
+            'TXT_NEWSLETTER_NOTIFICATION_SETTINGS'   => $_ARRAYLANG['TXT_SETTINGS'],
         ));
     }
 
+    /**
+     * Get available placeholders in newsletter notification mails
+     *
+     * @return string Newsletter placehodlers list
+     */
+    public function getNewsletterPlaceHoldersList()
+    {
+        global $_ARRAYLANG;
+
+        $objTemplate = new \Cx\Core\Html\Sigma(\Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath().'/Newsletter/View/Template/Backend');
+        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        $objTemplate->loadTemplateFile('module_newsletter_config_placeholders.html');
+
+        $objTemplate->setVariable(array(
+            'TXT_NEWSLETTER_PLACEHOLDERS'        => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDERS'],
+            'TXT_NEWSLETTER_GENERAL'             => $_ARRAYLANG['TXT_NEWSLETTER_GENERAL'],
+            'TXT_NEWSLETTER_USER_TITLE'          => $_ARRAYLANG['TXT_TITLE'],
+            'TXT_NEWSLETTER_USER_SEX'            => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
+            'TXT_NEWSLETTER_USER_FIRSTNAME'      => $_ARRAYLANG['TXT_FIRSTNAME'],
+            'TXT_NEWSLETTER_USER_LASTNAME'       => $_ARRAYLANG['TXT_LASTNAME'],
+            'TXT_NEWSLETTER_USER_EMAIL'          => $_ARRAYLANG['TXT_EMAIL'],
+            'TXT_NEWSLETTER_DOMAIN_URL'          => $_ARRAYLANG['TXT_NEWSLETTER_URL'],
+            'TXT_NEWSLETTER_CURRENT_DATE'        => $_ARRAYLANG['TXT_DATE'],
+            'TXT_NEWSLETTER_SENDER_EMAIL'        => $_ARRAYLANG['TXT_NEWSLETTER_SENDER_EMAIL'],
+            'TXT_NEWSLETTER_SENDER_NAME'         => $_ARRAYLANG['TXT_NEWSLETTER_SENDER_NAME'],
+            'TXT_NEWSLETTER_REPLY_TO'            => $_ARRAYLANG['TXT_NEWSLETTER_REPLY_TO'],
+            'TXT_NEWSLETTER_CONFIRM_CODE'        => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_CODE'],
+            'TXT_NEWSLETTER_NOTIFICATION_ACTION' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_ACTION'],
+            'TXT_NEWSLETTER_NOTIFICATION_RECIPIENT' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_RECIPIENT'],
+        ));
+        return $objTemplate->get();
+    }
 
     /**
      * Show the mail send page
@@ -5707,6 +5645,7 @@ function MultiAction() {
             'UNSUBSCRIBE_DELETE_ON' => $delete,
             'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
             'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
+            'TXT_NEWSLETTER_EMAIL_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'],
         ));
     }
 
