@@ -463,61 +463,43 @@ die("Failed to get Customer for ID $customer_id");
                 $objTpl->setVariable('SHOP_CURRENCIES', $curNavbar);
             }
         }
-        if ($objTpl->blockExists('shopNavbar')) {
-            $selectedCatId = 0;
-            if (isset($_REQUEST['catId'])) {
-                $selectedCatId = intval($_REQUEST['catId']);
-                $objCategory = ShopCategory::getById($selectedCatId);
-                if (!$objCategory) $selectedCatId = 0;
+
+        // determine selected category and/or product
+        $selectedCatId = 0;
+        $objProduct = null;
+        if (isset($_REQUEST['catId'])) {
+            $selectedCatId = intval($_REQUEST['catId']);
+            $objCategory = ShopCategory::getById($selectedCatId);
+            if (!$objCategory) $selectedCatId = 0;
+        }
+        if (empty($selectedCatId) && isset($_REQUEST['productId'])) {
+            $product_id = intval($_REQUEST['productId']);
+            if (isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
+                $product_id = Cart::get_product_id($product_id);
             }
-            if (empty($selectedCatId) && isset($_REQUEST['productId'])) {
-                $product_id = intval($_REQUEST['productId']);
-                if (isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
-                    $product_id = Cart::get_product_id($product_id);
-                }
-                $objProduct = Product::getById($product_id);
-                if ($objProduct) {
-                    $productCatIds = $objProduct->category_id();
-                    if (isset($_SESSION['shop']['previous_category_id']) && in_array($_SESSION['shop']['previous_category_id'], array_map('intval', explode(',', $productCatIds)))) {
-                        $selectedCatId = $_SESSION['shop']['previous_category_id'];
-                    } else {
-                        $selectedCatId = preg_replace('/,.+$/', '', $productCatIds);
-                    }
-                }
-            }
-            // If there is no distinct Category ID, use the previous one, if any
-            if (is_numeric($selectedCatId) && !empty($selectedCatId)) {
-                $_SESSION['shop']['previous_category_id'] = $selectedCatId;
-            } else {
-                if (isset($_SESSION['shop']['previous_category_id']))
+            $objProduct = Product::getById($product_id);
+            if ($objProduct) {
+                $productCatIds = $objProduct->category_id();
+                if (isset($_SESSION['shop']['previous_category_id']) && in_array($_SESSION['shop']['previous_category_id'], array_map('intval', explode(',', $productCatIds)))) {
                     $selectedCatId = $_SESSION['shop']['previous_category_id'];
-            }
-            // Only the visible ShopCategories are present
-            $arrShopCategoryTree = ShopCategories::getTreeArray(
-                false, true, true, $selectedCatId, 0, 0
-            );
-            // The trail of IDs from root to the selected ShopCategory,
-            // built along with the tree array when calling getTreeArray().
-            $arrTrail = ShopCategories::getTrailArray($selectedCatId);
-            // Display the ShopCategories
-            foreach ($arrShopCategoryTree as $arrShopCategory) {
-                $level = $arrShopCategory['level'];
-                // Skip levels too deep: if ($level >= 2) { continue; }
-                $id = $arrShopCategory['id'];
-                $style = 'shopnavbar'.($level+1);
-                if (in_array($id, $arrTrail)) {
-                    $style .= '_active';
+                } else {
+                    $selectedCatId = preg_replace('/,.+$/', '', $productCatIds);
                 }
-                $objTpl->setVariable(array(
-                    'SHOP_CATEGORY_STYLE' => $style,
-                    'SHOP_CATEGORY_ID' => $id,
-                    'SHOP_CATEGORY_NAME' =>
-                        str_repeat('&nbsp;', 3*$level).
-                        str_replace('"', '&quot;', $arrShopCategory['name']),
-                ));
-                $objTpl->parse("shopNavbar");
             }
         }
+        // If there is no distinct Category ID, use the previous one, if any
+        if (is_numeric($selectedCatId) && !empty($selectedCatId)) {
+            $_SESSION['shop']['previous_category_id'] = $selectedCatId;
+        } else {
+            if (isset($_SESSION['shop']['previous_category_id']))
+                $selectedCatId = $_SESSION['shop']['previous_category_id'];
+        }
+
+        // parse shopNavbar and/or shop_breadcrumb
+        if ($objTpl->blockExists('shopNavbar') || $objTpl->blockExists('shop_breadcrumb')) {
+            self::parseBreadcrumb($objTpl, $selectedCatId, $objProduct);
+        }
+
         // Only show the cart info when the JS cart is not active!
         if (!self::$use_js_cart) {
             $objTpl->setVariable(array(
@@ -529,6 +511,90 @@ die("Failed to get Customer for ID $customer_id");
 //        }
         $strContent = $objTpl->get();
         return $strContent;
+    }
+
+
+    /**
+     * Parse the category/product breadcrumb
+     *
+     * Parses the template block shopNavbar and shop_breadcrumb based on
+     * the currently selected category and product.
+     *
+     * @param   \Cx\Core\Html\Sigma $objTpl The template object to be used to parse the breadcrumb on.
+     * @param   integer $selectedCatId  The ID of the currently selected category.
+     * @param   Product $product        The currently selected product.
+     */
+    static function parseBreadcrumb($objTpl, $selectedCatId = 0, $product = null) {
+        // Only the visible ShopCategories are present
+        $arrShopCategoryTree = ShopCategories::getTreeArray(
+            false, true, true, $selectedCatId, 0, 0
+        );
+
+        // The trail of IDs from root to the selected ShopCategory,
+        // built along with the tree array when calling getTreeArray().
+        $arrTrail = ShopCategories::getTrailArray($selectedCatId);
+
+        // Display the ShopCategories
+        foreach ($arrShopCategoryTree as $arrShopCategory) {
+            $level = $arrShopCategory['level'];
+            // Skip levels too deep: if ($level >= 2) { continue; }
+            $id = $arrShopCategory['id'];
+            $style = 'shopnavbar'.($level+1);
+            if (in_array($id, $arrTrail)) {
+                $style .= '_active';
+            }
+
+            // parse shopNavbar
+            if ($objTpl->blockExists('shopNavbar')) {
+                $objTpl->setVariable(array(
+                    'SHOP_CATEGORY_STYLE' => $style,
+                    'SHOP_CATEGORY_ID' => $id,
+                    'SHOP_CATEGORY_NAME' =>
+                        str_repeat('&nbsp;', 3*$level).
+                        str_replace('"', '&quot;', $arrShopCategory['name']),
+                ));
+                $objTpl->parse("shopNavbar");
+            }
+
+            // skip shop_breadcrumb parsing in case the required template blocks are missing
+            if (!$objTpl->blockExists('shop_breadcrumb') || !$objTpl->blockExists('shop_breadcrumb_part')) {
+                continue;
+            }
+
+            // skip shop_breadcrumb parsing in case the category is not part of the selected category tree
+            if (!in_array($id, $arrTrail)) {
+                continue;
+            }
+
+            // parse the category in shop_breadcrumb
+            $objTpl->setVariable(array(
+                'SHOP_BREADCRUMB_PART_SRC'  => \Cx\Core\Routing\URL::fromModuleAndCmd('Shop'.MODULE_INDEX, '', FRONTEND_LANG_ID, array('catId' => $id))->toString(),
+                'SHOP_BREADCRUMB_PART_TITLE'=> contrexx_raw2xhtml($arrShopCategory['name']),
+            ));
+            $objTpl->parse('shop_breadcrumb_part');
+        }
+
+        // skip shop_breadcrumb parsing in case the required template blocks are missing
+        if (!$objTpl->blockExists('shop_breadcrumb') && !$objTpl->blockExists('shop_breadcrumb_part')) {
+            return;
+        }
+
+        // parse Product in shop_breadcrumb if a product is being viewed
+        if ($product) {
+            $objTpl->setVariable(array(
+                'SHOP_BREADCRUMB_PART_SRC'  => \Cx\Core\Routing\URL::fromModuleAndCmd('Shop'.MODULE_INDEX, '', FRONTEND_LANG_ID, array('productId' => $product->id()))->toString(),
+                'SHOP_BREADCRUMB_PART_TITLE'=> contrexx_raw2xhtml($product->name()),
+            ));
+            $objTpl->parse('shop_breadcrumb_part');
+        }
+
+        // show or hide the shop_breadcrumb template block, depending on if a category
+        // has been selected or a product is being viewed
+        if (array_intersect(array_keys($arrShopCategoryTree), $arrTrail) || $product) {
+            $objTpl->touchBlock('shop_breadcrumb');
+        } else {
+            $objTpl->hideBlock('shop_breadcrumb');
+        }
     }
 
 
