@@ -212,27 +212,34 @@ class JsonNode implements JsonAdapter {
         $moved_node = $this->nodeRepo->find($arguments['post']['id']);
         $parent_node = $this->nodeRepo->find($arguments['post']['ref']);
 
-        $moved_node->setParent($parent_node);
-        $this->em->persist($parent_node);
-        $this->em->persist($moved_node);
-        $this->em->flush();
+        $this->em->getConnection()->beginTransaction();
+        try {
+            $moved_node->setParent($parent_node);
+            $this->em->persist($parent_node);
+            $this->em->persist($moved_node);
+            $this->em->flush();
 
 
-        $this->nodeRepo->moveUp($moved_node, true);
-        if ($arguments['post']['position']) {
-            $this->nodeRepo->moveDown($moved_node, $arguments['post']['position'], true);
+            $this->nodeRepo->moveUp($moved_node, true);
+            if ($arguments['post']['position']) {
+                $this->nodeRepo->moveDown($moved_node, $arguments['post']['position'], true);
+            }
+            \Env::get('cx')->getEvents()->triggerEvent('model/onFlush', array(new \Doctrine\ORM\Event\LifecycleEventArgs($moved_node, $this->em)));
+
+            foreach ($moved_node->getPages() as $page) {
+                $page->setupPath($page->getLang());
+                $this->em->persist($page);
+            }
+            
+            $this->em->persist($moved_node);
+            $this->em->persist($parent_node);
+
+            $this->em->flush();
+            $this->em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $this->em->getConnection()->rollback();
+            throw $e;
         }
-        \Env::get('cx')->getEvents()->triggerEvent('model/onFlush', array(new \Doctrine\ORM\Event\LifecycleEventArgs($moved_node, $this->em)));
-
-        foreach ($moved_node->getPages() as $page) {
-            $page->setupPath($page->getLang());
-            $this->em->persist($page);
-        }
-        
-        $this->em->persist($moved_node);
-        $this->em->persist($parent_node);
-
-        $this->em->flush();
         
         $nodeLevels = array();
         $nodeStack = array();
