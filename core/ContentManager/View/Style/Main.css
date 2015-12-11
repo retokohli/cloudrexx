@@ -87,13 +87,17 @@ h1{ font-size: 20px }
 .ie7 #input1{ float:left; }
 .ie7 .space{ margin-bottom: 10px; }
 
-#site-language {
+#subnav {
     float: left;
     width: 100%;
     border-right: 1px solid #e5e5e5;
     border-left: 1px solid #e5e5e5;
     margin-left: -1px;
     min-height: 31px;
+}
+
+#site-language {
+    float: right;
 }
 
 #content-manager.edit_view #site-language {
