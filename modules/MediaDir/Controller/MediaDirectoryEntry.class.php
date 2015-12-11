@@ -1514,6 +1514,9 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml');
         $coreListProtectedPages   = \Cx\Core\Setting\Controller\Setting::getValue('coreListProtectedPages','Config');
         $searchVisibleContentOnly = \Cx\Core\Setting\Controller\Setting::getValue('searchVisibleContentOnly','Config');
+        //get the config otherConfigurations value
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations','Yaml');
+        $searchDescriptionLength  = \Cx\Core\Setting\Controller\Setting::getValue('searchDescriptionLength','Config');
 
         $hasPageAccess = true;
         $isNotVisible = ($searchVisibleContentOnly == 'on') && !$page->isVisible();
@@ -1588,11 +1591,41 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             if (!$pageUrlResult) {
                 continue;
             }
+            //Get the search results title and content from the form context field 'title' and 'content'
+            $title          = current($entry['entryFields']);
+            $content        = '';
+            $objInputfields = new MediaDirectoryInputfield($entry['entryFormId'], false, $entry['entryTranslationStatus'], $this->moduleName);
+            $inputFields    = $objInputfields->getInputfields();
+            foreach ($inputFields as $arrInputfield) {
+                $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
+                if (!in_array($contextType, array('title', 'content'))) {
+                    continue;
+                }
+                $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
+                $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield" . ucfirst($strType);
+                try {
+                    $objInputfield        = safeNew($strInputfieldClass, $this->moduleName);
+                    $arrTranslationStatus = (contrexx_input2int($arrInputfield['type_multi_lang']) == 1)
+                                            ? $entry['entryTranslationStatus'] 
+                                            : null;
+                    $arrInputfieldContent = $objInputfield->getContent($entry['entryId'], $arrInputfield, $arrTranslationStatus);
+                } catch (\Exception $e) {
+                    \DBG::log($e->getMessage());
+                    continue;
+                }
+                $inputFieldValue = $arrInputfieldContent[$this->moduleConstVar . '_INPUTFIELD_VALUE'];
+                if ($contextType == 'title' && !empty($inputFieldValue)) {
+                    $title = $inputFieldValue;
+                } elseif ($contextType == 'content' && !empty($inputFieldValue)) {
+                    $content = \Cx\Core_Modules\Search\Controller\Search::shortenSearchContent(
+                                $inputFieldValue, $searchDescriptionLength);
+                }
+            }
 
             $results[] = array(
                 'Score'   => 100,
-                'Title'   => current($entry['entryFields']),
-                'Content' => '',
+                'Title'   => html_entity_decode(contrexx_strip_tags($title), ENT_QUOTES, CONTREXX_CHARSET),
+                'Content' => $content,
                 'Link'    => $pageUrlResult->toString()
             );
         }
