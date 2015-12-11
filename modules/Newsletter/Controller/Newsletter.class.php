@@ -106,76 +106,78 @@ class Newsletter extends NewsletterLib
 
     function _confirm()
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
-        $query         = "SELECT id FROM ".DBPREFIX."module_newsletter_user where status=0 and email='".contrexx_addslashes($_GET['email'])."'";
-        $objResult     = $objDatabase->Execute($query);
-        $count         = $objResult->RecordCount();
-        $userId        = $objResult->fields['id'];
-
-        if($count == 1){
-            $objResult     = $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_user SET status=1 where email='".contrexx_addslashes($_GET['email'])."'");
-            if ($objResult !== false) {
-                $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL']);
-
-                //send notification
-                $this->_sendNotificationEmail(1, $userId);
-
-                //send mail
-                $query = "SELECT id, sex, salutation, firstname, lastname, email, code FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_addslashes($_GET['email'])."'";
-                $objResult = $objDatabase->Execute($query);
-
-                if ($objResult !== false) {
-                    $userFirstname    = $objResult->fields['firstname'];
-                    $userLastname    = $objResult->fields['lastname'];
-                    $userTitle        = $objResult->fields['salutation'];
-                    $userEmail        = $objResult->fields['email'];
-                    $userSex = $objResult->fields['sex'];
-
-// TODO: use FWUSER
-                    $arrRecipientTitles = &$this->_getRecipientTitles();
-                    $userTitle = $arrRecipientTitles[$userTitle];
-
-
-                    switch($userSex){
-                        case "m":
-                            $userSex = $_ARRAYLANG['TXT_NEWSLETTER_MALE'];
-                            break;
-
-                        case "f":
-                            $userSex = $_ARRAYLANG['TXT_NEWSLETTER_FEMALE'];
-                            break;
-
-                        default:
-                            $userSex = '';
-                            break;
-                    }
-
-                    $arrSettings = $this->_getSettings();
-
-                    $url = $_SERVER['SERVER_NAME'];
-                    $arrMailTemplate = array(
-                        'key'          => 'newsletter_confirm_email',
-                        'lang_id'      => FRONTEND_LANG_ID,
-                        'substitution' => array(
-                            'NEWSLETTER_USER_SEX'       => $userSex,
-                            'NEWSLETTER_USER_TITLE'     => $userTitle,
-                            'NEWSLETTER_USER_FIRSTNAME' => $userFirstname,
-                            'NEWSLETTER_USER_LASTNAME'  => $userLastname,
-                            'NEWSLETTER_USER_EMAIL'     => $userEmail,
-                            'NEWSLETTER_DOMAIN_URL'     => $url,
-                            'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
-                            'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
-                            'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
-                            'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue']
-                        ),
-                    );
-                    \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate);
-                }
-            }
-        } else {
+        $userEmail = isset($_GET['email']) ? contrexx_input2raw(urldecode($_GET['email'])) : '';
+        $count     = 0;
+        if (!empty($userEmail)) {
+            $query     = "SELECT id FROM ".DBPREFIX."module_newsletter_user where status=0 and email='". contrexx_raw2db($userEmail) ."'";
+            $objResult = $objDatabase->Execute($query);
+            $count     = $objResult->RecordCount();
+            $userId    = $objResult->fields['id'];
+        }
+        if (empty($count)) {
             $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", '<span class="text-danger">'.$_ARRAYLANG['TXT_NOT_VALID_EMAIL'].'</span>');
+            return;
+        }
+        $objResult     = $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_user SET status=1 where email='". contrexx_raw2db($userEmail) ."'");
+        if ($objResult !== false) {
+            $this->_objTpl->setVariable("NEWSLETTER_MESSAGE", $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL']);
+
+            //send notification
+            $this->_sendNotificationEmail(1, $userId);
+
+            //send mail
+            $query = "SELECT id, sex, salutation, firstname, lastname, code FROM ".DBPREFIX."module_newsletter_user WHERE email='". contrexx_raw2db($userEmail) ."'";
+            $objResult = $objDatabase->Execute($query);
+
+            if ($objResult !== false) {
+                $userFirstname = $objResult->fields['firstname'];
+                $userLastname  = $objResult->fields['lastname'];
+                $userTitle     = $objResult->fields['salutation'];
+                $userSex       = $objResult->fields['sex'];
+
+                // TODO: use FWUSER
+                $arrRecipientTitles = $this->_getRecipientTitles();
+                $userTitle          = $arrRecipientTitles[$userTitle];
+
+                switch ($userSex) {
+                    case "m":
+                        $userSex = $_ARRAYLANG['TXT_NEWSLETTER_MALE'];
+                        break;
+
+                    case "f":
+                        $userSex = $_ARRAYLANG['TXT_NEWSLETTER_FEMALE'];
+                        break;
+
+                    default:
+                        $userSex = '';
+                        break;
+                }
+
+                $arrSettings = $this->_getSettings();
+
+                $url = $_SERVER['SERVER_NAME'];
+                $arrMailTemplate = array(
+                    'key'          => 'newsletter_confirm_email',
+                    'section'      => 'Newsletter',
+                    'lang_id'      => FRONTEND_LANG_ID,
+                    'substitution' => array(
+                        'NEWSLETTER_USER_SEX'       => $userSex,
+                        'NEWSLETTER_USER_TITLE'     => $userTitle,
+                        'NEWSLETTER_USER_FIRSTNAME' => $userFirstname,
+                        'NEWSLETTER_USER_LASTNAME'  => $userLastname,
+                        'NEWSLETTER_USER_EMAIL'     => $userEmail,
+                        'NEWSLETTER_DOMAIN_URL'     => $url,
+                        'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
+                        'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
+                        'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
+                        'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue']
+                    ),
+                );
+                \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate);
+            }
         }
     }
 
@@ -736,6 +738,7 @@ class Newsletter extends NewsletterLib
 
         $arrMailTemplate = array(
             'key'          => 'newsletter_activation_email',
+            'section'      => 'Newsletter',
             'lang_id'      => FRONTEND_LANG_ID,
             'substitution' => array(
                 'NEWSLETTER_USER_SEX'       => $recipientSexTxt,
@@ -743,7 +746,7 @@ class Newsletter extends NewsletterLib
                 'NEWSLETTER_USER_FIRSTNAME' => $recipientFirstname,
                 'NEWSLETTER_USER_LASTNAME'  => $recipientLastname,
                 'NEWSLETTER_USER_EMAIL'     => $recipientEmail,
-                'NEWSLETTER_CONFIRM_CODE'   => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Newsletter&cmd=confirm&email='.$recipientEmail,
+                'NEWSLETTER_CONFIRM_CODE'   => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Newsletter&cmd=confirm&email='. urlencode($recipientEmail),
                 'NEWSLETTER_DOMAIN_URL'     => $url,
                 'NEWSLETTER_CURRENT_DATE'   => $now,
                 'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
@@ -797,6 +800,7 @@ class Newsletter extends NewsletterLib
                 $arrRecipientTitle = $objRecipientTitle->fields['title'];
             }
 
+            $notifyMails = array();
             if($action == 1) {
                 $txtAction = $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SUBSCRIBE'];
             } else {
@@ -804,7 +808,7 @@ class Newsletter extends NewsletterLib
                 $objNotificationAdressesFromLists = $objDatabase->Execute('SELECT notification_email FROM '.DBPREFIX.'module_newsletter_category AS c 
                                                                         INNER JOIN '.DBPREFIX.'module_newsletter_rel_user_cat AS r ON r.category = c.id
                                                                         WHERE r.user = '.contrexx_addslashes($recipientId));
-                $notifyMails = array();
+
                 if ($objNotificationAdressesFromLists !== false) {
                     while (!$objNotificationAdressesFromLists->EOF) {
                         foreach (explode(',', $objNotificationAdressesFromLists->fields['notification_email']) as $mail) {
@@ -821,6 +825,7 @@ class Newsletter extends NewsletterLib
 
             $arrMailTemplate = array(
                 'key'          => 'newsletter_notification_email',
+                'section'      => 'Newsletter',
                 'lang_id'      => FRONTEND_LANG_ID,
                 'substitution' => array(
                     'NEWSLETTER_NOTIFICATION_ACTION'    => $txtAction,
