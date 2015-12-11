@@ -19,7 +19,7 @@ var language_labels = {LANGUAGE_LABELS};
 </ul>
 <div id="content-manager" class="sidebar-hide {EDIT_VIEW_CSS_CLASS}">
     <div id="cm-left">
-        <div id="site-language" style="{LANGUAGE_DISPLAY}">
+        <div id="subnav">
             <div class="navi">
                 <!-- BEGIN content_manager_create_new_page_navigation_item -->
                 <a href="index.php?cmd=content&act=new">{TXT_NEW_PAGE}</a>
@@ -27,9 +27,11 @@ var language_labels = {LANGUAGE_LABELS};
                 <a href="index.php?cmd=workflow">{TXT_CONTENT_HISTORY}</a>
                 <a href="index.php?cmd=media&archive=content">{TXT_IMAGE_ADMINISTRATION}</a>
             </div>
-            <!-- BEGIN content_manager_language_selection -->
-            {LANGSWITCH_OPTIONS}
-            <!-- END content_manager_language_selection -->
+            <div id="site-language" style="{LANGUAGE_DISPLAY}">
+                <!-- BEGIN content_manager_language_selection -->
+                {LANGSWITCH_OPTIONS}
+                <!-- END content_manager_language_selection -->
+            </div>
         </div>
         <div id="site-structure">
             <div id="tooltip_message" class="tooltip-message"></div>
