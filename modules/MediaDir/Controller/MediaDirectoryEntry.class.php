@@ -1614,11 +1614,16 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                     continue;
                 }
                 $inputFieldValue = $arrInputfieldContent[$this->moduleConstVar . '_INPUTFIELD_VALUE'];
-                if ($contextType == 'title' && !empty($inputFieldValue)) {
+                if (empty($inputFieldValue)) {
+                    continue;
+                }
+                if ($contextType == 'title') {
                     $title = $inputFieldValue;
-                } elseif ($contextType == 'content' && !empty($inputFieldValue)) {
+                } elseif ($contextType == 'content') {
                     $content = \Cx\Core_Modules\Search\Controller\Search::shortenSearchContent(
-                                $inputFieldValue, $searchDescriptionLength);
+                                    $inputFieldValue,
+                                    $searchDescriptionLength
+                                );
                 }
             }
 
