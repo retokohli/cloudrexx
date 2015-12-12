@@ -94,7 +94,7 @@ class NewsletterManager extends NewsletterLib
                 .(\Permission::checkAccess(172, 'static', true) ? "<a href='index.php?cmd=Newsletter&amp;act=lists' class='".($this->act == 'lists' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_LISTS']."</a>" : '')
                 .(\Permission::checkAccess(174, 'static', true) ? "<a href='index.php?cmd=Newsletter&amp;act=users' class='".($this->act == 'users' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS']."</a>" : '')
                 .(\Permission::checkAccess(175, 'static', true) ? "<a href='index.php?cmd=Newsletter&amp;act=news' class='".($this->act == 'news' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_NEWS']."</a>" : '')
-                .(\Permission::checkAccess(176, 'static', true) ? "<a href='index.php?cmd=Newsletter&amp;act=dispatch' class='".(in_array($this->act, array('dispatch', 'templates', 'interface', 'confightml', 'EmailTemplates', 'mailtemplate_edit', 'mailtemplate_overview', 'system', 'tpledit')) ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>" : ''));
+                .(\Permission::checkAccess(176, 'static', true) ? "<a href='index.php?cmd=Newsletter&amp;act=Settings' class='".($this->act == 'Settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_SETTINGS']."</a>" : ''));
         }
         $months = explode(',', $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY']);
         $i = 0;
@@ -186,44 +186,9 @@ class NewsletterManager extends NewsletterLib
                 \Permission::checkAccess(176, 'static');
                 $this->configOverview();
                 break;
-            case "system":
-                \Permission::checkAccess(176, 'static');
-                $this->ConfigSystem();
-                break;
             case "editusersort":
                 \Permission::checkAccess(174, 'static');
                 $this->edituserSort();
-                break;
-            case "dispatch":
-                \Permission::checkAccess(176, 'static');
-                $this->ConfigDispatch();
-                break;
-            case "confightml":
-                \Permission::checkAccess(176, 'static');
-                $this->ConfigHTML();
-                break;
-            case "interface":
-                \Permission::checkAccess(176, 'static');
-                $this->interfaceSettings();
-                break;
-            case "templates":
-                \Permission::checkAccess(176, 'static');
-                $this->_templates();
-                break;
-            case "tpledit":
-                \Permission::checkAccess(176, 'static');
-                $this->_editTemplate();
-                break;
-            case "tpldel":
-                \Permission::checkAccess(176, 'static');
-                $this->delTemplate();
-                $this->_templates();
-                break;
-            case 'mailtemplate_overview':
-            case 'mailtemplate_edit':
-            case 'EmailTemplates':
-                \Permission::checkAccess(176, 'static');
-                $this->emailTemplates();
                 break;
             case "update":
                 \Permission::checkAccess(171, 'static');
@@ -248,6 +213,14 @@ class NewsletterManager extends NewsletterLib
                     }*/
                     break;
                 }
+            case 'mailtemplate_overview':
+            case 'mailtemplate_edit':
+                $_GET['tpl'] = 'EmailTemplates';
+            case 'dispatch': // fallback for older implementation
+            case 'Settings':
+                \Permission::checkAccess(176, 'static');
+                $this->showSettings();
+                break;
             default:
                 \Permission::checkAccess(152, 'static');
                 $this->_mails();
@@ -266,6 +239,54 @@ class NewsletterManager extends NewsletterLib
             $this->_objTpl->show();
             exit;
         }
+    }
+
+    /**
+     * Parse the newsletter settings section
+     */
+    public function showSettings()
+    {
+        global $_ARRAYLANG;
+
+        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
+        $this->_objTpl->loadTemplateFile('module_newsletter_settings.html');
+
+        $tpl = isset($_GET['tpl']) ? contrexx_input2raw($_GET['tpl']) : '';
+        switch ($tpl) {
+            case 'EmailTemplates':
+                $this->emailTemplates();
+                break;
+            case 'Confightml':
+                $this->ConfigHTML();
+                break;
+            case 'Interface':
+                $this->interfaceSettings();
+                break;
+            case 'Tpledit':
+                $tpl = 'Templates';
+                $this->_editTemplate();
+                break;
+            case 'Tpldel':
+                $tpl = 'Templates';
+                $this->delTemplate();
+            case 'Templates':
+                $this->_templates();
+                break;
+            case 'Dispatch':
+            default :
+                $tpl = 'Dispatch';
+                $this->ConfigDispatch();
+                break;
+        }
+
+        $this->_objTpl->setVariable(array(
+            'TXT_DISPATCH_SETINGS'           => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
+            'TXT_GENERATE_HTML'              => $_ARRAYLANG['TXT_GENERATE_HTML'],
+            'TXT_NEWSLETTER_TEMPLATES'       => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
+            'TXT_NEWSLETTER_INTERFACE'       => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
+            'TXT_NEWSLETTER_EMAIL_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'],
+            'NEWSLETTER_'. strtoupper($tpl) ."_ACTIVE" => 'active',
+        ));
     }
 
     /**
@@ -1660,8 +1681,7 @@ class NewsletterManager extends NewsletterLib
     {
         global $_ARRAYLANG;
 
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('newsletter_config_html.html');
+        $this->_objTpl->addBlockfile('NEWSLETTER_SETTINGS_FILE', 'settings_block', 'newsletter_config_html.html');
 
         $this->_objTpl->setVariable(array(
             'HTML_CODE' => htmlentities($this->_getHTML(), ENT_QUOTES, CONTREXX_CHARSET),
@@ -1686,8 +1706,7 @@ class NewsletterManager extends NewsletterLib
 
         \JS::activate('jquery');
 
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('newsletter_config_interface.html');
+        $this->_objTpl->addBlockfile('NEWSLETTER_SETTINGS_FILE', 'settings_block', 'newsletter_config_interface.html');
 
         $recipientAttributeStatus = array();
         if (isset($_POST['interfaceSettings'])) {
@@ -1838,21 +1857,29 @@ class NewsletterManager extends NewsletterLib
 
     function ConfigDispatch()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('newsletter_config_dispatch.html');
+        $this->_objTpl->addBlockfile('NEWSLETTER_SETTINGS_FILE', 'settings_block', 'newsletter_config_dispatch.html');
         $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_DISPATCH_SETINGS']);
 
         if (isset($_POST["update"])) {
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".contrexx_addslashes($_POST['sender_email'])."' WHERE setname='sender_mail'");
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".contrexx_addslashes($_POST['sender_name'])."' WHERE setname='sender_name'");
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".contrexx_addslashes($_POST['return_path'])."' WHERE setname='reply_mail'");
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST['mails_per_run'])."' WHERE setname='mails_per_run'");
-            //$objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".contrexx_addslashes($_POST['bcc_mail'])."' WHERE setname='bcc_mail'");
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".contrexx_addslashes($_POST['test_mail'])."' WHERE setname='test_mail'");
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST['overview_entries'])."' WHERE setname='overview_entries_limit'");
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST['text_break_after'])."' WHERE setname='text_break_after'");
+            $queryUpdateSetting = '
+                UPDATE
+                    `'. DBPREFIX .'module_newsletter_settings`
+                SET `setvalue` = CASE `setname`
+                                 WHEN "sender_mail" THEN "'. contrexx_input2db($_POST['sender_email']) .'"
+                                 WHEN "sender_name" THEN "'. contrexx_input2db($_POST['sender_name']) .'"
+                                 WHEN "reply_mail" THEN "'. contrexx_input2db($_POST['return_path']) .'"
+                                 WHEN "mails_per_run" THEN "'. contrexx_input2int($_POST['mails_per_run']) .'"
+                                 WHEN "overview_entries_limit" THEN "'. contrexx_input2int($_POST["overview_entries"]) .'"
+                                 WHEN "test_mail" THEN "'. contrexx_input2db($_POST['test_mail']) .'"
+                                 WHEN "text_break_after" THEN "'. contrexx_input2int($_POST['text_break_after']) .'"
+                                 WHEN "defUnsubscribe" THEN "'. contrexx_input2int($_POST['def_unsubscribe']) .'"
+                                 WHEN "notificationSubscribe" THEN "'. contrexx_input2int($_POST["mailSendSubscribe"]) .'"
+                                 WHEN "notificationUnsubscribe" THEN "'. contrexx_input2int($_POST["mailSendUnsubscribe"]) .'"
+                                 END
+                WHERE `setname` IN("sender_mail", "sender_name", "reply_mail", "mails_per_run", "overview_entries_limit", "test_mail", "text_break_after", "defUnsubscribe", "notificationSubscribe", "notificationUnsubscribe")';
+            $objDatabase->Execute($queryUpdateSetting);
 
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".contrexx_addslashes($_POST['newsletter_rejected_mail_task'])."' WHERE setname='rejected_mail_operation'");
             $rejectText = contrexx_addslashes($_POST['reject_info_mail_text']);
@@ -1918,6 +1945,13 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_INFORM_ADMIN' => $_ARRAYLANG['TXT_NEWSLETTER_INFORM_ADMIN'],
             'TXT_NEWSLETTER_REJECT_INFO_MAIL_TEXT' => $_ARRAYLANG['TXT_NEWSLETTER_REJECT_INFO_MAIL_TEXT'],
             'TXT_NEWSLETTER_INFO_ABOUT_INFORM_TEXT' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_INFORM_TEXT'],
+            'TXT_NEWSLETTER_UNSUBSCRIBE_DEACTIVATE' => $_CORELANG['TXT_DEACTIVATED'],
+            'TXT_NEWSLETTER_UNSUBSCRIBE_DELETE'     => $_CORELANG['TXT_DELETED'],
+            'TXT_NEWSLETTER_DEF_UNSUBSCRIBE' => $_ARRAYLANG['TXT_STATE_OF_SUBSCRIBED_USER'],
+            'TXT_NEWSLETTER_NOTIFICATION_ACTIVATE'   => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATE'],
+            'TXT_NEWSLETTER_NOTIFICATION_DEACTIVATE' => $_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE'],
+            'TXT_NEWSLETTER_SEND_BY_SUBSCRIBE'       => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SEND_BY_SUBSCRIBE'],
+            'TXT_NEWSLETTER_SEND_BY_UNSUBSCRIBE'     => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SEND_BY_UNSUBSCRIBE'],
 
             'SENDERMAIL_VALUE' => htmlentities(
                 $arrSettings['sender_mail'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1947,6 +1981,24 @@ class NewsletterManager extends NewsletterLib
                     ? 'checked="checked"' : ''),
             'NEWSLETTER_REJECT_INFO_MAIL_TEXT' => htmlentities(
                 $arrSettings['reject_info_mail_text'], ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_UNSUBSCRIBE_DELETE_ON' =>
+                ($arrSettings['defUnsubscribe'] == 1
+                    ? 'checked="checked"' : ''),
+            'NEWSLETTER_UNSUBSCRIBE_DEACTIVATE_ON' =>
+                ($arrSettings['defUnsubscribe'] != 1
+                    ? 'checked="checked"' : ''),
+            'NEWSLETTER_SEND_BY_SUBSCRIBE_ON' =>
+                ($arrSettings['notificationSubscribe'] == 1
+                    ? 'checked="checked"' : ''),
+            'NEWSLETTER_SEND_BY_SUBSCRIBE_OFF' =>
+                ($arrSettings['notificationSubscribe'] != 1
+                    ? 'checked="checked"' : ''),
+            'NEWSLETTER_SEND_BY_UNSUBSCRIBE_ON' =>
+                ($arrSettings['notificationUnsubscribe'] == 1
+                    ? 'checked="checked"' : ''),
+            'NEWSLETTER_SEND_BY_UNSUBSCRIBE_OFF' =>
+                ($arrSettings['notificationUnsubscribe'] != 1
+                    ? 'checked="checked"' : ''),
         ));
 
     }
@@ -1957,8 +2009,7 @@ class NewsletterManager extends NewsletterLib
         global $objDatabase, $_ARRAYLANG;
 
         $rowNr = 0;
-        $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'];
-        $this->_objTpl->loadTemplateFile('module_newsletter_templates.html');
+        $this->_objTpl->addBlockfile('NEWSLETTER_SETTINGS_FILE', 'settings_block', 'module_newsletter_templates.html');
         $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES']);
 
         $this->_objTpl->setVariable(array(
@@ -2131,8 +2182,7 @@ class NewsletterManager extends NewsletterLib
 		$typeOps = "<option value=\"e-mail\"".($type=='e-mail' ? " selected" : "").">".$_ARRAYLANG['TXT_NEWSLETTER_TYPE_EMAIL']."</option>\n";
 		$typeOps .= "<option value=\"news\"".($type=='news' ? " selected" : "").">".$_ARRAYLANG['TXT_NEWSLETTER_TYPE_NEWS_IMPORT']."</option>\n";
 
-        $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'];
-        $this->_objTpl->loadTemplateFile('module_newsletter_template_edit.html');
+        $this->_objTpl->addBlockfile('NEWSLETTER_SETTINGS_FILE', 'settings_block', 'module_newsletter_template_edit.html');
 
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY'],
@@ -2233,49 +2283,8 @@ class NewsletterManager extends NewsletterLib
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('newsletter_config_email_templates.html');
+        $this->_objTpl->addBlockfile('NEWSLETTER_SETTINGS_FILE', 'settings_block', 'newsletter_config_email_templates.html');
         $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES']);
-
-        //Update settings
-        if (isset($_POST["saveSettings"])) {
-            $queryUpdateSetting = '
-                UPDATE
-                    `'. DBPREFIX .'module_newsletter_settings`
-                SET `setvalue` = CASE `setname`
-                                 WHEN "notificationSubscribe" THEN "'. contrexx_input2int($_POST["mailSendSubscribe"]) .'"
-                                 WHEN "notificationUnsubscribe" THEN "'. contrexx_input2int($_POST["mailSendUnsubscribe"]) .'"
-                                 END
-                WHERE `setname` IN("notificationSubscribe", "notificationUnsubscribe")';
-            if ($objDatabase->Execute($queryUpdateSetting) !== false) {
-                self::$strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SETTING_UPDATED_SUCCESSFULLY'];
-            } else {
-                self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_NOTIFICATION_SETTING'];
-            }
-        }
-
-        $query    = 'SELECT
-                        `setname`,
-                        `setvalue`
-                     FROM
-                        `'. DBPREFIX .'module_newsletter_settings`
-                     WHERE
-                        `setname` IN ("notificationSubscribe", "notificationUnsubscribe")';
-        $settings = $objDatabase->Execute($query);
-        $sendBySubscribe = $sendByUnsubscribe = false;
-        if ($settings !== false) {
-            while (!$settings->EOF) {
-                switch ($settings->fields['setname']) {
-                    case 'notificationSubscribe':
-                        $sendBySubscribe   = ($settings->fields['setvalue'] == 1);
-                        break;
-                    case 'notificationUnsubscribe':
-                        $sendByUnsubscribe = ($settings->fields['setvalue'] == 1);
-                        break;
-                }
-                $settings->MoveNext();
-            }
-        }
 
         $_REQUEST['active_tab'] = 1;
         if (   isset($_REQUEST['act'])
@@ -2310,26 +2319,7 @@ class NewsletterManager extends NewsletterLib
         );
         $this->_objTpl->setVariable(array(
             'NEWSLETTER_MAIL_TEMPLATE_SETTINGS'  => $objTemplate->get(),
-            'NEWSLETTER_SEND_BY_SUBSCRIBE_ON'    => $sendBySubscribe ? 'checked="checked"' : '',
-            'NEWSLETTER_SEND_BY_SUBSCRIBE_OFF'   => !$sendBySubscribe ? 'checked="checked"' : '',
-            'NEWSLETTER_SEND_BY_UNSUBSCRIBE_ON'  => $sendByUnsubscribe? 'checked="checked"' : '',
-            'NEWSLETTER_SEND_BY_UNSUBSCRIBE_OFF' => !$sendByUnsubscribe ? 'checked="checked"' : '',
-
-            'TXT_CONFIRM_MAIL'               => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
-            'TXT_ACTIVATE_MAIL'              => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
-            'TXT_DISPATCH_SETINGS'           => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
-            'TXT_GENERATE_HTML'              => $_ARRAYLANG['TXT_GENERATE_HTML'],
-            'TXT_SYSTEM_SETINGS'             => $_ARRAYLANG['TXT_NEWSLETTER_SYSTEM'],
-            'TXT_NOTIFICATION_MAIL'          => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
-            'TXT_NEWSLETTER_TEMPLATES'       => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
-            'TXT_NEWSLETTER_INTERFACE'       => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
             'TXT_NEWSLETTER_EMAIL_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'],
-            'TXT_NEWSLETTER_NOTIFICATION_ACTIVATE'   => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATE'],
-            'TXT_NEWSLETTER_NOTIFICATION_DEACTIVATE' => $_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE'],
-            'TXT_NEWSLETTER_SEND_BY_SUBSCRIBE'       => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SEND_BY_SUBSCRIBE'],
-            'TXT_NEWSLETTER_SEND_BY_UNSUBSCRIBE'     => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SEND_BY_UNSUBSCRIBE'],
-            'TXT_NEWSLETTER_SAVE'                    => $_ARRAYLANG['TXT_SAVE'],
-            'TXT_NEWSLETTER_NOTIFICATION_SETTINGS'   => $_ARRAYLANG['TXT_SETTINGS'],
         ));
     }
 
@@ -5597,56 +5587,6 @@ function MultiAction() {
             'NEWSLETTER_HTML_CODE' => htmlentities($this->_getHTML($listId), ENT_QUOTES, CONTREXX_CHARSET)
         ));
         return true;
-    }
-
-
-    function ConfigSystem()
-    {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('newsletter_config_system.html');
-        $this->_objTpl->setVariable('TXT_TITLE', $_CORELANG['TXT_SETTINGS_MENU_SYSTEM']);
-        if (isset($_POST["update"])) {
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST['def_unsubscribe'])."' WHERE setname='defUnsubscribe'");
-        }
-
-        // Load Values
-        $objSystem = $objDatabase->Execute("SELECT setname, setvalue FROM ".DBPREFIX."module_newsletter_settings");
-        if ($objSystem !== false) {
-            while (!$objSystem->EOF) {
-                $arrSystem[$objSystem->fields['setname']] = $objSystem->fields['setvalue'];
-                $objSystem->MoveNext();
-            }
-        }
-
-        if ($arrSystem['defUnsubscribe'] == 1) {
-            $delete = 'checked="checked"';
-            $deactivate = '';
-        } else {
-            $delete = '';
-            $deactivate = 'checked="checked"';
-        }
-
-        $this->_objTpl->setVariable(array(
-            'TXT_NEWSLETTER_ACTIVATE' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATE'],
-            'TXT_NEWSLETTER_DEACTIVATE' => $_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE'],
-            'TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE'],
-            'TXT_CONFIRM_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
-            'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
-            'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
-            'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
-            'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
-            'TXT_SYSTEM_SETINGS' => $_CORELANG['TXT_SETTINGS_MENU_SYSTEM'],
-            'TXT_DEF_UNSUBSCRIBE' => $_ARRAYLANG['TXT_STATE_OF_SUBSCRIBED_USER'],
-            'UNSUBSCRIBE_DEACTIVATE' => $_CORELANG['TXT_DEACTIVATED'],
-            'UNSUBSCRIBE_DELETE' => $_CORELANG['TXT_DELETED'],
-            'TXT_SAVE' => $_CORELANG['TXT_SETTINGS_SAVE'],
-            'UNSUBSCRIBE_DEACTIVATE_ON' => $deactivate,
-            'UNSUBSCRIBE_DELETE_ON' => $delete,
-            'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
-            'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
-            'TXT_NEWSLETTER_EMAIL_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'],
-        ));
     }
 
     // TODO: we consider, that attribute values are all included in double quotes (""):  wysiwyg editor replaces them automatically
