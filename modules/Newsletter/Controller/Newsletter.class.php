@@ -160,7 +160,7 @@ class Newsletter extends NewsletterLib
 
                 $url = $_SERVER['SERVER_NAME'];
                 $arrMailTemplate = array(
-                    'key'          => 'newsletter_confirm_email',
+                    'key'          => 'confirm_email',
                     'section'      => 'Newsletter',
                     'lang_id'      => FRONTEND_LANG_ID,
                     'substitution' => array(
@@ -737,7 +737,7 @@ class Newsletter extends NewsletterLib
         $now = date(ASCMS_DATE_FORMAT);
 
         $arrMailTemplate = array(
-            'key'          => 'newsletter_activation_email',
+            'key'          => 'activation_email',
             'section'      => 'Newsletter',
             'lang_id'      => FRONTEND_LANG_ID,
             'substitution' => array(
@@ -824,7 +824,7 @@ class Newsletter extends NewsletterLib
             $arrSettings = $this->_getSettings();
 
             $arrMailTemplate = array(
-                'key'          => 'newsletter_notification_email',
+                'key'          => 'notification_email',
                 'section'      => 'Newsletter',
                 'lang_id'      => FRONTEND_LANG_ID,
                 'substitution' => array(

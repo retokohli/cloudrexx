@@ -1874,22 +1874,13 @@ class NewsletterManager extends NewsletterLib
                                  WHEN "overview_entries_limit" THEN "'. contrexx_input2int($_POST["overview_entries"]) .'"
                                  WHEN "test_mail" THEN "'. contrexx_input2db($_POST['test_mail']) .'"
                                  WHEN "text_break_after" THEN "'. contrexx_input2int($_POST['text_break_after']) .'"
+                                 WHEN "rejected_mail_operation" THEN "'. contrexx_input2db($_POST['newsletter_rejected_mail_task']) .'"
                                  WHEN "defUnsubscribe" THEN "'. contrexx_input2int($_POST['def_unsubscribe']) .'"
                                  WHEN "notificationSubscribe" THEN "'. contrexx_input2int($_POST["mailSendSubscribe"]) .'"
                                  WHEN "notificationUnsubscribe" THEN "'. contrexx_input2int($_POST["mailSendUnsubscribe"]) .'"
                                  END
-                WHERE `setname` IN("sender_mail", "sender_name", "reply_mail", "mails_per_run", "overview_entries_limit", "test_mail", "text_break_after", "defUnsubscribe", "notificationSubscribe", "notificationUnsubscribe")';
+                WHERE `setname` IN("sender_mail", "sender_name", "reply_mail", "mails_per_run", "overview_entries_limit", "test_mail", "text_break_after", "rejected_mail_operation", "defUnsubscribe", "notificationSubscribe", "notificationUnsubscribe")';
             $objDatabase->Execute($queryUpdateSetting);
-
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".contrexx_addslashes($_POST['newsletter_rejected_mail_task'])."' WHERE setname='rejected_mail_operation'");
-            $rejectText = contrexx_addslashes($_POST['reject_info_mail_text']);
-            $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."module_newsletter_settings`
-                ( `setvalue`, `setname`, `status`)
-                VALUES
-                ('".$rejectText."', 'reject_info_mail_text', 1)
-                ON DUPLICATE KEY UPDATE
-                setvalue = '".$rejectText."'");
         }
 
         // Load Values
@@ -1979,8 +1970,6 @@ class NewsletterManager extends NewsletterLib
             'NEWSLETTER_REJECTED_MAIL_INFORM' =>
                 ($arrSettings['rejected_mail_operation'] == 'inform'
                     ? 'checked="checked"' : ''),
-            'NEWSLETTER_REJECT_INFO_MAIL_TEXT' => htmlentities(
-                $arrSettings['reject_info_mail_text'], ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_UNSUBSCRIBE_DELETE_ON' =>
                 ($arrSettings['defUnsubscribe'] == 1
                     ? 'checked="checked"' : ''),
@@ -2352,6 +2341,9 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_CONFIRM_CODE'        => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_CODE'],
             'TXT_NEWSLETTER_NOTIFICATION_ACTION' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_ACTION'],
             'TXT_NEWSLETTER_NOTIFICATION_RECIPIENT' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_RECIPIENT'],
+            'TXT_NEWSLETTER_SUBJECT'             => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
+            'TXT_NEWSLETTER_USER_EDIT_LINK'      => $_ARRAYLANG['TXT_NEWSLETTER_USER_EDIT_LINK'],
+            'TXT_NEWSLETTER_LOGGED_USER_EMAIL'   => $_ARRAYLANG['TXT_NEWSLETTER_LOGGED_USER_EMAIL'],
         ));
         return $objTemplate->get();
     }
@@ -3094,14 +3086,14 @@ class NewsletterManager extends NewsletterLib
                                 case self::USER_TYPE_NEWSLETTER:
                                 default:
                                     // Remove user data from the module
-                                    $this->_deleteRecipient(UserID);
+                                    $this->_deleteRecipient($UserID);
                                     break;
                             }
                             break;
 
 
                         case 'inform':
-                            $this->informAdminAboutRejectedMail($NewsletterID, UserID, $TargetEmail, $type);
+                            $this->informAdminAboutRejectedMail($NewsletterID, $UserID, $TargetEmail, $type, $newsletterUserData);
                             break;
                     }
                 }
@@ -3134,59 +3126,61 @@ class NewsletterManager extends NewsletterLib
         return $result !== false ? $result->fields : false;
     }
 
-
     /**
      * Inform the admin about a reject
      *
      * If an email could not be sent, inform the administrator
      * about that (only if the option to do so was set)
-     * @author      Stefan Heinemann <sh@adfinis.com>
-     * @param       int $newsletterID
-     * @param       int $userID
-     * @param       string $email
-     * @param       const
+     *
+     * @param integer $newsletterID        Nesletter id
+     * @param integer $userID              User Id
+     * @param string  $email               E-mail id of the user
+     * @param string  $type                User type
+     * @param array   $newsletterUserData  Info about the newsletter user
      */
-    protected function informAdminAboutRejectedMail($newsletterID, $userID, $email, $type)
+    protected function informAdminAboutRejectedMail($newsletterID, $userID, $email, $type, $newsletterUserData)
     {
+        global $_CONFIG;
+
         // Get the current user's email address
-        $addy = \FWUser::getFWUserObject()->objUser->getEmail();
-        \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php');
-        $mail = new \phpmailer();
+        $loggedUserMail   = \FWUser::getFWUserObject()->objUser->getEmail();
         $newsletterValues = $this->getNewsletterValues($newsletterID);
-        if ($newsletterValues['smtp_server'] > 0) {
-            if (($arrSmtp = \SmtpSettings::getSmtpAccount($newsletterValues['smtp_server'])) !== false) {
-                $mail->IsSMTP();
-                $mail->Host     = $arrSmtp['hostname'];
-                $mail->Port     = $arrSmtp['port'];
-                $mail->SMTPAuth = $arrSmtp['username'] == '-' ? false : true;
-                $mail->Username = $arrSmtp['username'];
-                $mail->Password = $arrSmtp['password'];
-            }
-        }
-        $mail->CharSet      = CONTREXX_CHARSET;
-        $mail->From         = $newsletterValues['sender_email'];
-        $mail->FromName     = $newsletterValues['sender_name'];
-        $mail->AddReplyTo($newsletterValues['return_path']);
-        $mail->Subject      = $newsletterValues['subject'];
-        $mail->Priority     = $newsletterValues['priority'];
-        $mail->Body         = $this->getInformMailBody($userID, $email, $type);
-        $mail->AddAddress($addy);
-        $mail->send();
+
+        $arrMailTemplate = array(
+            'key'          => 'notify_undelivered_email',
+            'section'      => 'Newsletter',
+            'lang_id'      => BACKEND_LANG_ID,
+            'substitution' => array(
+                'NEWSLETTER_USER_SEX'       => $newsletterUserData['sex'],
+                'NEWSLETTER_USER_TITLE'     => $newsletterUserData['title'],
+                'NEWSLETTER_USER_FIRSTNAME' => $newsletterUserData['firstname'],
+                'NEWSLETTER_USER_LASTNAME'  => $newsletterUserData['lastname'],
+                'NEWSLETTER_USER_EMAIL'     => $newsletterUserData['email'],
+                'NEWSLETTER_DOMAIN_URL'     => $_CONFIG['domainUrl'],
+                'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
+                'NEWSLETTER_SENDER_EMAIL'   => $newsletterValues['sender_email'],
+                'NEWSLETTER_SENDER_NAME'    => $newsletterValues['sender_name'],
+                'NEWSLETTER_REPLY_TO'       => $newsletterValues['return_path'],
+                'NEWSLETTER_SUBJECT'        => $newsletterValues['subject'],
+                'NEWSLETTER_USER_EDIT_LINK' => $this->getUserEditLink($userID, $type),
+                'NEWSLETTER_LOGGED_USER_EMAIL' => $loggedUserMail,
+            ),
+        );
+        \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate);
     }
 
 
     /**
-     * Return the body of the inform email
+     * Return the Edit link of the inform email
+     *
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $userID
-     * @param       string $mail
      * @param       const $type
      */
-    protected function getInformMailBody($userID, $mail, $type)
+    protected function getUserEditLink($userID, $type)
     {
         global $_CONFIG;
 
-        $body = $this->getSetting('reject_info_mail_text');
         $link = 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;
 
         switch ($type) {
@@ -3201,8 +3195,7 @@ class NewsletterManager extends NewsletterLib
                 break;
         }
 
-        $body = str_replace(array('[[EMAIL]]', '[[LINK]]'), array($mail, $link), $body);
-        return $body;
+        return $link;
     }
 
 

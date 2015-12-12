@@ -503,3 +503,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_SENDER_NAME'] = 'Sender name from dispatch settings'
 $_ARRAYLANG['TXT_NEWSLETTER_REPLY_TO'] = 'Reply to email from dispatch settings';
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_CODE'] = 'Email confirmation code';
 $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_RECIPIENT'] = 'Email addresses to send notification about the unsubscribe';
+$_ARRAYLANG['TXT_NEWSLETTER_USER_EDIT_LINK'] = 'Link to edit view of user';
+$_ARRAYLANG['TXT_NEWSLETTER_LOGGED_USER_EMAIL'] = 'Currently logged in user E-Mail';
