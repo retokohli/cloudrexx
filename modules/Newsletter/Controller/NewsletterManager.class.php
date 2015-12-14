@@ -3423,17 +3423,14 @@ class NewsletterManager extends NewsletterLib
         $allImg = array();
         preg_match_all('/src="([^"]*)"/', $content_text, $allImg, PREG_PATTERN_ORDER);
         $size = sizeof($allImg[1]);
+        
         $i = 0;
-        $port = $_SERVER['SERVER_PORT'] != 80 ? ':'.intval($_SERVER['SERVER_PORT']) : '';
-
         while ($i < $size) {
             $URLforReplace = $allImg[1][$i];
-            if (substr($URLforReplace, 0, 7) != ASCMS_PROTOCOL.'://') {
-                $ReplaceWith = '"'.ASCMS_PROTOCOL.'://'.$_SERVER['SERVER_NAME'].$port.$URLforReplace.'"';
-            } else {
-                $ReplaceWith = $URLforReplace;
-            }
-            $content_text = str_replace('"'.$URLforReplace.'"', $ReplaceWith, $content_text);
+            $ReplaceWith = (
+                new \Cx\Core\Routing\Url($URLforReplace, true)
+            )->toString();
+            $content_text = str_replace('"'.$URLforReplace.'"', '"'.$ReplaceWith.'"', $content_text);
             $i++;
         }
 
