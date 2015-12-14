@@ -40,7 +40,7 @@ global $_ARRAYLANG;
 
 // Let's start with module info:
 $_ARRAYLANG['TXT_CORE_MODULE_GEOIP'] = 'Location-based services';
-$_ARRAYLANG['TXT_CORE_MODULE_GEOIP_DESCRIPTION'] = 'This is a new module with some sample content to show how to start.';
+$_ARRAYLANG['TXT_CORE_MODULE_GEOIP_DESCRIPTION'] = 'Location-based content delivery services (IP GeoLocation).';
 
 // Here come the ACTs:
 $_ARRAYLANG['TXT_CORE_MODULE_GEOIP_ACT_DEFAULT'] = 'Overview';
