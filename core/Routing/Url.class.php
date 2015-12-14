@@ -139,7 +139,14 @@ class Url {
         if (isset($data['host'])) {
             $this->domain   = $data['host'];
         }
+        if (empty($this->domain)) {
+            global $_CONFIG;
+            $this->domain = $_CONFIG['domainUrl'];
+        }
         $this->protocol = $data['scheme'];
+        if (empty($this->protocol)) {
+            $this->protocol = 'http';
+        }
         if ($this->protocol == 'file') {
             // we don't want virtual language dir in file URLs
             $this->setMode('backend');
@@ -158,6 +165,13 @@ class Url {
             $path = $data['path'];
         }
         $path = ltrim($path, '/');
+        
+        // do not add virtual language dir for files
+        $fileName = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . '/' . $path;
+        if (file_exists($fileName)) {
+            $this->setMode('backend');
+        }
+        
         if(!empty($data['query'])) {
             $path .= '?' . $data['query'];
         }
