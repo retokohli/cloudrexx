@@ -140,8 +140,7 @@ class Url {
             $this->domain   = $data['host'];
         }
         if (empty($this->domain)) {
-            global $_CONFIG;
-            $this->domain = $_CONFIG['domainUrl'];
+            $this->domain = \Env::get('config')['domainUrl'];
         }
         $this->protocol = $data['scheme'];
         if (empty($this->protocol)) {
