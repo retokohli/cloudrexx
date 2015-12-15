@@ -53,7 +53,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
 
     /**
      * Returns a list of available commands (?act=XY)
-     * @return array List of acts
+     * 
+     * @return array list of acts
      */
     public function getCommands() {
         return array();
@@ -65,8 +66,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * You will get the template located in /View/Template/{CMD}.html
      * You can access Cx class using $this->cx
      * To show messages, use \Message class
-     * @param \Cx\Core\Html\Sigma $template Template for current CMD
-     * @param array $cmd CMD separated by slashes
+     * 
+     * @param \Cx\Core\Html\Sigma $template template for current CMD
+     * @param array               $cmd      CMD separated by slashes
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
     {
@@ -83,7 +85,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     /**
      * Trigger a controller according to the act param from the url
      * 
-     * @param string $act
+     * @param string $act page action parameter
      */
     public function connectToController($act)
     {

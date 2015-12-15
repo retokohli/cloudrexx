@@ -79,7 +79,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     /**
      * Use this to parse your backend page
      * 
-     * @param \Cx\Core\Html\Sigma $template 
+     * @param \Cx\Core\Html\Sigma $template template for current CMD
      */
     public function parsePage(\Cx\Core\Html\Sigma $template)
     {
