@@ -37,6 +37,11 @@
 namespace Cx\Core_Modules\GeoIp\Controller;
 
 /**
+ * Class GeoIpException
+ */
+class GeoIpException extends \Exception {}
+
+/**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
  * @copyright   Cloudrexx AG
@@ -52,5 +57,75 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      */
     public function getCommands() {
         return array();
+    }
+
+    /**
+     * Use this to parse your backend page
+     * 
+     * You will get the template located in /View/Template/{CMD}.html
+     * You can access Cx class using $this->cx
+     * To show messages, use \Message class
+     * @param \Cx\Core\Html\Sigma $template Template for current CMD
+     * @param array $cmd CMD separated by slashes
+     */
+    public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
+    {
+        $this->template = $template;
+        $act = $cmd[0];
+
+        //GeoIp configuration setting
+        self::errorHandler();
+        $this->connectToController($act);
+
+        \Message::show();
+    }
+
+    /**
+     * Trigger a controller according to the act param from the url
+     * 
+     * @param string $act
+     */
+    public function connectToController($act)
+    {
+        $act = ucfirst($act);
+        if (!empty($act)) {
+            $controllerName = __NAMESPACE__.'\\'.$act.'Controller';
+            if (!$controllerName && !class_exists($controllerName)) {
+                return;
+            }
+            //  instantiate the view specific controller
+            $objController = new $controllerName($this->getSystemComponentController(), $this->cx);
+        } else { 
+            // instantiate the default View Controller
+            $objController = new DefaultController($this->getSystemComponentController(), $this->cx);
+        }
+        $objController->parsePage($this->template);
+    }
+
+    /**
+     * Fixes database errors.   
+     * 
+     * @return boolean
+     * @throws GeoIpException
+     */
+    static function errorHandler() {
+
+        try {
+            \Cx\Core\Setting\Controller\Setting::init('GeoIp', '', 'Yaml');
+
+            //setup config
+            \Cx\Core\Setting\Controller\Setting::init('GeoIp', 'config', 'Yaml');
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('serviceStatus')
+                && !\Cx\Core\Setting\Controller\Setting::add('serviceStatus',1, 1,
+               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'config')
+            ) {
+                    throw new GeoIpException("Failed to add Setting entry for GeoIp Service Status");
+            }
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+        }
+
+        // Always!
+        return false;
     }
 }
