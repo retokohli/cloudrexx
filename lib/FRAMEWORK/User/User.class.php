@@ -1787,8 +1787,7 @@ class User extends User_Profile
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $objUserMail->getSenderMail();
-            $objMail->FromName = $objUserMail->getSenderName();
+            $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
             $objMail->AddReplyTo($objUserMail->getSenderMail());
             $objMail->Subject = $objUserMail->getSubject();
 
@@ -2161,8 +2160,12 @@ class User extends User_Profile
         return false;
     }
 
-
-    private function isLoggedIn()
+    /**
+     * Returns true if the User is logged in
+     * @return  boolean       True if the User is logged in,
+     *                        false otherwise
+     */
+    public function isLoggedIn()
     {
         return $this->loggedIn;
     }

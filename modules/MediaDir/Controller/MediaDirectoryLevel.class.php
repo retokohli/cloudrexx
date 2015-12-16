@@ -282,6 +282,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_LEVEL_ORDER' => $arrLevel['levelOrder'],
                         $this->moduleLangVar.'_LEVEL_NAME' => contrexx_raw2xhtml($arrLevel['levelName'][0]),
                         $this->moduleLangVar.'_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
+                        $this->moduleLangVar.'_LEVEL_DESCRIPTION_ESCAPED' => strip_tags($arrLevel['levelDescription'][0]),
                         $this->moduleLangVar.'_LEVEL_PICTURE' => $arrLevel['levelPicture'],
                         $this->moduleLangVar.'_LEVEL_NUM_ENTRIES' => $arrLevel['levelNumEntries'],
                         $this->moduleLangVar.'_LEVEL_ICON' => $spacer.$strLevelIcon,
@@ -454,12 +455,13 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 break;
             case 5:
                 //Frontend View Detail
+                $thumbImage = $this->getThumbImage($arrLevels[$intLevelId]['levelPicture']);
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevels[$intLevelId]['levelId'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]),
                     $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.'&amp;cid='.$arrLevels[$intCategoryId]['levelId'].'">'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'</a>',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevels[$intLevelId]['levelDescription'][0],
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevels[$intLevelId]['levelPicture'].'.thumb" border="0" alt="'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'" />',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$thumbImage.'" border="0" alt="'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'" />',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevels[$intLevelId]['levelPicture'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevels[$intLevelId]['levelNumEntries'],
                 ));

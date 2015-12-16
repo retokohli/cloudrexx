@@ -160,13 +160,10 @@ class Cart
             $cart_id = intval($keys[0]);
         }
         $arrOptions = array();
-        // Add names of uploaded files to options array, so they will be
-        // recognized and added to the product in the cart
-        if (!empty($_FILES['productOption']['name'])) {
-            $arrOptions = $_FILES['productOption']['name'];
-        }
+        //Add values of the product option to options array, so they will be
+        //recognized and added to the product in the cart
         if (!empty($_POST['productOption'])) {
-            $arrOptions = $arrOptions + $_POST['productOption'];
+            $arrOptions = contrexx_input2raw($_POST['productOption']);
         }
         $arrProduct = array(
             'id' => intval($_REQUEST['productId']),
@@ -331,7 +328,8 @@ class Cart
                 }
                 if (   $type == Attribute::TYPE_UPLOAD_OPTIONAL
                     || $type == Attribute::TYPE_UPLOAD_MANDATORY) {
-                    $option_id = Shop::uploadFile($attribute_id);
+                    $filename = $arrNewProduct['options'][$attribute_id];
+                    $option_id = Shop::uploadFile($filename);
                     if ($option_id == '') {
                         continue;
                     }

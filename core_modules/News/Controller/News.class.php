@@ -590,6 +590,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_TITLE'        => $_ARRAYLANG['TXT_NEWS_TITLE'],
             'TXT_NEWS_COMMENT'      => $_ARRAYLANG['TXT_NEWS_COMMENT'],
             'TXT_NEWS_ADD'          => $_ARRAYLANG['TXT_NEWS_ADD'],
+            'TXT_NEWS_WRITE_COMMENT'=> $_ARRAYLANG['TXT_NEWS_WRITE_COMMENT']
         ));
 
         $this->_objTpl->parse('news_add_comment');
@@ -1423,8 +1424,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $_CONFIG['coreAdminName'];
+            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreAdminName']);
             $objMail->Subject = $_ARRAYLANG['TXT_NOTIFY_SUBJECT'];
             $objMail->IsHTML(false);
             $objMail->Body = $msg;
@@ -2079,8 +2079,7 @@ RSS2JSCODE;
         }
 
         $objMail->CharSet   = CONTREXX_CHARSET;
-        $objMail->From      = $_CONFIG['coreAdminEmail'];
-        $objMail->FromName  = $_CONFIG['coreGlobalPageTitle'];
+        $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
         $objMail->IsHTML(false);
         $objMail->Subject   = sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_SUBJECT'], $newsMessageTitle);
         $manageCommentsUrl  = ASCMS_PROTOCOL.'://'

@@ -1,3 +1,13 @@
+.uploader-modal, .media-browser-modal-window {
+    font-size: 14.4px;
+}
+
+.uploader-modal .modal-title, .media-browser-modal-window .modal-title {
+    color:#fff;
+    clear:none;
+    text-transform: none;
+}
+
 .uploader-modal .img-rounded, .media-browser-modal-window .img-rounded {
     border-radius: 6px;
 }
@@ -1140,11 +1150,11 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     vertical-align: top;
     display: inline-block;
     height: 585px;
+    float:none;
 }
 
 .uploader-modal .mediaBrowserNavigation, .media-browser-modal-window .mediaBrowserNavigation {
     font-size: 14px;
-    font-size: 1.2rem;
     width: 180px;
     border-right: 1px solid #e5e5e5;
 }
@@ -1268,7 +1278,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 .uploader-modal .tabMediaBrowserFooter, .media-browser-modal-window .tabMediaBrowserFooter {
     border-top: 1px solid #e5e5e5;
     vertical-align: bottom;
-    padding: 13px;
+    padding: 13px 0 0 13px;
     background: #fff;
 }
 
@@ -1303,6 +1313,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     font-size: 31px;
     font-weight: normal;
     color: #aaa;
+    line-height: normal;
 }
 
 .uploader-modal .loadingText2, .media-browser-modal-window .loadingText2, .uploader-modal .dropzoneText2, .media-browser-modal-window .dropzoneText2 {
@@ -1412,7 +1423,8 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     padding: 0 20px 20px;
 }
 
-.fileOptions .btn {
+#content .media-browser-modal-window .fileOptions .btn,
+.media-browser-modal-window .fileOptions .btn {
     padding: 4px 8px;
     vertical-align: top;
     margin-top: 20px;
@@ -1561,6 +1573,12 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     width: 100%;
     max-width: 100%;
     margin-bottom: 20px;
+    will-change: height, max-height;
+}
+
+.uploader-modal .file-list-wrapper,
+.uploader-modal .uploadControl {
+    will-change:height, max-height;
 }
 
 .uploader-modal .table > thead > tr > th, .media-browser-modal-window .table > thead > tr > th, .uploader-modal .table > tbody > tr > th, .media-browser-modal-window .table > tbody > tr > th, .uploader-modal .table > tfoot > tr > th, .media-browser-modal-window .table > tfoot > tr > th, .uploader-modal .table > thead > tr > td, .media-browser-modal-window .table > thead > tr > td, .uploader-modal .table > tbody > tr > td, .media-browser-modal-window .table > tbody > tr > td, .uploader-modal .table > tfoot > tr > td, .media-browser-modal-window .table > tfoot > tr > td {
@@ -1694,12 +1712,18 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 .uploader-modal .drag-zone {
     color: #cfcfcf;
     text-align: center;
-    padding: 100px 30px;
+    padding: 0;
     margin: 10px 0;
     font-size: 20px;
     overflow: hidden;
     -webkit-transition: .6s color, .6s border;
     transition: .6s color, .6s border;
+}
+
+@media (min-width: 1280px) {
+    .uploader-modal .drag-zone {
+        padding: 60px 30px;
+    }
 }
 
 .uploader-modal .drag-zone.dragover {
@@ -1787,7 +1811,18 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 }
 
 .uploader-modal .uploadControl {
-    display: none;
+    max-height:0;
+    overflow:hidden;
+    -webkit-transition: 0.6s max-height ease-out, 0.6s height ease-out;
+    -moz-transition: 0.6s max-height ease-out, 0.6s height ease-out;
+    -ms-transition: 0.6s max-height ease-out, 0.6s height ease-out;
+    -o-transition: 0.6s max-height ease-out, 0.6s height ease-out;
+    transition: 0.6s max-height ease-out, 0.6s height ease-out;
+}
+
+.uploader-modal .uploadControl.open {
+    max-height:2000px;
+    overflow:hidden;
 }
 
 .uploader-modal .file-list-wrapper {
@@ -1939,7 +1974,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
     border-bottom-color: #000;
 }
 
-#thumbnailSelector .image,  {
+#thumbnailSelector .image {
     width: 100%;
     max-width: 100%;
     height: auto;
@@ -1961,6 +1996,10 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 
 .media-browser-modal-window tr.data-row.files:hover {
     background-color: #E4E4E4;
+}
+
+.media-browser-modal-window tr.data-row.files td.col_2 a {
+    display: block !important; /* Fix for conflict with prototype */
 }
 
 .media-browser-modal-window .uploadlist .fileName {
@@ -2054,6 +2093,7 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 .media-browser-modal-window .successfulUpload p {
     font-size: 16px;
     margin: 5px 0 0;
+    color: #fff;
 }
 
 .media-browser-modal-window .successfulUpload.finished {
@@ -2067,6 +2107,10 @@ input[type=button].btn-block, input[type=button].btn-block, input[type=reset].bt
 
 .media-browser-modal-window, .bootbox {
     z-index: 10050 !important;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .uploader-modal .upload-limit-tooltip, .media-browser-modal-window .upload-limit-tooltip {

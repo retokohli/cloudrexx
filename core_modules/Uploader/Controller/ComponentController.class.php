@@ -45,7 +45,9 @@ use Cx\Core_Modules\Uploader\Model\Entity\Uploader;
 
 class ComponentController extends SystemComponentController
 {
-
+    /**
+     * @var Uploader[]
+     */
     protected $uploaderInstances = array();
 
     public function addUploader(Uploader $uploader) {
@@ -76,8 +78,17 @@ class ComponentController extends SystemComponentController
                 );
             }
         }
+        $appendix = "";
+        foreach ($this->uploaderInstances as $uploader){
+            if ($uploader->getType() == Uploader::UPLOADER_TYPE_MODAL){
+                $appendix .= $uploader->getContainer();
+            }
+        }
+
+        $template->_blocks["__global__"] = preg_replace("/<\/body>/", $appendix.'</body>', $template->_blocks["__global__"]);
+
         \ContrexxJavascript::getInstance()->setVariable(
-            'chunk_size', floor((\FWSystem::getMaxUploadFileSize()-1000000)/1000000).'mb', 'uploader'
+            'chunk_size', min(floor((\FWSystem::getMaxUploadFileSize()-1000000)/1000000), 20) .'mb', 'uploader'
         );
 
         \JS::activate('mediabrowser');

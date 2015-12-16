@@ -129,4 +129,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_NOT_SPECIFIED'] = "Keine Angabe";
 $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_DATE'] = "Tag";
 $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MONTH'] = "Monat";
 $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_YEAR'] = "Jahr";
+$_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_IF_ONLY_ONE_LIST_ACTIVE'] = "Sie müssen mindestens eine Newsletter-Liste selektieren! Wenn Sie keine Newsletter mehr empfangen möchten, dann können Sie sich vom %s.";
 ?>

@@ -168,9 +168,10 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 } else {
                     $author = '';
                 }
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                 if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
                     $image = $objResult->fields['teaser_image_thumbnail_path'];
-                } elseif (!empty($objResult->fields['teaser_image_path']) && file_exists(ASCMS_PATH.\ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']))) {
+                } elseif (!empty($objResult->fields['teaser_image_path']) && file_exists($cx->getWebsitePath() .'/' .\ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']))) {
                     $image = \ImageManager::getThumbnailFilename($objResult->fields['teaser_image_path']);
                 } elseif (!empty($objResult->fields['teaser_image_path'])) {
                     $image = $objResult->fields['teaser_image_path'];

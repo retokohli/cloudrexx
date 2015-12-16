@@ -75,8 +75,18 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $this->cx;
         $this->template = $template;
         $act = $cmd[0];
-        
-        $this->connectToController($act);
+
+        /* If the act is not empty, we are not on the first tab an we can use parsePage() from
+           SystemComponentBackendController to create the view.
+           If act is empty, we are on first tab where parent::parsePage() will not work, because ViewGenerator does
+           not support views on first tab of components.
+           Note: This function (parsePage) can be removed as soon as ViewGenerator has first tab support
+        */
+        if ($act != '') {
+            parent::parsePage($template, $cmd);
+        } else {
+            $this->connectToController('Default');
+        }
                 
         \Message::show();
     }
@@ -89,13 +99,89 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function connectToController($act)
     {
         $act = ucfirst($act);
-        
         $controller = $this->getSystemComponentController()->getController($act);
-        if (!$controller) {
-            $act = 'Default';
-            $controller = $this->getSystemComponentController()->getController($act);
-        }
-        
         $controller->parsePage($this->template);
+
+    }
+
+    /**
+     * This function returns the ViewGeneration options for a given entityClass
+     *
+     * @access protected
+     * @global $_ARRAYLANG
+     * @param $entityClassName contains the FQCN from entity
+     * @return array with options
+     */
+    protected function getViewGeneratorOptions($entityClassName) {
+        global $_ARRAYLANG;
+
+        $classNameParts = explode('\\', $entityClassName);
+        $classIdentifier = end($classNameParts);
+
+        $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
+        $header = '';
+        if (isset($_ARRAYLANG[$langVarName])) {
+            $header = $_ARRAYLANG[$langVarName];
+        }
+        switch ($entityClassName) {
+            case 'Cx\Modules\Pim\Model\Entity\Product':
+                return array(
+                    'header'    => $_ARRAYLANG['TXT_MODULE_PIM_ACT_DEFAULT'],
+                    'functions' => array(
+                        'add'       => true,
+                        'edit'      => true,
+                        'delete'    => true,
+                        'sorting'   => true,
+                        'paging'    => true,
+                        'filtering' => false,
+                    )
+                );
+                break;
+            case 'Cx\Modules\Pim\Model\Entity\Price':
+                return array(
+                    'header' => $_ARRAYLANG['TXT_MODULE_PIM_ACT_PRICE'],
+                    'validate' => function ($formGenerator) {
+                        // this validation checks whether already a price for the currency and product exists
+                        $data = $formGenerator->getData()->toArray();
+
+                        $currency = $data['currency'];
+                        $product = $data['product'];
+                        $priceRepository = \Env::get('cx')->getDb()->getEntityManager()->getRepository('Cx\Modules\Pim\Model\Entity\Price');
+                        $prices =
+                            $priceRepository->createQueryBuilder('p')
+                                ->where('p.currency = ?1')->setParameter(1, $currency)
+                                ->andWhere('p.product = ?2')->setParameter(2, $product);
+                        $prices = $prices->getQuery()->getResult();
+                        if (!empty($data['editid']) && count($prices) > 1) {
+                            return false;
+                        }
+                        if (empty($data['editid']) && count($prices) > 0) {
+                            return false;
+                        }
+                        return true;
+                    },
+                    'functions' => array(
+                        'add' => true,
+                        'edit' => true,
+                        'delete' => true,
+                        'sorting' => true,
+                        'paging' => true,
+                        'filtering' => false,
+                    ),
+                );
+                break;
+            default:
+                return array(
+                    'header' => $header,
+                    'functions' => array(
+                        'add'       => true,
+                        'edit'      => true,
+                        'delete'    => true,
+                        'sorting'   => true,
+                        'paging'    => true,
+                        'filtering' => false,
+                    ),
+                );
+        }
     }
 }

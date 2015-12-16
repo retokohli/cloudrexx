@@ -94,6 +94,11 @@ class InitCMS
     public $mode;
     
     protected $themeRepository;
+    
+    /**
+     * @var array Language var cache
+     */
+    protected $moduleSpecificLanguageData = array();
 
     /**
      * Constructor
@@ -526,6 +531,8 @@ class InitCMS
         $this->templates['sidebar']                 = $this->getThemeFileContent($themesPath, 'sidebar.html');
         $this->templates['top_news']                = $this->getThemeFileContent($themesPath, 'top_news.html');
         $this->templates['shopnavbar']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html');
+        $this->templates['shopnavbar2']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html2');
+        $this->templates['shopnavbar3']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html3');
         $this->templates['headlines']               = $this->getThemeFileContent($themesPath, 'headlines.html');
         $this->templates['headlines2']              = $this->getThemeFileContent($themesPath, 'headlines2.html');
         $this->templates['headlines3']              = $this->getThemeFileContent($themesPath, 'headlines3.html');
@@ -700,6 +707,7 @@ class InitCMS
                         case 'NetManager':
                         case 'Wysiwyg':
                         case 'Routing':
+                        case 'Html':
                             $this->arrModulePath[$objResult->fields['name']] = ASCMS_CORE_PATH.'/'. $objResult->fields['name'] . '/lang/';
                             break;
                         default:
@@ -770,6 +778,59 @@ class InitCMS
             return $_CORELANG;
         }
         return $_CORELANG;
+    }
+    
+    /**
+     * Get component specific language data
+     * State of the init will be backedup and restored while loading the language
+     * data
+     *
+     * @param string $componentName Name of the desired component
+     * @param bool|true $frontend true if desired mode is frontend false otherwise
+     * @param integer $languageId Id of the desired language i.e. 1 for german
+     * @return array The language data which has been loaded
+     */
+    public function getComponentSpecificLanguageData($componentName, $frontend = true, $languageId) {
+        global $_ARRAYLANG;
+
+        $mode = $frontend ? 'frontend' : 'backend';
+
+        if ($componentName == 'Core') {
+            $componentName = lcfirst($componentName);
+        }
+        
+        if (!isset($this->moduleSpecificLanguageData[$languageId])) {
+            $this->moduleSpecificLanguageData[$languageId] = array();
+        }
+        if (!isset($this->moduleSpecificLanguageData[$languageId][$frontend])) {
+            $this->moduleSpecificLanguageData[$languageId][$frontend] = array();
+        }
+        
+        if (isset($this->moduleSpecificLanguageData[$languageId][$frontend][$componentName])) {
+            return $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName];
+        }
+
+        // save init state
+        $langBackup = $_ARRAYLANG;
+        $modeBackup = $this->mode;
+        $frontentLangIdBackup = $this->frontendLangId;
+        $backendLangIdBackup = $this->backendLangId;
+
+        // set custom init state
+        $this->mode = $mode;
+        $this->frontentLangId = $languageId;
+        $this->backendLangId = $languageId;
+
+        // load language data
+        $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName] = $this->loadLanguageData($componentName);
+
+        // restore init state
+        $_ARRAYLANG = $langBackup;
+        $this->mode = $modeBackup;
+        $this->frontendLangId = $frontentLangIdBackup;
+        $this->backendLangId = $backendLangIdBackup;
+
+        return $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName];
     }
 
     protected function getLangFilePath($module, $langId) {
