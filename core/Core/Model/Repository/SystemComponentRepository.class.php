@@ -155,6 +155,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
                 $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
             }
             $entity = $this->decorateEntity($components);
+            \Cx\Core\Json\JsonData::addAdapter($entity->getControllersAccessableByJson(), $entity->getNamespace() . '\\Controller');
             return $entity;
         }
         

@@ -36,6 +36,7 @@
  */
 
 namespace Cx\Modules\Block\Controller;
+use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 
 /**
  * Block
@@ -648,6 +649,14 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         \JS::activate('cx');
         \JS::activate('ckeditor');
 
+        $mediaBrowserCkeditor = new MediaBrowser();
+        $mediaBrowserCkeditor->setCallback('ckeditor_image_button');
+        $mediaBrowserCkeditor->setOptions(array(
+            'id' => 'ckeditor_image_button',
+            'type' => 'button',
+            'style' => 'display:none'
+        ));
+        
         $blockId                = !empty($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
         $blockCat               = 0;
         $blockName              = '';
@@ -807,6 +816,9 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'BLOCK_CATEGORY_0'                  => $blockCategory == '0' ? 'checked="checked"' : '',
             'BLOCK_CATEGORY_1'                  => $blockCategory == '1' ? 'checked="checked"' : '',
             'BLOCK_CATEGORY_SHOW_PAGE_SELECTOR' => $blockCategory == '1' ? 'block' : 'none',
+
+            // mediabrowser
+            'BLOCK_WYSIWYG_MEDIABROWSER' => $mediaBrowserCkeditor->getXHtml()
         ));
         
         $jsonData =  new \Cx\Core\Json\JsonData();

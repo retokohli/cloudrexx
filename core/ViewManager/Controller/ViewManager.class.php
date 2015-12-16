@@ -92,7 +92,7 @@ class ViewManager
      * Required files
      * @var array
      */
-    public $filenames = array("index.html","style.css","content.html","home.html","navbar.html","navbar2.html","navbar3.html","subnavbar.html","subnavbar2.html","subnavbar3.html","sidebar.html","shopnavbar.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","component.yml","forum.html","podcast.html","blog.html","immo.html");
+    public $filenames = array("index.html","style.css","content.html","home.html","navbar.html","navbar2.html","navbar3.html","subnavbar.html","subnavbar2.html","subnavbar3.html","sidebar.html","shopnavbar.html","shopnavbar2.html","shopnavbar3.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","component.yml","forum.html","podcast.html","blog.html","immo.html");
 
     /**
      * Required directories
@@ -325,7 +325,7 @@ class ViewManager
      * @param type $theme
      */
     private function parseThemesData($theme, $subType) {
-        global $objTemplate;
+        global $objTemplate,$_ARRAYLANG;
         
         $frontendLanguages = \FWLanguage::getActiveFrontendLanguages();
         
@@ -338,18 +338,49 @@ class ViewManager
             $objTemplate->parse('activatedLangCode'. ucfirst($subType));
 
             $objTemplate->setVariable(array(
-                "TXT_THEME_STANDARD_DISPLAY"      => "default_active"
+                'TXT_THEME_STANDARD_DISPLAY'      => 'default_active'
             ));
         }
 
-        $objTemplate->setVariable(array(
-            'THEME_PREVIEW'                      => $theme->getPreviewImage(),
-            'THEME_ID'                           => $theme->getId(),
-            'THEME_FOLDER_NAME'                  => $theme->getFoldername(),
-            'THEME_ACTIVATE_DISABLED'            => count($frontendLanguages) == count($activeLanguages) ? 'disabled' : '' ,
-            'THEME_NAME'                         => contrexx_raw2xhtml($theme->getThemesname()),
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
+        $objTemplate->setVariable(array(
+            'TXT_THEME_TEMPLATEEDITOR_USABLE'      => $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_USABLE'],
+            'TXT_THEME_TEMPLATEEDITOR_UNUSABLE'      => $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_UNUSABLE']
         ));
+
+        $supportForTemplateEditor = false;
+        if (file_exists(
+                $cx->getClassLoader()->getFilePath(
+                    $cx->getWebsiteThemesPath() . '/'
+                    . $theme->getFoldername()
+                    . '/options/options.yml'
+                )
+            )
+        ) {
+            $supportForTemplateEditor = true;
+        }
+
+        $objTemplate->setVariable(
+            array(
+                'THEME_PREVIEW' => $theme->getPreviewImage(),
+                'THEME_ID' => $theme->getId(),
+                'THEME_ACTION' => $supportForTemplateEditor
+                    ? 'cmd=TemplateEditor&tid=' . $theme->getId()
+                    : 'cmd=ViewManager&act=templates&themes='
+                    . $theme->getFoldername(),
+                'THEME_FOLDER_NAME' => $theme->getFoldername(),
+                'THEME_TEMPLATEEDITOR' => $supportForTemplateEditor
+                    ? 'templateEditor' : '',
+                'TXT_EDIT' => $supportForTemplateEditor
+                    ? $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_EDIT']
+                    : $_ARRAYLANG['TXT_SETTINGS_MODFIY'],
+                'THEME_ACTIVATE_DISABLED' => count($frontendLanguages) == count(
+                    $activeLanguages
+                ) ? 'disabled' : '',
+                'THEME_NAME' => contrexx_raw2xhtml($theme->getThemesname()),
+            )
+        );
 
         $objTemplate->parse('themes'. ucfirst($subType));
                 
@@ -565,7 +596,23 @@ CODE;
         if (!empty($_GET['import'])) {
             $this->importFile();
         }
-        
+        // init uploader to import of themes
+        $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+        $uploader->setCallback('themesZipFileUploaderCallback');
+        $uploader->setOptions(array(
+            'id'                 => 'local-archive-uploader',
+            'allowed-extensions' => array('zip'),
+            'style'              => 'display:none',
+            'data-upload-limit'  => 1,
+        ));
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $uploader->setFinishedCallback(array(
+            $cx->getCodeBaseCorePath().'/ViewManager/Controller/ViewManager.class.php',
+            '\Cx\Core\ViewManager\Controller\ViewManager',
+            'uploadFinished'
+        ));
+
         $objTemplate->setVariable(array(
             'TXT_THEMES_EDIT'       => $_ARRAYLANG['TXT_SETTINGS_MODFIY'],
             'TXT_THEMES_CREATE'     => $_ARRAYLANG['TXT_CREATE'],
@@ -582,6 +629,9 @@ CODE;
             'TXT_VIEWMANAGER_THEME_SELECTION_TXT' => $_ARRAYLANG['TXT_VIEWMANAGER_THEME_SELECTION_TXT'],
             'TXT_VIEWMANAGER_THEME' => $_ARRAYLANG['TXT_VIEWMANAGER_THEME'],
             'TXT_VIEWMANAGER_SOURCE' => $_ARRAYLANG['TXT_VIEWMANAGER_SOURCE'],
+            'TXT_SELECT_FILE'        => $_ARRAYLANG['TXT_SELECT_FILE'],
+            'THEMES_UPLOADER_CODE'   => $uploader->getXHtml(),
+            'THEMES_UPLOADER_ID'     => $uploader->getId(),
         ));
         
     }
@@ -639,61 +689,52 @@ CODE;
 
     /**
      * check fileupload and move uploaded file if it's a valid archive
-     * @return unknown
+     *
+     * @return boolean|string File path when the uploaded file copied to archieveTempPath, false otherwise
      */
 
     private function checkUpload()
     {
         global $_ARRAYLANG;
 
-        if (!isset($_FILES['importlocal'])){
-            $this->strErrMessage="POST Request Error. 'importlocal' is empty";
-            return false;
-        }
-        // Check for MIME type and whether it's a zip file
-        // (not all browsers provide the type)
-        if (   is_uploaded_file($_FILES['importlocal']['tmp_name'])
-            && is_file($_FILES['importlocal']['tmp_name'])) {
-            // this is unreliable
-            /*if (isset($_FILES['importlocal']['type'])) {
-                if (   !preg_match('/zip$/i', $_FILES['importlocal']['type'])
-                   && !(   preg_match('/binary$/', $_FILES['importlocal']['type'])
-                        || preg_match('/application\/octet\-?stream/', $_FILES['importlocal']['type'])
-                        || preg_match('/application\/x-zip-compressed/', $_FILES['importlocal']['type']))) {
-                    $this->strErrMessage =
-                        $_FILES['importlocal']['name'].': '.
-                        $_ARRAYLANG['TXT_THEME_IMPORT_WRONG_MIMETYPE'].': '.
-                        $_FILES['importlocal']['type'];
-                    return false;
-                }
-            }*/
-        } else {
+        $uploaderId   = isset($_POST['importUploaderId']) ? contrexx_input2raw($_POST['importUploaderId']) : '';
+        $uploadedFile = $this->getUploadedFileFromUploader($uploaderId);
+        if (!$uploadedFile) {
             $this->strErrMessage = $_ARRAYLANG['TXT_COULD_NOT_UPLOAD_FILE'];
             return false;
         }
-        // Move the uploaded file to the themezip location
-        if (!move_uploaded_file($_FILES['importlocal']['tmp_name'], $this->_archiveTempPath.basename($_FILES['importlocal']['name']))) {
-            $this->strErrMessage = $this->_archiveTempPath.basename($_FILES['importlocal']['name']).': '.$_ARRAYLANG['TXT_COULD_NOT_UPLOAD_FILE'];
+
+        $objFile = new \Cx\Lib\FileSystem\File($uploadedFile);
+        $uploadedFileBaseName = basename($uploadedFile);
+        if (!$objFile->copy($this->_archiveTempPath . $uploadedFileBaseName)) {
+            $this->strErrMessage = $this->_archiveTempPath . $uploadedFileBaseName . ': ' .$_ARRAYLANG['TXT_COULD_NOT_UPLOAD_FILE'];
             return false;
         }
-        return true;
+
+        return $uploadedFileBaseName;
     }
 
 
     /**
      * check for valid archive structure, put directories into $arrDirectories
      * set errormessage if structure not valid
-     * @access private
-     * @param array $content file and directory list
+     *
+     * @param array  $content                    File and directory list
+     * @param string $themeDirectory             Theme directory
+     * @param string $themeDirectoryFromArchive  Theme directory from archive
+     * @param string $themeName                  Theme name
+     * @param array  $arrDirectories             Array directories
+     * @param string $archiveFile                Archive File
+     * 
      * @return boolean
      */
-    private function validateArchiveStructure($content, &$themeDirectory, &$themeDirectoryFromArchive, &$themeName, &$arrDirectories)
+    private function validateArchiveStructure($content, &$themeDirectory, &$themeDirectoryFromArchive, &$themeName, &$arrDirectories, $archiveFile)
     {
         global $_ARRAYLANG;
 
         //check if archive is empty
         if (sizeof($content) == 0){
-            $this->strErrMessage = $_FILES['importlocal']['name'].': '.$_ARRAYLANG['TXT_THEME_ARCHIVE_WRONG_STRUCTURE'];
+            $this->strErrMessage = $archiveFile . ': '. $_ARRAYLANG['TXT_THEME_ARCHIVE_WRONG_STRUCTURE'];
             return false;
         }
 
@@ -716,7 +757,7 @@ CODE;
         foreach ($content as $item){
             //check if current file/directory contains the base directory and abort when not true
             if (strpos($item['stored_filename'], $themeDirectoryFromArchive) !== 0) {
-                $this->strErrMessage = $_FILES['importlocal']['name'].': '.$_ARRAYLANG['TXT_THEME_ARCHIVE_WRONG_STRUCTURE'];
+                $this->strErrMessage = $archiveFile . ': ' . $_ARRAYLANG['TXT_THEME_ARCHIVE_WRONG_STRUCTURE'];
                 return false;
             }
 
@@ -796,7 +837,7 @@ CODE;
             "tga","tif","tiff","xbm","xpm","pcd","oth","odm","sxg",
             "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
             "html","shtml","css","js","tpl","thumb","ico",
-            "eot", "ttf", "woff", "otf", // font files
+            "eot", "ttf", "woff", "otf", "yml", "yaml"
         );
 
         if (($files = $archive->extract(PCLZIP_OPT_PATH, $this->path . $theme->getFoldername(), PCLZIP_OPT_REMOVE_PATH, $themeDirectoryFromArchive, PCLZIP_OPT_BY_PREG, '/('.implode('|', $valid_exts).')$/')) != 0){
@@ -840,10 +881,10 @@ CODE;
                 //no break
             case 'local':
                 if (empty($archive)) {
-                    if ($this->checkUpload() === false) {
+                    if (($archiveFile = $this->checkUpload()) === false) {
                         return false;
                     }
-                    $archive = new \PclZip($this->_archiveTempPath.basename($_FILES['importlocal']['name']));
+                    $archive = new \PclZip($this->_archiveTempPath . $archiveFile);
                 }
                 $content = $archive->listContent();
                 $themeName = '';
@@ -852,7 +893,7 @@ CODE;
                 $arrDirectories = array();
                 
                 // analyze theme archive
-                if (!$this->validateArchiveStructure($content, $themeDirectory, $themeDirectoryFromArchive, $themeName, $arrDirectories)) {
+                if (!$this->validateArchiveStructure($content, $themeDirectory, $themeDirectoryFromArchive, $themeName, $arrDirectories, $archiveFile)) {
                     return false;
                 }
                 // prepare directory structure of new theme
@@ -934,6 +975,72 @@ CODE;
         
     }
 
+    /**
+     * Uploader callback function
+     *
+     * This is called as soon as uploads have finished.
+     *
+     * @param string  $tempPath    Path to the temporary directory containing the files at this moment
+     * @param string  $tempWebPath Points to the same folder as tempPath, but relative to the webroot
+     * @param array   $data        Data given to setData() when creating the uploader
+     * @param string  $uploadId    upload id
+     * @param array   $fileInfos   uploaded file informations
+     * @param object  $response    Upload api response object
+     *
+     * @return array $tempPath and $tempWebPath
+     */
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
+    {
+        // in case uploader has been restricted to only allow one single file to be
+        // uploaded, we'll have to clean up any previously uploaded files
+        if (count($fileInfos['name'])) {
+            // new files have been uploaded -> remove existing files
+            if (\Cx\Lib\FileSystem\FileSystem::exists($tempPath)) {
+                foreach (glob($tempPath.'/*') as $file) {
+                    if (basename($file) == $fileInfos['name']) {
+                        continue;
+                    }
+                    \Cx\Lib\FileSystem\FileSystem::delete_file($file);
+                }
+            }
+        }
+
+        return array($tempPath, $tempWebPath);
+    }
+
+    /**
+    * Get uploaded zip file by using uploader id
+    *
+    * @param string $uploaderId Uploader id
+    *
+    * @return boolean|string File path when file exists, false otherwise
+    */
+    public function getUploadedFileFromUploader($uploaderId)
+    {
+        global $sessionObj;
+
+        if (empty($uploaderId)) {
+            \DBG::log('Uploader id is empty');
+            return false;
+        }
+
+        if (empty($sessionObj)) {
+            $sessionObj = \cmsSession::getInstance();
+        }
+
+        $uploaderFolder = $sessionObj->getTempPath() . '/' . $uploaderId;
+
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($uploaderFolder)) {
+            \DBG::log('The Uploader Folder path is invalid/not exists');
+            return false;
+        }
+
+        foreach (glob($uploaderFolder.'/*.zip') as $file) {
+            return $file;
+        }
+
+        return false;
+    }
 
     function _fetchRemoteFile($URL)
     {
@@ -990,7 +1097,6 @@ CODE;
         if (is_dir($this->codeBaseThemesFilePath) || is_dir($this->websiteThemesFilePath)) {
             $archive    = new \PclZip($this->_archiveTempPath . $themeFolder . '.zip');
             $themeFiles = $this->getThemesFiles();
-            
             \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
             $this->createZipFolder($themeFiles, '', $archive);
             \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath . $themeFolder . '.zip');
@@ -2327,6 +2433,7 @@ CODE;
         // write component.yml file
         // this line will create a default component.yml file    
         try {
+            $this->themeRepository->loadComponentData($theme);
             $this->themeRepository->convertThemeToComponent($theme);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());

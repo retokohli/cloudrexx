@@ -47,10 +47,11 @@ namespace Cx\Core_Modules\Listing\Controller;
 class SortingController {
 	
 	public function handle($params, $config) {
-	    if (!isset($config['order'])) {
+            $paramName = !empty($params['entity']) ? $params['entity'] . 'Order' : 'order';
+	    if (!isset($config[$paramName])) {
 	        return $params;
 	    }
-	    $order = explode('/', $config['order']);
+	    $order = explode('/', $config[$paramName]);
 	    $sortField = current($order);
 	    $sortOrder = SORT_ASC;
 	    if (count($order) > 1) {

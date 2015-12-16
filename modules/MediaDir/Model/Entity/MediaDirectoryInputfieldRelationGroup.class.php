@@ -194,7 +194,7 @@ class MediaDirectoryInputfieldRelationGroup extends \Cx\Modules\MediaDir\Control
                     }
 
                     if($bolAddNewAlowed || (intval($intFormType) == 0) || $intUserIsAdmin == 1) {
-                        $strAddNewButton = '<a class="addEntryLink" rel="shadowbox[add'.$intId.'];height=750;width=730;options={onClose:new Function(\'refreshSelector_'.$intId.'(\\\''.$intId.'\\\', \\\''.$this->moduleNameLC.'Inputfield_deselected_'.$intId.'\\\', \\\''.$this->moduleNameLC.'Inputfield_'.$intId.'\\\', \\\''.$_GET['section'].'\\\', \\\''.$_GET['cmd'].'\\\', \\\''.$intEntryId.'\\\')\')}" href="index.php?section=marketplace&cmd='.$strAddNewCmd.'" ><img src="../core/Core/View/Media/icons/icon-user-add.png" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>';
+                        $strAddNewButton = '<a class="addEntryLink" rel="shadowbox[add'.$intId.'];height=750;width=730;options={onClose:new Function(\'refreshSelector_'.$intId.'(\\\''.$intId.'\\\', \\\''.$this->moduleNameLC.'Inputfield_deselected_'.$intId.'\\\', \\\''.$this->moduleNameLC.'Inputfield_'.$intId.'\\\', \\\''.$_GET['section'].'\\\', \\\''.$_GET['cmd'].'\\\', \\\''.$intEntryId.'\\\')\')}" href="index.php?section=mediadir&cmd='.$strAddNewCmd.'" ><img src="../core/Core/View/Media/icons/icon-user-add.png" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>';
                         $strEditFunction = 'ondblclick="editSelectedElement_'.$intId.'(this);"';
                     } else {
                     	$strAddNewButton = '';
@@ -274,7 +274,7 @@ class MediaDirectoryInputfieldRelationGroup extends \Cx\Modules\MediaDir\Control
 
 
     function editSelectedElement_$intId(eid){
-        var editLink = 'index.php?section=marketplace&cmd=$editPageCmd&eid=' + eid;
+        var editLink = 'index.php?section=mediadir&cmd=$editPageCmd&eid=' + eid;
 
         Shadowbox.open({
             content:    editLink,
@@ -313,7 +313,7 @@ function refreshSelector_$intId(fieldId,elementDeselectedId,elementSelectedId,pa
 }
 
 function editSelectedElement_$intId(elmSelector){
-    var editLink = 'index.php?section=marketplace&cmd=$strEditCmd&eid=' + elmSelector.value;
+    var editLink = 'index.php?section=mediadir&cmd=$strEditCmd&eid=' + elmSelector.value;
 
     Shadowbox.open({
         content:    editLink,

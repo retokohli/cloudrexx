@@ -400,4 +400,19 @@ cx.jQuery(function() {
 
         return $sReturn;
     }
+
+    /**
+     * Check the given value is in valid date format(d.M.Y H:i:s) or not
+     * 
+     * @param string $value input value
+     * 
+     * @return boolean true|false
+     */
+    public function isValidDate($value) {
+        if (empty($value)) {
+            return false;
+        }
+        return preg_match('/\d{2}\.\D{3}.\d{4}\s\d{2}:\d{2}:\d{2}/i', $value);
+    }
+
 }

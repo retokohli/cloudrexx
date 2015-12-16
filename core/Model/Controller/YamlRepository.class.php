@@ -132,6 +132,15 @@ class YamlRepository {
         $this->repositoryPath = $repositoryPath; 
         $this->load();
     }
+    
+    /**
+     * Tells wheter an entity is managed by this repo or not
+     * @param \Cx\Model\Base\EntityBase $entity Entity to test
+     * @return boolean True if given entity is managed by this repo, false otherwise
+     */
+    public function isManaged(\Cx\Model\Base\EntityBase $entity) {
+        return in_array($entity, $this->entities);
+    }
 
     /**
      * Reset the repository. Unload all data.

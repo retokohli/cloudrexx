@@ -88,10 +88,13 @@
     </tr>
 </table>
 <br />
+<input type="hidden" name="imgUploaderId" value="{DIRECTORY_IMAGE_UPLOADER_ID}"/>
+<input type="hidden" name="fileUploaderId" value="{DIRECTORY_FILE_UPLOADER_ID}"/>
 <input id="directorySubmit" type="submit" name="edit_submit" value="{TXT_UPDATE}" />&nbsp;<font color="red">*</font> = {TXT_REQUIRED_FIELDS}
 </form>
 <br />
 
 {DIRECTORY_GOOGLEMAP_JAVASCRIPT_BLOCK}
-
+{DIRECTORY_IMAGE_UPLOADER_CODE}
+{DIRECTORY_FILE_UPLOADER_CODE}
 <!-- END module_directory_entry_add.html -->

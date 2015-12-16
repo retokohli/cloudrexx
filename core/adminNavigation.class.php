@@ -126,15 +126,14 @@ class adminMenu
                 if (isset($_CORELANG[$objResult->fields['area_name']])) {
                     $name = $_CORELANG[$objResult->fields['area_name']];
                 } else {
-                    $arrLang = $_ARRAYLANG;
                     // load language file
-                    \Env::get('init')->loadLanguageData($objResult->fields['module_name']);
-                    if (isset($_ARRAYLANG[$objResult->fields['area_name']])) {
-                        $name = $_ARRAYLANG[$objResult->fields['area_name']];
+                    $objInit = \Env::get('init');
+                    $moduleLanguageData = $objInit->getComponentSpecificLanguageData($objResult->fields['module_name'], false, $objInit->backendLangId);
+                    if (isset($moduleLanguageData[$objResult->fields['area_name']])) {
+                        $name = $moduleLanguageData[$objResult->fields['area_name']];
                     } else {
                         $name = '';
                     }
-                    $_ARRAYLANG = $arrLang;
                 }
                 $this->arrMenuItems[$objResult->fields['area_id']] =
                 array(
