@@ -535,12 +535,14 @@ class Url {
      * @param $string pathOffset ASCMS_PATH_OFFSET
      */
     public static function fromCapturedRequest($request, $pathOffset, $get) {
+        global $_CONFIG;
+
         if(substr($request, 0, strlen($pathOffset)) != $pathOffset)
             throw new UrlException("'$request' doesn't seem to start with provided offset '$pathOffset'");
 
         //cut offset
         $request = substr($request, strlen($pathOffset)+1);
-        $host = \Env::get('config')['domainUrl'];
+        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_CONFIG['domainUrl'];
         $protocol = ASCMS_PROTOCOL;
 
 
