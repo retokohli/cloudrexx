@@ -1471,7 +1471,7 @@ CODE;
                     }
                 }
             }
-            \DBG::dump($objMail);
+
             if ($chosenMailRecipient !== null) {
                 if (!empty($chosenMailRecipient)) {
                     $objMail->AddAddress($chosenMailRecipient);
