@@ -1955,13 +1955,6 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                 $objResult->MoveNext();
             }
         }
-        $objResult = $objDatabase->Execute("SELECT setname, setvalue, settyp FROM ".DBPREFIX."module_directory_settings_google");
-        if ($objResult !== false) {
-            while(!$objResult->EOF) {
-                $settings['google'][$objResult->fields['setname']] = $objResult->fields['setvalue'];
-                $objResult->MoveNext();
-            }
-        }
 
         return $settings;
     }

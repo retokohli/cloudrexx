@@ -1375,14 +1375,6 @@ CREATE TABLE `contrexx_module_directory_settings` (
   PRIMARY KEY (`setid`),
   KEY `setname` (`setname`)
 ) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_directory_settings_google` (
-  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `setname` varchar(250) NOT NULL DEFAULT '',
-  `setvalue` text NOT NULL,
-  `settyp` int(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`setid`),
-  KEY `setname` (`setname`)
-) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_directory_vote` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
   `feed_id` int(7) NOT NULL DEFAULT '0',
