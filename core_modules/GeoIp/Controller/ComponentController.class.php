@@ -47,7 +47,21 @@ namespace Cx\Core_Modules\GeoIp\Controller;
  * @version     1.0.0
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+    
+    /**
+     * List of available locales
+     * 
+     * @var array
+     */
+    public $availableLocale = array('de', 'en', 'fr', 'ru', 'es', 'ja', 'pt-BR', 'zh-CN');
 
+    /**
+     * Default locale
+     * 
+     * @var string
+     */
+    public $defaultLocale = 'en';
+    
     /**
      * Returns all Controller class names for this component (except this)
      * 
@@ -64,45 +78,46 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page)
     {
-        switch ($this->cx->getMode()) {
-            case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                \Cx\Core\Setting\Controller\Setting::init('GeoIp', 'config', 'Yaml');
-                $serviceStatus = \Cx\Core\Setting\Controller\Setting::getValue('serviceStatus', 'GeoIp');
-                
-                //If GeoIp processing is deactivated, skip the process
-                if (empty($serviceStatus)) {
-                    return;
-                }
-                
-                //Get the country name and code by using the ipaddress through GeoIp2 library
-                $countryDb          = $this->getDirectory().'/Data/GeoLite2-Country.mmdb';
-                $availableLocale    = array('de', 'en', 'fr', 'ru', 'es', 'ja', 'pt-BR', 'zh-CN');
-                $frontendLangLocale = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
-                $locale             = in_array($frontendLangLocale, $availableLocale) ? $frontendLangLocale : 'en';
-                try {
-                    $reader = new \GeoIp2\Database\Reader($countryDb, array($locale));
-                    $record = $reader->country($_SERVER['REMOTE_ADDR']);
-                    $countryName = $record->country->name;
-                    $countryCode = $record->country->isoCode;
-                } catch (\Exception $e) {
-                    \DBG::log($e->getMessage());
-                    return;
-                }
-
-                //Parse the country name and code
-                $objTemplate = $this->cx->getTemplate();
-                $objTemplate->setVariable(array(
-                    'GEOIP_COUNTRY_NAME' => $countryName,
-                    'GEOIP_COUNTRY_CODE' => $countryCode
-                ));
-
-                //Set the country name and code as cx.variables
-                $objJS = \ContrexxJavascript::getInstance();
-                $objJS->setVariable(array(
-                    'countryName'   => $countryName,
-                    'countryCode'   => $countryCode
-                ), 'geoIp');
-            break;
+        //If the mode is not a frontend, skip the process
+        if ($this->cx->getMode() !== \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            return;
         }
+
+        //Get the GeoIp config option 'serviceStatus'
+        \Cx\Core\Setting\Controller\Setting::init('GeoIp', 'config', 'Yaml');
+        $serviceStatus = \Cx\Core\Setting\Controller\Setting::getValue('serviceStatus', 'GeoIp');
+
+        //If GeoIp processing is deactivated, skip the process
+        if (empty($serviceStatus)) {
+            return;
+        }
+
+        //Get the country name and code by using the ipaddress through GeoIp2 library
+        $countryDb    = $this->getDirectory().'/Data/GeoLite2-Country.mmdb';
+        $activeLocale = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
+        $locale       = in_array($activeLocale, $this->availableLocale) ? $activeLocale : $this->defaultLocale;
+        try {
+            $reader = new \GeoIp2\Database\Reader($countryDb, array($locale));
+            $record = $reader->country($_SERVER['REMOTE_ADDR']);
+            $countryName = $record->country->name;
+            $countryCode = $record->country->isoCode;
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            return;
+        }
+
+        //Parse the country name and code
+        $objTemplate = $this->cx->getTemplate();
+        $objTemplate->setVariable(array(
+            'GEOIP_COUNTRY_NAME' => $countryName,
+            'GEOIP_COUNTRY_CODE' => $countryCode
+        ));
+
+        //Set the country name and code as cx.variables
+        $objJS = \ContrexxJavascript::getInstance();
+        $objJS->setVariable(array(
+            'countryName'   => $countryName,
+            'countryCode'   => $countryCode
+        ), 'geoIp');
     }
 }
