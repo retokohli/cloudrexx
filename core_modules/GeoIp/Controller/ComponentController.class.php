@@ -75,7 +75,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 
                 //Get the country name and code by using the ipaddress through GeoIp2 library
-                spl_autoload_register(array($this, 'loadGeoIpClass'));
                 $countryDb          = $this->getDirectory().'/Data/GeoLite2-Country.mmdb';
                 $availableLocale    = array('de', 'en', 'fr', 'ru', 'es', 'ja', 'pt-BR', 'zh-CN');
                 $frontendLangLocale = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
@@ -105,25 +104,5 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 ), 'geoIp');
             break;
         }
-    }
-    
-    /**
-     * Load the GeoIp library classes
-     * 
-     * @param type $className namespace of the class
-     * 
-     * @return null
-     */
-    public function loadGeoIpClass($className) 
-    {
-        $parts = explode('\\', $className);
-        if (!in_array($parts[0], array('GeoIp2', 'MaxMind'))) {
-            return;
-        }
-        if ($parts[0] == 'MaxMind') {
-            array_unshift($parts, 'MaxMind'); // add virtual name MaxMind in the begining
-        }
-        $filePath = $this->cx->getCodeBaseLibraryPath() . '/' . implode('/', $parts) . '.php';
-        $this->cx->getClassLoader()->loadFile($filePath);
     }
 }
