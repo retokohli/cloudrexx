@@ -1139,7 +1139,14 @@ class DataLibrary
 
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
-            $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Data&amp;cmd=details&amp;id=';
+            $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                'Data',
+                'details',
+                '',
+                array(
+                    'id' => '',
+                )
+            )->toString();
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
                 $arrEntries = $this->createEntryArray($intLanguageId, 0, intval($this->_arrSettings['data_rss_messages']) );
@@ -1149,7 +1156,9 @@ class DataLibrary
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_MESSAGES_TITLE'];
-                    $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Data';
+                    $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Data'
+                    )->toString();
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_MESSAGES_TITLE'];
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
@@ -1192,7 +1201,14 @@ class DataLibrary
 
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
-            $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Data&amp;cmd=details&amp;id={ID}#comments';
+            $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                'Data',
+                'details',
+                '',
+                array(
+                    'id' => '{ID}#comments',
+                )
+            )->toString();
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
                 $objResult = $objDatabase->Execute('SELECT        message_id,
@@ -1213,7 +1229,9 @@ class DataLibrary
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_COMMENTS_TITLE'];
-                    $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Data';
+                    $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Data'
+                    )->toString();
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_COMMENTS_TITLE'];
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
@@ -1259,7 +1277,14 @@ class DataLibrary
 
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
-            $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Data&amp;cmd=details&amp;id=';
+            $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                'Data',
+                'details',
+                '',
+                array(
+                    'id' => '',
+                )
+            )->toString();
 
             $arrCategories = $this->createCategoryArray();
 
@@ -1281,7 +1306,9 @@ class DataLibrary
                             $objRSSWriter = new \RSSWriter();
                             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                             $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_MESSAGES_TITLE'];
-                            $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Data';
+                            $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'Data'
+                            )->toString();
                             $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_DATA_LIB_RSS_MESSAGES_TITLE'].' ('.$arrCategoryTranslation[$intLanguageId]['name'].')';
                             $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
