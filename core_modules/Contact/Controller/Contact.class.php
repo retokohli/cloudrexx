@@ -1447,7 +1447,10 @@ CODE;
                 }
 
                 if ($arrFormData['useEmailOfSender'] == 1) {
-                    $objMail->SetFrom($replyAddress);
+                    $objMail->SetFrom(
+                        $replyAddress, 
+                        ($senderName !== $_CONFIG['coreGlobalPageTitle']) ? $senderName : ''
+                    );
                 }
             }
             $objMail->Subject = $arrFormData['subject'];
@@ -1468,7 +1471,7 @@ CODE;
                     }
                 }
             }
-
+            \DBG::dump($objMail);
             if ($chosenMailRecipient !== null) {
                 if (!empty($chosenMailRecipient)) {
                     $objMail->AddAddress($chosenMailRecipient);
