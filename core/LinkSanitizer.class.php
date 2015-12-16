@@ -95,6 +95,7 @@ class LinkSanitizer {
             $content = preg_replace_callback("/
                 (\<(?:a|form)[^>]*?\s+(?:href|action)\s*=\s*)
                 (['\"])
+                (?!\#)
                 ((?![a-zA-Z]+?:|\\\\).+?)
                 \\2
                 ([^>]*\>)
@@ -210,6 +211,9 @@ class LinkSanitizer {
 
         if (!empty($_GET['preview']) && !isset($query['preview'])) {
             $query['preview'] = $_GET['preview'];
+        }
+        if (!empty($_GET['templateEditor']) && !isset($query['templateEditor'])) {
+            $query['templateEditor'] = $_GET['templateEditor'];
         }
         if ((isset($_GET['appview']) && ($_GET['appview'] == 1)) && !isset($query['appview'])) {
             $query['appview'] = $_GET['appview'];

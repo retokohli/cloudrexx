@@ -99,6 +99,9 @@ class Csrf {
 
     private static function __get_code()
     {
+        // don't generate a CSRF token in case the user is not signed-in
+        if (!self::__is_logged_in()) return false;
+
         if (!empty(self::$current_code)) {
             return self::$current_code;
         }

@@ -59,7 +59,17 @@ class DataSet implements \Iterator {
     protected $data = array();
     protected $dataType = 'array';
 
-// TODO: DataSet must be extended, that it can handle objects
+    /**
+     * Identifier is used as a kind of description for the DataSet. For example: If you want to save an array with
+     * frontend users in a DataSet you can name the identifier something like 'frontendUser'
+     * This is used for the ViewGenerator, so you can have separated options for all DataSets
+     *
+     * @access protected
+     * @var $identifier
+     */
+    protected $identifier = '';
+
+    // TODO: DataSet must be extended, that it can handle objects
     public function __construct($data = array(), callable $converter = null) {
         if (!count($data)) {
             return;
@@ -260,6 +270,16 @@ class DataSet implements \Iterator {
     public function getDataType() {
         return $this->dataType;
     }
+
+    /**
+     * This function sets the DataType of an DataSet
+     *
+     * @access public
+     * @param string $dataType
+     */
+    public function setDataType($dataType) {
+        $this->dataType = $dataType;
+    }
     
     public function entryExists($key) {
         return isset($this->data[$key]);
@@ -340,13 +360,16 @@ class DataSet implements \Iterator {
     public function sort($order) {
         $data = $this->data;
         
-        uasort($data, function($a, $b) use($order) {
+        $dateTimeTools = new \DateTimeTools();
+        uasort($data, function($a, $b) use($order, $dateTimeTools) {
             $diff = 1;
             $orderMultiplier = 1;
-            foreach ($order as $sortField=>$sortOrder) {
+            foreach ($order as $sortField => $sortOrder) {
                 $orderMultiplier = $sortOrder == SORT_ASC ? 1 : -1;
-                $diff = $a[$sortField] < $b[$sortField];
-                if ($a[$sortField] !== $b[$sortField]) {
+                $termOne = $dateTimeTools->isValidDate($a[$sortField]) ? strtotime($a[$sortField]) : $a[$sortField];
+                $termTwo = $dateTimeTools->isValidDate($b[$sortField]) ? strtotime($b[$sortField]) : $b[$sortField];
+                $diff    = $termOne < $termTwo;
+                if ($termOne !== $termTwo) {
                     return ($diff ? -1 : 1) * $orderMultiplier;
                 }
             }
@@ -404,6 +427,26 @@ class DataSet implements \Iterator {
             }
             $this->data[$key] = array_merge($sortedData, $val);
         }
+    }
+
+    /**
+     * This function returns the identifier of the DataSet
+     *
+     * @access public
+     * @return string the identifier
+     */
+    public function getIdentifier(){
+        return $this->identifier;
+    }
+
+    /**
+     * This function sets the identifier of the DataSet
+     *
+     * @access public
+     * @param string $identifier the identifier of the DataSet
+     */
+    public function setIdentifier($identifier){
+        $this->identifier = $identifier;
     }
 }
 

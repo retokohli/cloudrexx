@@ -322,8 +322,8 @@ class Url {
                 unset($params[$key]);
                 $this->removeAllParams();
                 $this->addParamsToPath($params);
-                return;
             }
+            return;
         }
         if (!empty($key)) {
             $this->setParams(array($key => $value));

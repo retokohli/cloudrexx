@@ -14,7 +14,8 @@ CKEDITOR.on('dialogDefinition', function (event) {
             /**
              * Handling image selection.
              */
-            if (browseButton.filebrowser.target == 'info:txtUrl') {
+            if (browseButton.filebrowser.target == 'info:txtUrl' || browseButton.filebrowser.target == 'info:src') {
+                var targetType = browseButton.filebrowser.target.split(':');
                 browseButton.hidden = false;
                 var filelistCallback = function (callback) {
                     if (callback.type == 'close') {
@@ -42,7 +43,7 @@ CKEDITOR.on('dialogDefinition', function (event) {
                                     else {
                                         image = callback.data[0].datainfo.thumbnail[thumbnail];
                                     }
-                                    dialogDefinition.dialog.setValueOf('info', 'txtUrl', image);
+                                    dialogDefinition.dialog.setValueOf(targetType[0], targetType[1], image);
                                 }
                             }
                         }

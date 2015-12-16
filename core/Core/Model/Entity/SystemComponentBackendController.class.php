@@ -371,7 +371,7 @@ class SystemComponentBackendController extends Controller {
         }
         $view = new \Cx\Core\Html\Controller\ViewGenerator(
             $this->getViewGeneratorParseObjectForEntityClass($entityClassName),
-            $this->getViewGeneratorOptions($entityClassName, $classIdentifier)
+            $this->getAllViewGeneratorOptions($entityClassName)
         );
         $renderedContent = $view->render($isSingle);
         $template->setVariable('ENTITY_VIEW', $renderedContent);
@@ -386,10 +386,48 @@ class SystemComponentBackendController extends Controller {
     protected function getViewGeneratorParseObjectForEntityClass($entityClassName) {
         return $entityClassName;
     }
-    
-    protected function getViewGeneratorOptions($entityClassName, $classIdentifier) {
+
+    /**
+     * Returns all entities of this component which can have an auto-generated view
+     *
+     * @access protected
+     * @return array
+     */
+    protected function getEntityClassesWithView() {
+        return $this->getEntityClasses();
+    }
+
+    /**
+     * This function returns an array which contains the vgOptions array for all entities
+     *
+     * @access public
+     * @param $dataSetIdentifier
+     * @return array
+     */
+    public function getAllViewGeneratorOptions($dataSetIdentifier = '') {
+        $vgOptions = array();
+        foreach ($this->getEntityClassesWithView() as $entityClassName) {
+            $vgOptions[$entityClassName] = $this->getViewGeneratorOptions($entityClassName, $dataSetIdentifier);
+        }
+        $vgOptions[''] = $this->getViewGeneratorOptions('', '');
+        return $vgOptions;
+    }
+
+    /**
+     * This function returns the ViewGeneration options for a given entityClass
+     *
+     * @access protected
+     * @global $_ARRAYLANG
+     * @param $entityClassName contains the FQCN from entity
+     * @param $dataSetIdentifier if $entityClassName is DataSet, this is used for better partition
+     * @return array with options
+     */
+    protected function getViewGeneratorOptions($entityClassName, $dataSetIdentifier = '') {
         global $_ARRAYLANG;
-        
+
+        $classNameParts = explode('\\', $entityClassName);
+        $classIdentifier = end($classNameParts);
+
         $langVarName = 'TXT_' . strtoupper($this->getType() . '_' . $this->getName() . '_ACT_' . $classIdentifier);
         $header = '';
         if (isset($_ARRAYLANG[$langVarName])) {

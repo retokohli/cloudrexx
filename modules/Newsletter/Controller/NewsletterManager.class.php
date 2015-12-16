@@ -817,7 +817,7 @@ class NewsletterManager extends NewsletterLib
             if ($objAttachment !== false) {
                 $arrCurrentAttachments = array();
                 while (!$objAttachment->EOF) {
-                    array_push($arrCurrentAttachments, $cx->getWebsiteImagesAttachPath() . '/' . $objAttachment->fields['file_name']);
+                    array_push($arrCurrentAttachments, $cx->getWebsiteImagesAttachWebPath() . '/' . $objAttachment->fields['file_name']);
                     $objAttachment->MoveNext();
                 }
 
@@ -1041,6 +1041,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW'],
             'TXT_NEWSLETTER_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
             'TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK' => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK'],
+            'TXT_NEWSLETTER_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
             'TXT_NEWSLETTER_SAVE' => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
             'TXT_NEWSLETTER_BACK' => $_ARRAYLANG['TXT_NEWSLETTER_BACK'],
             'TXT_NEWSLETTER_CONFIRM_EMPTY_TEXT' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_EMPTY_TEXT']
@@ -2163,6 +2164,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW'],
             'TXT_NEWSLETTER_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
             'TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK' => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK'],
+            'TXT_NEWSLETTER_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
 			'TXT_NEWSLETTER_NEWS_IMPORT' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_IMPORT'],
             'TXT_NEWSLETTER_NEWS_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_DATE'],
             'TXT_NEWSLETTER_NEWS_LONG_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_LONG_DATE'],
@@ -3044,8 +3046,7 @@ class NewsletterManager extends NewsletterLib
             }
         }
         $mail->CharSet  = CONTREXX_CHARSET;
-        $mail->From     = $sender_email;
-        $mail->FromName = $sender_name;
+        $mail->SetFrom($sender_email, $sender_name);
         $mail->AddReplyTo($return_path);
         $mail->Subject  = $subject;
         $mail->Priority = $priority;
@@ -3234,8 +3235,7 @@ class NewsletterManager extends NewsletterLib
             }
         }
         $mail->CharSet      = CONTREXX_CHARSET;
-        $mail->From         = $newsletterValues['sender_email'];
-        $mail->FromName     = $newsletterValues['sender_name'];
+        $mail->SetFrom($newsletterValues['sender_email'], $newsletterValues['sender_name']);
         $mail->AddReplyTo($newsletterValues['return_path']);
         $mail->Subject      = $newsletterValues['subject'];
         $mail->Priority     = $newsletterValues['priority'];
@@ -3400,13 +3400,15 @@ class NewsletterManager extends NewsletterLib
             '[[display_in_browser_url]]',
             '[[profile_setup]]',
             '[[unsubscribe]]',
-            '[[date]]'
+            '[[date]]',
+            '[[subject]]',
         );
         $replace = array(
             $browserViewUrl,
             $this->GetProfileURL($userData['code'], $TargetEmail, $userData['type']),
             $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $userData['type']),
-            date(ASCMS_DATE_FORMAT_DATE)
+            date(ASCMS_DATE_FORMAT_DATE),
+            $subject,
         );
 
         // Replace the links in the content
@@ -3433,7 +3435,6 @@ class NewsletterManager extends NewsletterLib
             $i++;
         }
 
-        $NewsletterBody = str_replace("[[subject]]", $subject, $TemplateSource);
         $NewsletterBody = str_replace("[[content]]", $content_text, $TemplateSource);
         return $NewsletterBody;
     }
@@ -3573,7 +3574,7 @@ class NewsletterManager extends NewsletterLib
     /**
      * Get the URL to the page to unsubscribe
      */
-    function GetUnsubscribeURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
+    public function GetUnsubscribeURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
     {
         global $_ARRAYLANG, $_CONFIG;
 
@@ -3598,9 +3599,14 @@ class NewsletterManager extends NewsletterLib
             $_CONFIG['domainUrl'].
             ($_SERVER['SERVER_PORT'] == 80
               ? '' : ':'.intval($_SERVER['SERVER_PORT'])).
-            ASCMS_PATH_OFFSET.
-// TODO: use the recipient's language instead of the default language
-            '/'.\FWLanguage::getLanguageParameter(\FWLanguage::getDefaultLangId(), 'lang').
+            ASCMS_PATH_OFFSET.'/'.
+            \FWLanguage::getLanguageParameter(
+                $this->getUsersPreferredLanguageId(
+                    $email, 
+                    $type
+                ),
+                'lang'
+            ).
             '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
 
         return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
@@ -3625,9 +3631,14 @@ class NewsletterManager extends NewsletterLib
             $_CONFIG['domainUrl'].
             ($_SERVER['SERVER_PORT'] == 80
               ? NULL : ':'.intval($_SERVER['SERVER_PORT'])).
-            ASCMS_PATH_OFFSET.
-// TODO: use the recipient's language instead of the default language
-            '/'.\FWLanguage::getLanguageParameter(\FWLanguage::getDefaultLangId(), 'lang').
+            ASCMS_PATH_OFFSET.'/'.
+            \FWLanguage::getLanguageParameter(
+                $this->getUsersPreferredLanguageId(
+                    $email,
+                    $type
+                ),
+                'lang'
+            ).
             '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
         return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
     }
@@ -3692,7 +3703,7 @@ class NewsletterManager extends NewsletterLib
 
                 if (!empty($thumbnail)) {
                     $imageSrc = $thumbnail;
-                } elseif (!empty($image) && file_exists(ASCMS_PATH.\ImageManager::getThumbnailFilename($image))) {
+                } elseif (!empty($image) && file_exists(\ImageManager::getThumbnailFilename(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $image))) {
                     $imageSrc = \ImageManager::getThumbnailFilename($image);
                 } elseif (!empty($image)) {
                     $imageSrc = $image;
@@ -4357,8 +4368,7 @@ $WhereStatement = '';
                 $objTpl->parse("additional");
                 $this->_objTpl->setVariable('NEWSLETTER_USER_FILE', $objTpl->get());
             }
-        } elseif (   (   empty($_FILES['importfile'])
-                      || $_FILES['importfile']['size'] == 0)
+        } elseif (   empty($_POST['importfile'])
                   || (   isset($_POST['imported'])
                       && empty($_POST['newsletter_recipient_associated_list']))) {
             // Dateiauswahldialog. Siehe Fileselect
@@ -4467,6 +4477,10 @@ $WhereStatement = '';
                 'IMPORT_HIDDEN_VALUE' => (isset($_POST['sendEmail']) ? intval($_POST['sendEmail']) : 0),
             ));
             $objTpl->parse('hidden_fields');
+            $objTpl->setVariable(array(
+                'IMPORT_ACTION' => 'index.php?cmd=Newsletter&amp;act=users&amp;tpl=import',
+            ));
+            
             $this->_objTpl->setVariable(array(
                 'TXT_REMOVE_PAIR' => $_ARRAYLANG['TXT_REMOVE_PAIR'],
                 'NEWSLETTER_USER_FILE' => $objTpl->get(),

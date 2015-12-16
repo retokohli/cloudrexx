@@ -250,6 +250,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_ORDER' => $arrCategory['catOrder'],
                         $this->moduleLangVar.'_CATEGORY_NAME' => contrexx_raw2xhtml($arrCategory['catName'][0]),
                         $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => $arrCategory['catDescription'][0],
+                        $this->moduleLangVar.'_CATEGORY_DESCRIPTION_ESCAPED' => strip_tags($arrCategory['catDescription'][0]),
                         $this->moduleLangVar.'_CATEGORY_PICTURE' => $arrCategory['catPicture'],
                         $this->moduleLangVar.'_CATEGORY_NUM_ENTRIES' => $arrCategory['catNumEntries'],
                         $this->moduleLangVar.'_CATEGORY_ICON' => $spacer.$strCategoryIcon,
@@ -455,13 +456,14 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
             case 5:
                 //Frontend View Detail
                 $strLevelId = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
-
+                
+                $thumbImage = $this->getThumbImage($arrCategories[$intCategoryId]['catPicture']);
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrCategories[$intCategoryId]['catId'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]),
                     $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$arrCategories[$intCategoryId]['catId'].'">'.contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]).'</a>',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrCategories[$intCategoryId]['catDescription'][0],
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'.thumb" border="0" alt="'.$arrCategories[$intCategoryId]['catName'][0].'" />',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'. $thumbImage .'" border="0" alt="'.$arrCategories[$intCategoryId]['catName'][0].'" />',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategories[$intCategoryId]['catNumEntries'],
                 ));

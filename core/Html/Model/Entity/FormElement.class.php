@@ -46,6 +46,7 @@ class FormElement extends HtmlElement {
             'action' => $action,
             'method' => $method,
             'enctype' => $enctype,
+            'onsubmit' => 'cx.ui.forms.validate(cx.jQuery(this));',
         ));
     }
     

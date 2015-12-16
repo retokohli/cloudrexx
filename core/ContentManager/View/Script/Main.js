@@ -182,6 +182,14 @@ cx.ready(function() {
         cx.jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
         cx.jQuery('#page_target, #page_target_backup').val(url);
       }
+      else if (data.type == "file") {
+        cx.jQuery('#page_target_wrapper').hide();
+        cx.jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + data.data[0].datainfo.filepath.substr(1)).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('#page_target_text_wrapper').show();
+        cx.jQuery('#page_target_protocol > option').removeAttr('selected');
+        cx.jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
+        cx.jQuery('#page_target, #page_target_backup').val(data.data[0].datainfo.filepath);
+      }
     }
     
     cx.jQuery('#page_target').keyup(function() {
@@ -239,7 +247,7 @@ cx.ready(function() {
             // no need to get the whole tree twice
             cx.cm.all_opened = true;
             cx.cm.is_opening = true;
-            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
+            cx.ui.messages.showLoad();
             cx.jQuery("#site-tree").hide();
             // get complete tree
             cx.trigger("loadingStart", "contentmanager", {});
@@ -1004,7 +1012,7 @@ cx.cm = function(target) {
             cx.jQuery("#site-language").show();
             cx.jQuery(".adminlist ").removeClass("margin0");
         }
-        if (cx.jQuery.getUrlVar('act') == 'new') {
+        if (cx.jQuery('#pageId').val() == 'new') {
             // make sure history tab is hidden
             cx.jQuery('.tab.page_history').hide();
             // load selected tab
@@ -1702,7 +1710,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
     })
     .ajaxStart(function(){
         if (!cx.cm.is_opening) {
-            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery("#loading").html() + "</div>");
+            cx.ui.messages.showLoad();
         }
     })
     .ajaxError(function(event, request, settings) {

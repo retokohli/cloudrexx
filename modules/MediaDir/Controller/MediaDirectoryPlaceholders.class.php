@@ -31,7 +31,7 @@
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @subpackage  module_marketplace
+ * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
 namespace Cx\Modules\MediaDir\Controller;
