@@ -535,14 +535,12 @@ class Url {
      * @param $string pathOffset ASCMS_PATH_OFFSET
      */
     public static function fromCapturedRequest($request, $pathOffset, $get) {
-        global $_CONFIG;
-
         if(substr($request, 0, strlen($pathOffset)) != $pathOffset)
             throw new UrlException("'$request' doesn't seem to start with provided offset '$pathOffset'");
 
         //cut offset
         $request = substr($request, strlen($pathOffset)+1);
-        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_CONFIG['domainUrl'];
+        $host = \Env::get('config')['domainUrl'];
         $protocol = ASCMS_PROTOCOL;
 
 
@@ -663,15 +661,13 @@ class Url {
      */
     public static function fromDocumentRoot($arrParameters = array(), $lang = '', $protocol = '')
     {
-        global $_CONFIG;
-
         if ($lang == '') {
             $lang = FRONTEND_LANG_ID;
         }
         if ($protocol == '') {
             $protocol = ASCMS_PROTOCOL;
         }
-        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_CONFIG['domainUrl'];
+        $host = \Env::get('config')['domainUrl'];
         $offset = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath();
         $langDir = \FWLanguage::getLanguageCodeById($lang);
         $parameters = '';
@@ -739,19 +735,16 @@ class Url {
 
     /**
      * Returns the URL object for a page
-     * @global type $_CONFIG
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page to get the URL to
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
      * @return \Cx\Core\Routing\Url Url object for the supplied page
      */
     public static function fromPage($page, $parameters = array(), $protocol = '') {
-        global $_CONFIG;
-        
         if ($protocol == '') {
             $protocol = ASCMS_PROTOCOL;
         }
-        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_CONFIG['domainUrl'];
+        $host = \Env::get('config')['domainUrl'];
         $offset = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath();
         $path = $page->getPath();
         $langDir = \FWLanguage::getLanguageCodeById($page->getLang());
