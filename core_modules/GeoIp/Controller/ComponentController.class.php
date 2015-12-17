@@ -53,15 +53,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @var array
      */
-    public $availableLocale = array('de', 'en', 'fr', 'ru', 'es', 'ja', 'pt-BR', 'zh-CN');
+    protected $availableLocale = array('de', 'en', 'fr', 'ru', 'es', 'ja', 'pt-BR', 'zh-CN');
 
     /**
      * Default locale
      * 
      * @var string
      */
-    public $defaultLocale = 'en';
+    protected $defaultLocale = 'en';
     
+    /**
+     * Client record
+     * 
+     * @var \GeoIp2\Model\Country
+     */
+    protected $clientRecord;
+
     /**
      * Returns all Controller class names for this component (except this)
      * 
@@ -78,6 +85,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page)
     {
+        global $objCounter;
+        
         //If the mode is not a frontend, skip the process
         if ($this->cx->getMode() !== \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
@@ -98,9 +107,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $locale       = in_array($activeLocale, $this->availableLocale) ? $activeLocale : $this->defaultLocale;
         try {
             $reader = new \GeoIp2\Database\Reader($countryDb, array($locale));
-            $record = $reader->country($_SERVER['REMOTE_ADDR']);
-            $countryName = $record->country->name;
-            $countryCode = $record->country->isoCode;
+            $this->clientRecord = $reader->country($objCounter->getClientIp());
+            $countryName = $this->clientRecord->country->name;
+            $countryCode = $this->clientRecord->country->isoCode;
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
             return;
@@ -119,5 +128,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'countryName'   => $countryName,
             'countryCode'   => $countryCode
         ), 'geoIp');
+    }
+
+    /**
+     * Get the client record
+     * 
+     * @return GeoIp2\Model\Country
+     */
+    public function getClientRecord() {
+        return $this->clientRecord;
     }
 }
