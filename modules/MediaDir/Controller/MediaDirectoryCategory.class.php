@@ -250,6 +250,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_ORDER' => $arrCategory['catOrder'],
                         $this->moduleLangVar.'_CATEGORY_NAME' => contrexx_raw2xhtml($arrCategory['catName'][0]),
                         $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => $arrCategory['catDescription'][0],
+                        $this->moduleLangVar.'_CATEGORY_DESCRIPTION_ESCAPED' => strip_tags($arrCategory['catDescription'][0]),
                         $this->moduleLangVar.'_CATEGORY_PICTURE' => $arrCategory['catPicture'],
                         $this->moduleLangVar.'_CATEGORY_NUM_ENTRIES' => $arrCategory['catNumEntries'],
                         $this->moduleLangVar.'_CATEGORY_ICON' => $spacer.$strCategoryIcon,
