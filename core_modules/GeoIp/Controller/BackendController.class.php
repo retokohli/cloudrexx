@@ -73,29 +73,36 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
     {
         $this->template = $template;
-        $act = $cmd[0];
 
         //GeoIp configuration setting
         self::errorHandler();
-        $this->connectToController($act);
-
+        $this->showOverview();
+        
         \Message::show();
     }
 
     /**
-     * Trigger a controller according to the act param from the url
-     * 
-     * @param string $act page action parameter
+     * Display GeoIp settings
      */
-    public function connectToController($act)
+    public function showOverview()
     {
-        $act = empty($act) ? 'Default' : ucfirst($act);
-        $controllerName = __NAMESPACE__ . '\\' . $act . 'Controller';
-        if (!$controllerName && !in_array($controllerName, $this->getEntityClasses())) {
-            return;
+        global $_ARRAYLANG;
+
+        //save the setting values
+        if (isset($_POST['bsubmit'])) {
+            \Cx\Core\Setting\Controller\Setting::storeFromPost();
         }
-        $objController = $this->getSystemComponentController()->getController($act);
-        $objController->parsePage($this->template);
+
+        //display the setting options
+        \Cx\Core\Setting\Controller\Setting::init('GeoIp', null,'Yaml');
+        \Cx\Core\Setting\Controller\Setting::setEngineType('GeoIp', 'Yaml', 'config');    
+        \Cx\Core\Setting\Controller\Setting::show(
+            $this->template,
+            'index.php?cmd=GeoIp',
+            $_ARRAYLANG['TXT_CORE_MODULE_GEOIP'],
+            $_ARRAYLANG['TXT_CORE_MODULE_GEOIP_SETTINGS'],
+            'TXT_CORE_MODULE_GEOIP_'
+        );
     }
 
     /**
