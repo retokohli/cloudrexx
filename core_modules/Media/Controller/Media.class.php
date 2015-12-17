@@ -416,8 +416,9 @@ CODE;
      */
     private function manageAccessGranted()
     {
-        $manageAccessSetting = isset($this->_arrSettings[$this->archive . '_frontend_managable'])
-                                ? $this->_arrSettings[$this->archive . '_frontend_managable']
+        $accessSettingKey    = strtolower($this->archive) . '_frontend_managable';
+        $manageAccessSetting = isset($this->_arrSettings[$accessSettingKey])
+                                ? $this->_arrSettings[$accessSettingKey]
                                 : '';
         if (is_numeric($manageAccessSetting)
            && \Permission::checkAccess(intval($manageAccessSetting), 'dynamic', true)) { // access group
