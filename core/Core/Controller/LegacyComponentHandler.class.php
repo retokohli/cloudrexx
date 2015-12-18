@@ -1966,8 +1966,9 @@ class LegacyComponentHandler {
                         $objSkins->getPage();
                     },
                     'content' => function() {
-                        global $objTemplate, $objDatabase, $objInit, $act;
-
+                        global $objTemplate, $objDatabase, $objInit, $act, $subMenuTitle, $_ARRAYLANG;
+                        
+                        $subMenuTitle = $_ARRAYLANG['TXT_CONTENT_MANAGER'];
                         \Permission::checkAccess(6, 'static');
                         $cm = new \Cx\Core\ContentManager\Controller\ContentManager($act, $objTemplate, $objDatabase, $objInit);
                         $cm->getPage();
