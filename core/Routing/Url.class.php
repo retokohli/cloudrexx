@@ -670,9 +670,17 @@ class Url {
         }
         
         // disable virtual language dir if not in Backend
-        if(preg_match('/.*(cadmin).*/', $url->getPath()) < 1 && $url->getProtocol() != 'file'){
+        if (
+            preg_match(
+                '/.*(' .
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName() .
+                    ').*/',
+                $url->getPath()
+            ) < 1 &&
+            $url->getProtocol() != 'file'
+        ) {
             $url->setMode('frontend');
-        }else{
+        } else {
             $url->setMode('backend');
         }
         return $url;
