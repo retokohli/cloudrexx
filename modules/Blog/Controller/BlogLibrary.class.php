@@ -1015,7 +1015,6 @@ class BlogLibrary {
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
                 $arrEntries = $this->createEntryArray($intLanguageId, 0, intval($this->_arrSettings['blog_rss_messages']) );
-                $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', 'details', '', array('id' => '',))->toString();
 
                 if (count($arrEntries) > 0) {
                     $objRSSWriter = new \RSSWriter();
@@ -1029,10 +1028,12 @@ class BlogLibrary {
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
+                    $entryUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', 'details', $intLanguageId);
                     foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+                        $entryUrl->setAttribute('id', $intEntryId);
                         $objRSSWriter->addItem(
                             html_entity_decode($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
-                            $strItemLink.$intEntryId,
+                            $entryUrl->toString(),
                             htmlspecialchars($arrEntryValues['translation'][$intLanguageId]['content'], ENT_QUOTES, CONTREXX_CHARSET),
                             htmlspecialchars($arrEntryValues['user_name'], ENT_QUOTES, CONTREXX_CHARSET),
                             '',
@@ -1071,15 +1072,6 @@ class BlogLibrary {
             $objFWUser = \FWUser::getFWUserObject();
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
-                $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                    'Blog',
-                    'details',
-                    '',
-                    array(
-                        'id' => '{ID}#comments',
-                    )
-                )->toString();
-
                 $objResult = $objDatabase->Execute('SELECT      message_id,
                                                                 time_created,
                                                                 user_id,
@@ -1107,6 +1099,14 @@ class BlogLibrary {
                     //$objRSSWriter->channelLanguage = \FWLanguage::getLanguageParameter($intLanguageId, 'lang');
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
+                    $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Blog',
+                        'details',
+                        $intLanguageId,
+                        array(
+                            'id' => '{ID}#comments',
+                        )
+                    )->toString();
                     while (!$objResult->EOF) {
                         $strUserName = (intval($objResult->fields['user_id']) > 0 && ($objUser = $objFWUser->objUser->getUser($objResult->fields['user_id'])) !== false) ? htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET) : $objResult->fields['user_name'];
 
@@ -1153,15 +1153,6 @@ class BlogLibrary {
 
             //Iterate over all languages
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
-                $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                    'Blog',
-                    'details',
-                    '',
-                    array(
-                        'id' => '',
-                    )
-                )->toString();
-                
                 $arrEntries = $this->createEntryArray($intLanguageId);
 
                 //If there exist entries in this language go on, otherwise skip
@@ -1188,12 +1179,14 @@ class BlogLibrary {
                             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
                             //Find assigned messages
+                            $entryUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', 'details', $intLanguageId);
                             foreach ($arrEntries as $intEntryId => $arrEntryValues) {
                                 if ($this->categoryMatches($intCategoryId, $arrEntryValues['categories'][$intLanguageId])) {
                                     //Message is in category, add to feed
+                                    $entryUrl->setAttribute('id', $intEntryId);
                                     $objRSSWriter->addItem(
                                         html_entity_decode($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
-                                        $strItemLink.$intEntryId,
+                                        $entryUrl->toString(),
                                         htmlspecialchars($arrEntryValues['translation'][$intLanguageId]['content'], ENT_QUOTES, CONTREXX_CHARSET),
                                         htmlspecialchars($arrEntryValues['user_name'], ENT_QUOTES, CONTREXX_CHARSET),
                                         '',
