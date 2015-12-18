@@ -642,7 +642,7 @@ class FWUser extends User_Setting
      * @param   mixed  $objTemplate Template
      * @global  array  Core language array
      */
-    function resetPassword($username, $restoreKey, $password = null, $confirmedPassword = null, $store = false)
+    function resetPassword($email, $restoreKey, $password = null, $confirmedPassword = null, $store = false)
     {
         global $_CORELANG;
 
@@ -661,14 +661,8 @@ class FWUser extends User_Setting
                 '=' => time(),
             ),
             'active'           => 1,
+            'email'            => $email,
         );
-
-        $arrSettings = User_Setting::getSettings();
-        if ($arrSettings['use_usernames']['status']) {
-            $userFilter['username'] = $username;
-        } else {
-            $userFilter['email'] = $username;
-        }
 
         $objUser = $this->objUser->getUsers($userFilter, null, null, null, 1);
         if ($objUser) {
