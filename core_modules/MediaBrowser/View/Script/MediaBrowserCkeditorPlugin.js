@@ -106,7 +106,8 @@ CKEDITOR.on('dialogDefinition', function (event) {
                     //editor.execCommand ('image');
                     cx.variables.get('jquery','mediabrowser')('#ckeditor_image_button').trigger("click", {
                         callback: sitestructureCallback,
-                        cxMbStartview: 'MediaBrowserList'
+                        cxMbViews: 'sitestructure,filebrowser,uploader',
+                        cxMbStartview: 'Sitestructure'
                     });
                 };
 
