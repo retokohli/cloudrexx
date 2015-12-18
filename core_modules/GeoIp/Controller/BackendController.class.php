@@ -119,7 +119,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             //setup config
             \Cx\Core\Setting\Controller\Setting::init('GeoIp', 'config', 'Yaml');
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('serviceStatus')
-                && !\Cx\Core\Setting\Controller\Setting::add('serviceStatus',1, 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('serviceStatus', 0, 1,
                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'config')
             ) {
                     throw new GeoIpException("Failed to add Setting entry for GeoIp Service Status");
