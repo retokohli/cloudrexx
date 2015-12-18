@@ -130,7 +130,7 @@ class CrmTask extends CrmLibrary
         }
 
         $filterTaskType  = isset($_GET['searchType'])? intval($_GET['searchType']) : 0 ;
-        $filterTaskStatus= !empty($_GET['status']) && is_array($_GET['status']) ? contrexx_input2int($_GET['status']) : array();
+        $filterTaskStatus= !empty($_GET['status']) && is_array($_GET['status']) ? contrexx_input2int($_GET['status']) : array(0);
         $filterTaskTitle = isset($_GET['searchTitle'])? contrexx_input2raw($_GET['searchTitle']) : '';
         $sortField       = isset($_GET['sort_by']) && array_key_exists($_GET['sort_by'], $this->_sortFields) ? (int) $_GET['sort_by'] : 2;
         $sortOrder       = (isset($_GET['sort_order']) && $_GET['sort_order'] == 1)  ? 1 : 0 ;
