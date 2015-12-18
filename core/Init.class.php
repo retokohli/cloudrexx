@@ -531,8 +531,8 @@ class InitCMS
         $this->templates['sidebar']                 = $this->getThemeFileContent($themesPath, 'sidebar.html');
         $this->templates['top_news']                = $this->getThemeFileContent($themesPath, 'top_news.html');
         $this->templates['shopnavbar']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html');
-        $this->templates['shopnavbar2']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html2');
-        $this->templates['shopnavbar3']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html3');
+        $this->templates['shopnavbar2']              = $this->getThemeFileContent($themesPath, 'shopnavbar2.html');
+        $this->templates['shopnavbar3']              = $this->getThemeFileContent($themesPath, 'shopnavbar3.html');
         $this->templates['headlines']               = $this->getThemeFileContent($themesPath, 'headlines.html');
         $this->templates['headlines2']              = $this->getThemeFileContent($themesPath, 'headlines2.html');
         $this->templates['headlines3']              = $this->getThemeFileContent($themesPath, 'headlines3.html');

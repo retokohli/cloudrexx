@@ -365,8 +365,7 @@ class Ecard
 
                 // Send notification mail to ecard-recipient
                 $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = $senderEmail;
-                $objMail->FromName = $senderName;
+                $objMail->SetFrom($senderEmail, $senderName);
                 $objMail->AddReplyTo($senderEmail);
                 $objMail->Subject = $subject;
                 $objMail->IsHTML(false);
