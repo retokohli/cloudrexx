@@ -127,6 +127,12 @@ class Url {
      * @var int
      */
     protected $port = 0;
+    
+    /**
+     * The fragment (after #) part of the URL
+     * @var string
+     */
+    protected $fragment = '';
 
     /**
      * Initializes $domain, $protocol, $port and $path.
@@ -178,6 +184,10 @@ class Url {
             $this->setPath($path);
         } else {
             $this->suggest();
+        }
+        
+        if (!empty($data['fragment'])) {
+            $this->fragment = $data['fragment'];
         }
 
         $this->addPassedParams();
@@ -788,7 +798,7 @@ class Url {
         if(!$absolute) {
             return \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()  . '/' .
                 ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '') . 
-                $this->path;
+                $this->path . (empty($this->fragment) ? '' : '#' . $this->fragment);
         }
         $defaultPort = getservbyname($this->protocol, 'tcp');
         $portPart = '';
