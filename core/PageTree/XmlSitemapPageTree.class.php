@@ -118,10 +118,6 @@ class XmlSitemapPageTree extends PageTree {
      * @return type 
      */
     protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
-        global $_CONFIG;
-        $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        $mainDn = $domainRepo->getMainDomain()->getName();
-        
         return "\t" . '<url>' . 
                 "\n\t\t" . '<loc>' . \Cx\Core\Routing\Url::fromPage($page)->toString() . '</loc>' . 
                 "\n\t\t" . '<lastmod>' . $this->getLastModificationDate($page) . '</lastmod>' . 
