@@ -1899,7 +1899,7 @@ EOF;
         $documentRoot->setPath('feed/news_' . \FWLanguage::getLanguageParameter($_LANGID, 'lang') . '.js');
         $jsFeedUrl = $documentRoot->toString();
         
-        $hostname = \Env::get('config')['domainUrl'];
+        $hostname = addslashes(htmlspecialchars(\Env::get('config')['domainUrl'], ENT_QUOTES, CONTREXX_CHARSET));
 
         $rss2jsCode = <<<RSS2JSCODE
 &lt;script language="JavaScript" type="text/javascript"&gt;
