@@ -87,6 +87,10 @@ class BlockLibrary
      */
     var $_categoryNames = array();
 
+    protected $availableTargeting = array(
+        'country',
+    );
+
     /**
      * Constructor
      */
@@ -348,6 +352,110 @@ class BlockLibrary
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$blockId." AND lang_id NOT IN (".join(',', array_map('intval', array_keys($arrLangActive))).")");
     }
 
+    /**
+     * Verify targeting options for the given block Id
+     *
+     * @param integer $blockId Block id
+     *
+     * @return boolean True when all targeting options vaild, false otherwise
+     */
+    public function checkTargetingOptions($blockId)
+    {
+        $targeting = $this->loadTargetingSettings($blockId);
+
+        if (empty($targeting)) {
+            return true;
+        }
+
+        foreach ($targeting as $targetingType => $targetingSetting) {
+            switch ($targetingType) {
+                case 'country':
+                    if (!$this->checkTargetingCountry($targetingSetting['filter'], $targetingSetting['value'])) {
+                        return false;
+                    }
+                    break;
+                default :
+                    break;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check Country targeting option
+     *
+     * @param string $filter      include => client country should exists in given country ids
+     *                            exclude => client country should not exists in given country ids
+     * @param array  $countryIds  Country ids to match
+     *
+     * @return boolean True when targeting country option matching to client country
+     *                 False otherwise
+     */
+    public function checkTargetingCountry($filter, $countryIds)
+    {
+        // getClient country using GeoIp component
+        $componentRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+                            ->getDb()
+                            ->getEntityManager()
+                            ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $geoIpComponent     = $componentRepo->findOneBy(array('name' => 'GeoIp'));
+        if (!$geoIpComponent) {
+            return false;
+        }
+        $geoIpComponentController = $geoIpComponent->getSystemComponentController();
+        if (!$geoIpComponentController) {
+            return false;
+        }
+
+        $clientRecord = $geoIpComponentController->getClientRecord();
+        if (!$clientRecord) {
+            return false;
+        }
+        $clientCountryAlpha2 = $clientRecord->country->isoCode;
+        $clientCountryId     = \Cx\Core\Country\Controller\Country::getIdByAlpha2($clientCountryAlpha2);
+
+        $isCountryExists = in_array($clientCountryId, $countryIds);
+        if ($filter == 'include') {
+            return $isCountryExists;
+        } else {
+            return !$isCountryExists;
+        }
+    }
+
+    /**
+     * Load Targeting settings
+     *
+     * @param integer $blockId Content block id
+     *
+     * @return array Settings array
+     */
+    public function loadTargetingSettings($blockId)
+    {
+        global $objDatabase;
+
+        $query = 'SELECT
+                    `filter`,
+                    `type`,
+                    `value`
+                  FROM
+                    `'. DBPREFIX .'module_block_targeting_option`
+                  WHERE
+                    `block_id` = "'. contrexx_raw2db($blockId) .'"
+                 ';
+        $targeting    = $objDatabase->Execute($query);
+        $targetingArr = array();
+        if ($targeting) {
+            while (!$targeting->EOF) {
+                $targetingArr[$targeting->fields['type']] = array(
+                    'filter' => $targeting->fields['filter'],
+                    'value'  => json_decode($targeting->fields['value'])
+                );
+                $targeting->MoveNext();
+            }
+        }
+
+        return $targetingArr;
+    }
 
     /**
     * Get block
@@ -540,6 +648,10 @@ class BlockLibrary
     {
         global $objDatabase;
 
+        if (!$this->checkTargetingOptions($id)) {
+            return;
+        }
+
         $now = time();
         $query = "  SELECT
                         tblContent.content
@@ -621,8 +733,14 @@ class BlockLibrary
         
         if ($objResult !== false && $objResult->RecordCount() > 0) {
             while(!$objResult->EOF) {
+                $blockId = $objResult->fields['id'];
+                if (!$this->checkTargetingOptions($blockId)) {
+                    $objResult->MoveNext();
+                    continue;
+                }
+
                 $blockContent = $objResult->fields['content'];
-                $frontendEditingComponent->prepareBlock($objResult->fields['id'], $blockContent);
+                $frontendEditingComponent->prepareBlock($blockId, $blockContent);
                 $content[] = $blockContent;
                 $objResult->MoveNext();
             }
@@ -698,8 +816,13 @@ class BlockLibrary
         $frontendEditingComponent = $systemComponentRepo->findOneBy(array('name' => 'FrontendEditing'));
         if ($objResult !== false) {
             while (!$objResult->EOF) {
+                $blockId = $objResult->fields['id'];
+                if (!$this->checkTargetingOptions($blockId)) {
+                    $objResult->MoveNext();
+                    continue;
+                }
                 $blockContent = $objResult->fields['content'];
-                $frontendEditingComponent->prepareBlock($objResult->fields['id'], $blockContent);
+                $frontendEditingComponent->prepareBlock($blockId, $blockContent);
                 
                 $block .= $blockContent.$seperator;
                 $objResult->MoveNext();
@@ -764,7 +887,10 @@ class BlockLibrary
         if ($objBlockName !== false && $objBlockName->RecordCount() > 0) {
 
             while (!$objBlockName->EOF) {
-                $arrActiveBlocks[] = $objBlockName->fields['id'];
+                $blockId = $objBlockName->fields['id'];
+                if ($this->checkTargetingOptions($blockId)) {
+                    $arrActiveBlocks[] = $blockId;
+                }
                 $objBlockName->MoveNext();
             }
 

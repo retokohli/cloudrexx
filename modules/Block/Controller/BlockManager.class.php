@@ -648,6 +648,9 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
 
         \JS::activate('cx');
         \JS::activate('ckeditor');
+        \JS::activate('jqueryui');
+        \JS::registerJS('lib/javascript/tag-it/js/tag-it.min.js');
+        \JS::registerCss('lib/javascript/tag-it/css/tag-it.css');
 
         $mediaBrowserCkeditor = new MediaBrowser();
         $mediaBrowserCkeditor->setCallback('ckeditor_image_button');
@@ -712,7 +715,30 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'TXT_BLOCK_DISPLAY_TIME'            => $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME'],
             'TXT_BLOCK_FORM_DESC'               => $_ARRAYLANG['TXT_BLOCK_CONTENT'],
             'TXT_BLOCK_USE_WYSIWYG_EDITOR'      => $_ARRAYLANG['TXT_BLOCK_USE_WYSIWYG_EDITOR'],
+            'TXT_BLOCK_TARGETING'               => $_ARRAYLANG['TXT_BLOCK_TARGETING'],
+            'TXT_BLOCK_TARGETING_SHOW_PANE'     => $_ARRAYLANG['TXT_BLOCK_TARGETING_SHOW_PANE'],
+            'TXT_BLOCK_TARGETING_ALL_USERS'     => $_ARRAYLANG['TXT_BLOCK_TARGETING_ALL_USERS'],
+            'TXT_BLOCK_TARGETING_VISITOR_CONDITION_BELOW' => $_ARRAYLANG['TXT_BLOCK_TARGETING_VISITOR_CONDITION_BELOW'],
+            'TXT_BLOCK_TARGETING_INCLUDE'       => $_ARRAYLANG['TXT_BLOCK_TARGETING_INCLUDE'],
+            'TXT_BLOCK_TARGETING_EXCLUDE'       => $_ARRAYLANG['TXT_BLOCK_TARGETING_EXCLUDE'],
+            'TXT_BLOCK_TARGETING_TYPE_LOCATION' => $_ARRAYLANG['TXT_BLOCK_TARGETING_TYPE_LOCATION'],
         ));
+
+        $targetingStatus = isset($_POST['targeting_status']) ? contrexx_input2int($_POST['targeting_status']) : 0;
+        $targeting       = array();
+        foreach ($this->availableTargeting as $targetingType) {
+            $targetingArr = isset($_POST['targeting'][$targetingType]) ? $_POST['targeting'][$targetingType] : array();
+            if (empty($targetingArr)) {
+                continue;
+            }
+
+            $targeting[$targetingType] = array(
+                'filter' => !empty($targetingArr['filter']) && in_array($targetingArr['filter'], array('include', 'exclude'))
+                              ? contrexx_input2raw($targetingArr['filter'])
+                              : 'include',
+                'value'  => isset($targetingArr['value']) ? contrexx_input2raw($targetingArr['value']) : array(),
+            );
+        }
 
         if (isset($_POST['block_save_block'])) {
             $blockCat               = !empty($_POST['blockCat']) ? intval($_POST['blockCat']) : 0;
@@ -743,6 +769,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             if ($blockId) {
                 if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockWysiwygEditor, $blockLangActive)) {
                     if ($this->storePlaceholderSettings($blockId, $blockGlobal, $blockDirect, $blockCategory, $blockGlobalAssociatedPageIds, $blockDirectAssociatedPageIds, $blockCategoryAssociatedPageIds)) {
+                        $this->storeTargetingSettings($blockId, $targetingStatus, $targeting);
                         \Cx\Core\Csrf\Controller\Csrf::header('location: index.php?cmd=Block&modified=true&blockname='.$blockName);
                         exit;
                     }
@@ -751,6 +778,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             } else { 
                 if ($blockId = $this->_addBlock($blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockWysiwygEditor, $blockLangActive)) {
                     if ($this->storePlaceholderSettings($blockId, $blockGlobal, $blockDirect, $blockCategory, $blockGlobalAssociatedPageIds, $blockDirectAssociatedPageIds, $blockCategoryAssociatedPageIds)) {
+                        $this->storeTargetingSettings($blockId, $targetingStatus, $targeting);
                         \Cx\Core\Csrf\Controller\Csrf::header('location: index.php?cmd=Block&added=true&blockname='.$blockName);
                         exit;
                     }
@@ -777,6 +805,11 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             $blockGlobalAssociatedPageIds   = $this->_getAssociatedPageIds($blockId, 'global');
             $blockDirectAssociatedPageIds   = $this->_getAssociatedPageIds($blockId, 'direct');
             $blockCategoryAssociatedPageIds = $this->_getAssociatedPageIds($blockId, 'category');
+
+            $targeting = $this->loadTargetingSettings($blockId);
+            if (!empty($targeting)) {
+                $targetingStatus = 1;
+            }
         }
 
         $pageTitle = $blockId != 0 ? sprintf(($copy ? $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] : $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK']), contrexx_raw2xhtml($blockName)) : $_ARRAYLANG['TXT_BLOCK_ADD_BLOCK'];
@@ -818,9 +851,31 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'BLOCK_CATEGORY_SHOW_PAGE_SELECTOR' => $blockCategory == '1' ? 'block' : 'none',
 
             // mediabrowser
-            'BLOCK_WYSIWYG_MEDIABROWSER' => $mediaBrowserCkeditor->getXHtml()
+            'BLOCK_WYSIWYG_MEDIABROWSER' => $mediaBrowserCkeditor->getXHtml(),
+
+            // Targeting
+            'BLOCK_TARGETING_ALL_USERS'         => $targetingStatus == 0 ? 'checked="checked"' : '',
+            'BLOCK_TARGETING_VISITOR_CONDITION_BELOW' => $targetingStatus == 1 ? 'checked="checked"' : '',
+            'BLOCK_TARGETING_COUNTRY_INCLUDE'   => !empty($targeting['country']) && $targeting['country']['filter'] == 'include'
+                                                    ? 'selected="selected"' : '',
+            'BLOCK_TARGETING_COUNTRY_EXCLUDE'   => !empty($targeting['country']) && $targeting['country']['filter'] == 'exclude'
+                                                    ? 'selected="selected"' : '',
         ));
         
+        if (!empty($targeting['country']) && !empty($targeting['country']['value'])) {
+            foreach ($targeting['country']['value'] as $countryId) {
+                $countryName = \Cx\Core\Country\Controller\Country::getNameById($countryId);
+                if (empty($countryName)) {
+                    continue;
+                }
+                $this->_objTpl->setVariable(array(
+                    'BLOCK_TARGET_COUNTRY_ID'   => contrexx_raw2xhtml($countryId),
+                    'BLOCK_TARGET_COUNTRY_NAME' => contrexx_raw2xhtml($countryName),
+                ));
+                $this->_objTpl->parse('block_targeting_country');
+            }
+        }
+
         $jsonData =  new \Cx\Core\Json\JsonData();
         $pageTitlesTree = $jsonData->data('node', 'getPageTitlesTree');
         $pageTitlesTree = $pageTitlesTree['data'];
@@ -908,6 +963,73 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             $activeClass = '';
             $i++;
         }
+    }
+
+    /**
+     * Store the targeting settings in to database
+     *
+     * @param integer $blockId         Content block id
+     * @param integer $targetingStatus status
+     * @param array   $targeting       Array settings of targeting to store
+     */
+    public function storeTargetingSettings($blockId, $targetingStatus, $targeting = array())
+    {
+        foreach ($this->availableTargeting as $targetingType) {
+            if (!$targetingStatus) {
+                $this->removeTargetingSetting($blockId, $targetingType);
+                continue;
+            }
+            $targetingArr = isset($targeting[$targetingType]) ? $targeting[$targetingType] : array();
+            if (!empty($targetingArr)) {
+                $this->storeTargetingSetting($blockId, $targetingArr['filter'], $targetingType, $targetingArr['value']);
+            }
+        }
+    }
+
+    /**
+     * Store the targeting setting in to database
+     *
+     * @param integer $blockId     Content block id
+     * @param string  $filter      Targeting filter type (include/exclude)
+     * @param string  $type        Targeting type (country)
+     * @param array   $arrayValues Target selected option values
+     */
+    public function storeTargetingSetting($blockId, $filter, $type, $arrayValues = array())
+    {
+        global $objDatabase;
+
+        $valueString = json_encode($arrayValues);
+        $query = 'INSERT INTO
+                    `'. DBPREFIX .'module_block_targeting_option`
+                  SET
+                    `block_id` = "'. contrexx_raw2db($blockId) .'",
+                    `filter`   = "'. contrexx_raw2db($filter) .'",
+                    `type`     = "'. contrexx_raw2db($type) .'",
+                    `value`    = "'. contrexx_raw2db($valueString) .'"
+                  ON DUPLICATE KEY UPDATE
+                    `filter`   = "'. contrexx_raw2db($filter) .'",
+                    `value`    = "'. contrexx_raw2db($valueString) .'"
+                 ';
+        $objDatabase->Execute($query);
+    }
+
+    /**
+     * Remove the targeting settings from database
+     *
+     * @param integer $blockId Content block id
+     * @param string  $type    Targeting type (country)
+     */
+    public function removeTargetingSetting($blockId, $type)
+    {
+        global $objDatabase;
+
+        $query = 'DELETE FROM
+                    `'. DBPREFIX .'module_block_targeting_option`
+                  WHERE
+                    `block_id` = "'. contrexx_raw2db($blockId) .'"
+                  AND
+                    `type`     = "'. contrexx_raw2db($type) .'"';
+        $objDatabase->Execute($query);
     }
 
     /**

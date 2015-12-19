@@ -134,4 +134,10 @@ $_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE'] = "Content Pane gets displayed on all 
 $_ARRAYLANG['TXT_BLOCK_USE_WYSIWYG_EDITOR'] = "Use WYSIWYG editor";
 $_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'] = "Content Panes using the random generator are shown accordingly.";
 $_ARRAYLANG['TXT_BLOCK_SEPERATOR'] = "Trennzeichen zwischen den Blöcken";
-?>
+$_ARRAYLANG['TXT_BLOCK_TARGETING'] = 'Targeting';
+$_ARRAYLANG['TXT_BLOCK_TARGETING_SHOW_PANE'] = 'Who should see this content pane?';
+$_ARRAYLANG['TXT_BLOCK_TARGETING_ALL_USERS'] = 'All visitors';
+$_ARRAYLANG['TXT_BLOCK_TARGETING_VISITOR_CONDITION_BELOW'] = 'Visitor who meet the conditions below';
+$_ARRAYLANG['TXT_BLOCK_TARGETING_INCLUDE'] = 'Include';
+$_ARRAYLANG['TXT_BLOCK_TARGETING_EXCLUDE'] = 'Exclude';
+$_ARRAYLANG['TXT_BLOCK_TARGETING_TYPE_LOCATION'] = 'Type location';
