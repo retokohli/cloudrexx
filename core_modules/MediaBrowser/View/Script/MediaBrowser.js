@@ -251,7 +251,7 @@
                 if(newTabNames.indexOf("filebrowser") === -1 && newTabNames.indexOf("uploader") !== -1){
                     newTabNames.push("filebrowser");
                 }
-                
+
                 var newTabs = [];
                 var tabStartViewName;
                 var tabName;
