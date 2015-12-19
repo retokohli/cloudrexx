@@ -251,12 +251,16 @@
                 if(newTabNames.indexOf("filebrowser") === -1 && newTabNames.indexOf("uploader") !== -1){
                     newTabNames.push("filebrowser");
                 }
-
+                
                 var newTabs = [];
+                var tabStartViewName;
+                var tabName;
                 newTabNames.forEach(function (newTabName) {
+                    tabName = (newTabName === 'filebrowser') ? 'MediaBrowserList' : newTabName;
+                    tabStartViewName = tabName.charAt(0).toUpperCase() + tabName.slice(1) + 'Ctrl';
                     $scope.dataTabs.forEach(function (tab) {
                         if (tab.name === newTabName) {
-                            if (newTabName === mediabrowserConfig.get('startView')){
+                            if (tabStartViewName === mediabrowserConfig.get('startView')) {
                                 isStartviewInViews = true;
                             }
                             newTabs.push(tab);
