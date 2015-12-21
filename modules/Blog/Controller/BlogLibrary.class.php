@@ -1033,7 +1033,7 @@ class BlogLibrary {
                         $entryUrl->setAttribute('id', $intEntryId);
                         $objRSSWriter->addItem(
                             html_entity_decode($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
-                            $entryUrl->toString(),
+                            contrexx_raw2xhtml($entryUrl->toString()),
                             htmlspecialchars($arrEntryValues['translation'][$intLanguageId]['content'], ENT_QUOTES, CONTREXX_CHARSET),
                             htmlspecialchars($arrEntryValues['user_name'], ENT_QUOTES, CONTREXX_CHARSET),
                             '',
@@ -1114,7 +1114,7 @@ class BlogLibrary {
 
                         $objRSSWriter->addItem(
                             htmlspecialchars($objResult->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET),
-                            str_replace('{ID}',$objResult->fields['message_id'],$strItemLink),
+                            contrexx_raw2xhtml(str_replace('{ID}',$objResult->fields['message_id'],$strItemLink)),
                             htmlspecialchars($objResult->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET),
                             htmlspecialchars($strUserName, ENT_QUOTES, CONTREXX_CHARSET),
                             '',
@@ -1190,7 +1190,7 @@ class BlogLibrary {
                                     $entryUrl->setAttribute('id', $intEntryId);
                                     $objRSSWriter->addItem(
                                         html_entity_decode($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
-                                        $entryUrl->toString(),
+                                        contrexx_raw2xhtml($entryUrl->toString()),
                                         htmlspecialchars($arrEntryValues['translation'][$intLanguageId]['content'], ENT_QUOTES, CONTREXX_CHARSET),
                                         htmlspecialchars($arrEntryValues['user_name'], ENT_QUOTES, CONTREXX_CHARSET),
                                         '',
