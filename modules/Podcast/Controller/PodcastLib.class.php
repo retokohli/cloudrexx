@@ -1450,46 +1450,66 @@ EOF;
             }
         }
 
-        $baseUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
-        $baseUrl->setMode('backend');
-        $baseUrlString = $baseUrl->toString();
         $objRSSWriter = new \RSSWriter();
-
+        
         $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
         $objRSSWriter->channelTitle = $this->_arrSettings['feed_title'];
-        $objRSSWriter->channelLink = $baseUrlString . 'index.php?section=Podcast';
+        $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Podcast'
+        )->toString();
         $objRSSWriter->channelDescription = $this->_arrSettings['feed_description'];
         $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
 
         if (!empty($this->_arrSettings['feed_image'])) {
-            $objRSSWriter->channelImageUrl = $baseUrlString . substr(
+            $channelImageUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+            $channelImageUrl->setMode('backend');
+            $channelImageUrl->setPath(substr(
                 $this->_arrSettings['feed_image'],
                 strlen(
                     \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()
                 ) + 1
-            );
+            ));
+            $objRSSWriter->channelImageUrl = $channelImageUrl;
             $objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
             $objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
         }
         $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
-
-        $itemLink = $baseUrlString . 'index.php?section=Podcast&amp;id=';
-        $categoryLink = $baseUrlString . 'index.php?section=Podcast&amp;cid=';
 
         // create podcast feed
         $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/podcast.xml';
         foreach ($arrMedia as $mediumId => $arrMedium) {
             $arrCategories = array();
             foreach ($arrMedium['categories'] as $categoryId => $categoryTitle) {
-                array_push($arrCategories, array(
-                    'domain'    => htmlspecialchars($categoryLink.$categoryId, ENT_QUOTES, CONTREXX_CHARSET),
-                    'title'     => htmlspecialchars($categoryTitle, ENT_QUOTES, CONTREXX_CHARSET)
-                ));
+                array_push(
+                    $arrCategories,
+                    array(
+                        'domain' => htmlspecialchars(
+                            \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'Podcast',
+                                '',
+                                '',
+                                array(
+                                    'cid' => $categoryId,
+                                )
+                            )->toString(),
+                            ENT_QUOTES,
+                            CONTREXX_CHARSET
+                        ),
+                        'title' => htmlspecialchars($categoryTitle, ENT_QUOTES, CONTREXX_CHARSET),
+                    )
+                );
             }
 
             $objRSSWriter->addItem(
                 htmlspecialchars($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
-                $itemLink.$mediumId,
+                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'Podcast',
+                    '',
+                    '',
+                    array(
+                        'id' => $mediumId,
+                    )
+                )->toString(),
                 htmlspecialchars($arrMedium['description'], ENT_QUOTES, CONTREXX_CHARSET),
                 htmlspecialchars($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET),
                 $arrCategories,
