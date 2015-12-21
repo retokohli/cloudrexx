@@ -20,6 +20,14 @@ options:
     specific:
       color: '#555555'
   -
+    name: regular_text  
+    specific:
+      activeChoice: 'Arial'
+  -
+    name: title_text  
+    specific:
+      activeChoice: 'Arial'  
+  -
     name: news_area
     specific:
       active: true

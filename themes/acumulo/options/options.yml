@@ -85,6 +85,20 @@ options:
       1: Fontfarbe
       2: 'Font color'
   -
+    name: regular_text  
+    specific: {  }
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\FontOption
+    translation:
+      1: 'Regular Text'
+      2: 'Regular Text'
+  -
+    name: title_text  
+    specific: {  }
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\FontOption
+    translation:
+      1: 'Title Text'
+      2: 'Title Text'
+  -
     name: news_area
     specific: {  }
     type: Cx\Core_Modules\TemplateEditor\Model\Entity\AreaOption

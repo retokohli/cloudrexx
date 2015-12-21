@@ -39,14 +39,14 @@
         </script>
         <script type="text/javascript" src= "themes/acumulo/scripts.js"></script>
         <script type="text/javascript">
-           $jq.ajax({
-               url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg',
-               statusCode: {
+            $jq.ajax({
+                url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg',
+                statusCode: {
                    200: function() {
-                       $jq('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg" alt="Titelbild" />');
-                   }
-               }
-           });
+                        $jq('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg" alt="Titelbild" />');
+                    }
+                }
+            });
         </script>  
         <script type="text/javascript">
             $jq(window).load(function() {
@@ -121,6 +121,40 @@
             .page-content.with-sidebar.content #news-content h2 a,
             #shop table {
                 color: {TEMPLATE_EDITOR_FONT_COLOR};
+            }
+            h1, h2, h3, h4, h5, h6,
+            .page-title span,
+            .team-member h5,
+            .sixteen.columns > h6,
+            .sixteen.columns h1,
+            button,
+            input[type="submit"],
+            input[type="button"],
+            input[type="reset"],
+            .wpcf7-form input[type="submit"],
+            .page-content.with-sidebar.content h3,
+            .page-content.with-sidebar.content #news h3 a,
+            .page-content.with-sidebar.content #news-content h2 a {
+                font-family: {TEMPLATE_EDITOR_TITLE_TEXT};
+            }
+            .sf-menu ul a,
+            .sf-menu > li > a,
+            .sf-menu > li.current-menu-item a,
+            .info-inner span,
+            .description-inner h4 a,
+            .lp-description h5 a,
+            .widget,
+            .widget ul li,
+            .tagcloud a, 
+            .testimonial-author,
+            .sidebar-block,
+            .page-content.with-sidebar.content,
+            #shop table,
+            .copyright p,
+            .breadcrumbs p,
+            .flex-caption p,
+            .menu li a {
+                font-family: {TEMPLATE_EDITOR_REGULAR_TEXT};
             }
             .flex-caption {
                 display: none;
