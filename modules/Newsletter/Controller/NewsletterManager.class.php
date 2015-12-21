@@ -3425,9 +3425,14 @@ class NewsletterManager extends NewsletterLib
         $i = 0;
         while ($i < $size) {
             $URLforReplace = $allImg[1][$i];
-            $ReplaceWith = (
-                new \Cx\Core\Routing\Url($URLforReplace, true)
-            )->toString();
+            
+            $replaceUrl = new \Cx\Core\Routing\Url($URLforReplace, true);
+            if ($replaceUrl->isInternal()) {
+                $ReplaceWith = $replaceUrl->toString();
+            } else {
+                $ReplaceWith = $URLforReplace;
+            }
+            
             $content_text = str_replace('"'.$URLforReplace.'"', '"'.$ReplaceWith.'"', $content_text);
             $i++;
         }
