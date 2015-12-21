@@ -1139,14 +1139,16 @@ class DataLibrary
 
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
-            $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                'Data',
-                'details',
-                '',
-                array(
-                    'id' => '',
-                )
-            )->toString();
+            $strItemLink = contrexx_raw2xhtml(
+                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'Data',
+                    'details',
+                    '',
+                    array(
+                        'id' => '',
+                    )
+                )->toString()
+            );
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
                 $arrEntries = $this->createEntryArray($intLanguageId, 0, intval($this->_arrSettings['data_rss_messages']) );
@@ -1201,14 +1203,16 @@ class DataLibrary
 
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
-            $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                'Data',
-                'details',
-                '',
-                array(
-                    'id' => '{ID}#comments',
-                )
-            )->toString();
+            $strItemLink = contrexx_raw2xhtml(
+                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'Data',
+                    'details',
+                    '',
+                    array(
+                        'id' => '{ID}#comments',
+                    )
+                )->toString()
+            );
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
                 $objResult = $objDatabase->Execute('SELECT        message_id,
@@ -1277,14 +1281,16 @@ class DataLibrary
 
         if (intval($this->_arrSettings['data_rss_activated'])) {
 
-            $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                'Data',
-                'details',
-                '',
-                array(
-                    'id' => '',
-                )
-            )->toString();
+            $strItemLink = contrexx_raw2xhtml(
+                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'Data',
+                    'details',
+                    '',
+                    array(
+                        'id' => '',
+                    )
+                )->toString()
+            );
 
             $arrCategories = $this->createCategoryArray();
 
