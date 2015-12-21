@@ -177,6 +177,8 @@ class Url {
             $this->setMode('backend');
         }
         
+        $this->realPath = '/' . $path;
+        
         if(!empty($data['query'])) {
             $path .= '?' . $data['query'];
         }
@@ -199,6 +201,41 @@ class Url {
         } else {
             \DBG::msg('URL: Invalid url mode "'.$mode.'"');
         }
+    }
+    
+    /**
+     * Checks wheter this Url points to a location within this installation
+     * @todo This does not work correctly if setPath() is called from outside
+     * @return boolean True for internal URL, false otherwise
+     */
+    public function isInternal() {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        
+        // check domain
+        $domainRepo = $cx->getDb()->getEntityManager()->getRepository(
+            'Cx\Core\Net\Model\Entity\Domain'
+        );
+        $domains = array_map(
+            function ($domain) {
+                return $domain->getName();
+            },
+            $domainRepo->findAll()
+        );
+        $domainMatch = in_array($this->getDomain(), $domains);
+        if (!$domainMatch) {
+            return false;
+        }
+        
+        // check offset
+        $installationOffset = \Env::get('cx')->getWebsiteOffsetPath();
+        $providedOffset = $this->realPath;
+        if (
+            $installationOffset !=
+            substr($providedOffset, 0, strlen($installationOffset))
+        ) {
+            return false;
+        }
+        return true;
     }
 
     /**
