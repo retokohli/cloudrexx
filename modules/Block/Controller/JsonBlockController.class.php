@@ -35,7 +35,35 @@
  */
 
 namespace Cx\Modules\Block\Controller;
- 
+
+/**
+ * Class NoPermissionException
+ * @package     cloudrexx
+ * @subpackage  module_block
+ */
+class NoPermissionException extends \Exception {}
+
+/**
+ * Class NotEnoughArgumentsException
+ * @package     cloudrexx
+ * @subpackage  module_block
+ */
+class NotEnoughArgumentsException extends \Exception {}
+
+/**
+ * Class NoBlockFoundException
+ * @package     cloudrexx
+ * @subpackage  module_block
+ */
+class NoBlockFoundException extends \Exception {}
+
+/**
+ * Class BlockCouldNotBeSavedException
+ * @package     cloudrexx
+ * @subpackage  module_block
+ */
+class BlockCouldNotBeSavedException extends \Exception {}
+
 /**
  * JSON Adapter for Block
  * 
@@ -46,6 +74,12 @@ namespace Cx\Modules\Block\Controller;
  */
 class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implements \Cx\Core\Json\JsonAdapter
 {
+    /**
+     * List of messages
+     * @var Array
+     */
+    private $messages = array();
+
     /**
      * Returns the internal name used as identifier for this adapter
      * @return String Name of this adapter
@@ -61,7 +95,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
      */
     public function getDefaultPermissions()
     {
-        return null;
+        return new \Cx\Core_Modules\Access\Model\Entity\Permission(null, array('get'), true);
     }
     
     /**
@@ -71,7 +105,10 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
     public function getAccessableMethods()
     {
         return array(
-            'getCountries' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, array('get'), true),
+            'getCountries',
+            'getBlocks',
+            'getBlockContent',
+            'saveBlockContent' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, array('post'), true)
         );
     }
 
@@ -80,7 +117,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
      * @return String HTML encoded error messages
      */
     public function getMessagesAsString() {
-        return '';
+        return implode('<br />', $this->messages);
     }
 
     /**
@@ -110,5 +147,136 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
         return array(
             'countries' => $countries
         );
+    }
+
+    /**
+     * Returns all available blocks for each language
+     *
+     * @return array List of blocks (lang => id )
+     */
+    public function getBlocks() {
+        global $objInit, $_CORELANG;
+
+        if (!\FWUser::getFWUserObject()->objUser->login() || $objInit->mode != 'backend') {
+            throw new \Exception($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
+        }
+
+        $blockLib = new \Cx\Modules\Block\Controller\BlockLibrary();
+        $blocks = $blockLib->getBlocks();
+        $data = array();
+        foreach ($blocks as $id=>$block) {
+            $data[$id] = array(
+                'id' => $id,
+                'name' => $block['name'],
+                'disabled' => $block['global'] == 1,
+                'selected' => $block['global'] == 1,
+            );
+        }
+        return $data;
+    }
+
+    /**
+     * Get the block content as html
+     * 
+     * @param array $params all given params from http request
+     * @throws NoPermissionException
+     * @throws NotEnoughArgumentsException
+     * @throws NoBlockFoundException
+     * @return string the html content of the block
+     */
+    public function getBlockContent($params) {
+        global $_CORELANG, $objDatabase;
+
+        // security check
+        if (   !\FWUser::getFWUserObject()->objUser->login()
+            || !\Permission::checkAccess(76, 'static', true)) {
+            throw new NoPermissionException($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
+        }
+
+        // check for necessary arguments
+        if (empty($params['get']['block']) || empty($params['get']['lang'])) {
+            throw new NotEnoughArgumentsException('not enough arguments');
+        }
+
+        // get id and langugage id
+        $id = intval($params['get']['block']);
+        $lang = \FWLanguage::getLanguageIdByCode($params['get']['lang']);
+        if (!$lang) {
+            $lang = FRONTEND_LANG_ID;
+        }
+
+        // database query to get the html content of a block by block id and
+        // language id
+        $query = "SELECT
+                      c.content
+                  FROM
+                      `".DBPREFIX."module_block_blocks` b
+                  INNER JOIN
+                      `".DBPREFIX."module_block_rel_lang_content` c
+                  ON c.block_id = b.id
+                  WHERE
+                      b.id = ".$id."
+                  AND
+                      (c.lang_id = ".$lang." AND c.active = 1)";
+
+        $result = $objDatabase->Execute($query);
+
+        // nothing found
+        if ($result === false || $result->RecordCount() == 0) {
+            throw new NoBlockFoundException('no block content found with id: ' . $id);
+        }
+
+        $ls = new \LinkSanitizer(ASCMS_PATH_OFFSET.\Env::get('virtualLanguageDirectory').'/', $result->fields['content']);
+        return array('content' => $ls->replace());
+    }
+
+    /**
+     * Save the block content
+     *
+     * @param array $params all given params from http request
+     * @throws NoPermissionException
+     * @throws NotEnoughArgumentsException
+     * @throws BlockCouldNotBeSavedException
+     * @return boolean true if everything finished with success
+     */
+    public function saveBlockContent($params) {
+        global $_CORELANG, $objDatabase;
+
+        // security check
+        if (   !\FWUser::getFWUserObject()->objUser->login()
+            || !\Permission::checkAccess(76, 'static', true)) {
+            throw new NoPermissionException($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
+        }
+
+        // check arguments
+        if (empty($params['get']['block']) || empty($params['get']['lang'])) {
+            throw new NotEnoughArgumentsException('not enough arguments');
+        }
+
+        // get language and block id
+        $id = intval($params['get']['block']);
+        $lang = \FWLanguage::getLanguageIdByCode($params['get']['lang']);
+        if (!$lang) {
+            $lang = FRONTEND_LANG_ID;
+        }
+        $content = $params['post']['content'];
+
+        // query to update content in database
+        $query = "UPDATE `".DBPREFIX."module_block_rel_lang_content`
+                      SET content = '".\contrexx_input2db($content)."'
+                  WHERE
+                      block_id = ".$id." AND lang_id = ".$lang;
+        $result = $objDatabase->Execute($query);
+
+        // error handling
+        if ($result === false) {
+            throw new BlockCouldNotBeSavedException('block could not be saved');
+        }
+        \LinkGenerator::parseTemplate($content);
+
+        $ls = new \LinkSanitizer(ASCMS_PATH_OFFSET.\Env::get('virtualLanguageDirectory').'/', $content);
+        $this->messages[] = $_CORELANG['TXT_CORE_SAVED_BLOCK'];
+
+        return array('content' => $ls->replace());
     }
 }
