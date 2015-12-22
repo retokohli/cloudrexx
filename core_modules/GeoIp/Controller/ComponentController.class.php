@@ -85,12 +85,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page)
     {
-        global $objCounter;
-        
         //skip the process incase mode is not frontend or GeoIp is deactivated
         if (   $this->cx->getMode() !== \Cx\Core\Core\Controller\Cx::MODE_FRONTEND
             || \FWValidator::isEmpty($this->getGeoIpServiceStatus())
         ) {
+            return;
+        }
+
+        // Get stats controller to get client ip
+        $componentRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+                            ->getDb()
+                            ->getEntityManager()
+                            ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $statsComponentContoller = $componentRepo->findOneBy(array('name' => 'Stats'));
+        if (!$statsComponentContoller) {
             return;
         }
 
@@ -100,7 +108,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $locale       = in_array($activeLocale, $this->availableLocale) ? $activeLocale : $this->defaultLocale;
         try {
             $reader = new \GeoIp2\Database\Reader($countryDb, array($locale));
-            $this->clientRecord = $reader->country($objCounter->getClientIp());
+            $this->clientRecord = $reader->country($statsComponentContoller->getCounterInstance()->getClientIp());
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
             return;

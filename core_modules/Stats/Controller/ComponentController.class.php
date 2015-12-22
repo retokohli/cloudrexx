@@ -77,11 +77,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $objCounter;
         // Initialize counter and track search engine robot
-        $objCounter = new \Cx\Core_Modules\Stats\Controller\StatsLibrary();
-        $objCounter->checkForSpider();
-        
+        $this->getCounterInstance()->checkForSpider();
+    }
+
+    /**
+     * Get the Counter instance, if instance already created use the existing one
+     *
+     * @return \Cx\Core_Modules\Stats\Controller\StatsLibrary
+     */
+    public function getCounterInstance()
+    {
+        global $objCounter;
+
+        if (!$objCounter) {
+            $objCounter = new \Cx\Core_Modules\Stats\Controller\StatsLibrary();
+        }
+
+        return $objCounter;
     }
 
 }
