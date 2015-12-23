@@ -71,6 +71,13 @@ class InitCMS
     public $arrModulePath = array();
 
     /**
+     * Current view type(web, app, mobile, etc)
+     *
+     * @var string
+     */
+    protected $currentChannel;
+
+    /**
     * int $isMobileDevice
     * whether we're dealing with a mobile device.
     * values 1 or 0.
@@ -229,22 +236,27 @@ class InitCMS
         // Load print template
         if (isset($_GET['printview']) && $_GET['printview'] == 1) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['print_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT;
         }
         // Load PDF template
         elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['pdf_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF;
         }
         // Load mobile template
         elseif ($this->isMobileDevice and $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['mobile_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE;
         }
         // Load app template
         elseif (isset($_GET['appview']) && $_GET['appview'] == 1) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['app_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP;
         }
         // Load regular content template
         else {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['themesid'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB;
         }
         
         $this->channelThemeId = $this->currentThemesId;
@@ -486,18 +498,19 @@ class InitCMS
             $this->customContentTemplate=$_GET['custom_content'];
         }
 
-        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
-
         if (isset($_GET['preview']) && intval($_GET['preview'])){
             $id = intval($_GET['preview']);
-            $theme = $themeRepository->findById($id);
+            $theme = $this->themeRepository->findById($id);
             if ($theme){
                 $this->currentThemesId = $id;
             }
         }
 
-		// get theme object so we get the configured libraries
-        $theme = $themeRepository->findById($this->currentThemesId);
+	// get theme object so we get the configured libraries
+        $theme = $this->themeRepository->findById($this->currentThemesId);
+        if (!$theme) {
+            $theme = $this->getFallbackTemplate();
+        }
         $themesPath = $theme->getFoldername();
         if ($theme && $theme->isComponent()) {
             $libraries = JS::getConfigurableLibraries();
@@ -555,6 +568,37 @@ class InitCMS
         }
 
         return $this->templates;
+    }
+
+    /**
+     * Load template from the fallback language
+     *
+     * @return Cx\Core\View\Model\Entity\Theme Template instance
+     * @throws \Exception Throws exception when template not found
+     */
+    protected function getFallbackTemplate()
+    {
+        // Get fallback language
+        // if fallback lang not set, it will return default language
+        // if given language is default language, it will return false
+        $fallbackLangId = \FWLanguage::getFallbackLanguageIdById($this->frontendLangId);
+        if (!$fallbackLangId) {
+            throw new \Exception('Could not load the fallback template');
+        }
+        do {
+            $theme = $this->themeRepository->getDefaultTheme($this->currentChannel, $fallbackLangId);
+            if ($theme) {
+                break;
+            }
+            if ($fallbackLangId == $this->defaultFrontendLangId) {
+                throw new \Exception('Could not load the fallback template');
+            }
+            $fallbackLangId = \FWLanguage::getFallbackLanguageIdById($fallbackLangId);
+        } while (!$theme);
+
+        $this->channelThemeId = $this->currentThemesId = $theme->getId();
+
+        return $theme;
     }
 
     /**
