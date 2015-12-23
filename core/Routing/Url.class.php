@@ -215,14 +215,7 @@ class Url {
         $domainRepo = $cx->getDb()->getEntityManager()->getRepository(
             'Cx\Core\Net\Model\Entity\Domain'
         );
-        $domains = array_map(
-            function ($domain) {
-                return $domain->getName();
-            },
-            $domainRepo->findAll()
-        );
-        $domainMatch = in_array($this->getDomain(), $domains);
-        if (!$domainMatch) {
+        if (!$domainRepo->findOneBy(array('name' => $this->getDomain()))) {
             return false;
         }
         
