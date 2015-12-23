@@ -3145,27 +3145,51 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                         $objRSSWriter->channelTitle = contrexx_raw2xml($this->arrSettings['news_feed_title'][$LangId]);
                         $objRSSWriter->channelDescription = contrexx_raw2xml($this->arrSettings['news_feed_description'][$LangId]);
-                        $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=News';
+                        $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            'News',
+                            '',
+                            $LangId
+                        )->toString();
                         $objRSSWriter->channelLanguage = \FWLanguage::getLanguageParameter($LangId, 'lang');
                         $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
 
                         if (!empty($this->arrSettings['news_feed_image'])) {
-                            $objRSSWriter->channelImageUrl = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).$this->arrSettings['news_feed_image'];
+                            $channelImageUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+                            $channelImageUrl->setMode('backend');
+                            $channelImageUrl->setPath(substr(
+                                $this->arrSettings['news_feed_image'],
+                                strlen(
+                                    \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()
+                                ) + 1
+                            ));
+                            $objRSSWriter->channelImageUrl = $channelImageUrl;
                             $objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
                             $objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
                         }
                         $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
-                        $itemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=News&amp;cmd=';
-                        
                         // create rss feed
                         $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/news_'.\FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
                         foreach ($arrNews as $newsId => $arrNewsItem) {
                             list($cmdDetail, $categories) = $this->getRssNewsLinks($LangId, $arrNewsItem['categoryIds'], $categoryDetails[$LangId]);
 
+                            $itemUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'News',
+                                '',
+                                $LangId,
+                                array(
+                                    'newsid' => $newsId,
+                                )
+                            );
                             $objRSSWriter->addItem(
                                 contrexx_raw2xml($arrNewsItem['title']),
-                                (empty($arrNewsItem['redirect'])) ? ($itemLink.$cmdDetail.'&amp;newsid='.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
+                                (empty($arrNewsItem['redirect'])) ?
+                                    contrexx_raw2xml($itemUrl->toString()) :
+                                    htmlspecialchars(
+                                        $arrNewsItem['redirect'],
+                                        ENT_QUOTES,
+                                        CONTREXX_CHARSET
+                                    ),
                                 contrexx_raw2xml($arrNewsItem['text']),
                                 '',
                                 $categories,
@@ -3184,15 +3208,20 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                         foreach ($arrNews as $newsId => $arrNewsItem) {
                             list($cmdDetail, $categories) = $this->getRssNewsLinks($LangId, $arrNewsItem['categoryIds'], $categoryDetails[$LangId]);
 
+                            $itemUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'News',
+                                '',
+                                $LangId,
+                                array(
+                                    'newsid' => $newsId,
+                                )
+                            );
+                            if (isset($arrNewsItem['teaser_frames'][0])) {
+                                $itemUrl->setParam('teaserId', $arrNewsItem['teaser_frames'][0]);
+                            }
                             $objRSSWriter->addItem(
                                 contrexx_raw2xml($arrNewsItem['title']),
-                                $itemLink
-                                    . $cmdDetail
-                                    . '&amp;newsid=' . $newsId
-                                    . (isset($arrNewsItem['teaser_frames'][0])
-                                        ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0]
-                                        : ''
-                                    ),
+                                contrexx_raw2xml($itemUrl->toString()),
                                 '',
                                 '',
                                 $categories,
@@ -3249,16 +3278,20 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             $currentCmdDetail = $this->findCmdById('details', array($newsCategoryId));
             $cmdDetail = !empty($currentCmdDetail) ? $currentCmdDetail : $cmdDetail;
             $cmdOverview = $this->findCmdById('', array($newsCategoryId));
-            $cmdOverview = !empty($cmdOverview) ? '&amp;cmd=' . $cmdOverview : '';
+            
+            $overviewUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                'News',
+                '',
+                $LangId,
+                array(
+                    'category' => $newsCategoryId,
+                )
+            );
+            if (!empty($cmdOverview)) {
+                $overviewUrl->setParam('cmd', $cmdOverview);
+            }
             $categories[] = array(
-                'domain' => 'http://'
-                . $_CONFIG['domainUrl']
-                . ($_SERVER['SERVER_PORT'] == 80 ? '' : ':' . intval($_SERVER['SERVER_PORT']))
-                . ASCMS_PATH_OFFSET . '/'
-                . \FWLanguage::getLanguageParameter($langId, 'lang') . '/'
-                . CONTREXX_DIRECTORY_INDEX
-                . '?section=news' . $cmdOverview
-                . '&amp;category=' . $newsCategoryId,
+                'domain' => contrexx_raw2xml($overviewUrl->toString()),
                 'title' => contrexx_raw2xml($categoryDetails[$newsCategoryId])
             );
         }
