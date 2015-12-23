@@ -330,7 +330,8 @@ class Wysiwyg
 
         try {
             //Store the process started time
-            $processTime = time();
+            $processTime = \Cx\Core\Core\Controller\Cx::instanciate()->getStartTime();
+
             //Get the file path and filename prefix
             $filePath   = is_callable($path) ? call_user_func($path) : $path;
             $filePrefix = is_callable($namePrefix) ? call_user_func($namePrefix) : $namePrefix;
@@ -369,7 +370,7 @@ class Wysiwyg
                 }
                 //Check the memory overflow and timeout limit
                 $this->checkMemoryLimit(self::MiB2);
-                $this->checkTimeoutLimit($processTime);
+                $this->checkTimeoutLimit($processTime[1]);
             }
             $content = $html->__toString();
 
