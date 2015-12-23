@@ -1502,14 +1502,16 @@ EOF;
 
             $objRSSWriter->addItem(
                 htmlspecialchars($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
-                \Cx\Core\Routing\Url::fromModuleAndCmd(
-                    'Podcast',
-                    '',
-                    '',
-                    array(
-                        'id' => $mediumId,
-                    )
-                )->toString(),
+                contrexx_raw2xhtml(
+                    \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Podcast',
+                        '',
+                        '',
+                        array(
+                            'id' => $mediumId,
+                        )
+                    )->toString()
+                ),
                 htmlspecialchars($arrMedium['description'], ENT_QUOTES, CONTREXX_CHARSET),
                 htmlspecialchars($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET),
                 $arrCategories,
