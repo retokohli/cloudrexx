@@ -1399,13 +1399,24 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $line = $words[$idx];
             }
         }
+        
+        $newsEditLink = \Cx\Core\Routing\Url::fromDocumentRoot(array(
+            'cmd' => 'News',
+            'act' => 'edit',
+            'newsId' => $news_id,
+            'validate' => 'true',
+        ));
+        $newsEditLink->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName(),
+                1
+            ) .                 
+            '/index.php'
+        );
+        $newsEditLink->setMode('backend');
+        
         $msg .= "$line\n";
-        $msg .= ' '
-                .ASCMS_PROTOCOL.'://'
-                .$_CONFIG['domainUrl']
-                .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
-                .ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=News'
-            . "&act=edit&newsId=$news_id&validate=true";
+        $msg .= ' ' . $newsEditLink->toString();
         $msg .= "\n\n";
         $msg .= $_CONFIG['coreAdminName'];
 
@@ -1879,10 +1890,16 @@ EOF;
     {
         global $_ARRAYLANG, $_LANGID;
 
-        $serverPort = $_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT']);
-        $rssFeedUrl = 'http://'.$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET.'/feed/news_headlines_'.\FWLanguage::getLanguageParameter($_LANGID, 'lang').'.xml';
-        $jsFeedUrl = 'http://'.$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET.'/feed/news_'.\FWLanguage::getLanguageParameter($_LANGID, 'lang').'.js';
-        $hostname = addslashes(htmlspecialchars($_SERVER['SERVER_NAME'], ENT_QUOTES, CONTREXX_CHARSET));
+        $documentRoot = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $documentRoot->setMode('backend');
+        
+        $documentRoot->setPath('feed/news_headlines_' . \FWLanguage::getLanguageParameter($_LANGID, 'lang') . '.xml');
+        $rssFeedUrl = $documentRoot->toString();
+        
+        $documentRoot->setPath('feed/news_' . \FWLanguage::getLanguageParameter($_LANGID, 'lang') . '.js');
+        $jsFeedUrl = $documentRoot->toString();
+        
+        $hostname = addslashes(htmlspecialchars(\Env::get('config')['domainUrl'], ENT_QUOTES, CONTREXX_CHARSET));
 
         $rss2jsCode = <<<RSS2JSCODE
 &lt;script language="JavaScript" type="text/javascript"&gt;
@@ -2082,10 +2099,22 @@ RSS2JSCODE;
         $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
         $objMail->IsHTML(false);
         $objMail->Subject   = sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_SUBJECT'], $newsMessageTitle);
-        $manageCommentsUrl  = ASCMS_PROTOCOL.'://'
-                              .$_CONFIG['domainUrl']
-                              .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
-                              .ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=News&act=comments&newsId='.$newsMessageId;
+        
+        $manageCommentsUrl = \Cx\Core\Routing\Url::fromDocumentRoot(array(
+            'cmd' => 'News',
+            'act' => 'comments',
+            'newsId' => $newsMessageId,
+        ));
+        $manageCommentsUrl->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName(),
+                1
+            ) .                 
+            '/index.php'
+        );
+        $manageCommentsUrl->setMode('backend');
+        $manageCommentsUrl = $manageCommentsUrl->toString();
+        
         $activateCommentTxt = $this->arrSettings['news_comments_autoactivate']
                               ? ''
                               : sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_LINK'], $manageCommentsUrl);

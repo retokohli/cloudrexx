@@ -260,10 +260,14 @@ class Ecard
 
         // Initialize variables
         $code = substr(md5(rand()), 1, 10);
-        $url = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].
-            ($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT'])).
-            CONTREXX_SCRIPT_PATH.
-            '?section=Ecard&cmd=show&code='.$code;
+        $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Ecard',
+            'show',
+            '',
+            array(
+                'code' => $code,
+            )
+        )->toString();
 
         // Initialize POST variables
         $id = intval($_POST['selectedEcard']);

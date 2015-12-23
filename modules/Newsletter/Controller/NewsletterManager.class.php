@@ -3421,17 +3421,19 @@ class NewsletterManager extends NewsletterLib
         $allImg = array();
         preg_match_all('/src="([^"]*)"/', $content_text, $allImg, PREG_PATTERN_ORDER);
         $size = sizeof($allImg[1]);
+        
         $i = 0;
-        $port = $_SERVER['SERVER_PORT'] != 80 ? ':'.intval($_SERVER['SERVER_PORT']) : '';
-
         while ($i < $size) {
             $URLforReplace = $allImg[1][$i];
-            if (substr($URLforReplace, 0, 7) != ASCMS_PROTOCOL.'://') {
-                $ReplaceWith = '"'.ASCMS_PROTOCOL.'://'.$_SERVER['SERVER_NAME'].$port.$URLforReplace.'"';
+            
+            $replaceUrl = new \Cx\Core\Routing\Url($URLforReplace, true);
+            if ($replaceUrl->isInternal()) {
+                $ReplaceWith = $replaceUrl->toString();
             } else {
                 $ReplaceWith = $URLforReplace;
             }
-            $content_text = str_replace('"'.$URLforReplace.'"', $ReplaceWith, $content_text);
+            
+            $content_text = str_replace('"'.$URLforReplace.'"', '"'.$ReplaceWith.'"', $content_text);
             $i++;
         }
 
@@ -3583,33 +3585,32 @@ class NewsletterManager extends NewsletterLib
             return '';
         }
 
+        $cmd = '';
         switch ($type) {
             case self::USER_TYPE_ACCESS:
-                $profileURI = '?section=Newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
+                $cmd = 'profile';
                 break;
 
             case self::USER_TYPE_NEWSLETTER:
             default:
-                $profileURI = '?section=Newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email);
+                $cmd = 'unsubscribe';
                 break;
         }
 
-        $uri =
-            ASCMS_PROTOCOL.'://'.
-            $_CONFIG['domainUrl'].
-            ($_SERVER['SERVER_PORT'] == 80
-              ? '' : ':'.intval($_SERVER['SERVER_PORT'])).
-            ASCMS_PATH_OFFSET.'/'.
-            \FWLanguage::getLanguageParameter(
-                $this->getUsersPreferredLanguageId(
-                    $email, 
-                    $type
-                ),
-                'lang'
-            ).
-            '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
+        $unsubscribeUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Newsletter',
+            $cmd,
+            $this->getUsersPreferredLanguageId(
+                $email,
+                $type
+            ),
+            array(
+                'code' => $code,
+                'mail' => urlencode($email),
+            )
+        );
 
-        return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
+        return '<a href="'.$unsubscribeUrl->toString().'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
     }
 
 
@@ -3618,29 +3619,26 @@ class NewsletterManager extends NewsletterLib
      */
     function GetProfileURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG;
 
         if ($type == self::USER_TYPE_CORE) {
             // recipients that will receive the newsletter through the selection of their user group don't have a profile
             return '';
         }
 
-        $profileURI = '?section=Newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
-        $uri =
-            ASCMS_PROTOCOL.'://'.
-            $_CONFIG['domainUrl'].
-            ($_SERVER['SERVER_PORT'] == 80
-              ? NULL : ':'.intval($_SERVER['SERVER_PORT'])).
-            ASCMS_PATH_OFFSET.'/'.
-            \FWLanguage::getLanguageParameter(
-                $this->getUsersPreferredLanguageId(
-                    $email,
-                    $type
-                ),
-                'lang'
-            ).
-            '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
-        return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
+        $profileUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Newsletter',
+            'profile',
+            $this->getUsersPreferredLanguageId(
+                $email,
+                $type
+            ),
+            array(
+                'code' => $code,
+                'mail' => urlencode($email),
+            )
+        );
+        return '<a href="'.$profileUrl->toString().'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
     }
 
 
