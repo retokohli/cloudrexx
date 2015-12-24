@@ -227,7 +227,16 @@ class Blog extends \Cx\Modules\Blog\Controller\BlogLibrary  {
         $arrNetworks = $this->createNetworkArray();
 
         if (count($arrNetworks) > 0) {
-            $strPageUrl = urlencode('http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).CONTREXX_SCRIPT_PATH.'?section=Blog&cmd=details&id='.$intMessageId);
+            $strPageUrl = urlencode(
+                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'Blog',
+                    'details',
+                    '',
+                    array(
+                        'id' => $intMessageId,
+                    )
+                )->toString()
+            );
 
             foreach ($arrNetworks as $arrNetworkValues) {
                 if (key_exists($this->_intLanguageId, $arrNetworkValues['status'])) {
@@ -583,8 +592,7 @@ class Blog extends \Cx\Modules\Blog\Controller\BlogLibrary  {
                     $strMailBody    = str_replace('[COMMENT]', $strComment, $strMailBody);
 
                     $objMail->CharSet = CONTREXX_CHARSET;
-                    $objMail->From = $_CONFIG['coreAdminEmail'];
-                    $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
+                    $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
                     $objMail->AddAddress($_CONFIG['coreAdminEmail']);
                     $objMail->Subject   = $strMailSubject;
                     $objMail->IsHTML(false);
