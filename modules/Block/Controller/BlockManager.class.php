@@ -722,6 +722,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'TXT_BLOCK_TARGETING_INCLUDE'       => $_ARRAYLANG['TXT_BLOCK_TARGETING_INCLUDE'],
             'TXT_BLOCK_TARGETING_EXCLUDE'       => $_ARRAYLANG['TXT_BLOCK_TARGETING_EXCLUDE'],
             'TXT_BLOCK_TARGETING_TYPE_LOCATION' => $_ARRAYLANG['TXT_BLOCK_TARGETING_TYPE_LOCATION'],
+            'TXT_BLOCK_TARGETING_GEOIP_DISABLED_WARNING'  => $_ARRAYLANG['TXT_BLOCK_TARGETING_GEOIP_DISABLED_WARNING'],
         ));
 
         $targetingStatus = isset($_POST['targeting_status']) ? contrexx_input2int($_POST['targeting_status']) : 0;
@@ -962,6 +963,12 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             $this->_objTpl->parse('block_language_content');
             $activeClass = '';
             $i++;
+        }
+        \Cx\Core\Setting\Controller\Setting::init('GeoIp', 'config', 'Yaml');
+        if (\FWValidator::isEmpty(\Cx\Core\Setting\Controller\Setting::getValue('serviceStatus', 'GeoIp'))) {
+            $this->_objTpl->touchBlock('warning_geoip_disabled');
+        } else {
+            $this->_objTpl->hideBlock('warning_geoip_disabled');
         }
     }
 

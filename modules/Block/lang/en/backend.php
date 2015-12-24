@@ -141,3 +141,4 @@ $_ARRAYLANG['TXT_BLOCK_TARGETING_VISITOR_CONDITION_BELOW'] = 'Visitor who meet t
 $_ARRAYLANG['TXT_BLOCK_TARGETING_INCLUDE'] = 'Include';
 $_ARRAYLANG['TXT_BLOCK_TARGETING_EXCLUDE'] = 'Exclude';
 $_ARRAYLANG['TXT_BLOCK_TARGETING_TYPE_LOCATION'] = 'Type location';
+$_ARRAYLANG['TXT_BLOCK_TARGETING_GEOIP_DISABLED_WARNING'] = 'Warning: The location-based services are currently deactivated. Unless activated, this option will cause the Content Pane to be no longer visible on the website. <a target="_blank" title="Activate location-based services" href="index.php?cmd=GeoIp">Activate location-based services now</a>';
