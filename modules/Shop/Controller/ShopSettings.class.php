@@ -85,7 +85,6 @@ class ShopSettings
         self::storeCurrencies();
         self::storePayments();
         self::storeShipping();
-        self::storeCountries();
         $result = Zones::store_from_post();
         if (isset($result)) {
             self::$changed = true;
@@ -98,6 +97,7 @@ class ShopSettings
                 return false;
             }
         }
+        self::storeCountries();
         if (self::$changed) {
             return (self::$success
                 ? \Message::ok($_CORELANG['TXT_CORE_SETTING_STORED_SUCCESSFULLY'])
@@ -187,26 +187,26 @@ class ShopSettings
         \Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_notes',
             intval($_POST['user_profile_attribute_notes']));
         // New in V3.0.4 or V3.1.0
-        if (!\Cx\Core\Setting\Controller\Setting::set('numof_products_per_page_backend',
-            intval($_POST['numof_products_per_page_backend']))) {
+        if (\Cx\Core\Setting\Controller\Setting::set('numof_products_per_page_backend',
+            intval($_POST['numof_products_per_page_backend'])) === false) {
             \Cx\Core\Setting\Controller\Setting::add('numof_products_per_page_backend',
                 intval($_POST['numof_products_per_page_backend']), 53,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         }
-        if (!\Cx\Core\Setting\Controller\Setting::set('numof_orders_per_page_backend',
-            intval($_POST['numof_orders_per_page_backend']))) {
+        if (\Cx\Core\Setting\Controller\Setting::set('numof_orders_per_page_backend',
+            intval($_POST['numof_orders_per_page_backend'])) === false) {
             \Cx\Core\Setting\Controller\Setting::add('numof_orders_per_page_backend',
                 intval($_POST['numof_orders_per_page_backend']), 54,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         }
-        if (!\Cx\Core\Setting\Controller\Setting::set('numof_coupon_per_page_backend',
-            intval($_POST['numof_coupon_per_page_backend']))) {
+        if (\Cx\Core\Setting\Controller\Setting::set('numof_coupon_per_page_backend',
+            intval($_POST['numof_coupon_per_page_backend'])) === false) {
             \Cx\Core\Setting\Controller\Setting::add('numof_coupon_per_page_backend',
                 intval($_POST['numof_coupon_per_page_backend']), 58,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         }
-        if (!\Cx\Core\Setting\Controller\Setting::set('numof_products_per_page_frontend',
-            intval($_POST['numof_products_per_page_frontend']))) {
+        if (\Cx\Core\Setting\Controller\Setting::set('numof_products_per_page_frontend',
+            intval($_POST['numof_products_per_page_frontend'])) === false) {
             \Cx\Core\Setting\Controller\Setting::add('numof_products_per_page_frontend',
                 intval($_POST['numof_products_per_page_frontend']), null,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
@@ -425,19 +425,12 @@ class ShopSettings
      */
     private static function storeCountries()
     {
-        // Skip if not submitted or if the list is empty.
-        // At least one Country needs to be active.
-        // "list1" contains the active Country IDs
-        if (   empty($_POST['countries'])
-            || empty($_POST['list1'])) return null;
-        $list = contrexx_input2raw($_POST['list1']);
-        sort($list);
-        $arrCountryIdActive = array_keys(\Cx\Core\Country\Controller\Country::getNameArray(true));
-        sort($arrCountryIdActive);
-        if ($list == $arrCountryIdActive) return null;
-        self::$changed = true;
-        $strCountryIdActive = join(',', $list);
-        return \Cx\Core\Country\Controller\Country::activate($strCountryIdActive);
+        if (!isset($_POST['bsubmit'])) {
+            return;
+        }
+        \Cx\Core\Setting\Controller\Setting::init('Shop', 'delivery');
+        $result = \Cx\Core\Setting\Controller\Setting::storeFromPost();
+        return $result;
     }
 
 
@@ -911,6 +904,15 @@ class ShopSettings
         // Note that the Settings *MUST* be reinited after adding new entries!
 
         // Add more new/missing settings here
+        \Cx\Core\Setting\Controller\Setting::init('Shop', 'delivery');
+        \Cx\Core\Setting\Controller\Setting::add(
+            'available_countries',
+            json_encode(array()),
+            1,
+            \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN_MULTISELECT,
+            '{src:\Cx\Core\Country\Controller\Country::getNameArray()}',
+            'delivery'
+        );
 
         \Cx\Lib\UpdateUtil::drop_table($table_name);
 

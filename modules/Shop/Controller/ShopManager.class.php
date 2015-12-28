@@ -70,7 +70,7 @@ class ShopManager extends ShopLibrary
     {
         global $_ARRAYLANG, $objTemplate;
 
-        \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
+        \Cx\Core\Setting\Controller\Setting::init('Shop', '');
         
         $this->checkProfileAttributes();
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
@@ -1349,25 +1349,36 @@ class ShopManager extends ShopLibrary
      */
     static function view_settings_countries()
     {
-        self::$objTemplate->addBlockfile('SHOP_SETTINGS_FILE',
-            'settings_block', 'module_shop_settings_countries.html');
-        $selected = '';
-        $notSelected = '';
-        $count = 0;
-        foreach (\Cx\Core\Country\Controller\Country::getArray($count) as $country_id => $arrCountry) {
-            if (empty($arrCountry['active'])) {
-                $notSelected .=
-                    '<option value="'.$country_id.'">'.
-                    $arrCountry['name']."</option>\n";
-            } else {
-                $selected .=
-                    '<option value="'.$country_id.'">'.
-                    $arrCountry['name']."</option>\n";
-            }
+        global $_ARRAYLANG;
+
+        // TODO: Temporary.  Remove in release with working update
+        // Returns NULL on missing entries even when other settings are properly loaded
+        \Cx\Core\Setting\Controller\Setting::init('Shop', 'delivery');
+        $availableCountries = \Cx\Core\Setting\Controller\Setting::getValue('available_countries', 'Shop');
+        if (is_null($availableCountries)) {
+            \Cx\Core\Setting\Controller\Setting::add(
+                'available_countries',
+                json_encode(array()),
+                1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN_MULTISELECT,
+                '{src:\Cx\Core\Country\Controller\Country::getNameArray()}',
+                'delivery'
+            );
         }
+        $template = new \Cx\Core\Html\Sigma();
+        \Cx\Core\Setting\Controller\Setting::show(
+            $template,
+            'index.php?cmd=Shop'. MODULE_INDEX .'&amp;act=settings&amp;tpl=countries',
+            $_ARRAYLANG['TXT_AVAILABLE_COUNTRIES'],
+            $_ARRAYLANG['TXT_AVAILABLE_COUNTRIES']
+        );
+        self::$objTemplate->addBlockfile(
+            'SHOP_SETTINGS_FILE',
+            'settings_block',
+            'module_shop_settings_countries.html'
+        );
         self::$objTemplate->setVariable(array(
-            'SHOP_COUNTRY_SELECTED_OPTIONS' => $selected,
-            'SHOP_COUNTRY_NOTSELECTED_OPTIONS' => $notSelected,
+            'SHOP_DELIVERY_AVAILABLE_COUNTRIES' => $template->get()
         ));
     }
 
