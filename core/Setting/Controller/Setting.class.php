@@ -594,6 +594,7 @@ class Setting{
             }
 
 //DBG::log("Value: $value -> align $value_align");
+            $isMultiSelect = false;
             switch ($type) {
               //Multiselect dropdown/Dropdown menu
               case self::TYPE_DROPDOWN_MULTISELECT:
