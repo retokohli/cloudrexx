@@ -600,12 +600,17 @@ class Setting{
               case self::TYPE_DROPDOWN_MULTISELECT:
                   $isMultiSelect = true;
               case self::TYPE_DROPDOWN:
-                $matches = null;
-                $arrValues = preg_match('/^\{src:([a-z0-9_\\\:]+)\(\)\}$/i', $arrSetting['values'], $matches)
-                             ? self::splitValues(call_user_func($matches[1]))
-                             : self::splitValues($arrSetting['values']);
+                $matches   = null;
+                $arrValues = $arrSetting['values'];
+                if (preg_match('/^\{src:([a-z0-9_\\\:]+)\(\)\}$/i', $arrSetting['values'], $matches)) {
+                    $arrValues = call_user_func($matches[1]);
+                }
+                if (is_string($arrValues)) {
+                    $arrValues = self::splitValues($arrValues);
+                }
                 $elementName   = $isMultiSelect ? $name.'[]' : $name;
-                $elementValue  = $isMultiSelect ? json_decode($value, true) : $value;
+                $value         = $isMultiSelect ? json_decode($value, true) : $value;
+                $elementValue  = is_array($value) ? array_flip($value) : $value;
                 $elementAttr   = $isMultiSelect ? ' multiple class="chzn-select"' : '';
                 $element       = \Html::getSelect(
                                     $elementName, $arrValues, $elementValue,
