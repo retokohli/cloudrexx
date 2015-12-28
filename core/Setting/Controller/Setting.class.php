@@ -616,7 +616,8 @@ class Setting{
                                     $elementName, $arrValues, $elementValue,
                                     '', '',
                                     'style="width: ' . self::DEFAULT_INPUT_WIDTH . 'px;' .
-                                    (   isset ($arrValues[$value])
+                                    (   !$isMultiSelect
+                                     && isset ($arrValues[$value])
                                      && is_numeric($arrValues[$value])
                                         ? 'text-align: right;' : '') . '"' .
                                     ($readOnly ? \Html::ATTRIBUTE_DISABLED : '') . $elementAttr);
