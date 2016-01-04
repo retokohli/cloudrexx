@@ -3175,12 +3175,15 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
                             $itemUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
                                 'News',
-                                '',
+                                $cmdDetail,
                                 $LangId,
                                 array(
                                     'newsid' => $newsId,
                                 )
                             );
+                            if (isset($arrNewsItem['teaser_frames'][0])) {
+                                $itemUrl->setParam('teaserId', $arrNewsItem['teaser_frames'][0]);
+                            }
                             $objRSSWriter->addItem(
                                 contrexx_raw2xml($arrNewsItem['title']),
                                 (empty($arrNewsItem['redirect'])) ?
@@ -3210,7 +3213,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
                             $itemUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
                                 'News',
-                                '',
+                                $cmdDetail,
                                 $LangId,
                                 array(
                                     'newsid' => $newsId,
@@ -3281,15 +3284,12 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             
             $overviewUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
                 'News',
-                '',
+                $cmdOverview,
                 $LangId,
                 array(
                     'category' => $newsCategoryId,
                 )
             );
-            if (!empty($cmdOverview)) {
-                $overviewUrl->setParam('cmd', $cmdOverview);
-            }
             $categories[] = array(
                 'domain' => contrexx_raw2xml($overviewUrl->toString()),
                 'title' => contrexx_raw2xml($categoryDetails[$newsCategoryId])
