@@ -1815,6 +1815,14 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     public function updateFromArray($newData) {
         foreach ($newData as $key => $value) {
             try {
+                //If the value from 'wysiwyg' editor 
+                //then extract data urls from img tag and 
+                //store the image in the path 'images/content' and 
+                //replace the data url by respective img path in the value
+                if ($key === 'content') {
+                    $wysiwyg = new \Cx\Core\Wysiwyg\Wysiwyg(null);
+                    $wysiwyg->extractDataUrlsToFileSystem($value, $this->cx->getWebsiteImagesContentWebPath());
+                }
                 call_user_func(array($this, "set".ucfirst($key)), $value);
             }
             catch (Exception $e) {
