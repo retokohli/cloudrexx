@@ -425,7 +425,10 @@ class Newsletter extends NewsletterLib
                                 if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
                                     if (!empty($arrAssociatedInactiveLists) || !empty($arrAssociatedLists) && ($objList = $objDatabase->SelectLimit('SELECT id FROM '.DBPREFIX.'module_newsletter_category WHERE status=1 AND (id='.implode(' OR id=', $arrAssociatedLists).')' , 1)) && $objList->RecordCount() > 0) {
                                         if ($recipientId > 0) {
+                                            // Get subscribed list to send notification email
+                                            $arrPreAssociatedActiveLists = $this->_getAssociatedListsOfRecipient($recipientId);
                                             if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, 1, $arrAssociatedLists, $recipientLanguage)) {
+                                                $this->sendSubscriptionNotificationMail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname, $arrAssociatedLists, $arrPreAssociatedActiveLists);
                                                 array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED']);
                                                 $showForm = false;
                                             } else {
@@ -759,6 +762,72 @@ class Newsletter extends NewsletterLib
         }
 
         return true;
+    }
+
+    /**
+     * Send the notificaiton about the newly subscribed lists
+     *
+     * @param string $recipientEmail                E-mail
+     * @param string $recipientSex                  Sex
+     * @param string $recipientTitle                User title
+     * @param string $recipientFirstname            First name
+     * @param string $recipientLastname             Last name
+     * @param array  $arrAssociatedLists            User subscribed list
+     * @param array  $arrPreAssociatedActiveLists   User already assigned lists
+     *
+     * @return null
+     */
+    public function sendSubscriptionNotificationMail($recipientEmail, $recipientSex, $recipientTitle, $recipientFirstname, $recipientLastname, $arrAssociatedLists, $arrPreAssociatedActiveLists)
+    {
+        global $_CONFIG;
+
+        sort($arrAssociatedLists);
+        sort($arrPreAssociatedActiveLists);
+        $newsletterKey = '';
+        $substitution  = array();
+        if ($arrAssociatedLists == $arrPreAssociatedActiveLists) {
+            // send the notification about the subscribe of same newsletter again
+            $newsletterKey = 'notify_subscription_list_same';
+        } else {
+            $newLists = array_diff($arrAssociatedLists, $arrPreAssociatedActiveLists);
+            if (!empty($newLists)) {
+                $newsletterKey = 'notify_subscription_list_additional';
+                $substitution['NEWSLETTER_LISTS'] = array();
+                foreach ($newLists as $listId) {
+                    $listName = $this->getListNameById($listId);
+                    if ($listName) {
+                        $substitution['NEWSLETTER_LISTS'][] = array(
+                          'NEWSLETTER_LIST' => contrexx_raw2xhtml($listName),
+                        );
+                    }
+                }
+            }
+        }
+        if (empty($newsletterKey)) {
+            return;
+        }
+
+        $arrSettings = $this->_getSettings();
+
+        $arrMailTemplate = array(
+            'key'          => $newsletterKey,
+            'section'      => 'Newsletter',
+            'lang_id'      => FRONTEND_LANG_ID,
+            'substitution' => array(
+                'NEWSLETTER_USER_SEX'       => $recipientSex,
+                'NEWSLETTER_USER_TITLE'     => $recipientTitle,
+                'NEWSLETTER_USER_FIRSTNAME' => $recipientFirstname,
+                'NEWSLETTER_USER_LASTNAME'  => $recipientLastname,
+                'NEWSLETTER_USER_EMAIL'     => $recipientEmail,
+                'NEWSLETTER_DOMAIN_URL'     => $_CONFIG['domainUrl'],
+                'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
+                'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
+                'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
+                'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue'],
+            ),
+        );
+        $arrMailTemplate['substitution'] = $substitution + $arrMailTemplate['substitution'];
+        \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate);
     }
 
     /**
