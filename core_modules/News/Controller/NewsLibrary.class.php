@@ -3079,7 +3079,7 @@ EOF;
 
             $objTpl->setVariable(array(
                 'TXT_NEWS_REDIRECT_INSTRUCTION' => $_ARRAYLANG['TXT_NEWS_REDIRECT_INSTRUCTION'],
-                'NEWS_REDIRECT_URL'             => contrexx_raw2encodedUrl($redirect),
+                'NEWS_REDIRECT_URL'             => $redirect,
                 'NEWS_REDIRECT_NAME'            => contrexx_raw2xhtml($redirectName),
             ));
             if ($objTpl->blockExists('news_redirect')) {
