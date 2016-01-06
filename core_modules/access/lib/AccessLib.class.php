@@ -1532,6 +1532,8 @@ JSaccessValidatePrimaryGroupAssociation
             $arrLetters[] = 48;
             $arrLetters = array_merge($arrLetters, range(65, 90)); // ascii codes of characters "A" to "Z"
             $arrLetters[] = '';
+            
+            $uri = \Cx\Core\Routing\Url::fromPage(\Env::get('cx')->getPage());
 
             foreach ($arrLetters as $letter) {
                 switch ($letter) {
@@ -1551,10 +1553,17 @@ JSaccessValidatePrimaryGroupAssociation
                 if ($letter == '' && $selectedLetter == '' || chr($letter) == $selectedLetter) {
                     $parsedLetter = '<strong>'.$parsedLetter.'</strong>';
                 }
+                
+                $uriLetter = null;
+                if (!empty($letter)) {
+                    $uriLetter = chr($letter);
+                }
+                $uri->setParam($paramName, $uriLetter);
 
                 $this->_objTpl->setVariable(array(
                     $this->modulePrefix.'USER_LETTER_INDEX_URI'        => $URI.(!empty($letter) ? '&amp;'.$paramName.'='.chr($letter) : null),
-                    $this->modulePrefix.'USER_LETTER_INDEX_LETTER'    => $parsedLetter
+                    $this->modulePrefix.'USER_LETTER_INDEX_LETTER'    => $parsedLetter,
+                    $this->modulePrefix.'USER_LETTER_INDEX_URI_SELF' => $uri,
                 ));
 
                 $this->_objTpl->parse('access_user_letter_index_list');
