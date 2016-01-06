@@ -33,7 +33,7 @@
                     });
                 },
                 select: function( event, ui ) {
-                    uiSelectedCountry = ui.item.id;
+                    uiSelectedCountry = parseInt( ui.item.id );
                     cx.jQuery( '#selectedCoutries' ).tagit( 'createTag', ui.item.value );
                     return false;
                 }
