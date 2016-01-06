@@ -326,9 +326,9 @@ class Feed extends FeedLibrary
             $x = 0;
             foreach ($rss->getItems() as $value){
                 if ($x < $objResult->fields['articles']) {
-                    $feedLink = !empty($value['link'])
-                                  ? $value['link']
-                                  : (!empty($value['guid']) ? $value['guid'] : '');
+                    $feedLink = !empty($value['guid'])
+                                  ? $value['guid']
+                                  : (!empty($value['link']) ? $value['link'] : '');
                     $this->_objTpl->setVariable(array(
                         'FEED_ROWCLASS' => $x % 2 ? 'row2' : 'row1',
                         'FEED_DATE'     => date('d.m.Y', strtotime($value['pubdate'])),
