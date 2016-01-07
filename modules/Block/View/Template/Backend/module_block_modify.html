@@ -80,9 +80,18 @@
             fieldName: 'targeting[country][value][]',
             placeholderText: '{TXT_BLOCK_TARGETING_TYPE_LOCATION}'
         });
-        cx.jQuery( 'ul.tagit li.tagit-new > input' ).keyup(function(){
-            cx.jQuery( this ).removeClass( 'error' );
-        });
+        cx.jQuery( 'ul.tagit li.tagit-new > input' )
+            .keyup(function() {
+                cx.jQuery( this ).removeClass( 'error' );
+            })
+            .focusin(function() {
+                cx.jQuery( this ).removeClass( 'error' );
+            })
+            .blur(function() {
+                if ( cx.jQuery( this ).val() != '' ) {
+                    cx.jQuery( this ).addClass( 'error' );
+                }
+            });
         cx.jQuery("#blockLanguages li a:visible").first().click();
     });
 
