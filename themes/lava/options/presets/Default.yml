@@ -1,0 +1,45 @@
+options:
+  -
+    name: main_title
+    specific:
+      textvalue: 'Template Editor Test'
+  -
+    name: subtitle
+    specific:
+      textvalue: 'Testing the templateditor sfdsfs'
+  -
+    name: main_color
+    specific:
+      color: '#ff755a'
+  -
+    name: secondary_color
+    specific:
+      color: '#ff755a'
+  -
+    name: font_color
+    specific:
+      color: '#a5b2b9'
+  -
+    name: regular_text  
+    specific:
+      activeChoice: 'Arial'
+  -
+    name: news_area
+    specific:
+      active: true
+  -
+    name: logo
+    specific:
+      url: /themes/lava/images/logo.png
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption
+    translation:
+        1: logo
+        2: logo
+  -
+    name: slider_images
+    specific:
+      urls:
+        1: /themes/lava/images/header1.jpg
+        2: /themes/lava/images/header2.jpg
+        3: /themes/lava/images/header3.jpg
+      type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageSeriesOption

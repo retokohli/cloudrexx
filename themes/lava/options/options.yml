@@ -1,0 +1,114 @@
+activePreset: Default
+options:
+  -
+    name: main_color
+    specific:
+      choice:
+        - '#1ABC9C'
+        - '#16A085'
+        - '#2ECC71'
+        - '#27AE60'
+        - '#3498DB'
+        - '#2980B9'
+        - '#9B59B6'
+        - '#8E44AD'
+        - '#34495E'
+        - '#2C3E50'
+        - '#F1C40F'
+        - '#F39C12'
+        - '#E67E22'
+        - '#D35400'
+        - '#E74C3C'
+        - '#C0392B'
+        - '#ECF0F1'
+        - '#BDC3C7'
+        - '#95A5A6'
+        - '#7F8C8D'
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption
+    translation:
+      1: Navigation
+      2: Navbar
+  -
+    name: secondary_color
+    specific:
+      choice:
+        - '#1ABC9C'
+        - '#16A085'
+        - '#2ECC71'
+        - '#27AE60'
+        - '#3498DB'
+        - '#2980B9'
+        - '#9B59B6'
+        - '#8E44AD'
+        - '#34495E'
+        - '#2C3E50'
+        - '#F1C40F'
+        - '#F39C12'
+        - '#E67E22'
+        - '#D35400'
+        - '#E74C3C'
+        - '#C0392B'
+        - '#ECF0F1'
+        - '#BDC3C7'
+        - '#95A5A6'
+        - '#7F8C8D'
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption
+    translation:
+      1: Akzentfarbe
+      2: 'Accent color'
+  -
+    name: font_color
+    specific:
+      choice:
+        - '#1ABC9C'
+        - '#16A085'
+        - '#2ECC71'
+        - '#27AE60'
+        - '#3498DB'
+        - '#2980B9'
+        - '#9B59B6'
+        - '#8E44AD'
+        - '#34495E'
+        - '#2C3E50'
+        - '#F1C40F'
+        - '#F39C12'
+        - '#E67E22'
+        - '#D35400'
+        - '#E74C3C'
+        - '#C0392B'
+        - '#ECF0F1'
+        - '#BDC3C7'
+        - '#95A5A6'
+        - '#7F8C8D'
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption
+    translation:
+      1: Fontfarbe
+      2: 'Font color'
+  -
+    name: regular_text  
+    specific: {  }
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\FontOption
+    translation:
+      1: 'Regular Text'
+      2: 'Regular Text'
+  -
+    name: news_area
+    specific: {  }
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\AreaOption
+    translation:
+      1: 'News anzeigen'
+      2: 'Show News'
+  -
+    name: logo  
+    specific: {  }
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption
+    translation:
+      1: Logo
+      2: Logo
+  -
+    name: slider_images
+    specific: {  }
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageSeriesOption
+    translation:
+      1: 'Haupt Slider'
+      2: 'Main Slider'

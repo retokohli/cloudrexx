@@ -2958,3 +2958,13 @@ a.out {
 .blog-post h2 {
     color: #626C72;
 }
+.blog-post h1,
+.blog-post h5,
+.blog-post h6 {
+    color: #a5b2b9;
+}
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover {
+opacity: 0.8;
+}
