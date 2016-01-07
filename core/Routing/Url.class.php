@@ -176,8 +176,12 @@ class Url {
         if (file_exists($fileName)) {
             $this->setMode('backend');
         }
-        
         $this->realPath = '/' . $path;
+
+        // do not add virtual language dir in backend
+        if (strpos($this->realPath, \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName()) === 0) {
+            $this->setMode('backend');
+        }
         
         if(!empty($data['query'])) {
             $path .= '?' . $data['query'];
@@ -699,20 +703,6 @@ class Url {
             $url = new static($url);
         }
         
-        // disable virtual language dir if not in Backend
-        if (
-            preg_match(
-                '/.*(' .
-                    \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName() .
-                    ').*/',
-                $url->getPath()
-            ) < 1 &&
-            $url->getProtocol() != 'file'
-        ) {
-            $url->setMode('frontend');
-        } else {
-            $url->setMode('backend');
-        }
         return $url;
     }
 
