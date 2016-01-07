@@ -128,7 +128,6 @@ $_ARRAYLANG['TXT_BLOCK_CATEGORY_SEPERATOR'] = "Trennzeichen für Rubrik Platzhal
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME'] = "Anzeigedauer";
 $_ARRAYLANG['TXT_BLOCK_CONTENT'] = "Inhalt";
 $_ARRAYLANG['TXT_BLOCK_ORDER']   = "Reihenfolge";
-$_ARRAYLANG['TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'] = "Anzeige im globalen Platzhalter";
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'] = "Inhaltscontainer wird nur auf den folgenden Seiten angezeigt:";
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE'] = "Inhaltscontainer wird auf jeder Seite angezeigt.";
 $_ARRAYLANG['TXT_BLOCK_USE_WYSIWYG_EDITOR'] = "WYSIWYG-Editor verwenden";
@@ -140,5 +139,5 @@ $_ARRAYLANG['TXT_BLOCK_TARGETING_ALL_USERS'] = 'Alle Besucher';
 $_ARRAYLANG['TXT_BLOCK_TARGETING_VISITOR_CONDITION_BELOW'] = 'Besucher welche die folgenden Kriterien erfüllen';
 $_ARRAYLANG['TXT_BLOCK_TARGETING_INCLUDE'] = 'Einschliesslich';
 $_ARRAYLANG['TXT_BLOCK_TARGETING_EXCLUDE'] = 'Ausschliesslich';
-$_ARRAYLANG['TXT_BLOCK_TARGETING_TYPE_LOCATION'] = 'Ort eingeben';
+$_ARRAYLANG['TXT_BLOCK_TARGETING_TYPE_LOCATION'] = 'Land eingeben';
 $_ARRAYLANG['TXT_BLOCK_TARGETING_GEOIP_DISABLED_WARNING'] = 'Achtung: Die standortbezogenen Dienste sind aktuell deaktiviert. Sofern diese nicht aktiviert werden, führt die Verwendung dieser Funktion dazu, dass dieser Inhaltscontainer auf der Website nicht mehr angezeigt wird. <a target="_blank" title="Standortbezogenen Dienste jetzt aktivieren" href="index.php?cmd=GeoIp">Standortbezogenen Dienste jetzt aktivieren</a>';

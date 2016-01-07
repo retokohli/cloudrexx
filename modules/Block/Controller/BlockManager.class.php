@@ -279,7 +279,6 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'TXT_BLOCK_SUBMIT_GLOBAL_OFF'       => $_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL_OFF'],
             'TXT_BLOCK_SELECT_ALL'              => $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'],
             'TXT_BLOCK_DESELECT_ALL'            => $_ARRAYLANG['TXT_BLOCK_DESELECT_ALL'],
-            'TXT_BLOCK_RANDOM'                  => $_ARRAYLANG['TXT_BLOCK_RANDOM'],
             'TXT_BLOCK_PLACEHOLDER'             => $_ARRAYLANG['TXT_BLOCK_PLACEHOLDER'],
             'TXT_BLOCK_FUNCTIONS'               => $_ARRAYLANG['TXT_BLOCK_FUNCTIONS'],
             'TXT_BLOCK_DELETE_SELECTED_BLOCKS'  => $_ARRAYLANG['TXT_BLOCK_DELETE_SELECTED_BLOCKS'],
@@ -291,7 +290,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'TXT_BLOCK_CATEGORIES_ALL'          => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_ALL'],
             'TXT_BLOCK_ORDER'                   => $_ARRAYLANG['TXT_BLOCK_ORDER'],
             'TXT_BLOCK_LANGUAGE'                => $_ARRAYLANG['TXT_BLOCK_LANGUAGE'],
-            'TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'=> $_ARRAYLANG['TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'],
+            'TXT_BLOCK_INCLUSION'               => $_ARRAYLANG['TXT_BLOCK_INCLUSION'],
             'BLOCK_CATEGORIES_DROPDOWN'         => $this->_getCategoriesDropdown($catId),
             'DIRECTORY_INDEX'                   => CONTREXX_DIRECTORY_INDEX,
             'CSRF_PARAM'                        => \Cx\Core\Csrf\Controller\Csrf::param(),
@@ -299,102 +298,97 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
 
         $arrBlocks = $this->getBlocks($catId);
 
+        if (empty($arrBlocks)) {
+            return;
+        }
+
         // create new ContentTree instance
         $objContentTree = new \ContentTree();
-        
-        if (count($arrBlocks)>0) {
-            $rowNr = 0;
-            foreach ($arrBlocks as $blockId => $arrBlock) {
-                if ($arrBlock['active'] ==  '1') {
-                    $status = '<a href="index.php?cmd=Block&amp;act=deactivate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'"><img src="../core/Core/View/Media/icons/led_green.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'" /></a>';
-                }else{
-                    $status = '<a href="index.php?cmd=Block&amp;act=activate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'"><img src="../core/Core/View/Media/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'" /></a>';
-                }
 
-                if ($arrBlock['random'] ==  '1') {
-                    $random = '<img src="'.ASCMS_MODULE_WEB_PATH.'/Block/View/Media/Shuffle1.png" width="16" height="16" border="0" alt="random 1" class="tooltip-trigger" /><span class="tooltip-message">'.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'</span>';
-                } else {
-                    $random = '<img src="../core/Core/View/Media/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
-                }
-
-                if ($arrBlock['random2'] ==  '1') {
-                    $random2 = '<img src="'.ASCMS_MODULE_WEB_PATH.'/Block/View/Media/Shuffle2.png" width="16" height="16" border="0" alt="random 2" class="tooltip-trigger" /><span class="tooltip-message">'.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'</span>';
-                } else {
-                    $random2 = '<img src="../core/Core/View/Media/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
-                }
-
-                if ($arrBlock['random3'] ==  '1') {
-                    $random3 = '<img src="'.ASCMS_MODULE_WEB_PATH.'/Block/View/Media/Shuffle3.png" width="16" height="16" border="0" alt="random 3" class="tooltip-trigger" /><span class="tooltip-message">'.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'</span>';
-                } else {
-                    $random3 = '<img src="../core/Core/View/Media/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
-                }
-
-                if ($arrBlock['random4'] ==  '1') {
-                    $random4 = '<img src="'.ASCMS_MODULE_WEB_PATH.'/Block/View/Media/Shuffle4.png" width="16" height="16" border="0" alt="random 4" class="tooltip-trigger" /><span class="tooltip-message">'.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'</span>';
-                } else {
-                    $random4 = '<img src="../core/Core/View/Media/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
-                }
-
-                if ($arrBlock['global'] ==  '1') {
-                    $global = '<img src="../core/Core/View/Media/icons/upload.gif" width="16" height="16" border="0" alt="upload" title="upload" />';
-                } else {
-                    $global = '&nbsp;';
-                }
-
-                $lang = array();
-                foreach ($arrBlock['lang'] as $langId) {
-                    $lang[] = \FWLanguage::getLanguageCodeById($langId);
-                }
-                $langString = implode(', ',$lang);
-                
-                switch ($arrBlock['global']) {
-                    case '1':
-                        $checkImage = "../core/Core/View/Media/icons/check.gif";
-                        break;
-                    case '2':
-                        $checkImage = "../core/Core/View/Media/icons/check.gif";
-                        
-                        $blockAssociatedPageIds = $this->_getAssociatedPageIds($blockId, 'global');
-                        $selectedPages    = array();
-                        $strSelectedPages = '';
-                        
-                        foreach ($objContentTree->getTree() as $arrData) {
-                            if (in_array($arrData['catid'], $blockAssociatedPageIds)) {                
-                                $selectedPages[] = contrexx_raw2xhtml($arrData['catname']);
-                            }
-                        } 
-                        $strSelectedPages = implode('<br />', $selectedPages);                        
-                        break;
-                    default :
-                        $checkImage = '../core/Core/View/Media/icons/pixel.gif';
-                        break;
-                }
-                    
-                $this->_objTpl->setVariable(array(
-                    'BLOCK_ROW_CLASS'             => $rowNr % 2 ? "row1" : "row2",
-                    'BLOCK_ID'                    => $blockId,
-                    'BLOCK_RANDOM'                => $random,
-                    'BLOCK_RANDOM_2'              => $random2,
-                    'BLOCK_RANDOM_3'              => $random3,
-                    'BLOCK_RANDOM_4'              => $random4,
-                    'BLOCK_CATEGORY_NAME'         => $this->_categoryNames[$arrBlock['cat']],
-                    'BLOCK_GLOBAL'                => $global,
-                    'BLOCK_ORDER'                 => $arrBlock['order'],
-                    'BLOCK_PLACEHOLDER'           => $this->blockNamePrefix.$blockId,
-                    'BLOCK_NAME'                  => contrexx_raw2xhtml($arrBlock['name']),
-                    'BLOCK_MODIFY'                => sprintf($_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
-                    'BLOCK_COPY'                  => sprintf($_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
-                    'BLOCK_DELETE'                => sprintf($_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
-                    'BLOCK_STATUS'                => $status,
-                    'BLOCK_LANGUAGES_NAME'        => $langString,
-                    'BLOCK_GLOBAL_CHECK_IMAGE'    => $checkImage,
-                    'BLOCK_CHECK_IMAGE_DISPLAY'   => ($arrBlock['global'] == 0) ? 'display:none' : 'display:block',
-                    'BLOCK_CHECK_IMAGE_TITLE'     => ($arrBlock['global'] == 1) ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE'] : (($arrBlock['global'] == 2) ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'].'<br />'.$strSelectedPages : '')
-                ));
-                $this->_objTpl->parse('blockBlockList');
-
-                $rowNr ++;                
+        $rowNr = 0;
+        foreach ($arrBlocks as $blockId => $arrBlock) {
+            if ($arrBlock['active'] ==  '1') {
+                $status = '<a href="index.php?cmd=Block&amp;act=deactivate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'"><img src="../core/Core/View/Media/icons/led_green.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'" /></a>';
+            } else {
+                $status = '<a href="index.php?cmd=Block&amp;act=activate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'"><img src="../core/Core/View/Media/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'" /></a>';
             }
+
+            $random1Class = ($arrBlock['random']  ==  1) ? 'active' : '';
+            $random2Class = ($arrBlock['random2'] ==  1) ? 'active' : '';
+            $random3Class = ($arrBlock['random3'] ==  1) ? 'active' : '';
+            $random4Class = ($arrBlock['random4'] ==  1) ? 'active' : '';
+            $globalClass  = in_array($arrBlock['global'], array(1, 2)) ? 'active' : '';
+
+            $lang = array();
+            foreach ($arrBlock['lang'] as $langId) {
+                $lang[] = \FWLanguage::getLanguageCodeById($langId);
+            }
+            $langString = implode(', ',$lang);
+
+            $strSelectedPages = '';
+            if ($arrBlock['global'] == 2) {
+                $blockAssociatedPageIds = $this->_getAssociatedPageIds($blockId, 'global');
+
+                $selectedPages    = array();
+                foreach ($objContentTree->getTree() as $arrData) {
+                    if (in_array($arrData['catid'], $blockAssociatedPageIds)) {
+                        $selectedPages[] = contrexx_raw2xhtml($arrData['catname']);
+                    }
+                }
+                $strSelectedPages = implode('<br />', $selectedPages);
+            }
+
+            $targeting      = $this->loadTargetingSettings($blockId);
+            $targetingClass = '';
+            if (!empty($targeting)) {
+                $targetingClass       = 'active';
+                $arrSelectedCountries = array();
+                if (!empty($targeting['country']) && !empty($targeting['country']['value'])) {
+                    foreach ($targeting['country']['value'] as $countryId) {
+                        $countryName = \Cx\Core\Country\Controller\Country::getNameById($countryId);
+                        if (!empty($countryName)) {
+                            $arrSelectedCountries[] = $countryName;
+                        }
+                    }
+                }
+                $strSelectedCountries = implode('<br />', $arrSelectedCountries);
+            }
+
+            $this->_objTpl->setVariable(array(
+                'BLOCK_ROW_CLASS'             => $rowNr % 2 ? "row1" : "row2",
+                'BLOCK_ID'                    => $blockId,
+                'BLOCK_RANDOM_1_CLASS'        => $random1Class,
+                'BLOCK_RANDOM_2_CLASS'        => $random2Class,
+                'BLOCK_RANDOM_3_CLASS'        => $random3Class,
+                'BLOCK_RANDOM_4_CLASS'        => $random4Class,
+                'BLOCK_RANDOM_1_INFO'         => sprintf($_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'], '[[BLOCK_RANDOMIZER]]'),
+                'BLOCK_RANDOM_2_INFO'         => sprintf($_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'], '[[BLOCK_RANDOMIZER2]]'),
+                'BLOCK_RANDOM_3_INFO'         => sprintf($_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'], '[[BLOCK_RANDOMIZER3]]'),
+                'BLOCK_RANDOM_4_INFO'         => sprintf($_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'], '[[BLOCK_RANDOMIZER4]]'),
+                'BLOCK_TARGETING_CLASS'       => $targetingClass,
+                'BLOCK_TARGETING_INFO'        => !empty($targeting) 
+                                                    ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGES'] . '<br />' . $strSelectedCountries 
+                                                    : $_ARRAYLANG['TXT_BLOCK_LOCATION_BASED_DISPLAY_INFO'],
+                'BLOCK_GLOBAL_CLASS'          => $globalClass,
+                'BLOCK_GLOBAL_INFO'           => ($arrBlock['global'] == 1)
+                                                    ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE']
+                                                    : (($arrBlock['global'] == 2)
+                                                            ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'] . '<br />' . $strSelectedPages
+                                                            : $_ARRAYLANG['TXT_BLOCK_DISPLAY_GLOBAL_INACTIVE']
+                                                      ),
+                'BLOCK_CATEGORY_NAME'         => $this->_categoryNames[$arrBlock['cat']],
+                'BLOCK_ORDER'                 => $arrBlock['order'],
+                'BLOCK_PLACEHOLDER'           => $this->blockNamePrefix.$blockId,
+                'BLOCK_NAME'                  => contrexx_raw2xhtml($arrBlock['name']),
+                'BLOCK_MODIFY'                => sprintf($_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
+                'BLOCK_COPY'                  => sprintf($_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
+                'BLOCK_DELETE'                => sprintf($_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
+                'BLOCK_STATUS'                => $status,
+                'BLOCK_LANGUAGES_NAME'        => $langString,
+            ));
+            $this->_objTpl->parse('blockBlockList');
+
+            $rowNr ++;
         }
     }
 

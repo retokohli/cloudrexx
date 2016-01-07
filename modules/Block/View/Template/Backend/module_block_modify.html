@@ -21,6 +21,9 @@
                 source: function( request, response ) {
                     var term = request.term;
                     if ( term in cache ) {
+                      if ( !cache[ term ].length ) {
+                          cx.jQuery( 'ul.tagit li.tagit-new > input' ).addClass('error');
+                      }
                       response( cache[ term ] );
                       return;
                     }
@@ -28,6 +31,9 @@
                         if ( data.status == 'success' ) {
                             availableCountries = data.data.countries;
                             cache[ term ] = availableCountries;
+                            if ( !availableCountries.length ) {
+                                cx.jQuery( 'ul.tagit li.tagit-new > input' ).addClass('error');
+                            }
                             response( availableCountries );
                         }
                     });
@@ -73,6 +79,9 @@
             },
             fieldName: 'targeting[country][value][]',
             placeholderText: '{TXT_BLOCK_TARGETING_TYPE_LOCATION}'
+        });
+        cx.jQuery( 'ul.tagit li.tagit-new > input' ).keyup(function(){
+            cx.jQuery( this ).removeClass( 'error' );
         });
         cx.jQuery("#blockLanguages li a:visible").first().click();
     });
@@ -479,6 +488,7 @@
     #targeting_filter_block ul.tagit li.tagit-new {
         margin-top: 0;
         padding-top: 0;
+        padding-bottom: 0;
     }
     #targeting_filter_block ul.tagit input[type="text"] {
         width: 250px;
@@ -489,6 +499,10 @@
     .ui-autocomplete-loading {
       background: white url("../lib/javascript/jquery/ui/images/ui-anim_basic_16x16.gif") right center no-repeat;
     }
+    #targeting_filter_block ul.tagit li.tagit-new input.error {
+        background: #fee;
+    }
+
 </style>
 {BLOCK_WYSIWYG_MEDIABROWSER}
 <form name="blockFormModifyBlock" action="index.php?cmd=Block&amp;act=modify" method="post" onsubmit="onSubmit();">
