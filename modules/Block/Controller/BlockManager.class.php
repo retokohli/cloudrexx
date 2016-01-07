@@ -305,7 +305,6 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         // create new ContentTree instance
         $objContentTree = new \ContentTree();
         $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        $pageLinkTemplate = '<li><a href="%1$s" target="_blank">%2$s</a></li>';
 
         $rowNr = 0;
         foreach ($arrBlocks as $blockId => $arrBlock) {
@@ -314,6 +313,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             } else {
                 $status = '<a href="index.php?cmd=Block&amp;act=activate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'"><img src="../core/Core/View/Media/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'" /></a>';
             }
+
+            $blockPlaceholder = $this->blockNamePrefix . $blockId;
 
             $random1Class = ($arrBlock['random']  ==  1) ? 'active' : '';
             $random2Class = ($arrBlock['random2'] ==  1) ? 'active' : '';
@@ -332,24 +333,12 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             }
             $langString = implode(', ',$lang);
 
-            $strSelectedPages = '';
-            if ($arrBlock['global'] == 2) {
-                $blockAssociatedPageIds = $this->_getAssociatedPageIds($blockId, 'global');
-
-                $selectedPages    = array();
-                foreach ($objContentTree->getTree() as $arrData) {
-                    if (in_array($arrData['catid'], $blockAssociatedPageIds)) {
-                        $page = $pageRepo->findOneById($arrData['catid']);
-                        if (!$page) {
-                            continue;
-                        }
-                        $selectedPages[] = sprintf($pageLinkTemplate, \Cx\Core\Routing\Url::fromPage($page)->toString(), contrexx_raw2xhtml($arrData['catname']));
-                    }
-                }
-                if ($selectedPages) {
-                    $strSelectedPages = '<ul>'.implode($selectedPages).'</ul>';
-                }
-            }
+            $strGlobalSelectedPages = ($arrBlock['global'] == 2)
+                                        ? $this->getSelectedPages($blockId, 'global', $objContentTree, $pageRepo)
+                                        : '';
+            $strDirectSelectedPages = ($arrBlock['direct'] == 1)
+                                        ? $this->getSelectedPages($blockId, 'direct', $objContentTree, $pageRepo)
+                                        : '';
 
             $targeting      = $this->loadTargetingSettings($blockId);
             $targetingClass = '';
@@ -371,6 +360,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                 }
             }
 
+            $blockDirectInfo = sprintf(($arrBlock['direct'] == 1 ? $_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_SELECTED_PAGES'] : $_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_ALL_PAGES']), '[['. $blockPlaceholder .']]');
             $this->_objTpl->setVariable(array(
                 'BLOCK_ROW_CLASS'             => $rowNr % 2 ? "row1" : "row2",
                 'BLOCK_ID'                    => $blockId,
@@ -390,12 +380,15 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                 'BLOCK_GLOBAL_INFO'           => ($arrBlock['global'] == 1)
                                                     ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE']
                                                     : (($arrBlock['global'] == 2)
-                                                            ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'] . '<br />' . $strSelectedPages
+                                                            ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'] . '<br />' . $strGlobalSelectedPages
                                                             : $_ARRAYLANG['TXT_BLOCK_DISPLAY_GLOBAL_INACTIVE']
                                                       ),
                 'BLOCK_CATEGORY_NAME'         => $this->_categoryNames[$arrBlock['cat']],
                 'BLOCK_ORDER'                 => $arrBlock['order'],
-                'BLOCK_PLACEHOLDER'           => $this->blockNamePrefix.$blockId,
+                'BLOCK_PLACEHOLDER'           => $blockPlaceholder,
+                'BLOCK_PLACEHOLDER_INFO'      => ($arrBlock['direct'] == 1)
+                                                    ? $blockDirectInfo . '<br />' . $strDirectSelectedPages
+                                                    : $blockDirectInfo,
                 'BLOCK_NAME'                  => contrexx_raw2xhtml($arrBlock['name']),
                 'BLOCK_MODIFY'                => sprintf($_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
                 'BLOCK_COPY'                  => sprintf($_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
@@ -407,6 +400,40 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
 
             $rowNr ++;
         }
+    }
+
+    /**
+     * Get selected pages for a block to display in overview page
+     * @see $this->_showOverview()
+     *
+     * @param integer                                                 $blockId            Block id
+     * @param string                                                  $placeholder        Placeholder (global, direct)
+     * @param \ContentTree                                            $objContentTree     ContentTree instance
+     * @param \Cx\Core\ContentManager\Model\Repository\PageRepository $pageRepo           PageRepository instance
+     *
+     * @return string Return the selected pages as <ul><li></li></ul>
+     */
+    function getSelectedPages($blockId, $placeholder, \ContentTree $objContentTree, \Cx\Core\ContentManager\Model\Repository\PageRepository $pageRepo)
+    {
+        $pageLinkTemplate       = '<li><a href="%1$s" target="_blank">%2$s</a></li>';
+        $blockAssociatedPageIds = $this->_getAssociatedPageIds($blockId, $placeholder);
+
+        $selectedPages    = array();
+        $strSelectedPages = '';
+        foreach ($objContentTree->getTree() as $arrData) {
+            if (!in_array($arrData['catid'], $blockAssociatedPageIds)) {
+                continue;
+            }
+            $page = $pageRepo->findOneById($arrData['catid']);
+            if (!$page) {
+                continue;
+            }
+            $selectedPages[] = sprintf($pageLinkTemplate, \Cx\Core\Routing\Url::fromPage($page)->toString(), contrexx_raw2xhtml($arrData['catname']));
+        }
+        if ($selectedPages) {
+            $strSelectedPages = '<ul>'.implode($selectedPages).'</ul>';
+        }
+        return $strSelectedPages;
     }
 
     /**

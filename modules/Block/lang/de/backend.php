@@ -147,3 +147,5 @@ $_ARRAYLANG['TXT_BLOCK_LOCATION_BASED_DISPLAY_INFO'] = 'Dieser Inhaltscontainer 
 $_ARRAYLANG['TXT_BLOCK_TARGETING_INFO_INCLUDE'] = 'Dieser Inhaltscontainer wird <strong>nur</strong> Besuchern der folgenden Länder angezeigt:';
 $_ARRAYLANG['TXT_BLOCK_TARGETING_INFO_EXCLUDE'] = 'Dieser Inhaltscontainer wird allen Besuchern <strong>ausser</strong> jene der folgenden Ländern angezeigt:';
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_GLOBAL_INACTIVE'] = 'Dieser Inhaltscontainer wird im globalen Platzhalter [[BLOCK_GLOBAL]] nicht angezeigt';
+$_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_ALL_PAGES'] = 'Dieser Inhaltscontainer wird auf jeder Seite im eigenen Platzhalter %s angezeigt';
+$_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_SELECTED_PAGES'] = 'Dieser Inhaltscontainer wird auf den folgenden Seiten im eigenen Platzhalter %s angezeigt:';

@@ -87,7 +87,11 @@ function blockDeleteBlock(blockId, blockName)
           <td><a href="index.php?cmd=Block&amp;act=modify&amp;blockId={BLOCK_ID}" title="{BLOCK_MODIFY}">{BLOCK_NAME}</a></td>
           <td style="text-align:left;">{BLOCK_CATEGORY_NAME}</td>
           <td style="text-align:left;">{BLOCK_LANGUAGES_NAME}</td>
-          <td>[[{BLOCK_PLACEHOLDER}]]</td>
+          <td>
+              [[{BLOCK_PLACEHOLDER}]]
+              <span class="tooltip-trigger icon-info"></span>
+              <span class="tooltip-message">{BLOCK_PLACEHOLDER_INFO}</span>
+          </td>
           <td>
               <img src="../modules/Block/View/Media/Global.png" width="16" height="16" border="0" alt="Global" class="{BLOCK_GLOBAL_CLASS}  inclusion tooltip-trigger" /><span class="tooltip-message">{BLOCK_GLOBAL_INFO}</span>
               <img src="../modules/Block/View/Media/Shuffle1.png" width="16" height="16" border="0" alt="random 1" class="{BLOCK_RANDOM_1_CLASS}  inclusion tooltip-trigger" /><span class="tooltip-message">{BLOCK_RANDOM_1_INFO}</span>

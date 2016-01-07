@@ -132,7 +132,8 @@ class BlockLibrary
                                 `random_3`,
                                 `random_4`,
                                 `global`,
-                                `active`
+                                `active`,
+                                `direct`
                         FROM `%1$s`
                         # WHERE
                         %2$s
@@ -165,6 +166,7 @@ class BlockLibrary
                         'random4'   => $objResult->fields['random_4'],
                         'global'    => $objResult->fields['global'],
                         'active'    => $objResult->fields['active'],
+                        'direct'    => $objResult->fields['direct'],
                         'name'      => $objResult->fields['name'],
                         'lang'      => array_unique($langArr),
                     );

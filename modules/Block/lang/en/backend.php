@@ -147,3 +147,5 @@ $_ARRAYLANG['TXT_BLOCK_LOCATION_BASED_DISPLAY_INFO'] = 'This Content Pane will b
 $_ARRAYLANG['TXT_BLOCK_TARGETING_INFO_INCLUDE'] = 'This Content Pane will be shown to visitors from the following countries <strong>only</strong>:';
 $_ARRAYLANG['TXT_BLOCK_TARGETING_INFO_EXCLUDE'] = 'This Content Pane will be shown to all visitors <strong>except</strong> those from the following countries:';
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_GLOBAL_INACTIVE'] = 'This Content Pane is not included in the global placeholder [[BLOCK_GLOBAL]]';
+$_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_ALL_PAGES'] = 'This Content Pane gets displayed on all pages in its own placeholder %s';
+$_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_SELECTED_PAGES'] = 'This Content Pane gets displayed on the following pages in its own placeholder %s:';
