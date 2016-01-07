@@ -304,6 +304,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
 
         // create new ContentTree instance
         $objContentTree = new \ContentTree();
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $pageLinkTemplate = '<li><a href="%1$s" target="_blank">%2$s</a></li>';
 
         $rowNr = 0;
         foreach ($arrBlocks as $blockId => $arrBlock) {
@@ -319,6 +321,11 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             $random4Class = ($arrBlock['random4'] ==  1) ? 'active' : '';
             $globalClass  = in_array($arrBlock['global'], array(1, 2)) ? 'active' : '';
 
+            $random1Info = sprintf(($arrBlock['random']  ? $_ARRAYLANG['TXT_BLOCK_RANDOM_INFO_INCLUDED'] : $_ARRAYLANG['TXT_BLOCK_RANDOM_INFO_EXCLUDED']), '[[BLOCK_RANDOMIZER]]');
+            $random2Info = sprintf(($arrBlock['random2'] ? $_ARRAYLANG['TXT_BLOCK_RANDOM_INFO_INCLUDED'] : $_ARRAYLANG['TXT_BLOCK_RANDOM_INFO_EXCLUDED']), '[[BLOCK_RANDOMIZER2]]');
+            $random3Info = sprintf(($arrBlock['random3'] ? $_ARRAYLANG['TXT_BLOCK_RANDOM_INFO_INCLUDED'] : $_ARRAYLANG['TXT_BLOCK_RANDOM_INFO_EXCLUDED']), '[[BLOCK_RANDOMIZER3]]');
+            $random4Info = sprintf(($arrBlock['random4'] ? $_ARRAYLANG['TXT_BLOCK_RANDOM_INFO_INCLUDED'] : $_ARRAYLANG['TXT_BLOCK_RANDOM_INFO_EXCLUDED']), '[[BLOCK_RANDOMIZER4]]');
+
             $lang = array();
             foreach ($arrBlock['lang'] as $langId) {
                 $lang[] = \FWLanguage::getLanguageCodeById($langId);
@@ -332,26 +339,36 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                 $selectedPages    = array();
                 foreach ($objContentTree->getTree() as $arrData) {
                     if (in_array($arrData['catid'], $blockAssociatedPageIds)) {
-                        $selectedPages[] = contrexx_raw2xhtml($arrData['catname']);
+                        $page = $pageRepo->findOneById($arrData['catid']);
+                        if (!$page) {
+                            continue;
+                        }
+                        $selectedPages[] = sprintf($pageLinkTemplate, \Cx\Core\Routing\Url::fromPage($page)->toString(), contrexx_raw2xhtml($arrData['catname']));
                     }
                 }
-                $strSelectedPages = implode('<br />', $selectedPages);
+                if ($selectedPages) {
+                    $strSelectedPages = '<ul>'.implode($selectedPages).'</ul>';
+                }
             }
 
             $targeting      = $this->loadTargetingSettings($blockId);
             $targetingClass = '';
+            $targetingInfo = '';
             if (!empty($targeting)) {
                 $targetingClass       = 'active';
                 $arrSelectedCountries = array();
                 if (!empty($targeting['country']) && !empty($targeting['country']['value'])) {
+                    $targetingInfo = $targeting['country']['filter'] == 'include' ? $_ARRAYLANG['TXT_BLOCK_TARGETING_INFO_INCLUDE'] : $_ARRAYLANG['TXT_BLOCK_TARGETING_INFO_EXCLUDE'];
                     foreach ($targeting['country']['value'] as $countryId) {
                         $countryName = \Cx\Core\Country\Controller\Country::getNameById($countryId);
                         if (!empty($countryName)) {
-                            $arrSelectedCountries[] = $countryName;
+                            $arrSelectedCountries[] = '<li>'.contrexx_raw2xhtml($countryName).'</li>';
                         }
                     }
                 }
-                $strSelectedCountries = implode('<br />', $arrSelectedCountries);
+                if ($arrSelectedCountries) {
+                    $targetingInfo .= '<br /><ul>'.implode($arrSelectedCountries).'</ul>';
+                }
             }
 
             $this->_objTpl->setVariable(array(
@@ -361,13 +378,13 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                 'BLOCK_RANDOM_2_CLASS'        => $random2Class,
                 'BLOCK_RANDOM_3_CLASS'        => $random3Class,
                 'BLOCK_RANDOM_4_CLASS'        => $random4Class,
-                'BLOCK_RANDOM_1_INFO'         => sprintf($_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'], '[[BLOCK_RANDOMIZER]]'),
-                'BLOCK_RANDOM_2_INFO'         => sprintf($_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'], '[[BLOCK_RANDOMIZER2]]'),
-                'BLOCK_RANDOM_3_INFO'         => sprintf($_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'], '[[BLOCK_RANDOMIZER3]]'),
-                'BLOCK_RANDOM_4_INFO'         => sprintf($_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'], '[[BLOCK_RANDOMIZER4]]'),
+                'BLOCK_RANDOM_1_INFO'         => $random1Info,
+                'BLOCK_RANDOM_2_INFO'         => $random2Info,
+                'BLOCK_RANDOM_3_INFO'         => $random3Info,
+                'BLOCK_RANDOM_4_INFO'         => $random4Info,
                 'BLOCK_TARGETING_CLASS'       => $targetingClass,
                 'BLOCK_TARGETING_INFO'        => !empty($targeting) 
-                                                    ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGES'] . '<br />' . $strSelectedCountries 
+                                                    ? $targetingInfo 
                                                     : $_ARRAYLANG['TXT_BLOCK_LOCATION_BASED_DISPLAY_INFO'],
                 'BLOCK_GLOBAL_CLASS'          => $globalClass,
                 'BLOCK_GLOBAL_INFO'           => ($arrBlock['global'] == 1)
