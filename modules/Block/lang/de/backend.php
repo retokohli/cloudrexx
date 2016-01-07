@@ -141,7 +141,7 @@ $_ARRAYLANG['TXT_BLOCK_TARGETING_VISITOR_CONDITION_BELOW'] = 'Besucher welche di
 $_ARRAYLANG['TXT_BLOCK_TARGETING_INCLUDE'] = 'Einschliesslich';
 $_ARRAYLANG['TXT_BLOCK_TARGETING_EXCLUDE'] = 'Ausschliesslich';
 $_ARRAYLANG['TXT_BLOCK_TARGETING_TYPE_LOCATION'] = 'Land eingeben';
-$_ARRAYLANG['TXT_BLOCK_TARGETING_GEOIP_DISABLED_WARNING'] = 'Achtung: Die standortbezogenen Dienste sind aktuell deaktiviert. Sofern diese nicht aktiviert werden, führt die Verwendung dieser Funktion dazu, dass dieser Inhaltscontainer auf der Website nicht mehr angezeigt wird. <a target="_blank" title="Standortbezogenen Dienste jetzt aktivieren" href="index.php?cmd=GeoIp">Standortbezogenen Dienste jetzt aktivieren</a>';
+$_ARRAYLANG['TXT_BLOCK_TARGETING_GEOIP_DISABLED_WARNING'] = 'Achtung: Die standortbezogenen Dienste sind aktuell deaktiviert. Sofern diese nicht aktiviert werden, führt die Verwendung dieser Funktion dazu, dass dieser Inhaltscontainer auf der Website nicht mehr angezeigt wird. <a target="_blank" title="Standortbezogene Dienste jetzt aktivieren" href="index.php?cmd=GeoIp">Standortbezogene Dienste jetzt aktivieren</a>';
 $_ARRAYLANG['TXT_BLOCK_INCLUSION'] = 'Einbindung';
 $_ARRAYLANG['TXT_BLOCK_LOCATION_BASED_DISPLAY_INFO'] = 'Dieser Inhaltscontainer wird allen Besuchern angezeigt';
 $_ARRAYLANG['TXT_BLOCK_TARGETING_INFO_INCLUDE'] = 'Dieser Inhaltscontainer wird <strong>nur</strong> Besuchern der folgenden Länder angezeigt:';
