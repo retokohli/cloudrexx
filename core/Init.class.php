@@ -506,11 +506,8 @@ class InitCMS
             }
         }
 
-	// get theme object so we get the configured libraries
-        $theme = $this->themeRepository->findById($this->currentThemesId);
-        if (!$theme) {
-            $theme = $this->getFallbackTemplate();
-        }
+        // get theme object so we get the configured libraries
+        $theme = $this->getFrontendTemplate();
         $themesPath = $theme->getFoldername();
         if ($theme && $theme->isComponent()) {
             $libraries = JS::getConfigurableLibraries();
@@ -571,34 +568,40 @@ class InitCMS
     }
 
     /**
-     * Load template from the fallback language
+     * Load the frontend template
      *
      * @return Cx\Core\View\Model\Entity\Theme Template instance
-     * @throws \Exception Throws exception when template not found
+     * @throws \Exception Throws exception when no template was found
      */
-    protected function getFallbackTemplate()
+    protected function getFrontendTemplate()
     {
-        // Get fallback language
-        // if fallback lang not set, it will return default language
-        // if given language is default language, it will return false
-        $fallbackLangId = \FWLanguage::getFallbackLanguageIdById($this->frontendLangId);
-        if (!$fallbackLangId) {
-            throw new \Exception('Could not load the fallback template');
+        // fetch and return the configured frontend template
+        $theme = $this->themeRepository->findById($this->currentThemesId);
+        if ($theme) {
+            return $theme;
         }
-        do {
-            $theme = $this->themeRepository->getDefaultTheme($this->currentChannel, $fallbackLangId);
+
+        // The configured frontend template does not exist
+        \DBG::msg('Template width ID '.$this->currentThemesId.' does not exist!');
+
+        // We will try to load the frontend template of a fallback-language therefore
+        $langId = $this->frontendLangId;
+        while ($langId = \FWLanguage::getFallbackLanguageIdById($langId)) {
+            // fetch and return default template of fallback language
+            $theme = $this->themeRepository->getDefaultTheme($this->currentChannel, $langId);
             if ($theme) {
-                break;
+                // reset local variables based on the loaded fallback frontend template
+                $this->channelThemeId = $this->currentThemesId = $theme->getId();
+                return $theme;
             }
-            if ($fallbackLangId == $this->defaultFrontendLangId) {
-                throw new \Exception('Could not load the fallback template');
-            }
-            $fallbackLangId = \FWLanguage::getFallbackLanguageIdById($fallbackLangId);
-        } while (!$theme);
 
-        $this->channelThemeId = $this->currentThemesId = $theme->getId();
+            // template of fallback language does not exist
+            \DBG::msg('Default template of language '.$langId.' does not exist!');
+        }
 
-        return $theme;
+        // None of the fallback-languages did have an existing frontend template.
+        // Therefore, we will abort the system execution now
+        throw new \Exception('Unable to load a webdesign template!');
     }
 
     /**
