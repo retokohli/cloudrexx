@@ -1030,7 +1030,7 @@ class BlogLibrary {
 
                     $entryUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', 'details', $intLanguageId);
                     foreach ($arrEntries as $intEntryId => $arrEntryValues) {
-                        $entryUrl->setAttribute('id', $intEntryId);
+                        $entryUrl->setParam('id', $intEntryId);
                         $objRSSWriter->addItem(
                             html_entity_decode($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
                             contrexx_raw2xhtml($entryUrl->toString()),
@@ -1093,7 +1093,7 @@ class BlogLibrary {
                     $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
                         'Blog',
                         '',
-                        $intLanguageId,
+                        $intLanguageId
                     )->toString();
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_COMMENTS_TITLE'];
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
@@ -1187,7 +1187,7 @@ class BlogLibrary {
                             foreach ($arrEntries as $intEntryId => $arrEntryValues) {
                                 if ($this->categoryMatches($intCategoryId, $arrEntryValues['categories'][$intLanguageId])) {
                                     //Message is in category, add to feed
-                                    $entryUrl->setAttribute('id', $intEntryId);
+                                    $entryUrl->setParam('id', $intEntryId);
                                     $objRSSWriter->addItem(
                                         html_entity_decode($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
                                         contrexx_raw2xhtml($entryUrl->toString()),
