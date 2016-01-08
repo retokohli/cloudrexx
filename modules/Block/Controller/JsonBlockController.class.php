@@ -37,32 +37,11 @@
 namespace Cx\Modules\Block\Controller;
 
 /**
- * Class NoPermissionException
+ * Class JsonBlockException
  * @package     cloudrexx
  * @subpackage  module_block
  */
-class NoPermissionException extends \Exception {}
-
-/**
- * Class NotEnoughArgumentsException
- * @package     cloudrexx
- * @subpackage  module_block
- */
-class NotEnoughArgumentsException extends \Exception {}
-
-/**
- * Class NoBlockFoundException
- * @package     cloudrexx
- * @subpackage  module_block
- */
-class NoBlockFoundException extends \Exception {}
-
-/**
- * Class BlockCouldNotBeSavedException
- * @package     cloudrexx
- * @subpackage  module_block
- */
-class BlockCouldNotBeSavedException extends \Exception {}
+class JsonBlockException extends \Exception {}
 
 /**
  * JSON Adapter for Block
@@ -78,7 +57,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
      * List of messages
      * @var Array
      */
-    private $messages = array();
+    protected $messages = array();
 
     /**
      * Returns the internal name used as identifier for this adapter
@@ -179,9 +158,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
      * Get the block content as html
      * 
      * @param array $params all given params from http request
-     * @throws NoPermissionException
-     * @throws NotEnoughArgumentsException
-     * @throws NoBlockFoundException
+     * @throws JsonBlockException
      * @return string the html content of the block
      */
     public function getBlockContent($params) {
@@ -190,12 +167,12 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
         // security check
         if (   !\FWUser::getFWUserObject()->objUser->login()
             || !\Permission::checkAccess(76, 'static', true)) {
-            throw new NoPermissionException($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
+            throw new JsonBlockException($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
         }
 
         // check for necessary arguments
         if (empty($params['get']['block']) || empty($params['get']['lang'])) {
-            throw new NotEnoughArgumentsException('not enough arguments');
+            throw new JsonBlockException('not enough arguments');
         }
 
         // get id and langugage id
@@ -223,7 +200,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
 
         // nothing found
         if ($result === false || $result->RecordCount() == 0) {
-            throw new NoBlockFoundException('no block content found with id: ' . $id);
+            throw new JsonBlockException('no block content found with id: ' . $id);
         }
 
         $ls = new \LinkSanitizer(ASCMS_PATH_OFFSET.\Env::get('virtualLanguageDirectory').'/', $result->fields['content']);
@@ -234,9 +211,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
      * Save the block content
      *
      * @param array $params all given params from http request
-     * @throws NoPermissionException
-     * @throws NotEnoughArgumentsException
-     * @throws BlockCouldNotBeSavedException
+     * @throws JsonBlockException
      * @return boolean true if everything finished with success
      */
     public function saveBlockContent($params) {
@@ -245,12 +220,12 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
         // security check
         if (   !\FWUser::getFWUserObject()->objUser->login()
             || !\Permission::checkAccess(76, 'static', true)) {
-            throw new NoPermissionException($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
+            throw new JsonBlockException($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
         }
 
         // check arguments
         if (empty($params['get']['block']) || empty($params['get']['lang'])) {
-            throw new NotEnoughArgumentsException('not enough arguments');
+            throw new JsonBlockException('not enough arguments');
         }
 
         // get language and block id
@@ -270,7 +245,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
 
         // error handling
         if ($result === false) {
-            throw new BlockCouldNotBeSavedException('block could not be saved');
+            throw new JsonBlockException('block could not be saved');
         }
         \LinkGenerator::parseTemplate($content);
 

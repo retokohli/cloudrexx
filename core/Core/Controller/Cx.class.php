@@ -1775,13 +1775,12 @@ namespace Cx\Core\Core\Controller {
          * @todo Remove usage of globals
          * @global array $_CONFIG
          * @global type $themesPages
-         * @global type $objCounter
          * @global type $objBanner
          * @global type $_CORELANG
          * @return type
          */
         protected function setPostContentLoadPlaceholders() {
-            global $_CONFIG, $themesPages, $objCounter, $objBanner, $_CORELANG;
+            global $_CONFIG, $themesPages, $objBanner, $_CORELANG;
 
             if ($this->mode == self::MODE_BACKEND) {
                 $formattedVersion = htmlentities(
@@ -1829,6 +1828,13 @@ namespace Cx\Core\Core\Controller {
                 return;
             }
 
+            $objCounter              = null;
+            $componentRepo           = $this->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+            $statsComponentContoller = $componentRepo->findOneBy(array('name' => 'Stats'));
+            if ($statsComponentContoller) {
+                $objCounter = $statsComponentContoller->getCounterInstance();
+            }
+
             // set global template variables
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
@@ -1866,9 +1872,9 @@ namespace Cx\Core\Core\Controller {
                 'NAVBAR_FILE'                    => $objNavbar->getNavigation($themesPages['navbar'], $this->license, $boolShop),
                 'NAVBAR2_FILE'                   => $objNavbar->getNavigation($themesPages['navbar2'], $this->license, $boolShop),
                 'NAVBAR3_FILE'                   => $objNavbar->getNavigation($themesPages['navbar3'], $this->license, $boolShop),
-                'ONLINE_USERS'                   => $objCounter->getOnlineUsers(),
-                'VISITOR_NUMBER'                 => $objCounter->getVisitorNumber(),
-                'COUNTER'                        => $objCounter->getCounterTag(),
+                'ONLINE_USERS'                   => $objCounter ? $objCounter->getOnlineUsers() : '',
+                'VISITOR_NUMBER'                 => $objCounter ? $objCounter->getVisitorNumber() : '',
+                'COUNTER'                        => $objCounter ? $objCounter->getCounterTag() : '',
                 'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
                 'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
                 'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl()),

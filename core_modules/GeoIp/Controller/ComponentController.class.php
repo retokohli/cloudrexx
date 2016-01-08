@@ -86,18 +86,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page)
     {
         //skip the process incase mode is not frontend or GeoIp is deactivated
-        if (   $this->cx->getMode() !== \Cx\Core\Core\Controller\Cx::MODE_FRONTEND
-            || \FWValidator::isEmpty($this->getGeoIpServiceStatus())
-        ) {
+        if (!$this->isGeoIpEnabled()) {
             return;
         }
 
         // Get stats controller to get client ip
-        $componentRepo = \Cx\Core\Core\Controller\Cx::instanciate()
-                            ->getDb()
-                            ->getEntityManager()
-                            ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-        $statsComponentContoller = $componentRepo->findOneBy(array('name' => 'Stats'));
+        $statsComponentContoller = $this->getComponent('Stats');
         if (!$statsComponentContoller) {
             return;
         }
@@ -125,8 +119,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
 
         //skip the process incase mode is not frontend or GeoIp is deactivated or client record not found
-        if (   $this->cx->getMode() !== \Cx\Core\Core\Controller\Cx::MODE_FRONTEND
-            || \FWValidator::isEmpty($this->getGeoIpServiceStatus())
+        if (   !$this->isGeoIpEnabled()
             || !$this->clientRecord
         ) {
             return;
@@ -148,6 +141,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'countryName'   => $countryName,
             'countryCode'   => $countryCode
         ), 'geoIp');
+    }
+
+    /**
+     * Check and return status of GeoIp for Frontend
+     *
+     * @return boolean True|False
+     */
+    public function isGeoIpEnabled()
+    {
+        if (   $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND
+            && $this->getGeoIpServiceStatus()
+        ) {
+            return true;
+        }
+        return false;
     }
 
     /**

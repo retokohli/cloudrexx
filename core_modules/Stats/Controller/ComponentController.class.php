@@ -45,7 +45,15 @@ namespace Cx\Core_Modules\Stats\Controller;
  * @subpackage coremodule_stats
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+
     /**
+     * Instance of StatsLibrary
+     *
+     * @var StatsLibrary
+     */
+    protected $counter;
+
+     /**
      * getControllerClasses
      * 
      * @return type
@@ -88,13 +96,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function getCounterInstance()
     {
-        global $objCounter;
 
-        if (!$objCounter) {
-            $objCounter = new \Cx\Core_Modules\Stats\Controller\StatsLibrary();
+        if (!$this->counter) {
+            $this->counter = new \Cx\Core_Modules\Stats\Controller\StatsLibrary();
         }
 
-        return $objCounter;
+        return $this->counter;
     }
 
 }
