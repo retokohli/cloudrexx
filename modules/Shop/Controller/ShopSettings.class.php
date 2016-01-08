@@ -120,6 +120,7 @@ class ShopSettings
 
 // TODO: Use
 //        \Cx\Core\Setting\Controller\Setting::storeFromPost();
+        \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
 
         \Cx\Core\Setting\Controller\Setting::set('email',
             trim(strip_tags(contrexx_input2raw($_POST['email']))));
@@ -425,12 +426,17 @@ class ShopSettings
      */
     private static function storeCountries()
     {
-        if (!isset($_POST['bsubmit'])) {
+        if (!isset($_POST['countries'])) {
             return;
         }
+        $selectedCountries = contrexx_input2int($_POST['list1']);
+
         \Cx\Core\Setting\Controller\Setting::init('Shop', 'delivery');
-        $result = \Cx\Core\Setting\Controller\Setting::storeFromPost();
-        return $result;
+        \Cx\Core\Setting\Controller\Setting::set(
+            'available_countries',
+            implode(',', $selectedCountries)
+        );
+        \Cx\Core\Setting\Controller\Setting::update('available_countries');
     }
 
 
@@ -907,7 +913,7 @@ class ShopSettings
         \Cx\Core\Setting\Controller\Setting::init('Shop', 'delivery');
         \Cx\Core\Setting\Controller\Setting::add(
             'available_countries',
-            json_encode(array()),
+            '',
             1,
             \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN_MULTISELECT,
             '{src:\Cx\Core\Country\Controller\Country::getNameArray()}',
