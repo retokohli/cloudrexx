@@ -609,7 +609,7 @@ class Setting{
                     $arrValues = self::splitValues($arrValues);
                 }
                 $elementName   = $isMultiSelect ? $name.'[]' : $name;
-                $value         = $isMultiSelect ? json_decode($value, true) : $value;
+                $value         = $isMultiSelect ? self::splitValues($value) : $value;
                 $elementValue  = is_array($value) ? array_flip($value) : $value;
                 $elementAttr   = $isMultiSelect ? ' multiple class="chzn-select"' : '';
                 $element       = \Html::getSelect(
@@ -937,15 +937,14 @@ class Setting{
                     break;
                   case self::TYPE_CHECKBOX:
                       break;
+                  case self::TYPE_DROPDOWN_MULTISELECT:
+                      $value = array_flip($value);
                   case self::TYPE_CHECKBOXGROUP:
                     $value = (is_array($value)
                         ? join(',', array_keys($value))
                         : $value);
                         // 20120508
                   case self::TYPE_RADIO:
-                      break;
-                  case self::TYPE_DROPDOWN_MULTISELECT:
-                      $value = json_encode($value);
                       break;
                   default:
                         // Regular value of any other type
