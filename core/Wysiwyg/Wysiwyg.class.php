@@ -322,7 +322,7 @@ class Wysiwyg
      * @return array $movedFiles Array of moved files
      * @throws \Exception
      */
-    public function extractDataUrlsToFileSystem(&$content, $path, $namePrefix = 'image')
+    public function extractDataUrlsToFileSystem(&$content, $path, $namePrefix = 'html_inline_image')
     {
         if (empty($content) || empty($path)) {
             return array();
@@ -347,6 +347,7 @@ class Wysiwyg
             }
 
             //Find the relative path for setting it as img src instead of data url
+            \Cx\Lib\FileSystem\FileSystem::path_absolute_to_os_root($filePath);
             $documentPath = \Env::get('cx')->getWebsiteDocumentRootPath();
             $relativePath = \Env::get('cx')->getWebsiteOffsetPath() . str_replace($documentPath, '', $filePath);
 
@@ -363,6 +364,7 @@ class Wysiwyg
                     $file->touch();
                     $file->write(base64_decode($matches[4]));
                     $element->src = $relativePath . '/' . $fileName;
+                    $element->alt = $element->title = $fileName;
                     $movedFiles[] = $filePath . '/' . $fileName;
                 } catch (\Exception $e) {
                     \DBG::log($e->getMessage());
