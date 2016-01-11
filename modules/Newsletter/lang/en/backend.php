@@ -494,4 +494,14 @@ $_ARRAYLANG['TXT_NEWSLETTER_MAIL_SENT_TO_RECIPIENTS'] = 'Die E-Mail-Kampagne wur
 $_ARRAYLANG['TXT_NEWSLETTER_MAIL_NOT_SENT_TO_RECIPIENTS'] = 'An <strong>%s Teilnehmer</strong> konnte die E-Mail-Kampagne nicht zugestellt werden.';
 $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND'] = "Die E-Mail-Kampagne kann direkt an die Mitglieder einer Benutzergruppe zugestellt werden.<br /><br /><strong>ACHTUNG:</strong><br />Die Mitglieder einer Benutzergruppen haben sich nicht via Double-Opt-in in eine Verteilerliste eingetragen.<br />Bitte beachten Sie daher, dass die Zustellung einer E-Mail-Kampagne an eine Benutzergruppe in bestimmten Ländern <u>gesetzeswidrig</u> ist.<br />Verwenden Sie die Zustellung an eine Benutzergruppe <u>nicht zu Werbezwecken</u>, sondern nur zum Versand einer wichtigen Mitteilung an Ihre Mitglieder.<br />In einer solch versendeten E-Mail-Kampagne steht den empfängern <u>kein Profil- und Austragungslink</u> zur Verfügung.";
 $_ARRAYLANG['TXT_NEWSLETTER_COPY_RECIPIENT'] = "Use as template for new users";
-?>
+$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'] = 'E-mail Templates';
+$_ARRAYLANG['TXT_NEWSLETTER_SYSTEM'] = 'System';
+$_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDERS'] = 'Placeholders';
+$_ARRAYLANG['TXT_NEWSLETTER_GENERAL'] = 'General';
+$_ARRAYLANG['TXT_NEWSLETTER_SENDER_EMAIL'] = 'Sender email from dispatch settings';
+$_ARRAYLANG['TXT_NEWSLETTER_SENDER_NAME'] = 'Sender name from dispatch settings';
+$_ARRAYLANG['TXT_NEWSLETTER_REPLY_TO'] = 'Reply to email from dispatch settings';
+$_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_CODE'] = 'Email confirmation code';
+$_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_RECIPIENT'] = 'Email addresses to send notification about the unsubscribe';
+$_ARRAYLANG['TXT_NEWSLETTER_USER_EDIT_LINK'] = 'Link to edit view of user';
+$_ARRAYLANG['TXT_NEWSLETTER_LOGGED_USER_EMAIL'] = 'Currently logged in user E-Mail';

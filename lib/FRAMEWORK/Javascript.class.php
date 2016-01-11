@@ -647,6 +647,9 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
             $customAvailableLibrary = $name.'-version-'.$activatedLibraryVersion;
             self::$available[$customAvailableLibrary]['specialcode'] .= $libraryVersionData;
+
+            // trigger the activate again to push the library up in the dependency chain
+            self::activate($customAvailableLibrary);
             return true;
         }
 

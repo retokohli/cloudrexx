@@ -494,4 +494,13 @@ $_ARRAYLANG['TXT_NEWSLETTER_MAIL_SENT_TO_RECIPIENTS'] = 'Die E-Mail-Kampagne wur
 $_ARRAYLANG['TXT_NEWSLETTER_MAIL_NOT_SENT_TO_RECIPIENTS'] = 'An <strong>%s Teilnehmer</strong> konnte die E-Mail-Kampagne nicht zugestellt werden.';
 $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND'] = "Die E-Mail-Kampagne kann direkt an die Mitglieder einer Benutzergruppe zugestellt werden.<br /><br /><strong>ACHTUNG:</strong><br />Die Mitglieder einer Benutzergruppen haben sich nicht via Double-Opt-in in eine Verteilerliste eingetragen.<br />Bitte beachten Sie daher, dass die Zustellung einer E-Mail-Kampagne an eine Benutzergruppe in bestimmten Ländern <u>gesetzeswidrig</u> ist.<br />Verwenden Sie die Zustellung an eine Benutzergruppe <u>nicht zu Werbezwecken</u>, sondern nur zum Versand einer wichtigen Mitteilung an Ihre Mitglieder.<br />In einer solch versendeten E-Mail-Kampagne steht den empfängern <u>kein Profil- und Austragungslink</u> zur Verfügung.";
 $_ARRAYLANG['TXT_NEWSLETTER_COPY_RECIPIENT'] = "Als Template für neue Benutzer verwenden";
-?>
+$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_TEMPLATES'] = 'E-Mail Vorlagen';
+$_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDERS'] = 'Platzhalter';
+$_ARRAYLANG['TXT_NEWSLETTER_GENERAL'] = 'Allgemein';
+$_ARRAYLANG['TXT_NEWSLETTER_SENDER_EMAIL'] = 'Absender E-Mail (siehe Versandeinstellungen)';
+$_ARRAYLANG['TXT_NEWSLETTER_SENDER_NAME'] = 'Absender Name (siehe Versandeinstellungen)';
+$_ARRAYLANG['TXT_NEWSLETTER_REPLY_TO'] = 'Antwort E-Mail Adresse (siehe Versandeinstellungen)';
+$_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_CODE'] = 'Email Aktivierungscode';
+$_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_RECIPIENT'] = 'Adressen der Empfänger des Benachrichtigungs-E-Mails';
+$_ARRAYLANG['TXT_NEWSLETTER_USER_EDIT_LINK'] = 'Link zu den Einstellungen des aktuellen Benutzers';
+$_ARRAYLANG['TXT_NEWSLETTER_LOGGED_USER_EMAIL'] = 'E-Mail-Adresse des aktuellen Benutzers';
