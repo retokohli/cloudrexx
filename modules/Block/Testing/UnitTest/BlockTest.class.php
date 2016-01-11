@@ -51,7 +51,7 @@ namespace Cx\Modules\Block\Testing\UnitTest;
 class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     /**
      * @covers \Cx\Modules\Block\Controller\JsonBlockController::getBlockContent
-     * @expectedException \Cx\Modules\Block\Controller\JsonBlockException
+     * @expectedException \Cx\Modules\Block\Controller\NoPermissionException
      */
     public function testGetBlockContentNoPermission() {
         global $sessionObj;
@@ -62,7 +62,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     
     /**
      * @covers \Cx\Modules\Block\Controller\JsonBlockController::getBlockContent
-     * @expectedException \Cx\Modules\Block\Controller\JsonBlockException
+     * @expectedException \Cx\Modules\Block\Controller\NotEnoughArgumentsException
      */
     public function testGetBlockContentNotEnoughArguments() {
         global $sessionObj;
@@ -76,7 +76,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     
     /**
      * @covers \Cx\Modules\Block\Controller\JsonBlockController::getBlockContent
-     * @expectedException \Cx\Modules\Block\Controller\JsonBlockException
+     * @expectedException \Cx\Modules\Block\Controller\NoBlockFoundException
      */
     public function testGetBlockContentNoBlockFound() {
         global $sessionObj;
@@ -104,7 +104,7 @@ class BlockTest extends \Cx\Core\Test\Model\Entity\DoctrineTestCase {
     
     /**
      * @covers \Cx\Modules\Block\Controller\JsonBlockController::saveBlockContent
-     * @expectedException \Cx\Modules\Block\Controller\JsonBlockException
+     * @expectedException \Cx\Modules\Block\Controller\NotEnoughArgumentsException
      */
     public function testSaveBlockContentNotEnoughArguments() {
         global $sessionObj;
