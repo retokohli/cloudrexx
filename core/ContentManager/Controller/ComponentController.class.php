@@ -94,10 +94,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $objTemplate, $objDatabase, $objInit, $act;
+        global $objTemplate, $objDatabase, $objInit, $act, $subMenuTitle, $_ARRAYLANG;
         
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
+                
+                // @todo: This should be set by SystemComponentBackendController
+                $subMenuTitle = $_ARRAYLANG['TXT_CONTENT_MANAGER'];
+                
                 $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
                 $cachedRoot = $this->cx->getTemplate()->getRoot();
                 $this->cx->getTemplate()->setRoot($this->getDirectory() . '/View/Template/Backend');

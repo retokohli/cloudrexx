@@ -118,18 +118,8 @@ class XmlSitemapPageTree extends PageTree {
      * @return type 
      */
     protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
-        global $_CONFIG;
-        $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        $mainDn = $domainRepo->getMainDomain()->getName();
-        
-        $location = \Env::get('cx')->getRequest()->getUrl()->getProtocol() . '://'
-                . $mainDn
-                . ($_SERVER['SERVER_PORT'] == 80 ? null : ':' . intval($_SERVER['SERVER_PORT']))
-                . \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()
-                . '/' . \FWLanguage::getLanguageCodeById($this->lang)
-                . $page->getPath();
         return "\t" . '<url>' . 
-                "\n\t\t" . '<loc>' . $location . '</loc>' . 
+                "\n\t\t" . '<loc>' . \Cx\Core\Routing\Url::fromPage($page)->toString() . '</loc>' . 
                 "\n\t\t" . '<lastmod>' . $this->getLastModificationDate($page) . '</lastmod>' . 
                 "\n\t\t" . '<changefreq>' . $this->getChangingFrequency($page) . '</changefreq>' .
                 "\n\t\t" . '<priority>0.5</priority>' .

@@ -601,8 +601,7 @@ die("MailTemplate::init(): Empty section!");
 //        if (empty($arrTemplate['message']))
 //            $arrTemplate['message'] = $_CORELANG['TXT_CORE_MAILTEMPLATE_NO_MESSAGE'];
 
-        $objMail->FromName = $arrTemplate['sender'];
-        $objMail->From = $arrTemplate['from'];
+        $objMail->SetFrom($arrTemplate['from'], $arrTemplate['sender']);
         $objMail->Subject = $arrTemplate['subject'];
         $objMail->CharSet = CONTREXX_CHARSET;
 //        $objMail->IsHTML(false);
