@@ -1426,7 +1426,7 @@ class ShopManager extends ShopLibrary
         }
         self::$objTemplate->setVariable(array(
             'SHOP_ZONES_OPTIONS' => $strZoneOptions,
-            'SHOP_ZONE_COUNTRY_LIST' => \Cx\Core\Country\Controller\Country::getMenuoptions(),
+            'SHOP_ZONE_COUNTRY_LIST' => ShopLibrary::getCountryMenuoptions(),
         ));
     }
 
@@ -1571,7 +1571,7 @@ if ($test === NULL) {
             'SHOP_CONTACT_TEL' => \Cx\Core\Setting\Controller\Setting::getValue('telephone','Shop'),
             'SHOP_CONTACT_FAX' => \Cx\Core\Setting\Controller\Setting::getValue('fax','Shop'),
             // Country settings
-            'SHOP_GENERAL_COUNTRY_MENUOPTIONS' => \Cx\Core\Country\Controller\Country::getMenuoptions(
+            'SHOP_GENERAL_COUNTRY_MENUOPTIONS' => ShopLibrary::getCountryMenuoptions(
                 \Cx\Core\Setting\Controller\Setting::getValue('country_id','Shop')),
             // Thumbnail settings
             'SHOP_THUMBNAIL_MAX_WIDTH' => \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width','Shop'),
@@ -3026,7 +3026,7 @@ if ($test === NULL) {
             'SHOP_COMPANY_NOTE' => $companynote,
             'SHOP_REGISTER_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $registerdate),
             'SHOP_COUNTRY_MENUOPTIONS' =>
-                \Cx\Core\Country\Controller\Country::getMenuoptions($country_id),
+                ShopLibrary::getCountryMenuoptions($country_id),
             'SHOP_DISCOUNT_GROUP_CUSTOMER_MENUOPTIONS' =>
                 Discount::getMenuOptionsGroupCustomer($customer_group_id),
             'SHOP_CUSTOMER_TYPE_MENUOPTIONS' =>

@@ -414,4 +414,48 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
         );
     }
 
+    /**
+     * Get country select dropdown menu
+     *
+     * @param string  $menuName Name of the select menu
+     * @param integer $selected Selected option
+     * @param string  $onchange Javascript on change callback function
+     *
+     * @return string Select Menu
+     */
+    static function getCountryMenu($menuName = 'countryId', $selected = 0, $onchange = '')
+    {
+        return \Html::getSelectCustom(
+            $menuName,
+            self::getMenuoptions($selected),
+            false,
+            $onchange
+        );
+    }
+
+    /**
+     * Get country select dropdown options
+     *
+     * @param integer $selected Selected option
+     *
+     * @return string Select options
+     */
+    static function getCountryMenuOptions($selected = 0)
+    {
+        \Cx\Core\Setting\Controller\Setting::init('Shop', 'delivery');
+        $availableCountries = \Cx\Core\Setting\Controller\Setting::getValue('available_countries', 'Shop');
+        if (!$availableCountries) {
+            return '';
+        }
+
+        $activeCountries       = array();
+        $arrAvailableCountries = explode(',', $availableCountries);
+        foreach ($arrAvailableCountries as $countryId) {
+            if (\Cx\Core\Country\Controller\Country::isActiveById($countryId)) {
+                $activeCountries[$countryId] = \Cx\Core\Country\Controller\Country::getNameById($countryId);
+            }
+        }
+
+        return \Html::getOptions($activeCountries, $selected);
+    }
 }
