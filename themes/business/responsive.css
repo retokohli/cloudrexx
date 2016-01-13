@@ -837,7 +837,7 @@ word-wrap: break-word;
 #shop div.details {
           margin-top: 215px;
       }
-    }
+}
 
 @media (max-width: 241px){
     #search-form {
