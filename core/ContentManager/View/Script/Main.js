@@ -1531,9 +1531,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             var lang = cx.jQuery(element).attr("class").split(" ")[0];
             // theres an error here, we'll fix it later:
             if (!cx.jQuery(element).children(".name").length) {
-                var pageName = jQuery.trim(cx.jQuery(element).text());
-                cx.jQuery(element).html(cx.jQuery(element).html().replace(pageName.replace("&", "&amp;"), " "));
-                cx.jQuery(element).append("<div class=\"name\">" + pageName + "</div>");
+                cx.jQuery(element).contents().filter(function(){return this.nodeType === 3}).wrap('<div class="name"></div>');
             }
             if (pageId) {
                 cx.cm.updateTreeEntry(cx.cm.getPageStatus(nodeId, lang));
