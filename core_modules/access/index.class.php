@@ -161,8 +161,7 @@ class Access extends AccessLib
         $usernameFilter = isset($_REQUEST['username_filter']) && $_REQUEST['username_filter'] != '' && in_array(ord($_REQUEST['username_filter']), array_merge(array(48), range(65, 90))) ? $_REQUEST['username_filter'] : null;
         $userFilter = array('active' => true);
 
-        $uri = \Cx\Core\Routing\Url::fromPage(\Env::get('cx')->getPage());
-        $this->parseLetterIndexList($uri . '?groupId='.$groupId, 'username_filter', $usernameFilter);
+        $this->parseLetterIndexList('index.php?section=Access&amp;cmd=members&amp;groupId='.$groupId, 'username_filter', $usernameFilter);
 
         $this->_objTpl->setVariable('ACCESS_SEARCH_VALUE', htmlentities(join(' ', $search), ENT_QUOTES, CONTREXX_CHARSET));
 
