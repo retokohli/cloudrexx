@@ -71,28 +71,34 @@ class FeedLibrary
         $old_link     = $objResult->fields['link'];
         $old_filename = $objResult->fields['filename'];
 
-        if($old_link != '') {
+        if (!empty($old_link)) {
             $filename = 'feed_' . $time . '_' . \Cx\Lib\FileSystem\FileSystem::replaceCharacters(basename($old_link));
             @copy($old_link, $path.$filename);
-
-            //rss class
-            $rss = new \XML_RSS($path.$filename);
-            $rss->parse();
-            $content = '';
-
-            foreach($rss->getStructure() as $array) {
-                $content .= $array;
-            }
-        }
-
-        if($old_link == '') {
+        } else {
             $filename = $old_filename;
         }
 
-        $query = "UPDATE ".DBPREFIX."module_feed_news
-                       SET filename = '".$filename."',
-                           time = '".$time."'
-                     WHERE id = '".$id."'";
+        //rss class
+        $rss = new \Cx\Modules\Feed\Model\Entity\RSSFeedParser($path . $filename);
+        $rss->parse();
+
+        $channelInfo = $rss->getChannelInfo();
+        if (empty($channelInfo)) {
+            return;
+        }
+        $channelLink        = !empty($channelInfo['link']) ? $channelInfo['link'] : '';
+        $channelDescription = !empty($channelInfo['description']) ? $channelInfo['description'] : '';
+        $channelBuildDate   = !empty($channelInfo['lastbuilddate']) ? date('Y-m-d H:i:s', strtotime($channelInfo['lastbuilddate'])) : '';
+
+        $query = 'UPDATE
+                    `'.DBPREFIX.'module_feed_news`
+                  SET
+                    `filename` = "'. contrexx_raw2db($filename) .'",
+                    `time`     = "'. contrexx_raw2db($time) .'",
+                    `channel_link` = "'. contrexx_raw2db($channelLink) .'",
+                    `channel_description` = "'. contrexx_raw2db($channelDescription) .'",
+                    `channel_build_date`  = "'. contrexx_raw2db($channelBuildDate) .'"
+                  WHERE id = "'. contrexx_input2int($id) .'"';
         $objDatabase->Execute($query);
 
         //delete old #02
