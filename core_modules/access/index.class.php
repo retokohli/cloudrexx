@@ -161,7 +161,8 @@ class Access extends AccessLib
         $usernameFilter = isset($_REQUEST['username_filter']) && $_REQUEST['username_filter'] != '' && in_array(ord($_REQUEST['username_filter']), array_merge(array(48), range(65, 90))) ? $_REQUEST['username_filter'] : null;
         $userFilter = array('active' => true);
 
-        $this->parseLetterIndexList('index.php?section=access&amp;cmd=members&amp;groupId='.$groupId, 'username_filter', $usernameFilter);
+        $uri = \Cx\Core\Routing\Url::fromPage(\Env::get('cx')->getPage());
+        $this->parseLetterIndexList($uri . '?groupId='.$groupId, 'username_filter', $usernameFilter);
 
         $this->_objTpl->setVariable('ACCESS_SEARCH_VALUE', htmlentities(join(' ', $search), ENT_QUOTES, CONTREXX_CHARSET));
 
@@ -177,7 +178,7 @@ class Access extends AccessLib
         if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
 
             if ($userCount > $_CONFIG['corePagingLimit']) {
-                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&section=access&cmd=members&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
+                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
             }
 
             $this->_objTpl->setVariable('ACCESS_GROUP_NAME', (($objGroup = $objFWUser->objGroup->getGroup($groupId)) && $objGroup->getId()) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
