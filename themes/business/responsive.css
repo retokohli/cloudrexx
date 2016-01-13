@@ -837,7 +837,7 @@ word-wrap: break-word;
 #shop div.details {
           margin-top: 215px;
       }
-}
+    }
 
 @media (max-width: 241px){
     #search-form {
@@ -922,4 +922,13 @@ height: auto;}
   h1.first {
 word-wrap: break-word;
 }    
+}
+@media(min-width: 241px) and (max-width: 1019px){
+    form .contactFormGroup {
+        float: left;
+        width: 100%;
+    }
+    #contactForm #contactFrame div.checkbox > label {
+        margin-left: 0;
+    }   
 }
