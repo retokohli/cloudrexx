@@ -1097,6 +1097,32 @@ class LanguageManager
                 }
             }
         } elseif (!empty($_POST['submit']) AND ( $_POST['modLanguage'] == "true")) {
+            $eventArgs       = array();
+            $frontendLangIds = array_keys(\FWLanguage::getActiveFrontendLanguages());
+            $postLangIds     = array_keys($_POST['langActiveStatus']);
+            foreach (array_keys(\FWLanguage::getLanguageArray()) as $langId) {
+                $isLangInPost     = in_array($langId, $postLangIds);
+                $isLangInFrontend = in_array($langId, $frontendLangIds);
+                if ($isLangInPost == $isLangInFrontend) {
+                    continue;
+                }
+                $langStatus = $isLangInPost && !$isLangInFrontend ? true : false;
+                $eventArgs[] = array('langId' => $langId, 'status' => $langStatus);
+            }
+
+            //Trigger the event 'updateNewsLocale' 
+            //if the language is activated/deactivated for frontend 
+            if (!empty($eventArgs)) {
+                $evm = \Cx\Core\Core\Controller\Cx::instanciate()->getEvents();
+                $evm->triggerEvent(
+                    'updateNewsLocale',
+                    array(
+                        $eventArgs,
+                        new \Cx\Core\Model\RecursiveArrayAccess(array())
+                    )
+                );
+            }
+
             //-----------------------------------------------
             // Update languages
             //-----------------------------------------------

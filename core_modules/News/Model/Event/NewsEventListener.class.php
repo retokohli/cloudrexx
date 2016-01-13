@@ -105,4 +105,75 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $result = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($search->getResultArray($query, 'News', '', $pageUrl, $search->getTerm()));
         $search->appendResult($result);
     }
+
+    /**
+     * Update the news locales 
+     * while activate/deactivate a language in the Administrative -> Language
+     * 
+     * @param array $eventArgs Arguments for the event
+     * 
+     * @return boolean
+     */
+    private function updateNewsLocale(array $eventArgs)
+    {
+        global $objDatabase;
+
+        if (empty($eventArgs[0])) {
+            return;
+        }
+
+        $defaultLangId = \FWLanguage::getDefaultLangId();
+        foreach ($eventArgs[0] as $args) {
+            $langId     = isset($args['langId']) ? $args['langId'] : 0;
+            $langStatus = isset($args['status']) ? $args['status'] : 0;
+
+            if (empty($langId) || !isset($args['status'])) {
+                continue;
+            }
+
+            //Update the news locale
+            $newsQuery = $langStatus ?
+                            'INSERT IGNORE INTO 
+                                `' . DBPREFIX . 'module_news_locale` 
+                                (   `news_id`, 
+                                    `lang_id`, 
+                                    `is_active`, 
+                                    `title`, 
+                                    `text`, 
+                                    `teaser_text`
+                                )
+                            SELECT * FROM 
+                                (SELECT `news_id`, 
+                                        ' . $langId . ',
+                                        `is_active`, 
+                                        `title`, 
+                                        `text`, 
+                                        `teaser_text` 
+                                    FROM `' . DBPREFIX . 'module_news_locale` 
+                                    WHERE lang_id = ' . $defaultLangId . '
+                                ) as tmp' 
+                        :   'DELETE FROM `' . DBPREFIX . 'module_news_locale` 
+                                WHERE lang_id = ' . $langId;
+            $objDatabase->Execute($newsQuery);
+
+            //Update the news category locale
+            $catQuery = $langStatus ?
+                            'INSERT IGNORE INTO 
+                                `' . DBPREFIX . 'module_news_categories_locale` 
+                                (   `category_id`, 
+                                    `lang_id`, 
+                                    `name` 
+                                )
+                            SELECT * FROM 
+                                (SELECT `category_id`, 
+                                        ' . $langId . ',
+                                        `name` 
+                                    FROM `' . DBPREFIX . 'module_news_categories_locale` 
+                                    WHERE lang_id = ' . $defaultLangId . '
+                                ) as tmp'  
+                        :   'DELETE FROM `' . DBPREFIX . 'module_news_categories_locale` 
+                                WHERE lang_id = ' . $langId;
+            $objDatabase->Execute($catQuery);
+        }
+    }
 }
