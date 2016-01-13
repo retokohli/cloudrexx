@@ -347,7 +347,7 @@ class Feed extends FeedLibrary
                         'FEED_LINK'     => $feedLink,
                         'FEED_NAME'     => $value['title'],
                         'FEED_ITEM_AUTHOR'          => $value['author'] ? contrexx_raw2xhtml($value['author']) : '',
-                        'FEED_ITEM_DESCRIPTION'     => $value['description'] ? contrexx_raw2xhtml($value['description']) : '',
+                        'FEED_ITEM_DESCRIPTION'     => $value['description'] ? contrexx_remove_script_tags($value['description']) : '',
                         'FEED_ITEM_SOURCE'          => $value['source'] ? contrexx_raw2xhtml($value['source']) : '',
                         'FEED_ITEM_GUID'            => $value['guid'] ? contrexx_raw2xhtml($value['guid']) : '',
                         'FEED_ITEM_SUBTITLE'        => $value['subtitle'] ? contrexx_raw2xhtml($value['subtitle']) : '',
