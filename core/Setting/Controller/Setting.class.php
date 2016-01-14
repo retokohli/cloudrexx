@@ -571,209 +571,8 @@ class Setting{
         $i = 0;
         if ($objTemplateLocal->blockExists('core_setting_row'))
             $objTemplateLocal->setCurrentBlock('core_setting_row');
-        foreach ($arrSettings as $name => $arrSetting) {
-            // Determine HTML element for type and apply values and selected
-            $element = '';
-            $value = $arrSetting['value'];
-            $values = self::splitValues($arrSetting['values']);
-            $type = $arrSetting['type'];
-            // Not implemented yet:
-            // Warn if some mandatory value is empty
-            if (empty($value) && preg_match('/_mandatory$/', $type)) {
-                \Message::warning(
-                    sprintf($_CORELANG['TXT_CORE_SETTING_WARNING_EMPTY'],
-                        $_ARRAYLANG[$prefix.strtoupper($name)],
-                        $name));
-            }
-            // Warn if some language variable is not defined
-            if (empty($_ARRAYLANG[$prefix.strtoupper($name)])) {
-                \Message::warning(
-                    sprintf($_CORELANG['TXT_CORE_SETTING_WARNING_MISSING_LANGUAGE'],
-                        $prefix.strtoupper($name),
-                        $name));
-            }
-
-//DBG::log("Value: $value -> align $value_align");
-            $isMultiSelect = false;
-            switch ($type) {
-              //Multiselect dropdown/Dropdown menu
-              case self::TYPE_DROPDOWN_MULTISELECT:
-                  $isMultiSelect = true;
-              case self::TYPE_DROPDOWN:
-                $matches   = null;
-                $arrValues = $arrSetting['values'];
-                if (preg_match('/^\{src:([a-z0-9_\\\:]+)\(\)\}$/i', $arrSetting['values'], $matches)) {
-                    $arrValues = call_user_func($matches[1]);
-                }
-                if (is_string($arrValues)) {
-                    $arrValues = self::splitValues($arrValues);
-                }
-                $elementName   = $isMultiSelect ? $name.'[]' : $name;
-                $value         = $isMultiSelect ? self::splitValues($value) : $value;
-                $elementValue  = is_array($value) ? array_flip($value) : $value;
-                $elementAttr   = $isMultiSelect ? ' multiple class="chzn-select"' : '';
-                $element       = \Html::getSelect(
-                                    $elementName, $arrValues, $elementValue,
-                                    '', '',
-                                    'style="width: ' . self::DEFAULT_INPUT_WIDTH . 'px;' .
-                                    (   !$isMultiSelect
-                                     && isset ($arrValues[$value])
-                                     && is_numeric($arrValues[$value])
-                                        ? 'text-align: right;' : '') . '"' .
-                                    ($readOnly ? \Html::ATTRIBUTE_DISABLED : '') . $elementAttr);
-                break;
-              case self::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE:
-                $element = \Html::getSelect(
-                    $name,
-                    User_Profile_Attribute::getCustomAttributeNameArray(),
-                    $arrSetting['value'], '', '',
-                    'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : '')
-                );
-                break;
-              case self::TYPE_DROPDOWN_USERGROUP:
-                $element = \Html::getSelect(
-                    $name,
-                    UserGroup::getNameArray(),
-                    $arrSetting['value'],
-                    '', '', 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : '')
-                );
-                break;
-              case self::TYPE_WYSIWYG:
-                // These must be treated differently, as wysiwyg editors
-                // claim the full width
-                if ($readOnly) {
-// TODO: this might be dangerous! should be rewritten probably
-                    $element = $value;
-                } else {
-                    $element = new \Cx\Core\Wysiwyg\Wysiwyg($name, $value);
-                }
-                $objTemplateLocal->setVariable(array(
-                    'CORE_SETTING_ROW' => $_ARRAYLANG[$prefix.strtoupper($name)],
-                    'CORE_SETTING_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
-                ));
-                $objTemplateLocal->parseCurrentBlock();
-                $objTemplateLocal->setVariable(array(
-                    'CORE_SETTING_ROW' => $element.'<br /><br />',
-                    'CORE_SETTING_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
-                ));
-                $objTemplateLocal->parseCurrentBlock();
-                // Skip the part below, all is done already
-                continue 2;
-
-              case self::TYPE_FILEUPLOAD:
-//echo("\Cx\Core\Setting\Controller\Setting::show_section(): Setting up upload for $name, $value<br />");
-                $element =
-                    \Html::getInputFileupload(
-                        // Set the ID only if the $value is non-empty.
-                        // This toggles the file name and delete icon on or off
-                        $name, ($value ? $name : false),
-                        Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
-                        // "values" defines the MIME types allowed
-                        $arrSetting['values'],
-                        'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : ''), true,
-                        ($value
-                          ? $value
-                          : 'media/'.
-                            (isset($_REQUEST['cmd'])
-                                ? $_REQUEST['cmd'] : 'other'))
-                    );
-                // File uploads must be multipart encoded
-                $enctype = 'enctype="multipart/form-data"';
-                break;
-
-              case self::TYPE_BUTTON:
-                // The button is only available to trigger some event.
-                $event =
-                    'onclick=\''.
-                      'if (confirm("'.$_ARRAYLANG[$prefix.strtoupper($name).'_CONFIRM'].'")) {'.
-                        'document.getElementById("'.$name.'").value=1;'.
-                        'document.formSettings_'.self::$tab_index.'.submit();'.
-                      '}\'';
-//DBG::log("\Cx\Core\Setting\Controller\Setting::show_section(): Event: $event");
-                $element =
-                    \Html::getInputButton(
-                        // The button itself gets a dummy name attribute value
-                        '__'.$name,
-                        $_ARRAYLANG[strtoupper($prefix.$name).'_LABEL'],
-                        'button', false,
-                        $event.($readOnly ? \Html::ATTRIBUTE_DISABLED : '')
-                    ).
-                    // The posted value is set to 1 when confirmed,
-                    // before the form is posted
-                    \Html::getHidden($name, 0, '');
-//DBG::log("\Cx\Core\Setting\Controller\Setting::show_section(): Element: $element");
-                break;
-
-              case self::TYPE_TEXTAREA:
-                $element =
-                    \Html::getTextarea($name, $value, 80, 8, ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
-//                        'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;'.$value_align.'"');
-                break;
-
-              case self::TYPE_CHECKBOX:
-                $arrValues = self::splitValues($arrSetting['values']);
-                $value_true = current($arrValues);
-                $element =
-                    \Html::getCheckbox($name, $value_true, false,
-                        in_array($value, $arrValues), '', ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
-                break;
-              case self::TYPE_CHECKBOXGROUP:
-                $checked = self::splitValues($value);
-                $element =
-                    \Html::getCheckboxGroup($name, $values, $values, $checked,
-                        '', '', '<br />', ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''), '');
-                break;
-// 20120508 UNTESTED!
-              case self::TYPE_RADIO:
-                $checked = $value;
-                $element =
-                    \Html::getRadioGroup($name, $values, $checked, '', ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
-                break;
-
-                case self::TYPE_PASSWORD:
-                $element =
-                    \Html::getInputPassword($name, $value, 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
-                break;
-
-                //datepicker
-                case self::TYPE_DATE:
-                    $element = \Html::getDatepicker($name, array('defaultDate' => $value), 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"');
-                    break;
-                //datetimepicker
-                case self::TYPE_DATETIME:
-                    $element = \Html::getDatetimepicker($name, array('defaultDate' => $value), 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"');
-                    break;
-
-                // Default to text input fields
-              case self::TYPE_TEXT:
-              case self::TYPE_EMAIL:
-              default:
-                $element =
-                    \Html::getInputText(
-                        $name, $value, false,
-                        'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;'.
-                        (is_numeric($value) ? 'text-align: right;' : '').
-                        '"'.
-                        ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
-            }
-
-            //add Tooltip
-            $toolTips='';
-            $toolTipsHelp ='';
-            if (isset($_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP'])) {
-                // generate tooltip for configuration option
-                $toolTips='  <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP'].'</span>';
-            }
-            if (isset($_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP_HELP'])) {
-                // generate tooltip for configuration option
-                $toolTipsHelp ='  <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP_HELP'].'</span>';
-            }
-            $objTemplateLocal->setVariable(array(
-                'CORE_SETTING_NAME' => (isset($_ARRAYLANG[$prefix.strtoupper($name)]) ? $_ARRAYLANG[$prefix.strtoupper($name)] : $name).$toolTips,
-                'CORE_SETTING_VALUE' => $element.$toolTipsHelp,
-                'CORE_SETTING_ROWCLASS2' => (++$i % 2 ? '1' : '2'),
-            ));
-            $objTemplateLocal->parseCurrentBlock();
+        foreach ($arrSettings as $arrSetting) {
+            self::show_option($objTemplateLocal, $arrSetting, $enctype, $i, $prefix, $readOnly, (++$i % 2 ? '1' : '2'));
 //echo("\Cx\Core\Setting\Controller\Setting::show(objTemplateLocal, $prefix): shown $name => $value<br />");
         }
 
@@ -791,6 +590,252 @@ class Setting{
         }
         return true;
     }
+
+    /**
+     * Show single setting option
+     * 
+     * @param \Cx\Core\Html\Sigma   $objTemplateLocal  Template object
+     * @param array                 $arrSetting        Setting option array
+     * @param string                $enctype           Enc type
+     * @param integer               $rowNumber         Row number
+     * @param string                $prefix            Text lang prefix
+     * @param boolean               $readOnly          Mode readonly
+     *
+     * @return null
+     */
+    static function show_option(&$objTemplateLocal, $arrSetting, &$enctype, &$rowNumber, $prefix = 'TXT_', $readOnly = false)
+    {
+        global $_CORELANG, $_ARRAYLANG;
+
+        // Determine HTML element for type and apply values and selected
+        $element = '';
+        $value = $arrSetting['value'];
+        $values = self::splitValues($arrSetting['values']);
+        $type = $arrSetting['type'];
+        $name = $arrSetting['name'];
+        // Not implemented yet:
+        // Warn if some mandatory value is empty
+        if (empty($value) && preg_match('/_mandatory$/', $type)) {
+            \Message::warning(
+                sprintf($_CORELANG['TXT_CORE_SETTING_WARNING_EMPTY'],
+                    $_ARRAYLANG[$prefix.strtoupper($name)],
+                    $name));
+        }
+        // Warn if some language variable is not defined
+        if (empty($_ARRAYLANG[$prefix.strtoupper($name)])) {
+            \Message::warning(
+                sprintf($_CORELANG['TXT_CORE_SETTING_WARNING_MISSING_LANGUAGE'],
+                    $prefix.strtoupper($name),
+                    $name));
+        }
+
+//DBG::log("Value: $value -> align $value_align");
+        $isMultiSelect = false;
+        switch ($type) {
+          //Multiselect dropdown/Dropdown menu
+          case self::TYPE_DROPDOWN_MULTISELECT:
+              $isMultiSelect = true;
+          case self::TYPE_DROPDOWN:
+            $matches   = null;
+            $arrValues = $arrSetting['values'];
+            if (preg_match('/^\{src:([a-z0-9_\\\:]+)\(\)\}$/i', $arrSetting['values'], $matches)) {
+                $arrValues = call_user_func($matches[1]);
+            }
+            if (is_string($arrValues)) {
+                $arrValues = self::splitValues($arrValues);
+            }
+            $elementName   = $isMultiSelect ? $name.'[]' : $name;
+            $value         = $isMultiSelect ? self::splitValues($value) : $value;
+            $elementValue  = is_array($value) ? array_flip($value) : $value;
+            $elementAttr   = $isMultiSelect ? ' multiple class="chzn-select"' : '';
+            $element       = \Html::getSelect(
+                                $elementName, $arrValues, $elementValue,
+                                '', '',
+                                'style="width: ' . self::DEFAULT_INPUT_WIDTH . 'px;' .
+                                (   !$isMultiSelect
+                                 && isset ($arrValues[$value])
+                                 && is_numeric($arrValues[$value])
+                                    ? 'text-align: right;' : '') . '"' .
+                                ($readOnly ? \Html::ATTRIBUTE_DISABLED : '') . $elementAttr);
+            break;
+          case self::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE:
+            $element = \Html::getSelect(
+                $name,
+                User_Profile_Attribute::getCustomAttributeNameArray(),
+                $arrSetting['value'], '', '',
+                'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : '')
+            );
+            break;
+          case self::TYPE_DROPDOWN_USERGROUP:
+            $element = \Html::getSelect(
+                $name,
+                UserGroup::getNameArray(),
+                $arrSetting['value'],
+                '', '', 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : '')
+            );
+            break;
+          case self::TYPE_WYSIWYG:
+            // These must be treated differently, as wysiwyg editors
+            // claim the full width
+            if ($readOnly) {
+// TODO: this might be dangerous! should be rewritten probably
+                $element = $value;
+            } else {
+                $element = new \Cx\Core\Wysiwyg\Wysiwyg($name, $value);
+            }
+            $objTemplateLocal->setVariable(array(
+                'CORE_SETTING_ROW' => $_ARRAYLANG[$prefix.strtoupper($name)],
+                'CORE_SETTING_ROWCLASS1' => (++$rowNumber % 2 ? '1' : '2'),
+            ));
+            $objTemplateLocal->parseCurrentBlock();
+            $objTemplateLocal->setVariable(array(
+                'CORE_SETTING_ROW' => $element.'<br /><br />',
+                'CORE_SETTING_ROWCLASS1' => (++$rowNumber % 2 ? '1' : '2'),
+            ));
+            $objTemplateLocal->parseCurrentBlock();
+            // Skip the part below, all is done already
+            return;
+
+          case self::TYPE_FILEUPLOAD:
+//echo("\Cx\Core\Setting\Controller\Setting::show_section(): Setting up upload for $name, $value<br />");
+            $element =
+                \Html::getInputFileupload(
+                    // Set the ID only if the $value is non-empty.
+                    // This toggles the file name and delete icon on or off
+                    $name, ($value ? $name : false),
+                    Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
+                    // "values" defines the MIME types allowed
+                    $arrSetting['values'],
+                    'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : ''), true,
+                    ($value
+                      ? $value
+                      : 'media/'.
+                        (isset($_REQUEST['cmd'])
+                            ? $_REQUEST['cmd'] : 'other'))
+                );
+            // File uploads must be multipart encoded
+            $enctype = 'enctype="multipart/form-data"';
+            break;
+
+          case self::TYPE_BUTTON:
+            // The button is only available to trigger some event.
+            $event =
+                'onclick=\''.
+                  'if (confirm("'.$_ARRAYLANG[$prefix.strtoupper($name).'_CONFIRM'].'")) {'.
+                    'document.getElementById("'.$name.'").value=1;'.
+                    'document.formSettings_'.self::$tab_index.'.submit();'.
+                  '}\'';
+//DBG::log("\Cx\Core\Setting\Controller\Setting::show_section(): Event: $event");
+            $element =
+                \Html::getInputButton(
+                    // The button itself gets a dummy name attribute value
+                    '__'.$name,
+                    $_ARRAYLANG[strtoupper($prefix.$name).'_LABEL'],
+                    'button', false,
+                    $event.($readOnly ? \Html::ATTRIBUTE_DISABLED : '')
+                ).
+                // The posted value is set to 1 when confirmed,
+                // before the form is posted
+                \Html::getHidden($name, 0, '');
+//DBG::log("\Cx\Core\Setting\Controller\Setting::show_section(): Element: $element");
+            break;
+
+          case self::TYPE_TEXTAREA:
+            $element =
+                \Html::getTextarea($name, $value, 80, 8, ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
+//                        'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;'.$value_align.'"');
+            break;
+
+          case self::TYPE_CHECKBOX:
+            $arrValues = self::splitValues($arrSetting['values']);
+            $value_true = current($arrValues);
+            $element =
+                \Html::getCheckbox($name, $value_true, false,
+                    in_array($value, $arrValues), '', ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
+            break;
+          case self::TYPE_CHECKBOXGROUP:
+            $checked = self::splitValues($value);
+            $element =
+                \Html::getCheckboxGroup($name, $values, $values, $checked,
+                    '', '', '<br />', ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''), '');
+            break;
+// 20120508 UNTESTED!
+          case self::TYPE_RADIO:
+            $checked = $value;
+            $element =
+                \Html::getRadioGroup($name, $values, $checked, '', ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
+            break;
+
+            case self::TYPE_PASSWORD:
+            $element =
+                \Html::getInputPassword($name, $value, 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"'.($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
+            break;
+
+            //datepicker
+            case self::TYPE_DATE:
+                $element = \Html::getDatepicker($name, array('defaultDate' => $value), 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"');
+                break;
+            //datetimepicker
+            case self::TYPE_DATETIME:
+                $element = \Html::getDatetimepicker($name, array('defaultDate' => $value), 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"');
+                break;
+
+            // Default to text input fields
+          case self::TYPE_TEXT:
+          case self::TYPE_EMAIL:
+          default:
+            $element =
+                \Html::getInputText(
+                    $name, $value, false,
+                    'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;'.
+                    (is_numeric($value) ? 'text-align: right;' : '').
+                    '"'.
+                    ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
+        }
+
+        //add Tooltip
+        $toolTips='';
+        $toolTipsHelp ='';
+        if (isset($_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP'])) {
+            // generate tooltip for configuration option
+            $toolTips='  <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP'].'</span>';
+        }
+        if (isset($_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP_HELP'])) {
+            // generate tooltip for configuration option
+            $toolTipsHelp ='  <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP_HELP'].'</span>';
+        }
+        $objTemplateLocal->setVariable(array(
+            'CORE_SETTING_NAME' => (isset($_ARRAYLANG[$prefix.strtoupper($name)]) ? $_ARRAYLANG[$prefix.strtoupper($name)] : $name).$toolTips,
+            'CORE_SETTING_VALUE' => $element.$toolTipsHelp,
+            'CORE_SETTING_ROWCLASS2' => (++$rowNumber % 2 ? '1' : '2'),
+        ));
+        $objTemplateLocal->parseCurrentBlock();
+    }
+
+    /**
+     * Parse the given setting option
+     *
+     * @param string                $name              Setting name
+     * @param \Cx\Core\Html\Sigma   $objTemplate       Template object
+     * @param string                $enctype           Enc type
+     * @param integer               $rowNumber         Row number
+     * @param string                $prefix            Text lang prefix
+     * @param boolean               $readOnly          Mode readonly
+     *
+     * @return type
+     */
+    static function getOption($name, \Cx\Core\Html\Sigma $objTemplate, $enctype = '', $rowNumber = 1, $prefix = 'TXT_', $readOnly = false)
+    {
+        $arrSettings = self::getCurrentSettings();
+        if (!$arrSettings[$name]) {
+            return;
+        }
+        if ($objTemplate->blockExists('core_setting_row')) {
+            $objTemplate->setCurrentBlock('core_setting_row');
+        }
+        self::show_option($objTemplate, $arrSettings[$name], $enctype, $rowNumber, $prefix, $readOnly);
+    }
+
     /**
      * Adds an external settings view to the current template
      *
