@@ -1651,7 +1651,7 @@ CREATE TABLE `contrexx_module_feed_news` (
   `filename` varchar(150) NOT NULL DEFAULT '',
   `channel_link` varchar(256) NOT NULL DEFAULT '',
   `channel_description` text NOT NULL DEFAULT '',
-  `channel_build_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `channel_build_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `articles` int(2) NOT NULL DEFAULT '0',
   `cache` int(4) NOT NULL DEFAULT '3600',
   `time` int(100) NOT NULL DEFAULT '0',

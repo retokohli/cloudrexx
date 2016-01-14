@@ -83,9 +83,7 @@ class FeedLibrary
         $rss->parse();
 
         $channelInfo = $rss->getChannelInfo();
-        if (empty($channelInfo)) {
-            return;
-        }
+
         $channelLink        = !empty($channelInfo['link']) ? $channelInfo['link'] : '';
         $channelDescription = !empty($channelInfo['description']) ? $channelInfo['description'] : '';
         $channelBuildDate   = !empty($channelInfo['lastbuilddate']) ? date('Y-m-d H:i:s', strtotime($channelInfo['lastbuilddate'])) : '';
