@@ -288,7 +288,10 @@ class feed extends feedLibrary
                                filename,
                                time,
                                articles,
-                               image
+                               image,
+                               `channel_link`,
+                               `channel_description`,
+                               `channel_build_date`
                           FROM ".DBPREFIX."module_feed_news
                          WHERE id = '".$getNews."'
                            AND subid = '".$getCat."'
@@ -324,21 +327,54 @@ class feed extends feedLibrary
                 'FEED_IMAGE'            => $out_image,
                 'FEED_TITLE'            => $out_title,
                 'FEED_TIME'             => $out_time,
-                'TXT_FEED_LAST_UPTDATE' => $_ARRAYLANG['TXT_FEED_LAST_UPDATE']
+                'TXT_FEED_LAST_UPTDATE' => $_ARRAYLANG['TXT_FEED_LAST_UPDATE'],
+                'FEED_CHANNEL_LINK'             => contrexx_raw2xhtml($objResult->fields['channel_link']),
+                'FEED_CHANNEL_DESCRIPTION'      => contrexx_raw2xhtml($objResult->fields['channel_description']),
+                'FEED_CHANNEL_LAST_BUILD_DATE'  => contrexx_raw2xhtml($objResult->fields['channel_build_date']),
+                'FEED_CHANNEL_IMAGE'            => !empty($out_image) ? $out_image : '',
+                'FEED_CHANNEL_TITLE'            => contrexx_raw2xhtml($rss->channel['title']),
+                'FEED_FETCH_TIME'               => $out_time,
             ));
 
             //items
             $x = 0;
             foreach ($rss->getItems() as $value){
                 if ($x < $objResult->fields['articles']) {
-                    $feedLink = !empty($value['guid'])
-                                  ? $value['guid']
-                                  : (!empty($value['link']) ? $value['link'] : '');
+                    $rowClass        = $x % 2 ? 'row2' : 'row1';
+                    $publicationDate = date('d.m.Y', strtotime($value['pubdate']));
+                    $feedLink        = !empty($value['guid'])
+                                        ? $value['guid']
+                                        : (!empty($value['link']) ? $value['link'] : '');
                     $this->_objTpl->setVariable(array(
-                        'FEED_ROWCLASS' => $x % 2 ? 'row2' : 'row1',
-                        'FEED_DATE'     => date('d.m.Y', strtotime($value['pubdate'])),
+                        'FEED_ROWCLASS' => $rowClass,
+                        'FEED_DATE'     => $publicationDate,
                         'FEED_LINK'     => $feedLink,
                         'FEED_NAME'     => $value['title'],
+                        'FEED_ITEM_AUTHOR'          => $value['author'] ? contrexx_raw2xhtml($value['author']) : '',
+                        'FEED_ITEM_DESCRIPTION'     => $value['description'] ? contrexx_remove_script_tags($value['description']) : '',
+                        'FEED_ITEM_SOURCE'          => $value['source'] ? contrexx_raw2xhtml($value['source']) : '',
+                        'FEED_ITEM_GUID'            => $value['guid'] ? contrexx_raw2xhtml($value['guid']) : '',
+                        'FEED_ITEM_SUBTITLE'        => $value['subtitle'] ? contrexx_raw2xhtml($value['subtitle']) : '',
+                        'FEED_ITEM_CATEGORY'        => $value['category'] ? contrexx_raw2xhtml($value['category']) : '',
+                        'FEED_ITEM_ROWCLASS'        => $rowClass,
+                        'FEED_ITEM_PUBDATE'         => $publicationDate,
+                        'FEED_ITEM_LINK'            => $feedLink,
+                        'FEED_ITEM_TITLE'           => $value['title'] ? contrexx_raw2xhtml($value['title']) : '',
+                        'FEED_ITEM_DC_TITLE'        => $value['dc:title'] ? contrexx_raw2xhtml($value['dc:title']) : '',
+                        'FEED_ITEM_DC_CREATOR'      => $value['dc:creator'] ? contrexx_raw2xhtml($value['dc:creator']) : '',
+                        'FEED_ITEM_DC_SUBJECT'      => $value['dc:subject'] ? contrexx_raw2xhtml($value['dc:subject']) : '',
+                        'FEED_ITEM_DC_DESCRIPTION'  => $value['dc:description'] ? contrexx_raw2xhtml($value['dc:description']) : '',
+                        'FEED_ITEM_DC_PUBLISHER'    => $value['dc:publisher'] ? contrexx_raw2xhtml($value['dc:publisher']) : '',
+                        'FEED_ITEM_DC_CONTRIBUTOR'  => $value['dc:contributor'] ? contrexx_raw2xhtml($value['dc:contributor']) : '',
+                        'FEED_ITEM_DC_DATE'         => $value['dc:date'] ? contrexx_raw2xhtml($value['dc:date']) : '',
+                        'FEED_ITEM_DC_TYPE'         => $value['dc:type'] ? contrexx_raw2xhtml($value['dc:type']) : '',
+                        'FEED_ITEM_DC_FORMAT'       => $value['dc:format'] ? contrexx_raw2xhtml($value['dc:format']) : '',
+                        'FEED_ITEM_DC_IDENTIFIER'   => $value['dc:identifier'] ? contrexx_raw2xhtml($value['dc:identifier']) : '',
+                        'FEED_ITEM_DC_SOURCE'       => $value['dc:source'] ? contrexx_raw2xhtml($value['dc:source']) : '',
+                        'FEED_ITEM_DC_LANGUAGE'     => $value['dc:language'] ? contrexx_raw2xhtml($value['dc:language']) : '',
+                        'FEED_ITEM_DC_RELATION'     => $value['dc:relation'] ? contrexx_raw2xhtml($value['dc:relation']) : '',
+                        'FEED_ITEM_DC_COVERAGE'     => $value['dc:coverage'] ? contrexx_raw2xhtml($value['dc:coverage']) : '',
+                        'FEED_ITEM_DC_RIGHTS'       => $value['dc:rights'] ? contrexx_raw2xhtml($value['dc:rights']) : '',
                     ));
                     $this->_objTpl->parse('feed_output_news');
                     $x++;

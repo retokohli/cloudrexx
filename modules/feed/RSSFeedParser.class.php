@@ -44,6 +44,21 @@
  */
 class RSSFeedParser extends \XML_RSS
 {
+
+    /**
+     * @var array
+     */
+    var $channelTags = array('TITLE', 'LINK', 'DESCRIPTION', 'IMAGE',
+                             'LASTBUILDDATE',
+                             'ITEMS', 'TEXTINPUT');
+
+    /**
+     * @var array
+     */
+    var $itemTags = array('TITLE', 'LINK', 'DESCRIPTION',
+                          'AUTHOR', 'CATEGORY', 'PUBDATE',
+                          'SOURCE', 'SUBTITLE');
+
     /**
      * List of allowed module tags
      *
