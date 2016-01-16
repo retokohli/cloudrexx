@@ -572,7 +572,7 @@ class Setting{
         if ($objTemplateLocal->blockExists('core_setting_row'))
             $objTemplateLocal->setCurrentBlock('core_setting_row');
         foreach ($arrSettings as $arrSetting) {
-            self::show_option($objTemplateLocal, $arrSetting, $enctype, $i, $prefix, $readOnly, (++$i % 2 ? '1' : '2'));
+            self::show_option($objTemplateLocal, $arrSetting, $enctype, $i, $prefix, $readOnly);
 //echo("\Cx\Core\Setting\Controller\Setting::show(objTemplateLocal, $prefix): shown $name => $value<br />");
         }
 
@@ -603,7 +603,7 @@ class Setting{
      *
      * @return null
      */
-    static function show_option(&$objTemplateLocal, $arrSetting, &$enctype, &$rowNumber, $prefix = 'TXT_', $readOnly = false)
+    static function show_option(\Cx\Core\Html\Sigma $objTemplateLocal, $arrSetting, &$enctype, &$rowNumber, $prefix = 'TXT_', $readOnly = false)
     {
         global $_CORELANG, $_ARRAYLANG;
 
@@ -815,25 +815,34 @@ class Setting{
     /**
      * Parse the given setting option
      *
-     * @param string                $name              Setting name
-     * @param \Cx\Core\Html\Sigma   $objTemplate       Template object
-     * @param string                $enctype           Enc type
-     * @param integer               $rowNumber         Row number
-     * @param string                $prefix            Text lang prefix
-     * @param boolean               $readOnly          Mode readonly
+     * @param string    $name              Setting name
+     * @param mixed     $objTemplate       Template object | null,
+     *                                       if null passed Default template will be loaded
      *
-     * @return type
+     * @param string    $enctype           Enc type
+     * @param integer   $rowNumber         Row number
+     * @param string    $prefix            Text lang prefix
+     * @param boolean   $readOnly          Mode readonly
+     *
+     * @return string Return's the parsed setting option
      */
-    static function getOption($name, \Cx\Core\Html\Sigma $objTemplate, $enctype = '', $rowNumber = 1, $prefix = 'TXT_', $readOnly = false)
+    static function getOption($name, $objTemplate = null, $enctype = '', $rowNumber = 1, $prefix = 'TXT_', $readOnly = false)
     {
         $arrSettings = self::getCurrentSettings();
         if (!$arrSettings[$name]) {
             return;
         }
+        if (!($objTemplate instanceof \Cx\Core\Html\Sigma)) {
+            $templatePath = \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseDocumentRootPath() . '/core/Setting/View/Template/Generic';
+            $objTemplate  = new \Cx\Core\Html\Sigma($templatePath);
+            $objTemplate->loadTemplateFile('FormSettingOption.html');
+        }
         if ($objTemplate->blockExists('core_setting_row')) {
             $objTemplate->setCurrentBlock('core_setting_row');
         }
         self::show_option($objTemplate, $arrSettings[$name], $enctype, $rowNumber, $prefix, $readOnly);
+
+        return $objTemplate->get();
     }
 
     /**
