@@ -975,20 +975,26 @@ class Gallery
                     "SELECT p.name, p.desc FROM ".DBPREFIX."module_gallery_language_pics p ".
                     "WHERE picture_id=".$objResult->fields['id']." AND lang_id=$this->langId LIMIT 1");
                 
-// Never used
-//                $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
+                $imageReso = getimagesize($this->strImagePath.$objResult->fields['path']);
                 $strImagePath = $this->strImageWebPath.$objResult->fields['path'];
                 $imageThumbPath = $this->strThumbnailWebPath.$objResult->fields['path'];
                 $imageFileName = $this->arrSettings['show_file_name'] == 'on' ? $objResult->fields['path'] : '';
                 $imageName = $this->arrSettings['show_names'] == 'on' ? $objSubResult->fields['name'] : '';
                 $imageTitle = $this->arrSettings['show_names'] == 'on' ? $objSubResult->fields['name'] : ($this->arrSettings['show_file_name'] == 'on' ? $objResult->fields['path'] : '');
                 $imageLinkName = $objSubResult->fields['desc'];
+                $imageDesc = !empty($objSubResult->fields['desc']) ? $imageDesc = $objSubResult->fields['desc'] : '-';
                 $imageLink = $objResult->fields['link'];
                 $showImageSize = $this->arrSettings['show_image_size'] == 'on' && $objResult->fields['size_show'];
                 $imageFileSize = ($showImageSize) ? round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2) : '';
                 $imageLinkOutput = '';
                 $imageSizeOutput = '';
                 $imageTitleTag = '';
+                $strImageWebPath = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                        'Gallery',
+                                        $this->strCmd,
+                                        '',
+                                        array('cid' => $intParentId, 'pId' => $objResult->fields['id'])
+                                    )->toString();
 
                 // chop the file extension if the settings tell us to do so
                 if ($this->arrSettings['show_ext'] == 'off') {
@@ -1104,6 +1110,35 @@ class Gallery
                     if (!empty($imageLink)) {
                         $imageLinkOutput = '<a href="'.$imageLink.'" target="_blank">'.$imageLink.'</a>';
                     }
+                }
+
+                if ($this->_objTpl->blockExists('gallery_list_images')) {
+                    $intImageWidth  = '';
+                    $intImageHeigth = '';
+                    if ($this->arrSettings['image_width'] < $imageReso[0]) {
+                        $resizeFactor   = $this->arrSettings['image_width'] / $imageReso[0];
+                        $intImageWidth  = $imageReso[0] * $resizeFactor;
+                        $intImageHeigth = $imageReso[1] * $resizeFactor;
+                    }
+                    $strImageTitle = substr(strrchr($strImagePath, '/'), 1);
+                    // chop the file extension if the settings tell us to do so
+                    if ($this->arrSettings['show_ext'] == 'off') {
+                        $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
+                    }
+                    $this->_objTpl->setVariable(array(
+                        'GALLERY_LIST_IMAGE_ID'             => contrexx_raw2xhtml($objResult->fields['id']),
+                        'GALLERY_LIST_IMAGE_TITLE'          => ($this->arrSettings['show_file_name'] == 'on')
+                                                                 ? $strImageTitle
+                                                                 : '',
+                        'GALLERY_LIST_IMAGE_PATH'           => contrexx_raw2xhtml($strImagePath),
+                        'GALLERY_LIST_IMAGE_WIDTH'          => $intImageWidth,
+                        'GALLERY_LIST_IMAGE_HEIGHT'         => $intImageHeigth,
+                        'GALLERY_LIST_IMAGE_LINK'           => $strImageWebPath,
+                        'GALLERY_LIST_IMAGE_NAME'           => contrexx_raw2xhtml($objSubResult->fields['name']),
+                        'GALLERY_LIST_IMAGE_DESCRIPTION'    => contrexx_raw2xhtml($imageDesc),
+                        'GALLERY_LIST_IMAGE_FILESIZE'       => ($showImageSize) ? $imageFileSize . ' kB' : '',
+                    ));
+                    $this->_objTpl->parse('gallery_list_images');
                 }
 
                 $this->_objTpl->setVariable(array(
