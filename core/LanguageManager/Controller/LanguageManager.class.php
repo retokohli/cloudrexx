@@ -1110,12 +1110,12 @@ class LanguageManager
                 $eventArgs[] = array('langId' => $langId, 'status' => $langStatus);
             }
 
-            //Trigger the event 'updateNewsLocale' 
+            //Trigger the event 'languageStatusUpdate' 
             //if the language is activated/deactivated for frontend 
             if (!empty($eventArgs)) {
                 $evm = \Cx\Core\Core\Controller\Cx::instanciate()->getEvents();
                 $evm->triggerEvent(
-                    'updateNewsLocale',
+                    'languageStatusUpdate',
                     array(
                         $eventArgs,
                         new \Cx\Core\Model\RecursiveArrayAccess(array())

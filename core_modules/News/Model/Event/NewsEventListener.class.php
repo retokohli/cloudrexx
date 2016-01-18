@@ -114,7 +114,7 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
      * 
      * @return boolean
      */
-    private function updateNewsLocale(array $eventArgs)
+    protected function languageStatusUpdate(array $eventArgs)
     {
         global $objDatabase;
 

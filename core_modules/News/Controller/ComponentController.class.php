@@ -292,17 +292,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Register your events here
-     */
-    public function registerEvents()
-    {
-        $this->cx->getEvents()->addEvent('updateNewsLocale');
-    }
-
-    /**
      * Register the Event listeners
      */
     public function registerEventListeners() {
-        $this->cx->getEvents()->addEventListener('updateNewsLocale', new \Cx\Core_Modules\News\Model\Event\NewsEventListener());
+        $this->cx->getEvents()->addEventListener('languageStatusUpdate', new \Cx\Core_Modules\News\Model\Event\NewsEventListener());
     }
 }
