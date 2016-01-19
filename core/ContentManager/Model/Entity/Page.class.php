@@ -1908,6 +1908,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @throws PageException If parent page can not be found
      */
     public function getParent() {
+        // virtual pages may not have a node. Throw an exception instead of dying.
+        if (!$this->getNode() && $this->isVirtual()) {
+            throw new PageException('Virtual page has no node');
+        }
         $parentNode = $this->getNode()->getParent();
         if (!$parentNode) {
             throw new PageException('Parent node not found (my page id is ' . $this->getId() . ')');

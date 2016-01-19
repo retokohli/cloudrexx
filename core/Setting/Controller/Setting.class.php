@@ -81,6 +81,7 @@ class Setting{
      * See {@see show()} for examples on how to extend these.
      */
     const TYPE_DROPDOWN = 'dropdown';
+    const TYPE_DROPDOWN_MULTISELECT = 'dropdown_multiselect';
     const TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE = 'dropdown_user_custom_attribute';
     const TYPE_DROPDOWN_USERGROUP = 'dropdown_usergroup';
     const TYPE_WYSIWYG = 'wysiwyg';
@@ -593,25 +594,33 @@ class Setting{
             }
 
 //DBG::log("Value: $value -> align $value_align");
+            $isMultiSelect = false;
             switch ($type) {
-              // Dropdown menu
+              //Multiselect dropdown/Dropdown menu
+              case self::TYPE_DROPDOWN_MULTISELECT:
+                  $isMultiSelect = true;
               case self::TYPE_DROPDOWN:
-                $matches = null;
+                $matches   = null;
+                $arrValues = $arrSetting['values'];
                 if (preg_match('/^\{src:([a-z0-9_\\\:]+)\(\)\}$/i', $arrSetting['values'], $matches)) {
-                    $arrValues = self::splitValues(call_user_func($matches[1]));
-                } else {
-                    $arrValues = self::splitValues($arrSetting['values']);
+                    $arrValues = call_user_func($matches[1]);
                 }
-//DBG::log("Values: ".var_export($arrValues, true));
-                $element = \Html::getSelect(
-                    $name, $arrValues, $value,
-                    '', '',
-                    'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;'.
-                    (   isset ($arrValues[$value])
-                     && is_numeric($arrValues[$value])
-                        ? 'text-align: right;' : '').
-                    '"'.
-                    ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
+                if (is_string($arrValues)) {
+                    $arrValues = self::splitValues($arrValues);
+                }
+                $elementName   = $isMultiSelect ? $name.'[]' : $name;
+                $value         = $isMultiSelect ? self::splitValues($value) : $value;
+                $elementValue  = is_array($value) ? array_flip($value) : $value;
+                $elementAttr   = $isMultiSelect ? ' multiple class="chzn-select"' : '';
+                $element       = \Html::getSelect(
+                                    $elementName, $arrValues, $elementValue,
+                                    '', '',
+                                    'style="width: ' . self::DEFAULT_INPUT_WIDTH . 'px;' .
+                                    (   !$isMultiSelect
+                                     && isset ($arrValues[$value])
+                                     && is_numeric($arrValues[$value])
+                                        ? 'text-align: right;' : '') . '"' .
+                                    ($readOnly ? \Html::ATTRIBUTE_DISABLED : '') . $elementAttr);
                 break;
               case self::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE:
                 $element = \Html::getSelect(
@@ -928,6 +937,8 @@ class Setting{
                     break;
                   case self::TYPE_CHECKBOX:
                       break;
+                  case self::TYPE_DROPDOWN_MULTISELECT:
+                      $value = array_flip($value);
                   case self::TYPE_CHECKBOXGROUP:
                     $value = (is_array($value)
                         ? join(',', array_keys($value))

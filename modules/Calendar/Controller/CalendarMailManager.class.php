@@ -282,8 +282,7 @@ class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
+            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
             $objMail->AddReplyTo($_CONFIG['coreAdminEmail']); 
 
             foreach ($recipients as $mailAdress => $langId) {
