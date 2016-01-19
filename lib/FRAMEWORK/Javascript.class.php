@@ -435,6 +435,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         ),
         'mediabrowser' => array(
             'jsfiles' => array(
+                'lib/javascript/jquery/2.0.3/js/jquery.min.js',
                 'lib/plupload/js/moxie.min.js?v=2',
                 'lib/plupload/js/plupload.full.min.js?v=2',
                 'lib/javascript/angularjs/angular.js?v=2',
@@ -450,10 +451,12 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             ),
             'dependencies' => array(
                 'cx',
-                'jquery'    => '^([^1]\..*|1\.[^0-8]*\..*)$', // jquery needs to be version 1.9.0 or higher
+                // Note: loading jQuery as a dependency does not work as it would
+                //       interfere with jQuery plugins
+                //'jquery'    => '^([^1]\..*|1\.[^0-8]*\..*)$', // jquery needs to be version 1.9.0 or higher
             ),
             'specialcode' => 'if (typeof cx.variables.get(\'jquery\', \'mediabrowser\') == \'undefined\'){
-    cx.variables.set({"jquery": jQuery.noConflict()},\'mediabrowser\');
+    cx.variables.set({"jquery": jQuery.noConflict(true)},\'mediabrowser\');
 }'
         ),
         'intro.js' => array(
@@ -534,7 +537,8 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      * @var array associative array ( '/regexstring/' => 'componentToIncludeInstead' )
      */
     protected static $alternatives = array(
-        '/^jquery([-_]\d\.\d(\.\d)?)?(\.custom)?(\.m(in|ax))?\.js$/i' => 'jquery'
+        '/^jquery([-_]\d\.\d(\.\d)?)?(\.custom)?(\.m(in|ax))?\.js$/i' => 'jquery',
+        '/^contrexxJs\.js$/i' => 'cx',
     );
 
     /**
@@ -634,6 +638,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 
         // check if a matching library has already been loaded
         $activatedLibraries = preg_grep('/^'.$name.'-version-/', self::$active);
+        // check if any of the already loaded libraries can be used as an alternativ
         foreach ($activatedLibraries as $activatedLibrary) {
             $activatedLibraryVersion = str_replace($name.'-version-', '', $activatedLibrary);
             if (!preg_match('/'.$version.'/', $activatedLibraryVersion)) {
@@ -647,6 +652,9 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
             $customAvailableLibrary = $name.'-version-'.$activatedLibraryVersion;
             self::$available[$customAvailableLibrary]['specialcode'] .= $libraryVersionData;
+
+            // trigger the activate again to push the library up in the dependency chain
+            self::activate($customAvailableLibrary);
             return true;
         }
 
@@ -669,6 +677,8 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 } else {
                     $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$libraryVersion': jQuery.noConflict()}};";
                 }
+                // we have to load cx again as we are using cx.libs in the specialcode
+                $libraryVersionData['dependencies'] = array('cx');
             }
             self::$available[$customAvailableLibrary] = $libraryVersionData;
 
