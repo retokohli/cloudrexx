@@ -451,6 +451,20 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 break;
             case 2:
                 //Frontend View
+                // Set block name to mediadirEntryList when mediadirLatestList not present in listing of latest entries
+                if ($this->bolLatest && !$objTpl->blockExists($this->moduleNameLC."LatestList")) {
+                    $this->strBlockName = $this->moduleNameLC."EntryList";
+                }
+                // hide the additional block when both exists
+                if (   $objTpl->blockExists($this->moduleNameLC."LatestList")
+                    && $objTpl->blockExists($this->moduleNameLC."EntryList")
+                ) {
+                    if ($this->bolLatest) {
+                        $objTpl->hideBlock($this->moduleNameLC."EntryList");
+                    } else {
+                        $objTpl->hideBlock($this->moduleNameLC."LatestList");
+                    }
+                }
                 if(!empty($this->arrEntries)) {
                     foreach ($this->arrEntries as $key => $arrEntry) {
 	                    if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
