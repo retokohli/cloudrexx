@@ -967,7 +967,16 @@ class Gallery
             }
         } else {
             $this->_objTpl->setVariable(array('GALLERY_CATEGORY_COMMENT' =>    $strCategoryComment));
-            $intFillLastRow = 1;
+            $availableImagePlaceholders = array();
+            for ($intPlaceholder = 1;$intPlaceholder <= 3;$intPlaceholder++) {
+                if (   $this->_objTpl->placeholderExists('GALLERY_IMAGE' . $intPlaceholder)
+                    || $this->_objTpl->placeholderExists('GALLERY_IMAGE_LINK' . $intPlaceholder)
+                ) {
+                    $availableImagePlaceholders[] = $intPlaceholder;
+                }
+            }
+            $intFillPlaceholder   = 1;
+            $fillPlaceholderCount = count($availableImagePlaceholders);
             while (!$objResult->EOF) {
                 $imageVotingOutput = '';
                 $imageCommentOutput = '';
@@ -1140,33 +1149,33 @@ class Gallery
                     ));
                     $this->_objTpl->parse('gallery_list_images');
                 }
-
+                if (!$availableImagePlaceholders) {
+                    $objResult->MoveNext();
+                    continue;
+                }
+                $placeholderNumber = $availableImagePlaceholders[$intFillPlaceholder - 1];
                 $this->_objTpl->setVariable(array(
-                    'GALLERY_IMAGE_LINK'.$intFillLastRow => $imageSizeOutput.$imageCommentOutput.$imageVotingOutput.$imageLinkOutput,
-                    'GALLERY_IMAGE'.$intFillLastRow      => $strImageOutput
-                    ));
+                    'GALLERY_IMAGE_LINK'.$placeholderNumber => $imageSizeOutput.$imageCommentOutput.$imageVotingOutput.$imageLinkOutput,
+                    'GALLERY_IMAGE'.$placeholderNumber      => $strImageOutput
+                ));
 
-                if ($intFillLastRow == 3) {
-                    // Parse the data after every third image
+                if ($intFillPlaceholder == $fillPlaceholderCount) {
+                    // Parse the data after current increment reaches placeholder count
                     $this->_objTpl->parse('galleryShowImages');
-                    $intFillLastRow = 1;
+                    $intFillPlaceholder = 1;
                 } else {
-                    $intFillLastRow++;
+                    $intFillPlaceholder++;
                 }
                 $objResult->MoveNext();
             }
-            if ($intFillLastRow == 2) {
-                $this->_objTpl->setVariable(array(
-                    'GALLERY_IMAGE'.$intFillLastRow      => '',
-                    'GALLERY_IMAGE_LINK'.$intFillLastRow => ''
-                ));
-                $intFillLastRow++;
-            }
-            if ($intFillLastRow == 3) {
-                $this->_objTpl->setVariable(array(
-                    'GALLERY_IMAGE'.$intFillLastRow      => '',
-                    'GALLERY_IMAGE_LINK'.$intFillLastRow => ''
-                ));
+            if ($intFillPlaceholder < $fillPlaceholderCount) {
+                for ($intPlaceholder = $intFillPlaceholder;$intPlaceholder <= $fillPlaceholderCount;$intPlaceholder++) {
+                    $placeholderNumber = $availableImagePlaceholders[$intFillPlaceholder - 1];
+                    $this->_objTpl->setVariable(array(
+                        'GALLERY_IMAGE_LINK'.$placeholderNumber => '',
+                        'GALLERY_IMAGE'.$placeholderNumber      => '',
+                    ));
+                }
                 $this->_objTpl->parse('galleryShowImages');
             }
         }
