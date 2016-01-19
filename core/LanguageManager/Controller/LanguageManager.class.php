@@ -1106,8 +1106,10 @@ class LanguageManager
                 if ($isLangInPost == $isLangInFrontend) {
                     continue;
                 }
-                $langStatus = $isLangInPost && !$isLangInFrontend ? true : false;
-                $eventArgs[] = array('langId' => $langId, 'status' => $langStatus);
+                $eventArgs[] = array(
+                    'langId' => $langId,
+                    'status' => $isLangInPost && !$isLangInFrontend
+                );
             }
 
             //Trigger the event 'languageStatusUpdate' 
