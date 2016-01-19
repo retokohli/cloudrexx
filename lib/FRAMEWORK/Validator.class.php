@@ -146,6 +146,31 @@ class FWValidator
     const REGEX_URI_JS = VALIDATOR_REGEX_URI_JS;
     
     /**
+     * Array of harmful file extensions
+     * 
+     * @var array
+     */
+    protected static $evilFileExtensions = array(
+        # windows executables:
+        'exe', 'bat', 'pif', 'com',
+        # client scripts:
+        'vs', 'vbs',
+        # server scripts:
+        'php', 'php4', 'php5', 'phps', 'cgi', 'pl', 'jsp', 'jspx', 'asp', 'aspx',
+        'jsp', 'jspx', 'jhtml', 'phtml', 'cfm', 'htaccess','py',
+    );
+
+    /**
+     * Array of harmful file extensions(client script containers)
+     * 
+     * @var array
+     */
+    protected  static $potentialEvilFileExtensions = array(
+        # client script containers:
+        'xhtml', 'xml', 'svg', 'shtml',
+    );
+
+    /**
      * Validate an E-mail address
      *
      * Note:  This used to have a stripslashes() around the string.
@@ -238,19 +263,45 @@ class FWValidator
      */
     static function is_file_ending_harmless($file)
     {
-        $evil = array(
-            # windows executables:
-            'exe', 'bat', 'pif', 'com',
-            # client scripts:
-            'vs', 'vbs',
-            # client script containers:
-            'xhtml', 'xml', 'svg', 'shtml',
-            # server scripts:
-            'php', 'php4', 'php5', 'phps', 'cgi', 'pl', 'jsp', 'jspx', 'asp', 'aspx',
-            'jsp', 'jspx', 'jhtml', 'phtml', 'cfm', 'htaccess','py',
-        );
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (in_array($ext, $evil)) return false;
+
+        //Check the file extension is present in $evilFileExtensions
+        //if so, its a harm file
+        if (in_array($ext, self::$evilFileExtensions)) {
+            return false;
+        }
+
+        //Check the file extension is present in $potentialEvilFileExtensions
+        //if so, check the config options 
+        //'allowClientsideScriptUpload' and 'allowClientSideScriptUploadOnGroups'.
+        //If the option 'allowClientsideScriptUpload' is 'nobody' then its a harmful file
+        //else if the option is 'groups' and the current user is member of the 
+        // groups mentioned in the option 'allowClientSideScriptUploadOnGroups' then
+        //its a harmless file.
+        //If the option is 'all' then its a harmless file too.
+        if (in_array($ext, self::$potentialEvilFileExtensions)) {
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'security','Yaml');
+            $allowedCSUpload = \Cx\Core\Setting\Controller\Setting::getValue(
+                                'allowClientsideScriptUpload',
+                                'Config');
+            $allowedCSGroups = \Cx\Core\Setting\Controller\Setting::getValue(
+                                'allowClientSideScriptUploadOnGroups',
+                                'Config');
+            if (    $allowedCSUpload == 'nobody'
+                ||
+                    (   $allowedCSUpload == 'groups'
+                    &&  !count(
+                            array_intersect(
+                                explode(',', $allowedCSGroups),
+                                \FWUser::getFWUserObject()->objUser->getAssociatedGroupIds()
+                            )
+                        )
+                    )
+            ) {
+                return false;
+            }
+        }
+
         return true;
     }
 

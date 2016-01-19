@@ -464,6 +464,25 @@ class Config
         return implode(',', $options);
     }
     
+    /**
+     * Returns user groups
+     * 
+     * @return string user groups as string
+     */
+    public static function getUserGroups()
+    {
+        $em        = Cx::instanciate()->getDb()->getEntityManager();
+        $groupRepo = $em->getRepository('\Cx\Core\User\Model\Entity\Group');
+        $groups    = $groupRepo->findAll();
+        $options   = array();
+        if (!empty($groups)) {
+            foreach ($groups as $group) {
+                $options[] = $group->getGroupId() . ':' . $group->getGroupName();
+            }
+        }
+
+        return implode(',', $options);
+    }
 
     /**
      * Sets debugging related template variables according to session state.
@@ -1279,6 +1298,16 @@ class Config
                 && !\Cx\Core\Setting\Controller\Setting::add('passwordComplexity','off', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'security')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Passwords must meet the complexity requirements");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('allowClientsideScriptUpload')
+                && !\Cx\Core\Setting\Controller\Setting::add('allowClientsideScriptUpload','nobody', 3,
+                \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'nobody:TXT_CORE_CONFIG_NOBODY_LABEL,groups:TXT_CORE_CONFIG_GROUPS_LABEL,all:TXT_CORE_CONFIG_ALL_LABEL', 'security')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Allow clientside script upload");
+            }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('allowClientSideScriptUploadOnGroups')
+                && !\Cx\Core\Setting\Controller\Setting::add('allowClientSideScriptUploadOnGroups','', 4,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN_MULTISELECT, '{src:\\'.__CLASS__.'::getUserGroups()}', 'security')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Allow clientside script upload on groups");
             }
 
             //contactInformation group

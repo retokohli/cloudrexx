@@ -118,11 +118,17 @@ $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID'] = 'Google Analytics Tra
 $_ARRAYLANG['TXT_CORE_CONFIG_GOOGLEANALYTICSTRACKINGID_TOOLTIP_HELP'] = 'Geben Sie hier Ihre Google Analytics Tracking-ID ein. Diese finden Sie in Ihrem Google Analytics Konto unter Verwaltung => Tracking-Code.';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY'] = 'Kennwort muss der Komplexitätsvoraussetzung entsprechen';
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY_TOOLTIP_HELP'] = 'Kennwort muss folgende Zeichen enthalten: Gross-, Kleinbuchstabe und Zahl';
+$_ARRAYLANG['TXT_CORE_CONFIG_ALLOWCLIENTSIDESCRIPTUPLOAD'] = 'Hochladen von clientseitigen Skripten erlauben';
+$_ARRAYLANG['TXT_CORE_CONFIG_ALLOWCLIENTSIDESCRIPTUPLOAD_TOOLTIP_HELP'] = 'Das Hochladen von clientseitigen Skripten (xhtml, xml, svg, shtml) stellt ein potentielles Sicherheitsrisiko dar, da Angreifer mit einem clientseitigen Skript eine Benutzersitzung und somit die Kontrolle der Website einnehmen können. Aktivieren Sie das Hochladen von clientseitigen Skripten nur, wenn Sie Ihren Benutzern voll und ganz vertrauen.';
+$_ARRAYLANG['TXT_CORE_CONFIG_ALLOWCLIENTSIDESCRIPTUPLOADONGROUPS'] = 'Erlaubte Benutzergruppen zum Hochladen von clientseitigen Skripten';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADBACKEND'] = 'Erweiterte Dateiuploadmöglickeiten';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADFRONTEND'] = 'Erweiterte Dateiuploadmöglickeiten';
 $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLFRONTEND_TOOLTIP_HELP'] = $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLBACKEND_TOOLTIP_HELP'] = 'Cloudrexx erzwingt standardmässig kein Protokoll. Sie können HTTP erzwingen um die Suchmaschinen-Bewertung zu verbessern oder HTTPS (Hypertext Transfer Protocol Secure), ein Protokoll das zusätzlich mehr Sicherheit garantiert, aktivieren. Sollte Ihr Webserver dies nicht unterstützen, deaktiviert Cloudrexx diese Einstellung automatisch wieder.';
 $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLBACKEND'] = 'Verwendetes Protokoll';
 $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLFRONTEND'] = 'Verwendetes Protokoll';
+$_ARRAYLANG['TXT_CORE_CONFIG_NOBODY_LABEL'] = 'Niemand';
+$_ARRAYLANG['TXT_CORE_CONFIG_GROUPS_LABEL'] = 'Ausgewählte Benutzergruppen';
+$_ARRAYLANG['TXT_CORE_CONFIG_ALL_LABEL'] = 'Jeder';
 $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_NONE'] = 'dynamisch';
 $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_HTTP'] = 'HTTP';
 $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_HTTPS'] = 'HTTPS';
