@@ -892,7 +892,6 @@ class Setting{
         $arrSettings = $engine->getArraySetting();
         unset($_POST['bsubmit']);
         $result = true;
-        \DBG::dump($_POST);
         // Compare POST with current settings and only store what was changed.
         foreach (array_keys($arrSettings) as $name) {
             if (isset ($_POST[$name])) {
