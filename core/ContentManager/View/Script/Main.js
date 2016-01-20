@@ -2567,7 +2567,9 @@ cx.cm.destroyEditor = function() {
 cx.cm.setEditorData = function(pageContent) {
     cx.jQuery(document).ready(function() {
         if (!cx.jQuery('#page_sourceMode').prop('checked') && cx.cm.editorInUse()) {
-            CKEDITOR.instances.cm_ckeditor.setData(pageContent);
+            setTimeout(function(){
+                CKEDITOR.instances.cm_ckeditor.setData(pageContent);
+            }, 0);
         } else {
             cx.jQuery('#page textarea[name="page[content]"]').val(pageContent);
         }
