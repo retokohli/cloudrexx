@@ -107,7 +107,7 @@ class NestedNavigationPageTree extends SigmaPageTree {
     
     protected function getFullNavigation() {
         $match = array();
-        if (preg_match('/levels_([1-9])([1-9\+]*)(_full)?/', trim($this->template->_blocks['nested_navigation']), $match)) {
+        if (preg_match('/levels_([1-9])([1-9\+]*)(_full|_branch)?/', trim($this->template->_blocks['nested_navigation']), $match)) {
             if(isset($match[3]))
                 return true;
         }
@@ -284,7 +284,19 @@ class NestedNavigationPageTree extends SigmaPageTree {
 
     private function isParentNodeInsideCurrentBranch($node)
     {
-        if (!$node->getParent()) {
+        $match = array();
+        $branch = false;
+        if (preg_match('/levels_([1-9])([1-9\+]*)(_branch)?/', trim($this->template->_blocks['nested_navigation']), $match)) {
+            if (isset($match[3])) {
+                $branch = true;
+            }
+        }
+
+        if ($branch) {
+            while ($node->getLvl() > $this->getFirstLevel() && $node->getParent()) {
+                $node = $node->getParent();
+            }
+        } else if (!$node->getParent()) {
             return true;
         }
         return $this->isNodeInsideCurrentBranch($node->getParent());
