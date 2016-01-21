@@ -27,18 +27,22 @@
 
 function _cronUpdate()
 {
-    try {
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'core_module_cron_job',
-            array(
-                'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'active'     => array('type' => 'TINYINT(1)', 'notnull' => true, 'after' => 'id'),
-                'expression' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'active'),
-                'command'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'expression'),
-                'last_ran'   => array('type' => 'DATETIME', 'notnull' => true, 'after' => 'command')
-            )
-        );
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    global $objUpdate, $_CONFIG;
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'core_module_cron_job',
+                array(
+                    'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'active'     => array('type' => 'TINYINT(1)', 'notnull' => true, 'after' => 'id'),
+                    'expression' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'active'),
+                    'command'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'expression'),
+                    'last_ran'   => array('type' => 'DATETIME', 'notnull' => true, 'after' => 'command')
+                )
+            );
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
     }
 }
