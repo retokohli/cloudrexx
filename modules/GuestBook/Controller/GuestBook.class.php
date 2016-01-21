@@ -405,10 +405,10 @@ class GuestBook extends GuestBookLibrary {
 
             $objMail->CharSet = CONTREXX_CHARSET;
             if (isset($email)) {
-                $objMail->From = $email;
+                $objMail->SetFrom($email);
                 $objMail->AddReplyTo($email);
             } else {
-                $objMail->From = $mailto;
+                $objMail->SetFrom($mailto);
             }
             $objMail->Subject = $subject;
             $objMail->IsHTML(false);
