@@ -39,17 +39,8 @@ $cx = init('minimal');
 
 $sessionObj = \cmsSession::getInstance();
 $_SESSION->cmsSessionStatusUpdate('backend');
-$CSRF = '&'.\Cx\Core\Csrf\Controller\Csrf::key().'='.\Cx\Core\Csrf\Controller\Csrf::code();
 
-
-$langId = !empty($_GET['langId']) ? $_GET['langId'] : null;
 $pageId = !empty($_GET['pageId']) ? $_GET['pageId'] : null;
-
-//'&' must not be htmlentities, used in javascript
-$defaultBrowser   = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                   .'?cmd=FileBrowser&standalone=true&langId='.$langId.$CSRF;
-$linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                   .'?cmd=FileBrowser&standalone=true&langId='.$langId.'&type=webpages'.$CSRF;
 
 //get the main domain
 $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
