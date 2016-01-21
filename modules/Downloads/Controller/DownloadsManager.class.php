@@ -776,9 +776,9 @@ class DownloadsManager extends DownloadsLibrary
 
         // parse image attribute
         $image = $objCategory->getImage();
-        if (!empty($image) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$image)) {
+        if (!empty($image) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$image)) {
             $thumb_name = \ImageManager::getThumbnailFilename($image);
-            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$thumb_name)) {
                 $imageSrc = $thumb_name;
             } else {
                 $imageSrc = $image;
@@ -923,9 +923,12 @@ class DownloadsManager extends DownloadsLibrary
             'DOWNLOADS_CATEGORY_MENU'       => $this->getCategoryMenu('read', $objCategory->getId(), $_ARRAYLANG['TXT_DOWNLOADS_ALL_CATEGORIES']),
             'TXT_DOWNLOADS_SEARCH'          => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
         ));
-
-        $filter = array('category_id' => $objCategory->getId());
-
+        
+        $filter = null;
+        if($objCategory->getId() > 0) {
+            $filter = array('category_id' => $objCategory->getId());
+        }
+        
         $objDownload = new Download();
         $objDownload->loadDownloads(
             $filter, $searchTerm, $arrOrder, null,
@@ -1602,9 +1605,9 @@ class DownloadsManager extends DownloadsLibrary
 
         // parse image attribute
         $image = $objDownload->getImage();
-        if (!empty($image) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$image)) {
+        if (!empty($image) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$image)) {
             $thumb_name = \ImageManager::getThumbnailFilename($image);
-            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$thumb_name)) {
                 $imageSrc = $thumb_name;
             } else {
                 $imageSrc = $image;
@@ -2383,14 +2386,17 @@ class DownloadsManager extends DownloadsLibrary
                 ));
                 $this->objTemplate->parse('downloads_download_orderbox');
                 $this->objTemplate->hideBlock('downloads_download_no_orderbox');
+                $this->objTemplate->parse('downloads_download_no_save_button');
             } else {
                 // select checkbox
                 $this->objTemplate->hideBlock('downloads_download_checkbox');
+                $this->objTemplate->hideBlock('downloads_download_action_dropdown');
 
                 // order box
                 $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ORDER', $objCategory->getId() ? $arrDownloadOrder[$objDownload->getId()] : $objDownload->getOrder());
                 $this->objTemplate->parse('downloads_download_no_orderbox');
                 $this->objTemplate->hideBlock('downloads_download_orderbox');
+                $this->objTemplate->hideBlock('downloads_download_no_save_button');
             }
 
             // parse status link and modify button

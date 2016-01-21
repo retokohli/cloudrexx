@@ -771,6 +771,7 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "The chosen username is alread
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "visit website";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Website";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "ZIP";
+$_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'] = 'Choose file';
 $_ARRAYLANG['CONTENT_ALIAS_HELPTEXT'] = "Using the alias funcionality, you may assign an URL to the page that is easier to recognize by both humans and search engines. Instead of using e.g. <b>www.yourdomain.com/index.php?page=9934</b> you may use an URL in the form <b>www.yourdomain.com/services</b>";
 $_ARRAYLANG['TXT_ERROR_NO_TITLE'] = "This page does not have a link name. It has not been saved.";
 $_ARRAYLANG['TXT_CREATE_BACKUPS'] = "Create backup";
@@ -1021,6 +1022,7 @@ $_ARRAYLANG['TXT_CORE_HTML_MARK_UNDELETED'] = "Wiederherstellen";
 $_ARRAYLANG['TXT_CORE_HTML_TOGGLE_CLOSE'] = "schliessen";
 $_ARRAYLANG['TXT_CORE_HTML_TOGGLE_OPEN'] = "öffnen";
 $_ARRAYLANG['TXT_CORE_HTML_VIEW'] = "Details";
+$_ARRAYLANG['TXT_CORE_HTML_FORM_VALIDATION_ERROR'] = 'Validation of at least one field failed!';
 $_ARRAYLANG['TXT_CORE_IMAGETYPES_EDIT'] = "Bildtypen";
 $_ARRAYLANG['TXT_CORE_IMAGETYPE_ACTION_IS_IRREVERSIBLE'] = "Diese Aktion kann nicht rückgängig gemacht werden!";
 $_ARRAYLANG['TXT_CORE_IMAGETYPE_CONFIRM_DELETE_IMAGETYPE'] = "Wollen Sie diesen Bildtyp wirklich löschen?";

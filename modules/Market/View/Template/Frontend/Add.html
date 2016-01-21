@@ -54,6 +54,19 @@
         }
         return false;
     }
+    function marketUploaderCallback(path) {
+        if (typeof path[0] !== 'undefined') {
+          var uploaderField = $J('#uploadImage'),
+                  data = path[0].split('/'),
+                  fileName = data.pop();
+          uploaderField.val(fileName);
+        }
+    }
+    jQuery(document).ready(function ($) {
+        $('#file_upload').click(function () {
+          $('#marketUploader').trigger('click');
+        });
+    });
     --></script>
 <div id="market">
     <form name="formEntry" enctype="multipart/form-data" method="post" action="index.php?section=Market&cmd=confirm" onsubmit="return CheckForm()">
@@ -75,7 +88,11 @@
 <label for="premium"><input type="checkbox" id="premium" name="premium" value="1" />{TXT_MARKET_PREMIUM}</label>
 </span>
 </p>
-        <p><label for="pic">{TXT_MARKET_PICTURE}</label>{ENTRY_PICTURE}<input type="file" id="pic" name="pic"></p>
+        <p><label for="uploadImage">{TXT_MARKET_PICTURE}</label>{ENTRY_PICTURE}
+          <input type="text" name="uploadImage" value="" id="uploadImage" autocomplete="off" onfocus="this.select();" />
+          <input type="button" id='file_upload' value="{TXT_MARKET_CHOOSE_FILE}"/>
+        </p>
+          <input type="hidden" value="{MARKET_UPLOADER_ID}" name="marketUploaderId" />
         <p><label for="cat">{TXT_MARKET_CATEGORIE}<font color="red"> *</font></label><select id="cat" name="cat">{MARKET_CATEGORIES}</select></p>
         <p><label for="price">{TXT_MARKET_PRICE}<font color="red"> *</font></label><input type="text" id="price" name="price" maxlength="100" value=""></p>
         <p>
@@ -107,4 +124,5 @@
         <!-- END spez_fields -->
         <p><input class="btn btn-default" type="submit" name="submitEntry" value="{TXT_MARKET_SAVE}" /></p>
 	</form>
+  {MARKET_UPLOADER_CODE}
 </div>

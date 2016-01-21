@@ -1,30 +1,23 @@
 <!-- START module_mediadir_modify_category.html -->
 <script language="JavaScript" type="text/javascript">
-var mediaBrowseInputBox;
-var mediaBrowserCallback = function(data) {
-    if (data.type=="file") {
-        var path = data.data[0].datainfo.filepath;
-        mediaBrowseInputBox.val(path);
-        mediaBrowseInputBox.trigger('keyup');
-    }
-}
-
-function SetUrl(url, width, height, alt) {
-    document.getElementById(insertBox).value = url;
-    $J('#'+insertBox).trigger('keyup');
-}
-    
-function getFileBrowser(name, type, path)
-{
-    insertBox = name;
-	fileType = type;
-
-	openWindow('?cmd=FileBrowser&standalone=true&type='+fileType+'&path='+path,'','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-}
-
-function openWindow(theURL,winName,features){
-	browserPopup = window.open(theURL,"Browser",features);
-	browserPopup.focus();
+function getMediaBrowser(e) { // e => jQuery element
+    var inputId = e.data('inputId'),
+        isImageField = e.data('isImage'),
+        mediaBrowseInputBox = $J('#' + inputId);
+    cx.variables.get('jquery','mediabrowser')('#mediabrowser_button').trigger('click', {
+        callback: function(data) {
+            if (data.type == "file") {
+                var path = data.data[0].datainfo.filepath;
+                mediaBrowseInputBox.val(path);
+                mediaBrowseInputBox.trigger('keyup');
+                if (isImageField && $J('#'+ inputId +'_preview')) {
+                    changeImagePreview($J('#'+ inputId +'_preview'), path);
+                }
+            }
+        },
+        cxMbViews : e.data('views'),
+        cxMbStartmediatype : e.data('startmediatype')
+    });
 }
 
 /*function ExpandMinimize(toggle){
@@ -50,12 +43,6 @@ function toggleDisplayDouration(){
 cx.ready(function() {
     $J('input[name=durationStart]').datepicker();
     $J('input[name=durationEnd]').datepicker();
-});
-$J(function(){
-   $J('.mediabrowser-button').click(function(){
-       var inputId = $J(this).data('inputId');
-       mediaBrowseInputBox = $J('#' + inputId);
-   });
 });
 </script>
 
@@ -96,9 +83,6 @@ $J(function(){
     .mediadirInputfieldFileDisplayName {
         width: 300px;        
         padding-left: 3px !important;
-    }
-    .mediaBrowserScope {
-        display: none;
     }
 </style>
 
@@ -259,4 +243,5 @@ $J(function(){
 <input type="submit" name="submitEntryModfyForm" value="{TXT_MEDIADIR_SUBMIT}" />
 <div id="mediadirErrorMessage" style="display:none; color: #ff0000;"><br />{TXT_MEDIADIR_PLEASE_CHECK_INPUT}</div>
 </form>
+{MEDIADIR_MEDIABROWSER_BUTTON}
 <!-- END module_mediadir_modify_category.html -->

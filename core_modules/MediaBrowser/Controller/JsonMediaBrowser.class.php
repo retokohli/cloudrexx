@@ -88,7 +88,9 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     public function getAccessableMethods() {
         return array(
             'getFiles', 'getSites', 'getSources', 'createThumbnails',
-            'createDir', 'renameFile', 'removeFile', 'folderWidget', 'removeFileFromFolderWidget'
+            'createDir', 'renameFile', 'removeFile', 
+            'removeFileFromFolderWidget'=> new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false),
+            'folderWidget' => new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false)
         );
     }
 
@@ -156,7 +158,7 @@ class JsonMediaBrowser extends SystemComponentController implements JsonAdapter
     public function getSites() {
         $pageTree = new MediaBrowserPageTree(
             $this->cx->getDb()->getEntityManager(), $this->cx->getLicense(), 0, null, FRONTEND_LANG_ID
-            , null, false, false
+            , null, false, false, false
         );
         $pageTree->render();
         return $pageTree->getFlatTree();

@@ -395,7 +395,7 @@ die("Failed to get Customer for ID $customer_id");
      * @global  array   $_ARRAYLANG
      * @global  array   $themesPages
      * @global  array   $_CONFIGURATION
-     * @staticvar string    $strContent Caches created content
+     * @staticvar array $content    Caches created content
      * @param   type    $template   Replaces the default template
      *                              ($themesPages['shopnavbar']) and sets
      *                              $use_cache to false unless empty.
@@ -409,12 +409,13 @@ die("Failed to get Customer for ID $customer_id");
     static function getNavbar($template=NULL, $use_cache=true)
     {
         global $_ARRAYLANG, $themesPages;
-        static $strContent = NULL;
+        static $content = array();
+        $templateHash = md5($template);
 
-        if (!$use_cache) $strContent = NULL;
+        if (!$use_cache) $content[$templateHash] = NULL;
         // Note: This is valid only as long as the content is the same every
         // time this method is called!
-        if ($strContent) return $strContent;
+        if ($content[$templateHash]) return $content[$templateHash];
         $objTpl = new \Cx\Core\Html\Sigma('.');
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTpl->setTemplate(empty($template)
@@ -463,57 +464,52 @@ die("Failed to get Customer for ID $customer_id");
                 $objTpl->setVariable('SHOP_CURRENCIES', $curNavbar);
             }
         }
-        if ($objTpl->blockExists('shopNavbar')) {
-            $selectedCatId = 0;
-            if (isset($_REQUEST['catId'])) {
-                $selectedCatId = intval($_REQUEST['catId']);
-                $objCategory = ShopCategory::getById($selectedCatId);
-                if (!$objCategory) $selectedCatId = 0;
+
+        // determine selected category and/or product
+        $selectedCatId = 0;
+        $objProduct = null;
+        if (isset($_REQUEST['catId'])) {
+            $selectedCatId = intval($_REQUEST['catId']);
+            $objCategory = ShopCategory::getById($selectedCatId);
+            if (!$objCategory) $selectedCatId = 0;
+        }
+        if (empty($selectedCatId) && isset($_REQUEST['productId'])) {
+            $product_id = intval($_REQUEST['productId']);
+            if (isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
+                $product_id = Cart::get_product_id($product_id);
             }
-            if (empty($selectedCatId) && isset($_REQUEST['productId'])) {
-                $product_id = intval($_REQUEST['productId']);
-                if (isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
-                    $product_id = Cart::get_product_id($product_id);
-                }
-                $objProduct = Product::getById($product_id);
-                if ($objProduct) {
-                    $selectedCatId = $objProduct->category_id();
-                    $selectedCatId = preg_replace('/,.+$/', '', $selectedCatId);
-                }
-            }
-            // If there is no distinct Category ID, use the previous one, if any
-            if (is_numeric($selectedCatId)) {
-                $_SESSION['shop']['previous_category_id'] = $selectedCatId;
-            } else {
-                if (isset($_SESSION['shop']['previous_category_id']))
+            $objProduct = Product::getById($product_id);
+            if ($objProduct) {
+                $productCatIds = $objProduct->category_id();
+                if (isset($_SESSION['shop']['previous_category_id']) && in_array($_SESSION['shop']['previous_category_id'], array_map('intval', explode(',', $productCatIds)))) {
                     $selectedCatId = $_SESSION['shop']['previous_category_id'];
-            }
-            // Only the visible ShopCategories are present
-            $arrShopCategoryTree = ShopCategories::getTreeArray(
-                false, true, true, $selectedCatId, 0, 0
-            );
-            // The trail of IDs from root to the selected ShopCategory,
-            // built along with the tree array when calling getTreeArray().
-            $arrTrail = ShopCategories::getTrailArray($selectedCatId);
-            // Display the ShopCategories
-            foreach ($arrShopCategoryTree as $arrShopCategory) {
-                $level = $arrShopCategory['level'];
-                // Skip levels too deep: if ($level >= 2) { continue; }
-                $id = $arrShopCategory['id'];
-                $style = 'shopnavbar'.($level+1);
-                if (in_array($id, $arrTrail)) {
-                    $style .= '_active';
+                } else {
+                    $selectedCatId = preg_replace('/,.+$/', '', $productCatIds);
                 }
-                $objTpl->setVariable(array(
-                    'SHOP_CATEGORY_STYLE' => $style,
-                    'SHOP_CATEGORY_ID' => $id,
-                    'SHOP_CATEGORY_NAME' =>
-                        str_repeat('&nbsp;', 3*$level).
-                        str_replace('"', '&quot;', $arrShopCategory['name']),
-                ));
-                $objTpl->parse("shopNavbar");
             }
         }
+        // If there is no distinct Category ID, use the previous one, if any
+        // NOTE: when switching to the cart, the previous_category_id is being reset
+        //       as we are not checking if $selectedCatId is greater than 0.
+        //       We need to accept the value of $selectedCatId as 0, otherwise
+        //       when we navigate away from the Shop or if we open the overview
+        //       section, the shopNavbar and/or shop_breadcrumb will sill display
+        //       the last visited category as currently active. The latter would
+        //       be wrong.
+        //       A possible solution would be to check for all section/cmd cases
+        //       that won't allow $selectedCatId to be empty.
+        if (is_numeric($selectedCatId)/* && !empty($selectedCatId)*/) {
+            $_SESSION['shop']['previous_category_id'] = $selectedCatId;
+        } else {
+            if (isset($_SESSION['shop']['previous_category_id']))
+                $selectedCatId = $_SESSION['shop']['previous_category_id'];
+        }
+
+        // parse shopNavbar and/or shop_breadcrumb
+        if ($objTpl->blockExists('shopNavbar') || $objTpl->blockExists('shop_breadcrumb')) {
+            self::parseBreadcrumb($objTpl, $selectedCatId, $objProduct);
+        }
+
         // Only show the cart info when the JS cart is not active!
         if (!self::$use_js_cart) {
             $objTpl->setVariable(array(
@@ -523,8 +519,92 @@ die("Failed to get Customer for ID $customer_id");
 //        if ($objTpl->blockExists('shopJsCart')) {
 //            $objTpl->touchBlock('shopJsCart');
 //        }
-        $strContent = $objTpl->get();
-        return $strContent;
+        $content[$templateHash] = $objTpl->get();
+        return $content[$templateHash];
+    }
+
+
+    /**
+     * Parse the category/product breadcrumb
+     *
+     * Parses the template block shopNavbar and shop_breadcrumb based on
+     * the currently selected category and product.
+     *
+     * @param   \Cx\Core\Html\Sigma $objTpl The template object to be used to parse the breadcrumb on.
+     * @param   integer $selectedCatId  The ID of the currently selected category.
+     * @param   Product $product        The currently selected product.
+     */
+    static function parseBreadcrumb($objTpl, $selectedCatId = 0, $product = null) {
+        // Only the visible ShopCategories are present
+        $arrShopCategoryTree = ShopCategories::getTreeArray(
+            false, true, true, $selectedCatId, 0, 0
+        );
+
+        // The trail of IDs from root to the selected ShopCategory,
+        // built along with the tree array when calling getTreeArray().
+        $arrTrail = ShopCategories::getTrailArray($selectedCatId);
+
+        // Display the ShopCategories
+        foreach ($arrShopCategoryTree as $arrShopCategory) {
+            $level = $arrShopCategory['level'];
+            // Skip levels too deep: if ($level >= 2) { continue; }
+            $id = $arrShopCategory['id'];
+            $style = 'shopnavbar'.($level+1);
+            if (in_array($id, $arrTrail)) {
+                $style .= '_active';
+            }
+
+            // parse shopNavbar
+            if ($objTpl->blockExists('shopNavbar')) {
+                $objTpl->setVariable(array(
+                    'SHOP_CATEGORY_STYLE' => $style,
+                    'SHOP_CATEGORY_ID' => $id,
+                    'SHOP_CATEGORY_NAME' =>
+                        str_repeat('&nbsp;', 3*$level).
+                        str_replace('"', '&quot;', $arrShopCategory['name']),
+                ));
+                $objTpl->parse("shopNavbar");
+            }
+
+            // skip shop_breadcrumb parsing in case the required template blocks are missing
+            if (!$objTpl->blockExists('shop_breadcrumb') || !$objTpl->blockExists('shop_breadcrumb_part')) {
+                continue;
+            }
+
+            // skip shop_breadcrumb parsing in case the category is not part of the selected category tree
+            if (!in_array($id, $arrTrail)) {
+                continue;
+            }
+
+            // parse the category in shop_breadcrumb
+            $objTpl->setVariable(array(
+                'SHOP_BREADCRUMB_PART_SRC'  => \Cx\Core\Routing\URL::fromModuleAndCmd('Shop'.MODULE_INDEX, '', FRONTEND_LANG_ID, array('catId' => $id))->toString(),
+                'SHOP_BREADCRUMB_PART_TITLE'=> contrexx_raw2xhtml($arrShopCategory['name']),
+            ));
+            $objTpl->parse('shop_breadcrumb_part');
+        }
+
+        // skip shop_breadcrumb parsing in case the required template blocks are missing
+        if (!$objTpl->blockExists('shop_breadcrumb') && !$objTpl->blockExists('shop_breadcrumb_part')) {
+            return;
+        }
+
+        // parse Product in shop_breadcrumb if a product is being viewed
+        if ($product) {
+            $objTpl->setVariable(array(
+                'SHOP_BREADCRUMB_PART_SRC'  => \Cx\Core\Routing\URL::fromModuleAndCmd('Shop'.MODULE_INDEX, '', FRONTEND_LANG_ID, array('productId' => $product->id()))->toString(),
+                'SHOP_BREADCRUMB_PART_TITLE'=> contrexx_raw2xhtml($product->name()),
+            ));
+            $objTpl->parse('shop_breadcrumb_part');
+        }
+
+        // show or hide the shop_breadcrumb template block, depending on if a category
+        // has been selected or a product is being viewed
+        if (array_intersect(array_keys($arrShopCategoryTree), $arrTrail) || $product) {
+            $objTpl->touchBlock('shop_breadcrumb');
+        } else {
+            $objTpl->hideBlock('shop_breadcrumb');
+        }
     }
 
 
@@ -537,9 +617,11 @@ die("Failed to get Customer for ID $customer_id");
      */
     static function setNavbar()
     {
-        global $objTemplate;
+        global $objTemplate, $themesPages;
 
-        $objTemplate->setVariable('SHOPNAVBAR_FILE', self::getNavbar());
+        $objTemplate->setVariable('SHOPNAVBAR_FILE', self::getNavbar($themesPages['shopnavbar']));
+        $objTemplate->setVariable('SHOPNAVBAR2_FILE', self::getNavbar($themesPages['shopnavbar2']));
+        $objTemplate->setVariable('SHOPNAVBAR3_FILE', self::getNavbar($themesPages['shopnavbar3']));
     }
 
 
@@ -841,6 +923,7 @@ die("Failed to update the Cart!");
      */
     static function showCategories($parent_id=0)
     {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if ($parent_id) {
             $objCategory = ShopCategory::getById($parent_id);
             // If we can't get this ShopCategory, it most probably does
@@ -854,7 +937,7 @@ die("Failed to update the Cart!");
                 if ($imageName) {
                     self::$objTemplate->setVariable(array(
                         'SHOP_CATEGORY_CURRENT_IMAGE' =>
-                        \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $imageName,
+                         $cx->getWebsiteImagesShopWebPath() . '/' . $imageName,
                         'SHOP_CATEGORY_CURRENT_IMAGE_ALT' => $objCategory->name(),
                     ));
                 }
@@ -879,7 +962,7 @@ die("Failed to update the Cart!");
             $description = preg_replace('/[\n\r]/', '', $description);
             if (empty($arrDefaultImageSize)) {
 //\DBG::log("Shop::showCategories(): ".\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . self::$defaultImage);
-                $arrDefaultImageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . self::$defaultImage);
+                $arrDefaultImageSize = getimagesize($cx->getWebsitePath() . self::$defaultImage);
                 self::scaleImageSizeToThumbnail($arrDefaultImageSize);
             }
             $arrSize = $arrDefaultImageSize;
@@ -892,12 +975,12 @@ die("Failed to update the Cart!");
                 $imageName = ShopCategories::getPictureById($id);
             }
             if ($imageName) {
-                $thumb_name = \ImageManager::getThumbnailFilename($imageName);
-                if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopPath() . '/' . $thumb_name)) {
+                if (file_exists(\ImageManager::getThumbnailFilename($cx->getWebsiteImagesShopPath() . '/' . $imageName))) {
                     // Image found!  Use that instead of the default.
-                    $thumbnailPath =
-                        \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $thumb_name;
-                    $arrSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $thumbnailPath);
+                    $thumbnailPath = \ImageManager::getThumbnailFilename(
+                        $cx->getWebsiteImagesShopWebPath() . '/' . $imageName
+                    );
+                    $arrSize = getimagesize($cx->getWebsitePath() . $thumbnailPath);
                     self::scaleImageSizeToThumbnail($arrSize);
                 }
             }
@@ -905,7 +988,7 @@ die("Failed to update the Cart!");
                 self::$objTemplate->setVariable(
                     'SHOP_CATEGORY_IMAGE',
                     contrexx_raw2encodedUrl(
-                        \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath().'/'.$imageName));
+                        $cx->getWebsiteImagesShopWebPath().'/'.$imageName));
             }
             self::$objTemplate->setVariable(array(
                 'SHOP_CATEGORY_ID' => $id,
@@ -1192,6 +1275,7 @@ die("Failed to update the Cart!");
         ));
         $formId = 0;
         $arrDefaultImageSize = $arrSize = null;
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         foreach ($arrProduct as $objProduct) {
             if (!empty($product_id)) {
                 self::$pageTitle = $objProduct->name();
@@ -1211,33 +1295,32 @@ die("Failed to update the Cart!");
                     $thumbnailPath = self::$defaultImage;
                     $pictureLink = '#'; //"javascript:alert('".$_ARRAYLANG['TXT_NO_PICTURE_AVAILABLE']."');";
                     if (empty($arrDefaultImageSize)) {
-                        $arrDefaultImageSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . self::$defaultImage);
+                        $arrDefaultImageSize = getimagesize($cx->getWebsitePath() . self::$defaultImage);
                         self::scaleImageSizeToThumbnail($arrDefaultImageSize);
                     }
                     $arrSize = $arrDefaultImageSize;
                 } else {
-                    $thumbnailPath = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' .
-                            \ImageManager::getThumbnailFilename($image['img']);
+                    $thumbnailPath = \ImageManager::getThumbnailFilename($cx->getWebsiteImagesShopWebPath() . '/' .$image['img']);
                     if ($image['width'] && $image['height']) {
                         $pictureLink =
-                                contrexx_raw2encodedUrl(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $image['img']) .
+                                contrexx_raw2encodedUrl($cx->getWebsiteImagesShopWebPath() . '/' . $image['img']) .
                                 // Hack ahead!
                             '" rel="shadowbox['.($formId+1).']';
                         // Thumbnail display size
                         $arrSize = array($image['width'], $image['height']);
                     } else {
                         $pictureLink = '#';
-                        if (!file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $thumbnailPath)) {
+                        if (!file_exists($cx->getWebsitePath() . $thumbnailPath)) {
                             continue;
                         }
-                        $arrSize = getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $thumbnailPath);
+                        $arrSize = getimagesize($cx->getWebsitePath() . $thumbnailPath);
                     }
                     self::scaleImageSizeToThumbnail($arrSize);
                     // Use the first available picture in microdata, if any
                     if (!$havePicture) {
                         $picture_url = \Cx\Core\Routing\Url::fromCapturedRequest(
-                            \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteImagesShopWebPath() . '/' . $image['img'],
-                            \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath(), array());
+                            $cx->getWebsiteImagesShopWebPath() . '/' . $image['img'],
+                            $cx->getWebsiteOffsetPath(), array());
                         self::$objTemplate->setVariable(
                             'SHOP_PRODUCT_IMAGE', $picture_url->toString());
 //\DBG::log("Set image to ".$picture_url->toString());
@@ -1733,6 +1816,7 @@ die("Failed to update the Cart!");
                 self::$objTemplate->hideBlock('shopProductOptionsRow');
                 self::$objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
+                $isUpload = false;
                 // Loop through the Attribute Names for the Product
                 foreach ($arrAttributes as $attribute_id => $objAttribute) {
                     $mandatory = false;
@@ -1823,8 +1907,9 @@ die("Failed to update the Cart!");
                         $selected = false;
                         // Show the price only if non-zero
                         if ($arrOption['price'] != 0) {
+                            $pricePrefix = $arrOption['price'] > 0 ? '+' : '';
                             $option_price =
-                                '&nbsp;('.Currency::getCurrencyPrice($arrOption['price']).
+                                '&nbsp;('.$pricePrefix.Currency::getCurrencyPrice($arrOption['price']).
                                 '&nbsp;'.Currency::getActiveCurrencySymbol().')';
                         }
                         // mark the option value as selected if it was before
@@ -1947,11 +2032,14 @@ die("Failed to update the Cart!");
                           case Attribute::TYPE_UPLOAD_OPTIONAL:
                           case Attribute::TYPE_UPLOAD_MANDATORY:
 //                            $option_price = '&nbsp;';
-                            $selectValues .=
-                                '<input type="file" name="productOption['.$attribute_id.
+                            $isUpload = true;
+                            $selectValues .='<input type="input" name="productOption['.$attribute_id.
                                 ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
-                                '" style="width:180px;" />'.
-                                '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
+                                '" style="width:180px; float:left" />'.
+                                  '<input type="button" name="productOption['.$attribute_id.
+                                ']" onClick="getUploader(cx.jQuery(this));" data-input-id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
+                                '" value="'.$_ARRAYLANG['TXT_SHOP_CHOOSE_FILE'].'"/>'.
+                                  '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
                                 $option_price."</label><br />\n";
                             break;
                           case Attribute::TYPE_TEXTAREA_OPTIONAL:
@@ -2029,6 +2117,21 @@ die("Failed to update the Cart!");
                     self::$objTemplate->parse('shopProductOptionsValuesRow');
                 }
                 self::$objTemplate->parse('shopProductOptionsRow');
+                if ($isUpload) {
+                    //initialize the uploader
+                    $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader(); //create an uploader
+                    $uploader->setCallback('productOptionsUploaderCallback');
+                    $uploader->setOptions(array(
+                        'id' => 'productOptionsUploader',
+                        'allowed-extensions' => array('jpg', 'png', 'gif'),
+                        'data-upload-limit' => 1,
+                        'style' => 'display:none'
+                    ));
+                    self::$objTemplate->setVariable(array(
+                        'SHOP_PRODUCT_OPTIONS_UPLOADER_CODE' => $uploader->getXHtml(),
+                        'SHOP_PRODUCT_OPTIONS_UPLOADER_ID'   => $uploader->getId()
+                    ));
+                }
             }
         }
         return
@@ -4024,22 +4127,30 @@ die("Shop::processRedirect(): This method is obsolete!");
 
     /**
      * Upload a file to be associated with a product in the cart
-     * @param   integer   $productAttributeId   The Attribute ID the
-     *                                          file belongs to
+     * @param   string    $fileName             upload file name
+     *
      * @return  string                          The file name on success,
      *                                          the empty string otherwise
      * @author    Reto Kohli <reto.kohli@comvation.com>
      * @static
      */
-    static function uploadFile($productAttributeId)
+    static function uploadFile($fileName)
     {
         global $_ARRAYLANG;
 
-        if (empty($_FILES['productOption']['tmp_name'][$productAttributeId])) {
+        $uploaderId = isset($_REQUEST['productOptionsUploaderId'])
+                        ? contrexx_input2raw($_REQUEST['productOptionsUploaderId'])
+                        : '';
+
+        if (empty($uploaderId) || empty($fileName)) {
             return '';
         }
-        $uploadFileName = $_FILES['productOption']['tmp_name'][$productAttributeId];
-        $originalFileName = $_FILES['productOption']['name'][$productAttributeId];
+        $objSession = \cmsSession::getInstance();
+        $tmpFile    = $objSession->getTempPath() . '/' . $uploaderId . '/' . $fileName;
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($tmpFile)) {
+            return '';
+        }
+        $originalFileName = $fileName;
         $arrMatch = array();
         $filename = '';
         $fileext = '';
@@ -4054,11 +4165,17 @@ die("Shop::processRedirect(): This method is obsolete!");
             || $fileext == '.png') {
             $newFileName = $filename.'['.uniqid().']'.$fileext;
             $newFilePath = Order::UPLOAD_FOLDER.$newFileName;
-            if (move_uploaded_file($uploadFileName,
-                       \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath() . $newFilePath)) {
-                return $newFileName;
+            //Move the uploaded file to the path specified in the variable $newFilePath
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($tmpFile);
+                if ($objFile->move(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath() . '/' . $newFilePath, false)) {
+                   return $newFileName;
+                } else {
+                    \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);
+                }
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
             }
-            \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPLOADING_FILE']);
         } else {
             \Message::error(sprintf(
                 $_ARRAYLANG['TXT_SHOP_ERROR_WRONG_FILETYPE'], $fileext));

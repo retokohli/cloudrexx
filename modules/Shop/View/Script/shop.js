@@ -155,6 +155,8 @@ function addProductToCart(objForm,quantity) {
                 objProduct.title = formElement.value;
             if (formElement.name == 'productQuantity')
                 objProduct.quantity = formElement.value;
+            if (formElement.name == 'productOptionsUploaderId')
+                objProduct.productOptionsUploaderId = formElement.value;
             arrUpdateProduct = updateProductRe.exec(formElement.name);
             if (arrUpdateProduct != null)
                 updateProduct = '&updateProduct=' + arrUpdateProduct[1];
@@ -283,4 +285,18 @@ function centerY(height) {
         y = document.body.clientHeight;
     }
     return parseInt((y - height) / 2);
+}
+
+var inputId, uploaderInputBox;
+function getUploader(e) { // e => jQuery element
+    inputId = e.data('inputId');
+    uploaderInputBox = cx.jQuery('#' + inputId);
+    cx.jQuery('#productOptionsUploader').trigger('click');
+}
+function productOptionsUploaderCallback(data) {
+    if (typeof data[0] !== 'undefined') {
+        var data       = data[0].split('/'),
+            fileName   = data.pop();
+        uploaderInputBox.val(fileName);
+    }
 }

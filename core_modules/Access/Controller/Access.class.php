@@ -178,7 +178,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
 
             if ($userCount > $_CONFIG['corePagingLimit']) {
-                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&section=Access&cmd=members&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
+                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
             }
 
             $this->_objTpl->setVariable('ACCESS_GROUP_NAME', (($objGroup = $objFWUser->objGroup->getGroup($groupId)) && $objGroup->getId()) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
@@ -300,9 +300,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             if (isset($_POST['access_profile_attribute']) && is_array($_POST['access_profile_attribute'])) {
                 $arrProfile = $_POST['access_profile_attribute'];
 
-                if (isset($_FILES['access_profile_attribute_images'])
-                    && is_array($_FILES['access_profile_attribute_images'])
-                    && ($result = $this->addUploadedImagesToProfile($objFWUser->objUser, $arrProfile, $_FILES['access_profile_attribute_images'])) !== true
+                if (   !empty($_POST['access_image_uploader_id'])
+                    && isset($_POST['access_profile_attribute_images'])
+                    && is_array($_POST['access_profile_attribute_images'])
+                    && ($result = $this->addUploadedImagesToProfile($objFWUser->objUser, $arrProfile, $_POST['access_profile_attribute_images'], $_POST['access_image_uploader_id'])) !== true
                 ) {
                     $status = false;
                 }
@@ -345,6 +346,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             exit;
         }
 
+        $uploader = $this->getImageUploader();
+        
         $this->parseAccountAttributes($objFWUser->objUser, true);
         $this->parseNewsletterLists($objFWUser->objUser);
 
@@ -369,6 +372,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_STORE_BUTTON'           => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
             'ACCESS_CHANGE_PASSWORD_BUTTON' => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
+            'ACCESS_IMAGE_UPLOADER_ID'      => $uploader->getId(),
+            'ACCESS_IMAGE_UPLOADER_CODE'    => $uploader->getXHtml(),
         ));
 
         $arrSettings = \User_Setting::getSettings();
@@ -562,10 +567,10 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                         ($arrProfile = $_POST['access_profile_attribute'])
                         && (
                             // either no profile images are set
-                            (!isset($_FILES['access_profile_attribute_images']) || !is_array($_FILES['access_profile_attribute_images']))
+                            (!isset($_POST['access_profile_attribute_images']) || !is_array($_POST['access_profile_attribute_images']))
                             ||
                             // otherwise try to upload them
-                            ($uploadImageError = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_FILES['access_profile_attribute_images'])) === true
+                            ($uploadImageError = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_POST['access_profile_attribute_images'], $_POST['access_image_uploader_id'])) === true
                         )
                         && $objUser->setProfile($arrProfile)
                     )
@@ -640,9 +645,12 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $this->attachJavaScriptFunction('accessSetWebsite');
 
+        $uploader = $this->getImageUploader();
         $this->_objTpl->setVariable(array(
             'ACCESS_SIGNUP_BUTTON'          => '<input type="submit" name="access_signup" value="'.$_ARRAYLANG['TXT_ACCESS_CREATE_ACCOUNT'].'" />',
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
+            'ACCESS_IMAGE_UPLOADER_ID'      => $uploader->getId(),
+            'ACCESS_IMAGE_UPLOADER_CODE'    => $uploader->getXHtml(),
             'ACCESS_SIGNUP_MESSAGE'         => implode("<br />\n", $this->arrStatusMsg['error'])
         ));
 
@@ -747,8 +755,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $objUserMail->getSenderMail();
-            $objMail->FromName = $objUserMail->getSenderName();
+            $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
             $objMail->AddReplyTo($objUserMail->getSenderMail());
             $objMail->Subject = $objUserMail->getSubject();
 

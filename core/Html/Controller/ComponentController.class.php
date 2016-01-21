@@ -27,46 +27,43 @@
  */
 
 /**
- * This file is used for the ComponentController of the core html
- *
- * @copyright CONTREXX CMS - COMVATION AG
- * @author Adrian Berger <ab@comvation.com>
- * @package contrexx
- * @subpackage core_html
- * @version 1.0.0
+ * Main controller for Html
+ * 
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_html
  */
+
 namespace Cx\Core\Html\Controller;
 
 /**
  * This class is used as controller for core html. It is also a SystemComponentController
  * Its used to handle json request to ViewGenerator and FormGenerator
- *
- * @copyright CONTREXX CMS - COMVATION AG
- * @author Adrian Berger <ab@comvation.com>
- * @package contrexx
- * @subpackage core_html
- * @version 1.0.0
+ * 
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_html
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
-
-    /**
-     * This functions returns all classes which are accessable over ajax
-     *
-     * @access public
-     * @return array Accessable Classes
-     */
-    public function getControllersAccessableByJson()
-    {
-        return array('ViewGeneratorJsonController');
-    }
-
     /**
      * Returns all Controller class names for this component (except this)
-     *
-     * Be sure to return all your controller classes if you add your own
+     * 
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
+        // Return an empty array here to let the component handler know that there
+        // does not exist a backend, nor a frontend controller of this component.
         return array('ViewGeneratorJson');
+    }
+
+    /**
+     * Returns a list of JsonAdapter class names
+     * 
+     * @return array List of ComponentController classes
+     */
+    public function getControllersAccessableByJson() {
+        return array('ViewGeneratorJsonController');
     }
 }

@@ -33,8 +33,8 @@ use Cx\Core\Html\Sigma;
 /**
  * Class AreaOption
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -49,8 +49,8 @@ class AreaOption extends Option
     protected $active;
 
     /**
-     * @param String $name
-     * @param array  $translations
+     * @param String $name Name of the option
+     * @param array  $translations Array with translations for option.
      * @param array  $data
      */
     public function __construct($name, $translations, $data)

@@ -39,8 +39,8 @@ use Cx\Core_Modules\TemplateEditor\Model\TestStorage;
 /**
  * Class StorableTest
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Robin Glauser <robin.glauser@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -66,7 +66,7 @@ class StorableTest extends ContrexxTestCase
     {
         $themeOption = $this->themeOptionRepository->get(new Theme(null, null, 'standard_3_0'));
         $this->assertTrue($themeOption instanceof OptionSet);
-        if ($themeOption instanceof OptionSet){
+        if ($themeOption instanceof OptionSet) {
             $this->assertTrue($themeOption->getOption('main_color') instanceof ColorOption);
         }
     }

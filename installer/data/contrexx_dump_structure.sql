@@ -882,8 +882,9 @@ CREATE TABLE `contrexx_module_crm_company_size` (
   `company_size` varchar(100) NOT NULL,
   `sorting` int(11) NOT NULL,
   `status` tinyint(4) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB ;
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `company_size` (`company_size`)
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_crm_contacts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` varchar(256) DEFAULT NULL,
@@ -2311,7 +2312,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `required` int(10) NOT NULL,
   `order` int(10) NOT NULL,
   `show_in` int(10) NOT NULL,
-  `context_type` enum('none','title','address','zip','city','country') NOT NULL,
+  `context_type` enum('none','title','content','address','zip','city','country') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_level_names` (
