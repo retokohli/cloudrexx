@@ -99,6 +99,34 @@ function _podcastUpdate() {
         }
     }
 
+    //Update script for moving the folder
+    $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
+    $sourceImagePath = $imagePath . '/podcast';
+    $targetImagePath = $imagePath . '/Podcast';
 
+    try {
+        \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
+    } catch (\Exception $e) {
+        \DBG::log($e->getMessage());
+        setUpdateMsg(sprintf(
+            $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+            $sourceImagePath, $targetImagePath
+        ));
+        return false;
+    }
+
+    $mediaPath       = ASCMS_DOCUMENT_ROOT . '/media';
+    $sourceMediaPath = $mediaPath . '/podcast';
+    $targetMediaPath = $mediaPath . '/Podcast';
+    try {
+        \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceMediaPath, $targetMediaPath);
+    } catch (\Exception $e) {
+        \DBG::log($e->getMessage());
+        setUpdateMsg(sprintf(
+            $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+            $sourceMediaPath, $targetMediaPath
+        ));
+        return false;
+    }
     return true;
 }

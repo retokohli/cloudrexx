@@ -27,7 +27,7 @@
 
 
 function _crmUpdate() {
-    global $objUpdate, $_CONFIG;
+    global $objUpdate, $_CONFIG, $_ARRAYLANG;
 	try {
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_crm_contacts',
@@ -305,6 +305,36 @@ function _crmUpdate() {
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+    }
+
+    //Update script for moving the folder
+    $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
+    $sourceImagePath = $imagePath . '/crm';
+    $targetImagePath = $imagePath . '/Crm';
+
+    try {
+        \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
+    } catch (\Exception $e) {
+        \DBG::log($e->getMessage());
+        setUpdateMsg(sprintf(
+            $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+            $sourceImagePath, $targetImagePath
+        ));
+        return false;
+    }
+
+    $mediaPath       = ASCMS_DOCUMENT_ROOT . '/media';
+    $sourceMediaPath = $mediaPath . '/crm';
+    $targetMediaPath = $mediaPath . '/Crm';
+    try {
+        \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceMediaPath, $targetMediaPath);
+    } catch (\Exception $e) {
+        \DBG::log($e->getMessage());
+        setUpdateMsg(sprintf(
+            $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+            $sourceMediaPath, $targetMediaPath
+        ));
+        return false;
     }
     return true;
 }

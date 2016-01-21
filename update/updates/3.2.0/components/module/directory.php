@@ -273,6 +273,20 @@ function _directoryUpdate() {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    //Update script for moving the folder
+    $mediaPath       = ASCMS_DOCUMENT_ROOT . '/media';
+    $sourceMediaPath = $mediaPath . '/directory';
+    $targetMediaPath = $mediaPath . '/Directory';
+    try {
+        \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceMediaPath, $targetMediaPath);
+    } catch (\Exception $e) {
+        \DBG::log($e->getMessage());
+        setUpdateMsg(sprintf(
+            $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+            $sourceMediaPath, $targetMediaPath
+        ));
+        return false;
+    }
 
     return true;
 }

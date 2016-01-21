@@ -982,5 +982,20 @@ function _accessUpdate()
     	return false;
     }*/
 
+    //Update script for moving the folder
+    $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
+    $sourceImagePath = $imagePath . '/access';
+    $targetImagePath = $imagePath . '/Access';
+    try {
+        \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
+    } catch (\Exception $e) {
+        \DBG::log($e->getMessage());
+        setUpdateMsg(sprintf(
+            $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+            $sourceImagePath, $targetImagePath
+        ));
+        return false;
+    }
+
     return true;
 }

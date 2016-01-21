@@ -339,5 +339,21 @@ function _downloadsUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    //Update script for moving the folder
+    $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
+    $sourceImagePath = $imagePath . '/downloads';
+    $targetImagePath = $imagePath . '/Downloads';
+
+    try {
+        \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
+    } catch (\Exception $e) {
+        \DBG::log($e->getMessage());
+        setUpdateMsg(sprintf(
+            $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+            $sourceImagePath, $targetImagePath
+        ));
+        return false;
+    }
+
     return true;
 }

@@ -576,6 +576,21 @@ Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] ge
         tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_settings_perm_group_forms` VALUES (5,18,1),(4,18,1),(3,18,1);");
     }
 
+    //Update script for moving the folder
+    $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
+    $sourceImagePath = $imagePath . '/mediadir';
+    $targetImagePath = $imagePath . '/MediaDir';
+
+    try {
+        \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
+    } catch (\Exception $e) {
+        \DBG::log($e->getMessage());
+        setUpdateMsg(sprintf(
+            $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+            $sourceImagePath, $targetImagePath
+        ));
+        return false;
+    }
     return true;
 }
 
