@@ -1321,6 +1321,36 @@ EOF
         //update module name for email templates
         \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_mail_template` SET `section` = 'Shop' WHERE `section` = 'shop'");
         \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_text` SET `section` = 'Shop' WHERE `section` = 'shop'");
+
+        //Update script for moving the folder
+        $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
+        $sourceImagePath = $imagePath . '/shop';
+        $targetImagePath = $imagePath . '/Shop';
+
+        try {
+            \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+                $sourceImagePath, $targetImagePath
+            ));
+            return false;
+        }
+
+        $mediaPath       = ASCMS_DOCUMENT_ROOT . '/media';
+        $sourceMediaPath = $mediaPath . '/shop';
+        $targetMediaPath = $mediaPath . '/Shop';
+        try {
+            \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceMediaPath, $targetMediaPath);
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+                $sourceMediaPath, $targetMediaPath
+            ));
+            return false;
+        }
     }
 
     return true;

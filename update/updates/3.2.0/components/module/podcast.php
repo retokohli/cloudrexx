@@ -28,6 +28,7 @@
 
 function _podcastUpdate() {
     global $objDatabase, $_ARRAYLANG, $objUpdate, $_CONFIG;
+
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         //move podcast images directory
         $path = ASCMS_DOCUMENT_ROOT . '/images';
@@ -35,7 +36,7 @@ function _podcastUpdate() {
         $newImagesPath = '/podcast';
 
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '1.2.1')) {
-            if (!file_exists($path . $newImagesPath)
+            if (   !file_exists($path . $newImagesPath)
                 && file_exists($path . $oldImagesPath)
             ) {
                 \Cx\Lib\FileSystem\FileSystem::makeWritable($path . $oldImagesPath);
@@ -65,15 +66,16 @@ function _podcastUpdate() {
         }
 
 
+
         // only update if installed version is at least a version 2.0.0
         // older versions < 2.0 have a complete other structure of the content page and must therefore completely be reinstalled
         if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
             try {
                 // migrate content page to version 3.0.1
                 $search = array(
-                    '/(.*)/ms',
+                '/(.*)/ms',
                 );
-                $callback = function ($matches) {
+                $callback = function($matches) {
                     $content = $matches[1];
                     if (empty($content)) {
                         return $content;
@@ -104,6 +106,36 @@ function _podcastUpdate() {
         \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_podcast_medium`
                                  SET `thumbnail` = REPLACE(`thumbnail`, 'images/podcast', 'images/Podcast')
                                  WHERE `thumbnail` LIKE ('".ASCMS_PATH_OFFSET."/images/podcast%')");
+
+        //Update script for moving the folder
+        $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
+        $sourceImagePath = $imagePath . '/podcast';
+        $targetImagePath = $imagePath . '/Podcast';
+
+        try {
+            \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+                $sourceImagePath, $targetImagePath
+            ));
+            return false;
+        }
+
+        $mediaPath       = ASCMS_DOCUMENT_ROOT . '/media';
+        $sourceMediaPath = $mediaPath . '/podcast';
+        $targetMediaPath = $mediaPath . '/Podcast';
+        try {
+            \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceMediaPath, $targetMediaPath);
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+                $sourceMediaPath, $targetMediaPath
+            ));
+            return false;
+        }
     }
 
     return true;

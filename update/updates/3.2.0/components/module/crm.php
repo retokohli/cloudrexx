@@ -27,7 +27,7 @@
 
 
 function _crmUpdate() {
-    global $objUpdate, $_CONFIG;
+    global $objUpdate, $_CONFIG, $_ARRAYLANG;
 	try {
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
             \Cx\Lib\UpdateUtil::table(
@@ -52,9 +52,9 @@ function _crmUpdate() {
                     'datasource'             => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'user_account'),
                     'profile_picture'        => array('type' => 'VARCHAR(256)', 'after' => 'datasource'),
                     'status'                 => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '1', 'after' => 'profile_picture'),
-                    'added_date'             => array('type' => 'date', 'after' => 'status'),
-                    'email_delivery'         => array('type' => 'TINYINT(2)', 'notnull' => false, 'default' => '1', 'after' => 'added_date'),
-                    'company_size'           => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_addedby'),
+                        'added_date'             => array('type' => 'date', 'after' => 'status'),
+                        'email_delivery'         => array('type' => 'TINYINT(2)', 'notnull' => false, 'default' => '1', 'after' => 'added_date'),
+                        'company_size'           => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_addedby'),
                 ),
                 array(
                     'contact_customer'       => array('fields' => array('contact_customer')),
@@ -350,6 +350,38 @@ function _crmUpdate() {
         \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_text` SET `section` = 'Crm' WHERE `section` = 'crm'");
         //update module name for crm core settings
         \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_setting` SET `section` = 'Crm' WHERE `section` = 'crm'");
+    }
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        //Update script for moving the folder
+        $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
+        $sourceImagePath = $imagePath . '/crm';
+        $targetImagePath = $imagePath . '/Crm';
+
+        try {
+            \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+                $sourceImagePath, $targetImagePath
+            ));
+            return false;
+        }
+
+        $mediaPath       = ASCMS_DOCUMENT_ROOT . '/media';
+        $sourceMediaPath = $mediaPath . '/crm';
+        $targetMediaPath = $mediaPath . '/Crm';
+        try {
+            \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceMediaPath, $targetMediaPath);
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+                $sourceMediaPath, $targetMediaPath
+            ));
+            return false;
+        }
     }
     return true;
 }

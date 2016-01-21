@@ -589,103 +589,103 @@ function _accessUpdate()
 
     }
 
-        /***********************************
-         *
-         * CREATE PROFILE ATTRIBUTE TABLES
-         *
-         **********************************/
-        try {
-            if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX . 'access_user_attribute',
-                    array(
-                        'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                        'parent_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'after' => 'id'),
-                        'type' => array('type' => 'ENUM(\'text\',\'textarea\',\'mail\',\'uri\',\'date\',\'image\',\'checkbox\',\'menu\',\'menu_option\',\'group\',\'frame\',\'history\')', 'notnull' => true, 'default' => 'text', 'after' => 'parent_id'),
-                        'mandatory' => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'type'),
-                        'sort_type' => array('type' => 'ENUM(\'asc\',\'desc\',\'custom\')', 'notnull' => true, 'default' => 'asc', 'after' => 'mandatory'),
-                        'order_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'sort_type'),
-                        'access_special' => array('type' => 'ENUM(\'\',\'menu_select_higher\',\'menu_select_lower\')', 'notnull' => true, 'default' => '', 'after' => 'order_id'),
-                        'access_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'access_special')
-                    ),
-                    array(),
-                    'InnoDB'
-                );
-            }
-
-            if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX . 'access_user_attribute_name',
-                    array(
-                        'attribute_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
-                        'lang_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'attribute_id'),
-                        'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'lang_id')
-                    ), array(),
-                    'InnoDB'
-                );
-
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX . 'access_user_attribute_value',
-                    array(
-                        'attribute_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
-                        'user_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'attribute_id'),
-                        'history_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'user_id'),
-                        'value' => array('type' => 'text', 'after' => 'history_id')
-                    ),
-                    array(
-                        'value' => array('fields' => array('value'), 'type' => 'FULLTEXT')
-                    )
-                );
-
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX . 'access_user_core_attribute',
-                    array(
-                        'id' => array('type' => 'VARCHAR(25)', 'primary' => true),
-                        'mandatory' => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'id'),
-                        'sort_type' => array('type' => 'ENUM(\'asc\',\'desc\',\'custom\')', 'notnull' => true, 'default' => 'asc', 'after' => 'mandatory'),
-                        'order_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'sort_type'),
-                        'access_special' => array('type' => 'ENUM(\'\',\'menu_select_higher\',\'menu_select_lower\')', 'notnull' => true, 'default' => '', 'after' => 'order_id'),
-                        'access_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'access_special')
-                    ),
-                    array(),
-                    'InnoDB'
-                );
-
-
-                /************************
-                 *
-                 * ADD USER TITLE TABLE
-                 *
-                 ***********************/
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX . 'access_user_title',
-                    array(
-                        'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                        'title' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'id'),
-                        'order_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'title')
-                    ),
-                    array(
-                        'title' => array('fields' => array('title'), 'type' => 'UNIQUE')
-                    ),
-                    'InnoDB'
-                );
-
-                $arrDefaultTitle = array(
-                    'Sehr geehrte Frau',
-                    'Sehr geehrter Herr',
-                    'Dear Ms',
-                    'Dear Mr',
-                    'Madame',
-                    'Monsieur'
-                );
-
-                foreach ($arrDefaultTitle as $title) {
-                    \Cx\Lib\UpdateUtil::sql("INSERT INTO `" . DBPREFIX . "access_user_title` SET `title` = '" . $title . "' ON DUPLICATE KEY UPDATE `id` = `id`");
-                }
-            }
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    /***********************************
+     *
+     * CREATE PROFILE ATTRIBUTE TABLES
+     *
+     **********************************/
+    try {
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'access_user_attribute',
+                array(
+                    'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'parent_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'after' => 'id'),
+                    'type' => array('type' => 'ENUM(\'text\',\'textarea\',\'mail\',\'uri\',\'date\',\'image\',\'checkbox\',\'menu\',\'menu_option\',\'group\',\'frame\',\'history\')', 'notnull' => true, 'default' => 'text', 'after' => 'parent_id'),
+                    'mandatory' => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'type'),
+                    'sort_type' => array('type' => 'ENUM(\'asc\',\'desc\',\'custom\')', 'notnull' => true, 'default' => 'asc', 'after' => 'mandatory'),
+                    'order_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'sort_type'),
+                    'access_special' => array('type' => 'ENUM(\'\',\'menu_select_higher\',\'menu_select_lower\')', 'notnull' => true, 'default' => '', 'after' => 'order_id'),
+                    'access_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'access_special')
+                ),
+                array(),
+                'InnoDB'
+            );
         }
+
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'access_user_attribute_name',
+                array(
+                    'attribute_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                    'lang_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'attribute_id'),
+                    'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'lang_id')
+                ), array(),
+                'InnoDB'
+            );
+
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'access_user_attribute_value',
+                array(
+                    'attribute_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                    'user_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'attribute_id'),
+                    'history_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'user_id'),
+                    'value' => array('type' => 'text', 'after' => 'history_id')
+                ),
+                array(
+                    'value' => array('fields' => array('value'), 'type' => 'FULLTEXT')
+                )
+            );
+
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'access_user_core_attribute',
+                array(
+                    'id' => array('type' => 'VARCHAR(25)', 'primary' => true),
+                    'mandatory' => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                    'sort_type' => array('type' => 'ENUM(\'asc\',\'desc\',\'custom\')', 'notnull' => true, 'default' => 'asc', 'after' => 'mandatory'),
+                    'order_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'sort_type'),
+                    'access_special' => array('type' => 'ENUM(\'\',\'menu_select_higher\',\'menu_select_lower\')', 'notnull' => true, 'default' => '', 'after' => 'order_id'),
+                    'access_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'access_special')
+                ),
+                array(),
+                'InnoDB'
+            );
+
+
+            /************************
+             *
+             * ADD USER TITLE TABLE
+             *
+             ***********************/
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'access_user_title',
+                array(
+                    'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'title' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                    'order_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'title')
+                ),
+                array(
+                    'title' => array('fields' => array('title'), 'type' => 'UNIQUE')
+                ),
+                'InnoDB'
+            );
+
+            $arrDefaultTitle = array(
+                'Sehr geehrte Frau',
+                'Sehr geehrter Herr',
+                'Dear Ms',
+                'Dear Mr',
+                'Madame',
+                'Monsieur'
+            );
+
+            foreach ($arrDefaultTitle as $title) {
+                \Cx\Lib\UpdateUtil::sql("INSERT INTO `" . DBPREFIX . "access_user_title` SET `title` = '" . $title . "' ON DUPLICATE KEY UPDATE `id` = `id`");
+            }
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
 
@@ -733,61 +733,62 @@ function _accessUpdate()
 
     }
 
-        // Currently, this is only here to create the u2u_active field.. but instead of adding
-        // 10 lines for each new field in the future, why not just extend this block
-        try{
-            if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX . 'access_users',
-                    array(
-                        'id' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                        'is_admin' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
-                        'username' => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'is_admin'),
-                        'password' => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'username'),
-                        'regdate' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'password'),
-                        'expiration' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'regdate'),
-                        'validity' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'expiration'),
-                        'last_auth' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'validity'),
-                        'last_auth_status' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '1', 'after' => 'last_auth'),
-                        'last_activity' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'last_auth_status'),
-                        'email' => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'last_activity'),
-                        'email_access' => array('type' => 'ENUM(\'everyone\',\'members_only\',\'nobody\')', 'notnull' => true, 'default' => 'nobody', 'after' => 'email'),
-                        'frontend_lang_id' => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'email_access'),
-                        'backend_lang_id' => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'frontend_lang_id'),
-                        'active' => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'backend_lang_id'),
-                        'primary_group' => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'active'),
-                        'profile_access' => array('type' => 'ENUM(\'everyone\',\'members_only\',\'nobody\')', 'notnull' => true, 'default' => 'members_only', 'after' => 'primary_group'),
-                        'restore_key' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'profile_access'),
-                        'restore_key_time' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'restore_key'),
-                        'u2u_active' => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '1', 'after' => 'restore_key_time'),
-                        'auth_token' => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'password'),
-                        'auth_token_timeout' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'auth_token'),
-                        'verified' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'active'),
-                    ),
-                    array(
-                        'username' => array('fields' => array('username'))
-                    )
-                );
-            }
+    // Currently, this is only here to create the u2u_active field.. but instead of adding
+    // 10 lines for each new field in the future, why not just extend this block
+    try{
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'access_users',
+                array(
+                    'id' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'is_admin' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                    'username' => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'is_admin'),
+                    'password' => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'username'),
+                    'regdate' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'password'),
+                    'expiration' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'regdate'),
+                    'validity' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'expiration'),
+                    'last_auth' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'validity'),
+                    'last_auth_status' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '1', 'after' => 'last_auth'),
+                    'last_activity' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'last_auth_status'),
+                    'email' => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'last_activity'),
+                    'email_access' => array('type' => 'ENUM(\'everyone\',\'members_only\',\'nobody\')', 'notnull' => true, 'default' => 'nobody', 'after' => 'email'),
+                    'frontend_lang_id' => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'email_access'),
+                    'backend_lang_id' => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'frontend_lang_id'),
+                    'active' => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'backend_lang_id'),
+                    'primary_group' => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'active'),
+                    'profile_access' => array('type' => 'ENUM(\'everyone\',\'members_only\',\'nobody\')', 'notnull' => true, 'default' => 'members_only', 'after' => 'primary_group'),
+                    'restore_key' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'profile_access'),
+                    'restore_key_time' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'restore_key'),
+                    'u2u_active' => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '1', 'after' => 'restore_key_time'),
+                    'auth_token' => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'password'),
+                    'auth_token_timeout' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'auth_token'),
+                    'verified' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'active'),
+                ),
+                array(
+                    'username' => array('fields' => array('username'))
+                )
+            );
+        }
 
-            if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX . 'access_user_groups',
-                    array(
-                        'group_id' => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                        'group_name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'group_id'),
-                        'group_description' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'group_name'),
-                        'is_active' => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '1', 'after' => 'group_description'),
-                        'type' => array('type' => 'ENUM(\'frontend\',\'backend\')', 'notnull' => true, 'default' => 'frontend', 'after' => 'is_active'),
-                        'homepage' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'type')
-                    )
-                );
-            }
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'access_user_groups',
+                array(
+                    'group_id' => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'group_name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'group_id'),
+                    'group_description' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'group_name'),
+                    'is_active' => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '1', 'after' => 'group_description'),
+                    'type' => array('type' => 'ENUM(\'frontend\',\'backend\')', 'notnull' => true, 'default' => 'frontend', 'after' => 'is_active'),
+                    'homepage' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'type')
+                )
+            );
         }
-        catch (\Cx\Lib\UpdateException $e) {
-            // we COULD do something else here..
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
+    }
+    catch (\Cx\Lib\UpdateException $e) {
+        // we COULD do something else here..
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
     \DBG::msg('004');
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         // only update if installed version is at least a version 2.0.0
@@ -1138,6 +1139,23 @@ function _accessUpdate()
     	setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_ACCESS_PHOTO_IMG_PATH.'/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
     	return false;
     }*/
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        //Update script for moving the folder
+        $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
+        $sourceImagePath = $imagePath . '/access';
+        $targetImagePath = $imagePath . '/Access';
+        try {
+            \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+                $sourceImagePath, $targetImagePath
+            ));
+            return false;
+        }
+    }
 
     return true;
 }

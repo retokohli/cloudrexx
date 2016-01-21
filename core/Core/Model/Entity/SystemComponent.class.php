@@ -176,7 +176,14 @@ class SystemComponent extends \Cx\Model\Base\EntityBase
         if (!$allowCustomizing) {
             return $componentPath;
         }
-        return $this->cx->getClassLoader()->getFilePath($componentPath);
+        $isCustomized = false;
+        $isWebsite = false;
+        return $this->cx->getClassLoader()->getFilePath(
+            $componentPath,
+            $isCustomized,
+            $isWebsite,
+            $relative
+        );
     }
     
     /**
