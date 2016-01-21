@@ -205,7 +205,7 @@ class Newsletter extends NewsletterLib
                     }
 
                     $mail->CharSet = CONTREXX_CHARSET;
-                    $mail->SetFrom($value_sender_emailDEF, $value_sender_nameDEF);
+                    $mail->SetFrom($value_sender_emailDEF, $value_sender_nameDEF, 0);
                     $mail->AddReplyTo($value_reply_mailDEF);
                     $mail->Subject             = $mailTitle;
                     $mail->Priority         = 3;
@@ -790,7 +790,7 @@ class Newsletter extends NewsletterLib
         }
 
         $objMail->CharSet = CONTREXX_CHARSET;
-        $objMail->SetFrom($arrSettings['sender_mail']['setvalue'], $arrSettings['sender_name']['setvalue']);
+        $objMail->SetFrom($arrSettings['sender_mail']['setvalue'], $arrSettings['sender_name']['setvalue'], 0);
         $objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);
         $objMail->Subject = $arrParsedTxts[0];
         $objMail->Priority = 3;
@@ -883,7 +883,7 @@ class Newsletter extends NewsletterLib
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->SetFrom($arrSettings['sender_mail']['setvalue'], $arrSettings['sender_name']['setvalue']);
+            $objMail->SetFrom($arrSettings['sender_mail']['setvalue'], $arrSettings['sender_name']['setvalue'], 0);
             $objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);
             $objMail->Subject = $arrParsedTxts[0];
             $objMail->Priority = 3;

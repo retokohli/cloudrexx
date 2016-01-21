@@ -223,7 +223,6 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
 
             $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
-            $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
             $objMail->Subject = $this->strTitle;
             $objMail->IsHTML(false);
             $objMail->Body = $this->strTemplate;

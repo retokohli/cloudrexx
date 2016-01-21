@@ -178,7 +178,7 @@ die("Mail::send(): Obsolete method called!");
         $objMail->CharSet = CONTREXX_CHARSET;
         $from = preg_replace('/\015\012/', '', $mailFrom);
         $fromName = preg_replace('/\015\012/', '', $mailSender);
-        $objMail->SetFrom($from, $fromName);
+        $objMail->SetFrom($from, $fromName, 0);
         //$objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
         $objMail->Subject = $mailSubject;
         $objMail->IsHTML(false);

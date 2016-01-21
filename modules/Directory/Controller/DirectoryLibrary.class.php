@@ -1121,7 +1121,6 @@ class DirectoryLibrary
             }
             $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreAdminName']);
-            $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
             $objMail->Subject = $subject;
             $objMail->IsHTML(false);
             $objMail->Body = $message;

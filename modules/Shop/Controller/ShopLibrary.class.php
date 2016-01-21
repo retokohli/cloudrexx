@@ -107,7 +107,7 @@ die("ShopLibrary::shopSendmail(): Obsolete method called");
             $objMail->CharSet = CONTREXX_CHARSET;
             $from = preg_replace('/\015\012/', "\012", $shopMailFrom);
             $fromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
-            $objMail->SetFrom($from, $fromName);
+            $objMail->SetFrom($from, $fromName, 0);
             $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
             $objMail->Subject = $shopMailSubject;
             $objMail->IsHTML(false);

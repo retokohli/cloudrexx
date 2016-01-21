@@ -181,7 +181,7 @@ class OBOLETE_Mail
             $objMail->CharSet = CONTREXX_CHARSET;
             $from = preg_replace('/\015\012/', '', $mailFrom);
             $fromName = preg_replace('/\015\012/', '', $mailSender);
-            $objMail->SetFrom($from, $fromName);
+            $objMail->SetFrom($from, $fromName, 0);
             $objMail->Subject = $mailSubject;
             $objMail->IsHTML(false);
             $objMail->Body = preg_replace('/\015\012/', "\012", $mailBody);

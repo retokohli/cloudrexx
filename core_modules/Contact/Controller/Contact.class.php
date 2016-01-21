@@ -1438,7 +1438,7 @@ CODE;
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $senderName);
+            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $senderName, 0);
             if (!empty($replyAddress)) {
                 $objMail->AddReplyTo($replyAddress);
 
