@@ -732,8 +732,7 @@ class U2u extends U2uLibrary
                                              array($strName['username'], $strReceiverName['username'], $_CONFIG['domainUrl']),
                                              $messageContent['email_message']);
             $objMail->CharSet   = CONTREXX_CHARSET;
-            $objMail->From      = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName  = $from['from'];//$_CONFIG['coreGlobalPageTitle'];
+            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $from['from']);
             $objMail->AddAddress($toEmail['email']);
             $objMail->Subject 	= $strMailSubject;//$strMailSubject;
             $objMail->IsHTML(true);
