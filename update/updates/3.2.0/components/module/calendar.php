@@ -28,108 +28,130 @@
 
 function _calendarUpdate()
 {
-    global $objDatabase, $_ARRAYLANG;
+    global $objDatabase, $objUpdate, $_CONFIG, $_ARRAYLANG;
 
-    try {
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX . 'module_calendar', array(
-                'id' => array('type' => 'INT(11)', 'notnull' => true, 'primary' => true, 'auto_increment' => true),
-                'active' => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'id'),
-                'catid' => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
-                'startdate' => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'catid'),
-                'enddate' => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'startdate'),
-                'priority' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'enddate'),
-                'access' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
-                'name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'access'),
-                'comment' => array('type' => 'text', 'after' => 'name'),
-                'placeName' => array('type' => 'VARCHAR(255)', 'after' => 'comment'),
-                'link' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => 'http://', 'after' => 'placeName'),
-                'pic' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
-                'attachment' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'pic'),
-                'placeStreet' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'attachment'),
-                'placeZip' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeStreet'),
-                'placeCity' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeZip'),
-                'placeLink' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeCity'),
-                'placeMap' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeLink'),
-                'organizerName' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeMap'),
-                'organizerStreet' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerName'),
-                'organizerZip' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerStreet'),
-                'organizerPlace' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerZip'),
-                'organizerMail' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerPlace'),
-                'organizerLink' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerMail'),
-                'key' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerLink'),
-                'num' => array('type' => 'INT(5)', 'notnull' => true, 'default' => '0', 'after' => 'key'),
-                'mailTitle' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'num'),
-                'mailContent' => array('type' => 'text', 'after' => 'mailTitle'),
-                'registration' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'mailContent'),
-                'groups' => array('type' => 'text', 'after' => 'registration'),
-                'all_groups' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'groups'),
-                'public' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'all_groups'),
-                'notification' => array('type' => 'INT(1)', 'after' => 'public'),
-                'notification_address' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'notification'),
-                'series_status' => array('type' => 'TINYINT(4)', 'after' => 'notification_address'),
-                'series_type' => array('type' => 'INT(11)', 'after' => 'series_status'),
-                'series_pattern_count' => array('type' => 'INT(11)', 'after' => 'series_type'),
-                'series_pattern_weekday' => array('type' => 'VARCHAR(7)', 'after' => 'series_pattern_count'),
-                'series_pattern_day' => array('type' => 'INT(11)', 'after' => 'series_pattern_weekday'),
-                'series_pattern_week' => array('type' => 'INT(11)', 'after' => 'series_pattern_day'),
-                'series_pattern_month' => array('type' => 'INT(11)', 'after' => 'series_pattern_week'),
-                'series_pattern_type' => array('type' => 'INT(11)', 'after' => 'series_pattern_month'),
-                'series_pattern_dourance_type' => array('type' => 'INT(11)', 'after' => 'series_pattern_type'),
-                'series_pattern_end' => array('type' => 'INT(11)', 'after' => 'series_pattern_dourance_type'),
-                'series_pattern_begin' => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end'),
-                'series_pattern_exceptions' => array('type' => 'longtext', 'after' => 'series_pattern_begin')
-            ),
-            array(
-                'name' => array('fields' => array('name', 'comment', 'placeName'), 'type' => 'FULLTEXT')
-            )
-        );
-    } catch (\Cx\Lib\UpdateException $e) {
-        // we COULD do something else here..
-        DBG::trace();
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
-
-
-    //2.1.1
-
-
-    $query = "SELECT status FROM " . DBPREFIX . "modules WHERE id='21'";
-    $objResultCheck = $objDatabase->SelectLimit($query, 1);
-
-    if ($objResultCheck !== false) {
-        if ($objResultCheck->fields['status'] == 'y') {
-            $calendarStatus = true;
-        } else {
-            $calendarStatus = false;
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'module_calendar', array(
+                    'id' => array('type' => 'INT(11)', 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                    'active' => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'id'),
+                    'catid' => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
+                    'startdate' => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'catid'),
+                    'enddate' => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'startdate'),
+                    'priority' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'enddate'),
+                    'access' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
+                    'name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'access'),
+                    'comment' => array('type' => 'text', 'after' => 'name'),
+                    'placeName' => array('type' => 'VARCHAR(255)', 'after' => 'comment'),
+                    'link' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => 'http://', 'after' => 'placeName'),
+                    'pic' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
+                    'attachment' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'pic'),
+                    'placeStreet' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'attachment'),
+                    'placeZip' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeStreet'),
+                    'placeCity' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeZip'),
+                    'placeLink' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeCity'),
+                    'placeMap' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeLink'),
+                    'organizerName' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeMap'),
+                    'organizerStreet' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerName'),
+                    'organizerZip' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerStreet'),
+                    'organizerPlace' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerZip'),
+                    'organizerMail' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerPlace'),
+                    'organizerLink' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerMail'),
+                    'key' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerLink'),
+                    'num' => array('type' => 'INT(5)', 'notnull' => true, 'default' => '0', 'after' => 'key'),
+                    'mailTitle' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'num'),
+                    'mailContent' => array('type' => 'text', 'after' => 'mailTitle'),
+                    'registration' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'mailContent'),
+                    'groups' => array('type' => 'text', 'after' => 'registration'),
+                    'all_groups' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'groups'),
+                    'public' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'all_groups'),
+                    'notification' => array('type' => 'INT(1)', 'after' => 'public'),
+                    'notification_address' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'notification'),
+                    'series_status' => array('type' => 'TINYINT(4)', 'after' => 'notification_address'),
+                    'series_type' => array('type' => 'INT(11)', 'after' => 'series_status'),
+                    'series_pattern_count' => array('type' => 'INT(11)', 'after' => 'series_type'),
+                    'series_pattern_weekday' => array('type' => 'VARCHAR(7)', 'after' => 'series_pattern_count'),
+                    'series_pattern_day' => array('type' => 'INT(11)', 'after' => 'series_pattern_weekday'),
+                    'series_pattern_week' => array('type' => 'INT(11)', 'after' => 'series_pattern_day'),
+                    'series_pattern_month' => array('type' => 'INT(11)', 'after' => 'series_pattern_week'),
+                    'series_pattern_type' => array('type' => 'INT(11)', 'after' => 'series_pattern_month'),
+                    'series_pattern_dourance_type' => array('type' => 'INT(11)', 'after' => 'series_pattern_type'),
+                    'series_pattern_end' => array('type' => 'INT(11)', 'after' => 'series_pattern_dourance_type'),
+                    'series_pattern_begin' => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end'),
+                    'series_pattern_exceptions' => array('type' => 'longtext', 'after' => 'series_pattern_begin')
+                ),
+                array(
+                    'name' => array('fields' => array('name', 'comment', 'placeName'), 'type' => 'FULLTEXT')
+                )
+            );
+        } catch (\Cx\Lib\UpdateException $e) {
+            // we COULD do something else here..
+            DBG::trace();
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-    if ($calendarStatus) {
-        $arrContentSites = array();
-
-        $arrContentSites[0]['module'] = 'calendar';
-        $arrContentSites[0]['cmd'] = '';
-        $arrContentSites[1]['module'] = 'calendar';
-        $arrContentSites[1]['cmd'] = 'eventlist';
-        $arrContentSites[2]['module'] = 'calendar';
-        $arrContentSites[2]['cmd'] = 'boxes';
 
 
-        //insert new link placeholder in content, if module is active
-        foreach ($arrContentSites as $key => $siteArray) {
+        //2.1.1
 
-            $module = $siteArray['module'];
-            $cmd = $siteArray['cmd'];
+
+        $query = "SELECT status FROM " . DBPREFIX . "modules WHERE id='21'";
+        $objResultCheck = $objDatabase->SelectLimit($query, 1);
+
+        if ($objResultCheck !== false) {
+            if ($objResultCheck->fields['status'] == 'y') {
+                $calendarStatus = true;
+            } else {
+                $calendarStatus = false;
+            }
+        } else {
+            return _databaseError($query, $objDatabase->ErrorMsg());
+        }
+
+        if ($calendarStatus) {
+            $arrContentSites = array();
+
+            $arrContentSites[0]['module'] = 'calendar';
+            $arrContentSites[0]['cmd'] = '';
+            $arrContentSites[1]['module'] = 'calendar';
+            $arrContentSites[1]['cmd'] = 'eventlist';
+            $arrContentSites[2]['module'] = 'calendar';
+            $arrContentSites[2]['cmd'] = 'boxes';
+
+
+            //insert new link placeholder in content, if module is active
+            foreach ($arrContentSites as $key => $siteArray) {
+
+                $module = $siteArray['module'];
+                $cmd = $siteArray['cmd'];
+
+                try {
+                    \Cx\Lib\UpdateUtil::migrateContentPage(
+                        $module,
+                        $cmd,
+                        '<a href="index.php?section=calendar&amp;cmd=event&amp;id={CALENDAR_ID}">{CALENDAR_TITLE}</a>',
+                        '{CALENDAR_DETAIL_LINK}',
+                        '3.0.0'
+                    );
+                } catch (\Cx\Lib\UpdateException $e) {
+                    return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+                }
+            }
+
 
             try {
                 \Cx\Lib\UpdateUtil::migrateContentPage(
-                    $module,
-                    $cmd,
-                    '<a href="index.php?section=calendar&amp;cmd=event&amp;id={CALENDAR_ID}">{CALENDAR_TITLE}</a>',
-                    '{CALENDAR_DETAIL_LINK}',
+                    'calendar',
+                    'sign',
+                    '<input type="hidden" name="id" value="{CALENDAR_NOTE_ID}" />',
+                    '<input type="hidden" name="id" value="{CALENDAR_NOTE_ID}" /><input type="hidden" name="date" value="{CALENDAR_NOTE_DATE}" />',
+                    '3.0.0'
+                );
+                \Cx\Lib\UpdateUtil::migrateContentPage(
+                    'calendar',
+                    'sign',
+                    '<a href="index.php?section=calendar&amp;id={CALENDAR_NOTE_ID}">{TXT_CALENDAR_BACK}</a>',
+                    '{CALENDAR_LINK_BACK}',
                     '3.0.0'
                 );
             } catch (\Cx\Lib\UpdateException $e) {
@@ -137,86 +159,158 @@ function _calendarUpdate()
             }
         }
 
-
         try {
-            \Cx\Lib\UpdateUtil::migrateContentPage(
-                'calendar',
-                'sign',
-                '<input type="hidden" name="id" value="{CALENDAR_NOTE_ID}" />',
-                '<input type="hidden" name="id" value="{CALENDAR_NOTE_ID}" /><input type="hidden" name="date" value="{CALENDAR_NOTE_DATE}" />',
-                '3.0.0'
+            // delete obsolete table  contrexx_module_calendar_access
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'module_calendar_access');
+
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'module_calendar_form_data', array(
+                    'reg_id' => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0'),
+                    'field_id' => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0'),
+                    'data' => array('type' => 'TEXT', 'notnull' => true)
+                )
             );
-            \Cx\Lib\UpdateUtil::migrateContentPage(
-                'calendar',
-                'sign',
-                '<a href="index.php?section=calendar&amp;id={CALENDAR_NOTE_ID}">{TXT_CALENDAR_BACK}</a>',
-                '{CALENDAR_LINK_BACK}',
-                '3.0.0'
+
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'module_calendar_form_fields', array(
+                    'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'note_id' => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0'),
+                    'name' => array('type' => 'TEXT'),
+                    'type' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0'),
+                    'required' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0'),
+                    'order' => array('type' => 'INT(3)', 'notnull' => true, 'default' => '0'),
+                    'key' => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0')
+                )
+            );
+
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'module_calendar_registrations', array(
+                    'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'note_id' => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0'),
+                    'note_date' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'note_id'),
+                    'time' => array('type' => 'INT(14)', 'notnull' => true, 'default' => '0'),
+                    'host' => array('type' => 'VARCHAR(255)'),
+                    'ip_address' => array('type' => 'VARCHAR(15)'),
+                    'type' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0')
+                )
             );
         } catch (\Cx\Lib\UpdateException $e) {
+            // we COULD do something else here..
+            DBG::trace();
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-    }
 
-    try {
-        // delete obsolete table  contrexx_module_calendar_access
-        \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'module_calendar_access');
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+            $CalendarUpdate31 = new CalendarUpdate31();
+            $calendarUpdateFeedback = $CalendarUpdate31->run();
+            if ($calendarUpdateFeedback !== true) {
+                return $calendarUpdateFeedback;
+            }
+        }
 
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX . 'module_calendar_form_data', array(
-                'reg_id' => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0'),
-                'field_id' => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0'),
-                'data' => array('type' => 'TEXT', 'notnull' => true)
-            )
-        );
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+            try {
+                \Cx\Lib\UpdateUtil::table(
+                    DBPREFIX.'module_calendar_event',
+                    array(
+                        'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'type'                               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                        'startdate'                          => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'type'),
+                        'enddate'                            => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'startdate'),
+                        'startdate_timestamp'                => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'enddate'),
+                        'enddate_timestamp'                  => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate_timestamp'),
+                        'use_custom_date_display'            => array('type' => 'TINYINT(1)', 'after' => 'enddate_timestamp'),
+                        'showStartDateList'                  => array('type' => 'INT(1)', 'after' => 'use_custom_date_display'),
+                        'showEndDateList'                    => array('type' => 'INT(1)', 'after' => 'showStartDateList'),
+                        'showStartTimeList'                  => array('type' => 'INT(1)', 'after' => 'showEndDateList'),
+                        'showEndTimeList'                    => array('type' => 'INT(1)', 'after' => 'showStartTimeList'),
+                        'showTimeTypeList'                   => array('type' => 'INT(1)', 'after' => 'showEndTimeList'),
+                        'showStartDateDetail'                => array('type' => 'INT(1)', 'after' => 'showTimeTypeList'),
+                        'showEndDateDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartDateDetail'),
+                        'showStartTimeDetail'                => array('type' => 'INT(1)', 'after' => 'showEndDateDetail'),
+                        'showEndTimeDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartTimeDetail'),
+                        'showTimeTypeDetail'                 => array('type' => 'INT(1)', 'after' => 'showEndTimeDetail'),
+                        'google'                             => array('type' => 'INT(11)', 'after' => 'showTimeTypeDetail'),
+                        'access'                             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'google'),
+                        'priority'                           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'access'),
+                        'price'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
+                        'link'                               => array('type' => 'VARCHAR(255)', 'after' => 'price'),
+                        'pic'                                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
+                        'attach'                             => array('type' => 'VARCHAR(255)', 'after' => 'pic'),
+                        'place_mediadir_id'                  => array('type' => 'INT(11)', 'after' => 'attach'),
+                        'catid'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'place_mediadir_id'),
+                        'show_in'                            => array('type' => 'VARCHAR(255)', 'after' => 'catid'),
+                        'invited_groups'                     => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'show_in'),
+                        'invited_mails'                      => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'invited_groups'),
+                        'invitation_sent'                    => array('type' => 'INT(1)', 'after' => 'invited_mails'),
+                        'invitation_email_template'          => array('type' => 'VARCHAR(255)', 'after' => 'invitation_sent'),
+                        'registration'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'invitation_email_template'),
+                        'registration_form'                  => array('type' => 'INT(11)', 'after' => 'registration'),
+                        'registration_num'                   => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'registration_form'),
+                        'registration_notification'          => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'registration_num'),
+                        'email_template'                     => array('type' => 'VARCHAR(255)', 'after' => 'registration_notification'),
+                        'ticket_sales'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email_template'),
+                        'num_seating'                        => array('type' => 'text', 'after' => 'ticket_sales'),
+                        'series_status'                      => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'num_seating'),
+                        'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_status'),
+                        'series_pattern_count'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_type'),
+                        'series_pattern_weekday'             => array('type' => 'VARCHAR(7)', 'after' => 'series_pattern_count'),
+                        'series_pattern_day'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_weekday'),
+                        'series_pattern_week'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_day'),
+                        'series_pattern_month'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_week'),
+                        'series_pattern_type'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_month'),
+                        'series_pattern_dourance_type'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_type'),
+                        'series_pattern_end'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_dourance_type'),
+                        'series_pattern_end_date'            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'series_pattern_end'),
+                        'series_pattern_begin'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end_date'),
+                        'series_pattern_exceptions'          => array('type' => 'longtext', 'after' => 'series_pattern_begin'),
+                        'status'                             => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'series_pattern_exceptions'),
+                        'confirmed'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'status'),
+                        'author'                             => array('type' => 'VARCHAR(255)', 'after' => 'confirmed'),
+                        'all_day'                            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'author'),
+                        'location_type'                      => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'all_day'),
+                        'place'                              => array('type' => 'VARCHAR(255)', 'after' => 'location_type'),
+                        'place_id'                           => array('type' => 'INT(11)', 'after' => 'place'),
+                        'place_street'                       => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_id'),
+                        'place_zip'                          => array('type' => 'VARCHAR(10)', 'notnull' => false, 'after' => 'place_street'),
+                        'place_city'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_zip'),
+                        'place_country'                      => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_city'),
+                        'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_country'),
+                        'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_link'),
+                        'host_type'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'place_map'),
+                        'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'host_type'),
+                        'org_street'                         => array('type' => 'VARCHAR(255)', 'after' => 'org_name'),
+                        'org_zip'                            => array('type' => 'VARCHAR(10)', 'after' => 'org_street'),
+                        'org_city'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_zip'),
+                        'org_country'                        => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
+                        'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_country'),
+                        'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_link'),
+                        'host_mediadir_id'                   => array('type' => 'INT(11)', 'after' => 'org_email')
+                    ),
+                    array(
+                        'fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1' => array('fields' => array('catid'))
+                    )
+                );
+            } catch (\Cx\Lib\UpdateException $e) {
+                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            }
 
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX . 'module_calendar_form_fields', array(
-                'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'note_id' => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0'),
-                'name' => array('type' => 'TEXT'),
-                'type' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0'),
-                'required' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0'),
-                'order' => array('type' => 'INT(3)', 'notnull' => true, 'default' => '0'),
-                'key' => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0')
-            )
-        );
-
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX . 'module_calendar_registrations', array(
-                'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'note_id' => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0'),
-                'note_date' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'note_id'),
-                'time' => array('type' => 'INT(14)', 'notnull' => true, 'default' => '0'),
-                'host' => array('type' => 'VARCHAR(255)'),
-                'ip_address' => array('type' => 'VARCHAR(15)'),
-                'type' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0')
-            )
-        );
-    } catch (\Cx\Lib\UpdateException $e) {
-        // we COULD do something else here..
-        DBG::trace();
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
-
-    global $objUpdate;
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
-        $CalendarUpdate31 = new CalendarUpdate31();
-        $calendarUpdateFeedback = $CalendarUpdate31->run();
-        if ($calendarUpdateFeedback !== true) {
-            return $calendarUpdateFeedback;
+            try {
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `startdate_timestamp` = FROM_UNIXTIME(`startdate`), `enddate_timestamp` = FROM_UNIXTIME(`enddate`)');
+            } catch (\Cx\Lib\UpdateException $e) {
+                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            }
         }
     }
-
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         try {
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_calendar_event',
                 array(
                     'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                     'type'                               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
-                    'startdate'                          => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'type'),
-                    'enddate'                            => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'startdate'),
+                    'startdate' => array('type' => 'timestamp', 'notnull' => false, 'default' => '0000-00-00 00:00:00', 'after' => 'type'),
+                    'enddate' => array('type' => 'timestamp', 'notnull' => false, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate'),
                     'startdate_timestamp'                => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'enddate'),
                     'enddate_timestamp'                  => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate_timestamp'),
                     'use_custom_date_display'            => array('type' => 'TINYINT(1)', 'after' => 'enddate_timestamp'),
@@ -291,102 +385,33 @@ function _calendarUpdate()
                     'fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1' => array('fields' => array('catid'))
                 )
             );
+
+            //following queries for changing the path from images/calendar into images/Calendar
+            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_calendar_event` SET `pic` = REPLACE(`pic`, 'images/calendar', 'images/Calendar'),
+                                     `attach` = REPLACE(`attach`, 'images/calendar', 'images/Calendar'),
+                                     `place_map` = REPLACE(`place_map`, 'images/calendar', 'images/Calendar')
+                                     WHERE `pic` LIKE ('" . ASCMS_PATH_OFFSET . "/images/calendar%') ");
+
+            //Update script for moving the folder
+            $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
+            $sourceImagePath = $imagePath . '/calendar';
+            $targetImagePath = $imagePath . '/Calendar';
+            try {
+                \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
+            } catch (\Exception $e) {
+                \DBG::log($e->getMessage());
+                setUpdateMsg(sprintf(
+                    $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+                    $sourceImagePath, $targetImagePath
+                ));
+                return false;
+            }
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+    }
 
-        try {
-            \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `startdate_timestamp` = FROM_UNIXTIME(`startdate`), `enddate_timestamp` = FROM_UNIXTIME(`enddate`)');
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
-
-        try {
-            \Cx\Lib\UpdateUtil::table(
-                DBPREFIX.'module_calendar_event',
-                array(
-                    'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                    'type'                               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
-                    'startdate'                          => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'type'),
-                    'enddate'                            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate'),
-                    'startdate_timestamp'                => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'enddate'),
-                    'enddate_timestamp'                  => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate_timestamp'),
-                    'use_custom_date_display'            => array('type' => 'TINYINT(1)', 'after' => 'enddate_timestamp'),
-                    'showStartDateList'                  => array('type' => 'INT(1)', 'after' => 'use_custom_date_display'),
-                    'showEndDateList'                    => array('type' => 'INT(1)', 'after' => 'showStartDateList'),
-                    'showStartTimeList'                  => array('type' => 'INT(1)', 'after' => 'showEndDateList'),
-                    'showEndTimeList'                    => array('type' => 'INT(1)', 'after' => 'showStartTimeList'),
-                    'showTimeTypeList'                   => array('type' => 'INT(1)', 'after' => 'showEndTimeList'),
-                    'showStartDateDetail'                => array('type' => 'INT(1)', 'after' => 'showTimeTypeList'),
-                    'showEndDateDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartDateDetail'),
-                    'showStartTimeDetail'                => array('type' => 'INT(1)', 'after' => 'showEndDateDetail'),
-                    'showEndTimeDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartTimeDetail'),
-                    'showTimeTypeDetail'                 => array('type' => 'INT(1)', 'after' => 'showEndTimeDetail'),
-                    'google'                             => array('type' => 'INT(11)', 'after' => 'showTimeTypeDetail'),
-                    'access'                             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'google'),
-                    'priority'                           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'access'),
-                    'price'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
-                    'link'                               => array('type' => 'VARCHAR(255)', 'after' => 'price'),
-                    'pic'                                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
-                    'attach'                             => array('type' => 'VARCHAR(255)', 'after' => 'pic'),
-                    'place_mediadir_id'                  => array('type' => 'INT(11)', 'after' => 'attach'),
-                    'catid'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'place_mediadir_id'),
-                    'show_in'                            => array('type' => 'VARCHAR(255)', 'after' => 'catid'),
-                    'invited_groups'                     => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'show_in'),
-                    'invited_mails'                      => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'invited_groups'),
-                    'invitation_sent'                    => array('type' => 'INT(1)', 'after' => 'invited_mails'),
-                    'invitation_email_template'          => array('type' => 'VARCHAR(255)', 'after' => 'invitation_sent'),
-                    'registration'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'invitation_email_template'),
-                    'registration_form'                  => array('type' => 'INT(11)', 'after' => 'registration'),
-                    'registration_num'                   => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'registration_form'),
-                    'registration_notification'          => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'registration_num'),
-                    'email_template'                     => array('type' => 'VARCHAR(255)', 'after' => 'registration_notification'),
-                    'ticket_sales'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email_template'),
-                    'num_seating'                        => array('type' => 'text', 'after' => 'ticket_sales'),
-                    'series_status'                      => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'num_seating'),
-                    'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_status'),
-                    'series_pattern_count'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_type'),
-                    'series_pattern_weekday'             => array('type' => 'VARCHAR(7)', 'after' => 'series_pattern_count'),
-                    'series_pattern_day'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_weekday'),
-                    'series_pattern_week'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_day'),
-                    'series_pattern_month'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_week'),
-                    'series_pattern_type'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_month'),
-                    'series_pattern_dourance_type'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_type'),
-                    'series_pattern_end'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_dourance_type'),
-                    'series_pattern_end_date'            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'series_pattern_end'),
-                    'series_pattern_begin'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end_date'),
-                    'series_pattern_exceptions'          => array('type' => 'longtext', 'after' => 'series_pattern_begin'),
-                    'status'                             => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'series_pattern_exceptions'),
-                    'confirmed'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'status'),
-                    'author'                             => array('type' => 'VARCHAR(255)', 'after' => 'confirmed'),
-                    'all_day'                            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'author'),
-                    'location_type'                      => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'all_day'),
-                    'place'                              => array('type' => 'VARCHAR(255)', 'after' => 'location_type'),
-                    'place_id'                           => array('type' => 'INT(11)', 'after' => 'place'),
-                    'place_street'                       => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_id'),
-                    'place_zip'                          => array('type' => 'VARCHAR(10)', 'notnull' => false, 'after' => 'place_street'),
-                    'place_city'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_zip'),
-                    'place_country'                      => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_city'),
-                    'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_country'),
-                    'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_link'),
-                    'host_type'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'place_map'),
-                    'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'host_type'),
-                    'org_street'                         => array('type' => 'VARCHAR(255)', 'after' => 'org_name'),
-                    'org_zip'                            => array('type' => 'VARCHAR(10)', 'after' => 'org_street'),
-                    'org_city'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_zip'),
-                    'org_country'                        => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
-                    'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_country'),
-                    'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_link'),
-                    'host_mediadir_id'                   => array('type' => 'INT(11)', 'after' => 'org_email')
-                ),
-                array(
-                    'fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1' => array('fields' => array('catid'))
-                )
-            );
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
-
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         try {
             \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `startdate` = `startdate_timestamp`, `enddate` = `enddate_timestamp`');
             if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_calendar_event', 'startdate_timestamp')) {
@@ -399,54 +424,38 @@ function _calendarUpdate()
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-    }
 
+        // update calendar data to version 3.2.0
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+            $languages = FWLanguage::getLanguageArray();
 
-    // update calendar data to version 3.2.0
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
-        $languages = FWLanguage::getLanguageArray();
-
-        try {
-            $result = \Cx\Lib\UpdateUtil::sql('SELECT `id`, `invitation_email_template`, `email_template` FROM `'.DBPREFIX.'module_calendar_event`');
-            if ($result && $result->RecordCount() > 0) {
-                while (!$result->EOF) {
-                    // if the event has been already migrated, continue
-                    if (intval($result->fields['invitation_email_template']) != $result->fields['invitation_email_template']) {
+            try {
+                $result = \Cx\Lib\UpdateUtil::sql('SELECT `id`, `invitation_email_template`, `email_template` FROM `'.DBPREFIX.'module_calendar_event`');
+                if ($result && $result->RecordCount() > 0) {
+                    while (!$result->EOF) {
+                        // if the event has been already migrated, continue
+                        if (intval($result->fields['invitation_email_template']) != $result->fields['invitation_email_template']) {
+                            $result->MoveNext();
+                            continue;
+                        }
+                        $invitationEmailTemplate = array();
+                        $emailTemplate = array();
+                        foreach ($languages as $langId => $langData) {
+                            $invitationEmailTemplate[$langId] = $result->fields['invitation_email_template'];
+                            $emailTemplate[$langId] = $result->fields['email_template'];
+                        }
+                        $invitationEmailTemplate = json_encode($invitationEmailTemplate);
+                        $emailTemplate = json_encode($emailTemplate);
+                        \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET
+                                                `invitation_email_template`=\''.contrexx_raw2db($invitationEmailTemplate).'\',
+                                                `email_template`=\''.contrexx_raw2db($emailTemplate).'\' WHERE `id`='.intval($result->fields['id']));
                         $result->MoveNext();
-                        continue;
                     }
-                    $invitationEmailTemplate = array();
-                    $emailTemplate = array();
-                    foreach ($languages as $langId => $langData) {
-                        $invitationEmailTemplate[$langId] = $result->fields['invitation_email_template'];
-                        $emailTemplate[$langId] = $result->fields['email_template'];
-                    }
-                    $invitationEmailTemplate = json_encode($invitationEmailTemplate);
-                    $emailTemplate = json_encode($emailTemplate);
-                    \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET
-                                            `invitation_email_template`=\''.contrexx_raw2db($invitationEmailTemplate).'\',
-                                            `email_template`=\''.contrexx_raw2db($emailTemplate).'\' WHERE `id`='.intval($result->fields['id']));
-                    $result->MoveNext();
                 }
+            } catch (\Cx\Lib\UpdateException $e) {
+                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             }
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-    }
-
-    //Update script for moving the folder
-    $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
-    $sourceImagePath = $imagePath . '/calendar';
-    $targetImagePath = $imagePath . '/Calendar';
-    try {
-        \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
-    } catch (\Exception $e) {
-        \DBG::log($e->getMessage());
-        setUpdateMsg(sprintf(
-            $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
-            $sourceImagePath, $targetImagePath
-        ));
-        return false;
     }
 
     return true;

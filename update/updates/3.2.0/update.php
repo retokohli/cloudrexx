@@ -1933,7 +1933,8 @@ function createOrAlterSessionVariableTable()
             'value'     => array('type' => 'TEXT', 'notnull' => false, 'default' => '', 'after' => 'key')
         ),
         array(
-            'key_index' => array('fields' => array('parent_id', 'key', 'sessionid'), 'type' => 'UNIQUE')
+            'key_index'               => array('fields' => array('parent_id', 'key', 'sessionid'), 'type' => 'UNIQUE'),
+            'key_parent_id_sessionid' => array('fields' => array('parent_id', 'sessionid')),
         )
     );
 }
