@@ -27,20 +27,24 @@
 
 function _routingUpdate()
 {
-    try {
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'core_rewrite_rule',
-            array(
-                'id'                  => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'regular_expression'  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'id'),
-                'continue_on_match'   => array('type' => 'TINYINT(1)', 'notnull' => true, 'after' => 'regular_expression'),
-                'rewrite_status_code' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'continue_on_match'),
-                'order_no'            => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'rewrite_status_code'),
-            ),
-            array(),
-            'InnoDB'
-        );
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    global $objUpdate, $_CONFIG;
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'core_rewrite_rule',
+                array(
+                    'id'                  => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'regular_expression'  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'id'),
+                    'continue_on_match'   => array('type' => 'TINYINT(1)', 'notnull' => true, 'after' => 'regular_expression'),
+                    'rewrite_status_code' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'continue_on_match'),
+                    'order_no'            => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'rewrite_status_code'),
+                ),
+                array(),
+                'InnoDB'
+            );
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
     }
 }
