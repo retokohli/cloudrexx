@@ -375,12 +375,12 @@ small {
     min-height: 450px !important;
     min-width: 100%;
 }
-#slide1{
+#cycle > div:first-of-type {
     background: url("images/banner.png") repeat scroll 0 0 transparent;
     min-height: 450px;
     min-width: 100% !important;
 }
-#slide2{
+#cycle > div:nth-of-type(2) {
     background: url("images/slider-bg.png") no-repeat scroll 0 0 transparent;
     min-height: 450px;
     min-width: 100% !important;

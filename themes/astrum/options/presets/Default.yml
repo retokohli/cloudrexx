@@ -1,0 +1,52 @@
+options:
+  -
+    name: main_title
+    specific:
+      textvalue: 'Template Editor Test'
+  -
+    name: subtitle
+    specific:
+      textvalue: 'Testing the templateditor sfdsfs'
+  -
+    name: main_color
+    specific:
+      color: '#ffffff'
+  -
+    name: secondary_color
+    specific:
+      color: '#73B819'
+  -
+    name: font_color
+    specific:
+      color: '#888888'
+  -
+    name: regular_text  
+    specific:
+      activeChoice: 'Arial'
+  -
+    name: title_text  
+    specific:
+      activeChoice: 'Arial'
+  -
+    name: news_area
+    specific:
+      active: true
+  -
+    name: newsletter_area
+    specific:
+      active: true
+  -
+    name: logo
+    specific:
+      url: /themes/astrum/images/logo.png
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption
+    translation:
+        1: logo
+        2: logo
+  -
+    name: slider_images
+    specific:
+      urls:
+        1: /themes/astrum/images/hand-slider.png
+        2: /themes/astrum/images/slide2.png
+      type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageSeriesOption

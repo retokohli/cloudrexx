@@ -79,6 +79,61 @@
             });
         </script>
         <![endif]-->
+        <style>
+            header {
+                background-color : {TEMPLATE_EDITOR_MAIN_COLOR};
+            }
+            #navigation li.starter_active,
+            #navigation li.starter_normal:hover {
+                border-bottom-color : {TEMPLATE_EDITOR_SECONDARY_COLOR}; 
+            }
+            #navigation ul.menu {
+                border-top-color : {TEMPLATE_EDITOR_SECONDARY_COLOR}; 
+            }
+            .starter_active > span,
+            .cycle-button:hover,
+            .blog-icon:hover,
+            li.imgblog1:hover > article,
+            #arrow-right:hover,
+            #arrow-left:hover,
+            #arrow-right:focus,
+            #arrow-left:focus,
+            button,
+            input[type=submit],
+            input[type=button],
+            input[type=reset],
+            #shop figure a h3,
+            table th {
+                background-color : {TEMPLATE_EDITOR_SECONDARY_COLOR} !important;
+            }
+            .blog-text > p,
+            #page,
+            #page strong,
+            .sidebar-block-title > p,
+            .sidebar-block,
+            #contactDescription {
+                color : {TEMPLATE_EDITOR_FONT_COLOR};
+            }
+            h1, h2, h3, h4, h5, h6,
+            #info-blog h2,
+            #page h2, #page h3,
+            input[type="submit"],
+            input[type="button"],
+            input[type="reset"] {
+                font-family: {TEMPLATE_EDITOR_TITLE_TEXT};
+            }
+            #info-blog,
+            .slide_text > p,
+            .blog-text > p,
+            #page,
+            #page strong,
+            .sidebar-block-title > p,
+            .sidebar-block,
+            #contactDescription,
+            .my-breadcrumb {
+                font-family: {TEMPLATE_EDITOR_REGULAR_TEXT};
+            }
+        </style>
     </head>
 
     <body>
@@ -92,7 +147,7 @@
                     <div id="sidr">
                         {NAVBAR2_FILE}
                     </div>
-                        <div id="logo" title="Astrum"><a href="{NODE_HOME}"><img alt="image" height="23" src="themes/astrum/images/logo.png" width="123" /></a></div>
+                        <div id="logo" title="Astrum"><a href="{NODE_HOME}"><img alt="image" height="23" src="{TEMPLATE_EDITOR_LOGO}" width="123" /></a></div>
                         <div id="header-right">
                             <div id="main-nav">
                                 {NAVBAR_FILE}
@@ -116,10 +171,12 @@
                         <p>Dank dem modular aufgebauten Contrexx Web Content Management System wird das Verwalten von anwendungsreichen Webseiten stark vereinfacht.</p>
                     </div>
                   	<!--{BLOCK_38}-->
+                    <!-- BEGIN template_editor_news_area -->
                     <div id="info-news" class="four columns">
                         <h2>News</h2>
                         {HEADLINES_FILE}
                     </div>
+                    <!-- END template_editor_news_area -->
                     <div id="info-address" class="four columns">
                         <h2>Kontakt</h2>
                         <ul>
@@ -128,6 +185,7 @@
                             <li><i class="icon-envelope"></i><strong>E-Mail:</strong>  {CONTACT_EMAIL}</li>
                         </ul>
                     </div>
+                    <!-- BEGIN template_editor_newsletter_area -->
                     <div id="info-newsletter" class="four columns">
                         <div id="newsletter_block">
                             <h2>Newsletter abbonieren</h2>
@@ -140,6 +198,7 @@
                             </form>
                         </div>
                     </div>
+                    <!-- END template_editor_newsletter_area -->
                 </div>
 
             </div>
