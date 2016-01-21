@@ -27,6 +27,8 @@
 
 function _contentmanagerUpdate()
 {
+    global $objUpdate, $_CONFIG;
+
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         try {
             \Cx\Lib\UpdateUtil::table(
