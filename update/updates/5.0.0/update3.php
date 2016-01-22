@@ -63,6 +63,8 @@ if ($objResultRc1->fields['target'] != '_blank') {
     $version = '310';
 } elseif ($_CONFIG['coreCmsVersion'] == '3.1.1') {
     $version = '311';
+} elseif ($_CONFIG['coreCmsVersion'] == '3.2.0') {
+    $version = '320';
 } else {
     // nothing to do
     return true;
@@ -778,7 +780,7 @@ $updatesSp4To310 = array(
     (57, 'forceProtocolFrontend', 'none', 1),
     (58, 'forceProtocolBackend', 'none', 1),
     (59, 'forceDomainUrl', 'off', 1)",
-    array (
+    array(
         'table'  =>  DBPREFIX . 'module_calendar_mail',
         'structure' => array(
             'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -831,6 +833,26 @@ $updatesSp4To310 = array(
             'title'  => array('type' => 'VARCHAR(255)', 'after' => 'name')
         )
     ),
+    'INSERT IGNORE INTO `' . DBPREFIX . 'module_calendar_settings_section` (`id`, `parent`, `order`, `name`, `title`)
+    VALUES
+    (5, 1, 0, "global", "TXT_CALENDAR_GLOBAL"),
+    (6, 1, 1, "headlines", "TXT_CALENDAR_HEADLINES"),
+    (1, 0, 0, "global", ""),
+    (2, 0, 1, "form", ""),
+    (3, 0, 2, "mails", ""),
+    (4, 0, 3, "hosts", ""),
+    (7, 4, 0, "publication", "TXT_CALENDAR_PUBLICATION"),
+    (8, 1, 2, "categories", "TXT_CALENDAR_CATEGORIES"),
+    (9, 0, 4, "payment", ""),
+    (10, 9, 0, "payment", "TXT_CALENDAR_PAYMENT"),
+    (11, 9, 1, "paymentBill", "TXT_CALENDAR_PAYMENT_BILL"),
+    (12, 9, 2, "paymentYellowpay", "TXT_CALENDAR_PAYMENT_YELLOWPAY"),
+    (13, 9, 1, "paymentBank", "TXT_CALENDAR_PAYMENT_BANK"),
+    (14, 0, 5, "dateDisplay", "TXT_CALENDAR_DATE_DISPLAY"),
+    (15, 14, 0, "dateGlobal", "TXT_CALENDAR_GLOBAL"),
+    (16, 14, 1, "dateDisplayList", "TXT_CALENDAR_DATE_DISPLAY_LIST"),
+    (17, 14, 2, "dateDisplayDetail", "TXT_CALENDAR_DATE_DISPLAY_DETAIL"),
+    (18, 1, 3, "frontend_submission", "TXT_CALENDAR_FRONTEND_SUBMISSION")',
     array (
         'table' => DBPREFIX.'core_text',
         'structure' => array(
@@ -890,6 +912,124 @@ $updatesSp4To310 = array(
             'description'    => array('fields' => array('description'), 'type' => 'FULLTEXT')
         )
     ),
+    array(
+        'table' => DBPREFIX . 'module_calendar',
+        'structure' => array(
+            'id'                           => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'active'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'id'),
+            'catid'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
+            'startdate'                    => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'catid'),
+            'enddate'                      => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'startdate'),
+            'priority'                     => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'enddate'),
+            'access'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
+            'name'                         => array('type' => 'VARCHAR(100)', 'default' => '', 'after' => 'access'),
+            'comment'                      => array('type' => 'TEXT', 'notnull' => true, 'after' => 'name'),
+            'placeName'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'comment'),
+            'link'                         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => 'http://', 'after' => 'placeName'),
+            'pic'                          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
+            'attachment'                   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'pic'),
+            'placeStreet'                  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'attachment'),
+            'placeZip'                     => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeStreet'),
+            'placeCity'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeZip'),
+            'placeLink'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeCity'),
+            'placeMap'                     => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeLink'),
+            'organizerName'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeMap'),
+            'organizerStreet'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerName'),
+            'organizerZip'                 => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerStreet'),
+            'organizerPlace'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerZip'),
+            'organizerMail'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerPlace'),
+            'organizerLink'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerMail'),
+            'key'                          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerLink'),
+            'num'                          => array('type' => 'INT(5)', 'notnull' => true, 'default' => '0', 'after' => 'key'),
+            'mailTitle'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'num'),
+            'mailContent'                  => array('type' => 'TEXT', 'notnull' => true, 'after' => 'mailTitle'),
+            'registration'                 => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'mailContent'),
+            'groups'                       => array('type' => 'TEXT', 'notnull' => true, 'after' => 'registration'),
+            'all_groups'                   => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'groups'),
+            'public'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'all_groups'),
+            'notification'                 => array('type' => 'INT(1)', 'notnull' => true, 'after' => 'public'),
+            'notification_address'         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'notification'),
+            'series_status'                => array('type' => 'TINYINT(4)', 'notnull' => true, 'after' => 'notification_address'),
+            'series_type'                  => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_status'),
+            'series_pattern_count'         => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_type'),
+            'series_pattern_weekday'       => array('type' => 'VARCHAR(7)', 'notnull' => true, 'after' => 'series_pattern_count'),
+            'series_pattern_day'           => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_weekday'),
+            'series_pattern_week'          => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_day'),
+            'series_pattern_month'         => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_week'),
+            'series_pattern_type'          => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_month'),
+            'series_pattern_dourance_type' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_type'),
+            'series_pattern_end'           => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_dourance_type'),
+            'series_pattern_begin'         => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end'),
+            'series_pattern_exceptions'    => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_begin'),
+            'startdate_timestamp'          => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'series_pattern_exceptions'),
+            'enddate_timestamp'            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate_timestamp'),
+        ),
+        'keys' => array(
+            'name' => array('fields' => array('name', 'comment', 'placeName'), 'type' => 'FULLTEXT'),
+        ),
+    ),
+    // backup start and end time as timestamp
+    'UPDATE `'.DBPREFIX.'module_calendar` SET `startdate_timestamp` = FROM_UNIXTIME(`startdate`), `enddate_timestamp` = FROM_UNIXTIME(`enddate`)',
+    array(
+        'table' => DBPREFIX . 'module_calendar',
+        'structure' => array(
+            'id'                           => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'active'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'id'),
+            'catid'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
+            'startdate'                    => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'catid'),
+            'enddate'                      => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate'),
+            'priority'                     => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'enddate'),
+            'access'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
+            'name'                         => array('type' => 'VARCHAR(100)', 'default' => '', 'after' => 'access'),
+            'comment'                      => array('type' => 'TEXT', 'notnull' => true, 'after' => 'name'),
+            'placeName'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'comment'),
+            'link'                         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => 'http://', 'after' => 'placeName'),
+            'pic'                          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
+            'attachment'                   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'pic'),
+            'placeStreet'                  => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'attachment'),
+            'placeZip'                     => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeStreet'),
+            'placeCity'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeZip'),
+            'placeLink'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeCity'),
+            'placeMap'                     => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeLink'),
+            'organizerName'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'placeMap'),
+            'organizerStreet'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerName'),
+            'organizerZip'                 => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerStreet'),
+            'organizerPlace'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerZip'),
+            'organizerMail'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerPlace'),
+            'organizerLink'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerMail'),
+            'key'                          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'organizerLink'),
+            'num'                          => array('type' => 'INT(5)', 'notnull' => true, 'default' => '0', 'after' => 'key'),
+            'mailTitle'                    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'num'),
+            'mailContent'                  => array('type' => 'TEXT', 'notnull' => true, 'after' => 'mailTitle'),
+            'registration'                 => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'mailContent'),
+            'groups'                       => array('type' => 'TEXT', 'notnull' => true, 'after' => 'registration'),
+            'all_groups'                   => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'groups'),
+            'public'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'all_groups'),
+            'notification'                 => array('type' => 'INT(1)', 'notnull' => true, 'after' => 'public'),
+            'notification_address'         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'notification'),
+            'series_status'                => array('type' => 'TINYINT(4)', 'notnull' => true, 'after' => 'notification_address'),
+            'series_type'                  => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_status'),
+            'series_pattern_count'         => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_type'),
+            'series_pattern_weekday'       => array('type' => 'VARCHAR(7)', 'notnull' => true, 'after' => 'series_pattern_count'),
+            'series_pattern_day'           => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_weekday'),
+            'series_pattern_week'          => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_day'),
+            'series_pattern_month'         => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_week'),
+            'series_pattern_type'          => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_month'),
+            'series_pattern_dourance_type' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_type'),
+            'series_pattern_end'           => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_dourance_type'),
+            'series_pattern_begin'         => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end'),
+            'series_pattern_exceptions'    => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'series_pattern_begin'),
+            'startdate_timestamp'          => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'series_pattern_exceptions'),
+            'enddate_timestamp'            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate_timestamp'),
+        ),
+        'keys' => array(
+            'name' => array('fields' => array('name', 'comment', 'placeName'), 'type' => 'FULLTEXT'),
+        ),
+    ),
+    
+    'UPDATE `'.DBPREFIX.'module_calendar` SET `startdate` = `startdate_timestamp`, `enddate` = `enddate_timestamp`',
+     // remove the temporary columns
+    'ALTER TABLE `'.DBPREFIX.'module_calendar` DROP COLUMN `startdate_timestamp` , DROP COLUMN `enddate_timestamp`',
 );
 
 $updates310To310Sp1 = array(
@@ -1481,38 +1621,40 @@ $updates310Sp1To310Sp2 = array(
     ),
 );
 
-$updatesRc1To310Sp2    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesRc2To310Sp2    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesStableTo310Sp2 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesHotfixTo310Sp2 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesSp1To310Sp2    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesSp2To310Sp2    = array_merge($updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesSp3To310Sp2    = array_merge($updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updatesSp4To310Sp2    = array_merge($updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
-$updates310To310Sp2    = array_merge($updates310To310Sp1, $updates310Sp1To310Sp2);
-//$updates310Sp1To310Sp2 = $updates310Sp1To310Sp2;
+$updatesRc1To400    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesRc2To400    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesStableTo400 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesHotfixTo400 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesSp1To400    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesSp2To400    = array_merge($updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesSp3To400    = array_merge($updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesSp4To400    = array_merge($updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updates310To400    = array_merge($updates310To310Sp1, $updates310Sp1To310Sp2);
+$updates310Sp1To400 = $updates310To400;
 
 
 if ($version == 'rc1') {
-    $updates = $updatesRc1To310Sp2;
+    $updates = $updatesRc1To400;
 } elseif ($version == 'rc2') {
-    $updates = $updatesRc2To310Sp2;
+    $updates = $updatesRc2To400;
 } elseif ($version == 'stable') {
-    $updates = $updatesStableTo310Sp2;
+    $updates = $updatesStableTo400;
 } elseif ($version == 'hotfix') {
-    $updates = $updatesHotfixTo310Sp2;
+    $updates = $updatesHotfixTo400;
 } elseif ($version == 'sp1') {
-    $updates = $updatesSp1To310Sp2;
+    $updates = $updatesSp1To400;
 } elseif ($version == 'sp2') {
-    $updates = $updatesSp2To310Sp2;
+    $updates = $updatesSp2To400;
 } elseif ($version == 'sp3') {
-    $updates = $updatesSp3To310Sp2;
+    $updates = $updatesSp3To400;
 } elseif ($version == 'sp4') {
-    $updates = $updatesSp4To310Sp2;
+    $updates = $updatesSp4To400;
 } elseif ($version == '310') {
-    $updates = $updates310To310Sp2;
+    $updates = $updates310To400;
+} elseif ($version == '311') {
+    $updates = $updates310Sp1To400;
 } else {
-    $updates = $updates310Sp1To310Sp2;
+    $updates = $updates310Sp1To400;
 }
 
 
@@ -2141,6 +2283,18 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
         return $calendarMigration;
     }
     
+    // migrate series pattern end date in calendar event table
+    try {
+        $table_name = DBPREFIX.'module_calendar_event';
+        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
+            && \Cx\Lib\UpdateUtil::column_exist($table_name, 'series_pattern_end_date')
+        ) {
+           \Cx\Lib\UpdateUtil::sql("UPDATE  `$table_name` SET `series_pattern_end_date` = FROM_UNIXTIME(`series_pattern_end`)");
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
     // rewrite backendAreas
     require_once(dirname(__FILE__).'/components/core/backendAreas.php');
     $backendAreasUpdate = _updateBackendAreas();
@@ -2163,14 +2317,14 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
  * CONTACT: Add multi-file upload field
  *
  **************************************/
-if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '4.0.0')) {
     try {
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_contact_form_field',
             array(
                 'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'id_form'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'country\',\'date\',\'file\',\'multi_file\',\'fieldset\',\'hidden\',\'horizontalLine\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\',\'special\')', 'notnull' => true, 'default' => 'text'),
+                'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'country\',\'date\',\'file\',\'multi_file\',\'fieldset\',\'hidden\',\'horizontalLine\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\',\'special\',\'datetime\')', 'notnull' => true, 'default' => 'text'),
                 'special_type'   => array('type' => 'VARCHAR(20)', 'notnull' => true),
                 'is_required'    => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
                 'check_type'     => array('type' => 'INT(3)', 'notnull' => true, 'default' => '1'),
