@@ -2576,9 +2576,12 @@ cx.cm.destroyEditor = function() {
 cx.cm.setEditorData = function(pageContent) {
     cx.jQuery(document).ready(function() {
         if (!cx.jQuery('#page_sourceMode').prop('checked') && cx.cm.editorInUse()) {
-            setTimeout(function(){
+            // This is bit of a hacky solution but CKEDITOR seems to have
+            // problems with setData() sometimes (without throwing an exception)
+            // and this seems to do the trick.
+            CKEDITOR.instances.cm_ckeditor.setData(pageContent, function() {
                 CKEDITOR.instances.cm_ckeditor.setData(pageContent);
-            }, 0);
+            });
         } else {
             cx.jQuery('#page textarea[name="page[content]"]').val(pageContent);
         }
