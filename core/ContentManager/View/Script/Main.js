@@ -1534,7 +1534,11 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 var pageName = jQuery.trim(cx.jQuery(element).text());
                 cx.jQuery(element).contents().filter(function() {
                     return this.nodeType == 3;
-                }).remove();
+                }).each(function(index, el) {
+                    var content = el.textContent;
+                    content = content.replace(pageName.replace("&", "&amp;"), " ");
+                    el.textContent = content;
+                });
                 cx.jQuery(element).append("<div class=\"name\">" + pageName + "</div>");
             }
             if (pageId) {
