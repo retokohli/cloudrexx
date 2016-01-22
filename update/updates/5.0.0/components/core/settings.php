@@ -607,7 +607,7 @@ function _updateSettings()
 					foreach($arrInner as $strName => $strValue) {
 						$fileContent .= sprintf("%-".$intMaxLen."s",'$_CONFIG[\''.$strName.'\']');
 						$fileContent .= "= ";
-						$fileContent .= (is_numeric($strValue) ? $strValue : '"'.$strValue.'"').";\n";
+						$fileContent .= (is_numeric($strValue) ? $strValue : '"'.str_replace('"', '\"', $strValue).'"').";\n";
 					}
 					$fileContent .= "\n";
 				}
