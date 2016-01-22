@@ -159,9 +159,35 @@ class LocalFileSystem extends EntityBase implements FileSystem
                     )->getFilename() => $path
                 );
             }
-            $jsonFileArray = array_merge_recursive($jsonFileArray, $path);
+            $jsonFileArray = $this->array_merge_recursive($jsonFileArray, $path);
         }
         return $jsonFileArray;
+    }
+
+    /**
+     * \array_merge_recursive() behaves unexpected with numerical indexes
+     * Fix from http://php.net/array_merge_recursive (array_merge_recursive_new)
+     *
+     * This method behaves differently than the original since it overwrites
+     * already present keys
+     * @return array Recursively merged array
+     */
+    protected function array_merge_recursive() {
+        $arrays = func_get_args();
+        $base = array_shift($arrays);
+
+        foreach ($arrays as $array) {
+            reset($base); //important
+            while (list($key, $value) = each($array)) {
+                if (is_array($value) && is_array($base[$key])) {
+                    $base[$key] = $this->array_merge_recursive($base[$key], $value);
+                } else {
+                    $base[$key] = $value;
+                }
+            }
+        }
+
+        return $base;
     }
 
     /**

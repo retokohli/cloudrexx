@@ -182,7 +182,7 @@ class PodcastLib
         if ($objMedium != false) {
             while (!$objMedium->EOF) {
                 if(!empty($objMedium->fields['youtube_id'])){
-                    $mediumSource = 'http://youtube.com/v/'.$objMedium->fields['youtube_id'];
+                    $mediumSource = '//youtube.com/v/'.$objMedium->fields['youtube_id'];
                 }else{
                     $mediumSource = str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']);
                 }
@@ -233,7 +233,7 @@ class PodcastLib
             ($isActive ? " AND status=1" : ""), 1);
         if ($objMedium !== false && $objMedium->RecordCount() == 1) {
             if(!empty($objMedium->fields['youtube_id'])){
-                $mediumSource = 'http://youtube.com/v/'.$objMedium->fields['youtube_id'];
+                $mediumSource = '//youtube.com/v/'.$objMedium->fields['youtube_id'];
             }else{
                 $mediumSource = str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']);
             }
@@ -1197,7 +1197,7 @@ EOF;
                     }
                 } elseif ($_POST['podcast_medium_source_type'] == 'youtube') {
                     $mediumYoutubeID = contrexx_addslashes(trim($_POST['youtubeID']));
-                    $mediumSource = 'http://youtube.com/v/'.$mediumYoutubeID;
+                    $mediumSource = '//youtube.com/v/'.$mediumYoutubeID;
                 } elseif (isset($_POST['podcast_medium_remote_source'])) {
                     $mediumSource = $_POST['podcast_medium_remote_source'];
                 }
@@ -1237,7 +1237,7 @@ EOF;
             'PODCAST_MEDIUM_TITLE'              => htmlentities($mediumTitle, ENT_QUOTES, CONTREXX_CHARSET),
             'PODCAST_MEDIUM_AUTHOR'             => htmlentities($mediumAuthor, ENT_QUOTES, CONTREXX_CHARSET),
             'PODCAST_MEDIUM_DESCRIPTION'        => htmlentities($mediumDescription, ENT_QUOTES, CONTREXX_CHARSET),
-            'PODCAST_MEDIUM_SOURCE'             => $mediumSource,
+            'PODCAST_MEDIUM_SOURCE'             => preg_replace('#^//#', '', $mediumSource), // replace double slash since user's don't know protocol independent URLs
             'PODCAST_MEDIUM_SOURCE_URL'         => htmlentities($mediumSource, ENT_QUOTES, CONTREXX_CHARSET),
             'PODCAST_MEDIUM_TEMPLATE_MENU'      => $this->_getTemplateMenu($mediumTemplate, 'name="podcast_medium_template" style="width:450px;"'),
             'PODCAST_MEDIUM_WIDTH'              => $mediumWidth,
@@ -1450,39 +1450,68 @@ EOF;
             }
         }
 
-
         $objRSSWriter = new \RSSWriter();
-
+        
         $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
         $objRSSWriter->channelTitle = $this->_arrSettings['feed_title'];
-        $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Podcast';
+        $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Podcast'
+        )->toString();
         $objRSSWriter->channelDescription = $this->_arrSettings['feed_description'];
         $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
 
         if (!empty($this->_arrSettings['feed_image'])) {
-            $objRSSWriter->channelImageUrl = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).$this->_arrSettings['feed_image'];
+            $channelImageUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+            $channelImageUrl->setMode('backend');
+            $channelImageUrl->setPath(substr(
+                $this->_arrSettings['feed_image'],
+                strlen(
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()
+                ) + 1
+            ));
+            $objRSSWriter->channelImageUrl = $channelImageUrl;
             $objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
             $objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
         }
         $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
-
-        $itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=Podcast&amp;id=";
-        $categoryLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=Podcast&amp;cid=";
 
         // create podcast feed
         $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/podcast.xml';
         foreach ($arrMedia as $mediumId => $arrMedium) {
             $arrCategories = array();
             foreach ($arrMedium['categories'] as $categoryId => $categoryTitle) {
-                array_push($arrCategories, array(
-                    'domain'    => htmlspecialchars($categoryLink.$categoryId, ENT_QUOTES, CONTREXX_CHARSET),
-                    'title'     => htmlspecialchars($categoryTitle, ENT_QUOTES, CONTREXX_CHARSET)
-                ));
+                array_push(
+                    $arrCategories,
+                    array(
+                        'domain' => htmlspecialchars(
+                            \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'Podcast',
+                                '',
+                                '',
+                                array(
+                                    'cid' => $categoryId,
+                                )
+                            )->toString(),
+                            ENT_QUOTES,
+                            CONTREXX_CHARSET
+                        ),
+                        'title' => htmlspecialchars($categoryTitle, ENT_QUOTES, CONTREXX_CHARSET),
+                    )
+                );
             }
 
             $objRSSWriter->addItem(
                 htmlspecialchars($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
-                $itemLink.$mediumId,
+                contrexx_raw2xhtml(
+                    \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Podcast',
+                        '',
+                        '',
+                        array(
+                            'id' => $mediumId,
+                        )
+                    )->toString()
+                ),
                 htmlspecialchars($arrMedium['description'], ENT_QUOTES, CONTREXX_CHARSET),
                 htmlspecialchars($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET),
                 $arrCategories,

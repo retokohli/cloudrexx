@@ -111,7 +111,7 @@ function executeContrexxUpdate() {
             'dependencies'  => array (),
         ),
     );
-    
+            
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
 
     // Copy cx files to the root directory
@@ -417,7 +417,7 @@ function executeContrexxUpdate() {
             return false;
         } else {
             try {
-                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry`
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry` 
                     SET `object_class` = \'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Entity\\\\Page\'
                     WHERE object_class = \'Cx\\\\Model\\\\ContentManager\\\\Page\'');
             } catch (\Cx\Lib\UpdateException $e) {
@@ -486,11 +486,11 @@ function executeContrexxUpdate() {
 
             if (_convertThemes2Component() === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
-                    DBG::msg('unable to convert themes to component');
+                    DBG::msg('unable to convert themes to component');                
                     setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
                 }
                 return false;
-            }
+            }            
             
             if (_updateModulePages($viewUpdateTable) === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -517,7 +517,7 @@ function executeContrexxUpdate() {
             return false;
         }
     }
-
+        
     ///////////////////////////////////////////////////
     // Changes which need to be done in all versions //
     ///////////////////////////////////////////////////
@@ -559,7 +559,6 @@ function executeContrexxUpdate() {
         setUpdateMsg('Die Komponenten konnten nicht migiert werden.');
         return false;
     }
-
 
     if (!include_once(dirname(__FILE__) . '/components/core/backendAreas.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/backendAreas.php'));
@@ -624,7 +623,7 @@ function executeContrexxUpdate() {
             $result = _convertThemes2Component();
             if ($result === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
-                    DBG::msg('unable to convert themes to component');
+                    DBG::msg('unable to convert themes to component');                
                     setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
                 }
                 return false;
@@ -632,7 +631,7 @@ function executeContrexxUpdate() {
                 $_SESSION['contrexx_update']['update']['done'][] = 'convertTemplates';
             }
         }
-
+        
         if (!in_array('moduleTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
             if (_updateModulePages($viewUpdateTable) === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -655,7 +654,7 @@ function executeContrexxUpdate() {
                 $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
             }
         }
-
+        
         if (!in_array('navigations', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
             if (_updateNavigations() === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -1588,7 +1587,7 @@ function loadMd5SumOfOriginalCxFiles()
 function backupModifiedFile($file)
 {
     global $_CONFIG;
-    
+            
     $cxFilePath = dirname(substr($file, strlen(ASCMS_DOCUMENT_ROOT)));
     if ($cxFilePath == '/') {
         $cxFilePath = '';
@@ -1606,7 +1605,7 @@ function backupModifiedFile($file)
             $idx++;
             $suffix = '_'.$idx;
         }
-        
+    
         $customizingFile .= $suffix;
     }
 
@@ -1733,7 +1732,7 @@ function copyCxFilesToRoot($src, $dst)
                 if (!renameCustomizingFile($dstPath)) {
                     return false;
                 }
-                
+                    
                 if (!verifyMd5SumOfFile($dstPath, $srcPath)) {
                     if (!backupModifiedFile($dstPath)) {
                         return false;
@@ -1758,7 +1757,7 @@ function copyCxFilesToRoot($src, $dst)
     return true;
 }
 
-function renameCustomizingFile($file)
+function renameCustomizingFile($file) 
 {
     global $_CONFIG;
     
@@ -1780,7 +1779,7 @@ function renameCustomizingFile($file)
             $idx++;
             $suffix = '_'.$idx;
         }
-        
+    
         $customizingFile .= $suffix;
     } else {
         return true;
@@ -1788,7 +1787,7 @@ function renameCustomizingFile($file)
 
     try {
         $objFile = new \Cx\Lib\FileSystem\File($file);
-        $objFile->move($customizingFile);
+        $objFile->move($customizingFile);        
     } catch (\Exception $e) {
         setUpdateMsg('Error on renaming customizing file:<br />' . $file);
         setUpdateMsg('Error: ' . $e->getMessage());
@@ -1882,12 +1881,13 @@ function migrateSessionTable()
                 'value'     => array('type' => 'TEXT', 'notnull' => false, 'default' => '', 'after' => 'key')
             ),
             array(
-                'key_index' => array('fields' => array('parent_id', 'key', 'sessionid'), 'type' => 'UNIQUE')
+                'key_index' => array('fields' => array('parent_id', 'key', 'sessionid'), 'type' => 'UNIQUE'),
+            'key_parent_id_sessionid' => array('fields' => array('parent_id', 'sessionid')),
             ),
             'InnoDB'
         );
         \Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `'. DBPREFIX .'session_variable`');
-        
+
         // update and empty sessions table
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'sessions',
@@ -1897,7 +1897,7 @@ function migrateSessionTable()
                 'startdate'      => array('type' => 'VARCHAR(14)', 'notnull' => true, 'default' => '', 'after' => 'remember_me'),
                 'lastupdated'    => array('type' => 'VARCHAR(14)', 'notnull' => true, 'default' => '', 'after' => 'startdate'),
                 'status'         => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'lastupdated'),
-                'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'status'),
+                'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'status'),                
             ),
             array(
                 'LastUpdated'    => array('fields' => array('lastupdated')),
@@ -1910,10 +1910,11 @@ function migrateSessionTable()
         $_SESSION['contrexx_update']['update']['done'][] = 'session';
         $sessionArray = $_SESSION;
         insertSessionArray(session_id(), $sessionArray);
-        
+
     } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
+        
     return true;
 }
 
@@ -1972,7 +1973,7 @@ function _convertThemes2Component()
     $errorMessages = '';
     $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
     while (!$result->EOF) {
-        $themePath = ASCMS_THEMES_PATH . '/' . $result->fields['foldername'];
+        $themePath = ASCMS_THEMES_PATH . '/' . $result->fields['foldername']; 
         if (!is_dir($themePath)) {
             \DBG::msg('Skipping theme "' . $result->fields['themesname'] . '"; No such folder!');
             $errorMessages .= '<div class="message-warning">' . sprintf($_CORELANG['TXT_CSS_UPDATE_MISSING_FOLDER'], $result->fields['themesname']) . '</div>';
@@ -2099,7 +2100,6 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
 
         closedir($dh);
     }
-
     return true;
 }
 

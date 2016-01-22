@@ -110,7 +110,10 @@ class Navigation
         $this->_objTpl->setTemplate($templateContent);
 
         if ($boolShop) {
-            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', \Cx\Modules\Shop\Controller\Shop::getNavbar());
+            $themesPages = \Env::get('init')->getTemplates($this->page);
+            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', \Cx\Modules\Shop\Controller\Shop::getNavbar($themesPages['shopnavbar']));
+            $this->_objTpl->setVariable('SHOPNAVBAR2_FILE', \Cx\Modules\Shop\Controller\Shop::getNavbar($themesPages['shopnavbar2']));
+            $this->_objTpl->setVariable('SHOPNAVBAR3_FILE', \Cx\Modules\Shop\Controller\Shop::getNavbar($themesPages['shopnavbar3']));
         }
 
         $rootNode = null;
