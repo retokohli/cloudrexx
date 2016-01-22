@@ -1536,6 +1536,11 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     return this.nodeType == 3;
                 }).each(function(index, el) {
                     var content = el.textContent;
+                    // It would be nicer if we could select all page <a>
+                    // elements directly using a class and just remove all text
+                    // nodes or not to add the text nodes in the first place.
+                    // ATTENTION: The space " " is necessary otherwise drag&drop
+                    // stops working.
                     content = content.replace(pageName.replace("&", "&amp;"), " ");
                     el.textContent = content;
                 });
