@@ -461,17 +461,19 @@ function executeContrexxUpdate() {
                     'content'                            => array('type' => 'longtext', 'after' => 'slug'),
                     'sourceMode'                         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content'),
                     'customContent'                      => array('type' => 'VARCHAR(64)', 'notnull' => false, 'after' => 'sourceMode'),
-                    'useCustomContentForAllChannels'     => array('type' => 'INT(2)', 'after' => 'customContent', 'notnull' => false),
-                    'cssName'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useCustomContentForAllChannels'),
+                    'useCustomContentForAllChannels'     => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'customContent'),
+                    'applicationTemplate'                => array('type' => 'VARCHAR(100)', 'notnull' => false, 'after' => 'useCustomContentForAllChannels'),
+                    'useCustomApplicationTemplateForAllChannels' => array('type' => 'TINYINT(2)', 'notnull' => false, 'after' => 'applicationTemplate'),
+                    'cssName'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useCustomApplicationTemplateForAllChannels'),
                     'cssNavName'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'cssName'),
                     'skin'                               => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cssNavName'),
-                    'useSkinForAllChannels'              => array('type' => 'INT(2)', 'after' => 'skin', 'notnull' => false),
+                    'useSkinForAllChannels'              => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'skin'),
                     'metatitle'                          => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useSkinForAllChannels'),
                     'metadesc'                           => array('type' => 'text', 'after' => 'metatitle'),
                     'metakeys'                           => array('type' => 'text', 'after' => 'metadesc'),
                     'metarobots'                         => array('type' => 'VARCHAR(7)', 'notnull' => false, 'after' => 'metakeys'),
-                    'start'                              => array('type' => 'timestamp', 'after' => 'metarobots', 'notnull' => false),
-                    'end'                                => array('type' => 'timestamp', 'after' => 'start', 'notnull' => false),
+                    'start'                              => array('type' => 'timestamp', 'notnull' => false, 'after' => 'metarobots'),
+                    'end'                                => array('type' => 'timestamp', 'notnull' => false, 'after' => 'start'),
                     'editingStatus'                      => array('type' => 'VARCHAR(16)', 'after' => 'end'),
                     'protection'                         => array('type' => 'INT(11)', 'after' => 'editingStatus'),
                     'frontendAccessId'                   => array('type' => 'INT(11)', 'after' => 'protection'),
@@ -527,7 +529,7 @@ function executeContrexxUpdate() {
 
         // we are updating from 3.0.0 rc1, rc2, stable or 3.0.0.1
         if (!include_once(dirname(__FILE__) . '/update3.php')) {
-            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/update3.php'));
+            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], dirname(__FILE__) . '/update3.php'));
             return false;
         }
     }

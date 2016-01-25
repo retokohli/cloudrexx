@@ -1725,8 +1725,17 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     }
 }
 
-
+if (!isset($_SESSION['contrexx_update']['db3_migration'])) {
+    $_SESSION['contrexx_update']['db3_migration'] = 0;
+}
+$executionCnt = 0;
 foreach ($updates as $update) {
+    // skip previously executed sql migrations
+    if ($executionCnt < $_SESSION['contrexx_update']['db3_migration']) {
+        $executionCnt++;
+        continue;
+    }
+
     if (is_array($update)) {
         try {
             \Cx\Lib\UpdateUtil::table(
@@ -1745,6 +1754,9 @@ foreach ($updates as $update) {
             return false;
         }
     }
+
+    $executionCnt++;
+    $_SESSION['contrexx_update']['db3_migration'] = $executionCnt;
 }
 
 
