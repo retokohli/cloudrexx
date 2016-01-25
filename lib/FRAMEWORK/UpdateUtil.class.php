@@ -558,7 +558,9 @@ class UpdateUtil
                 $keyinfo->MoveNext();
                 continue;
             }
-            $arr_keys_to_drop[] = $keyinfo->fields['Key_name'];
+            if (!in_array($keyinfo->fields['Key_name'], $arr_keys_to_drop)) {
+                $arr_keys_to_drop[] = $keyinfo->fields['Key_name'];
+            }
             $keyinfo->MoveNext();
         }
 
