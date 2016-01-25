@@ -72,8 +72,7 @@ function _filesharingUpdate()
         }
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
             //update section
-            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "core_setting` SET `section` = 'FileSharing',`value` = 'on' WHERE
-            `section` = 'filesharing' AND `name` = 'permission' AND `group` = 'config'");
+            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "core_setting` SET `section` = 'FileSharing' WHERE `section` = 'filesharing' AND `name` = 'permission' AND `group` = 'config'");
 
             // update path
             $mediaPath       = ASCMS_DOCUMENT_ROOT . '/media';

@@ -149,7 +149,7 @@ $updatesRc1ToRc2 = array(
     ),
     '
         UPDATE `'.DBPREFIX.'modules`
-        SET `distributor` = "Comvation AG"
+        SET `distributor` = "Cloudrexx AG"
     ',
     array(
         'table' => DBPREFIX.'module_mediadir_rel_entry_inputfields_clean1',
@@ -1541,38 +1541,18 @@ $updates310Sp1To310Sp2 = array(
             'id'                         => array('fields' => array('id'), 'type' => 'UNIQUE')
         ),
     ),
-    '
-        INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","payment_lsv_active","config","text","1","",18)
-    ',
-    '
-        INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_active","config","text","1","",3)
-    ',
-    '
-        INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_live_private_key","config","text","","",0)
-    ',
-    '
-        INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_live_public_key","config","text","","",0)
-    ',
-    '
-        INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_live_public_key","config","text","","",0)
-    ',
-    '
-        INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_test_private_key","config","text","","",2)
-    ',
-    '
-        INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_test_public_key","config","text","","",16)
-    ',
-    '
-        INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_use_test_account","config","text","0","",15)
-    ',
-    '
-        INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'shop\',\'orderitems_amount_min\',\'config\',\'text\',\'0\',\'\',0);
-    ',
-    '
-        UPDATE `'.DBPREFIX.'core_text` SET `text` = "VISA, Mastercard (Saferpay)" WHERE `key` = "payment_name" AND `section` = "shop" AND `text` LIKE "%PostFinance%"
-    ',
-    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'crm\',\'numof_mailtemplate_per_page_backend\',\'config\',\'text\',\'25\',\'\',1001)',
-    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'filesharing\',\'permission\',\'config\',\'text\',\'off\',\'\',0)',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","payment_lsv_active","config","text","1","",18)',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_active","config","text","1","",3)',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_live_private_key","config","text","","",0)',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_live_public_key","config","text","","",0)',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_live_public_key","config","text","","",0)',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_test_private_key","config","text","","",2)',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_test_public_key","config","text","","",16)',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_use_test_account","config","text","0","",15)',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","orderitems_amount_min","config","text","0","",0)',
+    'UPDATE `'.DBPREFIX.'core_text` SET `text` = "VISA, Mastercard (Saferpay)" WHERE `key` = "payment_name" AND `section` = "shop" AND `text` LIKE "%PostFinance%"',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("crm","numof_mailtemplate_per_page_backend","config","text","25","",1001)',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("filesharing","permission","config","text","off","",0)',
     'INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (16,1,"shop","payment_name","Kreditkarte (Paymill)")',
     'INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (16,2,"shop","payment_name","paymill")',
     'INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (17,1,"shop","payment_name","ELV (Paymill)")',
@@ -1633,6 +1613,7 @@ $updates310To400    = array_merge($updates310To310Sp1, $updates310Sp1To310Sp2);
 $updates310Sp1To400 = $updates310To400;
 
 
+$updates = array();
 if ($version == 'rc1') {
     $updates = $updatesRc1To400;
 } elseif ($version == 'rc2') {
@@ -1653,7 +1634,7 @@ if ($version == 'rc1') {
     $updates = $updates310To400;
 } elseif ($version == '311') {
     $updates = $updates310Sp1To400;
-} else {
+} elseif ($version == '320') {
     $updates = $updates310Sp1To400;
 }
 
@@ -1661,70 +1642,9 @@ if ($version == 'rc1') {
 
 /***************************************
  *
- * INSTALLING CRM AND FRONTEND EDITING BEFORE WE DO THE TABLE-UPDATES
+ * EXECUTE DB-UPDATES
  *
  **************************************/
-if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
-    require_once(dirname(__FILE__).'/components/module/crm.php');
-    $crmInstall = _crmInstall();
-    if ($crmInstall) {
-        // crm install returns an error
-        return $crmInstall;
-    }
-    if (
-        !\MailTemplate::store('crm', array(
-            'key' => 'crm_user_account_created',
-            'lang_id' => '1',
-            'sender' => 'Ihr Firmenname',
-            'from' => 'info@example.com',
-            'to' => '[CRM_CONTACT_EMAIL]',
-            'reply' => 'info@example.com',
-            'cc' => '',
-            'bcc' => '',
-            'subject' => 'Ihr persönlicher Zugang',
-            'message' => "Guten Tag,\r\n\r\nNachfolgend erhalten Sie Ihre persönlichen Zugansdaten zur Website http://www.example.com/\r\n\r\nBenutzername: [CRM_CONTACT_USERNAME]\r\nKennwort: [CRM_CONTACT_PASSWORD]",
-            'message_html' => "<div>Guten Tag,<br />\r\n<br />\r\nNachfolgend erhalten Sie Ihre pers&ouml;nlichen Zugangsdaten zur Website <a href=\"http://www.example.com/\">http://www.example.com/</a><br />\r\n<br />\r\nBenutzername: [CRM_CONTACT_USERNAME]<br />\r\nKennwort: [CRM_CONTACT_PASSWORD]</div>",
-            'html' => 'true',
-            'protected' => 'true',
-            'name' => 'Benachrichtigung über Benutzerkonto',
-        )) ||
-        !\MailTemplate::store('crm', array(
-            'key' => 'crm_task_assigned',
-            'lang_id' => '1',
-            'sender' => 'Ihr Firmenname',
-            'from' => 'info@example.com',
-            'to' => '[CRM_ASSIGNED_USER_MAIL]',
-            'reply' => 'info@example.com',
-            'cc' => '',
-            'bcc' => '',
-            'subject' => 'Neue Aufgabe',
-            'message' => "Der Mitarbeiter [CRM_TASK_CREATED_USER] hat eine neue Aufgabe erstellt und Ihnen zugewiesen: [CRM_TASK_URL]\r\n\r\nBeschreibung: [CRM_TASK_DESCRIPTION_TEXT_VERSION]\r\n\r\nFällig am: [CRM_TASK_DUE_DATE]\r\n",
-            'message_html' => "<div style=\"padding:0px; margin:0px; font-family:Tahoma, sans-serif; font-size:14px; width:620px; color: #333;\">\r\n<div style=\"padding: 0px 20px; border:1px solid #e0e0e0; margin-bottom: 10px; width:618px;\">\r\n<h1 style=\"background-color: #e0e0e0;color: #3d4a6b;font-size: 18px;font-weight: normal;padding: 15px 20px;margin-top: 0 !important;margin-bottom: 0 !important;margin-left: -20px !important;margin-right: -20px !important;-webkit-margin-before: 0 !important;-webkit-margin-after: 0 !important;-webkit-margin-start: -20px !important;-webkit-margin-end: -20px !important;\">Neue Aufgabe wurde Ihnen zugewiesen</h1>\r\n\r\n<p style=\"margin-top: 20px;word-wrap: break-word !important;\">Der Mitarbeiter [CRM_TASK_CREATED_USER] hat eine neue Aufgabe erstellt und Ihnen zugewiesen: [CRM_TASK_LINK]</p>\r\n\r\n<p style=\"margin-top: 20px;word-wrap: break-word !important;\">Beschreibung: [CRM_TASK_DESCRIPTION_HTML_VERSION]<br />\r\nF&auml;llig am: [CRM_TASK_DUE_DATE]</p>\r\n</div>\r\n</div>",
-            'html' => 'true',
-            'protected' => 'true',
-            'name' => 'Neue Aufgabe',
-        )) ||
-        !\MailTemplate::store('crm', array(
-            'key' => 'crm_notify_staff_on_contact_added',
-            'lang_id' => '1',
-            'sender' => 'Ihr Firmenname',
-            'from' => 'info@example.com',
-            'to' => '[CRM_ASSIGNED_USER_MAIL]',
-            'reply' => 'info@example.com',
-            'cc' => '',
-            'bcc' => '',
-            'subject' => 'Neuer Kontakt erfasst',
-            'message' => "Im CRM wurde ein neuer Kontakt erfasst: [CRM_CONTACT_DETAILS_URL]",
-            'message_html' => "<div style=\"padding:0px; margin:0px; font-family:Tahoma, sans-serif; font-size:14px; width:620px; color: #333;\">\r\n<div style=\"padding: 0px 20px; border:1px solid #e0e0e0; margin-bottom: 10px; width:618px;\">\r\n<h1 style=\"background-color: #e0e0e0;color: #3d4a6b;font-size: 18px;font-weight: normal;padding: 15px 20px;margin-top: 0 !important;margin-bottom: 0 !important;margin-left: -20px !important;margin-right: -20px !important;-webkit-margin-before: 0 !important;-webkit-margin-after: 0 !important;-webkit-margin-start: -20px !important;-webkit-margin-end: -20px !important;\">Neuer Kontakt im CRM</h1>\r\n\r\n<p style=\"margin-top: 20px;word-wrap: break-word !important;\">Neuer Kontakt: [CRM_CONTACT_DETAILS_LINK].</p>\r\n</div>\r\n</div>\r\n",
-            'html' => 'true',
-            'protected' => 'true',
-            'name' => 'Benachrichtigung an Mitarbeiter über neue Kontakte',
-        ))
-    ) {
-        return false;
-    }
-}
-
 if (!isset($_SESSION['contrexx_update']['db3_migration'])) {
     $_SESSION['contrexx_update']['db3_migration'] = 0;
 }
@@ -1757,27 +1677,6 @@ foreach ($updates as $update) {
 
     $executionCnt++;
     $_SESSION['contrexx_update']['db3_migration'] = $executionCnt;
-}
-
-
-if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
-    // install crm
-    require_once(dirname(__FILE__).'/components/core/modules.php');
-    $crmModuleInfo = getModuleInfo('crm');
-    try {
-        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$crmModuleInfo['id']." , '".$crmModuleInfo['name']."', '".$crmModuleInfo['description_variable']."', '".$crmModuleInfo['status']."', '".$crmModuleInfo['is_required']."', '".$crmModuleInfo['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
-    \DBG::log('installing crm module');
-    
-    // install frontend editing
-    $frontendEditingModuleInfo = getModuleInfo('FrontendEditing');
-    try {
-        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$frontendEditingModuleInfo['id']." , '".$frontendEditingModuleInfo['name']."', '".$frontendEditingModuleInfo['description_variable']."', '".$frontendEditingModuleInfo['status']."', '".$frontendEditingModuleInfo['is_required']."', '".$frontendEditingModuleInfo['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
 }
 
 // Add primary keys
@@ -2255,103 +2154,6 @@ if($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0') &&
 
 /***************************************
  *
- * STRICT_TRANS_TABLES ISSUE FIX FOR PROFILE TABLE
- *
- * ADD NEW ACCESS ID FOR FILESHARING
- *
- * MIGRATE CALENDAR
- *
- **************************************/
-if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
-    try {
-        \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `interests` `interests` TEXT NULL");
-        \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `signature` `signature` TEXT NULL");
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
-
-    // add access to filesharing for existing groups
-    try {
-        $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 7 GROUP BY group_id");
-        if ($result !== false) {
-            while (!$result->EOF) {
-                \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
-                                            VALUES (8, " . intval($result->fields['group_id']) . ")");
-                $result->MoveNext();
-            }
-        }
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
-
-    $calendarComponentUpdateFile = dirname(__FILE__).'/components/module/calendar.php';
-    require_once($calendarComponentUpdateFile);
-    $CalendarUpdate31 = new CalendarUpdate31();
-
-    // if something fails, return the error or message
-    $calendarMigration = $CalendarUpdate31->run();
-    if ($calendarMigration !== true) {
-        \DBG::dump($calendarMigration);
-        return $calendarMigration;
-    }
-    
-    // migrate series pattern end date in calendar event table
-    try {
-        $table_name = DBPREFIX.'module_calendar_event';
-        if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
-            && \Cx\Lib\UpdateUtil::column_exist($table_name, 'series_pattern_end_date')
-        ) {
-           \Cx\Lib\UpdateUtil::sql("UPDATE  `$table_name` SET `series_pattern_end_date` = FROM_UNIXTIME(`series_pattern_end`)");
-        }
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
-
-    // rewrite backendAreas
-    require_once(dirname(__FILE__).'/components/core/backendAreas.php');
-    $backendAreasUpdate = _updateBackendAreas();
-    if ($backendAreasUpdate !== true) {
-        return $backendAreasUpdate;
-    }
-} elseif ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.1')) {
-    $calendarComponentUpdateFile = dirname(__FILE__).'/components/module/calendar.php';
-    require_once($calendarComponentUpdateFile);
-    $CalendarUpdate31 = new CalendarUpdate31();
-    $calendarMigration = $CalendarUpdate31->migrateContentPages();
-    if ($calendarMigration !== true) {
-        \DBG::dump($calendarMigration);
-        return $calendarMigration;
-    }
-}
-
-/***************************************
- *
- * CONTACT: Add multi-file upload field
- *
- **************************************/
-if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '4.0.0')) {
-    try {
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_contact_form_field',
-            array(
-                'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'id_form'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'country\',\'date\',\'file\',\'multi_file\',\'fieldset\',\'hidden\',\'horizontalLine\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\',\'special\',\'datetime\')', 'notnull' => true, 'default' => 'text'),
-                'special_type'   => array('type' => 'VARCHAR(20)', 'notnull' => true),
-                'is_required'    => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
-                'check_type'     => array('type' => 'INT(3)', 'notnull' => true, 'default' => '1'),
-                'order_id'       => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
-            )
-        );
-        // change all fields currently set to 'file' to 'multi_file' ('multi_file' is same as former 'file' in previous versions)
-        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_contact_form_field` SET `type` = 'multi_file' WHERE `type` = 'file'");
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
-}
-
-/***************************************
- *
  * NEWSLETTER: ACCESS IDS
  *
  **************************************/
@@ -2545,15 +2347,6 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
         }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
-}
-
-if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
-    $crmComponentUpdateFile = dirname(__FILE__).'/components/module/crm.php';
-    require_once($crmComponentUpdateFile);
-    $crmUpdate = _crmUpdate();
-    if ($crmUpdate !== true) {
-        return $crmUpdate;
     }
 }
 

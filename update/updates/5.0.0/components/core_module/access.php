@@ -823,121 +823,117 @@ function _accessUpdate()
                 return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             }
         }
+    }
 
 
+
+    /***************************************
+     *
+     * ADD NETWORK TABLE FOR SOCIAL LOGIN
+     *
+     **************************************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'access_user_network',
+                array(
+                    'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'oauth_provider'     => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                    'oauth_id'           => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'oauth_provider'),
+                    'user_id'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'oauth_id')
+                ),
+                array(),
+                'InnoDB'
+            );
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
 
         /***************************************
          *
-         * ADD NETWORK TABLE FOR SOCIAL LOGIN
+         * ADD NEW VALUES FOR SOCIAL LOGIN
          *
          **************************************/
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
-            try {
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX.'access_user_network',
-                    array(
-                        'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                        'oauth_provider'     => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'id'),
-                        'oauth_id'           => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'oauth_provider'),
-                        'user_id'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'oauth_id')
-                    ),
-                    array(),
-                    'InnoDB'
-                );
-            } catch (\Cx\Lib\UpdateException $e) {
-                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-            }
+        try {
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin', '', '0') ON DUPLICATE KEY UPDATE `key` = `key`");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_show_signup', '', 0) ON DUPLICATE KEY UPDATE `key` = `key`");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('use_usernames', '0', '1') ON DUPLICATE KEY UPDATE `key` = `key`");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_assign_to_groups', '3', '0') ON DUPLICATE KEY UPDATE `key` = `key`");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_active_automatically', '', '1') ON DUPLICATE KEY UPDATE `key` = `key`");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('access', 'providers', 'sociallogin', 'text', '{\"facebook\":{\"active\":\"0\",\"settings\":[\"\",\"\"]},\"twitter\":{\"active\":\"0\",\"settings\":[\"\",\"\"]},\"google\":{\"active\":\"0\",\"settings\":[\"\",\"\",\"\"]}}', '', '0') ON DUPLICATE KEY UPDATE `section` = `section`");
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
 
-            /***************************************
-             *
-             * ADD NEW VALUES FOR SOCIAL LOGIN
-             *
-             **************************************/
-            try {
-                \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin', '', '0') ON DUPLICATE KEY UPDATE `key` = `key`");
-                \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_show_signup', '', 0) ON DUPLICATE KEY UPDATE `key` = `key`");
-                \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('use_usernames', '0', '1') ON DUPLICATE KEY UPDATE `key` = `key`");
-                \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_assign_to_groups', '3', '0') ON DUPLICATE KEY UPDATE `key` = `key`");
-                \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_active_automatically', '', '1') ON DUPLICATE KEY UPDATE `key` = `key`");
-                \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('access', 'providers', 'sociallogin', 'text', '{\"facebook\":{\"active\":\"0\",\"settings\":[\"\",\"\"]},\"twitter\":{\"active\":\"0\",\"settings\":[\"\",\"\"]},\"google\":{\"active\":\"0\",\"settings\":[\"\",\"\",\"\"]}}', '', '0') ON DUPLICATE KEY UPDATE `section` = `section`");
-            } catch (\Cx\Lib\UpdateException $e) {
-                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-            }
-
-            /**
-             * Content page
-             * access signup
-             */
-            try {
-                // migrate content page to version 3.0.1
-                $search = array(
-                    '/(.*)/ms',
-                );
-                $callback = function($matches) {
-                    $content = $matches[1];
-                    if (empty($content)) {
-                        return $content;
-                    }
-
-                    // fix duplicated social networks blocks
-                    if (preg_match('/<!--\s+BEGIN\s+access_social_networks\s+-->.*<!--\s+BEGIN\s+access_social_networks\s+-->/ms', $content)) {
-                        $content = preg_replace('/<br\s+\/><br\s+\/><!--\s+BEGIN\s+access_social_networks\s+-->.*?<!--\s+END\s+access_social_networks\s+-->/ms', '', $content);
-                    }
-
-                    // add missing access_social_networks template block
-                    if (!preg_match('/<!--\s+BEGIN\s+access_social_networks\s+-->.*<!--\s+END\s+access_social_networks\s+-->/ms', $content)) {
-                        $content = preg_replace('/(<!--\s+BEGIN\s+access_signup_form\s+-->.*?)(<div[^>]*>|)(.*?\{ACCESS_SIGNUP_MESSAGE\}.*?)(<\/div>|)/ms', '$1<br /><br /><!-- BEGIN access_social_networks --><fieldset><legend>oder Login mit Social Media</legend><!-- BEGIN access_social_networks_facebook -->        <a class="facebook loginbutton" href="{ACCESS_SOCIALLOGIN_FACEBOOK}">Facebook</a>        <!-- END access_social_networks_facebook -->        <!-- BEGIN access_social_networks_google -->        <a class="google loginbutton" href="{ACCESS_SOCIALLOGIN_GOOGLE}">Google</a>        <!-- END access_social_networks_google -->        <!-- BEGIN access_social_networks_twitter -->        <a class="twitter loginbutton" href="{ACCESS_SOCIALLOGIN_TWITTER}">Twitter</a>        <!-- END access_social_networks_twitter -->    </fieldset>    <!-- END access_social_networks -->$2$3$4', $content);
-                    }
-
+        /**
+         * Content page
+         * access signup
+         */
+        try {
+            // migrate content page to version 3.0.1
+            $search = array(
+                '/(.*)/ms',
+            );
+            $callback = function($matches) {
+                $content = $matches[1];
+                if (empty($content)) {
                     return $content;
-                };
-
-                \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'access', 'cmd' => 'signup'), $search, $callback, array('content'), '3.0.2');
-            } catch (\Cx\Lib\UpdateException $e) {
-                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-            }
-        }
-
-
-        /***************************************
-         *
-         * ADD SETTING FOR SOCIAL LOGIN
-         *
-         **************************************/
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
-            try {
-                \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_activation_timeout', '10', '0') ON DUPLICATE KEY UPDATE `key` = `key`");
-            } catch (\Cx\Lib\UpdateException $e) {
-                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-            }
-        }
-
-        /***************************************
-         *
-         * STRICT_TRANS_TABLES ISSUE FIX FOR PROFILE TABLE
-         *
-         **************************************/
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
-            try {
-                \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `interests` `interests` TEXT NULL");
-                \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `signature` `signature` TEXT NULL");
-
-                // add access to filesharing for existing groups
-                try {
-                    $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 7 GROUP BY group_id");
-                    if ($result !== false) {
-                        while (!$result->EOF) {
-                            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
-                                                        VALUES (8, " . intval($result->fields['group_id']) . ")");
-                            $result->MoveNext();
-                        }
-                    }
-                } catch (\Cx\Lib\UpdateException $e) {
-                    return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
                 }
-            } catch (\Cx\Lib\UpdateException $e) {
-                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+
+                // fix duplicated social networks blocks
+                if (preg_match('/<!--\s+BEGIN\s+access_social_networks\s+-->.*<!--\s+BEGIN\s+access_social_networks\s+-->/ms', $content)) {
+                    $content = preg_replace('/<br\s+\/><br\s+\/><!--\s+BEGIN\s+access_social_networks\s+-->.*?<!--\s+END\s+access_social_networks\s+-->/ms', '', $content);
+                }
+
+                // add missing access_social_networks template block
+                if (!preg_match('/<!--\s+BEGIN\s+access_social_networks\s+-->.*<!--\s+END\s+access_social_networks\s+-->/ms', $content)) {
+                    $content = preg_replace('/(<!--\s+BEGIN\s+access_signup_form\s+-->.*?)(<div[^>]*>|)(.*?\{ACCESS_SIGNUP_MESSAGE\}.*?)(<\/div>|)/ms', '$1<br /><br /><!-- BEGIN access_social_networks --><fieldset><legend>oder Login mit Social Media</legend><!-- BEGIN access_social_networks_facebook -->        <a class="facebook loginbutton" href="{ACCESS_SOCIALLOGIN_FACEBOOK}">Facebook</a>        <!-- END access_social_networks_facebook -->        <!-- BEGIN access_social_networks_google -->        <a class="google loginbutton" href="{ACCESS_SOCIALLOGIN_GOOGLE}">Google</a>        <!-- END access_social_networks_google -->        <!-- BEGIN access_social_networks_twitter -->        <a class="twitter loginbutton" href="{ACCESS_SOCIALLOGIN_TWITTER}">Twitter</a>        <!-- END access_social_networks_twitter -->    </fieldset>    <!-- END access_social_networks -->$2$3$4', $content);
+                }
+
+                return $content;
+            };
+
+            \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'access', 'cmd' => 'signup'), $search, $callback, array('content'), '3.0.2');
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+
+    /***************************************
+     *
+     * ADD SETTING FOR SOCIAL LOGIN
+     *
+     **************************************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
+        try {
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_activation_timeout', '10', '0') ON DUPLICATE KEY UPDATE `key` = `key`");
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+    /***************************************
+     *
+     * STRICT_TRANS_TABLES ISSUE FIX FOR PROFILE TABLE
+     *
+     **************************************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+        try {
+            \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `interests` `interests` TEXT NULL");
+            \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `signature` `signature` TEXT NULL");
+
+            // add access to filesharing for existing groups
+            $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 7 GROUP BY group_id");
+            if ($result !== false) {
+                while (!$result->EOF) {
+                    \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                                                VALUES (8, " . intval($result->fields['group_id']) . ")");
+                    $result->MoveNext();
+                }
             }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
 
