@@ -123,4 +123,6 @@ $_CORELANG = array(
     'TXT_UPDATE_EXECUTION_TIME'                  => 'Die PHP max_execution_time beträgt auf Ihrem Server weniger als 20 Sekunden. Dies kann Probleme während dem Update verursachen. Sie können den Update Vorgang hier trotzdem fortsetzen.',
     'TXT_UPDATE_PDO'                             => 'PHP-Erweiterung PDO',
     'TXT_UPDATE_THEME_FAILED'                    => 'Das CSS des Designes "%s" konnte nicht aktualisiert werden.',
+    'TXT_UPDATE_COMPONENT_TABLE'                 => 'Beim Aktualisieren der Komponententabelle (%scomponent) ist ein Fehler aufgetreten.',
+    'TXT_UPDATE_PAGE_LOG'                        => 'Beim Aktualisieren des Seitenverlaufs ist ein Fehler aufgetreten.',
 );
