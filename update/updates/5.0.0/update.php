@@ -164,7 +164,11 @@ function executeContrexxUpdate() {
      * before doctrine loads the Gedmo one)
      */
     require_once(ASCMS_CORE_PATH . '/ClassLoader/ClassLoader.class.php');
-    $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true);
+    require_once(dirname(UPDATE_PATH).'/core/Core/Controller/Cx.class.php');
+    require_once(UPDATE_PATH.'/UpdateCx.class.php');
+
+    $updateCx = new \UpdateCx();
+    $cl = new \Cx\Core\ClassLoader\ClassLoader($updateCx, true);
     Env::set('ClassLoader', $cl);
 
     FWLanguage::init();
@@ -1791,6 +1795,11 @@ function renameCustomizingFile($file)
     $customizingPath = ASCMS_DOCUMENT_ROOT.'/customizing'.$cxFilePath;
     
     $customizingFile = $customizingPath . '/'. basename($file);
+
+    if (!file_exists($file)) {
+        \DBG::msg('Rename customizing file cancelled. File not found in original path (' . $file . ')');
+        return true;
+    }
 
     if (file_exists($customizingFile)) {
         $customizingFile .= "_".$_CONFIG['coreCmsVersion'];

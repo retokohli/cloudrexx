@@ -51,6 +51,30 @@
     <br />
     Mit der Ausführung dieses Updatevorgangs wird Ihre aktuelle Contrexx Installation auf die Edition <strong>Contrexx 4</strong> (entspricht vollem Leistungsumfang) migriert.<br /><br />
     
+    <!-- BEGIN update_license_choose -->
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            jQuery("input[name=chooseCeOrder]").change(function() {
+                if (jQuery("#chooseCeOrderCe").is(":checked")) {
+                    jQuery("fieldset:not(#chooseCeOrder):not(#contactFormFieldId_474)").hide("blind", 500);
+                } else {
+                    jQuery("fieldset:not(#chooseCeOrder):not(#contactFormFieldId_474)").show("blind", 500);
+                }
+            });
+        });
+    </script>
+    <fieldset id="chooseCeOrder">
+        <p>Bitte wählen Sie eine der folgenden Lizenzformen:</p>
+        <p>
+            <input type="radio" name="chooseCeOrder" value="CE" id="chooseCeOrderCe" />
+            <label for="chooseCeOrderCe"><b>Community Edition</b> (gratis, ohne Anspruch auf Herstellersupport)</label>
+        </p>
+        <p>
+            <input type="radio" name="chooseCeOrder" checked="checked" value="Order" id="chooseCeOrderOrder" />
+            <label for="chooseCeOrderOrder"><b>Business / Non-Profit</b></label>
+        </p>
+    </fieldset>
+    <!-- END update_license_choose -->
     <!-- BEGIN update_license_new -->
     <p>
     <fieldset id="contactFrame">
@@ -157,8 +181,8 @@
 <fieldset id="contactFormFieldId_474">
 <legend>AGB</legend>
 <div class="contact row">
-<label for="contactFormFieldId_469">Ich habe die <a href="http://www.comvation.com/de/System/AGBs" target="_blank">AGBs</a>
-der Comvation AG<br /> gelesen und akzeptiere diese<strong class="is_required">*</strong></label><input class="contactFormClass_checkbox" id="agb" type="checkbox" name="agb" value="1" />
+<label for="contactFormFieldId_469">Ich habe die <a href="https://www.cloudrexx.com/de/Rechtliches/AGBs" target="_blank">AGBs</a>
+der Cloudrexx AG<br /> gelesen und akzeptiere diese<strong class="is_required">*</strong></label><input class="contactFormClass_checkbox" id="agb" type="checkbox" name="agb" value="1" />
 </div>
 </fieldset>
 <fieldset>
@@ -185,7 +209,7 @@ der Comvation AG<br /> gelesen und akzeptiere diese<strong class="is_required">*
     jQuery("#wrapper").attr("onsubmit", "");
     jQuery("input[value=null]").val("");
     jQuery("#wrapper").submit(function(e) {
-        if (!jQuery("select[name=edition]").size()) {
+        if (!jQuery("select[name=edition]").size() || jQuery("select[name=edition]").not(":visible")) {
             return doUpdate();
         }
         
@@ -208,6 +232,9 @@ der Comvation AG<br /> gelesen und akzeptiere diese<strong class="is_required">*
     
     var isFieldValid = function(element) {
         var valid = false;
+        if (element.not(":visible")) {
+            return true;
+        }
         if (element.prop("tagName") == "INPUT") {
             if (element.is("[type=checkbox]")) {
                 valid = element.is(":not(:checked)");

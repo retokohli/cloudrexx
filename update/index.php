@@ -103,7 +103,11 @@ $_PATHCONFIG['ascms_installation_root'] = $_PATHCONFIG['ascms_root'];
 $_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset'];
 
 $incSettingsStatus = include_once(dirname(UPDATE_PATH) . '/config/settings.php');
-$incSettingsStatus = include_once(dirname(UPDATE_PATH) . '/config/set_constants.php');
+// remove require_once ASCMS_DOCUMENT_ROOT.'/config/set_constants.php';
+$setConstantsContents = file_get_contents(dirname(UPDATE_PATH) . '/config/set_constants.php');
+$setConstantsContents = preg_replace('#<\?(?:php)?#', '', $setConstantsContents);
+$setConstantsContents = preg_replace('#require_once\s+ASCMS_DOCUMENT_ROOT\s*.([\'"])/config/settings.php\1\s*;#', '', $setConstantsContents);
+eval($setConstantsContents);
 
 if (!isset($_CONFIG['useCustomizings'])) {
     $_CONFIG['useCustomizings'] = 'off';
@@ -118,6 +122,9 @@ if (!isset($_CONFIG['coreCmsVersion']) && file_exists(ASCMS_DOCUMENT_ROOT . '/co
 }
 
 // Check if the system is installed 
+if (!defined('CONTREXX_INSTALLED') && defined('CONTEXX_INSTALLED')) {
+    define('CONTREXX_INSTALLED', CONTEXX_INSTALLED);
+}
 if (!defined('CONTREXX_INSTALLED') || !CONTREXX_INSTALLED) {
     header('Location: ../installer/index.php');
     exit;
