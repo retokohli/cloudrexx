@@ -32,11 +32,11 @@
  */
 $arrUpdate = array(
     'cmsName'          => 'Contrexx',
-    'cmsVersion'       => '3.0.4',
+    'cmsVersion'       => '5.0.0',
     'cmsStatus'        => 'Stable',
-    'cmsEdition'       => 'Trial',
-    'cmsCodeName'      => 'Nikola Tesla',
-    'cmsReleaseDate'   => '12.04.2013',
+    'cmsEdition'       => 'Standard',
+    'cmsCodeName'      => 'Cloudrexx',
+    'cmsReleaseDate'   => '01.02.2015',
     'cmsFromVersion'   => '1.2.0',
     'cmsRequiredPHP'   => '5.3',
     'cmsRequiredMySQL' => '5.0',

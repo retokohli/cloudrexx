@@ -31,8 +31,17 @@
  */
 function _updateComponent() {
     $components = getModules();
-    // Ids of components which shall not be in the component-table
-    $componentsToSkip = array(0, 1, 37, 64, 65, 67, 96, 97);
+    // Ids of modules which shall not be in the component-table
+    $componentsToSkip = array(
+        0, // system
+        1, // core
+        37, // immo
+        64, // language
+        65, // fulllanguage
+        67, // logout
+        96, // CacheManager
+        97, // LicenseManager
+    );
     try {
         // Drop existing values
         Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `' . DBPREFIX . 'component`');

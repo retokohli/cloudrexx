@@ -119,7 +119,7 @@ class Media extends MediaLibrary
     {
         $webPath = $defaultWebPath;
         if (isset($_GET['path']) AND !empty($_GET['path']) AND !stristr($_GET['path'],'..')) {
-            $webPath = trim($_GET['path']);
+            $webPath = rawurldecode(trim($_GET['path']));
         }
         if (substr($webPath, 0, strlen($defaultWebPath)) != $defaultWebPath || !file_exists($this->docRoot.$webPath)) {
             $webPath = $defaultWebPath;
@@ -416,8 +416,9 @@ CODE;
      */
     private function manageAccessGranted()
     {
-        $manageAccessSetting = isset($this->_arrSettings[$this->archive . '_frontend_managable'])
-                                ? $this->_arrSettings[$this->archive . '_frontend_managable']
+        $accessSettingKey    = strtolower($this->archive) . '_frontend_managable';
+        $manageAccessSetting = isset($this->_arrSettings[$accessSettingKey])
+                                ? $this->_arrSettings[$accessSettingKey]
                                 : '';
         if (is_numeric($manageAccessSetting)
            && \Permission::checkAccess(intval($manageAccessSetting), 'dynamic', true)) { // access group
