@@ -111,12 +111,21 @@ function executeContrexxUpdate() {
             'dependencies'  => array (),
         ),
     );
-            
+    
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
 
     // Copy cx files to the root directory
     if (!$_SESSION['contrexx_update']['copyFilesFinished']) {
         if (!loadMd5SumOfOriginalCxFiles()) {
+            return false;
+        }
+
+        // backup and remove old component directories
+        $backupAndRemoved = backupAndRemove(ASCMS_DOCUMENT_ROOT, array('core', 'core_modules', 'modules'));
+        if ($backupAndRemoved !== true) {
+            if ($backupAndRemoved === 'timeout') {
+                setUpdateMsg(1, 'timeout');
+            }
             return false;
         }
 
@@ -417,7 +426,7 @@ function executeContrexxUpdate() {
             return false;
         } else {
             try {
-                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry` 
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry`
                     SET `object_class` = \'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Entity\\\\Page\'
                     WHERE object_class = \'Cx\\\\Model\\\\ContentManager\\\\Page\'');
             } catch (\Cx\Lib\UpdateException $e) {
@@ -486,11 +495,11 @@ function executeContrexxUpdate() {
 
             if (_convertThemes2Component() === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
-                    DBG::msg('unable to convert themes to component');                
+                    DBG::msg('unable to convert themes to component');
                     setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
                 }
                 return false;
-            }            
+            }
             
             if (_updateModulePages($viewUpdateTable) === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -623,7 +632,7 @@ function executeContrexxUpdate() {
             $result = _convertThemes2Component();
             if ($result === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
-                    DBG::msg('unable to convert themes to component');                
+                    DBG::msg('unable to convert themes to component');
                     setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
                 }
                 return false;
@@ -631,7 +640,7 @@ function executeContrexxUpdate() {
                 $_SESSION['contrexx_update']['update']['done'][] = 'convertTemplates';
             }
         }
-        
+
         if (!in_array('moduleTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
             if (_updateModulePages($viewUpdateTable) === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -654,7 +663,7 @@ function executeContrexxUpdate() {
                 $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
             }
         }
-        
+
         if (!in_array('navigations', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
             if (_updateNavigations() === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -1587,7 +1596,7 @@ function loadMd5SumOfOriginalCxFiles()
 function backupModifiedFile($file)
 {
     global $_CONFIG;
-            
+    
     $cxFilePath = dirname(substr($file, strlen(ASCMS_DOCUMENT_ROOT)));
     if ($cxFilePath == '/') {
         $cxFilePath = '';
@@ -1605,7 +1614,7 @@ function backupModifiedFile($file)
             $idx++;
             $suffix = '_'.$idx;
         }
-    
+
         $customizingFile .= $suffix;
     }
 
@@ -1732,7 +1741,7 @@ function copyCxFilesToRoot($src, $dst)
                 if (!renameCustomizingFile($dstPath)) {
                     return false;
                 }
-                    
+                
                 if (!verifyMd5SumOfFile($dstPath, $srcPath)) {
                     if (!backupModifiedFile($dstPath)) {
                         return false;
@@ -1757,7 +1766,7 @@ function copyCxFilesToRoot($src, $dst)
     return true;
 }
 
-function renameCustomizingFile($file) 
+function renameCustomizingFile($file)
 {
     global $_CONFIG;
     
@@ -1779,7 +1788,7 @@ function renameCustomizingFile($file)
             $idx++;
             $suffix = '_'.$idx;
         }
-    
+
         $customizingFile .= $suffix;
     } else {
         return true;
@@ -1787,7 +1796,7 @@ function renameCustomizingFile($file)
 
     try {
         $objFile = new \Cx\Lib\FileSystem\File($file);
-        $objFile->move($customizingFile);        
+        $objFile->move($customizingFile);
     } catch (\Exception $e) {
         setUpdateMsg('Error on renaming customizing file:<br />' . $file);
         setUpdateMsg('Error: ' . $e->getMessage());
@@ -1882,7 +1891,7 @@ function migrateSessionTable()
             ),
             array(
                 'key_index' => array('fields' => array('parent_id', 'key', 'sessionid'), 'type' => 'UNIQUE'),
-            'key_parent_id_sessionid' => array('fields' => array('parent_id', 'sessionid')),
+                'key_parent_id_sessionid' => array('fields' => array('parent_id', 'sessionid')),
             ),
             'InnoDB'
         );
@@ -1897,7 +1906,7 @@ function migrateSessionTable()
                 'startdate'      => array('type' => 'VARCHAR(14)', 'notnull' => true, 'default' => '', 'after' => 'remember_me'),
                 'lastupdated'    => array('type' => 'VARCHAR(14)', 'notnull' => true, 'default' => '', 'after' => 'startdate'),
                 'status'         => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'lastupdated'),
-                'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'status'),                
+                'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'status'),
             ),
             array(
                 'LastUpdated'    => array('fields' => array('lastupdated')),
@@ -1912,9 +1921,8 @@ function migrateSessionTable()
         insertSessionArray(session_id(), $sessionArray);
 
     } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
-        
     return true;
 }
 
@@ -1973,7 +1981,7 @@ function _convertThemes2Component()
     $errorMessages = '';
     $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
     while (!$result->EOF) {
-        $themePath = ASCMS_THEMES_PATH . '/' . $result->fields['foldername']; 
+        $themePath = ASCMS_THEMES_PATH . '/' . $result->fields['foldername'];
         if (!is_dir($themePath)) {
             \DBG::msg('Skipping theme "' . $result->fields['themesname'] . '"; No such folder!');
             $errorMessages .= '<div class="message-warning">' . sprintf($_CORELANG['TXT_CSS_UPDATE_MISSING_FOLDER'], $result->fields['themesname']) . '</div>';
@@ -2106,6 +2114,177 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
 
         closedir($dh);
     }
+    return true;
+}
+
+/**
+ * Backup the components which have been renamed and remove the old ones to ensure compatibility with windows servers
+ *
+ * @param $src string path to source-files without trailing slash
+ * @param $directories array with name(s) of the directories which shall be backed up and removed if not directly under
+ *                     source-path, path without source-path is needed
+ * @return bool|string
+ */
+function backupAndRemove($src, $directories) {
+    $folderStructure = array();
+    foreach($directories as $directory) {
+        $folderStructure[$directory] = getFolderStructure($src . '/' . $directory);
+
+        // set last checked file-index to 0
+        if (empty($_SESSION['contrexx_update']['validatedComponentFiles'][$directory])) {
+            $_SESSION['contrexx_update']['validatedComponentFiles'][$directory] = 0;
+        }
+    }
+
+    // Backup any changes in the old components
+    foreach ($folderStructure as $rootFolder => $files) {
+        for ($i = $_SESSION['contrexx_update']['validatedComponentFiles'][$rootFolder]; $i < count($files); $i++) {
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                $_SESSION['contrexx_update']['validatedComponentFiles'][$rootFolder] = $i;
+                return 'timeout';
+            }
+            $newFile = dirname(__FILE__) . '/cx_files/'. substr($files[$i], strlen(ASCMS_DOCUMENT_ROOT.'/'));
+
+            if (!verifyMd5SumOfFile($files[$i], $newFile)) {
+                backupModifiedFile($files[$i]);
+            }
+        }
+    }
+
+    // Remove the old component directories
+    if (!removeOldComponents($directories)) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Get the structure of a directory with all the subdirectories and files
+ *
+ * @param $folder string path to the desired folder
+ * @param bool $foldersOnly
+ * @param bool $subdirectories
+ * @return array all the files and directories in the desired folder
+ */
+function getFolderStructure($folder, $foldersOnly = false, $subdirectories = true) {
+    $files = array();
+    $dirs = array($folder);
+    $folders = array();
+
+    while (($dir = array_pop($dirs)) !== NULL) {
+        if ($dh = opendir($dir)) {
+            while (($file = readdir($dh)) !== false) {
+                if ($file == '.' || $file == '..') {
+                    continue;
+                }
+
+                $path = $dir . '/' . $file;
+                if (is_dir($path)) {
+                    // add current dir if subdirectories shall be listed as well
+                    if ($subdirectories) {
+                        $dirs[] = $path;
+                    }
+                    // add current dir to folders-array if folders only is desired
+                    if ($foldersOnly) {
+                        $folders[] = $path;
+                    }
+                } else {
+                    $files[] = $path;
+                }
+            }
+            closedir($dh);
+        }
+    }
+
+    if ($foldersOnly) {
+        return $folders;
+    }
+    return $files;
+}
+
+/**
+ * Removes the old component-folders
+ *
+ * @param $folders array root folders which shall be checked for new versions and remvoed
+ * @return bool true on success false otherwise
+ */
+function removeOldComponents($folders) {
+    $newComponents = array();
+    foreach ($folders as $componentFolder) {
+        $newComponents[$componentFolder] = getFolderStructure(dirname(__FILE__) . '/cx_files' . $componentFolder, true, false);
+        if (empty($_SESSION['contrexx_update']['removedComponents'][$componentFolder])) {
+            $_SESSION['contrexx_update']['removedComponents'][$componentFolder] = 0;
+        }
+    }
+
+    $componentList = array(
+        'Config' => 'settings', 'ComponentManager' => 'modulemanager',
+        'ContentWorkflow' => 'workflow', 'Country' => 'country',
+        'Csrf' => 'CSRF', 'DatabaseManager' => 'dbm', 'Error' => 'error',
+        'ImageType' => 'Imagetype', 'JavaScript' => 'JavaScript',
+        'JsonData' => 'jsondata', 'MailTemplate' => 'MailTemplate',
+        'LanguageManager' => 'language', 'Message' => 'Message',
+        'Security' => 'Security', 'Session' => 'session',
+        'SystemInfo' => 'server', 'SystemLog' => 'log',
+        'ViewManager' => 'skins', 'Access' => 'access', 'Agb' => 'agb',
+        'Alias' => 'alias', 'Cache' => 'cache', 'Captcha' => 'captcha',
+        'Contact' => 'contact', 'FileBrowser' => 'fileBrowser',
+        'Home' => 'home', 'Ids' => 'ids', 'Imprint' => 'imprint',
+        'Login' => 'login', 'Media' => 'media', 'NetTools' => 'nettools',
+        'News' => 'news', 'Privacy' => 'privacy', 'Search' => 'search',
+        'Sitemap' => 'sitemap', 'Stats' => 'stats', 'Block' => 'block',
+        'Blog' => 'blog', 'Calendar' => 'calendar', 'Checkout' => 'checkout',
+        'Crm' => 'crm', 'Data' => 'data', 'Directory' => 'directory',
+        'DocSys' => 'docsys', 'Downloads' => 'downloads', 'Ecard' => 'ecard',
+        'Egov' => 'egov', 'Feed' => 'feed', 'FileSharing' => 'filesharing',
+        'Forum' => 'forum', 'Gallery' => 'gallery',
+        'GuestBook' => 'guestbook', 'Jobs' => 'jobs',
+        'Knowledge' => 'knowledge', 'Livecam' => 'livecam',
+        'Market' => 'market', 'MediaDir' => 'mediadir',
+        'MemberDir' => 'memberdir', 'Newsletter' => 'newsletter',
+        'Podcast' => 'podcast', 'Recommend' => 'recommend', 'Shop' => 'shop',
+        'U2u' => 'u2u', 'Voting' => 'voting',
+    );
+
+    foreach ($newComponents as $componentFolder => $newComponentNames) {
+        // load the removedComponent index stored in the session
+        $removedComponents = $_SESSION['contrexx_update']['removedComponents'][$componentFolder];
+        for ($i = $removedComponents; $i < count($newComponentNames); $i++) {
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                $_SESSION['contrexx_update']['removedComponents'][$componentFolder] = $i;
+                return 'timeout';
+            }
+            // get the component name out of the path
+            $newComponentName = end(explode(DIRECTORY_SEPARATOR, $newComponentNames[$i]));
+            // check if the component has been renamed, backed up or if the directory exists in cx_files/
+            if (
+                !array_key_exists($newComponentName, $componentList)
+                || !file_exists(ASCMS_CUSTOMIZING_PATH . '/' . $componentFolder . '/' . $componentList[$newComponentName])
+                || !file_exists('./cx_files/' . $componentFolder . '/' . $componentList[$newComponentName])
+            ) {
+                // Componentname didn't change or component hasn't been backed up
+                // or component doesn't exist in cx_files => No need to remove it
+                continue;
+            }
+
+            // get old component name
+            $oldComponentName = $componentList[$newComponentName];
+            // create the paths to the current component
+            $path = ASCMS_DOCUMENT_ROOT . '/' . $componentFolder;
+            $webPath = ASCMS_INSTANCE_OFFSET . '/' . $componentFolder;
+
+            $componentDir = new \Cx\Lib\FileSystem\FileSystem();
+
+            // make sure that current path is a directory and it can be removed
+            if (!is_dir($path . '/' . $oldComponentName) || !$componentDir->delDir($path, $webPath, $oldComponentName)) {
+                // failed to remove folder
+                setUpdateMsg('Das Verzeichnis \'' . $path . $oldComponentName . '\' konnte nicht gelöscht werden.');
+                return false;
+            }
+        }
+    }
+
     return true;
 }
 
