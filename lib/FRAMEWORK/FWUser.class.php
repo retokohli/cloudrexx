@@ -539,8 +539,7 @@ class FWUser extends User_Setting
         }
 
         $objMail->CharSet = CONTREXX_CHARSET;
-        $objMail->From = $objUserMail->getSenderMail();
-        $objMail->FromName = $objUserMail->getSenderName();
+        $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
         $objMail->AddReplyTo($objUserMail->getSenderMail());
         $objMail->Subject = $objUserMail->getSubject();
 

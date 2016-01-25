@@ -761,8 +761,7 @@ class EgovManager extends EgovLibrary
                             }
                         }
                         $objMail->CharSet = CONTREXX_CHARSET;
-                        $objMail->From = $FromEmail;
-                        $objMail->FromName = $FromName;
+                        $objMail->SetFrom($FromEmail, $FromName);
                         $objMail->AddReplyTo($FromEmail);
                         $objMail->Subject = $SubjectText;
                         $objMail->Priority = 3;
@@ -1638,8 +1637,9 @@ class EgovManager extends EgovLibrary
                     }
                 }
                 $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = EgovLibrary::GetSettings('set_orderentry_sender');
-                $objMail->FromName = EgovLibrary::GetSettings('set_orderentry_name');
+                $from = EgovLibrary::GetSettings('set_orderentry_sender');
+                $fromName = EgovLibrary::GetSettings('set_orderentry_name');
+                $objMail->SetFrom($from, $fromName);
                 $objMail->AddReplyTo($replyAddress);
                 $objMail->Subject = $SubjectText;
                 $objMail->Priority = 3;
@@ -1691,8 +1691,7 @@ class EgovManager extends EgovLibrary
                         }
                     }
                     $objMail->CharSet = CONTREXX_CHARSET;
-                    $objMail->From = $FromEmail;
-                    $objMail->FromName = $FromName;
+                    $objMail->SetFrom($FromEmail, $FromName);
                     $objMail->AddReplyTo($FromEmail);
                     $objMail->Subject = $SubjectText;
                     $objMail->Priority = 3;

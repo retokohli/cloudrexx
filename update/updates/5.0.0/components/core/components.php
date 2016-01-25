@@ -27,15 +27,21 @@
 
 /**
  * Update the component table and fill it with the new values
- * @param $objDatabase
- * @param $objUpdate
- * @param $_CONFIG
  * @return bool true on success false otherwise
  */
 function _updateComponent() {
     $components = getModules();
-    // Ids of components which shall not be in the component-table
-    $componentsToSkip = array(0, 1, 37, 64, 65, 67, 96, 97);
+    // Ids of modules which shall not be in the component-table
+    $componentsToSkip = array(
+        0, // system
+        1, // core
+        37, // immo
+        64, // language
+        65, // fulllanguage
+        67, // logout
+        96, // CacheManager
+        97, // LicenseManager
+    );
     try {
         // Drop existing values
         Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `' . DBPREFIX . 'component`');
@@ -46,9 +52,13 @@ function _updateComponent() {
             }
 
             $componentType = 'module';
-            if ($component['is_required'] === 1 && $component['is_core'] === 1) {
+            if ($component['is_required'] === 1
+                && $component['is_core'] === 1
+            ) {
                 $componentType = 'core';
-            } else if ($component['is_required'] === 0 && $component['is_core'] === 1) {
+            } else if ($component['is_required'] === 0
+                && $component['is_core'] === 1
+            ) {
                 $componentType = 'core_module';
             }
 

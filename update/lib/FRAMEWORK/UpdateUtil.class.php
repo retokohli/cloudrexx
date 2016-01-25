@@ -906,4 +906,36 @@ class UpdateUtil
         setUpdateMsg($e->getMessage());
         return false;
     }
+
+    /**
+     * Migrate the directory structure
+     *
+     * @param string $soruceDir Source directory
+     * @param string $targetDir Target directory
+     *
+     * @return boolean Return true when directory successfully migrated
+     *
+     * @throws \Cx\Lib\FileSystem\FileSystemException Error when moving directory
+     * @throws UpdateException                        Error when moving directory
+     */
+    public static function migrateOldDirectory($soruceDir, $targetDir)
+    {
+        if (   !\Cx\Lib\FileSystem\FileSystem::exists($soruceDir)
+            || \Cx\Lib\FileSystem\FileSystem::exists($targetDir)
+        ) {
+            // already migrated
+            return true;
+        }
+        try {
+            \Cx\Lib\FileSystem\FileSystem::makeWritable($soruceDir);
+            if (!\Cx\Lib\FileSystem\FileSystem::move($soruceDir, $targetDir)) {
+                throw new UpdateException('Failed to Moved the files from '. $soruceDir .' to '. $targetDir);
+            }
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            throw $e;
+        }
+
+        return true;
+    }
+
 }
