@@ -1534,7 +1534,16 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 var pageName = jQuery.trim(cx.jQuery(element).text());
                 cx.jQuery(element).contents().filter(function() {
                     return this.nodeType == 3;
-                }).remove();
+                }).each(function(index, el) {
+                    var content = el.textContent;
+                    // It would be nicer if we could select all page <a>
+                    // elements directly using a class and just remove all text
+                    // nodes or not to add the text nodes in the first place.
+                    // ATTENTION: The space " " is necessary otherwise drag&drop
+                    // stops working.
+                    content = content.replace(pageName.replace("&", "&amp;"), " ");
+                    el.textContent = content;
+                });
                 cx.jQuery(element).append("<div class=\"name\">" + pageName + "</div>");
             }
             if (pageId) {
@@ -2567,9 +2576,12 @@ cx.cm.destroyEditor = function() {
 cx.cm.setEditorData = function(pageContent) {
     cx.jQuery(document).ready(function() {
         if (!cx.jQuery('#page_sourceMode').prop('checked') && cx.cm.editorInUse()) {
-            setTimeout(function(){
+            // This is bit of a hacky solution but CKEDITOR seems to have
+            // problems with setData() sometimes (without throwing an exception)
+            // and this seems to do the trick.
+            CKEDITOR.instances.cm_ckeditor.setData(pageContent, function() {
                 CKEDITOR.instances.cm_ckeditor.setData(pageContent);
-            }, 0);
+            });
         } else {
             cx.jQuery('#page textarea[name="page[content]"]').val(pageContent);
         }
