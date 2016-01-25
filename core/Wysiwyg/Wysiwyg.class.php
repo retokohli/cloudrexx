@@ -129,6 +129,16 @@ class Wysiwyg
     protected $timeLimit;
 
     /**
+     * @var array
+     */
+    protected $argsForDataUriExtraction = array();
+
+    /**
+     * @var array
+     */
+    protected $extractedImgFiles = array();
+
+    /**
      * constant MiB2 2megabytes
      */
     const MiB2 = 2097152;
@@ -332,18 +342,21 @@ class Wysiwyg
             //Store the process started time
             $processTime = \Cx\Core\Core\Controller\Cx::instanciate()->getStartTime();
 
+            //Pattern to extract the image data-urls from the given content
+            $pattern = '/<img\s+[^>]*src=[\'\"](data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)([a-z0-9\!\$\&\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*)\s*)[\'\"][^>]*>/si';
+
             //Get the file path and filename prefix
             $filePath   = is_callable($path) ? call_user_func($path) : $path;
             $filePrefix = is_callable($namePrefix) ? call_user_func($namePrefix) : $namePrefix;
 
+            //If the filePath not exists, return empty array
             if (!\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
                 return array();
             }
 
-            //Convert the string content into html dom
-            $html = new \simple_html_dom($content);
-            if (!$html) {
-                return array();
+            //Reset the variable $extractedImgFiles if it's not empty
+            if (!empty($this->extractedImgFiles)) {
+                $this->extractedImgFiles = array();
             }
 
             //Find the relative path for setting it as img src instead of data url
@@ -351,36 +364,67 @@ class Wysiwyg
             $documentPath = \Env::get('cx')->getWebsiteDocumentRootPath();
             $relativePath = \Env::get('cx')->getWebsiteOffsetPath() . str_replace($documentPath, '', $filePath);
 
-            //Find all the occurrence of img src and store it into the location given in $filePath
-            $movedFiles = array();
-            foreach ($html->find('img') As $element) {
-                $matches = null;
-                if (!preg_match('/^data\:(\s|)image\/(\w{3,4})\;base64\,(\s|)(.*)/i', $element->src, $matches)) {
-                    continue;
-                }
-                $fileName = $this->checkFileAvailability($filePath, $filePrefix . '.' . $matches[2]);
-                try {
-                    $file = new \Cx\Lib\FileSystem\File($filePath . '/' . $fileName);
-                    $file->touch();
-                    $file->write(base64_decode($matches[4]));
-                    $element->src = $relativePath . '/' . $fileName;
-                    $element->alt = $element->title = $fileName;
-                    $movedFiles[] = $filePath . '/' . $fileName;
-                } catch (\Exception $e) {
-                    \DBG::log($e->getMessage());
-                    continue;
-                }
-                //Check the memory overflow and timeout limit
-                $this->checkMemoryLimit(self::MiB2);
-                $this->checkTimeoutLimit($processTime[1]);
-            }
-            $content = $html->__toString();
-
-            return $movedFiles;
+            //Find all the occurrence of img src and 
+            //store it into the location given in $filePath
+            $this->argsForDataUriExtraction = array(
+                                                'filePath'     => $filePath, 
+                                                'filePrefix'   => $filePrefix, 
+                                                'relativePath' => $relativePath, 
+                                                'processTime'  => $processTime[1]);
+            $content = preg_replace_callback(
+                        $pattern, 
+                        array($this, 'moveDataUrlsToFileSystem'), 
+                        $content);
+            return $this->extractedImgFiles;
         } catch(WysiwygException $e){
             \DBG::log($e->getMessage());
             throw new \Exception('Wysiwyg::extractDataUrlsToFileSystem(): Failed to extract the data urls into filesystem.');
         }
+    }
+
+    /**
+     * Move the extracted data urls into the filesystem
+     * 
+     * @param array $matches array of image data-url matches 
+     *                       found through the preg_replace_callback
+     * 
+     * @return string replace string
+     */
+    protected function moveDataUrlsToFileSystem($matches)
+    {
+        //If the variable $argsForDataUriExtraction is empty 
+        //then return empty string
+        if (empty($this->argsForDataUriExtraction)) {
+            return '';
+        }
+
+        //Convert the image data-url as image file and 
+        //store it into the location given in $filePath
+        $imgTag       = '';
+        $filePath     = $this->argsForDataUriExtraction['filePath'];
+        $filePrefix   = $this->argsForDataUriExtraction['filePrefix'];
+        $relativePath = $this->argsForDataUriExtraction['relativePath'];
+        $fileName     = $this->checkFileAvailability(
+                            $filePath, 
+                            $filePrefix . '.' . $matches[3]);
+        try {
+            $file = new \Cx\Lib\FileSystem\File($filePath . '/' . $fileName);
+            $file->touch();
+            $file->write(base64_decode($matches[5]));
+            $this->extractedImgFiles[] = $filePath . '/' . $fileName;
+            $imgTag = '<img src="'. $relativePath . '/' . $fileName 
+                    . '" title="' . $fileName 
+                    . '" alt="' . $fileName . '" />';
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            return '';
+        }
+
+        //Check the memory overflow and timeout limit
+        $this->checkMemoryLimit(self::MiB2);
+        $this->checkTimeoutLimit($this->argsForDataUriExtraction['processTime']);
+
+        return $imgTag;
     }
 
     /**
