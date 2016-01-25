@@ -168,6 +168,7 @@ function executeContrexxUpdate() {
     require_once(UPDATE_PATH.'/UpdateCx.class.php');
 
     $updateCx = new \UpdateCx();
+    Env::set('cx', $updateCx);
     $cl = new \Cx\Core\ClassLoader\ClassLoader($updateCx, true);
     Env::set('ClassLoader', $cl);
 
@@ -1994,7 +1995,7 @@ function _convertThemes2Component()
     global $objDatabase, $_CORELANG;
     
     // Find all themes
-    $result = $objDatabase->Execute('SELECT `themesname`, `foldername` FROM `' . DBPREFIX . 'skins`');
+    $result = $objDatabase->Execute('SELECT `id`, `themesname`, `foldername`, `expert` FROM `' . DBPREFIX . 'skins`');
     if ($result->EOF) {
         \DBG::msg('No themes found!');
         return false;
@@ -2014,7 +2015,8 @@ function _convertThemes2Component()
         // create a new one if no component.yml exists
         if (!file_exists($themePath . '/component.yml')) {
             \DBG::msg('Converting theme "' . $result->fields['themesname'] . ' to component');
-            $themeRepository->convertThemeToComponent($result->fields['foldername']);
+            $theme = new \Cx\Core\View\Model\Entity\Theme($result->fields['id'], $result->fields['themesname'], $result->fields['foldername'], $result->fields['expert']);
+            $themeRepository->convertThemeToComponent($theme);
         }
 
         $result->MoveNext();
