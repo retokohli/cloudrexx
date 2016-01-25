@@ -439,39 +439,41 @@ function _contactUpdate()
             if ($htmlMailIsNew) {
                 \Cx\Lib\UpdateUtil::sql('UPDATE ' . DBPREFIX . 'module_contact_form SET html_mail = 0');
             }
+        }
 
-            if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.1.5')) {
-                // for all versions >= 2.2.0
-                // change all fields currently set to 'file' to 'multi_file' ('multi_file' is same as former 'file' in previous versions)
-                \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_contact_form_field` SET `type` = 'multi_file' WHERE `type` = 'file'");
-            }
+        if (   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.1.5')
+            && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+            // for all versions >= 2.2.0 & < 3.1.0
+            // change all fields currently set to 'file' to 'multi_file' ('multi_file' is same as former 'file' in previous versions)
+            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_contact_form_field` SET `type` = 'multi_file' WHERE `type` = 'file'");
+        }
 
-            /**
-             * Update the content pages
-             */
-            if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-                $em = \Env::get('em');
-                $cl = \Env::get('ClassLoader');
-                $cl->loadFile(ASCMS_CORE_MODULE_PATH . '/contact/admin.class.php');
-                $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-                $Contact = new \ContactManager();
-                $Contact->initContactForms();
+        /**
+         * Update the content pages
+         */
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+            $em = \Env::get('em');
+            $cl = \Env::get('ClassLoader');
+            $cl->loadFile(ASCMS_CORE_MODULE_PATH . '/contact/admin.class.php');
+            $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $Contact = new \ContactManager();
+            $Contact->initContactForms();
 
-                foreach ($Contact->arrForms as $id => $form) {
-                    foreach ($form['lang'] as $langId => $lang) {
-                        if ($lang['is_active'] == true) {
-                            $page = $pageRepo->findOneByModuleCmdLang('contact', $id, $langId);
-                            if ($page) {
-                                $page->setContent($Contact->_getSourceCode($id, $langId));
-                                $page->setUpdatedAtToNow();
-                                $em->persist($page);
-                            }
+            foreach ($Contact->arrForms as $id => $form) {
+                foreach ($form['lang'] as $langId => $lang) {
+                    if ($lang['is_active'] == true) {
+                        $page = $pageRepo->findOneByModuleCmdLang('contact', $id, $langId);
+                        if ($page) {
+                            $page->setContent($Contact->_getSourceCode($id, $langId));
+                            $page->setUpdatedAtToNow();
+                            $em->persist($page);
                         }
                     }
                 }
-                $em->flush();
             }
+            $em->flush();
         }
+
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
             /*******************************************
             * EXTENSION:    Database structure changes *

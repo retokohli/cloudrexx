@@ -38,7 +38,7 @@ function _updateModules()
 
         // add modules
         foreach ($arrModules as $arrModule) {
-            \Cx\Lib\UpdateUtil::sql("INSERT INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `is_active`, `distributor` ) VALUES ( ".$arrModule['id']." , '".$arrModule['name']."', '".$arrModule['description_variable']."', '".$arrModule['status']."', '".$arrModule['is_required']."', '".$arrModule['is_core']."', ".$arrModule['is_active'].", 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `is_active`, `distributor` ) VALUES ( ".$arrModule['id']." , '".$arrModule['name']."', '".$arrModule['description_variable']."', '".$arrModule['status']."', '".$arrModule['is_required']."', '".$arrModule['is_core']."', ".$arrModule['is_active'].", 'Cloudrexx AG') ON DUPLICATE KEY UPDATE `id` = `id`");
         }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -321,15 +321,6 @@ function getModules()
                         'is_active'                             => 1
 		),
 		array(
-			'id'					=> 32,
-			'name'					=> 'NetTools',
-			'description_variable'	=> 'TXT_NETTOOLS_MODULE_DESCRIPTION',
-			'status'				=> 'n',
-			'is_required'			=> 0,
-			'is_core'				=> 1,
-                        'is_active'                             => 1
-		),
-		array(
 			'id'					=> 33,
 			'name'					=> 'Market',
 			'description_variable'	=> 'TXT_MARKET_MODULE_DESCRIPTION',
@@ -492,15 +483,6 @@ function getModules()
                         'is_active'                             => 1
 		),
 		array(
-			'id'					=> 62,
-			'name'					=> 'Checkout',
-			'description_variable'	=> 'TXT_CHECKOUT_MODULE_DESCRIPTION',
-			'status'				=> 'y',
-			'is_required'			=> 0,
-			'is_core'				=> 0,
-                        'is_active'                             => 1
-		),
-		array(
 			'id'					=> 63,
 			'name'					=> 'JsonData',
 			'description_variable'	=> 'Json Adapter',
@@ -511,7 +493,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 64,
-			'name'					=> 'LanguageManager',
+			'name'					=> 'language',
 			'description_variable'	=> 'TXT_LANGUAGE_SETTINGS',
 			'status'				=> 'n',
 			'is_required'			=> 1,
@@ -538,7 +520,7 @@ function getModules()
 		),
 		array(
 			'id'					=> 67,
-			'name'					=> 'Logout',
+			'name'					=> 'logout',
 			'description_variable'	=> 'TXT_LOGIN_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 1,
@@ -570,6 +552,177 @@ function getModules()
 			'status'				=> 'n',
 			'is_required'			=> 1,
 			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 72,
+			'name'					=> 'ContentManager',
+			'description_variable'	=> 'TXT_CONTENTMANAGER_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 0,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 75,
+			'name'					=> 'ViewManager',
+			'description_variable'	=> 'TXT_VIEWMANAGER_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 0,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 76,
+			'name'					=> 'ComponentManager',
+			'description_variable'	=> 'TXT_COMPONENTMANAGER_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 0,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 77,
+			'name'					=> 'LanguageManager',
+			'description_variable'	=> 'TXT_LANGUAGEMANAGER_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 0,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 78,
+			'name'					=> 'ContentWorkflow',
+			'description_variable'	=> 'TXT_CONTENTWORKFLOW_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 0,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 80,
+			'name'					=> 'Config',
+			'description_variable'	=> 'TXT_CONFIG_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 0,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 84,
+			'name'					=> 'Security',
+			'description_variable'	=> 'TXT_SECURITY_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 0,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 85,
+			'name'					=> 'Csrf',
+			'description_variable'	=> ' TXT_CSRF_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 0,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 86,
+			'name'					=> 'Session',
+			'description_variable'	=> 'TXT_SESSION_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 0,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 88,
+			'name'					=> 'JavaScript',
+			'description_variable'	=> 'TXT_JAVASCRIPT_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 0,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 90,
+			'name'					=> 'Net',
+			'description_variable'	=> 'TXT_NET_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 1,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 99,
+			'name'					=> 'Routing',
+			'description_variable'	=> 'TXT_ROUTING_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 0,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 100,
+			'name'					=> 'Support',
+			'description_variable'	=> 'TXT_MODULE_SUPPORT_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 1,
+			'is_core'				=> 0,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 101,
+			'name'					=> 'Uploader',
+			'description_variable'	=> 'TXT_CORE_MODULE_UPLOADER_DESCRIPTION',
+			'status'				=> 'y',
+			'is_required'			=> 1,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 102,
+			'name'					=> 'MediaBrowser',
+			'description_variable'	=> 'TXT_CORE_MODULE_MEDIABROWSER_DESCRIPTION',
+			'status'				=> 'y',
+			'is_required'			=> 1,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 103,
+			'name'					=> 'Cron',
+			'description_variable'	=> 'TXT_CORE_MODULE_CRON_DESCRIPTION',
+			'status'				=> 'y',
+			'is_required'			=> 1,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 105,
+			'name'					=> 'NetManager',
+			'description_variable'	=> 'TXT_NETMANAGER_MODULE_DESCRIPTION',
+			'status'				=> 'y',
+			'is_required'			=> 1,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 106,
+			'name'					=> 'Wysiwyg',
+			'description_variable'	=> 'TXT_CORE_WYSIWYG_DESCRIPTION',
+			'status'				=> 'y',
+			'is_required'			=> 1,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 107,
+			'name'					=> 'User',
+			'description_variable'	=> 'TXT_CORE_USER_DESCRIPTION',
+			'status'				=> 'y',
+			'is_required'			=> 1,
+			'is_core'				=> 1,
                         'is_active'                             => 1
 		)
 	);
@@ -582,7 +735,8 @@ function getModuleInfo($name)
     $arrModules = getModules();
 
     foreach ($arrModules as $arrModule) {
-        if ($arrModule['name'] == $name) {
+        // case-insensitive check is required due to the component renaming in version 5
+        if (strtolower($arrModule['name']) == strtolower($name)) {
             return $arrModule;
         }
     }

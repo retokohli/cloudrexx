@@ -81,7 +81,7 @@ function _crmUpdate() {
             );
         }
 
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_crm_customer_comment',
                 array(
@@ -303,42 +303,8 @@ function _crmUpdate() {
             }
 
             // migrate mail templates
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_bcc\', \'\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_cc\', \'\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_from\', \'info@example.com\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_message\', \'Guten Tag,\r\n\r\nNachfolgend erhalten Sie Ihre persönlichen Zugangsdaten zur Website http://www.example.com/\r\n\r\nBenutzername: [CRM_CONTACT_USERNAME]\r\nKennwort: [CRM_CONTACT_PASSWORD]\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_message_html\', \'<div>Guten Tag,<br />\r\n<br />\r\nNachfolgend erhalten Sie Ihre pers&ouml;nlichen Zugangsdaten zur Website <a href="http://www.example.com/">http://www.example.com/</a><br />\r\n<br />\r\nBenutzername: [CRM_CONTACT_USERNAME]<br />\r\nKennwort: [CRM_CONTACT_PASSWORD]</div>\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_name\', \'Benachrichtigung über Benutzerkonto\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_reply\', \'info@example.com\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_sender\', \'Ihr Firmenname\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_subject\', \'Ihr persönlischer Zugang\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_to\', \'[CRM_CONTACT_EMAIL]\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_bcc\', \'\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_cc\', \'\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_from\', \'info@example.com\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_message\', \'Der Mitarbeiter [CRM_TASK_CREATED_USER] hat eine neue Aufgabe erstellt und Ihnen zugewiesen: [CRM_TASK_URL]\r\n\r\nBeschreibung: [CRM_TASK_DESCRIPTION_TEXT_VERSION]\r\n\r\nFällig am: [CRM_TASK_DUE_DATE]\r\n\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_message_html\', \'<div style="padding:0px; margin:0px; font-family:Tahoma, sans-serif; font-size:14px; width:620px; color: #333;">\r\n<div style="padding: 0px 20px; border:1px solid #e0e0e0; margin-bottom: 10px; width:618px;">\r\n<h1 style="background-color: #e0e0e0;color: #3d4a6b;font-size: 18px;font-weight: normal;padding: 15px 20px;margin-top: 0 !important;margin-bottom: 0 !important;margin-left: -20px !important;margin-right: -20px !important;-webkit-margin-before: 0 !important;-webkit-margin-after: 0 !important;-webkit-margin-start: -20px !important;-webkit-margin-end: -20px !important;">Neue Aufgabe wurde Ihnen zugewiesen</h1>\r\n\r\n<p style="margin-top: 20px;word-wrap: break-word !important;">Der Mitarbeiter [CRM_TASK_CREATED_USER] hat eine neue Aufgabe erstellt und Ihnen zugewiesen: [CRM_TASK_LINK]</p>\r\n\r\n<p style="margin-top: 20px;word-wrap: break-word !important;">Beschreibung: [CRM_TASK_DESCRIPTION_HTML_VERSION]<br />\r\nF&auml;llig am: [CRM_TASK_DUE_DATE]</p>\r\n</div>\r\n</div>\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_name\', \'Neue Aufgabe\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_reply\', \'info@example.com\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_sender\', \'Ihr Firmenname\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_subject\', \'Neue Aufgabe : [CRM_TASK_NAME]\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_to\', \'[CRM_ASSIGNED_USER_EMAIL]\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_bcc\', \'\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_cc\', \'\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_from\', \'info@example.com\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_message\', \'Im CRM wurde ein neuer Kontakt erfasst: [CRM_CONTACT_DETAILS_URL]\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_message_html\', \'<div style="padding:0px; margin:0px; font-family:Tahoma, sans-serif; font-size:14px; width:620px; color: #333;">\r\n<div style="padding: 0px 20px; border:1px solid #e0e0e0; margin-bottom: 10px; width:618px;">\r\n<h1 style="background-color: #e0e0e0;color: #3d4a6b;font-size: 18px;font-weight: normal;padding: 15px 20px;margin-top: 0 !important;margin-bottom: 0 !important;margin-left: -20px !important;margin-right: -20px !important;-webkit-margin-before: 0 !important;-webkit-margin-after: 0 !important;-webkit-margin-start: -20px !important;-webkit-margin-end: -20px !important;">Neuer Kontakt im CRM</h1>\r\n\r\n<p style="margin-top: 20px;word-wrap: break-word !important;">Neuer Kontakt: [CRM_CONTACT_DETAILS_LINK].</p>\r\n</div>\r\n</div>\r\n\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_name\', \'Benachrichtigung an Mitarbeiter über neue Kontakte\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_reply\', \'info@example.com\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_sender\', \'Ihr Firmenname\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_subject\', \'Neuer Kontakt erfasst\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_to\', \'[CRM_ASSIGNED_USER_EMAIL]\')');
-
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES(\'crm_user_account_created\', \'crm\', 12, 1, 1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES(\'crm_notify_staff_on_contact_added\', \'crm\', 14, 1, 1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES(\'crm_task_assigned\', \'crm\', 13, 1, 1)');
-
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'crm\',\'numof_mailtemplate_per_page_backend\',\'config\',\'text\',\'25\',\'\',1001)');
+            installCrmMailTemplates();
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'Crm\',\'numof_mailtemplate_per_page_backend\',\'config\',\'text\',\'25\',\'\',1001)');
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
@@ -386,10 +352,74 @@ function _crmUpdate() {
     return true;
 }
 
+function installCrmMailTemplates() {
+    if (
+        !\MailTemplate::store('crm', array(
+            'key' => 'crm_user_account_created',
+            'lang_id' => '1',
+            'sender' => 'Ihr Firmenname',
+            'from' => 'info@example.com',
+            'to' => '[CRM_CONTACT_EMAIL]',
+            'reply' => 'info@example.com',
+            'cc' => '',
+            'bcc' => '',
+            'subject' => 'Ihr persönlicher Zugang',
+            'message' => "Guten Tag,\r\n\r\nNachfolgend erhalten Sie Ihre persönlichen Zugangsdaten zur Website http://www.example.com/\r\n\r\nBenutzername: [CRM_CONTACT_USERNAME]\r\nKennwort: [CRM_CONTACT_PASSWORD]",
+            'message_html' => "<div>Guten Tag,<br />\r\n<br />\r\nNachfolgend erhalten Sie Ihre pers&ouml;nlichen Zugangsdaten zur Website <a href=\"http://www.example.com/\">http://www.example.com/</a><br />\r\n<br />\r\nBenutzername: [CRM_CONTACT_USERNAME]<br />\r\nKennwort: [CRM_CONTACT_PASSWORD]</div>",
+            'html' => 'true',
+            'protected' => 'true',
+            'name' => 'Benachrichtigung über Benutzerkonto',
+        ))
+    ) {
+        return false;
+    }
+    if (
+        !\MailTemplate::store('crm', array(
+            'key' => 'crm_task_assigned',
+            'lang_id' => '1',
+            'sender' => 'Ihr Firmenname',
+            'from' => 'info@example.com',
+            'to' => '[CRM_ASSIGNED_USER_EMAIL]',
+            'reply' => 'info@example.com',
+            'cc' => '',
+            'bcc' => '',
+            'subject' => 'Neue Aufgabe: [CRM_TASK_NAME]',
+            'message' => "Der Mitarbeiter [CRM_TASK_CREATED_USER] hat eine neue Aufgabe erstellt und Ihnen zugewiesen: [CRM_TASK_URL]\r\n\r\nBeschreibung: [CRM_TASK_DESCRIPTION_TEXT_VERSION]\r\n\r\nFällig am: [CRM_TASK_DUE_DATE]\r\n",
+            'message_html' => "<div style=\"padding:0px; margin:0px; font-family:Tahoma, sans-serif; font-size:14px; width:620px; color: #333;\">\r\n<div style=\"padding: 0px 20px; border:1px solid #e0e0e0; margin-bottom: 10px; width:618px;\">\r\n<h1 style=\"background-color: #e0e0e0;color: #3d4a6b;font-size: 18px;font-weight: normal;padding: 15px 20px;margin-top: 0 !important;margin-bottom: 0 !important;margin-left: -20px !important;margin-right: -20px !important;-webkit-margin-before: 0 !important;-webkit-margin-after: 0 !important;-webkit-margin-start: -20px !important;-webkit-margin-end: -20px !important;\">Neue Aufgabe wurde Ihnen zugewiesen</h1>\r\n\r\n<p style=\"margin-top: 20px;word-wrap: break-word !important;\">Der Mitarbeiter [CRM_TASK_CREATED_USER] hat eine neue Aufgabe erstellt und Ihnen zugewiesen: [CRM_TASK_LINK]</p>\r\n\r\n<p style=\"margin-top: 20px;word-wrap: break-word !important;\">Beschreibung: [CRM_TASK_DESCRIPTION_HTML_VERSION]<br />\r\nF&auml;llig am: [CRM_TASK_DUE_DATE]</p>\r\n</div>\r\n</div>",
+            'html' => 'true',
+            'protected' => 'true',
+            'name' => 'Neue Aufgabe',
+        ))
+    ) {
+        return false;
+    }
+    if (
+        !\MailTemplate::store('crm', array(
+            'key' => 'crm_notify_staff_on_contact_added',
+            'lang_id' => '1',
+            'sender' => 'Ihr Firmenname',
+            'from' => 'info@example.com',
+            'to' => '[CRM_ASSIGNED_USER_EMAIL]',
+            'reply' => 'info@example.com',
+            'cc' => '',
+            'bcc' => '',
+            'subject' => 'Neuer Kontakt erfasst',
+            'message' => "Im CRM wurde ein neuer Kontakt erfasst: [CRM_CONTACT_DETAILS_URL]",
+            'message_html' => "<div style=\"padding:0px; margin:0px; font-family:Tahoma, sans-serif; font-size:14px; width:620px; color: #333;\">\r\n<div style=\"padding: 0px 20px; border:1px solid #e0e0e0; margin-bottom: 10px; width:618px;\">\r\n<h1 style=\"background-color: #e0e0e0;color: #3d4a6b;font-size: 18px;font-weight: normal;padding: 15px 20px;margin-top: 0 !important;margin-bottom: 0 !important;margin-left: -20px !important;margin-right: -20px !important;-webkit-margin-before: 0 !important;-webkit-margin-after: 0 !important;-webkit-margin-start: -20px !important;-webkit-margin-end: -20px !important;\">Neuer Kontakt im CRM</h1>\r\n\r\n<p style=\"margin-top: 20px;word-wrap: break-word !important;\">Neuer Kontakt: [CRM_CONTACT_DETAILS_LINK].</p>\r\n</div>\r\n</div>\r\n",
+            'html' => 'true',
+            'protected' => 'true',
+            'name' => 'Benachrichtigung an Mitarbeiter über neue Kontakte',
+        ))
+    ) {
+        return false;
+    }
+    return true;
+}
+
 function _crmInstall() {
 
     try {
-        $result = \Cx\Lib\UpdateUtil::sql('SELECT `id` FROM `'.DBPREFIX.'core_text` WHERE `section` = \'crm\'');
+        $result = \Cx\Lib\UpdateUtil::sql('SELECT `id` FROM `'.DBPREFIX.'core_text` WHERE `section` = \'crm\' OR `section` = \'Crm\'');
         if (!$result || $result->RecordCount() == 0) {
             // add core mail template table because it is possible it doesn't yet exist
             \Cx\Lib\UpdateUtil::table(
@@ -411,42 +441,8 @@ function _crmInstall() {
             ");
 
             // migrate mail templates
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_bcc\', \'\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_cc\', \'\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_from\', \'info@example.com\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_message\', \'Guten Tag,\r\n\r\nNachfolgend erhalten Sie Ihre persönlichen Zugangsdaten zur Website http://www.example.com/\r\n\r\nBenutzername: [CRM_CONTACT_USERNAME]\r\nKennwort: [CRM_CONTACT_PASSWORD]\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_message_html\', \'<div>Guten Tag,<br />\r\n<br />\r\nNachfolgend erhalten Sie Ihre pers&ouml;nlichen Zugangsdaten zur Website <a href="http://www.example.com/">http://www.example.com/</a><br />\r\n<br />\r\nBenutzername: [CRM_CONTACT_USERNAME]<br />\r\nKennwort: [CRM_CONTACT_PASSWORD]</div>\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_name\', \'Benachrichtigung über Benutzerkonto\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_reply\', \'info@example.com\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_sender\', \'Ihr Firmenname\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_subject\', \'Ihr persönlischer Zugang\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_to\', \'[CRM_CONTACT_EMAIL]\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_bcc\', \'\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_cc\', \'\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_from\', \'info@example.com\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_message\', \'Der Mitarbeiter [CRM_TASK_CREATED_USER] hat eine neue Aufgabe erstellt und Ihnen zugewiesen: [CRM_TASK_URL]\r\n\r\nBeschreibung: [CRM_TASK_DESCRIPTION_TEXT_VERSION]\r\n\r\nFällig am: [CRM_TASK_DUE_DATE]\r\n\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_message_html\', \'<div style="padding:0px; margin:0px; font-family:Tahoma, sans-serif; font-size:14px; width:620px; color: #333;">\r\n<div style="padding: 0px 20px; border:1px solid #e0e0e0; margin-bottom: 10px; width:618px;">\r\n<h1 style="background-color: #e0e0e0;color: #3d4a6b;font-size: 18px;font-weight: normal;padding: 15px 20px;margin-top: 0 !important;margin-bottom: 0 !important;margin-left: -20px !important;margin-right: -20px !important;-webkit-margin-before: 0 !important;-webkit-margin-after: 0 !important;-webkit-margin-start: -20px !important;-webkit-margin-end: -20px !important;">Neue Aufgabe wurde Ihnen zugewiesen</h1>\r\n\r\n<p style="margin-top: 20px;word-wrap: break-word !important;">Der Mitarbeiter [CRM_TASK_CREATED_USER] hat eine neue Aufgabe erstellt und Ihnen zugewiesen: [CRM_TASK_LINK]</p>\r\n\r\n<p style="margin-top: 20px;word-wrap: break-word !important;">Beschreibung: [CRM_TASK_DESCRIPTION_HTML_VERSION]<br />\r\nF&auml;llig am: [CRM_TASK_DUE_DATE]</p>\r\n</div>\r\n</div>\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_name\', \'Neue Aufgabe\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_reply\', \'info@example.com\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_sender\', \'Ihr Firmenname\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_subject\', \'Neue Aufgabe : [CRM_TASK_NAME]\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(13, 1, \'crm\', \'core_mail_template_to\', \'[CRM_ASSIGNED_USER_EMAIL]\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_bcc\', \'\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_cc\', \'\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_from\', \'info@example.com\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_message\', \'Im CRM wurde ein neuer Kontakt erfasst: [CRM_CONTACT_DETAILS_URL]\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_message_html\', \'<div style="padding:0px; margin:0px; font-family:Tahoma, sans-serif; font-size:14px; width:620px; color: #333;">\r\n<div style="padding: 0px 20px; border:1px solid #e0e0e0; margin-bottom: 10px; width:618px;">\r\n<h1 style="background-color: #e0e0e0;color: #3d4a6b;font-size: 18px;font-weight: normal;padding: 15px 20px;margin-top: 0 !important;margin-bottom: 0 !important;margin-left: -20px !important;margin-right: -20px !important;-webkit-margin-before: 0 !important;-webkit-margin-after: 0 !important;-webkit-margin-start: -20px !important;-webkit-margin-end: -20px !important;">Neuer Kontakt im CRM</h1>\r\n\r\n<p style="margin-top: 20px;word-wrap: break-word !important;">Neuer Kontakt: [CRM_CONTACT_DETAILS_LINK].</p>\r\n</div>\r\n</div>\r\n\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_name\', \'Benachrichtigung an Mitarbeiter über neue Kontakte\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_reply\', \'info@example.com\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_sender\', \'Ihr Firmenname\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_subject\', \'Neuer Kontakt erfasst\')');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(14, 1, \'crm\', \'core_mail_template_to\', \'[CRM_ASSIGNED_USER_EMAIL]\')');
-
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES(\'crm_user_account_created\', \'crm\', 12, 1, 1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES(\'crm_notify_staff_on_contact_added\', \'crm\', 14, 1, 1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES(\'crm_task_assigned\', \'crm\', 13, 1, 1)');
-
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'crm\',\'numof_mailtemplate_per_page_backend\',\'config\',\'text\',\'25\',\'\',1001)');
+            installCrmMailTemplates();
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'Crm\',\'numof_mailtemplate_per_page_backend\',\'config\',\'text\',\'25\',\'\',1001)');
         }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);

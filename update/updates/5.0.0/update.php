@@ -528,9 +528,12 @@ function executeContrexxUpdate() {
         }
 
         // we are updating from 3.0.0 rc1, rc2, stable or 3.0.0.1
-        if (!include_once(dirname(__FILE__) . '/update3.php')) {
-            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], dirname(__FILE__) . '/update3.php'));
-            return false;
+        if (!in_array('update3', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            if (!include_once(dirname(__FILE__) . '/update3.php')) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], dirname(__FILE__) . '/update3.php'));
+                return false;
+            }
+            $_SESSION['contrexx_update']['update']['done'][] = 'update3';
         }
     }
         
@@ -2319,7 +2322,7 @@ function removeOldComponents($folders) {
  *
  * @return boolean true on success false on failure
  */
-function _migrateLogs() {
+function _migratePageLogs() {
     $componentNames = array (
         'Access', 'Agb', 'Blog', 'Calendar', 'Checkout', 'Contact', 'Cron',
         'Data', 'Directory', 'DocSys', 'Downloads', 'Ecard', 'Egov', 'Error',
@@ -2341,7 +2344,7 @@ function _migrateLogs() {
         );
 
         if ($result === false) {
-            \DBG::log('Update::_migrateLogs(): Failed to Migrate logs for' .
+            \DBG::log('Update::_migratePageLogs(): Failed to Migrate logs for' .
                       ' Component ' . $componentName);
             return false;
         }
