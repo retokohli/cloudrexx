@@ -449,7 +449,7 @@ class ContrexxUpdate
             // HTTP POST http://updatesrv1.contrexx.com/register
             // license server creates new license and sends info mail to helpdesk for payment
             
-        if (isset($_POST['agb']) && isset($_POST['edition'])) {
+        if (isset($_POST['agb']) && isset($_POST['edition']) && (!isset($_POST['chooseCeOrder']) || $_POST['chooseCeOrder'] != "CE")) {
             $srvUri = 'updatesrv1.contrexx.com';
             $srvPath = '/';
             require_once(UPDATE_LIB.'/PEAR/HTTP/Request2.php');
@@ -517,12 +517,21 @@ class ContrexxUpdate
             'UPDATE_VERSION'                    => $this->getLiteralRepresentationOfVersion($_CONFIG['coreCmsVersion']),
         ));
 
-        if (in_array($_CONFIG['coreCmsEdition'], array('OpenSource', 'Trial', 'Free', 'Basic', 'Premium'))) {
+        if (in_array($_CONFIG['coreCmsEdition'], array('OpenSource', 'Free'))) {
+            // choose between CE and new license
+            $this->objTemplate->touchBlock('update_license_choose');
+            $this->objTemplate->hideBlock('update_license_existing');
+            $this->objTemplate->touchBlock('update_license_new');
+        } else if (in_array($_CONFIG['coreCmsEdition'], array('Trial','Basic', 'Premium'))) {
+            // order new license (business standart|enterprise, non-profit)
+            $this->objTemplate->hideBlock('update_license_choose');
             $this->objTemplate->touchBlock('update_license_new');
             $this->objTemplate->hideBlock('update_license_existing');
         } else {
-            $this->objTemplate->touchBlock('update_license_existing');
+            // keep existing license
+            $this->objTemplate->hideBlock('update_license_choose');
             $this->objTemplate->hideBlock('update_license_new');
+            $this->objTemplate->touchBlock('update_license_existing');
         }
         
         $this->objTemplate->parse('license_info');
@@ -608,14 +617,21 @@ class ContrexxUpdate
                         }
                     }
                     if ($result !== false) {
-                        DBG::msg('-------------------------------------------------------------');
-                        DBG::msg('CLOUDREXX UPDATE - NEW REQUEST');
-                        DBG::msg('Date: ' . date('d.m.Y H:i:s'));
-                        DBG::msg('Get-Params:');
-                        DBG::dump($_GET);
-                        DBG::msg('User: ' . $_SESSION['contrexx_update']['username']);
-                        DBG::msg('-------------------------------------------------------------');
-                        $result = executeContrexxUpdate();
+                        if (!isset($_REQUEST['executeUpdate'])) {
+                            setUpdateMsg('Der Updatevorgang wure unterbrochen', 'title');
+                            setUpdateMsg('Der Updatevorgang ist noch nicht abgeschlossen. Bitte betätigen Sie die Schaltfläche <strong>Update fortzsetzen</strong>, um den Updatevorgang fortzusetzen.', 'msg');
+                            setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="executeUpdate" />', 'button');
+                            $result = false;
+                        } else {
+                            DBG::msg('-------------------------------------------------------------');
+                            DBG::msg('CLOUDREXX UPDATE - NEW REQUEST');
+                            DBG::msg('Date: ' . date('d.m.Y H:i:s'));
+                            DBG::msg('Get-Params:');
+                            DBG::dump($_GET);
+                            DBG::msg('User: ' . $_SESSION['contrexx_update']['username']);
+                            DBG::msg('-------------------------------------------------------------');
+                            $result = executeContrexxUpdate();
+                        }
                     }
                 }
             }

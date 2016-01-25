@@ -25,7 +25,8 @@
  * our trademarks remain entirely with us.
  */
 
-define('UPDATE_PATH', dirname(__FILE__));@include_once(UPDATE_PATH.'/../config/configuration.php');@header('content-type: text/html; charset='.(UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1'));?>
+define('UPDATE_PATH', dirname(__FILE__));@include_once(UPDATE_PATH.'/../config/configuration.php');@header('content-type: application/javascript; charset='.(UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1'));
+?>
 
 var request_active = false;
 var getDebugInfo = false;
@@ -80,7 +81,7 @@ function doUpdate(goBack, viaPost, debug, timeout)
         jQuery.ajax({
             url: 'index.php',
             type: type,
-            data: {'ajax': formData, 'debug_update': getDebugInfo},
+            data: {'ajax': formData, 'debug_update': getDebugInfo, 'executeUpdate': true},
             success: parseResponse,
             error: cxUpdateErrorHandler,
         });
@@ -123,6 +124,20 @@ function getFormData(goBack)
   }
 
   oElements = document.getElementById('wrapper').getElementsByTagName('select');
+  if (oElements.length > 0) {
+    for (i = 0;i < oElements.length; i++) {
+      if (oElements[i].name.search('\[[0-9]+\]$') >= 0) {
+        if (typeof(oFormData[oElements[i].name.substr(0,oElements[i].name.search('\[[0-9]+\]$'))]) == 'undefined') {
+          oFormData[oElements[i].name.substr(0,oElements[i].name.search('\[[0-9]+\]$'))] = new Array();
+        }
+        oFormData[oElements[i].name.substr(0,oElements[i].name.search('\[[0-9]+\]$'))][oElements[i].name.substr(oElements[i].name.search('\[[0-9]+\]$')+1,oElements[i].name.match('\[[0-9]+\]$')[0].length-2)] = oElements[i].value;
+      } else {
+        oFormData[oElements[i].name] = oElements[i].value;
+      }
+    }
+  }
+  
+  oElements = document.getElementById('wrapper').getElementsByTagName('textarea');
   if (oElements.length > 0) {
     for (i = 0;i < oElements.length; i++) {
       if (oElements[i].name.search('\[[0-9]+\]$') >= 0) {
