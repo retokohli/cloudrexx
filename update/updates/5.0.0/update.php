@@ -598,12 +598,12 @@ function executeContrexxUpdate() {
             $_SESSION['contrexx_update']['update']['done'][] = 'coreSettings';
 
             if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-            // till this point the file config/version.php was still loaded upon a request,
-            // therefore we must force a new page request here, to ensure that the file config/version.php
-            // will not be loaded anylonger. This is essential here, otherwise the old values of config/version.php
-            // would screw up the update process
-            setUpdateMsg(1, 'timeout');
-            return false;
+                // till this point the file config/version.php was still loaded upon a request,
+                // therefore we must force a new page request here, to ensure that the file config/version.php
+                // will not be loaded anylonger. This is essential here, otherwise the old values of config/version.php
+                // would screw up the update process
+                setUpdateMsg(1, 'timeout');
+                return false;
             }
         }
     }
@@ -1614,7 +1614,7 @@ function backupModifiedFile($file)
             $idx++;
             $suffix = '_'.$idx;
         }
-        
+
         $customizingFile .= $suffix;
     }
 
@@ -1788,7 +1788,7 @@ function renameCustomizingFile($file)
             $idx++;
             $suffix = '_'.$idx;
         }
-        
+
         $customizingFile .= $suffix;
     } else {
         return true;
@@ -1896,7 +1896,7 @@ function migrateSessionTable()
             'InnoDB'
         );
         \Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `'. DBPREFIX .'session_variable`');
-        
+
         // update and empty sessions table
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'sessions',
@@ -1919,7 +1919,7 @@ function migrateSessionTable()
         $_SESSION['contrexx_update']['update']['done'][] = 'session';
         $sessionArray = $_SESSION;
         insertSessionArray(session_id(), $sessionArray);
-        
+
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
