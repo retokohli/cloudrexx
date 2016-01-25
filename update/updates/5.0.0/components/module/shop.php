@@ -2148,4 +2148,6 @@ function _shopInstall()
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
+
+    // shop install sql statements will be added here by pkg manager
 }

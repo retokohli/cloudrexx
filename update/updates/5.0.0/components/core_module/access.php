@@ -744,7 +744,9 @@ function _accessUpdate()
                     'is_admin' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
                     'username' => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'is_admin'),
                     'password' => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'username'),
-                    'regdate' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'password'),
+                    'auth_token' => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'password'),
+                    'auth_token_timeout' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'auth_token'),
+                    'regdate' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'auth_token_timeout'),
                     'expiration' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'regdate'),
                     'validity' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'expiration'),
                     'last_auth' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'validity'),
@@ -755,14 +757,12 @@ function _accessUpdate()
                     'frontend_lang_id' => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'email_access'),
                     'backend_lang_id' => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'frontend_lang_id'),
                     'active' => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'backend_lang_id'),
-                    'primary_group' => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'active'),
+                    'verified' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'active'),
+                    'primary_group' => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'verified'),
                     'profile_access' => array('type' => 'ENUM(\'everyone\',\'members_only\',\'nobody\')', 'notnull' => true, 'default' => 'members_only', 'after' => 'primary_group'),
                     'restore_key' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'profile_access'),
                     'restore_key_time' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'restore_key'),
-                    'u2u_active' => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '1', 'after' => 'restore_key_time'),
-                    'auth_token' => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'password'),
-                    'auth_token_timeout' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'auth_token'),
-                    'verified' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'active'),
+                    'u2u_active' => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '1', 'after' => 'restore_key_time')
                 ),
                 array(
                     'username' => array('fields' => array('username'))

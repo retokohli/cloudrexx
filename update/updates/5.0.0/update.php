@@ -2008,10 +2008,15 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
     }
 
     // Only these files introduce changes for all versions
-    $essentialFiles = array('core', 'settings', 'access', 'contact', 'contentmanager',
-        'news', 'blog', 'calendar', 'crm', 'data', 'downloads', 'filesharing',
-        'mediadir', 'podcast', 'shop',
-        'routing', 'wysiwyg', 'cron', 'linkmanager',
+    $essentialFiles = array(
+        // core
+        'core', 'routing', 'settings','wysiwyg',
+        // core module
+        'access', 'contact', 'contentmanager',
+        'cron', 'linkmanager', 'news',
+        // module
+        'blog', 'calendar', 'crm', 'data', 'directory', 'downloads', 'ecard', 'filesharing',
+        'forum', 'gallery', 'market', 'mediadir', 'memberdir', 'newsletter', 'podcast', 'shop',
     );
 
     foreach ($components as $dir) {

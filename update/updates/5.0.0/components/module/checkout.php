@@ -30,7 +30,7 @@ function _checkoutUpdate()
 {
     global $objUpdate, $_CONFIG;
 
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         try {
 
             /*********************************

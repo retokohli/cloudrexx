@@ -127,8 +127,8 @@ function _mediadirUpdate()
                     'use_level'                  => array('type' => 'INT(1)', 'after' => 'active'),
                     'use_category'               => array('type' => 'INT(1)', 'after' => 'use_level'),
                     'use_ready_to_confirm'       => array('type' => 'INT(1)', 'after' => 'use_category'),
-                        'entries_per_page' => array('type' => 'INT(7)', 'after' => 'use_ready_to_confirm'),
-                        'cmd' => array('type' => 'VARCHAR(50)', 'after' => 'entries_per_page')
+                    'entries_per_page'           => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'use_ready_to_confirm'),
+                    'cmd'                        => array('type' => 'VARCHAR(50)', 'after' => 'entries_per_page')
                 )
             );
         }

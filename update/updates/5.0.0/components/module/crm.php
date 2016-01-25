@@ -39,7 +39,8 @@ function _crmUpdate() {
                     'customer_name'          => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'customer_type'),
                     'customer_website'       => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'customer_name'),
                     'customer_addedby'       => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_website'),
-                    'customer_currency'      => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_addedby'),
+                    'company_size'           => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_addedby'),
+                    'customer_currency'      => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'company_size'),
                     'contact_familyname'     => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'customer_currency'),
                     'contact_role'           => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'contact_familyname'),
                     'contact_customer'       => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'contact_role'),
@@ -52,9 +53,8 @@ function _crmUpdate() {
                     'datasource'             => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'user_account'),
                     'profile_picture'        => array('type' => 'VARCHAR(256)', 'after' => 'datasource'),
                     'status'                 => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '1', 'after' => 'profile_picture'),
-                        'added_date'             => array('type' => 'date', 'after' => 'status'),
-                        'email_delivery'         => array('type' => 'TINYINT(2)', 'notnull' => false, 'default' => '1', 'after' => 'added_date'),
-                        'company_size'           => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_addedby'),
+                    'added_date'             => array('type' => 'date', 'after' => 'status'),
+                    'email_delivery'         => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '1', 'after' => 'added_date'),
                 ),
                 array(
                     'contact_customer'       => array('fields' => array('contact_customer')),
@@ -451,4 +451,6 @@ function _crmInstall() {
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
+
+    // crm install sql statements will be added here by pkg manager
 }
