@@ -543,6 +543,7 @@ function executeContrexxUpdate() {
 
     // Update languages, access_groups, modules table and so on
     if (!in_array('coreUpdate', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        \DBG::msg('update: process _coreUpdate()');
         $result = _coreUpdate();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -558,6 +559,7 @@ function executeContrexxUpdate() {
     // check for any missed modules
     $missedModules = array();
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        \DBG::msg('update: check for missed and conflicted modules');
         $missedModules = getMissedModules();
         $conflictedModules = getConflictedModules($missedModules);
         if (!empty($conflictedModules)) {
@@ -574,6 +576,7 @@ function executeContrexxUpdate() {
 
     $arrDirs = array('core_module', 'module');
     // migrate the components
+    \DBG::msg('update: migrate components');
     if (!_migrateComponents($arrDirs, $objUpdate, $missedModules)) {
         setUpdateMsg('Die Komponenten konnten nicht migiert werden.');
         return false;
@@ -594,6 +597,7 @@ function executeContrexxUpdate() {
         !in_array('coreSettings', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
         !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
     ) {
+        \DBG::msg('update: update settings');
         $result = _updateSettings();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -619,6 +623,7 @@ function executeContrexxUpdate() {
     }
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        \DBG::msg('update: continue update for cx < 3.0.0');
         ///////////////////////////////////////////
         // CONTINUE UPDATE FOR NON CX 3 VERSIONS //
         ///////////////////////////////////////////
@@ -626,6 +631,7 @@ function executeContrexxUpdate() {
         $updateStatus = true;
 
         if (!in_array('coreModuleRepository', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            \DBG::msg('update: update module repository');
             $result = _updateModuleRepository();
             if ($result === false) {
                 DBG::msg('unable to update module repository');
@@ -639,6 +645,7 @@ function executeContrexxUpdate() {
         }
 
         if (!in_array('convertTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            \DBG::msg('update: convert themes 2 component');
             $result = _convertThemes2Component();
             if ($result === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -652,6 +659,7 @@ function executeContrexxUpdate() {
         }
 
         if (!in_array('moduleTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            \DBG::msg('update: update module pages');
             if (_updateModulePages($viewUpdateTable) === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
                     DBG::msg('unable to update module templates');
@@ -664,6 +672,7 @@ function executeContrexxUpdate() {
         }
 
         if (!in_array('moduleStyles', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            \DBG::msg('update: update css definitions');
             if (_updateCssDefinitions($viewUpdateTable, $objUpdate) === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
                     setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
@@ -675,6 +684,7 @@ function executeContrexxUpdate() {
         }
 
         if (!in_array('navigations', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            \DBG::msg('update: update navigations');
             if (_updateNavigations() === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
                     setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_NAVIGATIONS']), 'title');
@@ -686,6 +696,7 @@ function executeContrexxUpdate() {
         }
 
         if (file_exists(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
+            \DBG::msg('update: backup customized index.php file');
             \DBG::msg('/cadmin/index.php still exists...');
             // move cadmin index.php if its customized
             if (!loadMd5SumOfOriginalCxFiles()) {
@@ -722,6 +733,7 @@ function executeContrexxUpdate() {
         !in_array('coreModules', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
         !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
     ) {
+        \DBG::msg('update: update modules');
         $result = _updateModules();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -738,6 +750,7 @@ function executeContrexxUpdate() {
         !in_array('coreBackendAreas', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
         !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
     ) {
+        \DBG::msg('update: update backend areas');
         $result = _updateBackendAreas();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -754,6 +767,7 @@ function executeContrexxUpdate() {
         !in_array('coreComponent', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
         !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
     ) {
+        \DBG::msg('update: update component');
         $result = _updateComponent();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -768,6 +782,7 @@ function executeContrexxUpdate() {
     // Migrate page logs
     if(!in_array('pageLogs', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))
         || !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        \DBG::msg('update: migrate page logs');
         $result = _migratePageLogs();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -779,6 +794,7 @@ function executeContrexxUpdate() {
     }
 
     // Update .htaccess
+    \DBG::msg('update: create htaccess file');
     if (!createHtAccess()) {
         $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
         $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
@@ -788,6 +804,7 @@ function executeContrexxUpdate() {
     }
 
     // Update license
+    \DBG::msg('update: update license');
     $arrUpdate = $objUpdate->getLoadedVersionInfo();
     $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
 
@@ -808,6 +825,7 @@ function executeContrexxUpdate() {
     ////////////////
     // END UPDATE //
     ////////////////
+    \DBG::msg('update: end of update reached :)');
 
     return true;
 }
@@ -2360,7 +2378,7 @@ class License {
     }
 
     public function update($getNew = true) {
-        global $documentRoot, $_CONFIG, $objUser, $license, $objDatabase;
+        global $documentRoot, $_CONFIG, $objUser, $license, $objDatabase, $objUpdate;
 
         if (@include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
             $_GET['force'] = 'true';
@@ -2383,9 +2401,15 @@ class License {
 
         // we force a version number update. if the license update failed
         // version number will not be upgraded yet:
-        \Cx\Lib\UpdateUtil::sql('UPDATE `' . DBPREFIX . 'settings` SET `setvalue` = \'' . $_CONFIG['coreCmsVersion'] . '\' WHERE `setid` = 97');
-        $settingsManager = new \settingsManager();
-        $settingsManager->writeSettingsFile();
+        $arrUpdate = $objUpdate->getLoadedVersionInfo();
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'release','Yaml');
+        \Cx\Core\Setting\Controller\Setting::set('coreCmsVersion', $arrUpdate['cmsVersion']);
+        \Cx\Core\Setting\Controller\Setting::set('coreCmsCodeName', $arrUpdate['cmsCodeName']);
+        \Cx\Core\Setting\Controller\Setting::set('coreCmsReleaseDate', $arrUpdate['cmsReleaseDate']);
+        \Cx\Core\Setting\Controller\Setting::set('coreCmsName', $arrUpdate['cmsName']);
+        \Cx\Core\Setting\Controller\Setting::set('coreCmsStatus', $arrUpdate['cmsStatus']);
+        \Cx\Core\Setting\Controller\Setting::updateAll();
+        Cx\Core\Config\Controller\Config::updatePhpCache();
 
         return ($return === true);
     }

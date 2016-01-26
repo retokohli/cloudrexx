@@ -111,4 +111,6 @@ function _checkoutUpdate()
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
+
+    return true;
 }

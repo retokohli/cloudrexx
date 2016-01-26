@@ -783,10 +783,12 @@ class ContrexxUpdate
                 return false;
             }
             
+            \DBG::msg(__METHOD__.': '.UPDATE_UPDATES);
             while ($file = readdir($dh)) {
                 if (preg_match('/^\d(\.\d)+$/', $file)) {
                     $arrUpdate = false;
                     
+                    \DBG::msg('load: '.UPDATE_UPDATES . '/' . $file . '/config.inc.php');
                     if (@include_once(UPDATE_UPDATES . '/' . $file . '/config.inc.php')) {
                         if (is_array($arrUpdate)) {
                             $updateVersionIsNewer  = $this->_isNewerVersion($_CONFIG['coreCmsVersion'], $arrUpdate['cmsVersion']);
@@ -802,6 +804,7 @@ class ContrexxUpdate
             }
         }
         
+        \DBG::dump($arrVersions);
         return $arrVersions;
     }
     

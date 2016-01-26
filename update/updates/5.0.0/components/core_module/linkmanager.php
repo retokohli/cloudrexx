@@ -98,4 +98,6 @@ function _linkmanagerUpdate()
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
+
+    return true;
 }

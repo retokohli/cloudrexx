@@ -49,4 +49,6 @@ function _wysiwygUpdate()
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
+
+    return true;
 }
