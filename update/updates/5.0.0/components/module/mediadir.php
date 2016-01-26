@@ -605,9 +605,6 @@ Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] ge
         \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_rel_entry_inputfields`
                                  SET `value` = REPLACE(`value`, 'images/mediadir', 'images/MediaDir')
                                  WHERE `value` LIKE ('" . ASCMS_PATH_OFFSET . "/images/mediadir%')");
-        \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_rel_entry_inputfields_clean1`
-                                 SET `value` = REPLACE(`value`, 'images/mediadir', 'images/MediaDir')
-                                 WHERE `value` LIKE ('" . ASCMS_PATH_OFFSET . "/images/mediadir%')");
 
         //Update script for moving the folder
         $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';

@@ -935,6 +935,12 @@ class FileSystem
         self::path_relative_to_root($to_path);
         if (self::exists($to_path) && !$force)
             return false;
+
+        // verify that parent directory of target location does exist
+        if (!self::exists(dirname($to_path))) {
+            \Cx\Lib\FileSystem\FileSystem::make_folder(dirname($to_path), true);
+        }
+
         if (!rename(
             ASCMS_DOCUMENT_ROOT.'/'.$from_path,
             ASCMS_DOCUMENT_ROOT.'/'.$to_path)) {

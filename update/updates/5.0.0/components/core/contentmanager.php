@@ -102,7 +102,7 @@ function _contentmanagerUpdate()
                     }
                     $designTemplateName  = $page->getSkin() ? $themeRepo->findById($page->getSkin())->getFoldername() : $themeRepo->getDefaultTheme()->getFoldername();
                     $cmd                 = !$page->getCmd() ? 'Default' : ucfirst($page->getCmd());
-                    $moduleFolderName    = contrexx_isCoreModule($page->getModule()) ? 'core_modules' : 'modules';
+                    $moduleFolderName    = \Cx\Core\ModuleChecker::getInstance(\Env::get('em'), \Env::get('db'), \Env::get('ClassLoader'))->isCoreModule($page->getModule()) ? 'core_modules' : 'modules';
 
                     $themesPath = ASCMS_THEMES_PATH . '/' . $designTemplateName;
 
