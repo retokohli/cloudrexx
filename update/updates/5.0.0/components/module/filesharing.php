@@ -92,4 +92,6 @@ function _filesharingUpdate()
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
+
+    return true;
 }

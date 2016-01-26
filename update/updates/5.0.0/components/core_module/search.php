@@ -38,4 +38,5 @@ function _searchUpdate() {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    return true;
 }

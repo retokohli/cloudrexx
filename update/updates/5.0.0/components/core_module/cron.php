@@ -45,4 +45,6 @@ function _cronUpdate()
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
+
+    return true;
 }

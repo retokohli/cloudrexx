@@ -47,4 +47,6 @@ function _routingUpdate()
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
+
+    return true;
 }

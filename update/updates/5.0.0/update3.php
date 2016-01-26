@@ -323,7 +323,7 @@ $updatesHotfixToSp1 = array(
             'lang'                               => array('type' => 'INT(11)', 'after' => 'nodeIdShadowed'),
             'type'                               => array('type' => 'VARCHAR(16)', 'after' => 'lang'),
             'caching'                            => array('type' => 'TINYINT(1)', 'after' => 'type'),
-            'updatedAt'                          => array('type' => 'timestamp', 'default' => null, 'notnull' => false, 'after' => 'caching'),
+            'updatedAt'                          => array('type' => 'timestamp', 'after' => 'caching', 'notnull' => false),
             'updatedBy'                          => array('type' => 'CHAR(40)', 'after' => 'updatedAt'),
             'title'                              => array('type' => 'VARCHAR(255)', 'after' => 'updatedBy'),
             'linkTarget'                         => array('type' => 'VARCHAR(16)', 'notnull' => false, 'after' => 'title'),
@@ -332,15 +332,19 @@ $updatesHotfixToSp1 = array(
             'content'                            => array('type' => 'longtext', 'after' => 'slug'),
             'sourceMode'                         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content'),
             'customContent'                      => array('type' => 'VARCHAR(64)', 'notnull' => false, 'after' => 'sourceMode'),
-            'cssName'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'customContent'),
+            'useCustomContentForAllChannels'     => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'customContent'),
+            'applicationTemplate'                => array('type' => 'VARCHAR(100)', 'notnull' => false, 'after' => 'useCustomContentForAllChannels'),
+            'useCustomApplicationTemplateForAllChannels' => array('type' => 'TINYINT(2)', 'notnull' => false, 'after' => 'applicationTemplate'),
+            'cssName'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useCustomApplicationTemplateForAllChannels'),
             'cssNavName'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'cssName'),
             'skin'                               => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cssNavName'),
-            'metatitle'                          => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'skin'),
+            'useSkinForAllChannels'              => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'skin'),
+            'metatitle'                          => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useSkinForAllChannels'),
             'metadesc'                           => array('type' => 'text', 'after' => 'metatitle'),
             'metakeys'                           => array('type' => 'text', 'after' => 'metadesc'),
             'metarobots'                         => array('type' => 'VARCHAR(7)', 'notnull' => false, 'after' => 'metakeys'),
-            'start'                              => array('type' => 'timestamp', 'notnull' => false, 'default' => null, 'after' => 'metarobots'),
-            'end'                                => array('type' => 'timestamp', 'notnull' => false, 'default' => null, 'after' => 'start'),
+            'start'                              => array('type' => 'timestamp', 'notnull' => false, 'after' => 'metarobots'),
+            'end'                                => array('type' => 'timestamp', 'notnull' => false, 'after' => 'start'),
             'editingStatus'                      => array('type' => 'VARCHAR(16)', 'after' => 'end'),
             'protection'                         => array('type' => 'INT(11)', 'after' => 'editingStatus'),
             'frontendAccessId'                   => array('type' => 'INT(11)', 'after' => 'protection'),
@@ -1039,7 +1043,6 @@ $updates310To310Sp1 = array(
         (57, 'forceProtocolFrontend', 'none', 1),
         (58, 'forceProtocolBackend', 'none', 1)
         ON DUPLICATE KEY UPDATE `setname` = VALUES(`setname`)",
-    'ALTER TABLE `' . DBPREFIX . 'module_crm_contacts` CONVERT TO CHARACTER SET `utf8`',
     array(
         'table' => DBPREFIX.'module_crm_contacts',
         'structure' => array(
@@ -1073,6 +1076,7 @@ $updates310To310Sp1 = array(
             'customer_id_2'          => array('fields' => array('customer_id','customer_name','contact_familyname','contact_role','notes'), 'type' => 'FULLTEXT')
         ),
     ),
+    'ALTER TABLE `' . DBPREFIX . 'module_crm_contacts` CONVERT TO CHARACTER SET `utf8`',
     array(
         'table' => DBPREFIX.'module_crm_currency',
         'structure' => array(
@@ -1317,7 +1321,7 @@ $updates310Sp1To310Sp2 = array(
             'lang'                               => array('type' => 'INT(11)', 'after' => 'nodeIdShadowed'),
             'type'                               => array('type' => 'VARCHAR(16)', 'after' => 'lang'),
             'caching'                            => array('type' => 'TINYINT(1)', 'after' => 'type'),
-            'updatedAt'                          => array('type' => 'timestamp', 'notnull' => false, 'after' => 'caching'),
+            'updatedAt'                          => array('type' => 'timestamp', 'after' => 'caching', 'notnull' => false),
             'updatedBy'                          => array('type' => 'CHAR(40)', 'after' => 'updatedAt'),
             'title'                              => array('type' => 'VARCHAR(255)', 'after' => 'updatedBy'),
             'linkTarget'                         => array('type' => 'VARCHAR(16)', 'notnull' => false, 'after' => 'title'),
@@ -1327,7 +1331,9 @@ $updates310Sp1To310Sp2 = array(
             'sourceMode'                         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content'),
             'customContent'                      => array('type' => 'VARCHAR(64)', 'notnull' => false, 'after' => 'sourceMode'),
             'useCustomContentForAllChannels'     => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'customContent'),
-            'cssName'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useCustomContentForAllChannels'),
+            'applicationTemplate'                => array('type' => 'VARCHAR(100)', 'notnull' => false, 'after' => 'useCustomContentForAllChannels'),
+            'useCustomApplicationTemplateForAllChannels' => array('type' => 'TINYINT(2)', 'notnull' => false, 'after' => 'applicationTemplate'),
+            'cssName'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useCustomApplicationTemplateForAllChannels'),
             'cssNavName'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'cssName'),
             'skin'                               => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cssNavName'),
             'useSkinForAllChannels'              => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'skin'),
@@ -1645,6 +1651,7 @@ if ($version == 'rc1') {
  * EXECUTE DB-UPDATES
  *
  **************************************/
+\DBG::msg('update3: execute DB-updates');
 if (!isset($_SESSION['contrexx_update']['db3_migration'])) {
     $_SESSION['contrexx_update']['db3_migration'] = 0;
 }
@@ -1680,6 +1687,7 @@ foreach ($updates as $update) {
 }
 
 // Add primary keys
+\DBG::msg('update3: add access primary keys');
 $result = \Cx\Lib\UpdateUtil::sql('SHOW KEYS FROM `' . DBPREFIX . 'access_group_dynamic_ids`');
 if ($result->EOF) {
     \Cx\Lib\UpdateUtil::sql('ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_dynamic_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )');
@@ -1690,6 +1698,7 @@ if ($result->EOF) {
 }
 
 // reimport module repository
+\DBG::msg('update3: reimport module repository');
 \Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `'.DBPREFIX.'module_repository`');
 $sqlQuery = '';
 $fp = @fopen($documentRoot.'/installer/data/contrexx_dump_data.sql', 'r');
@@ -1719,6 +1728,7 @@ if ($fp !== false) {
 }
 
 // add missing "remove page" log entries
+\DBG::msg('update3: add missing "remove page" log entries');
 $sqlQuery = '
     SELECT
         MAX(l1.version) as `version`,
@@ -1785,6 +1795,7 @@ while (!$result->EOF) {
 
 // fix fallback pages
 if ($version == 'rc1') {
+    \DBG::msg('update3: fix fallback pages');
     $em = \Env::get('em');
     $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
@@ -1808,6 +1819,7 @@ if ($version == 'rc1' || $version == 'rc2'
 
     // newsletter module
     // decode the urls of newsletter module
+    \DBG::msg('update3: decode the urls of newsletter module');
     try {
         $objResult = \Cx\Lib\UpdateUtil::sql('SELECT `id`, `url` FROM `'.DBPREFIX.'module_newsletter_email_link`');
         if ($objResult !== false && $objResult->RecordCount() > 0) {
@@ -1828,6 +1840,7 @@ if ($version == 'rc1' || $version == 'rc2'
     $table_name = DBPREFIX.'module_shop_currencies';
     if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
         && \Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
+        \DBG::msg('update3: update '.$table_name);
         $query = "
             UPDATE `$table_name`
             SET sort_order = 0 WHERE sort_order IS NULL";
@@ -1848,6 +1861,7 @@ if ($version == 'rc1' || $version == 'rc2'
     }
     $table_name = DBPREFIX.'module_shop_payment_processors';
     if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
+        \DBG::msg('update3: update '.$table_name);
         \Cx\Lib\UpdateUtil::table($table_name,
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -1865,6 +1879,7 @@ if ($version == 'rc1' || $version == 'rc2'
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     // contact core_module
     // update the content pages
+    \DBG::msg('update3: update contact content pages');
     $em = \Env::get('em');
     $cl = \Env::get('ClassLoader');
     $cl->loadFile(ASCMS_CORE_MODULE_PATH . '/contact/admin.class.php');
@@ -1892,6 +1907,7 @@ if (   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
 ) {
     try {
         // replace sigma template block in discounts page
+        \DBG::msg('update3: replace sigma template block in discounts page');
         \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(
             array('module'=>'shop', 'cmd' => 'discounts'),
             '/<!--\s+(BEGIN|END)\s+shopProductRow1\s+-->/', '<!-- $1 shopProductRow -->',
@@ -1939,6 +1955,7 @@ HTML;
 
         // add needed placeholders
         // this adds the missing placeholders [[SHOP_AGB]], [[SHOP_CANCELLATION_TERMS_CHECKED]]
+        \DBG::msg('update3: migrate shop payment page');
         $search = array(
         '/(<input[^>]+name=")(agb|cancellation_terms)(")([^>]*>)/ms',
         );
@@ -1961,6 +1978,7 @@ HTML;
         \Cx\Lib\UpdateUtil::setSourceModeOnContentPage(array('module' => 'shop', 'cmd' => 'payment'), '3.0.3');
 
         // replace comments placeholder with a sigma block , news module
+        \DBG::msg('update3: migrate news page');
         $search = array(
             '/.*\{NEWS_COUNT_COMMENTS\}.*/ms',
         );
@@ -1985,6 +2003,7 @@ HTML;
 
 try {
     // migrate content page to version 3.0.1
+    \DBG::msg('update3: access signup page');
     $search = array(
         '/(.*)/ms',
     );
@@ -2014,6 +2033,7 @@ try {
 
 // update page and node constraints
 try {
+    \DBG::msg('update3: add content page/node constraints');
     \Cx\Lib\UpdateUtil::set_constraints(DBPREFIX.'content_node', array(
         'parent_id' => array(
             'table'     => DBPREFIX.'content_node',
@@ -2035,6 +2055,7 @@ try {
 }
 
 // update filesharing page, add confirm deletion view
+\DBG::msg('update3: migrate filesharing page');
 $search = array(
     '/.*/ms',
 );
@@ -2062,6 +2083,7 @@ HTMLCODE;
 if($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0') &&
     (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_news_categories_catid') || \Cx\Lib\UpdateUtil::table_empty(DBPREFIX.'module_news_categories_catid'))
 ){
+    \DBG::msg('update3: migrate news categories (nestedset)');
     try {
         /************************************************
         * EXTENSION:    Categories as NestedSet         *
@@ -2159,6 +2181,7 @@ if($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0') &&
  **************************************/
 // add access id 176 for user groups which had access to 172 if version is older than 3.1.0
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+    \DBG::msg('update3: fix newsletter access ids');
     try {
         $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 172 GROUP BY `group_id`");
         if ($result !== false) {
@@ -2180,6 +2203,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
  **************************************/
 // add access id 4 for user groups which had access to 13 or 161
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+    \DBG::msg('update3: fix e-commerce access ids');
     try {
         $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 13 OR access_id = 161 GROUP BY `group_id`");
         if ($result !== false) {
@@ -2201,6 +2225,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
  **************************************/
 // add permission to stats settings if the user had permission to stats
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+    \DBG::msg('update3: fix stats access ids');
     try {
         $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 163 GROUP BY `group_id`");
         if ($result !== false) {
@@ -2222,6 +2247,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
  **************************************/
 // add permission to downloads edit all downloads if the user had permission to downloads administer
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0.2')) {
+    \DBG::msg('update3: fix downloads access ids');
     try {
         $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 142 GROUP BY `group_id`");
         if ($result !== false) {
@@ -2237,6 +2263,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0.2')) {
 }
 
 if (file_exists(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
+    \DBG::msg('update3: backup index.php -> customizing');
     // move cadmin index.php if its customized
     if (!loadMd5SumOfOriginalCxFiles()) {
         return false;
@@ -2262,15 +2289,9 @@ if (file_exists(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
     }
 }
 
-/***************************************
- *
- * CALENDAR: FIX TABLE
- * only for 3.1.0
- *
- **************************************/
-
 // fixing news container text setting which cannot be activated
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.1')) {
+    \DBG::msg('update3: fix news container text setting');
     try {
         $result = \Cx\Lib\UpdateUtil::sql('SELECT `name` FROM `'.DBPREFIX.'module_news_settings` WHERE `name` = "news_use_teaser_text"');
         if ($result && ($result->RecordCount() == 0)) {
@@ -2285,6 +2306,7 @@ $arrContentSites = array(
     'media1', 'media2', 'media3', 'media4',
 );
 // replace source url to image
+\DBG::msg('update3: migrate media pages (3.1.1)');
 foreach ($arrContentSites as $module) {
     try {
         \Cx\Lib\UpdateUtil::migrateContentPage(
@@ -2304,6 +2326,7 @@ $arrContentSites = array(
     'media1', 'media2', 'media3', 'media4',
 );
 // replace source url to image
+\DBG::msg('update3: migrate media pages (3.1.2)');
 foreach ($arrContentSites as $module) {
     try {
         \Cx\Lib\UpdateUtil::migrateContentPage(
@@ -2320,6 +2343,7 @@ foreach ($arrContentSites as $module) {
 
 // update calendar data to version 3.2.0
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+    \DBG::msg('update3: update calendar data to vesion 3.2.0');
     $languages = FWLanguage::getLanguageArray();
 
     try {
@@ -2351,23 +2375,8 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
 }
 
 // fix tree
+\DBG::msg('update3: fix content tree');
 \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
 
-require(dirname(__FILE__).'/config.inc.php');
-\Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsVersion'] . '\' WHERE `setname` = \'coreCmsVersion\'');
-\Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsCodeName'] . '\' WHERE `setname` = \'coreCmsCodeName\'');
-\Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsReleaseDate'] . '\' WHERE `setname` = \'coreCmsReleaseDate\'');
-\Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsName'] . '\' WHERE `setname` = \'coreCmsName\'');
-\Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsStatus'] . '\' WHERE `setname` = \'coreCmsStatus\'');
-
-// define the missing placeholders which are used by settingsManager to locate the settings file
-if (!defined('ASCMS_INSTANCE_PATH')) {
-    define('ASCMS_INSTANCE_PATH', $_PATHCONFIG['ascms_root']);
-}
-if (!defined('ASCMS_INSTANCE_OFFSET')) {
-    define('ASCMS_INSTANCE_OFFSET', $_PATHCONFIG['ascms_root_offset']);
-}
-$objSettings = new \settingsManager();
-$objSettings->writeSettingsFile();
-require($documentRoot.'/config/settings.php');
+\DBG::msg('update3: end of script reached');
 return true;
