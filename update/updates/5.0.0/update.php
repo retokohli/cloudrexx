@@ -422,110 +422,114 @@ function executeContrexxUpdate() {
         ///////////////////////////////////////////
         // BEGIN: UPDATE FOR CONTREXX 3 OR NEWER //
         ///////////////////////////////////////////
-        $result = _updateModuleRepository();
-        if ($result === false) {
-            DBG::msg('unable to update module repository');
+        if (!in_array('coreModuleRepository', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            $result = _updateModuleRepository();
+            if ($result === false) {
+                DBG::msg('unable to update module repository');
+                if (empty($objUpdate->arrStatusMsg['title'])) {
+                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY']), 'title');
+                }
+                return false;
+            }
+            $_SESSION['contrexx_update']['update']['done'][] = 'coreModuleRepository';
+            unset($_SESSION['contrexx_update']['update']['done']['coreModuleRepositoryDone']);
+        }
+
+        try {
+            \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry`
+                SET `object_class` = \'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Entity\\\\Page\'
+                WHERE object_class = \'Cx\\\\Model\\\\ContentManager\\\\Page\'');
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+
+        \Cx\Lib\UpdateUtil::sql('
+            ALTER TABLE `' . DBPREFIX . 'content_node` ENGINE = INNODB
+        ');
+
+        // before an update of module page can be done, the db changes have to be done
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX . 'content_page',
+            array(
+                'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'node_id'                            => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
+                'nodeIdShadowed'                     => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'node_id'),
+                'lang'                               => array('type' => 'INT(11)', 'after' => 'nodeIdShadowed'),
+                'type'                               => array('type' => 'VARCHAR(16)', 'after' => 'lang'),
+                'caching'                            => array('type' => 'TINYINT(1)', 'after' => 'type'),
+                'updatedAt'                          => array('type' => 'timestamp', 'after' => 'caching', 'notnull' => false),
+                'updatedBy'                          => array('type' => 'CHAR(40)', 'after' => 'updatedAt'),
+                'title'                              => array('type' => 'VARCHAR(255)', 'after' => 'updatedBy'),
+                'linkTarget'                         => array('type' => 'VARCHAR(16)', 'notnull' => false, 'after' => 'title'),
+                'contentTitle'                       => array('type' => 'VARCHAR(255)', 'after' => 'linkTarget'),
+                'slug'                               => array('type' => 'VARCHAR(255)', 'after' => 'contentTitle'),
+                'content'                            => array('type' => 'longtext', 'after' => 'slug'),
+                'sourceMode'                         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content'),
+                'customContent'                      => array('type' => 'VARCHAR(64)', 'notnull' => false, 'after' => 'sourceMode'),
+                'useCustomContentForAllChannels'     => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'customContent'),
+                'applicationTemplate'                => array('type' => 'VARCHAR(100)', 'notnull' => false, 'after' => 'useCustomContentForAllChannels'),
+                'useCustomApplicationTemplateForAllChannels' => array('type' => 'TINYINT(2)', 'notnull' => false, 'after' => 'applicationTemplate'),
+                'cssName'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useCustomApplicationTemplateForAllChannels'),
+                'cssNavName'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'cssName'),
+                'skin'                               => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cssNavName'),
+                'useSkinForAllChannels'              => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'skin'),
+                'metatitle'                          => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useSkinForAllChannels'),
+                'metadesc'                           => array('type' => 'text', 'after' => 'metatitle'),
+                'metakeys'                           => array('type' => 'text', 'after' => 'metadesc'),
+                'metarobots'                         => array('type' => 'VARCHAR(7)', 'notnull' => false, 'after' => 'metakeys'),
+                'start'                              => array('type' => 'timestamp', 'notnull' => false, 'after' => 'metarobots'),
+                'end'                                => array('type' => 'timestamp', 'notnull' => false, 'after' => 'start'),
+                'editingStatus'                      => array('type' => 'VARCHAR(16)', 'after' => 'end'),
+                'protection'                         => array('type' => 'INT(11)', 'after' => 'editingStatus'),
+                'frontendAccessId'                   => array('type' => 'INT(11)', 'after' => 'protection'),
+                'backendAccessId'                    => array('type' => 'INT(11)', 'after' => 'frontendAccessId'),
+                'display'                            => array('type' => 'TINYINT(1)', 'after' => 'backendAccessId'),
+                'active'                             => array('type' => 'TINYINT(1)', 'after' => 'display'),
+                'target'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'active'),
+                'module'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'target'),
+                'cmd'                                => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'module')
+            ),
+            array(
+                'node_id'                            => array('fields' => array('node_id','lang'), 'type' => 'UNIQUE'),
+                'IDX_D8E86F54460D9FD7'               => array('fields' => array('node_id'))
+            ),
+            'InnoDB',
+            '',
+            array(
+                'node_id' => array(
+                    'table'     => DBPREFIX.'content_node',
+                    'column'    => 'id',
+                    'onDelete'  => 'SET NULL',
+                    'onUpdate'  => 'NO ACTION',
+                ),
+            )
+        );
+
+        if (_convertThemes2Component() === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY']), 'title');
+                DBG::msg('unable to convert themes to component');
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
             }
             return false;
-        } else {
-            try {
-                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry`
-                    SET `object_class` = \'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Entity\\\\Page\'
-                    WHERE object_class = \'Cx\\\\Model\\\\ContentManager\\\\Page\'');
-            } catch (\Cx\Lib\UpdateException $e) {
-                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-            }
-
-            \Cx\Lib\UpdateUtil::sql('
-                ALTER TABLE `' . DBPREFIX . 'content_node` ENGINE = INNODB
-            ');
-
-            // before an update of module page can be done, the db changes have to be done
-            \Cx\Lib\UpdateUtil::table(
-                DBPREFIX . 'content_page',
-                array(
-                    'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                    'node_id'                            => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
-                    'nodeIdShadowed'                     => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'node_id'),
-                    'lang'                               => array('type' => 'INT(11)', 'after' => 'nodeIdShadowed'),
-                    'type'                               => array('type' => 'VARCHAR(16)', 'after' => 'lang'),
-                    'caching'                            => array('type' => 'TINYINT(1)', 'after' => 'type'),
-                    'updatedAt'                          => array('type' => 'timestamp', 'after' => 'caching', 'notnull' => false),
-                    'updatedBy'                          => array('type' => 'CHAR(40)', 'after' => 'updatedAt'),
-                    'title'                              => array('type' => 'VARCHAR(255)', 'after' => 'updatedBy'),
-                    'linkTarget'                         => array('type' => 'VARCHAR(16)', 'notnull' => false, 'after' => 'title'),
-                    'contentTitle'                       => array('type' => 'VARCHAR(255)', 'after' => 'linkTarget'),
-                    'slug'                               => array('type' => 'VARCHAR(255)', 'after' => 'contentTitle'),
-                    'content'                            => array('type' => 'longtext', 'after' => 'slug'),
-                    'sourceMode'                         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content'),
-                    'customContent'                      => array('type' => 'VARCHAR(64)', 'notnull' => false, 'after' => 'sourceMode'),
-                    'useCustomContentForAllChannels'     => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'customContent'),
-                    'applicationTemplate'                => array('type' => 'VARCHAR(100)', 'notnull' => false, 'after' => 'useCustomContentForAllChannels'),
-                    'useCustomApplicationTemplateForAllChannels' => array('type' => 'TINYINT(2)', 'notnull' => false, 'after' => 'applicationTemplate'),
-                    'cssName'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useCustomApplicationTemplateForAllChannels'),
-                    'cssNavName'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'cssName'),
-                    'skin'                               => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cssNavName'),
-                    'useSkinForAllChannels'              => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'skin'),
-                    'metatitle'                          => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useSkinForAllChannels'),
-                    'metadesc'                           => array('type' => 'text', 'after' => 'metatitle'),
-                    'metakeys'                           => array('type' => 'text', 'after' => 'metadesc'),
-                    'metarobots'                         => array('type' => 'VARCHAR(7)', 'notnull' => false, 'after' => 'metakeys'),
-                    'start'                              => array('type' => 'timestamp', 'notnull' => false, 'after' => 'metarobots'),
-                    'end'                                => array('type' => 'timestamp', 'notnull' => false, 'after' => 'start'),
-                    'editingStatus'                      => array('type' => 'VARCHAR(16)', 'after' => 'end'),
-                    'protection'                         => array('type' => 'INT(11)', 'after' => 'editingStatus'),
-                    'frontendAccessId'                   => array('type' => 'INT(11)', 'after' => 'protection'),
-                    'backendAccessId'                    => array('type' => 'INT(11)', 'after' => 'frontendAccessId'),
-                    'display'                            => array('type' => 'TINYINT(1)', 'after' => 'backendAccessId'),
-                    'active'                             => array('type' => 'TINYINT(1)', 'after' => 'display'),
-                    'target'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'active'),
-                    'module'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'target'),
-                    'cmd'                                => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'module')
-                ),
-                array(
-                    'node_id'                            => array('fields' => array('node_id','lang'), 'type' => 'UNIQUE'),
-                    'IDX_D8E86F54460D9FD7'               => array('fields' => array('node_id'))
-                ),
-                'InnoDB',
-                '',
-                array(
-                    'node_id' => array(
-                        'table'     => DBPREFIX.'content_node',
-                        'column'    => 'id',
-                        'onDelete'  => 'SET NULL',
-                        'onUpdate'  => 'NO ACTION',
-                    ),
-                )
-            );
-
-            if (_convertThemes2Component() === false) {
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    DBG::msg('unable to convert themes to component');
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
-                }
-                return false;
-            }
-            
-            if (_updateModulePages($viewUpdateTable) === false) {
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    DBG::msg('unable to update module templates');
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
-                }
-                return false;
-            }/* else {
-                if (!in_array('moduleStyles', $_SESSION['contrexx_update']['update']['done'])) {
-                    if (_updateCssDefinitions($viewUpdateTable, $objUpdate) === false) {
-                        if (empty($objUpdate->arrStatusMsg['title'])) {
-                            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
-                        }
-                        return false;
-                    }
-                    $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
-                }
-            }*/
         }
+        
+        if (_updateModulePages($viewUpdateTable) === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                DBG::msg('unable to update module templates');
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
+            }
+            return false;
+        }/* else {
+            if (!in_array('moduleStyles', $_SESSION['contrexx_update']['update']['done'])) {
+                if (_updateCssDefinitions($viewUpdateTable, $objUpdate) === false) {
+                    if (empty($objUpdate->arrStatusMsg['title'])) {
+                        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
+                    }
+                    return false;
+                }
+                $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
+            }
+        }*/
 
         // we are updating from 3.0.0 rc1, rc2, stable or 3.0.0.1
         if (!in_array('update3', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
@@ -576,27 +580,42 @@ function executeContrexxUpdate() {
 
     $arrDirs = array('core', 'core_module', 'module');
     // migrate the components
-    \DBG::msg('update: migrate components');
-    $result = _migrateComponents($arrDirs, $objUpdate, $missedModules);
-    if ($result === 'timeout') {
-        setUpdateMsg(1, 'timeout');
-        return false;
-    }
-    if (!$result) {
-        setUpdateMsg('Die Komponenten konnten nicht migiert werden.');
-        return false;
+    if (!in_array('migrateComponents', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        \DBG::msg('update: migrate components');
+        $result = _migrateComponents($arrDirs, $objUpdate, $missedModules);
+        if ($result === 'timeout') {
+            setUpdateMsg(1, 'timeout');
+            return false;
+        }
+        if (!$result) {
+            setUpdateMsg('Die Komponenten konnten nicht migiert werden.');
+            return false;
+        }
+
+        $_SESSION['contrexx_update']['update']['done'][] = 'migrateComponents';
+        unset($_SESSION['contrexx_update']['update']['done']['migrateComponentsDone']);
     }
 
+    // load backend areas migration script; execution will be manually called later by _updateBackendAreas()
     if (!include_once(dirname(__FILE__) . '/components/core/backendAreas.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/backendAreas.php'));
         return false;
-    } elseif (!include_once(dirname(__FILE__) . '/components/core/modules.php')) {
+    }
+
+    // load modules migration script; execution will be manually called later by _updateModules()
+    if (!include_once(dirname(__FILE__) . '/components/core/modules.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/modules.php'));
         return false;
-    } elseif (!include_once(dirname(__FILE__) . '/components/core/settings.php')) {
+    }
+
+    // load settings migration script; execution will be manually called later by _updateSettings()
+    if (!include_once(dirname(__FILE__) . '/components/core/settings.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/settings.php'));
         return false;
-    } elseif (!include_once(dirname(__FILE__) . '/components/core/componentmanger.php')) {
+    }
+
+    // load components migration script; execution will be manually called later by _updateComponent()
+    if (!include_once(dirname(__FILE__) . '/components/core/componentmanager.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/componentmanager.php'));
         return false;
     }
@@ -635,9 +654,6 @@ function executeContrexxUpdate() {
         ///////////////////////////////////////////
         // CONTINUE UPDATE FOR NON CX 3 VERSIONS //
         ///////////////////////////////////////////
-
-        $updateStatus = true;
-
         if (!in_array('coreModuleRepository', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
             \DBG::msg('update: update module repository');
             $result = _updateModuleRepository();
@@ -647,9 +663,9 @@ function executeContrexxUpdate() {
                     setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY']), 'title');
                 }
                 return false;
-            } else {
-                $_SESSION['contrexx_update']['update']['done'][] = 'coreModuleRepository';
             }
+            $_SESSION['contrexx_update']['update']['done'][] = 'coreModuleRepository';
+            unset($_SESSION['contrexx_update']['update']['done']['coreModuleRepositoryDone']);
         }
 
         if (!in_array('convertTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
@@ -1147,9 +1163,13 @@ function _updateModuleRepository() {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
 
+        if (!isset($_SESSION['contrexx_update']['update']['done']['coreModuleRepositoryDone'])) {
+            $_SESSION['contrexx_update']['update']['done']['coreModuleRepositoryDone'] = array();
+        }
+
         while (($file = readdir($dh)) !== false) {
             if (preg_match('#^repository_([0-9]+)\.php$#', $file, $arrFunction)) {
-                if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+                if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']['coreModuleRepositoryDone']))) {
                     if (function_exists('memory_get_usage')) {
                         if (!checkMemoryLimit()) {
                             return false;
@@ -1179,7 +1199,7 @@ function _updateModuleRepository() {
                         return false;
                     }
 
-                    $_SESSION['contrexx_update']['update']['done'][] = $file;
+                    $_SESSION['contrexx_update']['update']['done']['coreModuleRepositoryDone'][] = $file;
 
                     if ($count == 10) {
                         setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
@@ -2069,6 +2089,9 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
         setUpdateMsg('Keine Komponenten angegeben.');
         return false;
     }
+    if (!isset($_SESSION['contrexx_update']['update']['done']['migrateComponentsDone'])) {
+        $_SESSION['contrexx_update']['update']['done']['migrateComponentsDone'] = array();
+    }
 
     // list of core components who's update script will be executed independently
     $specialComponents2skip = array(
@@ -2091,7 +2114,7 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
         $dh = opendir(dirname(__FILE__).'/components/'.$dir);
         if ($dh) {
             while (($file = readdir($dh)) !== false) {
-                if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+                if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']['migrateComponentsDone']))) {
                     $fileInfo = pathinfo(dirname(__FILE__).'/components/'.$dir.'/'.$file);
 
                     if ($fileInfo['extension'] == 'php') {
@@ -2167,7 +2190,7 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
                         }
                     }
 
-                    $_SESSION['contrexx_update']['update']['done'][] = $file;
+                    $_SESSION['contrexx_update']['update']['done']['migrateComponentsDone'][] = $file;
                     return 'timeout';
                 }
             }
@@ -2374,7 +2397,7 @@ function _migratePageLogs() {
         $nameLower = strtolower($componentName);
 
         $result = \Cx\lib\UpdateUtil::sql(
-            'UPDATE `' . DBPREFIX . 'log_entry
+            'UPDATE `' . DBPREFIX . 'log_entry`
              SET `data` = REPLACE(`data`, \'"module";s:'. $nameLength . ':"' . $nameLower . '"\', \'"module";s:'. $nameLength . ':"' . $componentName . '"\')
              WHERE `data` LIKE \'%"module";s' . $nameLength . ':' . $nameLower . '"%\''
         );
@@ -2411,14 +2434,18 @@ class License {
                 $_CONFIG['licenseKey'] = '';
             }
             
+            \DBG::msg(__METHOD__.': fetch objUser');
             $objUser = \FWUser::getFWUserObject()->objUser;
+            \DBG::msg(__METHOD__.': fetch license');
             $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
 
+            \DBG::msg(__METHOD__.': load versioncheck.php');
             $return = @include_once(ASCMS_DOCUMENT_ROOT.'/core_modules/License/versioncheck.php');
         }
 
         // we force a version number update. if the license update failed
         // version number will not be upgraded yet:
+        \DBG::msg(__METHOD__.': manually update settings in case license update failed');
         $arrUpdate = $objUpdate->getLoadedVersionInfo();
         \Cx\Core\Setting\Controller\Setting::init('Config', 'release','Yaml');
         \Cx\Core\Setting\Controller\Setting::set('coreCmsVersion', $arrUpdate['cmsVersion']);
