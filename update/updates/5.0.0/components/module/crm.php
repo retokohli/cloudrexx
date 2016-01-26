@@ -279,16 +279,16 @@ function _crmUpdate() {
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         try {
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (1,\'1\',1,1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (2,\'2 - 9\',2,1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (3,\'10 - 19\',3,1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (4,\'20 - 49\',4,1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (5,\'50 - 99\',5,1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (6,\'100 - 199\',6,1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (7,\'200 - 749\',7,1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (8,\'750 - 999\',8,1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (9,\'1\'000 - 4\'999\',9,1)');
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'. DBPREFIX .'module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (10,\'> 5\'000\',10,1)');
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `". DBPREFIX ."module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (1,'1',1,1)");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `". DBPREFIX ."module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (2,'2 - 9',2,1)");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `". DBPREFIX ."module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (3,'10 - 19',3,1)");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `". DBPREFIX ."module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (4,'20 - 49',4,1)");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `". DBPREFIX ."module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (5,'50 - 99',5,1)");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `". DBPREFIX ."module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (6,'100 - 199',6,1)");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `". DBPREFIX ."module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (7,'200 - 749',7,1)");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `". DBPREFIX ."module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (8,'750 - 999',8,1)");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `". DBPREFIX ."module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (9,'1\'000 - 4\'999',9,1)");
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `". DBPREFIX ."module_crm_company_size` (`id`, `company_size`, `sorting`, `status`) VALUES (10,'> 5\'000',10,1)");
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }

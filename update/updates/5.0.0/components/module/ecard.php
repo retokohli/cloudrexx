@@ -27,7 +27,7 @@
 
 
 function _ecardUpdate() {
-    global $objDatabase, $objUpdate, $_ARRAYLANG, $_CORELANG;
+    global $objDatabase, $objUpdate, $_CONFIG, $_ARRAYLANG, $_CORELANG;
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         try {

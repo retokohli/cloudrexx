@@ -574,10 +574,15 @@ function executeContrexxUpdate() {
         }
     }
 
-    $arrDirs = array('core_module', 'module');
+    $arrDirs = array('core', 'core_module', 'module');
     // migrate the components
     \DBG::msg('update: migrate components');
-    if (!_migrateComponents($arrDirs, $objUpdate, $missedModules)) {
+    $result = _migrateComponents($arrDirs, $objUpdate, $missedModules);
+    if ($result === 'timeout') {
+        setUpdateMsg(1, 'timeout');
+        return false;
+    }
+    if (!$result) {
         setUpdateMsg('Die Komponenten konnten nicht migiert werden.');
         return false;
     }
@@ -590,6 +595,9 @@ function executeContrexxUpdate() {
         return false;
     } elseif (!include_once(dirname(__FILE__) . '/components/core/settings.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/settings.php'));
+        return false;
+    } elseif (!include_once(dirname(__FILE__) . '/components/core/componentmanger.php')) {
+        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/componentmanager.php'));
         return false;
     }
 
@@ -2062,10 +2070,15 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
         return false;
     }
 
+    // list of core components who's update script will be executed independently
+    $specialComponents2skip = array(
+        'backendAreas', 'componentmanager', 'core', 'modules', 'repository', 'settings', 'utf8',
+    );
+
     // Only these files introduce changes for all versions
     $essentialFiles = array(
         // core
-        'core', 'routing', 'settings','wysiwyg',
+        'routing', 'wysiwyg',
         // core module
         'access', 'contact', 'contentmanager',
         'cron', 'linkmanager', 'news',
@@ -2082,6 +2095,12 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
                     $fileInfo = pathinfo(dirname(__FILE__).'/components/'.$dir.'/'.$file);
 
                     if ($fileInfo['extension'] == 'php') {
+                        // skip special components that are being executed individually
+                        if (preg_match('/('.join($specialComponents2skip, '|').')/', $fileInfo['filename'])) {
+                            \DBG::msg("skip special component: $file");
+                            continue;
+                        }
+
                         // skip all files that don't introduce changes for versions 3.0 and up
                         if (
                             !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0') &&
@@ -2100,6 +2119,7 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
                         if (!in_array($fileInfo['filename'], $missedModules)) {
                             $function = '_'.$fileInfo['filename'].'Update';
                             if (function_exists($function)) {
+                                DBG::msg("execute $function");
                                 $result = $function();
                                 if ($result === false) {
                                     if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -2107,8 +2127,7 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
                                     }
                                     return false;
                                 } elseif ($result === 'timeout') {
-                                    setUpdateMsg(1, 'timeout');
-                                    return false;
+                                    return $result;
                                 }
                             } else {
                                 setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
@@ -2118,6 +2137,7 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
                         } else {
                             $function = '_'.$fileInfo['filename'].'Install';
                             if (function_exists($function)) {
+                                DBG::msg("execute $function");
                                 $result = $function();
                                 if ($result === false) {
                                     if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -2125,8 +2145,7 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
                                     }
                                     return false;
                                 } elseif ($result === 'timeout') {
-                                    setUpdateMsg(1, 'timeout');
-                                    return false;
+                                    return $result;
                                 } else {
                                     // fetch module info from components/core/module.php
                                     $arrModule = getModuleInfo($fileInfo['filename']);
@@ -2149,8 +2168,7 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
                     }
 
                     $_SESSION['contrexx_update']['update']['done'][] = $file;
-                    setUpdateMsg(1, 'timeout');
-                    return false;
+                    return 'timeout';
                 }
             }
         } else {
