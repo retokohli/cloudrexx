@@ -490,7 +490,7 @@ var checkTimeout = function() {
                     $J.ajax({
                         url: 'index.php',
                         type: type,
-                        data: {'ajax': formData, 'debug_update': getDebugInfo},
+                        data: {'ajax': formData, 'executeUpdate': true, 'debug_update': getDebugInfo},
                         success: parseResponse,
                         error: cxUpdateErrorHandler,
                     });
