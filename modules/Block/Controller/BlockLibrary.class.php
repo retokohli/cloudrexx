@@ -355,6 +355,33 @@ class BlockLibrary
     }
 
     /**
+     * Get GeoIp component controller
+     *
+     * @return mixed boolean|\Cx\Core_Modules\GeoIp\Controller\ComponentController
+     */
+    public function getGeoIpComponent()
+    {
+        $componentRepo = \Cx\Core\Core\Controller\Cx::instanciate()
+                            ->getDb()
+                            ->getEntityManager()
+                            ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $geoIpComponent = $componentRepo->findOneBy(array('name' => 'GeoIp'));
+        if (!$geoIpComponent) {
+            return false;
+        }
+        $geoIpComponentController = $geoIpComponent->getSystemComponentController();
+        if (!$geoIpComponentController) {
+            return false;
+        }
+        // Always return false when service is disabled in GeoIp component
+        if (!$geoIpComponentController->getGeoIpServiceStatus()) {
+            return false;
+        }
+
+        return $geoIpComponentController;
+    }
+
+    /**
      * Verify targeting options for the given block Id
      *
      * @param integer $blockId Block id
@@ -396,15 +423,7 @@ class BlockLibrary
     public function checkTargetingCountry($filter, $countryIds)
     {
         // getClient country using GeoIp component
-        $componentRepo = \Cx\Core\Core\Controller\Cx::instanciate()
-                            ->getDb()
-                            ->getEntityManager()
-                            ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-        $geoIpComponent     = $componentRepo->findOneBy(array('name' => 'GeoIp'));
-        if (!$geoIpComponent) {
-            return false;
-        }
-        $geoIpComponentController = $geoIpComponent->getSystemComponentController();
+        $geoIpComponentController = $this->getGeoIpComponent();
         if (!$geoIpComponentController) {
             return false;
         }
@@ -444,16 +463,18 @@ class BlockLibrary
                   WHERE
                     `block_id` = "'. contrexx_raw2db($blockId) .'"
                  ';
-        $targeting    = $objDatabase->Execute($query);
+        $targeting = $objDatabase->Execute($query);
+        if (!$targeting) {
+            return array();
+        }
+
         $targetingArr = array();
-        if ($targeting) {
-            while (!$targeting->EOF) {
-                $targetingArr[$targeting->fields['type']] = array(
-                    'filter' => $targeting->fields['filter'],
-                    'value'  => json_decode($targeting->fields['value'])
-                );
-                $targeting->MoveNext();
-            }
+        while (!$targeting->EOF) {
+            $targetingArr[$targeting->fields['type']] = array(
+                'filter' => $targeting->fields['filter'],
+                'value'  => json_decode($targeting->fields['value'])
+            );
+            $targeting->MoveNext();
         }
 
         return $targetingArr;

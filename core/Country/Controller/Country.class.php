@@ -376,31 +376,33 @@ class Country
              WHERE ' . $arrSqlName['alias']['name'] . ' LIKE "%'. contrexx_raw2db($term) .'%"';
         $countries = $objDatabase->Execute($query);
 
+        if (!$countries) {
+            return array();
+        }
+
         $arrCountries = array();
-        if ($countries) {
-            while (!$countries->EOF) {
-                $id      = $countries->fields['id'];
-                $strName = $countries->fields['name'];
-                if ($active && !$countries->fields['active']) {
-                    $countries->MoveNext();
-                    continue;
-                }
-                if ($strName === null) {
-                    $objText = \Text::getById($id, 'core', self::TEXT_NAME);
-                    if ($objText) {
-                        $strName = $objText->content();
-                    }
-                }
-                $arrCountries[] = array(
-                    'id'     => $id,
-                    'name'   => $strName,
-                    'ord'    => $countries->fields['ord'],
-                    'alpha2' => $countries->fields['alpha2'],
-                    'alpha3' => $countries->fields['alpha3'],
-                    'active' => $countries->fields['active'],
-                );
+        while (!$countries->EOF) {
+            $id      = $countries->fields['id'];
+            $strName = $countries->fields['name'];
+            if ($active && !$countries->fields['active']) {
                 $countries->MoveNext();
+                continue;
             }
+            if ($strName === null) {
+                $objText = \Text::getById($id, 'core', self::TEXT_NAME);
+                if ($objText) {
+                    $strName = $objText->content();
+                }
+            }
+            $arrCountries[] = array(
+                'id'     => $id,
+                'name'   => $strName,
+                'ord'    => $countries->fields['ord'],
+                'alpha2' => $countries->fields['alpha2'],
+                'alpha3' => $countries->fields['alpha3'],
+                'active' => $countries->fields['active'],
+            );
+            $countries->MoveNext();
         }
 
         return $arrCountries;

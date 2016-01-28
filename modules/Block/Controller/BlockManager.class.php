@@ -1002,8 +1002,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             $activeClass = '';
             $i++;
         }
-        \Cx\Core\Setting\Controller\Setting::init('GeoIp', 'config', 'Yaml');
-        if (\FWValidator::isEmpty(\Cx\Core\Setting\Controller\Setting::getValue('serviceStatus', 'GeoIp'))) {
+
+        if (!$this->getGeoIpComponent()) {
             $this->_objTpl->touchBlock('warning_geoip_disabled');
         } else {
             $this->_objTpl->hideBlock('warning_geoip_disabled');
