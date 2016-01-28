@@ -410,7 +410,7 @@ class Immo extends ImmoLib
             }
 
             $mailer->CharSet = CONTREXX_CHARSET;
-            $mailer->SetFrom(contrexx_addslashes($_REQUEST['contactFormField_email']), 'Interessent', 0);
+            $mailer->SetFrom(contrexx_addslashes($_REQUEST['contactFormField_email']), 'Interessent');
             $mailer->Subject = 'Neuer Interessent für '.$ref_note.' Ref-Nr.: '.$reference;
             $mailer->IsHTML(false);
             $mailer->Body = 'Jemand interessiert sich für das Objekt '.$ref_note.' Ref-Nr.: '.$reference."\n \nhttp://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/admin/index.php?cmd=immo&act=stats\n";
@@ -431,7 +431,7 @@ class Immo extends ImmoLib
 
             //mail for interested customer
             $mailer->ClearAddresses();
-            $mailer->SetFrom($this->arrSettings['sender_email'], $this->arrSettings['sender_name'], 0);
+            $mailer->SetFrom($this->arrSettings['sender_email'], $this->arrSettings['sender_name']);
             $mailer->AddAddress($_REQUEST['contactFormField_email']);
             $mailer->Subject = $this->arrSettings['interest_confirm_subject'];
             $message = str_replace('[[IMMO_OBJECT]]', $address.', '.$location." (Ref.Nr.: $reference)", $this->arrSettings['interest_confirm_message']);
@@ -707,7 +707,7 @@ class Immo extends ImmoLib
 
                         $mailer->CharSet = CONTREXX_CHARSET;
                         $mailer->IsHTML(false);
-                        $mailer->SetFrom($this->arrSettings['sender_email'], $this->arrSettings['sender_name'], 0);
+                        $mailer->SetFrom($this->arrSettings['sender_email'], $this->arrSettings['sender_name']);
                         $mailer->Subject = $this->arrSettings['prot_link_message_subject'];
                         $mailer->Body = str_replace('[[IMMO_PROTECTED_LINK]]', $link, $this->arrSettings['prot_link_message_body'])."\n\n";
                         $mailer->AddAddress($email);

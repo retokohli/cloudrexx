@@ -1346,7 +1346,7 @@ class Forum extends ForumLibrary {
         if(!empty($arrSubscribers)){
             $mail->CharSet = CONTREXX_CHARSET;
             $mail->IsHTML(false);
-            $mail->SetFrom($this->_arrSettings['notification_from_email'], $this->_arrSettings['notification_from_name'], 0);
+            $mail->SetFrom($this->_arrSettings['notification_from_email'], $this->_arrSettings['notification_from_name']);
             $strThreadURL = 'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Forum&cmd=thread&id='.$intThreadId;
             $arrSearch      = array('[[FORUM_THREAD_SUBJECT]]', '[[FORUM_THREAD_STARTER]]', '[[FORUM_LATEST_SUBJECT]]',    '[[FORUM_LATEST_MESSAGE]]',    '[[FORUM_THREAD_URL]]');
             $arrReplace     = array($strFirstPostSubject,         $strFirstPostAuthor,         $strSubject,                $strContent,                 $strThreadURL);
