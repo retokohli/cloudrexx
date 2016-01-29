@@ -36,6 +36,48 @@
         <script type="text/javascript" src= "/themes/fema/js/modernizr.js"></script>
         <script type="text/javascript" src= "/themes/fema/js/superfish.js"></script>
         <script type="text/javascript" src= "/themes/fema/js/javascript.js"></script>
+        <script type="text/javascript">
+            jQuery(window).load(function () {
+                jQuery('.sldImg > img').each(function () {
+                    var bnrImg = jQuery(this).attr('src');
+                    jQuery(this).parent('div').css('background-image', 'url(' + bnrImg + ')');
+                });
+                jQuery('.carousel-inner .item:nth-child(1)').addClass('active');
+            });
+        </script>
+        <style>
+            .carousel-inner .sldImg > img {
+                display: none;
+            }
+            .sldImg {
+                background-position: center center;
+                background-size: cover;
+            }
+            table th,
+            button,
+            input[type="submit"],
+            input[type="button"],
+            input[type="reset"] {
+                background-color: {TEMPLATE_EDITOR_SECONDARY_COLOR};
+            }
+            #subnavigation li a,
+            #subnavigation li > ul li a {
+                color: {TEMPLATE_EDITOR_SECONDARY_COLOR};
+            }
+            body h1,
+            body p,
+            #content2 {
+                color: {TEMPLATE_EDITOR_FONT_COLOR};
+            }
+            body p,
+            #content2,
+            .latest-article {
+                font-family: {TEMPLATE_EDITOR_REGULAR_TEXT};
+            }
+            body h1, body h2, body h3, body h4, body h5, body h6 {
+                font-family: {TEMPLATE_EDITOR_TITLE_TEXT};
+            }
+        </style>
     </head>
     <body>
         <div class="navbar navbar-inverse navbar-fixed-top">
@@ -43,7 +85,7 @@
                 <div class="mobile-header">
                     <div class="navbar-header">
                         <a class="navbar-brand" href="{NODE_HOME}">
-                            <img style="height: 30px; width: auto;" src="/themes/fema/images/Logo.png" alt="logo">
+                            <img style="height: 30px; width: auto;" src="{TEMPLATE_EDITOR_LOGO}" alt="logo">
                         </a>
                     </div>
                     <a class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mobile-navigation">
@@ -52,9 +94,9 @@
                         <span class="icon-bar"></span>
                     </a>
                 </div>
-                    <div class="collapse navbar-collapse" id="mobile-navigation">
-                        {NAVBAR_FILE}
-                    </div>
+                <div class="collapse navbar-collapse" id="mobile-navigation">
+                    {NAVBAR_FILE}
+                </div>
             </div>
         </div>
         {CONTENT_FILE}

@@ -1,0 +1,45 @@
+options:
+  -
+    name: main_title
+    specific:
+      textvalue: 'Template Editor Test'
+  -
+    name: subtitle
+    specific:
+      textvalue: 'Testing the templateditor sfdsfs'
+  -
+    name: secondary_color
+    specific:
+      color: '#AAAAAA'
+  -
+    name: font_color
+    specific:
+      color: '#232323'
+  -
+    name: regular_text  
+    specific:
+      activeChoice: 'Arial'
+  -
+    name: title_text  
+    specific:
+      activeChoice: 'Arial'
+  -
+    name: news_area
+    specific:
+      active: true
+  -
+    name: logo
+    specific:
+      url: /themes/fema/images/Logo.png
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption
+    translation:
+        1: logo
+        2: logo
+  -
+    name: slider_images
+    specific:
+      urls:
+        1: /themes/fema/images/header1.jpg
+        2: /themes/fema/images/header2.jpg
+        3: /themes/fema/images/header3.jpg
+      type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageSeriesOption
