@@ -968,7 +968,7 @@ class Gallery
         } else {
             $this->_objTpl->setVariable(array('GALLERY_CATEGORY_COMMENT' =>    $strCategoryComment));
             $availableImagePlaceholders = array();
-            for ($intPlaceholder = 1;$intPlaceholder <= 3;$intPlaceholder++) {
+            for ($intPlaceholder = 1;$intPlaceholder <= 10;$intPlaceholder++) {
                 if (   $this->_objTpl->placeholderExists('GALLERY_IMAGE' . $intPlaceholder)
                     || $this->_objTpl->placeholderExists('GALLERY_IMAGE_LINK' . $intPlaceholder)
                 ) {
@@ -1172,7 +1172,9 @@ class Gallery
                 }
                 $objResult->MoveNext();
             }
-            if ($intFillPlaceholder < $fillPlaceholderCount) {
+            if (   $intFillPlaceholder != 1 // No images found or no placeholders found or image count equals to placeholder count
+                && $intFillPlaceholder <= $fillPlaceholderCount
+            ) {
                 for ($intPlaceholder = $intFillPlaceholder;$intPlaceholder <= $fillPlaceholderCount;$intPlaceholder++) {
                     $placeholderNumber = $availableImagePlaceholders[$intFillPlaceholder - 1];
                     $this->_objTpl->setVariable(array(
