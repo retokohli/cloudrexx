@@ -1134,18 +1134,22 @@ class Gallery
                     if ($this->arrSettings['show_ext'] == 'off') {
                         $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
                     }
+                    $openBracket  = '(';
+                    $closeBracket = ')';
+                    $kB           = ' kB';
+                    if ($this->arrSettings['show_file_name'] == 'off') {
+                        $imageFileSize = $strImageTitle = $kB = $openBracket = $closeBracket = '';
+                    }
                     $this->_objTpl->setVariable(array(
                         'GALLERY_LIST_IMAGE_ID'             => contrexx_raw2xhtml($objResult->fields['id']),
-                        'GALLERY_LIST_IMAGE_TITLE'          => ($this->arrSettings['show_file_name'] == 'on')
-                                                                 ? $strImageTitle
-                                                                 : '',
+                        'GALLERY_LIST_IMAGE_TITLE'          => $strImageTitle,
                         'GALLERY_LIST_IMAGE_PATH'           => contrexx_raw2xhtml($strImagePath),
                         'GALLERY_LIST_IMAGE_WIDTH'          => $intImageWidth,
                         'GALLERY_LIST_IMAGE_HEIGHT'         => $intImageHeigth,
                         'GALLERY_LIST_IMAGE_LINK'           => $strImageWebPath,
                         'GALLERY_LIST_IMAGE_NAME'           => contrexx_raw2xhtml($objSubResult->fields['name']),
                         'GALLERY_LIST_IMAGE_DESCRIPTION'    => contrexx_raw2xhtml($imageDesc),
-                        'GALLERY_LIST_IMAGE_FILESIZE'       => ($showImageSize) ? $imageFileSize . ' kB' : '',
+                        'GALLERY_LIST_IMAGE_FILESIZE'       => ($showImageSize) ? $openBracket . $imageFileSize . $kB . $closeBracket : '',
                     ));
                     $this->_objTpl->parse('gallery_list_images');
                 }
