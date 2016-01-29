@@ -357,7 +357,7 @@ class BlockLibrary
     /**
      * Get GeoIp component controller
      *
-     * @return mixed boolean|\Cx\Core_Modules\GeoIp\Controller\ComponentController
+     * @return \Cx\Core_Modules\GeoIp\Controller\ComponentController
      */
     public function getGeoIpComponent()
     {
@@ -367,15 +367,11 @@ class BlockLibrary
                             ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $geoIpComponent = $componentRepo->findOneBy(array('name' => 'GeoIp'));
         if (!$geoIpComponent) {
-            return false;
+            return null;
         }
         $geoIpComponentController = $geoIpComponent->getSystemComponentController();
         if (!$geoIpComponentController) {
-            return false;
-        }
-        // Always return false when service is disabled in GeoIp component
-        if (!$geoIpComponentController->getGeoIpServiceStatus()) {
-            return false;
+            return null;
         }
 
         return $geoIpComponentController;

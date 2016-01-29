@@ -1003,7 +1003,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             $i++;
         }
 
-        if (!$this->getGeoIpComponent()) {
+        if (!$this->getGeoIpComponent() || !$this->getGeoIpComponent()->getGeoIpServiceStatus()) {
             $this->_objTpl->touchBlock('warning_geoip_disabled');
         } else {
             $this->_objTpl->hideBlock('warning_geoip_disabled');
