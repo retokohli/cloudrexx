@@ -306,12 +306,10 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
 
         //remove the navigation menu
         $navHtml = $htmlXpath->query(ASCMS_LINKMANAGER_NAVIGATION_QUERY);
-        if (!($navHtml instanceof \DOMNodeList) || !$navHtml->length) {
-            return;
-        }
-
-        foreach ($navHtml as $navNodes) {
-            $navNodes->parentNode->removeChild($navNodes);
+        if ($navHtml instanceof \DOMNodeList && $navHtml->length) {
+            foreach ($navHtml as $navNodes) {
+                $navNodes->parentNode->removeChild($navNodes);
+            }
         }
 
         // Find all images 
