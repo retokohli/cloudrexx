@@ -3439,7 +3439,7 @@ class NewsletterManager extends NewsletterLib
         
         // Set HTML height and width attributes for img-tags
         $allImgsWithHeightOrWidth = array();
-        preg_match('/<img[^>]*style="[^"]*(?:width|width): *[^;"]+; *[^"]*"[^>]*>/', $content_text, $allImgsWithHeightOrWidth);
+        preg_match_all('/<img[^>]*style=(["\'])[^\1]*(?:width|height):\s*[^;\1]+;?\s*[^\1]*\1[^>]*>/', $content_text, $allImgsWithHeightOrWidth);
         foreach ($allImgsWithHeightOrWidth as $img) {
             $htmlHeight = $this->getAttributeOfTag($img, 'img', 'height');
             $htmlWidth = $this->getAttributeOfTag($img, 'img', 'width');
@@ -3479,7 +3479,7 @@ class NewsletterManager extends NewsletterLib
      */
     protected function getAttributeOfTag($html, $tagName, $attributeName) {
         $matches = array();
-        preg_match('/<' . preg_quote($tagName) . '[^>]*' . preg_quote($attributeName) . '="([^"]*)/', $html, $matches);
+        preg_match('/<' . preg_quote($tagName) . '[^>]*' . preg_quote($attributeName) . '=(["\'])([^\1]*)/', $html, $matches);
         if (!isset($matches[1])) {
             return '';
         }
@@ -3496,9 +3496,9 @@ class NewsletterManager extends NewsletterLib
      */
     protected function setAttributeOfTag($html, $tagName, $attributeName, $attributeValue) {
         $count = 0;
-        $html = preg_replace('/(<' . preg_quote($tagName) . '[^>]*' . preg_quote($attributeName) . '=")[^"]*/', '\1' . $attributeValue, $html, -1, $count);
+        $html = preg_replace('/(<' . preg_quote($tagName) . '[^>]*' . preg_quote($attributeName) . '=(["\']))[^\2]*/', '\1' . $attributeValue, $html, -1, $count);
         if ($count == 0) {
-            $html = preg_replace('/(<' . preg_quote($tagName) . '[^>]*)(\/?>)/U', '\1 ' . $attributeName . '="' . $attributeValue . '"\2', $html);
+            $html = preg_replace('/(<' . preg_quote($tagName) . '[^>]*)(\/?>)/U', '\1 ' . $attributeName . '="' . $attributeValue . '"\s\2', $html);
         }
         return $html;
     }
@@ -3512,11 +3512,11 @@ class NewsletterManager extends NewsletterLib
      */
     protected function getCssAttributeOfTag($html, $tagName, $cssAttributeName) {
         $matches = array();
-        preg_match('/<' . preg_quote($tagName) . '[^>]*style="[^"]*' . preg_quote($cssAttributeName) . ': *([^;"]+); */', $html, $matches);
-        if (!isset($matches[1])) {
+        preg_match('/<' . preg_quote($tagName) . '[^>]*style=(["\'])[^\1]*' . preg_quote($cssAttributeName) . '\s*:\s*([^;\1]*)/', $html, $matches);
+        if (!isset($matches[2])) {
             return '';
         }
-        return $matches[1];
+        return $matches[2];
     }
 
 
