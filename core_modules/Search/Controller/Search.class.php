@@ -271,7 +271,7 @@ class Search
         // In case a root node was specified, we have to check if the page is in
         // the root page's branch.
         if ($this->rootPage) {
-            if (strpos($page->getPath(), $this->rootPage->getPath()) === false) {
+            if (strpos($page->getPath(), $this->rootPage->getPath()) !== 0) {
                 return null;
             }
         }

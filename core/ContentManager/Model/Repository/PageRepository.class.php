@@ -939,7 +939,7 @@ class PageRepository extends EntityRepository {
             if (!$page->isActive() || $isNotVisible || !$hasPageAccess) {
                 continue;
             }
-            if ($rootPage && strpos($page->getPath(), $rootPage->getPath()) === false) {
+            if ($rootPage && strpos($page->getPath(), $rootPage->getPath()) !== 0) {
                 continue;
             }
 // TODO: Add proper score with MATCH () AGAINST () or similar
