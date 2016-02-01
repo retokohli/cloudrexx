@@ -139,8 +139,6 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
             $this->historyRepo = $this->em->getRepository('Cx\Core_Modules\LinkManager\Model\Entity\History');
         }
         
-        \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/SimpleHtmlDom.php');
-        
         // checks if there are some incomplete crawling entries,
         // which have still a status of "running"
         $this->changeRunningCrawlingToIncomplete();
