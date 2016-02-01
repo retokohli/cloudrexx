@@ -205,7 +205,4 @@ define('ASCMS_NUMBER_SEPARATOR_THOUSANDS', '\'');
 define('ASCMS_NUMBER_SEPARATOR_DECIMALS', '.');
 
 // LinkManager constants
-define('ASCMS_LINKMANAGER_CONTENT_HREF_QUERY','div#home-page a, div#page a, div#content a');
-define('ASCMS_LINKMANAGER_CONTENT_IMG_QUERY','div#home-page img, div#page img, div#content img');
-define('ASCMS_LINKMANAGER_CONTENT_PAGE_QUERY','div#home-page, div#page, div#content');
-define('ASCMS_LINKMANAGER_NAVIGATION_QUERY','ul#navigation, ul.navigation');
+define('ASCMS_LINKMANAGER_NAVIGATION_QUERY','//*[contains(@id,\'navigation\') or contains(@class, \'navigation\')]');

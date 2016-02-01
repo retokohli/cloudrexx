@@ -285,64 +285,91 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
     public function initializeScript($url, \HTTP_Request2 $request, $referPageId) 
     {
         global $objInit;
-        
+
         $_ARRAYLANG = $objInit->loadLanguageData('LinkManager');
 
         $refererUrlResponse = $this->checkUrlStatus($url, $request);
         $this->storeUrlInfos($request, $url, $url, 0, $referPageId, $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_LINK']);
-        if ($refererUrlResponse) {
-            $refererUrlBody = $refererUrlResponse->getBody();
-            $html           = \str_get_html($refererUrlBody);
-        
-            if ($html) {
-                //First check the page content href and src
-                foreach ($html->find(ASCMS_LINKMANAGER_CONTENT_HREF_QUERY) As $element) {
-                    $aHref = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->href, $url);
-                    if (!empty($aHref) && $this->isLinkExists($aHref, true)) {
-                        $linkText = $element->plaintext ? $element->plaintext : $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_LINK'];
-                        $this->storeUrlInfos($request, $aHref, $url, 0, $referPageId, $linkText);
-                    }
-                }
-                foreach ($html->find(ASCMS_LINKMANAGER_CONTENT_IMG_QUERY) As $element) {
-                    if (preg_match('#\.(jpg|jpeg|gif|png)$# i', $element->src)) {
-                        $imgSrc = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->src, null);
-                        if (!empty($imgSrc) && $this->isLinkExists($imgSrc, true)) {
-                            $this->storeUrlInfos($request, $imgSrc, $url, 1, $referPageId, $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_IMAGE']);
-                        }
-                    }
-                }
-                //remove the page content
-                $objPageContent = $html->find(ASCMS_LINKMANAGER_CONTENT_PAGE_QUERY, 0);
-                $objPageContent->outertext = '';
-                $html = \str_get_html($html->outertext);
-                //remove the navigation menu
-                $objNavigation = $html->find(ASCMS_LINKMANAGER_NAVIGATION_QUERY, 0);
-                $objNavigation->outertext = '';
-                $html = \str_get_html($html->outertext); 
-                // Find all images 
-                foreach($html->find('img') as $element) {
-                    if (preg_match('#\.(jpg|jpeg|gif|png)$# i', $element->src)) {
-                        $imgSrc = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->src, null);
-                        if (!empty($imgSrc) && $this->isLinkExists($imgSrc)) {
-                            $this->storeUrlInfos($request, $imgSrc, $url, 1, $referPageId, $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_IMAGE']);
-                        }
-                    }
-                } 
-                
-                // Find all links 
-                foreach($html->find('a') as $element) {
-                    $aHref = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->href, $url);
-                    if (!empty($aHref) && $this->isLinkExists($aHref)) {
-                        $linkText = $element->plaintext ? $element->plaintext : $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_LINK'];
-                        $this->storeUrlInfos($request, $aHref, $url, 0, $referPageId, $linkText);
-                    }
-                }
-            }
-        } else {
+
+        //If the referer page response is empty, return
+        if (!$refererUrlResponse) {
             return;
         }
-    } 
-    
+
+        $refererUrlBody = $refererUrlResponse->getBody();
+        $htmlDom        = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        //If loadHTML fails, then return
+        if (!$htmlDom->loadHTML($refererUrlBody)) {
+            return;
+        }
+        libxml_use_internal_errors(false);
+        $htmlXpath = new \DOMXPath($htmlDom);
+
+        //remove the navigation menu
+        $navHtml = $htmlXpath->query(ASCMS_LINKMANAGER_NAVIGATION_QUERY);
+        if (!($navHtml instanceof \DOMNodeList) || !$navHtml->length) {
+            return;
+        }
+
+        foreach ($navHtml as $navNodes) {
+            $navNodes->parentNode->removeChild($navNodes);
+        }
+
+        // Find all images 
+        $this->fetchAndStoreTagDetails('img', $htmlDom, $request, $url, $referPageId);
+
+        // Find all links 
+        $this->fetchAndStoreTagDetails('a', $htmlDom, $request, $url, $referPageId);
+    }
+
+    /**
+     * Fetch and store the tag details
+     * 
+     * @param string         $tagName     name of the tag
+     * @param \DOMNode       $htmlDomNode DOM node object
+     * @param \HTTP_Request2 $request     HTTP request object
+     * @param string         $url         referer url
+     * @param type           $referPageId referer page id
+     * 
+     * @return null
+     */
+    public function fetchAndStoreTagDetails($tagName, 
+                                            \DOMNode $htmlDomNode, 
+                                            \HTTP_Request2 $request, 
+                                            $url, $referPageId)
+    {
+        global $_ARRAYLANG;
+
+        if (empty($tagName)) {
+            return;
+        }
+
+        $isImg = ($tagName == 'img');
+        $refererPath = !$isImg ? $url : null;
+        foreach ($htmlDomNode->getElementsByTagName($tagName) as $domElement) {
+            $attributeVal = $isImg ? $domElement->getAttribute('src') 
+                                   : $domElement->getAttribute('href');
+            if ($isImg && !preg_match('#\.(jpg|jpeg|gif|png)$# i', $attributeVal)) {
+                continue;
+            }
+
+            $validAttrVal = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($attributeVal, $refererPath);
+            if (empty($validAttrVal) || !$this->isLinkExists($validAttrVal)) {
+                continue;
+            }
+
+            $tagValue = $isImg ? $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_IMAGE']
+                               : $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_LINK'];
+            if (!$isImg && $domElement->nodeValue) {
+                $tagValue = $domElement->nodeValue;
+            }
+
+            //Store the tag details
+            $this->storeUrlInfos($request, $validAttrVal, $url, $isImg, $referPageId, $tagValue);
+        }
+    }
+
     /**
      * Check url status
      * 

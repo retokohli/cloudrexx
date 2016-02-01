@@ -102,7 +102,6 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
         
         //register backend js
         \JS::registerJS('core_modules/LinkManager/View/Script/LinkManagerBackend.js');
-        \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/SimpleHtmlDom.php');
     }
     
      /**
@@ -192,52 +191,14 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
             $links = array();
         }
         $request = new \HTTP_Request2();
+        $htmlDom = new \DOMDocument();
         $pageLinks = array();
         foreach ($links As $link) {
             if (!in_array($link->getEntryTitle(), $pageLinks)) {
                 $pageLinks[] = $link->getEntryTitle();
-                ${$link->getEntryTitle()} = array();
-                try {
-                    $request->setUrl($link->getRefererPath());
-                    $request->setConfig(array(
-                        'ssl_verify_peer' => false,
-                        'ssl_verify_host'  => false, 
-                        'follow_redirects' => true,
-                    ));
-                    $response = $request->send();
-                    $html     = \str_get_html($response->getBody());
-                } catch(\Exception $e) {
-                    $html = false;
-                }
-                
-                if (!$html) {
-                    continue;
-                } else {
-                    //remove the navigation menu
-                    $objNavigation = $html->find('ul#navigation, ul.navigation',0);
-                    $objNavigation->outertext = '';
-                    $html = \str_get_html($html->outertext); 
-                
-                    // Find all images 
-                    foreach($html->find('img') as $element) {
-                        if (preg_match('#\.(jpg|jpeg|gif|png)$# i', $element->src)) {
-                            $imgSrc = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->src, null);
-                            if (!empty($imgSrc)) {
-                                ${$link->getEntryTitle()}[$imgSrc] = $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_IMAGE'];
-                            }
-                        }
-                    } 
-                    // Find all links 
-                    foreach($html->find('a') as $element) {
-                        $aHref = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->href, $link->getRefererPath());
-                        if (!empty($aHref)) {
-                            $linkText = $element->plaintext ? $element->plaintext : $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_LINK'];
-                            ${$link->getEntryTitle()}[$aHref] = $linkText;
-                        }
-                    }
-                }
+                ${$link->getEntryTitle()} = $this->getPageLinks($request, $htmlDom, $link);
             }
-            
+
             if (!array_key_exists($link->getRequestedPath(), ${$link->getEntryTitle()})) {
                 $linkInputValues = array(
                     'lang'         => $link->getLang(),
@@ -332,6 +293,72 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
         }
     }
     
+    /**
+     * Get all the links from the page
+     * 
+     * @param \HTTP_Request2                                 $request HTTP request object
+     * @param \DOMDocument                                   $htmlDom DOM node object
+     * @param \Cx\Core_Modules\LinkManager\Model\Entity\Link $link
+     * 
+     * @return array $linksList List of the links from the given page
+     */
+    public function getPageLinks(\HTTP_Request2 $request, 
+                                \DOMDocument $htmlDom, 
+                                \Cx\Core_Modules\LinkManager\Model\Entity\Link $link)
+    {
+        global $_ARRAYLANG;
+
+        $linksList = array();
+        //Get the referer page content
+        try {
+            $request->setUrl($link->getRefererPath());
+            $request->setConfig(array(
+                'ssl_verify_peer' => false,
+                'ssl_verify_host'  => false, 
+                'follow_redirects' => true,
+            ));
+            $response = $request->send();
+            libxml_use_internal_errors(true);
+            if (!$htmlDom->loadHTML($response->getBody())) {
+                return $linksList;
+            }
+            libxml_use_internal_errors(false);
+            $htmlXpath = new \DOMXPath($htmlDom);
+        } catch(\Exception $e) {
+            return $linksList;
+        }
+
+        //remove the navigation menu
+        $navHtml = $htmlXpath->query(ASCMS_LINKMANAGER_NAVIGATION_QUERY);
+        if ($navHtml instanceof \DOMNodeList && $navHtml->length) {
+            foreach ($navHtml as $navNodes) {
+                $navNodes->parentNode->removeChild($navNodes);
+            }
+        }
+
+        // Find all the images
+        foreach ($htmlDom->getElementsByTagName('img') as $element) {
+            if (!preg_match('#\.(jpg|jpeg|gif|png)$# i', $element->getAttribute('src'))) {
+                continue;
+            }
+            $imgSrc = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->getAttribute('src'), null);
+            if (!empty($imgSrc)) {
+                $linksList[$imgSrc] = $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_IMAGE'];
+            }
+        }
+
+        // Find all the links
+        foreach ($htmlDom->getElementsByTagName('a') as $element) {
+            $aHref = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->getAttribute('href'), $link->getRefererPath());
+            if (!empty($aHref)) {
+                $linkText = $element->nodeValue ? $element->nodeValue : $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_LINK'];
+                $linksList[$aHref] = $linkText;
+            }
+        }
+
+        return $linksList;
+    }
+
     /**
      * Add and edit the link details
      * 
