@@ -76,6 +76,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     const TYPE_CONTENT = 'content';
     const TYPE_APPLICATION = 'application';
     const TYPE_REDIRECT = 'redirect';
+    const TYPE_SYMLINK = 'symlink';
     const TYPE_FALLBACK = 'fallback';
     const TYPE_ALIAS = 'alias';
 
