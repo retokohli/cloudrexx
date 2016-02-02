@@ -288,7 +288,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
         
         if(!empty($this->searchTerm) && $this->searchTerm != $_ARRAYLANG['TXT_CALENDAR_KEYWORD']) {
             $searchTerm_DB = ", ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field AS field";
-            $searchTerm_where = " AND ((field.title LIKE '%".$this->searchTerm."%' OR field.description LIKE '%".$this->searchTerm."%' OR event.place LIKE '%".$this->searchTerm."%') AND field.event_id = event.id)";
+            $searchTerm_where = " AND ((field.title LIKE '%".$this->searchTerm."%' OR field.teaser LIKE '%".$this->searchTerm."%' OR field.description LIKE '%".$this->searchTerm."%' OR event.place LIKE '%".$this->searchTerm."%') AND field.event_id = event.id)";
         } else {
             $searchTerm_where = $searchTerm_DB = '';            
         }
@@ -659,7 +659,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 $this->moduleLangVar.'_EVENT_START_TIME'        => date("H:i", $objEvent->startDate),  
                 $this->moduleLangVar.'_EVENT_END_DATE'          => date(parent::getDateFormat(), $objEvent->endDate),
                 $this->moduleLangVar.'_EVENT_END_TIME'          => date("H:i", $objEvent->endDate),                                                       
-                $this->moduleLangVar.'_EVENT_TITLE'             => $objEvent->title,                                                      
+                $this->moduleLangVar.'_EVENT_TITLE'             => $objEvent->title,
+                $this->moduleLangVar.'_EVENT_TEASER'            => $objEvent->teaser,
                 $this->moduleLangVar.'_EVENT_ATTACHMENT'        => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',                             
                 $this->moduleLangVar.'_EVENT_ATTACHMENT_SOURCE' => $objEvent->attach,
                 $this->moduleLangVar.'_EVENT_PICTURE'           => $objEvent->pic != '' ? '<img src="'.$hostUri.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
@@ -950,7 +951,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                     $this->moduleLangVar.'_EVENT_LED'            => $objEvent->status==0 ? 'red' : 'green',
                     $this->moduleLangVar.'_EVENT_STATUS'         => $objEvent->status==0 ? $_ARRAYLANG['TXT_CALENDAR_INACTIVE'] : $_ARRAYLANG['TXT_CALENDAR_ACTIVE'],
                     $this->moduleLangVar.'_EVENT_ID'             => $objEvent->id,                                        
-                    $this->moduleLangVar.'_EVENT_TITLE'          => $objEvent->title,                                                         
+                    $this->moduleLangVar.'_EVENT_TITLE'          => $objEvent->title,
+                    $this->moduleLangVar.'_EVENT_TEASER'         => $objEvent->teaser,
                     $this->moduleLangVar.'_EVENT_PICTURE'        => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
                     $this->moduleLangVar.'_EVENT_PICTURE_SOURCE' => $objEvent->pic,
                     $this->moduleLangVar.'_EVENT_THUMBNAIL'      => $objEvent->pic != '' ? '<img src="'.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                               
