@@ -502,7 +502,7 @@ class Market extends marketLibrary
 
         if (!isset($_SESSION['market'])) {
             $_SESSION['market'] = array();
-            $_SESSION['market']['sort'] = array();
+            //$_SESSION['market']['sort'] = array();
         }
         
         // Sort
