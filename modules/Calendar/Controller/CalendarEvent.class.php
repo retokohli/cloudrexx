@@ -268,6 +268,13 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
     public $confirmed;
     
     /**
+     * Whether or not to show the detail view of the event
+     * 
+     * @var boolean
+     */
+    public $showDetailView;
+    
+    /**
      * Event author
      * 
      * @access public
@@ -657,6 +664,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                          event.status AS status,
                          event.author AS author,
                          event.confirmed AS confirmed,
+                         event.show_detail_view,
                          event.show_in AS show_in,
                          event.google AS google,
                          event.invited_groups AS invited_groups,
@@ -786,6 +794,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 $this->showIn = htmlentities($objResult->fields['show_in'], ENT_QUOTES, CONTREXX_CHARSET);
                 $this->availableLang = intval($langId);
                 $this->status = intval($objResult->fields['status']);
+                $this->showDetailView = intval($objResult->fields['show_detail_view']);
                 $this->catId = intval($objResult->fields['catid']);
                 $this->map = intval($objResult->fields['google']);
                 $this->seriesStatus = intval($objResult->fields['series_status']);   
@@ -963,6 +972,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $google        = isset($data['map'][$_LANGID]) ? intval($data['map'][$_LANGID]) : 0;
         $allDay        = isset($data['all_day']) ? 1 : 0;
         $convertBBCode = ($objInit->mode == 'frontend' && empty($id));
+        $showDetailView= isset($data['show-detail-view']) ? 1 : 0;
         
         $useCustomDateDisplay = isset($data['showDateSettings']) ? 1 : 0;
         $showStartDateList    = isset($data['showStartDateList']) ? $data['showStartDateList'] : 0;
@@ -1268,6 +1278,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             'attach'                        => $attach,
             'place_mediadir_id'             => $placeMediadir,
             'host_mediadir_id'              => $hostMediadir,            
+            'show_detail_view'              => $showDetailView,
             'show_in'                       => $showIn,
             'invited_groups'                => $invited_groups,             
             'invited_mails'                 => $invited_mails,
