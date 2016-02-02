@@ -600,6 +600,7 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `series_pattern_exceptions` longtext NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `confirmed` tinyint(1) NOT NULL DEFAULT '1',
+  `show_detail_view` tinyint(1) NOT NULL DEFAULT '1',
   `author` varchar(255) NOT NULL,
   `all_day` tinyint(1) NOT NULL DEFAULT '0',
   `location_type` tinyint(1) NOT NULL DEFAULT '1',
