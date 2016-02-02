@@ -628,6 +628,7 @@ CREATE TABLE `contrexx_module_calendar_event_field` (
   `event_id` int(11) NOT NULL DEFAULT '0',
   `lang_id` varchar(225) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
+  `teaser` text DEFAULT NULL,
   `description` mediumtext,
   `redirect` varchar(255) NOT NULL,
   KEY `lang_field` (`title`),

@@ -633,3 +633,4 @@ $_ARRAYLANG['TXT_CALENDAR_COPY'] = "Als Vorlage für eine neue Veranstaltung ver
 $_ARRAYLANG['TXT_CALENDAR_DEFAULT'] = "Default";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW'] = "Detailansicht";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW_LABEL'] = "Verlinkung zur Detailansicht dieser Veranstaltung anzeigen";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_TEASER'] = "Teaser";
