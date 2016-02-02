@@ -972,14 +972,36 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                     $this->moduleLangVar.'_EVENT_END_TIME'       => date("H:i", $objEvent->endDate),    
                     $this->moduleLangVar.'_EVENT_LANGUAGES'      => $languages,
                     $this->moduleLangVar.'_EVENT_CATEGORY'       => $objCategory->name,
-                    $this->moduleLangVar.'_EVENT_DETAIL_LINK'    => $objEvent->type==0 ? self::_getDetailLink($objEvent) : $objEvent->arrData['redirect'][$_LANGID],
                     $this->moduleLangVar.'_EVENT_EDIT_LINK'      => $editLink,                    
                     $this->moduleLangVar.'_EVENT_COPY_LINK'      => $copyLink,                    
-                    $this->moduleLangVar.'_EVENT_DETAIL_TARGET'  => $objEvent->type==0 ? '_self' : '_blank',
                     $this->moduleLangVar.'_EVENT_SERIES'         => $objEvent->seriesStatus == 1 ? '<img src="'.ASCMS_MODULE_WEB_PATH.'/'.$this->moduleName.'/View/Media/Repeat.png" border="0"/>' : '<i>'.$_ARRAYLANG['TXT_CALENDAR_NO_SERIES'].'</i>',
                     $this->moduleLangVar.'_EVENT_FREE_PLACES'    => $objEvent->freePlaces,
                     $this->moduleLangVar.'_EVENT_ACCESS'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
                 ));              
+
+                if ($objEvent->showDetailView) {
+                    $objTpl->setVariable(array(
+                        $this->moduleLangVar.'_EVENT_DETAIL_LINK'    => $objEvent->type==0 ? self::_getDetailLink($objEvent) : $objEvent->arrData['redirect'][$_LANGID],
+                        $this->moduleLangVar.'_EVENT_DETAIL_TARGET'  => $objEvent->type==0 ? '_self' : '_blank',
+                    ));
+                    if ($objTpl->blockExists('event_detail_view')) {
+                        $objTpl->touchBlock('event_detail_view');
+                    }
+                    if ($objTpl->blockExists('event_no_detail_view')) {
+                        $objTpl->hideBlock('event_no_detail_view');
+                    }
+                } else {
+                    $objTpl->setVariable(array(
+                        $this->moduleLangVar.'_EVENT_DETAIL_LINK'    => '#',
+                        $this->moduleLangVar.'_EVENT_DETAIL_TARGET'  => '',
+                    ));
+                    if ($objTpl->blockExists('event_detail_view')) {
+                        $objTpl->hideBlock('event_detail_view');
+                    }
+                    if ($objTpl->blockExists('event_no_detail_view')) {
+                        $objTpl->touchBlock('event_no_detail_view');
+                    }
+                }
             
                 $hasPlaceMap = !empty($objEvent->place_map) && file_exists(\Env::get('cx')->getWebsitePath().$objEvent->place_map);
                 if ($hasPlaceMap) {
