@@ -122,6 +122,12 @@ class Url {
     const ROUTED = 2;
 
     protected $state = 0;
+    
+    /**
+     * The fragment (after #) part of the URL
+     * @var string
+     */
+    protected $fragment = '';
 
     /**
      * Initializes $domain and $path.
@@ -139,6 +145,11 @@ class Url {
             $this->setPath($matches[2]);
         } else {
             $this->suggest();
+        }
+        
+        $data = parse_url($url);
+        if (!empty($data['fragment'])) {
+            $this->fragment = $data['fragment'];
         }
 
         $this->addPassedParams();
@@ -746,7 +757,7 @@ class Url {
         return
             ASCMS_INSTANCE_OFFSET.'/'.
             ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '').
-            $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
+            $this->path . (empty($this->fragment) ? '' : '#' . $this->fragment); // contains path (except for PATH_OFFSET and virtual language dir) and params
     }
 
 
