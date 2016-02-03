@@ -625,13 +625,30 @@ class Gallery
             return;
         }
 
+        $placeholders = array(
+            'GALLERY_IMAGE',
+            'GALLERY_IMAGE_LINK',
+            'GALLERY_IMAGE_ID',
+            'GALLERY_IMAGE_TITLE',
+            'GALLERY_IMAGE_PATH',
+            'GALLERY_IMAGE_WIDTH',
+            'GALLERY_IMAGE_HEIGHT',
+            'GALLERY_IMAGE_DETAIL_LINK',
+            'GALLERY_IMAGE_NAME',
+            'GALLERY_IMAGE_DESCRIPTION',
+            'GALLERY_IMAGE_FILESIZE'
+        );
         $availableImagePlaceholders = array();
         for ($intPlaceholder = 1;$intPlaceholder <= 10;$intPlaceholder++) {
-            if (   $this->_objTpl->placeholderExists('GALLERY_IMAGE' . $intPlaceholder)
-                || $this->_objTpl->placeholderExists('GALLERY_IMAGE_LINK' . $intPlaceholder)
-            ) {
-                $availableImagePlaceholders[] = $intPlaceholder;
+            foreach ($placeholders as $placeholder) {
+                if ($this->_objTpl->placeholderExists($placeholder . $intPlaceholder)) {
+                    $availableImagePlaceholders[] = $intPlaceholder;
+                    continue 2;
+                }
             }
+        }
+        if (!$availableImagePlaceholders) {
+            return;
         }
         $intFillPlaceholder   = 1;
         $fillPlaceholderCount = count($availableImagePlaceholders);
@@ -651,39 +668,20 @@ class Gallery
             $imageSizeOutput = '';
             $imageTitleTag   = '';
 
-            if ($this->_objTpl->blockExists('gallery_list_images')) {
-                $intImageHeigth = $intImageWidth  = '';
-                if ($this->arrSettings['image_width'] < $imageReso[0]) {
-                    $resizeFactor   = $this->arrSettings['image_width'] / $imageReso[0];
-                    $intImageWidth  = $imageReso[0] * $resizeFactor;
-                    $intImageHeigth = $imageReso[1] * $resizeFactor;
-                }
-                $strImageTitle = '';
-                $showFileName  = $this->arrSettings['show_file_name'] == 'on';
-                if ($showFileName) {
-                    $strImageTitle = substr(strrchr($strImagePath, '/'), 1);
-                    // chop the file extension if the settings tell us to do so
-                    if ($this->arrSettings['show_ext'] == 'off') {
-                        $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
-                    }
-                }
-                $this->_objTpl->setVariable(array(
-                    'GALLERY_LIST_IMAGE_ID'             => contrexx_raw2xhtml($objResult->fields['id']),
-                    'GALLERY_LIST_IMAGE_TITLE'          => $strImageTitle,
-                    'GALLERY_LIST_IMAGE_PATH'           => contrexx_raw2xhtml($strImagePath),
-                    'GALLERY_LIST_IMAGE_WIDTH'          => $intImageWidth,
-                    'GALLERY_LIST_IMAGE_HEIGHT'         => $intImageHeigth,
-                    'GALLERY_LIST_IMAGE_LINK'           => $this->getPictureDetailLink($intParentId, $objResult->fields['id']),
-                    'GALLERY_LIST_IMAGE_NAME'           => contrexx_raw2xhtml($objSubResult->fields['name']),
-                    'GALLERY_LIST_IMAGE_DESCRIPTION'    => contrexx_raw2xhtml($imageDesc),
-                    'GALLERY_LIST_IMAGE_FILESIZE'       => ($showImageSize && $showFileName) ? '('. $imageFileSize .' kB)' : '',
-                ));
-                $this->_objTpl->parse('gallery_list_images');
+            $intImageHeigth = $intImageWidth  = '';
+            if ($this->arrSettings['image_width'] < $imageReso[0]) {
+                $resizeFactor   = $this->arrSettings['image_width'] / $imageReso[0];
+                $intImageWidth  = $imageReso[0] * $resizeFactor;
+                $intImageHeigth = $imageReso[1] * $resizeFactor;
             }
-
-            if (!$availableImagePlaceholders) {
-                $objResult->MoveNext();
-                continue;
+            $strImageTitle = '';
+            $showFileName  = $this->arrSettings['show_file_name'] == 'on';
+            if ($showFileName) {
+                $strImageTitle = substr(strrchr($strImagePath, '/'), 1);
+                // chop the file extension if the settings tell us to do so
+                if ($this->arrSettings['show_ext'] == 'off') {
+                    $strImageTitle = substr($strImageTitle, 0, strrpos($strImageTitle, '.'));
+                }
             }
 
             // chop the file extension if the settings tell us to do so
@@ -781,8 +779,18 @@ class Gallery
 
             $placeholderNumber = $availableImagePlaceholders[$intFillPlaceholder - 1];
             $this->_objTpl->setVariable(array(
-                'GALLERY_IMAGE_LINK'.$placeholderNumber => $imageSizeOutput.$imageCommentOutput.$imageVotingOutput.$imageLinkOutput,
-                'GALLERY_IMAGE'.$placeholderNumber      => $strImageOutput
+                'GALLERY_IMAGE_LINK'.$placeholderNumber         => $imageSizeOutput.$imageCommentOutput.$imageVotingOutput.$imageLinkOutput,
+                'GALLERY_IMAGE'.$placeholderNumber              => $strImageOutput,
+
+                'GALLERY_IMAGE_ID'.$placeholderNumber           => contrexx_raw2xhtml($objResult->fields['id']),
+                'GALLERY_IMAGE_TITLE'.$placeholderNumber        => $strImageTitle,
+                'GALLERY_IMAGE_PATH'.$placeholderNumber         => contrexx_raw2xhtml($strImagePath),
+                'GALLERY_IMAGE_WIDTH'.$placeholderNumber        => $intImageWidth,
+                'GALLERY_IMAGE_HEIGHT'.$placeholderNumber       => $intImageHeigth,
+                'GALLERY_IMAGE_DETAIL_LINK'.$placeholderNumber  => $this->getPictureDetailLink($intParentId, $objResult->fields['id']),
+                'GALLERY_IMAGE_NAME'.$placeholderNumber         => contrexx_raw2xhtml($objResult->fields['name']),
+                'GALLERY_IMAGE_DESCRIPTION'.$placeholderNumber  => contrexx_raw2xhtml($imageDesc),
+                'GALLERY_IMAGE_FILESIZE'.$placeholderNumber     => ($showImageSize && $showFileName) ? '('. $imageFileSize .' kB)' : '',
             ));
 
             if ($intFillPlaceholder == $fillPlaceholderCount) {
@@ -795,16 +803,11 @@ class Gallery
             $objResult->MoveNext();
         }
 
-        if (   $intFillPlaceholder != 1 // No images found or no placeholders found or image count equals to placeholder count
+        if (   $intFillPlaceholder != 1 // $intFillPlaceholder == 1, when image count equals to placeholder count
             && $intFillPlaceholder <= $fillPlaceholderCount
         ) {
-            for ($intPlaceholder = $intFillPlaceholder;$intPlaceholder <= $fillPlaceholderCount;$intPlaceholder++) {
-                $placeholderNumber = $availableImagePlaceholders[$intFillPlaceholder - 1];
-                $this->_objTpl->setVariable(array(
-                    'GALLERY_IMAGE_LINK'.$placeholderNumber => '',
-                    'GALLERY_IMAGE'.$placeholderNumber      => '',
-                ));
-            }
+            // The galleryShowImages block not parsed for the last entry,
+            // so we are calling parse function here
             $this->_objTpl->parse('galleryShowImages');
         }
     }
