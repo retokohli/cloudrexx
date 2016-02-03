@@ -149,6 +149,14 @@ class Calendar extends CalendarLibrary
      * @var integer
      */
     public $boxCount = 3;
+
+    /**
+     * When using the ID of a category, we will
+     * simulate as if cmd=category has been requested
+     *
+     * @var boolean
+     */
+    protected $simulateCategoryView = false;
     
     /**
      * Constructor
@@ -182,7 +190,12 @@ class Calendar extends CalendarLibrary
             $objEvent->export();
         }
 
-        switch ($_REQUEST['cmd']) {
+        $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : null;
+        if ($this->simulateCategoryView) {
+            $cmd = 'category';
+        }
+
+        switch ($cmd) {
             case 'detail':
                 if( $id!= null && $_GET['date'] != null) {
                     self::showEvent();
@@ -306,12 +319,16 @@ class Calendar extends CalendarLibrary
             $this->endDate = mktime(23, 59, 59, $month, $day, $year);
         }
         
+        // In case $_GET['cmd'] is an integer, then we shall treat it as the
+        // ID of a category and switch to category-mode
+        if (!empty($cmd) && intval($cmd) == $cmd) {
+            $catid = intval($cmd);
+            $cmd == 'category';
+            $this->simulateCategoryView = true;
+        }
         
         $this->searchTerm = !empty($term) ? contrexx_raw2db($term) : null;
         $this->categoryId = !empty($catid) ? intval($catid) : null;
-
-
-
 
         if ($cmd == 'boxes' || $cmd == 'category') {
             $this->startPos = 0;
