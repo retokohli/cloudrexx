@@ -1261,23 +1261,25 @@ EOF
                 return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             }
         }
+    }
 
-        // add access id 4 for user groups which had access to 13 or 161
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
-            try {
-                $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 13 OR access_id = 161 GROUP BY `group_id`");
-                if ($result !== false) {
-                    while (!$result->EOF) {
-                        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
-                                                VALUES (4, " . intval($result->fields['group_id']) . ")");
-                        $result->MoveNext();
-                    }
+    // add access id 4 for user groups which had access to 13 or 161
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+        try {
+            $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 13 OR access_id = 161 GROUP BY `group_id`");
+            if ($result !== false) {
+                while (!$result->EOF) {
+                    \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                                            VALUES (4, " . intval($result->fields['group_id']) . ")");
+                    $result->MoveNext();
                 }
-            } catch (\Cx\Lib\UpdateException $e) {
-                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+    }
 
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
         try {
             // add some necessary buttons to the confirmation page
             // fix of http://bugs.contrexx.com/contrexx/ticket/2015
@@ -1294,7 +1296,9 @@ EOF
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+    }
 
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         try {
             $queries = array(
                 'INSERT IGNORE INTO `' . DBPREFIX . 'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","payment_lsv_active","config","text","1","",18)',

@@ -221,13 +221,15 @@ function _accessUpdate()
             // we COULD do something else here..
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+    }
 
 
-        /********************
-         *
-         * ADD USER PROFILE
-         *
-         *******************/
+    /********************
+     *
+     * ADD USER PROFILE
+     *
+     *******************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
         try {
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX . 'access_user_profile',
@@ -261,8 +263,10 @@ function _accessUpdate()
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+    }
 
 
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         /***************************
          *
          * MIGRATE GROUP RELATIONS
@@ -744,7 +748,7 @@ function _accessUpdate()
                     'is_admin' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
                     'username' => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'is_admin'),
                     'password' => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'username'),
-                    'auth_token' => array('type' => 'VARCHAR(32)', 'notnull' => false, 'after' => 'password'),
+                    'auth_token' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'after' => 'password'),
                     'auth_token_timeout' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'auth_token'),
                     'regdate' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'auth_token_timeout'),
                     'expiration' => array('type' => 'INT(14)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'regdate'),
@@ -860,6 +864,8 @@ function _accessUpdate()
             \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('use_usernames', '0', '1') ON DUPLICATE KEY UPDATE `key` = `key`");
             \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_assign_to_groups', '3', '0') ON DUPLICATE KEY UPDATE `key` = `key`");
             \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_active_automatically', '', '1') ON DUPLICATE KEY UPDATE `key` = `key`");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_activation_timeout', '10', '0') ON DUPLICATE KEY UPDATE `key` = `key`");
+
             \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('access', 'providers', 'sociallogin', 'text', '{\"facebook\":{\"active\":\"0\",\"settings\":[\"\",\"\"]},\"twitter\":{\"active\":\"0\",\"settings\":[\"\",\"\"]},\"google\":{\"active\":\"0\",\"settings\":[\"\",\"\",\"\"]}}', '', '0') ON DUPLICATE KEY UPDATE `section` = `section`");
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -893,36 +899,15 @@ function _accessUpdate()
                 return $content;
             };
 
-            \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'access', 'cmd' => 'signup'), $search, $callback, array('content'), '3.0.2');
+            \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'access', 'cmd' => 'signup'), $search, $callback, array('content'), '3.0.3');
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
 
 
-    /***************************************
-     *
-     * ADD SETTING FOR SOCIAL LOGIN
-     *
-     **************************************/
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
-        try {
-            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_activation_timeout', '10', '0') ON DUPLICATE KEY UPDATE `key` = `key`");
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
-    }
-
-    /***************************************
-     *
-     * STRICT_TRANS_TABLES ISSUE FIX FOR PROFILE TABLE
-     *
-     **************************************/
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
         try {
-            \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `interests` `interests` TEXT NULL");
-            \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `signature` `signature` TEXT NULL");
-
             // add access to filesharing for existing groups
             $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 7 GROUP BY group_id");
             if ($result !== false) {
@@ -939,7 +924,7 @@ function _accessUpdate()
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         try {
-            //update module name for crm core settings
+            //update module name
             \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_setting` SET `section` = 'Access' WHERE `section` = 'access' AND `name` = 'providers' AND `group` = 'sociallogin'");
         }  catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);

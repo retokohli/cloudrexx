@@ -34,6 +34,14 @@ require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
 
 function executeContrexxUpdate() {
     global $_CORELANG, $_CONFIG, $objDatabase, $objUpdate, $_DBCONFIG;
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** UPDATE SYSTEM INITIALIZATION - PHASE 1 *******************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     
     /**
      * These are the modules which MUST have new template in order for Cloudrexx
@@ -114,6 +122,14 @@ function executeContrexxUpdate() {
     
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
 
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 1 - INSTALL NEW PHP CODE BASE **********************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+
     // Copy cx files to the root directory
     if (!$_SESSION['contrexx_update']['copyFilesFinished']) {
         if (!loadMd5SumOfOriginalCxFiles()) {
@@ -158,6 +174,15 @@ function executeContrexxUpdate() {
     }
     unset($_SESSION['contrexx_update']['copiedCxFilesIndex']);
 
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** UPDATE SYSTEM INITIALIZATION - PHASE 2 *******************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+
     /**
      * This needs to be initialized before loading config/doctrine.php
      * Because we overwrite the Gedmo model (so we need to load our model
@@ -167,9 +192,14 @@ function executeContrexxUpdate() {
     require_once(dirname(UPDATE_PATH).'/core/Core/Controller/Cx.class.php');
     require_once(UPDATE_PATH.'/UpdateCx.class.php');
 
-    $updateCx = new \UpdateCx();
-    Env::set('cx', $updateCx);
-    $cl = new \Cx\Core\ClassLoader\ClassLoader($updateCx, true);
+    if (isset($_SESSION['contrexx_update']['newSystemReady'])) {
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+    } else {
+        $cx = new \UpdateCx();
+    }
+
+    Env::set('cx', $cx);
+    $cl = new \Cx\Core\ClassLoader\ClassLoader($cx, true);
     Env::set('ClassLoader', $cl);
 
     FWLanguage::init();
@@ -182,9 +212,13 @@ function executeContrexxUpdate() {
     }
     
 
-    /////////////////////
-    // UTF-8 MIGRATION //
-    /////////////////////
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 2 - UTF-8 MIGRATION ********************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     if (!include_once(dirname(__FILE__) . '/components/core/core.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/core.php'));
         return false;
@@ -221,15 +255,19 @@ function executeContrexxUpdate() {
         setUpdateMsg(1, 'timeout');
         return false;
     }
-    /////////////////////
 
     
-    /////////////////////////////
-    // Session Table MIGRATION //
-    /////////////////////////////
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 3 - SESSION MIGRATION ******************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     if (!in_array('session', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         $isSessionVariableTableExists = \Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable');
         if (!$isSessionVariableTableExists || $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '4.0.0')) {
+            \DBG::msg('update: migrate session');
             if (!migrateSessionTable()) {
                 setUpdateMsg('Error in updating session table', 'error');
                 return false;
@@ -238,6 +276,15 @@ function executeContrexxUpdate() {
             return false;
         }
     }
+
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** UPDATE SYSTEM INITIALIZATION - PHASE 3 *******************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
 
     // Load Doctrine (this must be done after the UTF-8 Migration, because we'll need $_DBCONFIG['charset'] to be set)
     $incDoctrineStatus = require_once(UPDATE_PATH . '/config/doctrine.php');
@@ -249,9 +296,20 @@ function executeContrexxUpdate() {
     );
     $loggableListener = \Env::get('loggableListener');
     $loggableListener->setUsername(json_encode($userData));
-    /////////////////////
 
+    // load content manager migration script; execution will be manually called later by updateContentManagerDbStructure()
+    if (!include_once(dirname(__FILE__) . '/components/core/contentmanager.php')) {
+        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/contentmanager.php'));
+        return false;
+    }
     
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 4 - CONTENT MIGRATION ******************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         //////////////////////////////
         // BEGIN: CONTENT MIGRATION //
@@ -418,132 +476,62 @@ function executeContrexxUpdate() {
         ////////////////////////////
         // END: CONTENT MIGRATION //
         ////////////////////////////
-    } else {
-        ///////////////////////////////////////////
-        // BEGIN: UPDATE FOR CONTREXX 3 OR NEWER //
-        ///////////////////////////////////////////
-        if (!in_array('coreModuleRepository', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-            $result = _updateModuleRepository();
-            if ($result === false) {
-                DBG::msg('unable to update module repository');
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY']), 'title');
-                }
-                return false;
-            }
-            $_SESSION['contrexx_update']['update']['done'][] = 'coreModuleRepository';
-            unset($_SESSION['contrexx_update']['update']['done']['coreModuleRepositoryDone']);
-        }
+    }
 
-        try {
-            \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry`
-                SET `object_class` = \'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Entity\\\\Page\'
-                WHERE object_class = \'Cx\\\\Model\\\\ContentManager\\\\Page\'');
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
 
-        \Cx\Lib\UpdateUtil::sql('
-            ALTER TABLE `' . DBPREFIX . 'content_node` ENGINE = INNODB
-        ');
-
-        // before an update of module page can be done, the db changes have to be done
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX . 'content_page',
-            array(
-                'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'node_id'                            => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
-                'nodeIdShadowed'                     => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'node_id'),
-                'lang'                               => array('type' => 'INT(11)', 'after' => 'nodeIdShadowed'),
-                'type'                               => array('type' => 'VARCHAR(16)', 'after' => 'lang'),
-                'caching'                            => array('type' => 'TINYINT(1)', 'after' => 'type'),
-                'updatedAt'                          => array('type' => 'timestamp', 'after' => 'caching', 'notnull' => false),
-                'updatedBy'                          => array('type' => 'CHAR(40)', 'after' => 'updatedAt'),
-                'title'                              => array('type' => 'VARCHAR(255)', 'after' => 'updatedBy'),
-                'linkTarget'                         => array('type' => 'VARCHAR(16)', 'notnull' => false, 'after' => 'title'),
-                'contentTitle'                       => array('type' => 'VARCHAR(255)', 'after' => 'linkTarget'),
-                'slug'                               => array('type' => 'VARCHAR(255)', 'after' => 'contentTitle'),
-                'content'                            => array('type' => 'longtext', 'after' => 'slug'),
-                'sourceMode'                         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content'),
-                'customContent'                      => array('type' => 'VARCHAR(64)', 'notnull' => false, 'after' => 'sourceMode'),
-                'useCustomContentForAllChannels'     => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'customContent'),
-                'applicationTemplate'                => array('type' => 'VARCHAR(100)', 'notnull' => false, 'after' => 'useCustomContentForAllChannels'),
-                'useCustomApplicationTemplateForAllChannels' => array('type' => 'TINYINT(2)', 'notnull' => false, 'after' => 'applicationTemplate'),
-                'cssName'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useCustomApplicationTemplateForAllChannels'),
-                'cssNavName'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'cssName'),
-                'skin'                               => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cssNavName'),
-                'useSkinForAllChannels'              => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'skin'),
-                'metatitle'                          => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useSkinForAllChannels'),
-                'metadesc'                           => array('type' => 'text', 'after' => 'metatitle'),
-                'metakeys'                           => array('type' => 'text', 'after' => 'metadesc'),
-                'metarobots'                         => array('type' => 'VARCHAR(7)', 'notnull' => false, 'after' => 'metakeys'),
-                'start'                              => array('type' => 'timestamp', 'notnull' => false, 'after' => 'metarobots'),
-                'end'                                => array('type' => 'timestamp', 'notnull' => false, 'after' => 'start'),
-                'editingStatus'                      => array('type' => 'VARCHAR(16)', 'after' => 'end'),
-                'protection'                         => array('type' => 'INT(11)', 'after' => 'editingStatus'),
-                'frontendAccessId'                   => array('type' => 'INT(11)', 'after' => 'protection'),
-                'backendAccessId'                    => array('type' => 'INT(11)', 'after' => 'frontendAccessId'),
-                'display'                            => array('type' => 'TINYINT(1)', 'after' => 'backendAccessId'),
-                'active'                             => array('type' => 'TINYINT(1)', 'after' => 'display'),
-                'target'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'active'),
-                'module'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'target'),
-                'cmd'                                => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'module')
-            ),
-            array(
-                'node_id'                            => array('fields' => array('node_id','lang'), 'type' => 'UNIQUE'),
-                'IDX_D8E86F54460D9FD7'               => array('fields' => array('node_id'))
-            ),
-            'InnoDB',
-            '',
-            array(
-                'node_id' => array(
-                    'table'     => DBPREFIX.'content_node',
-                    'column'    => 'id',
-                    'onDelete'  => 'SET NULL',
-                    'onUpdate'  => 'NO ACTION',
-                ),
-            )
-        );
-
-        if (_convertThemes2Component() === false) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                DBG::msg('unable to convert themes to component');
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
-            }
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 5 - VERSION 3 FIXES ********************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        $result = ContentManagerUpdate::updateContentManagerDbStructure();
+        if ($result === false) {
             return false;
         }
-        
-        if (_updateModulePages($viewUpdateTable) === false) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                DBG::msg('unable to update module templates');
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
-            }
+
+        $result = ContentManagerUpdate::fixPageLogs();
+        if ($result === false) {
             return false;
-        }/* else {
-            if (!in_array('moduleStyles', $_SESSION['contrexx_update']['update']['done'])) {
-                if (_updateCssDefinitions($viewUpdateTable, $objUpdate) === false) {
-                    if (empty($objUpdate->arrStatusMsg['title'])) {
-                        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
-                    }
+        }
+
+        $result = ContentManagerUpdate::fixFallbackPages();
+        if ($result === false) {
+            return false;
+        }
+
+        $result = ContentManagerUpdate::fixTree();
+        if ($result === false) {
+            return false;
+        }
+
+        $cx3Version = detectCx3Version();
+        if ($cx3Version === false) {
+            return false;
+        }
+
+        if ($cx3Version !== true) {
+            // we are updating from 3.0.0 rc1, rc2, stable or 3.0.0.1
+            if (!in_array('update3', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+                if (!include_once(dirname(__FILE__) . '/update3.php')) {
+                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], dirname(__FILE__) . '/update3.php'));
                     return false;
                 }
-                $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
+                $_SESSION['contrexx_update']['update']['done'][] = 'update3';
             }
-        }*/
-
-        // we are updating from 3.0.0 rc1, rc2, stable or 3.0.0.1
-        if (!in_array('update3', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-            if (!include_once(dirname(__FILE__) . '/update3.php')) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], dirname(__FILE__) . '/update3.php'));
-                return false;
-            }
-            $_SESSION['contrexx_update']['update']['done'][] = 'update3';
         }
     }
         
-    ///////////////////////////////////////////////////
-    // Changes which need to be done in all versions //
-    ///////////////////////////////////////////////////
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 6 - CORE MIGRATION *********************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
 
     // Update languages, access_groups, modules table and so on
     if (!in_array('coreUpdate', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
@@ -559,42 +547,14 @@ function executeContrexxUpdate() {
         }
     }
 
-    // Execute component migration scripts:
-    // check for any missed modules
-    $missedModules = array();
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-        \DBG::msg('update: check for missed and conflicted modules');
-        $missedModules = getMissedModules();
-        $conflictedModules = getConflictedModules($missedModules);
-        if (!empty($conflictedModules)) {
-            $conflictedModulesList = '';
-            foreach ($conflictedModules as $moduleName => $moduleTables) {
-                $conflictedModulesList = '<li><strong>'.$moduleName.':</strong> '.implode(', ', $moduleTables).'</li>';
-            }
-            setUpdateMsg($_CORELANG['TXT_CONFLICTED_MODULES_TITLE'], 'title');
-            setUpdateMsg($_CORELANG['TXT_CONFLICTED_MODULES_DESCRIPTION'].'<ul>'.$conflictedModulesList.'</ul>', 'msg');
-            setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_TRY_AGAIN'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
-            return false;
-        }
-    }
 
-    $arrDirs = array('core', 'core_module', 'module');
-    // migrate the components
-    if (!in_array('migrateComponents', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-        \DBG::msg('update: migrate components');
-        $result = _migrateComponents($arrDirs, $objUpdate, $missedModules);
-        if ($result === 'timeout') {
-            setUpdateMsg(1, 'timeout');
-            return false;
-        }
-        if (!$result) {
-            setUpdateMsg('Die Komponenten konnten nicht migiert werden.');
-            return false;
-        }
-
-        $_SESSION['contrexx_update']['update']['done'][] = 'migrateComponents';
-        unset($_SESSION['contrexx_update']['update']['done']['migrateComponentsDone']);
-    }
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** UPDATE SYSTEM INITIALIZATION - PHASE 4 *******************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
 
     // load backend areas migration script; execution will be manually called later by _updateBackendAreas()
     if (!include_once(dirname(__FILE__) . '/components/core/backendAreas.php')) {
@@ -620,12 +580,70 @@ function executeContrexxUpdate() {
         return false;
     }
 
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 7 - COMPONENTS MIGRATION ***************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+
+    if (!in_array('migrateComponents', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        // Execute component migration scripts:
+        // check for any missed modules
+        $missedModules = array();
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+            \DBG::msg('update: check for missed and conflicted modules');
+            $missedModules = getMissedModules();
+            $conflictedModules = getConflictedModules($missedModules);
+            if (!empty($conflictedModules)) {
+                $conflictedModulesList = '';
+                foreach ($conflictedModules as $moduleName => $moduleTables) {
+                    $conflictedModulesList = '<li><strong>'.$moduleName.':</strong> '.implode(', ', $moduleTables).'</li>';
+                }
+                setUpdateMsg($_CORELANG['TXT_CONFLICTED_MODULES_TITLE'], 'title');
+                setUpdateMsg($_CORELANG['TXT_CONFLICTED_MODULES_DESCRIPTION'].'<ul>'.$conflictedModulesList.'</ul>', 'msg');
+                setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_TRY_AGAIN'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+                return false;
+            }
+        }
+
+        $arrDirs = array('core', 'core_module', 'module');
+        // migrate the components
+        \DBG::msg('update: migrate components');
+        $result = _migrateComponents($arrDirs, $objUpdate, $missedModules);
+        if ($result === 'timeout') {
+            setUpdateMsg(1, 'timeout');
+            return false;
+        }
+        if (!$result) {
+            setUpdateMsg('Die Komponenten konnten nicht migiert werden.');
+            return false;
+        }
+
+        $_SESSION['contrexx_update']['update']['done'][] = 'migrateComponents';
+        unset($_SESSION['contrexx_update']['update']['migrateComponentsDone']);
+    }
+
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 8 - SETTINGS MIGRATION *****************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     if (
         !in_array('coreSettings', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
         !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
     ) {
         \DBG::msg('update: update settings');
         $result = _updateSettings();
+        if ($result === 'timeout') {
+            setUpdateMsg(1, 'timeout');
+            return false;
+        }
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_BASIC_CONFIGURATION']), 'title');
@@ -649,52 +667,80 @@ function executeContrexxUpdate() {
         }
     }
 
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 9 - LOAD NEW MODULE REPOSITORY *********************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    if (!in_array('coreModuleRepository', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        \DBG::msg('update: update module repository');
+        $result = _updateModuleRepository();
+        if ($result === false) {
+            DBG::msg('unable to update module repository');
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY']), 'title');
+            }
+            return false;
+        }
+        $_SESSION['contrexx_update']['update']['done'][] = 'coreModuleRepository';
+        unset($_SESSION['contrexx_update']['update']['coreModuleRepositoryDone']);
+    }
+
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 10 - THEMES MIGRATION ******************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    if (!in_array('convertTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        \DBG::msg('update: convert themes 2 component');
+        $result = _convertThemes2Component();
+        if ($result === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                DBG::msg('unable to convert themes to component');
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
+            }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'convertTemplates';
+        }
+    }
+
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 11 - UPDATE CONTENT APPLICATION TEMPLATES  *********/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    if (!in_array('moduleTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        \DBG::msg('update: update module pages');
+        if (_updateModulePages($viewUpdateTable) === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                DBG::msg('unable to update module templates');
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
+            }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'moduleTemplates';
+        }
+    }
+
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 12 - INSTALL NEW APPLICATION TEMPLATES STYLES ******/
+    /******************************** (version < 3 only) ***************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-        \DBG::msg('update: continue update for cx < 3.0.0');
-        ///////////////////////////////////////////
-        // CONTINUE UPDATE FOR NON CX 3 VERSIONS //
-        ///////////////////////////////////////////
-        if (!in_array('coreModuleRepository', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-            \DBG::msg('update: update module repository');
-            $result = _updateModuleRepository();
-            if ($result === false) {
-                DBG::msg('unable to update module repository');
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY']), 'title');
-                }
-                return false;
-            }
-            $_SESSION['contrexx_update']['update']['done'][] = 'coreModuleRepository';
-            unset($_SESSION['contrexx_update']['update']['done']['coreModuleRepositoryDone']);
-        }
-
-        if (!in_array('convertTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-            \DBG::msg('update: convert themes 2 component');
-            $result = _convertThemes2Component();
-            if ($result === false) {
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    DBG::msg('unable to convert themes to component');
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
-                }
-                return false;
-            } else {
-                $_SESSION['contrexx_update']['update']['done'][] = 'convertTemplates';
-            }
-        }
-
-        if (!in_array('moduleTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-            \DBG::msg('update: update module pages');
-            if (_updateModulePages($viewUpdateTable) === false) {
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    DBG::msg('unable to update module templates');
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
-                }
-                return false;
-            } else {
-                $_SESSION['contrexx_update']['update']['done'][] = 'moduleTemplates';
-            }
-        }
-
         if (!in_array('moduleStyles', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
             \DBG::msg('update: update css definitions');
             if (_updateCssDefinitions($viewUpdateTable, $objUpdate) === false) {
@@ -706,7 +752,17 @@ function executeContrexxUpdate() {
                 $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
             }
         }
+    }
 
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 13 - FIX BROKEN NAVIGATIONS ************************/
+    /******************************** (version < 3 only) ***************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         if (!in_array('navigations', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
             \DBG::msg('update: update navigations');
             if (_updateNavigations() === false) {
@@ -718,45 +774,55 @@ function executeContrexxUpdate() {
                 $_SESSION['contrexx_update']['update']['done'][] = 'navigations';
             }
         }
+    }
 
-        if (file_exists(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
-            \DBG::msg('update: backup customized index.php file');
-            \DBG::msg('/cadmin/index.php still exists...');
-            // move cadmin index.php if its customized
-            if (!loadMd5SumOfOriginalCxFiles()) {
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 14 - DROP /CADMIN/INDEX.PHP ************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    // IMPORTANT: This only works as long as the backend areas have not been reloaded
+    if (file_exists(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
+        \DBG::msg('update: backup customized index.php file -> /<customizing-path>');
+        \DBG::msg('/cadmin/index.php still exists...');
+        // move cadmin index.php if its customized
+        if (!loadMd5SumOfOriginalCxFiles()) {
+            return false;
+        }
+        if (!verifyMd5SumOfFile(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php', '', false)) {
+            \DBG::msg('...and it\'s customized, so let\'s move it to customizing directory');
+            // changes, backup modified file
+            if (!backupModifiedFile(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
+                setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht kopiert werden.');
                 return false;
             }
-            if (!verifyMd5SumOfFile(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php', '', false)) {
-                \DBG::msg('...and it\'s customized, so let\'s move it to customizing directory');
-                // changes, backup modified file
-                if (!backupModifiedFile(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
-                    setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht kopiert werden.');
-                    return false;
-                }
-            } else {
-                \DBG::msg('...but it\'s not customized');
-            }
-            // no non-backupped changes, can delete
-            try {
-                \DBG::msg('So let\'s remove it...');
-                $cadminIndex = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php');
-                $cadminIndex->delete();
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht gelöscht werden.');
-                return false;
-            }
+        } else {
+            \DBG::msg('...but it\'s not customized');
+        }
+        // no non-backupped changes, can delete
+        try {
+            \DBG::msg('So let\'s remove it...');
+            $cadminIndex = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php');
+            $cadminIndex->delete();
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht gelöscht werden.');
+            return false;
         }
     }
 
-    ////////////////////////////////////////////////////////////
-    // Continue changes which need to be done in all versions //
-    ////////////////////////////////////////////////////////////
 
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 15 - LOAD NEW MODULE DB ****************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     // Update DBPREFIX_modules-table
-    if (
-        !in_array('coreModules', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
-        !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
-    ) {
+    if (!in_array('coreModules', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         \DBG::msg('update: update modules');
         $result = _updateModules();
         if ($result === false) {
@@ -769,11 +835,16 @@ function executeContrexxUpdate() {
         }
     }
 
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 16 - LOAD NEW BACKEND AREA DB **********************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     // Update DBPREFIX_backend_areas-table
-    if (
-        !in_array('coreBackendAreas', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
-        !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
-    ) {
+    if (!in_array('coreBackendAreas', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         \DBG::msg('update: update backend areas');
         $result = _updateBackendAreas();
         if ($result === false) {
@@ -786,11 +857,16 @@ function executeContrexxUpdate() {
         }
     }
 
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 17 - LOAD NEW COMPONENT DB *************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     // Update DBPREFIX_component-table
-    if (
-        !in_array('coreComponent', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
-        !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
-    ) {
+    if (!in_array('coreComponent', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         \DBG::msg('update: update component');
         $result = _updateComponent();
         if ($result === false) {
@@ -803,32 +879,137 @@ function executeContrexxUpdate() {
         }
     }
 
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 18 - MIGRATE PAGE LOGS TO NEW COMPONENT NAMES ******/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     // Migrate page logs
-    if(!in_array('pageLogs', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))
-        || !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+    if (!in_array('pageLogs', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         \DBG::msg('update: migrate page logs');
         $result = _migratePageLogs();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg($_CORELANG['TXT_UPDATE_PAGE_LOG'], 'title');
             }
+            return false;
         } else {
             $_SESSION['contrexx_update']['update']['done'][] = 'pageLogs';
         }
     }
 
+    if (!in_array('pageApplicationNames', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        \DBG::msg('update: migrate page application names');
+        $result = migratePageApplicationNames();
+        if ($result === 'timeout') {
+            setUpdateMsg(1, 'timeout');
+            return false;
+        }
+        if ($result === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg('Beim Aktualisieren der Anwendungsseiten ist ein Fehler aufgetreten', 'title');
+            }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'pageApplicationNames';
+        }
+    }
+
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 19 - INSTALL CONTENT APPLICATION TEMPLATES *********/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    // Migrate page logs
+    if (!in_array('applicationTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        \DBG::msg('update: install content application templates');
+        $result = installContentApplicationTemplates();
+        if ($result === 'timeout') {
+            setUpdateMsg(1, 'timeout');
+            return false;
+        }
+        if ($result === false) {
+            return false;
+        }
+
+        $_SESSION['contrexx_update']['update']['done'][] = 'applicationTemplates';
+    }
+
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 20 - SETTINGS 2 SETTINGDB MIGRATION ****************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    if (
+        !in_array('coreSettings2SettingDb', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
+        !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
+    ) {
+        \DBG::msg('update: migrate settings to \Cx\Core\Setting');
+        $result = migrateSettingsToSettingDb();
+        if ($result === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg('Bei der Migration der Grundeinstellungen trat ein Fehler auf', 'title');
+            }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'coreSettings2SettingDb';
+
+            // let's force a reload here to ensure any new settings will be loaded
+            setUpdateMsg(1, 'timeout');
+            return false;
+        }
+    }
+
+
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 21 - INSTALL NEW .HTACCESS FILE ********************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     // Update .htaccess
     \DBG::msg('update: create htaccess file');
-    if (!createHtAccess()) {
-        $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
-        $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
+    if(!in_array('createHtAccess', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        if (!createHtAccess()) {
+            $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
+            $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
 
-        setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
+            setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
+            return false;
+        }
+
+        $_SESSION['contrexx_update']['update']['done'][] = 'createHtAccess';
+        //$_SESSION['contrexx_update']['update']['done'][] = 'newSystemReady';
+
+        // force final reload
+        setUpdateMsg(1, 'timeout');
         return false;
     }
 
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 22 - INSTALL NEW LICENSE ***************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     // Update license
     \DBG::msg('update: update license');
+// TODO
+    \DBG::msg('update: skip...');
+    return true;
     $arrUpdate = $objUpdate->getLoadedVersionInfo();
     $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
 
@@ -1163,13 +1344,13 @@ function _updateModuleRepository() {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
 
-        if (!isset($_SESSION['contrexx_update']['update']['done']['coreModuleRepositoryDone'])) {
-            $_SESSION['contrexx_update']['update']['done']['coreModuleRepositoryDone'] = array();
+        if (!isset($_SESSION['contrexx_update']['update']['coreModuleRepositoryDone'])) {
+            $_SESSION['contrexx_update']['update']['coreModuleRepositoryDone'] = array();
         }
 
         while (($file = readdir($dh)) !== false) {
             if (preg_match('#^repository_([0-9]+)\.php$#', $file, $arrFunction)) {
-                if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']['coreModuleRepositoryDone']))) {
+                if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['coreModuleRepositoryDone']))) {
                     if (function_exists('memory_get_usage')) {
                         if (!checkMemoryLimit()) {
                             return false;
@@ -1199,7 +1380,7 @@ function _updateModuleRepository() {
                         return false;
                     }
 
-                    $_SESSION['contrexx_update']['update']['done']['coreModuleRepositoryDone'][] = $file;
+                    $_SESSION['contrexx_update']['update']['coreModuleRepositoryDone'][] = $file;
 
                     if ($count == 10) {
                         setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
@@ -1220,6 +1401,12 @@ function _updateModuleRepository() {
     return true;
 }
 
+
+/**
+ * Update content pages of modules which MUST have new template in order for Cloudrexx
+ * to work correctly. CSS definitions for these modules will get updated too.
+ * Content is loaded from module repository.
+ */
 function _updateModulePages(&$viewUpdateTable) {
     global $objUpdate, $_CONFIG, $objDatabase;
     
@@ -2089,21 +2276,21 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
         setUpdateMsg('Keine Komponenten angegeben.');
         return false;
     }
-    if (!isset($_SESSION['contrexx_update']['update']['done']['migrateComponentsDone'])) {
-        $_SESSION['contrexx_update']['update']['done']['migrateComponentsDone'] = array();
+    if (!isset($_SESSION['contrexx_update']['update']['migrateComponentsDone'])) {
+        $_SESSION['contrexx_update']['update']['migrateComponentsDone'] = array();
     }
 
     // list of core components who's update script will be executed independently
     $specialComponents2skip = array(
-        'backendAreas', 'componentmanager', 'core', 'modules', 'repository', 'settings', 'utf8',
+        'backendAreas', 'componentmanager', 'contentmanager', 'core', 'modules', 'repository', 'settings', 'utf8',
     );
 
-    // Only these files introduce changes for all versions
-    $essentialFiles = array(
+    // component update scripts that introduce changes for all versions (pre and post v3)
+    $genericMigrationScripts = array(
         // core
         'routing', 'wysiwyg',
         // core module
-        'access', 'contact', 'contentmanager',
+        'access', 'contact',
         'cron', 'linkmanager', 'news',
         // module
         'blog', 'calendar', 'crm', 'data', 'directory', 'downloads', 'ecard', 'filesharing',
@@ -2114,7 +2301,7 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
         $dh = opendir(dirname(__FILE__).'/components/'.$dir);
         if ($dh) {
             while (($file = readdir($dh)) !== false) {
-                if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']['migrateComponentsDone']))) {
+                if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['migrateComponentsDone']))) {
                     $fileInfo = pathinfo(dirname(__FILE__).'/components/'.$dir.'/'.$file);
 
                     if ($fileInfo['extension'] == 'php') {
@@ -2127,7 +2314,7 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
                         // skip all files that don't introduce changes for versions 3.0 and up
                         if (
                             !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0') &&
-                            !in_array($fileInfo['filename'], $essentialFiles)
+                            !in_array($fileInfo['filename'], $genericMigrationScripts)
                         ) {
                             continue;
                         }
@@ -2170,7 +2357,7 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
                                 } elseif ($result === 'timeout') {
                                     return $result;
                                 } else {
-                                    // fetch module info from components/core/module.php
+                                    // fetch module info from components/core/modules.php
                                     $arrModule = getModuleInfo($fileInfo['filename']);
                                     if ($arrModule) {
                                         try {
@@ -2190,7 +2377,7 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
                         }
                     }
 
-                    $_SESSION['contrexx_update']['update']['done']['migrateComponentsDone'][] = $file;
+                    $_SESSION['contrexx_update']['update']['migrateComponentsDone'][] = $file;
                     return 'timeout';
                 }
             }
@@ -2298,76 +2485,131 @@ function getFolderStructure($folder, $foldersOnly = false, $subdirectories = tru
  * @return bool true on success false otherwise
  */
 function removeOldComponents($folders) {
+    \DBG::msg(__METHOD__);
+
     $newComponents = array();
     foreach ($folders as $componentFolder) {
-        $newComponents[$componentFolder] = getFolderStructure(dirname(__FILE__) . '/cx_files' . $componentFolder, true, false);
+        $newComponents[$componentFolder] = getFolderStructure(dirname(__FILE__) . '/cx_files/' . $componentFolder, true, false);
         if (empty($_SESSION['contrexx_update']['removedComponents'][$componentFolder])) {
             $_SESSION['contrexx_update']['removedComponents'][$componentFolder] = 0;
         }
     }
 
     $componentList = array(
-        'Config' => 'settings', 'ComponentManager' => 'modulemanager',
-        'ContentWorkflow' => 'workflow', 'Country' => 'country',
-        'Csrf' => 'CSRF', 'DatabaseManager' => 'dbm', 'Error' => 'error',
-        'ImageType' => 'Imagetype', 'JavaScript' => 'JavaScript',
-        'JsonData' => 'jsondata', 'MailTemplate' => 'MailTemplate',
-        'LanguageManager' => 'language', 'Message' => 'Message',
-        'Security' => 'Security', 'Session' => 'session',
-        'SystemInfo' => 'server', 'SystemLog' => 'log',
-        'ViewManager' => 'skins', 'Access' => 'access', 'Agb' => 'agb',
-        'Alias' => 'alias', 'Cache' => 'cache', 'Captcha' => 'captcha',
-        'Contact' => 'contact', 'FileBrowser' => 'fileBrowser',
-        'Home' => 'home', 'Ids' => 'ids', 'Imprint' => 'imprint',
-        'Login' => 'login', 'Media' => 'media', 'NetTools' => 'nettools',
-        'News' => 'news', 'Privacy' => 'privacy', 'Search' => 'search',
-        'Sitemap' => 'sitemap', 'Stats' => 'stats', 'Block' => 'block',
-        'Blog' => 'blog', 'Calendar' => 'calendar', 'Checkout' => 'checkout',
-        'Crm' => 'crm', 'Data' => 'data', 'Directory' => 'directory',
-        'DocSys' => 'docsys', 'Downloads' => 'downloads', 'Ecard' => 'ecard',
-        'Egov' => 'egov', 'Feed' => 'feed', 'FileSharing' => 'filesharing',
-        'Forum' => 'forum', 'Gallery' => 'gallery',
-        'GuestBook' => 'guestbook', 'Jobs' => 'jobs',
-        'Knowledge' => 'knowledge', 'Livecam' => 'livecam',
-        'Market' => 'market', 'MediaDir' => 'mediadir',
-        'MemberDir' => 'memberdir', 'Newsletter' => 'newsletter',
-        'Podcast' => 'podcast', 'Recommend' => 'recommend', 'Shop' => 'shop',
-        'U2u' => 'u2u', 'Voting' => 'voting',
+        'Config' => 'settings',
+        'ComponentManager' => 'modulemanager',
+        'ContentWorkflow' => 'workflow',
+        'Country' => 'country',
+        'Csrf' => 'CSRF',
+        'DatabaseManager' => 'dbm',
+        'Error' => 'error',
+        'FrontendEditing' => 'frontendediting',
+        'ImageType' => 'Imagetype',
+        'JavaScript' => 'JavaScript',
+        'JsonData' => 'jsondata',
+        'MailTemplate' => 'MailTemplate',
+        'LanguageManager' => 'language',
+        'Message' => 'Message',
+        'Security' => 'Security',
+        'Session' => 'session',
+        'SystemInfo' => 'server',
+        'SystemLog' => 'log',
+        'ViewManager' => 'skins',
+        'Access' => 'access',
+        'Agb' => 'agb',
+        'Alias' => 'alias',
+        'Cache' => 'cache',
+        'Captcha' => 'captcha',
+        'Contact' => 'contact',
+        'FileBrowser' => 'fileBrowser',
+        'Home' => 'home',
+        'Ids' => 'ids',
+        'Imprint' => 'imprint',
+        'Login' => 'login',
+        'Media' => 'media',
+        'NetTools' => 'nettools',
+        'News' => 'news',
+        'Privacy' => 'privacy',
+        'Search' => 'search',
+        'Sitemap' => 'sitemap',
+        'Stats' => 'stats',
+        'Block' => 'block',
+        'Blog' => 'blog',
+        'Calendar' => 'calendar',
+        'Checkout' => 'checkout',
+        'Crm' => 'crm',
+        'Data' => 'data',
+        'Directory' => 'directory',
+        'DocSys' => 'docsys',
+        'Downloads' => 'downloads',
+        'Ecard' => 'ecard',
+        'Egov' => 'egov',
+        'Feed' => 'feed',
+        'FileSharing' => 'filesharing',
+        'Forum' => 'forum',
+        'Gallery' => 'gallery',
+        'GuestBook' => 'guestbook',
+        'Jobs' => 'jobs',
+        'Knowledge' => 'knowledge',
+        'Livecam' => 'livecam',
+        'Market' => 'market',
+        'MediaDir' => 'mediadir',
+        'MemberDir' => 'memberdir',
+        'Newsletter' => 'newsletter',
+        'Podcast' => 'podcast',
+        'Recommend' => 'recommend',
+        'Shop' => 'shop',
+        'U2u' => 'u2u',
+        'Voting' => 'voting',
     );
 
     foreach ($newComponents as $componentFolder => $newComponentNames) {
         // load the removedComponent index stored in the session
         $removedComponents = $_SESSION['contrexx_update']['removedComponents'][$componentFolder];
+        \DBG::msg(__METHOD__.': removed components:');
+        \DBG::dump($removedComponents);
         for ($i = $removedComponents; $i < count($newComponentNames); $i++) {
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                 $_SESSION['contrexx_update']['removedComponents'][$componentFolder] = $i;
                 return 'timeout';
             }
+
             // get the component name out of the path
-            $newComponentName = end(explode(DIRECTORY_SEPARATOR, $newComponentNames[$i]));
+            $newComponentNamesExploded = explode('/', $newComponentNames[$i]);
+            $newComponentName = end($newComponentNamesExploded);
+
+            // check if the component has been renamed
+            if (!isset($componentList[$newComponentName])) {
+                continue;
+            }
+
+            $oldComponentName = $componentList[$newComponentName];
+
             // check if the component has been renamed, backed up or if the directory exists in cx_files/
             if (
-                !array_key_exists($newComponentName, $componentList)
-                || !file_exists(ASCMS_CUSTOMIZING_PATH . '/' . $componentFolder . '/' . $componentList[$newComponentName])
-                || !file_exists('./cx_files/' . $componentFolder . '/' . $componentList[$newComponentName])
+                false
+                //   !file_exists(ASCMS_CUSTOMIZING_PATH . '/' . $componentFolder . '/' . $oldComponentName)
+                //|| file_exists(dirname(__FILE__) . '/cx_files/' . $componentFolder . '/' . $oldComponentName)
             ) {
                 // Componentname didn't change or component hasn't been backed up
                 // or component doesn't exist in cx_files => No need to remove it
+                \DBG::msg("skip component folder removal of $newComponentName");
                 continue;
             }
 
             // get old component name
-            $oldComponentName = $componentList[$newComponentName];
-            // create the paths to the current component
-            $path = ASCMS_DOCUMENT_ROOT . '/' . $componentFolder;
-            $webPath = ASCMS_INSTANCE_OFFSET . '/' . $componentFolder;
-
-            $componentDir = new \Cx\Lib\FileSystem\FileSystem();
+            $path = ASCMS_DOCUMENT_ROOT . '/' . $componentFolder . '/' .$oldComponentName;
 
             // make sure that current path is a directory and it can be removed
-            if (!is_dir($path . '/' . $oldComponentName) || !$componentDir->delDir($path, $webPath, $oldComponentName)) {
+            if (!is_dir($path)) {
+                \DBG::msg("skip component folder removal of $newComponentName; path ($path) is not recognized as a folder");
+                continue;
+            }
+
+            \DBG::msg("remove folder $path");
+            if (!\Cx\Lib\FileSystem\FileSystem::delete_folder($path, $recursive = true)) {
                 // failed to remove folder
-                setUpdateMsg('Das Verzeichnis \'' . $path . $oldComponentName . '\' konnte nicht gelöscht werden.');
+                setUpdateMsg('Das Verzeichnis \'' . $path . '\' konnte nicht gelöscht werden.');
                 return false;
             }
         }
@@ -2376,13 +2618,8 @@ function removeOldComponents($folders) {
     return true;
 }
 
-/**
- * Migrate the page logs to the new naming convention (component names CamelCase)
- *
- * @return boolean true on success false on failure
- */
-function _migratePageLogs() {
-    $componentNames = array (
+function getNewComponentNames() {
+    return array (
         'Access', 'Agb', 'Blog', 'Calendar', 'Checkout', 'Contact', 'Cron',
         'Data', 'Directory', 'DocSys', 'Downloads', 'Ecard', 'Egov', 'Error',
         'Feed', 'FileSharing', 'Forum', 'Gallery', 'GuestBook', 'Home', 'Html',
@@ -2392,24 +2629,222 @@ function _migratePageLogs() {
         'Pim', 'Podcast', 'Privacy', 'Recommend', 'Search', 'Shell', 'Shop',
         'Sitemap', 'Survey', 'SysLog', 'U2u', 'Uploader', 'User', 'Voting', 'Wysiwyg',
     );
-    foreach ($componentNames as $componentName) {
-        $nameLength = strlen($componentName);
-        $nameLower = strtolower($componentName);
+}
 
-        $result = \Cx\lib\UpdateUtil::sql(
-            'UPDATE `' . DBPREFIX . 'log_entry`
-             SET `data` = REPLACE(`data`, \'"module";s:'. $nameLength . ':"' . $nameLower . '"\', \'"module";s:'. $nameLength . ':"' . $componentName . '"\')
-             WHERE `data` LIKE \'%"module";s' . $nameLength . ':' . $nameLower . '"%\''
-        );
+/**
+ * Migrate the page logs to the new naming convention (component names CamelCase)
+ *
+ * @return boolean true on success false on failure
+ */
+function _migratePageLogs() {
+    $componentNames = getNewComponentNames();
+    try {
+        foreach ($componentNames as $componentName) {
+            $nameLength = strlen($componentName);
+            $nameLower = strtolower($componentName);
 
-        if ($result === false) {
-            \DBG::log('Update::_migratePageLogs(): Failed to Migrate logs for' .
-                      ' Component ' . $componentName);
-            return false;
+            $result = \Cx\lib\UpdateUtil::sql(
+                'UPDATE `' . DBPREFIX . 'log_entry`
+                 SET `data` = REPLACE(`data`, \'"module";s:'. $nameLength . ':"' . $nameLower . '"\', \'"module";s:'. $nameLength . ':"' . $componentName . '"\')
+                 WHERE `data` LIKE \'%"module";s' . $nameLength . ':' . $nameLower . '"%\''
+            );
         }
+    } catch (\Cx\Lib\UpdateException $e) {
+        \DBG::log('Update::_migratePageLogs(): Failed to Migrate logs for component ' . $componentName);
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;
+}
+
+function migratePageApplicationNames() {
+        $componentNames = getNewComponentNames();
+        $em = \Env::get('em');
+        $pages = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy(array('type' => Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION), true);
+        foreach ($pages as $page) {
+            if ($page) {
+                if (!checkMemoryLimit()) {
+                    return 'timeout';
+                }
+                try {
+                    // detect new component name
+                    $matchedComponentNames = preg_grep('/^' . $page->getModule() . '$/i', $componentNames);
+                    if (count($matchedComponentNames) != 1) {
+                        // TODO message
+                        return false;
+                    }
+
+                    // check if the page has already been migrated
+                    if ($page->getModule() == $matchedComponentNames[0]) {
+                        continue;
+                    }
+
+                    // update page with new component name
+                    $page->setModule($matchedComponentNames[0]);
+                    $page->setUpdatedAtToNow();
+                    $em->persist($page);
+                }
+                catch (\Exception $e) {
+                    \DBG::log("Migrating page application name failed: ".$e->getMessage());
+                    throw new UpdateException('Bei der Migration einer Inhaltsseite trat ein Fehler auf! '.$e->getMessage());
+                }
+            }
+        }
+        $em->flush();
+
+}
+
+
+// move content of application content pages into HTML files in associated themes and replace it by {APPLICATION_DATA} placeholder
+function installContentApplicationTemplates() {
+    try {
+        if (!isset($_SESSION['contrexx_update']['migratedApplicationContentPapges'])) {
+            $_SESSION['contrexx_update']['migratedApplicationContentPapges'] = array();
+        }
+
+        $virtualComponents = array('Agb', 'Ids', 'Imprint', 'Privacy');
+        //migrating custom application template
+        $pageRepo   = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $themeRepo  = new \Cx\Core\View\Model\Repository\ThemeRepository();
+
+        $pages      = $pageRepo->findBy(array('type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION));
+        foreach ($pages As $page) {
+            // skip already migrated pages
+            if (in_array($page->getId(), ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['migratedApplicationContentPapges']))) {
+                continue;
+            }
+
+            //virtual components do not migrating custom application template
+            if (in_array(ucfirst($page->getModule()), $virtualComponents)) {
+                continue;
+            }
+
+            $designTemplateName  = $page->getSkin() ? $themeRepo->findById($page->getSkin())->getFoldername() : $themeRepo->getDefaultTheme()->getFoldername();
+            $cmd                 = !$page->getCmd() ? 'Default' : ucfirst($page->getCmd());
+            $moduleFolderName    = \Cx\Core\ModuleChecker::getInstance(\Env::get('em'), \Env::get('db'), \Env::get('ClassLoader'))->isCoreModule($page->getModule()) ? 'core_modules' : 'modules';
+
+            $themesPath = ASCMS_THEMES_PATH . '/' . $designTemplateName;
+
+            //check common module or core_module folder exists
+            if (!file_exists($themesPath . '/' . $moduleFolderName)) {
+                \Cx\Lib\FileSystem\FileSystem::make_folder($themesPath . '/' . $moduleFolderName);
+            }
+
+            //check module's folder exists
+            if (!file_exists($themesPath . '/' . $moduleFolderName . '/' . $page->getModule())) {
+                \Cx\Lib\FileSystem\FileSystem::make_folder($themesPath . '/' . $moduleFolderName . '/' . $page->getModule());
+            }
+
+            //check module's template folder exists
+            if (!file_exists($themesPath . '/' . $moduleFolderName . '/' . $page->getModule() . '/Template')) {
+                \Cx\Lib\FileSystem\FileSystem::make_folder($themesPath . '/' . $moduleFolderName . '/' . $page->getModule() . '/Template');
+            }
+
+            //check module's Frontend folder exists
+            if (!file_exists($themesPath . '/' . $moduleFolderName . '/' . $page->getModule() . '/Template/Frontend')) {
+                \Cx\Lib\FileSystem\FileSystem::make_folder($themesPath . '/' . $moduleFolderName . '/' . $page->getModule() . '/Template/Frontend');
+            }
+
+            $targetPath = $themesPath . '/' . $moduleFolderName . '/' . $page->getModule() . '/Template/Frontend';
+            $applicationTemplateName = getApplicationTemplateFilename($targetPath, $cmd . '_custom_' . FWLanguage::getLanguageCodeById($page->getLang()));
+
+            if (file_exists($targetPath)) {
+                //create a application template file
+                $file = new \Cx\Lib\FileSystem\File($targetPath . '/' . $applicationTemplateName);
+                $file->write($page->getContent());
+            }
+
+            //update application template
+            $page->setContent('{APPLICATION_DATA}');
+            $page->setApplicationTemplate($applicationTemplateName);
+            $page->setUseCustomApplicationTemplateForAllChannels(1);
+            \Env::get('em')->persist($page);
+            \Env::get('em')->flush();
+
+            $_SESSION['contrexx_update']['migratedApplicationContentPapges'][] = $page->getId();
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                return 'timeout';
+            }
+        }
+    } catch (\Exception $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+    return true;
+}
+
+function getApplicationTemplateFilename($path, $name) {
+    if (!file_exists($path . '/' . $name . '.html')) {
+        return $name . '.html';
+    }
+
+    $suffix = 1;
+    while (file_exists($path . '/' . $name . $suffix . '.html')) {
+        $suffix++;
+    }
+
+    return $name . $suffix . '.html';
+}
+
+/**
+ * Detect the actual version of a contrexx 3.x installation
+ *
+ * @return  mixed   FALSE in case the detection failed
+ *                  NULL in case the installation is not a 3.x installation
+ *                  A string indicating the actual version
+ */
+function detectCx3Version() {
+    global $_CONFIG, $objUpdate;
+
+    static $version = null;
+
+    if (isset($version)) {
+        return $version;
+    }
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        return null;
+    }
+
+    try {
+        $objResultRc1 = \Cx\Lib\UpdateUtil::sql('SELECT `target` FROM `'.DBPREFIX.'backend_areas` WHERE `area_id` = 186');
+        $objResultRc2 = \Cx\Lib\UpdateUtil::sql('SELECT `order_id` FROM `'.DBPREFIX.'backend_areas` WHERE `area_id` = 2');
+
+        if (!$objResultRc1 || !$objResultRc2) {
+            return false;
+        }
+
+        if ($objResultRc1->fields['target'] != '_blank') {
+            $version = 'rc1';
+        } elseif ($objResultRc2->fields['order_id'] != 6 && $_CONFIG['coreCmsVersion'] == '3.0.0') {
+            $version = 'rc2';
+        } elseif ($_CONFIG['coreCmsVersion'] == '3.0.0') {
+            $version = 'stable';
+        } elseif ($_CONFIG['coreCmsVersion'] == '3.0.0.1') {
+            $version = 'hotfix';
+        } elseif ($_CONFIG['coreCmsVersion'] == '3.0.1') {
+            $version = 'sp1';
+        } elseif ($_CONFIG['coreCmsVersion'] == '3.0.2') {
+            $version = 'sp2';
+        } elseif ($_CONFIG['coreCmsVersion'] == '3.0.3') {
+            $version = 'sp3';
+        } elseif ($_CONFIG['coreCmsVersion'] == '3.0.4') {
+            $version = 'sp4';
+        } elseif ($_CONFIG['coreCmsVersion'] == '3.1.0') {
+            $version = '310';
+        } elseif ($_CONFIG['coreCmsVersion'] == '3.1.1') {
+            $version = '311';
+        } elseif ($_CONFIG['coreCmsVersion'] == '3.2.0') {
+            $version = '320';
+        } else {
+            // installation is either older than v3 or newer (4+)
+            $version = null;
+        }
+
+        return $version;
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
 }
 
 class License {
@@ -2421,7 +2856,7 @@ class License {
     public function update($getNew = true) {
         global $documentRoot, $_CONFIG, $objUser, $license, $objDatabase, $objUpdate;
 
-        if (@include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
+        if (false && @include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
             $_GET['force'] = 'true';
             $_GET['silent'] = 'true';
             $documentRoot = ASCMS_DOCUMENT_ROOT;
@@ -2447,15 +2882,17 @@ class License {
         // version number will not be upgraded yet:
         \DBG::msg(__METHOD__.': manually update settings in case license update failed');
         $arrUpdate = $objUpdate->getLoadedVersionInfo();
-        \Cx\Core\Setting\Controller\Setting::init('Config', 'release','Yaml');
-        \Cx\Core\Setting\Controller\Setting::set('coreCmsVersion', $arrUpdate['cmsVersion']);
-        \Cx\Core\Setting\Controller\Setting::set('coreCmsCodeName', $arrUpdate['cmsCodeName']);
-        \Cx\Core\Setting\Controller\Setting::set('coreCmsReleaseDate', $arrUpdate['cmsReleaseDate']);
-        \Cx\Core\Setting\Controller\Setting::set('coreCmsName', $arrUpdate['cmsName']);
-        \Cx\Core\Setting\Controller\Setting::set('coreCmsStatus', $arrUpdate['cmsStatus']);
-        \Cx\Core\Setting\Controller\Setting::updateAll();
-        Cx\Core\Config\Controller\Config::updatePhpCache();
+        \DBG::dump(\Cx\Core\Setting\Controller\Setting::init('Config', 'release','Yaml'));
+        \DBG::dump(\Cx\Core\Setting\Controller\Setting::set('coreCmsVersion', $arrUpdate['cmsVersion']));
+        \DBG::dump(\Cx\Core\Setting\Controller\Setting::set('coreCmsCodeName', $arrUpdate['cmsCodeName']));
+        \DBG::dump(\Cx\Core\Setting\Controller\Setting::set('coreCmsReleaseDate', $arrUpdate['cmsReleaseDate']));
+        \DBG::dump(\Cx\Core\Setting\Controller\Setting::set('coreCmsName', $arrUpdate['cmsName']));
+        \DBG::dump(\Cx\Core\Setting\Controller\Setting::set('coreCmsStatus', $arrUpdate['cmsStatus']));
+        \DBG::dump(\Cx\Core\Setting\Controller\Setting::updateAll());
+        \DBG::dump(\Cx\Core\Config\Controller\Config::updatePhpCache());
 
+// TODO: fix license
+        return false;
         return ($return === true);
     }
 }

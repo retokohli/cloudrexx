@@ -25,144 +25,238 @@
  * our trademarks remain entirely with us.
  */
 
-function _contentmanagerUpdate()
-{
-    global $objUpdate, $_CONFIG;
+class ContentManagerUpdate {
+    public static function updateContentManagerDbStructure() {
+        global $objUpdate, $_CONFIG;
 
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
-        try {
-            \Cx\Lib\UpdateUtil::table(
-                DBPREFIX . 'content_page',
-                array(
-                    'id'                                => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                    'node_id'                           => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
-                    'nodeIdShadowed'                    => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'node_id'),
-                    'lang'                              => array('type' => 'INT(11)', 'after' => 'nodeIdShadowed'),
-                    'type'                              => array('type' => 'VARCHAR(16)', 'after' => 'lang'),
-                    'caching'                           => array('type' => 'TINYINT(1)', 'after' => 'type'),
-                    'updatedAt'                         => array('type' => 'timestamp', 'after' => 'caching', 'notnull' => false),
-                    'updatedBy'                         => array('type' => 'CHAR(40)', 'after' => 'updatedAt'),
-                    'title'                             => array('type' => 'VARCHAR(255)', 'after' => 'updatedBy'),
-                    'linkTarget'                        => array('type' => 'VARCHAR(16)', 'notnull' => false, 'after' => 'title'),
-                    'contentTitle'                      => array('type' => 'VARCHAR(255)', 'after' => 'linkTarget'),
-                    'slug'                              => array('type' => 'VARCHAR(255)', 'after' => 'contentTitle'),
-                    'content'                           => array('type' => 'longtext', 'after' => 'slug'),
-                    'sourceMode'                        => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content'),
-                    'customContent'                     => array('type' => 'VARCHAR(64)', 'notnull' => false, 'after' => 'sourceMode'),
-                    'useCustomContentForAllChannels'    => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'customContent'),
-                    'applicationTemplate'               => array('type' => 'VARCHAR(100)', 'notnull' => false, 'after' => 'useCustomContentForAllChannels'),
-                    'useCustomApplicationTemplateForAllChannels' => array('type' => 'TINYINT(2)', 'notnull' => false, 'after' => 'applicationTemplate'),
-                    'cssName'                           => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useCustomApplicationTemplateForAllChannels'),
-                    'cssNavName'                        => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'cssName'),
-                    'skin'                              => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cssNavName'),
-                    'useSkinForAllChannels'             => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'skin'),
-                    'metatitle'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useSkinForAllChannels'),
-                    'metadesc'                          => array('type' => 'text', 'after' => 'metatitle'),
-                    'metakeys'                          => array('type' => 'text', 'after' => 'metadesc'),
-                    'metarobots'                        => array('type' => 'VARCHAR(7)', 'notnull' => false, 'after' => 'metakeys'),
-                    'start'                             => array('type' => 'timestamp', 'notnull' => false, 'after' => 'metarobots'),
-                    'end'                               => array('type' => 'timestamp', 'notnull' => false, 'after' => 'start'),
-                    'editingStatus'                     => array('type' => 'VARCHAR(16)', 'after' => 'end'),
-                    'protection'                        => array('type' => 'INT(11)', 'after' => 'editingStatus'),
-                    'frontendAccessId'                  => array('type' => 'INT(11)', 'after' => 'protection'),
-                    'backendAccessId'                   => array('type' => 'INT(11)', 'after' => 'frontendAccessId'),
-                    'display'                           => array('type' => 'TINYINT(1)', 'after' => 'backendAccessId'),
-                    'active'                            => array('type' => 'TINYINT(1)', 'after' => 'display'),
-                    'target'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'active'),
-                    'module'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'target'),
-                    'cmd'                               => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'module'),
-                ),
-                array(
-                    'node_id'              => array('fields' => array('node_id', 'lang'), 'type' => 'UNIQUE'),
-                    'IDX_D8E86F54460D9FD7' => array('fields' => array('node_id'))
-                ),
-                'InnoDB',
-                '',
-                array(
-                    'node_id' => array(
-                        'table'    => DBPREFIX . 'content_node',
-                        'column'   => 'id',
-                        'onDelete' => 'SET NULL',
-                        'onUpdate' => 'NO ACTION',
-                    ),
-                )
-            );
-
-            $virtualComponents = array('Agb', 'Ids', 'Imprint', 'Privacy');
-            //migrating custom application template
-            $pageRepo   = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-            $themeRepo  = new \Cx\Core\View\Model\Repository\ThemeRepository();
-
-            $pages      = $pageRepo->findBy(array('type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION));
-            foreach ($pages As $page) {
-                try {
-                    //virtual components do not migrating custom application template
-                    if (in_array(ucfirst($page->getModule()), $virtualComponents)) {
-                        continue;
-                    }
-                    $designTemplateName  = $page->getSkin() ? $themeRepo->findById($page->getSkin())->getFoldername() : $themeRepo->getDefaultTheme()->getFoldername();
-                    $cmd                 = !$page->getCmd() ? 'Default' : ucfirst($page->getCmd());
-                    $moduleFolderName    = \Cx\Core\ModuleChecker::getInstance(\Env::get('em'), \Env::get('db'), \Env::get('ClassLoader'))->isCoreModule($page->getModule()) ? 'core_modules' : 'modules';
-
-                    $themesPath = ASCMS_THEMES_PATH . '/' . $designTemplateName;
-
-                    //check common module or core_module folder exists
-                    if (!file_exists($themesPath . '/' . $moduleFolderName)) {
-                        \Cx\Lib\FileSystem\FileSystem::make_folder($themesPath . '/' . $moduleFolderName);
-                    }
-
-                    //check module's folder exists
-                    if (!file_exists($themesPath . '/' . $moduleFolderName . '/' . $page->getModule())) {
-                        \Cx\Lib\FileSystem\FileSystem::make_folder($themesPath . '/' . $moduleFolderName . '/' . $page->getModule());
-                    }
-
-                    //check module's template folder exists
-                    if (!file_exists($themesPath . '/' . $moduleFolderName . '/' . $page->getModule() . '/Template')) {
-                        \Cx\Lib\FileSystem\FileSystem::make_folder($themesPath . '/' . $moduleFolderName . '/' . $page->getModule() . '/Template');
-                    }
-
-                    //check module's Frontend folder exists
-                    if (!file_exists($themesPath . '/' . $moduleFolderName . '/' . $page->getModule() . '/Template/Frontend')) {
-                        \Cx\Lib\FileSystem\FileSystem::make_folder($themesPath . '/' . $moduleFolderName . '/' . $page->getModule() . '/Template/Frontend');
-                    }
-
-                    $targetPath = $themesPath . '/' . $moduleFolderName . '/' . $page->getModule() . '/Template/Frontend';
-                    $applicationTemplateName = getFilename($targetPath, $cmd . '_custom_' . FWLanguage::getLanguageCodeById($page->getLang()));
-
-                    if (file_exists($targetPath)) {
-                        //create a application template file
-                        $file = new \Cx\Lib\FileSystem\File($targetPath . '/' . $applicationTemplateName);
-                        $file->write($page->getContent());
-                    }
-
-                    //update application template
-                    $page->setContent('{APPLICATION_DATA}');
-                    $page->setApplicationTemplate($applicationTemplateName);
-                    $page->setUseCustomApplicationTemplateForAllChannels(1);
-                    \Env::get('em')->persist($page);
-                    \Env::get('em')->flush();
-
-                } catch (\Exception $e) {
-                    throw new \Exception('Error :' . $e);
-                }
+        // fix customContent
+        if (   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
+            && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.1')
+        ) {
+            try {
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'content_page` SET `customContent` = \'\' WHERE `customContent` = \'(Default)\'');
+            } catch (\Cx\Lib\UpdateException $e) {
+                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             }
+        }
+
+        // verify & fix DB structrue
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+            try {
+                \Cx\Lib\UpdateUtil::sql('
+                    ALTER TABLE `' . DBPREFIX . 'content_node` ENGINE = INNODB
+                ');
+
+                \Cx\Lib\UpdateUtil::table(
+                    DBPREFIX . 'content_page',
+                    array(
+                        'id'                                => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'node_id'                           => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
+                        'nodeIdShadowed'                    => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'node_id'),
+                        'lang'                              => array('type' => 'INT(11)', 'after' => 'nodeIdShadowed'),
+                        'type'                              => array('type' => 'VARCHAR(16)', 'after' => 'lang'),
+                        'caching'                           => array('type' => 'TINYINT(1)', 'after' => 'type'),
+                        'updatedAt'                         => array('type' => 'timestamp', 'after' => 'caching', 'notnull' => false),
+                        'updatedBy'                         => array('type' => 'CHAR(40)', 'after' => 'updatedAt'),
+                        'title'                             => array('type' => 'VARCHAR(255)', 'after' => 'updatedBy'),
+                        'linkTarget'                        => array('type' => 'VARCHAR(16)', 'notnull' => false, 'after' => 'title'),
+                        'contentTitle'                      => array('type' => 'VARCHAR(255)', 'after' => 'linkTarget'),
+                        'slug'                              => array('type' => 'VARCHAR(255)', 'after' => 'contentTitle'),
+                        'content'                           => array('type' => 'longtext', 'after' => 'slug'),
+                        'sourceMode'                        => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content'),
+                        'customContent'                     => array('type' => 'VARCHAR(64)', 'notnull' => false, 'after' => 'sourceMode'),
+                        'useCustomContentForAllChannels'    => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'customContent'),
+                        'applicationTemplate'               => array('type' => 'VARCHAR(100)', 'notnull' => false, 'after' => 'useCustomContentForAllChannels'),
+                        'useCustomApplicationTemplateForAllChannels' => array('type' => 'TINYINT(2)', 'notnull' => false, 'after' => 'applicationTemplate'),
+                        'cssName'                           => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useCustomApplicationTemplateForAllChannels'),
+                        'cssNavName'                        => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'cssName'),
+                        'skin'                              => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cssNavName'),
+                        'useSkinForAllChannels'             => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'skin'),
+                        'metatitle'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useSkinForAllChannels'),
+                        'metadesc'                          => array('type' => 'text', 'after' => 'metatitle'),
+                        'metakeys'                          => array('type' => 'text', 'after' => 'metadesc'),
+                        'metarobots'                        => array('type' => 'VARCHAR(7)', 'notnull' => false, 'after' => 'metakeys'),
+                        'start'                             => array('type' => 'timestamp', 'notnull' => false, 'after' => 'metarobots'),
+                        'end'                               => array('type' => 'timestamp', 'notnull' => false, 'after' => 'start'),
+                        'editingStatus'                     => array('type' => 'VARCHAR(16)', 'after' => 'end'),
+                        'protection'                        => array('type' => 'INT(11)', 'after' => 'editingStatus'),
+                        'frontendAccessId'                  => array('type' => 'INT(11)', 'after' => 'protection'),
+                        'backendAccessId'                   => array('type' => 'INT(11)', 'after' => 'frontendAccessId'),
+                        'display'                           => array('type' => 'TINYINT(1)', 'after' => 'backendAccessId'),
+                        'active'                            => array('type' => 'TINYINT(1)', 'after' => 'display'),
+                        'target'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'active'),
+                        'module'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'target'),
+                        'cmd'                               => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'module'),
+                    ),
+                    array(
+                        'node_id'              => array('fields' => array('node_id', 'lang'), 'type' => 'UNIQUE'),
+                        'IDX_D8E86F54460D9FD7' => array('fields' => array('node_id'))
+                    ),
+                    'InnoDB',
+                    '',
+                    array(
+                        'node_id' => array(
+                            'table'    => DBPREFIX . 'content_node',
+                            'column'   => 'id',
+                            'onDelete' => 'SET NULL',
+                            'onUpdate' => 'NO ACTION',
+                        ),
+                    )
+                );
+
+                \Cx\Lib\UpdateUtil::table(
+                    DBPREFIX . 'content_node',
+                    array(
+                        'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'parent_id'                          => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
+                        'lft'                                => array('type' => 'INT(11)', 'after' => 'parent_id'),
+                        'rgt'                                => array('type' => 'INT(11)', 'after' => 'lft'),
+                        'lvl'                                => array('type' => 'INT(11)', 'after' => 'rgt')
+                    ),
+                    array(
+                        'IDX_E5A18FDD727ACA70'               => array('fields' => array('parent_id'))
+                    ),
+                    'InnoDB',
+                    '',
+                    array(
+                        'parent_id' => array(
+                            'table' => DBPREFIX.'content_node',
+                            'column'    => 'id',
+                            'onDelete'  => 'NO ACTION',
+                            'onUpdate'  => 'NO ACTION',
+                        ),
+                    )
+                );
+            } catch (\Cx\Lib\UpdateException $e) {
+                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            }
+        }
+
+        return true;
+    }
+
+    public static function fixPageLogs() {
+        global $objUpdate, $_CONFIG;
+
+        try {
+            $userData = json_encode(array(
+                'id'   => $_SESSION['contrexx_update']['user_id'],
+                'name' => $_SESSION['contrexx_update']['username'],
+            ));
+
+
+            // migrate content logs (3.0 - 3.1.1)
+            if (   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
+                && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')
+            ) {
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry`
+                    SET `object_class` = \'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Entity\\\\Page\'
+                    WHERE object_class = \'Cx\\\\Model\\\\ContentManager\\\\Page\'');
+            }
+
+
+            // set user on page logs
+            if (   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
+                && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')
+            ) {
+                \Cx\Lib\UpdateUtil::sql('UPDATE `' . DBPREFIX . 'log_entry` SET `username` = \'' . $userData . '\' WHERE `username` = \'currently_loggedin_user\'');
+            }
+
+
+            // add missing "remove page" log entries
+            \DBG::msg(__METHOD__.': add missing "remove page" log entries');
+            $sqlQuery = '
+                SELECT
+                    MAX(l1.version) as `version`,
+                    l1.object_id
+                FROM
+                    `' . DBPREFIX . 'log_entry` AS l1
+                WHERE
+                    l1.object_id NOT IN (
+                        SELECT
+                            id
+                        FROM
+                            `' . DBPREFIX . 'content_page`
+                    )
+                    AND l1.object_id NOT IN (
+                        SELECT
+                            l3.object_id
+                        FROM
+                            `' . DBPREFIX . 'log_entry` AS l3
+                        WHERE
+                            l3.action LIKE \'remove\'
+                    )
+                GROUP BY
+                    l1.object_id
+            ';
+            $result = \Cx\Lib\UpdateUtil::sql($sqlQuery);
+            while (!$result->EOF) {
+                $sqlQuery = '
+                    INSERT INTO
+                        `' . DBPREFIX . 'log_entry`
+                        (
+                            `action`,
+                            `logged_at`,
+                            `version`,
+                            `object_id`,
+                            `object_class`,
+                            `data`,
+                            `username`
+                        )
+                    VALUES
+                        (
+                            \'remove\',
+                            NOW(),
+                            ' . ($result->fields['version'] + 1) . ',
+                            ' . $result->fields['object_id'] . ',
+                            \'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Doctrine\\\\Entity\\\\Page\',
+                            \'N;\',
+                            \'' . $userData . '\'
+                        )
+                ';
+                \Cx\Lib\UpdateUtil::sql($sqlQuery);
+                $result->MoveNext();
+            }
+
+            return true;
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
 
-    return true;
-}
+    // fix fallback pages
+    public static function fixFallbackPages() {
+        // only version 3 rc1 is affected by this bug
+        if (detectCx3Version() != 'rc1') {
+            return true;
+        }
 
-function getFilename($path, $name) {
-    if (!file_exists($path . '/' . $name . '.html')) {
-        return $name . '.html';
+        try {
+            \DBG::msg(__METHOD__);
+            $em = \Env::get('em');
+            $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+            $fallbackPages = $pageRepo->findBy(array(
+                'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK,
+            ));
+
+            foreach ($fallbackPages as $page) {
+                $page->setModule($page->getModule());
+                $page->setCmd($page->getCmd());
+                $page->setUpdatedAtToNow();
+                $em->persist($page);
+            }
+            $em->flush();
+        } catch (\Exception $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+
+        return true;
     }
 
-    $suffix = 1;
-    while (file_exists($path . '/' . $name . $suffix . '.html')) {
-        $suffix++;
+    public static function fixTree() {
+        // fix tree
+        \DBG::msg(__METHOD__);
+        \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
     }
-
-    return $name . $suffix . '.html';
 }

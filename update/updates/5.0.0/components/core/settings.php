@@ -28,10 +28,11 @@
 function _updateSettings()
 {
     global $objUpdate, $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG, $arrSettings, $arrSettingsByName;
-	if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-// TODO: Unused
-//    $setVars = false;
 
+    if (
+        !in_array('settingsPre5', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) &&
+        $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')
+    ) {
 		$arrSettings = array(
 			3	=> array(
 				'setname'	=> 'dnsServer',
@@ -630,7 +631,12 @@ function _updateSettings()
 			return _databaseError($query, $objDatabase->ErrorMsg());
 		}
 
+        $_SESSION['contrexx_update']['update']['done'][] = 'settingsPre5';
+        // force reload to ensure any settings migrations as well as any fixes have been loaded
+        return 'timeout';
+    }
 
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
 		try {
 			\Cx\Lib\UpdateUtil::table(
 				DBPREFIX.'settings_image',
@@ -657,8 +663,17 @@ function _updateSettings()
 		}
 	}
 
+    return true;
+}
+
+function migrateSettingsToSettingDb() {
+    global $objUpdate, $_CONFIG;
+
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         try {
+            // init new config
+            \Cx\Core\Config\Controller\Config::init();
+            \Cx\Core\Config\Controller\Config::updatePhpCache();
             \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'settings');
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);

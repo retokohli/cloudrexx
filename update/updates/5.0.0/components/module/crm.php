@@ -28,7 +28,14 @@
 
 function _crmUpdate() {
     global $objUpdate, $_CONFIG, $_ARRAYLANG;
+
 	try {
+        if (   \Cx\Lib\UpdateUtil::table_exist(DBPREFIX . 'module_crm_contacts')
+            && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.1')
+        ) {
+            \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'module_crm_contacts` CONVERT TO CHARACTER SET `utf8`');
+        }
+
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_crm_contacts',
@@ -294,22 +301,6 @@ function _crmUpdate() {
         }
     }
 
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
-        try {
-            $result = \Cx\Lib\UpdateUtil::sql('SELECT `id` FROM `'.DBPREFIX.'core_text` WHERE `section` = \'crm\'');
-            if ($result && $result->RecordCount() > 0) {
-                // emails have been already migrated, stop
-                return true;
-            }
-
-            // migrate mail templates
-            installCrmMailTemplates();
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'Crm\',\'numof_mailtemplate_per_page_backend\',\'config\',\'text\',\'25\',\'\',1001)');
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
-    }
-
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         //update module name for email templates
         \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_mail_template` SET `section` = 'Crm' WHERE `section` = 'crm'");
@@ -349,12 +340,28 @@ function _crmUpdate() {
             return false;
         }
     }
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+        try {
+            $result = \Cx\Lib\UpdateUtil::sql('SELECT `id` FROM `'.DBPREFIX.'core_text` WHERE `section` = \'crm\'');
+            if ($result && $result->RecordCount() > 0) {
+                // emails have been already migrated, stop
+                return true;
+            }
+
+            // migrate mail templates
+            installCrmMailTemplates();
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
     return true;
 }
 
 function installCrmMailTemplates() {
     if (
-        !\MailTemplate::store('crm', array(
+        !\MailTemplate::store('Crm', array(
             'key' => 'crm_user_account_created',
             'lang_id' => '1',
             'sender' => 'Ihr Firmenname',
@@ -374,7 +381,7 @@ function installCrmMailTemplates() {
         return false;
     }
     if (
-        !\MailTemplate::store('crm', array(
+        !\MailTemplate::store('Crm', array(
             'key' => 'crm_task_assigned',
             'lang_id' => '1',
             'sender' => 'Ihr Firmenname',
@@ -394,7 +401,7 @@ function installCrmMailTemplates() {
         return false;
     }
     if (
-        !\MailTemplate::store('crm', array(
+        !\MailTemplate::store('Crm', array(
             'key' => 'crm_notify_staff_on_contact_added',
             'lang_id' => '1',
             'sender' => 'Ihr Firmenname',
@@ -413,6 +420,9 @@ function installCrmMailTemplates() {
     ) {
         return false;
     }
+
+    \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'Crm\',\'numof_mailtemplate_per_page_backend\',\'config\',\'text\',\'25\',\'\',1001)');
+
     return true;
 }
 
@@ -442,7 +452,6 @@ function _crmInstall() {
 
             // migrate mail templates
             installCrmMailTemplates();
-            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'Crm\',\'numof_mailtemplate_per_page_backend\',\'config\',\'text\',\'25\',\'\',1001)');
         }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);

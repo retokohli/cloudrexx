@@ -451,12 +451,10 @@ function _contactUpdate()
         /**
          * Update the content pages
          */
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
             $em = \Env::get('em');
-            $cl = \Env::get('ClassLoader');
-            $cl->loadFile(ASCMS_CORE_MODULE_PATH . '/contact/admin.class.php');
             $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-            $Contact = new \ContactManager();
+            $Contact = new \Cx\Core_Modules\Contact\Controller\ContactManager();
             $Contact->initContactForms();
 
             foreach ($Contact->arrForms as $id => $form) {
@@ -464,7 +462,7 @@ function _contactUpdate()
                     if ($lang['is_active'] == true) {
                         $page = $pageRepo->findOneByModuleCmdLang('contact', $id, $langId);
                         if ($page) {
-                            $page->setContent($Contact->_getSourceCode($id, $langId));
+                            $page->setContent($Contact->getSourceCode($id, $langId));
                             $page->setUpdatedAtToNow();
                             $em->persist($page);
                         }
@@ -491,7 +489,8 @@ function _contactUpdate()
                     'use_email_of_sender'    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'send_copy'),
                     'html_mail'              => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'use_email_of_sender'),
                     'send_attachment'        => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'html_mail'),
-                    'crm_customer_groups'    => array('type' => 'text', 'notnull' => false, 'after' => 'send_attachment'),
+// TODO: not yet on live system
+                    //'crm_customer_groups'    => array('type' => 'text', 'notnull' => false, 'after' => 'send_attachment'),
                 )
             );
         }

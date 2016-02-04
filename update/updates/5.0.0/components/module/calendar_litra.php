@@ -79,7 +79,11 @@ function _calendarUpdate()
                     'series_pattern_dourance_type' => array('type' => 'INT(11)', 'after' => 'series_pattern_type'),
                     'series_pattern_end' => array('type' => 'INT(11)', 'after' => 'series_pattern_dourance_type'),
                     'series_pattern_begin' => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end'),
-                    'series_pattern_exceptions' => array('type' => 'longtext', 'after' => 'series_pattern_begin')
+                    'series_pattern_exceptions' => array('type' => 'longtext', 'after' => 'series_pattern_begin'),
+
+                    // litra
+                    'teaser' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'series_pattern_exceptions'),
+                    'use_details' => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'teaser'),
                 ),
                 array(
                     'name' => array('fields' => array('name', 'comment', 'placeName'), 'type' => 'FULLTEXT')
@@ -1260,6 +1264,7 @@ class CalendarUpdate
 
                 $langId = $this->categoryLanguages[$result->fields['catid']];
                 $name = $result->fields['name'];
+                $teaser = $result->fields['teaser'];
 
                 // added event name to mail title
                 $mailTemplateId = $this->addMailTemplate($result->fields['mailTitle'] . ' (' . $name . ')', $result->fields['mailContent'], $langId);
@@ -1326,6 +1331,7 @@ class CalendarUpdate
                         `ticket_sales`,
                         `num_seating`,
                         `confirmed`,
+                        `show_detail_view`,
                         `author`,
                         `all_day`,
                         `place_id`,
@@ -1391,6 +1397,7 @@ class CalendarUpdate
                         0,
                         '',
                         1,
+                        " . intval($result->fields['use_details']) . ",
                         " . $_SESSION['contrexx_update']['user_id'] . ",
                         0,
                         0,
@@ -1404,11 +1411,12 @@ class CalendarUpdate
 
                 // add language fields for event
                 \Cx\Lib\UpdateUtil::sql("
-                    INSERT IGNORE INTO `" . CALENDAR_NEW_EVENT_FIELD_TABLE . "` (`event_id`, `lang_id`, `title`, `description`, `redirect`)
+                    INSERT IGNORE INTO `" . CALENDAR_NEW_EVENT_FIELD_TABLE . "` (`event_id`, `lang_id`, `title`, `teaser`, `description`, `redirect`)
                     VALUES (
                         " . $eventId . ",
                         " . $langId . ",
                         '" . contrexx_raw2db($name) . "',
+                        '" . contrexx_raw2db($teaser) . "',
                         '" . contrexx_raw2db($result->fields['comment']) . "',
                         ''
                     )
