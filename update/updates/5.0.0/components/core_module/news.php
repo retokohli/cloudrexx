@@ -201,20 +201,29 @@ function _newsUpdate() {
                 return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             }
         }
+    }
 
 
+    try {
+        $objResult= \Cx\Lib\UpdateUtil::sql("SELECT 1 FROM `".DBPREFIX."module_news_settings` WHERE `name` = 'recent_news_message_limit'");
+        if ($objResult->RecordCount() == 0) {
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_news_settings` (`name`, `value`) VALUES ('recent_news_message_limit', '5')");
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
 
-        /************************************************
-        * EXTENSION:	Front- and backend permissions  *
-        * ADDED:		Contrexx v2.1.0					*
-        ************************************************/
+
+    /************************************************
+    * EXTENSION:	Front- and backend permissions  *
+    * ADDED:		Contrexx v2.1.0					*
+    ************************************************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         $query = "SELECT 1 FROM `".DBPREFIX."module_news_settings` WHERE `name` = 'news_message_protection'";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult) {
             if ($objResult->RecordCount() == 0) {
-                $query = "INSERT INTO `".DBPREFIX."module_news_settings` (`name`, `value`) VALUES ('news_message_protection', '1'),
-                                                                                                  ('recent_news_message_limit', '5')
-                ";
+                $query = "INSERT INTO `".DBPREFIX."module_news_settings` (`name`, `value`) VALUES ('news_message_protection', '1')";
                 if ($objDatabase->Execute($query) === false) {
                     return _databaseError($query, $objDatabase->ErrorMsg());
                 }
@@ -350,8 +359,8 @@ function _newsUpdate() {
     /****************************
     * ADDED:    Contrexx v3.0.0 *
     *****************************/
-    try {
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        try {
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_news_locale',
                 array(
@@ -438,9 +447,13 @@ function _newsUpdate() {
                     'idx_news_id'    => array('fields' => array('news_id'))
                 )
             );
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+    }
 
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        try {
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_news_rel_news',
                 array(
@@ -507,7 +520,7 @@ function _newsUpdate() {
                     'source'                         => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'redirect'),
                     'url1'                           => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'source'),
                     'url2'                           => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'url1'),
-                    'lang'                           => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'catid'),
+                    'lang'                           => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'url2'),
                     'typeid'                         => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'lang'),
                     'publisher'                      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'typeid'),
                     'publisher_id'                   => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'publisher'),
@@ -528,16 +541,20 @@ function _newsUpdate() {
                     'teaser_image_thumbnail_path'    => array('type' => 'text', 'notnull' => true, 'after' => 'teaser_image_path'),
                     'changelog'                      => array('type' => 'INT(14)', 'notnull' => true, 'default' => '0', 'after' => 'teaser_image_thumbnail_path'),
                     'allow_comments'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'changelog'),
-                    'enable_related_news'            => array('type' => 'TINYINT(1)', 'notnull' => false, 'default' => '0', 'after' => 'allow_comments'),
-                    'enable_tags'                    => array('type' => 'TINYINT(1)', 'notnull' => false, 'default' => '0', 'after' => 'enable_related_news'),
+                    'enable_related_news'            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'allow_comments'),
+                    'enable_tags'                    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'enable_related_news'),
                 ),
                 array(
                     'newsindex'                      => array('fields' => array('text','title','teaser_text'), 'type' => 'FULLTEXT')
                 )
             );
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+    }
 
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        try {
             if (isset($arrColumnsNews['TITLE']) && isset($arrColumnsNews['TEXT']) && isset($arrColumnsNews['TEASER_TEXT']) && isset($arrColumnsNews['LANG'])) {
                 \Cx\Lib\UpdateUtil::sql('
                     INSERT INTO `'.DBPREFIX.'module_news_locale` (`news_id`, `lang_id`, `title`, `text`, `teaser_text`)
@@ -611,10 +628,11 @@ function _newsUpdate() {
                         ("news_assigned_publisher_groups", "0")
                 ON DUPLICATE KEY UPDATE `name` = `name`
             ');
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
+
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         try {
             \Cx\Lib\UpdateUtil::migrateContentPage('news', 'details', array('{NEWS_DATE}','{NEWS_COMMENTS_DATE}'), array('{NEWS_LONG_DATE}', '{NEWS_COMMENTS_LONG_DATE}'), '3.0.1');
@@ -638,9 +656,10 @@ NEWS;
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+    }
 
 
-
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
         try {
             // migrate content page to version 3.0.1
             $search = array(
@@ -680,212 +699,268 @@ NEWS;
 
                 return $content;
             };
-
-
             \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'news', 'cmd' => 'submit'), $search, $callback, array('content'), '3.0.1');
-            \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'news'), '/(\{NEWS_COUNT_COMMENTS\})/', '<!-- BEGIN news_comments_count -->$1<!-- END news_comments_count -->', array('content'), '3.0.3');
-            \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'news', 'cmd' => 'details'), '/(\{NEWS_COUNT_COMMENTS\})/', '<!-- BEGIN news_comments_count -->$1<!-- END news_comments_count -->', array('content'), '3.0.3');
+
+
+            // replace comments placeholder with a sigma block , news module
+            $search = array(
+                '/.*\{NEWS_COUNT_COMMENTS\}.*/ms',
+            );
+            $callback = function($matches) {
+                $placeholder = '{NEWS_COUNT_COMMENTS}';
+                $htmlCode = '<!-- BEGIN news_comments_count -->'.$placeholder.'<!-- END news_comments_count -->';
+                if (!preg_match('/<!--\s+BEGIN\s+news_comments_count\s+-->.*<!--\s+END\s+news_comments_count\s+-->/ms', $matches[0])) {
+                    return str_replace($placeholder, $htmlCode, $matches[0]);
+                } else {
+                    return $matches[0];
+                }
+            };
+            \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'news', 'cmd' => ''), $search, $callback, array('content'), '3.0.3');
+            \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'news', 'cmd' => 'details'), $search, $callback, array('content'), '3.0.3');
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+    }
 
 
-        /************************************************
-        * EXTENSION:    Categories as NestedSet         *
-        * ADDED:        Contrexx v3.1.0                 *
-        ************************************************/
-        if (!isset($_SESSION['contrexx_update']['news'])) {
-            $_SESSION['contrexx_update']['news'] = array();
-        }
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0') && !isset($_SESSION['contrexx_update']['news']['nestedSet'])) {
-            try {
-                $nestedSetRootId = null;
-                $count = null;
-                $leftAndRight = 2;
-                $sorting = 1;
-                $level = 2;
+    /************************************************
+    * EXTENSION:    Categories as NestedSet         *
+    * ADDED:        Contrexx v3.1.0                 *
+    ************************************************/
+    if (!isset($_SESSION['contrexx_update']['news'])) {
+        $_SESSION['contrexx_update']['news'] = array();
+    }
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0') && !isset($_SESSION['contrexx_update']['news']['nestedSet'])) {
+        try {
+            $nestedSetRootId = null;
+            $count = null;
+            $leftAndRight = 2;
+            $sorting = 1;
+            $level = 2;
 
-                // add nested set columns
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX.'module_news_categories',
-                    array(
-                        'catid'          => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                        'parent_id'      => array('type' => 'INT(11)', 'after' => 'catid'),
-                        'left_id'        => array('type' => 'INT(11)', 'after' => 'parent_id'),
-                        'right_id'       => array('type' => 'INT(11)', 'after' => 'left_id'),
-                        'sorting'        => array('type' => 'INT(11)', 'after' => 'right_id'),
-                        'level'          => array('type' => 'INT(11)', 'after' => 'sorting')
-                    )
-                );
+            // add nested set columns
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_news_categories',
+                array(
+                    'catid'          => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'parent_id'      => array('type' => 'INT(11)', 'after' => 'catid'),
+                    'left_id'        => array('type' => 'INT(11)', 'after' => 'parent_id'),
+                    'right_id'       => array('type' => 'INT(11)', 'after' => 'left_id'),
+                    'sorting'        => array('type' => 'INT(11)', 'after' => 'right_id'),
+                    'level'          => array('type' => 'INT(11)', 'after' => 'sorting')
+                )
+            );
 
-                // add nested set root node and select its id
-                $objResultRoot = \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories` (`catid`, `parent_id`, `left_id`, `right_id`, `sorting`, `level`) VALUES (0, 0, 0, 0, 0, 0)');
-                if ($objResultRoot) {
-                    $nestedSetRootId = $objDatabase->Insert_ID();
-                }
-
-                // count categories
-                $objResultCount = \Cx\Lib\UpdateUtil::sql('SELECT count(`catid`) AS count FROM `'.DBPREFIX.'module_news_categories`');
-                if ($objResultCount && !$objResultCount->EOF) {
-                    $count = $objResultCount->fields['count'];
-                }
-
-                // add nested set information to root node
-                \Cx\Lib\UpdateUtil::sql('
-                    UPDATE `'.DBPREFIX.'module_news_categories` SET
-                    `parent_id` = '.$nestedSetRootId.',
-                    `left_id` = 1,
-                    `right_id` = '.($count*2).',
-                    `sorting` = 1,
-                    `level` = 1
-                    WHERE `catid` = '.$nestedSetRootId.'
-                ');
-
-                // add nested set information to all categories
-                $objResultCatSelect = \Cx\Lib\UpdateUtil::sql('SELECT `catid` FROM `'.DBPREFIX.'module_news_categories` ORDER BY `catid` ASC');
-                if ($objResultCatSelect) {
-                    while (!$objResultCatSelect->EOF) {
-                        $catId = $objResultCatSelect->fields['catid'];
-                        if ($catId != $nestedSetRootId) {
-                            \Cx\Lib\UpdateUtil::sql('
-                                UPDATE `'.DBPREFIX.'module_news_categories` SET
-                                `parent_id` = '.$nestedSetRootId.',
-                                `left_id` = '.$leftAndRight++.',
-                                `right_id` = '.$leftAndRight++.',
-                                `sorting` = '.$sorting++.',
-                                `level` = '.$level.'
-                                WHERE `catid` = '.$catId.'
-                            ');
-                        }
-                        $objResultCatSelect->MoveNext();
-                    }
-                }
-
-                // add new tables
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX.'module_news_categories_locks',
-                    array(
-                        'lockId'         => array('type' => 'VARCHAR(32)'),
-                        'lockTable'      => array('type' => 'VARCHAR(32)', 'after' => 'lockId'),
-                        'lockStamp'      => array('type' => 'BIGINT(11)', 'notnull' => true, 'after' => 'lockTable')
-                    )
-                );
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX.'module_news_categories_catid',
-                    array(
-                        'id'     => array('type' => 'INT(11)', 'notnull' => true)
-                    )
-                );
-
-
-                // insert id of last added category
-                \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories_catid` (`id`) VALUES ('.$nestedSetRootId.')');
-                $_SESSION['contrexx_update']['news']['nestedSet'] = true;
-            } catch (\Cx\Lib\UpdateException $e) {
-                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            // add nested set root node and select its id
+            $objResultRoot = \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories` (`catid`, `parent_id`, `left_id`, `right_id`, `sorting`, `level`) VALUES (0, 0, 0, 0, 0, 0)');
+            if ($objResultRoot) {
+                $nestedSetRootId = $objDatabase->Insert_ID();
             }
-        }
 
-
-        /************************************
-        * EXTENSION:    Module page changes *
-        * ADDED:        Contrexx v3.1.0     *
-        ************************************/
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
-            try {
-                $result = \Cx\Lib\UpdateUtil::sql('SELECT `id` FROM `'.DBPREFIX.'content_page` WHERE `module` = "news" AND `cmd` RLIKE "^[0-9]*$"');
-                if ($result && ($result->RecordCount() > 0)) {
-                    while (!$result->EOF) {
-
-                        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('id' => $result->fields['id']), '/(.*)/ms', function($matches) {
-                            $page = $matches[0];
-
-                            if (!empty($page) &&
-                                !preg_match('/<!--\s+BEGIN\s+news_status_message\s+-->.*<!--\s+END\s+news_status_message\s+-->/ms', $page) &&
-                                !preg_match('/<!--\s+BEGIN\s+news_menu\s+-->.*<!--\s+END\s+news_menu\s+-->/ms', $page) &&
-                                !preg_match('/<!--\s+BEGIN\s+news_list\s+-->.*<!--\s+END\s+news_list\s+-->/ms', $page)
-                            ) {
-                                $page = preg_replace_callback('/<form[^>]*>[^<]*\\{NEWS_CAT_DROPDOWNMENU\\}[^>]*<\/form>/ims', function($matches) {
-                                    $menu = $matches[0];
-
-                                    $menu = preg_replace_callback('/(action\s*=\s*([\'"])[^\2]+section=news)\2/i', function($matches) {
-                                        return $matches[1].'&cmd=[[NEWS_CMD]]'.$matches[2];
-                                    }, $menu);
-
-                                    return '
-                                        <!-- BEGIN news_status_message -->
-                                        {TXT_NEWS_NO_NEWS_FOUND}
-                                        <!-- END news_status_message -->
-
-                                        <!-- BEGIN news_menu -->
-                                        '.$menu.'
-                                        <!-- END news_menu -->
-                                    ';
-
-                                }, $page);
-
-                                $page = preg_replace_callback('/<ul[^>]*>[^<]*<!--\s+BEGIN\s+newsrow\s+-->.*<!--\s+END\s+newsrow\s+-->[^>]*<\/ul>/ims', function($matches) {
-                                    return '
-                                        <!-- BEGIN news_list -->
-                                        '.$matches[0].'
-                                        <!-- END news_list -->
-                                    ';
-                                }, $page);
-
-                                if (!preg_match('/<!--\s+BEGIN\s+news_status_message\s+-->.*<!--\s+END\s+news_status_message\s+-->/ms', $page)) {
-                                    $page = '
-                                        <!-- BEGIN news_status_message -->
-                                        {TXT_NEWS_NO_NEWS_FOUND}
-                                        <!-- END news_status_message -->
-                                    '.$page;
-                                }
-                            }
-
-                            return $page;
-
-                        }, array('content'), '3.1.0');
-
-                        $result->MoveNext();
-                    }
-                }
-
-                $result = \Cx\Lib\UpdateUtil::sql('SELECT `id` FROM `'.DBPREFIX.'content_page` WHERE `module` = "news" AND `cmd` RLIKE "^details[0-9]*$"');
-                if ($result && ($result->RecordCount() > 0)) {
-                    while (!$result->EOF) {
-
-                        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('id' => $result->fields['id']), '/(.*)/ms', function($matches) {
-                            $page = $matches[0];
-
-                            if (!empty($page) && !preg_match('/<!--\s+BEGIN\s+news_use_teaser_text\s+-->.*<!--\s+END\s+news_use_teaser_text\s+-->/ms', $page)) {
-                                $page = preg_replace('/\\{NEWS_TEASER_TEXT\\}/', '<!-- BEGIN news_use_teaser_text -->\0<!-- END news_use_teaser_text -->', $page);
-                            }
-
-                            return $page;
-                        }, array('content'), '3.1.0');
-
-
-                        $result->MoveNext();
-                    }
-                }
-            } catch (\Cx\Lib\UpdateException $e) {
-                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            // count categories
+            $objResultCount = \Cx\Lib\UpdateUtil::sql('SELECT count(`catid`) AS count FROM `'.DBPREFIX.'module_news_categories`');
+            if ($objResultCount && !$objResultCount->EOF) {
+                $count = $objResultCount->fields['count'];
             }
-        }
 
-        /***********************************
-        * EXTENSION:    new settings added *
-        * ADDED:        Contrexx v3.1.0    *
-        ***********************************/
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
-            try {
-                $result = \Cx\Lib\UpdateUtil::sql('SELECT `name` FROM `'.DBPREFIX.'module_news_settings` WHERE `name` = "news_use_teaser_text"');
-                if ($result && ($result->RecordCount() == 0)) {
-                    \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_settings` (`name`, `value`) VALUES ("news_use_teaser_text", 1)');
+            // add nested set information to root node
+            \Cx\Lib\UpdateUtil::sql('
+                UPDATE `'.DBPREFIX.'module_news_categories` SET
+                `parent_id` = '.$nestedSetRootId.',
+                `left_id` = 1,
+                `right_id` = '.($count*2).',
+                `sorting` = 1,
+                `level` = 1
+                WHERE `catid` = '.$nestedSetRootId.'
+            ');
+
+            // add nested set information to all categories
+            $objResultCatSelect = \Cx\Lib\UpdateUtil::sql('SELECT `catid` FROM `'.DBPREFIX.'module_news_categories` ORDER BY `catid` ASC');
+            if ($objResultCatSelect) {
+                while (!$objResultCatSelect->EOF) {
+                    $catId = $objResultCatSelect->fields['catid'];
+                    if ($catId != $nestedSetRootId) {
+                        \Cx\Lib\UpdateUtil::sql('
+                            UPDATE `'.DBPREFIX.'module_news_categories` SET
+                            `parent_id` = '.$nestedSetRootId.',
+                            `left_id` = '.$leftAndRight++.',
+                            `right_id` = '.$leftAndRight++.',
+                            `sorting` = '.$sorting++.',
+                            `level` = '.$level.'
+                            WHERE `catid` = '.$catId.'
+                        ');
+                    }
+                    $objResultCatSelect->MoveNext();
                 }
-            } catch (\Cx\Lib\UpdateException $e) {
-                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             }
+
+            // add new tables
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_news_categories_locks',
+                array(
+                    'lockId'         => array('type' => 'VARCHAR(32)'),
+                    'lockTable'      => array('type' => 'VARCHAR(32)', 'after' => 'lockId'),
+                    'lockStamp'      => array('type' => 'BIGINT(11)', 'notnull' => true, 'after' => 'lockTable')
+                )
+            );
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_news_categories_catid',
+                array(
+                    'id'     => array('type' => 'INT(11)', 'notnull' => true)
+                )
+            );
+
+
+            // insert id of last added category
+            \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories_catid` (`id`) VALUES ('.$nestedSetRootId.')');
+            $_SESSION['contrexx_update']['news']['nestedSet'] = true;
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
+
+
+    /************************************
+    * EXTENSION:    Module page changes *
+    * ADDED:        Contrexx v3.1.0     *
+    ************************************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+        try {
+            $result = \Cx\Lib\UpdateUtil::sql('SELECT `id` FROM `'.DBPREFIX.'content_page` WHERE `module` = "news" AND `cmd` RLIKE "^[0-9]*$"');
+            if ($result && ($result->RecordCount() > 0)) {
+                while (!$result->EOF) {
+
+                    \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('id' => $result->fields['id']), '/(.*)/ms', function($matches) {
+                        $page = $matches[0];
+
+                        if (!empty($page) &&
+                            !preg_match('/<!--\s+BEGIN\s+news_status_message\s+-->.*<!--\s+END\s+news_status_message\s+-->/ms', $page) &&
+                            !preg_match('/<!--\s+BEGIN\s+news_menu\s+-->.*<!--\s+END\s+news_menu\s+-->/ms', $page) &&
+                            !preg_match('/<!--\s+BEGIN\s+news_list\s+-->.*<!--\s+END\s+news_list\s+-->/ms', $page)
+                        ) {
+                            $page = preg_replace_callback('/<form[^>]*>[^<]*\\{NEWS_CAT_DROPDOWNMENU\\}[^>]*<\/form>/ims', function($matches) {
+                                $menu = $matches[0];
+
+                                $menu = preg_replace_callback('/(action\s*=\s*([\'"])[^\2]+section=news)\2/i', function($matches) {
+                                    return $matches[1].'&cmd=[[NEWS_CMD]]'.$matches[2];
+                                }, $menu);
+
+                                return '
+                                    <!-- BEGIN news_status_message -->
+                                    {TXT_NEWS_NO_NEWS_FOUND}
+                                    <!-- END news_status_message -->
+
+                                    <!-- BEGIN news_menu -->
+                                    '.$menu.'
+                                    <!-- END news_menu -->
+                                ';
+
+                            }, $page);
+
+                            $page = preg_replace_callback('/<ul[^>]*>[^<]*<!--\s+BEGIN\s+newsrow\s+-->.*<!--\s+END\s+newsrow\s+-->[^>]*<\/ul>/ims', function($matches) {
+                                return '
+                                    <!-- BEGIN news_list -->
+                                    '.$matches[0].'
+                                    <!-- END news_list -->
+                                ';
+                            }, $page);
+
+                            if (!preg_match('/<!--\s+BEGIN\s+news_status_message\s+-->.*<!--\s+END\s+news_status_message\s+-->/ms', $page)) {
+                                $page = '
+                                    <!-- BEGIN news_status_message -->
+                                    {TXT_NEWS_NO_NEWS_FOUND}
+                                    <!-- END news_status_message -->
+                                '.$page;
+                            }
+                        }
+
+                        return $page;
+
+                    }, array('content'), '3.1.0');
+
+                    $result->MoveNext();
+                }
+            }
+
+            $result = \Cx\Lib\UpdateUtil::sql('SELECT `id` FROM `'.DBPREFIX.'content_page` WHERE `module` = "news" AND `cmd` RLIKE "^details[0-9]*$"');
+            if ($result && ($result->RecordCount() > 0)) {
+                while (!$result->EOF) {
+
+                    \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('id' => $result->fields['id']), '/(.*)/ms', function($matches) {
+                        $page = $matches[0];
+
+                        if (!empty($page) && !preg_match('/<!--\s+BEGIN\s+news_use_teaser_text\s+-->.*<!--\s+END\s+news_use_teaser_text\s+-->/ms', $page)) {
+                            $page = preg_replace('/\\{NEWS_TEASER_TEXT\\}/', '<!-- BEGIN news_use_teaser_text -->\0<!-- END news_use_teaser_text -->', $page);
+                        }
+
+                        return $page;
+                    }, array('content'), '3.1.0');
+
+
+                    $result->MoveNext();
+                }
+            }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+    /***********************************
+    * EXTENSION:    new settings added *
+    * ADDED:        Contrexx v3.1.0    *
+    ***********************************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+        try {
+            $result = \Cx\Lib\UpdateUtil::sql('SELECT `name` FROM `'.DBPREFIX.'module_news_settings` WHERE `name` = "news_use_teaser_text"');
+            if ($result && ($result->RecordCount() == 0)) {
+                \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_settings` (`name`, `value`) VALUES ("news_use_teaser_text", 1)');
+            }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_news',
+                array(
+                    'id'                             => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                    'date'                           => array('type' => 'INT(14)', 'notnull' => false, 'default' => NULL, 'after' => 'id'),
+                    'redirect'                       => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'date'),
+                    'source'                         => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'redirect'),
+                    'url1'                           => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'source'),
+                    'url2'                           => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'url1'),
+                    'typeid'                         => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'url2'),
+                    'publisher'                      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'typeid'),
+                    'publisher_id'                   => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'publisher'),
+                    'author'                         => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'publisher_id'),
+                    'author_id'                      => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'author'),
+                    'userid'                         => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'author_id'),
+                    'startdate'                      => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'userid'),
+                    'enddate'                        => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate'),
+                    'status'                         => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '1', 'after' => 'enddate'),
+                    'validated'                      => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'status'),
+                    'frontend_access_id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'validated'),
+                    'backend_access_id'              => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'frontend_access_id'),
+                    'teaser_only'                    => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'backend_access_id'),
+                    'teaser_frames'                  => array('type' => 'text', 'notnull' => true, 'after' => 'teaser_only'),
+                    'teaser_show_link'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'teaser_frames'),
+                    'teaser_image_path'              => array('type' => 'text', 'notnull' => true, 'after' => 'teaser_show_link'),
+                    'teaser_image_thumbnail_path'    => array('type' => 'text', 'notnull' => true, 'after' => 'teaser_image_path'),
+                    'changelog'                      => array('type' => 'INT(14)', 'notnull' => true, 'default' => '0', 'after' => 'teaser_image_thumbnail_path'),
+                    'allow_comments'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'changelog'),
+                    'enable_related_news'            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'allow_comments'),
+                    'enable_tags'                    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'enable_related_news'),
+                )
+            );
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+
     return true;
 }

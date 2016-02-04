@@ -179,21 +179,6 @@ function _mediadirUpdate()
             );
 
             \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_mediadir_inputfields',
-                array(
-                    'id'                 => array('type' => 'INT(10)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                    'form'               => array('type' => 'INT(7)', 'after' => 'id'),
-                    'type'               => array('type' => 'INT(10)', 'after' => 'form'),
-                    'verification'       => array('type' => 'INT(10)', 'after' => 'type'),
-                    'search'             => array('type' => 'INT(10)', 'after' => 'verification'),
-                    'required'           => array('type' => 'INT(10)', 'after' => 'search'),
-                    'order'              => array('type' => 'INT(10)', 'after' => 'required'),
-                    'show_in'            => array('type' => 'INT(10)', 'after' => 'order'),
-                    'context_type'       => array('type' => 'ENUM(\'none\',\'title\',\'address\',\'zip\',\'city\',\'country\')', 'after' => 'show_in')
-                )
-            );
-
-            \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_mediadir_level_names',
                 array(
                     'lang_id'                => array('type' => 'INT(1)'),
@@ -277,7 +262,30 @@ function _mediadirUpdate()
                     'category_id'    => array('fields' => array('category_id'))
                 )
             );
+        }
 
+
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.2')) {
+            \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_mediadir_inputfields',
+                array(
+                    'id'                 => array('type' => 'INT(10)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'form'               => array('type' => 'INT(7)', 'after' => 'id'),
+                    'type'               => array('type' => 'INT(10)', 'after' => 'form'),
+                    'verification'       => array('type' => 'INT(10)', 'after' => 'type'),
+                    'search'             => array('type' => 'INT(10)', 'after' => 'verification'),
+                    'required'           => array('type' => 'INT(10)', 'after' => 'search'),
+                    'order'              => array('type' => 'INT(10)', 'after' => 'required'),
+                    'show_in'            => array('type' => 'INT(10)', 'after' => 'order'),
+                    'context_type'       => array('type' => 'ENUM(\'none\',\'title\',\'content\',\'address\',\'zip\',\'city\',\'country\')', 'after' => 'show_in')
+                )
+            );
+        }
+
+
+        if (   $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
+            || detectCx3Version() == 'rc1'
+        ) {
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_mediadir_rel_entry_inputfields_clean',
                 array(
@@ -329,7 +337,10 @@ function _mediadirUpdate()
             \Cx\Lib\UpdateUtil::sql('
                 DROP TABLE `'.DBPREFIX.'module_mediadir_rel_entry_inputfields_clean`
             ');
+        }
 
+
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_mediadir_rel_entry_levels',
                 array(
@@ -453,7 +464,7 @@ function _mediadirUpdate()
             }
 
             //mediadir_inputfield_types
-            $arrValues = array(array(1,'text',1,1,1,0,''),array(2,'textarea',1,1,1,0,''),array(3,'dropdown',1,0,1,0,''),array(4,'radio',1,0,1,0,''),array(5,'checkbox',1,0,0,0,''),array(7,'file',1,0,0,0,''),array(8,'image',1,0,0,0,''),array(9,'gallery',0,0,0,0,'not yet developed'),array(10,'podcast',0,0,0,0,'not yet developed'),array(11,'classification',1,0,1,0,''),array(12,'link',1,0,0,0,''),array(13,'link_group',1,0,0,0,''),array(14,'rss',0,0,0,0,'not yet developed'),array(15,'google_map',1,0,0,0,''),array(16,'add_step',0,0,0,0,''),array(17,'field_group',0,0,0,0,'not yet developed'),array(18,'label',0,0,0,0,'not yet developed'),array(19,'wysiwyg',0,1,0,0,'developed for OSEC (unstable)'),array(20,'mail',1,0,0,0,''),array(21,'google_weather',1,0,0,0,''),array(22,'relation',0,0,0,0,'developed for OSEC (unstable)'),array(23,'relation_group',0,0,0,0,'developed for OSEC (unstable)'),array(24,'accounts',0,0,0,0,'developed for OSEC (unstable)'),array(25,'country',1,0,0,0,''),array(26,'product_attributes',0,0,1,0,''),array(27,'downloads',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(28,'responsibles',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(29,'references',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(30,'title',0,0,0,0,'developed for CADexchange.ch (unstable)'));
+            $arrValues = array(array(1,'text',1,1,1,0,''),array(2,'textarea',1,1,1,0,''),array(3,'dropdown',1,0,1,0,''),array(4,'radio',1,0,1,0,''),array(5,'checkbox',1,0,0,0,''),array(7,'file',1,0,0,0,''),array(8,'image',1,0,0,0,''),array(9,'gallery',0,0,0,0,'not yet developed'),array(10,'podcast',0,0,0,0,'not yet developed'),array(11,'classification',1,0,1,0,''),array(12,'link',1,0,0,0,''),array(13,'link_group',1,0,0,0,''),array(14,'rss',0,0,0,0,'not yet developed'),array(15,'google_map',1,0,0,0,''),array(16,'add_step',0,0,0,0,''),array(17,'field_group',0,0,0,0,'not yet developed'),array(18,'label',0,0,0,0,'not yet developed'),array(19,'wysiwyg',1,1,0,0,''),array(20,'mail',1,0,0,0,''),array(21,'google_weather',1,0,0,0,''),array(22,'relation',0,0,0,0,'developed for OSEC (unstable)'),array(23,'relation_group',0,0,0,0,'developed for OSEC (unstable)'),array(24,'accounts',0,0,0,0,'developed for OSEC (unstable)'),array(25,'country',1,0,0,0,''),array(26,'product_attributes',0,0,1,0,''),array(27,'downloads',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(28,'responsibles',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(29,'references',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(30,'title',0,0,0,0,'developed for CADexchange.ch (unstable)'));
             foreach($arrValues as $arrValue) {
                 if(\Cx\Lib\UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_inputfield_types WHERE name="'.$arrValue[1].'"')->EOF) {
                     \Cx\Lib\UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_inputfield_types VALUES('.$arrValue[0].',"'.$arrValue[1].'",'.$arrValue[2].','.$arrValue[3].','.$arrValue[4].','.$arrValue[5].',"'.$arrValue[6].'")');
@@ -563,26 +574,17 @@ Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] ge
             // we COULD do something else here..
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+    }
 
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.2.0')) {
-            //insert demo values   
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_categories` VALUES (167,0,0,1,1,'',1),(168,0,0,1,1,'',1),(169,0,0,0,1,'',1),(166,0,0,1,1,'',1),(165,0,0,1,1,'',1),(164,0,0,1,1,'',1);");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_categories_names` VALUES (2,169,'Audio, Video ','test'),(2,165,'Foto',''),(3,165,'Foto',''),(1,166,'Telekommunikation',''),(2,166,'Telekommunikation',''),(3,166,'Telekommunikation',''),(1,167,'Internet',''),(2,167,'Internet',''),(3,167,'Internet',''),(1,168,'Elektronik   ',''),(2,168,'Elektronik   ',''),(3,168,'Elektronik   ',''),(1,169,'Audio, Video ','test'),(1,165,'Foto',''),(1,164,'Computer & Software',''),(2,164,'Computer & Software',''),(3,164,'Computer & Software',''),(3,169,'Audio, Video ','test');");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_entries` VALUES (367,0,18,1300357796,0,1300357796,1,0,1,0,0,'','::1',1,1,1,1,1300316400,1308261600,0,'2'),(368,0,18,1300358208,1301485252,1300358208,1,1,1,2,2,'1301436000','192.168.99.160',1,1,1,1,1301436000,1301436000,0,'2');");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_form_names` VALUES (3,18,'Unternehmen',''),(2,18,'Unternehmen',''),(1,18,'Unternehmen','');");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_forms` VALUES (18,0,'',1,1,1,0,'');");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_names` VALUES (2,18,138,'Logo','',''),(1,18,138,'Logo','',''),(3,18,137,'Standort','',''),(2,18,137,'Standort','',''),(1,18,137,'Standort','',''),(3,18,136,'E-Mail','',''),(2,18,136,'E-Mail','',''),(1,18,136,'E-Mail','',''),(3,18,135,'Webseite','',''),(2,18,135,'Webseite','',''),(1,18,135,'Webseite','',''),(3,18,134,'Ort','',''),(2,18,134,'Ort','',''),(1,18,134,'Ort','',''),(3,18,133,'PLZ','',''),(2,18,133,'PLZ','',''),(1,18,133,'PLZ','',''),(3,18,132,'Strasse / Nr.','',''),(2,18,132,'Strasse / Nr.','',''),(1,18,132,'Strasse / Nr.','',''),(3,18,131,'Beschreibung','',''),(2,18,131,'Beschreibung','',''),(1,18,131,'Beschreibung','',''),(3,18,130,'Firmenname','',''),(1,18,130,'Firmenname','',''),(2,18,130,'Firmenname','',''),(3,18,138,'Logo','','');");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_inputfields` VALUES (138,18,8,1,1,0,10,1),(137,18,15,1,0,0,9,1),(136,18,20,1,0,0,8,1),(135,18,12,1,0,0,7,1),(134,18,1,1,0,0,6,1),(133,18,1,1,1,0,5,1),(132,18,1,1,0,0,4,1),(131,18,2,1,0,1,3,1),(130,18,1,1,1,1,2,1);");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_level_names` VALUES (3,18,'Bern',''),(3,26,'[[Neue Ebene]]',''),(3,21,'Graub',''),(1,20,'Wallis',''),(2,20,'Wallis',''),(3,20,'Wallis',''),(2,18,'Bern',''),(1,18,'Bern',''),(2,21,'Graub',''),(1,21,'Graubünden',''),(1,22,'Basel','baaasler ebeni'),(1,23,'Zug',''),(2,23,'Zug',''),(3,23,'Zug',''),(2,26,'[[Neue Ebene]]',''),(2,22,'Basel','baaasler ebeni'),(3,22,'Basel','baaasler ebeni'),(1,26,'Zürich','');");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_levels` VALUES (18,0,0,0,1,0,'',1),(26,0,0,0,1,0,'',1),(20,0,0,1,1,0,'',1),(21,0,0,0,1,0,'',1),(22,0,0,0,1,0,'',1),(23,0,0,1,1,0,'',1);");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_masks` VALUES (4,'Janik\'s 1. Exportmaske','79,78,80,83,118,1',1,15),(5,'2','',1,15);");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_order_rel_forms_selectors` VALUES (10,18,1,1),(9,18,0,1);");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_rel_entry_categories` VALUES (368,167),(368,164);");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_rel_entry_inputfields` VALUES (368,1,18,138,'/mediadir_merge/images/downloads/no_picture.gif'),(368,1,18,137,'46.75759950155461,7.6165080070495605,16,'),(368,1,18,136,'info@comvation.com'),(368,1,18,135,'www.comvation.com'),(368,3,18,134,'Thun'),(368,2,18,134,'Thun'),(368,1,18,134,'Thun'),(368,3,18,133,'3600'),(368,2,18,133,'3600'),(368,1,18,133,'3600'),(368,2,18,132,'Milit'),(368,3,18,132,'Milit'),(368,1,18,132,'Militärstrasse 6'),(368,3,18,131,'Die Comvation AG, Hersteller des globalen Web Content Management System Contrexx'),(368,2,18,131,'Die Comvation AG, Hersteller des globalen Web Content Management System Contrexx'),(368,1,18,131,'Die Comvation AG, Hersteller des globalen Web Content Management System Contrexx'),(368,3,18,130,'Comvation AG'),(368,2,18,130,'Comvation AG'),(368,1,18,130,'Comvation AG');");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_rel_entry_levels` VALUES (368,18);");
-            tryButDontWorry("INSERT INTO `".DBPREFIX."module_mediadir_settings_perm_group_forms` VALUES (5,18,1),(4,18,1),(3,18,1);");
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.2')) {
+        try {
+            \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_mediadir_inputfield_types` set `active`=1, `comment`=\'\' WHERE `name` = \'wysiwyg\'');
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }
+
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         //update class name

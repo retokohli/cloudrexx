@@ -201,15 +201,30 @@ function _calendarUpdate()
         }
     }
 
+
+
+    // initialize calendar update system
+    $CalendarUpdate = new CalendarUpdate();
+
+    // migrate calendar to version 3.1
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
-        $CalendarUpdate31 = new CalendarUpdate31();
-        $calendarUpdateFeedback = $CalendarUpdate31->run();
+        $calendarUpdateFeedback = $CalendarUpdate->runUpdate31();
         if ($calendarUpdateFeedback !== true) {
             return $calendarUpdateFeedback;
         }
-    } elseif ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.1')) {
-        $CalendarUpdate31 = new CalendarUpdate31();
-        $calendarUpdateFeedback = $CalendarUpdate31->migrateContentPages();
+    }
+
+    // migrate old content pages to new ones
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.1')) {
+        $calendarUpdateFeedback = $CalendarUpdate->migrateContentPages();
+        if ($calendarUpdateFeedback !== true) {
+            return $calendarUpdateFeedback;
+        }
+    }
+
+    // migrate settings tables
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+        $calendarUpdateFeedback = $CalendarUpdate->migrateSettings();
         if ($calendarUpdateFeedback !== true) {
             return $calendarUpdateFeedback;
         }
@@ -217,232 +232,113 @@ function _calendarUpdate()
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
         try {
-            \Cx\Lib\UpdateUtil::table(
-                DBPREFIX.'module_calendar_event',
-                array(
-                    'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                    'type'                               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
-                    'startdate'                          => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'type'),
-                    'enddate'                            => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'startdate'),
-                    'startdate_timestamp'                => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'enddate'),
-                    'enddate_timestamp'                  => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate_timestamp'),
-                    'use_custom_date_display'            => array('type' => 'TINYINT(1)', 'after' => 'enddate_timestamp'),
-                    'showStartDateList'                  => array('type' => 'INT(1)', 'after' => 'use_custom_date_display'),
-                    'showEndDateList'                    => array('type' => 'INT(1)', 'after' => 'showStartDateList'),
-                    'showStartTimeList'                  => array('type' => 'INT(1)', 'after' => 'showEndDateList'),
-                    'showEndTimeList'                    => array('type' => 'INT(1)', 'after' => 'showStartTimeList'),
-                    'showTimeTypeList'                   => array('type' => 'INT(1)', 'after' => 'showEndTimeList'),
-                    'showStartDateDetail'                => array('type' => 'INT(1)', 'after' => 'showTimeTypeList'),
-                    'showEndDateDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartDateDetail'),
-                    'showStartTimeDetail'                => array('type' => 'INT(1)', 'after' => 'showEndDateDetail'),
-                    'showEndTimeDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartTimeDetail'),
-                    'showTimeTypeDetail'                 => array('type' => 'INT(1)', 'after' => 'showEndTimeDetail'),
-                    'google'                             => array('type' => 'INT(11)', 'after' => 'showTimeTypeDetail'),
-                    'access'                             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'google'),
-                    'priority'                           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'access'),
-                    'price'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
-                    'link'                               => array('type' => 'VARCHAR(255)', 'after' => 'price'),
-                    'pic'                                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
-                    'attach'                             => array('type' => 'VARCHAR(255)', 'after' => 'pic'),
-                    'place_mediadir_id'                  => array('type' => 'INT(11)', 'after' => 'attach'),
-                    'catid'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'place_mediadir_id'),
-                    'show_in'                            => array('type' => 'VARCHAR(255)', 'after' => 'catid'),
-                    'invited_groups'                     => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'show_in'),
-                    'invited_mails'                      => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'invited_groups'),
-                    'invitation_sent'                    => array('type' => 'INT(1)', 'after' => 'invited_mails'),
-                    'invitation_email_template'          => array('type' => 'VARCHAR(255)', 'after' => 'invitation_sent'),
-                    'registration'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'invitation_email_template'),
-                    'registration_form'                  => array('type' => 'INT(11)', 'after' => 'registration'),
-                    'registration_num'                   => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'registration_form'),
-                    'registration_notification'          => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'registration_num'),
-                    'email_template'                     => array('type' => 'VARCHAR(255)', 'after' => 'registration_notification'),
-                    'ticket_sales'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email_template'),
-                    'num_seating'                        => array('type' => 'text', 'after' => 'ticket_sales'),
-                    'series_status'                      => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'num_seating'),
-                    'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_status'),
-                    'series_pattern_count'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_type'),
-                    'series_pattern_weekday'             => array('type' => 'VARCHAR(7)', 'after' => 'series_pattern_count'),
-                    'series_pattern_day'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_weekday'),
-                    'series_pattern_week'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_day'),
-                    'series_pattern_month'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_week'),
-                    'series_pattern_type'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_month'),
-                    'series_pattern_dourance_type'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_type'),
-                    'series_pattern_end'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_dourance_type'),
-                    'series_pattern_end_date'            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'series_pattern_end'),
-                    'series_pattern_begin'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end_date'),
-                    'series_pattern_exceptions'          => array('type' => 'longtext', 'after' => 'series_pattern_begin'),
-                    'status'                             => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'series_pattern_exceptions'),
-                    'confirmed'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'status'),
-                    'author'                             => array('type' => 'VARCHAR(255)', 'after' => 'confirmed'),
-                    'all_day'                            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'author'),
-                    'location_type'                      => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'all_day'),
-                    'place'                              => array('type' => 'VARCHAR(255)', 'after' => 'location_type'),
-                    'place_id'                           => array('type' => 'INT(11)', 'after' => 'place'),
-                    'place_street'                       => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_id'),
-                    'place_zip'                          => array('type' => 'VARCHAR(10)', 'notnull' => false, 'after' => 'place_street'),
-                    'place_city'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_zip'),
-                    'place_country'                      => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_city'),
-                    'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_country'),
-                    'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_link'),
-                    'host_type'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'place_map'),
-                    'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'host_type'),
-                    'org_street'                         => array('type' => 'VARCHAR(255)', 'after' => 'org_name'),
-                    'org_zip'                            => array('type' => 'VARCHAR(10)', 'after' => 'org_street'),
-                    'org_city'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_zip'),
-                    'org_country'                        => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
-                    'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_country'),
-                    'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_link'),
-                    'host_mediadir_id'                   => array('type' => 'INT(11)', 'after' => 'org_email')
-                ),
-                array(
-                    'fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1' => array('fields' => array('catid'))
-                )
-            );
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
-
-        try {
-            \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `startdate_timestamp` = FROM_UNIXTIME(`startdate`), `enddate_timestamp` = FROM_UNIXTIME(`enddate`)');
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
-    }
-
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
-        try {
-            \Cx\Lib\UpdateUtil::table(
-                DBPREFIX.'module_calendar_event',
-                array(
-                    'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                    'type'                               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
-                    'startdate' => array('type' => 'timestamp', 'notnull' => false, 'default' => '0000-00-00 00:00:00', 'after' => 'type'),
-                    'enddate' => array('type' => 'timestamp', 'notnull' => false, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate'),
-                    'startdate_timestamp'                => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'enddate'),
-                    'enddate_timestamp'                  => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate_timestamp'),
-                    'use_custom_date_display'            => array('type' => 'TINYINT(1)', 'after' => 'enddate_timestamp'),
-                    'showStartDateList'                  => array('type' => 'INT(1)', 'after' => 'use_custom_date_display'),
-                    'showEndDateList'                    => array('type' => 'INT(1)', 'after' => 'showStartDateList'),
-                    'showStartTimeList'                  => array('type' => 'INT(1)', 'after' => 'showEndDateList'),
-                    'showEndTimeList'                    => array('type' => 'INT(1)', 'after' => 'showStartTimeList'),
-                    'showTimeTypeList'                   => array('type' => 'INT(1)', 'after' => 'showEndTimeList'),
-                    'showStartDateDetail'                => array('type' => 'INT(1)', 'after' => 'showTimeTypeList'),
-                    'showEndDateDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartDateDetail'),
-                    'showStartTimeDetail'                => array('type' => 'INT(1)', 'after' => 'showEndDateDetail'),
-                    'showEndTimeDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartTimeDetail'),
-                    'showTimeTypeDetail'                 => array('type' => 'INT(1)', 'after' => 'showEndTimeDetail'),
-                    'google'                             => array('type' => 'INT(11)', 'after' => 'showTimeTypeDetail'),
-                    'access'                             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'google'),
-                    'priority'                           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'access'),
-                    'price'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
-                    'link'                               => array('type' => 'VARCHAR(255)', 'after' => 'price'),
-                    'pic'                                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
-                    'attach'                             => array('type' => 'VARCHAR(255)', 'after' => 'pic'),
-                    'place_mediadir_id'                  => array('type' => 'INT(11)', 'after' => 'attach'),
-                    'catid'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'place_mediadir_id'),
-                    'show_in'                            => array('type' => 'VARCHAR(255)', 'after' => 'catid'),
-                    'invited_groups'                     => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'show_in'),
-                    'invited_mails'                      => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'invited_groups'),
-                    'invitation_sent'                    => array('type' => 'INT(1)', 'after' => 'invited_mails'),
-                    'invitation_email_template'          => array('type' => 'VARCHAR(255)', 'after' => 'invitation_sent'),
-                    'registration'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'invitation_email_template'),
-                    'registration_form'                  => array('type' => 'INT(11)', 'after' => 'registration'),
-                    'registration_num'                   => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'registration_form'),
-                    'registration_notification'          => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'registration_num'),
-                    'email_template'                     => array('type' => 'VARCHAR(255)', 'after' => 'registration_notification'),
-                    'ticket_sales'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email_template'),
-                    'num_seating'                        => array('type' => 'text', 'after' => 'ticket_sales'),
-                    'series_status'                      => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'num_seating'),
-                    'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_status'),
-                    'series_pattern_count'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_type'),
-                    'series_pattern_weekday'             => array('type' => 'VARCHAR(7)', 'after' => 'series_pattern_count'),
-                    'series_pattern_day'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_weekday'),
-                    'series_pattern_week'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_day'),
-                    'series_pattern_month'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_week'),
-                    'series_pattern_type'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_month'),
-                    'series_pattern_dourance_type'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_type'),
-                    'series_pattern_end'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_dourance_type'),
-                    'series_pattern_end_date'            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'series_pattern_end'),
-                    'series_pattern_begin'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end_date'),
-                    'series_pattern_exceptions'          => array('type' => 'longtext', 'after' => 'series_pattern_begin'),
-                    'status'                             => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'series_pattern_exceptions'),
-                    'confirmed'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'status'),
-                    'author'                             => array('type' => 'VARCHAR(255)', 'after' => 'confirmed'),
-                    'all_day'                            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'author'),
-                    'location_type'                      => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'all_day'),
-                    'place'                              => array('type' => 'VARCHAR(255)', 'after' => 'location_type'),
-                    'place_id'                           => array('type' => 'INT(11)', 'after' => 'place'),
-                    'place_street'                       => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_id'),
-                    'place_zip'                          => array('type' => 'VARCHAR(10)', 'notnull' => false, 'after' => 'place_street'),
-                    'place_city'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_zip'),
-                    'place_country'                      => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_city'),
-                    'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_country'),
-                    'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_link'),
-                    'host_type'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'place_map'),
-                    'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'host_type'),
-                    'org_street'                         => array('type' => 'VARCHAR(255)', 'after' => 'org_name'),
-                    'org_zip'                            => array('type' => 'VARCHAR(10)', 'after' => 'org_street'),
-                    'org_city'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_zip'),
-                    'org_country'                        => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
-                    'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_country'),
-                    'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_link'),
-                    'host_mediadir_id'                   => array('type' => 'INT(11)', 'after' => 'org_email')
-                ),
-                array(
-                    'fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1' => array('fields' => array('catid'))
-                )
-            );
-
-            //following queries for changing the path from images/calendar into images/Calendar
-            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_calendar_event` SET `pic` = REPLACE(`pic`, 'images/calendar', 'images/Calendar'),
-                                     `attach` = REPLACE(`attach`, 'images/calendar', 'images/Calendar'),
-                                     `place_map` = REPLACE(`place_map`, 'images/calendar', 'images/Calendar')
-                                     WHERE `pic` LIKE ('" . ASCMS_PATH_OFFSET . "/images/calendar%') ");
-
-            //Update script for moving the folder
-            $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
-            $sourceImagePath = $imagePath . '/calendar';
-            $targetImagePath = $imagePath . '/Calendar';
-            try {
-                \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
-            } catch (\Exception $e) {
-                \DBG::log($e->getMessage());
-                setUpdateMsg(sprintf(
-                    $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
-                    $sourceImagePath, $targetImagePath
-                ));
-                return false;
+            // in version 3.2.0 the type of startdate and enddate have changed to timestamp
+            // to prevent any data loss, we have to ensure that this conversion will be done only once
+            // therefore, we will run the following table command only in case the datatypes of those fields have not net been migrated
+            if (!\Cx\Lib\UpdateUtil::check_column_type(DBPREFIX.'module_calendar_event', 'startdate', 'timestamp')) {
+                \Cx\Lib\UpdateUtil::table(
+                    DBPREFIX.'module_calendar_event',
+                    array(
+                        'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'type'                               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                        'startdate'                          => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'type'),
+                        'enddate'                            => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'startdate'),
+                        // add startdate_timestamp and enddate_timestamp to migrate the datatypes of startdate and enddate
+                        'startdate_timestamp'                => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'enddate'),
+                        'enddate_timestamp'                  => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate_timestamp'),
+                        'use_custom_date_display'            => array('type' => 'TINYINT(1)', 'after' => 'enddate_timestamp'),
+                        'showStartDateList'                  => array('type' => 'INT(1)', 'after' => 'use_custom_date_display'),
+                        'showEndDateList'                    => array('type' => 'INT(1)', 'after' => 'showStartDateList'),
+                        'showStartTimeList'                  => array('type' => 'INT(1)', 'after' => 'showEndDateList'),
+                        'showEndTimeList'                    => array('type' => 'INT(1)', 'after' => 'showStartTimeList'),
+                        'showTimeTypeList'                   => array('type' => 'INT(1)', 'after' => 'showEndTimeList'),
+                        'showStartDateDetail'                => array('type' => 'INT(1)', 'after' => 'showTimeTypeList'),
+                        'showEndDateDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartDateDetail'),
+                        'showStartTimeDetail'                => array('type' => 'INT(1)', 'after' => 'showEndDateDetail'),
+                        'showEndTimeDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartTimeDetail'),
+                        'showTimeTypeDetail'                 => array('type' => 'INT(1)', 'after' => 'showEndTimeDetail'),
+                        'google'                             => array('type' => 'INT(11)', 'after' => 'showTimeTypeDetail'),
+                        'access'                             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'google'),
+                        'priority'                           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'access'),
+                        'price'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
+                        'link'                               => array('type' => 'VARCHAR(255)', 'after' => 'price'),
+                        'pic'                                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
+                        'attach'                             => array('type' => 'VARCHAR(255)', 'after' => 'pic'),
+                        'place_mediadir_id'                  => array('type' => 'INT(11)', 'after' => 'attach'),
+                        'catid'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'place_mediadir_id'),
+                        'show_in'                            => array('type' => 'VARCHAR(255)', 'after' => 'catid'),
+                        'invited_groups'                     => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'show_in'),
+                        'invited_mails'                      => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'invited_groups'),
+                        'invitation_sent'                    => array('type' => 'INT(1)', 'after' => 'invited_mails'),
+                        'invitation_email_template'          => array('type' => 'VARCHAR(255)', 'after' => 'invitation_sent'),
+                        'registration'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'invitation_email_template'),
+                        'registration_form'                  => array('type' => 'INT(11)', 'after' => 'registration'),
+                        'registration_num'                   => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'registration_form'),
+                        'registration_notification'          => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'registration_num'),
+                        'email_template'                     => array('type' => 'VARCHAR(255)', 'after' => 'registration_notification'),
+                        'ticket_sales'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email_template'),
+                        'num_seating'                        => array('type' => 'text', 'after' => 'ticket_sales'),
+                        'series_status'                      => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'num_seating'),
+                        'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_status'),
+                        'series_pattern_count'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_type'),
+                        'series_pattern_weekday'             => array('type' => 'VARCHAR(7)', 'after' => 'series_pattern_count'),
+                        'series_pattern_day'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_weekday'),
+                        'series_pattern_week'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_day'),
+                        'series_pattern_month'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_week'),
+                        'series_pattern_type'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_month'),
+                        'series_pattern_dourance_type'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_type'),
+                        'series_pattern_end'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_dourance_type'),
+                        'series_pattern_end_date'            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'series_pattern_end'),
+                        'series_pattern_begin'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end_date'),
+                        'series_pattern_exceptions'          => array('type' => 'longtext', 'after' => 'series_pattern_begin'),
+                        'status'                             => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'series_pattern_exceptions'),
+                        'confirmed'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'status'),
+                        'show_detail_view'                   => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'confirmed'),
+                        'author'                             => array('type' => 'VARCHAR(255)', 'after' => 'show_detail_view'),
+                        'all_day'                            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'author'),
+                        'location_type'                      => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'all_day'),
+                        'place'                              => array('type' => 'VARCHAR(255)', 'after' => 'location_type'),
+                        'place_id'                           => array('type' => 'INT(11)', 'after' => 'place'),
+                        'place_street'                       => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_id'),
+                        'place_zip'                          => array('type' => 'VARCHAR(10)', 'notnull' => false, 'after' => 'place_street'),
+                        'place_city'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_zip'),
+                        'place_country'                      => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_city'),
+                        'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_country'),
+                        'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_link'),
+                        'host_type'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'place_map'),
+                        'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'host_type'),
+                        'org_street'                         => array('type' => 'VARCHAR(255)', 'after' => 'org_name'),
+                        'org_zip'                            => array('type' => 'VARCHAR(10)', 'after' => 'org_street'),
+                        'org_city'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_zip'),
+                        'org_country'                        => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
+                        'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_country'),
+                        'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_link'),
+                        'host_mediadir_id'                   => array('type' => 'INT(11)', 'after' => 'org_email')
+                    ),
+                    array(
+                        'fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1' => array('fields' => array('catid'))
+                    )
+                );
             }
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
-    }
 
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-        try {
-            \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `startdate` = `startdate_timestamp`, `enddate` = `enddate_timestamp`');
+            // migrate dates to timestamp
             if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_calendar_event', 'startdate_timestamp')) {
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `startdate_timestamp` = FROM_UNIXTIME(`startdate`)');
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `startdate` = `startdate_timestamp`');
                 \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_calendar_event` DROP COLUMN `startdate_timestamp`');
             }
             if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_calendar_event', 'enddate_timestamp')) {
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `enddate_timestamp` = FROM_UNIXTIME(`enddate`)');
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `enddate` = `enddate_timestamp`');
                 \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_calendar_event` DROP COLUMN `enddate_timestamp`');
             }
+
             \Cx\LIb\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `series_pattern_end_date` = FROM_UNIXTIME(`series_pattern_end`)');
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-    }
 
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
-        try {
-            \Cx\LIb\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `series_pattern_end_date` = FROM_UNIXTIME(`series_pattern_end`)');
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
-    }
-
-    // update calendar data to version 3.2.0
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+        // update calendar data to version 3.2.0
         $languages = FWLanguage::getLanguageArray();
 
         try {
@@ -473,18 +369,138 @@ function _calendarUpdate()
         }
     }
 
+    // finally, define the definite structure for version 5.0
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_calendar_event',
+                array(
+                    'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'type'                               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                    'startdate'                          => array('type' => 'timestamp', 'notnull' => false, 'default' => '0000-00-00 00:00:00', 'after' => 'type'),
+                    'enddate'                            => array('type' => 'timestamp', 'notnull' => false, 'default' => '0000-00-00 00:00:00', 'after' => 'startdate'),
+                    'use_custom_date_display'            => array('type' => 'TINYINT(1)', 'after' => 'enddate'),
+                    'showStartDateList'                  => array('type' => 'INT(1)', 'after' => 'use_custom_date_display'),
+                    'showEndDateList'                    => array('type' => 'INT(1)', 'after' => 'showStartDateList'),
+                    'showStartTimeList'                  => array('type' => 'INT(1)', 'after' => 'showEndDateList'),
+                    'showEndTimeList'                    => array('type' => 'INT(1)', 'after' => 'showStartTimeList'),
+                    'showTimeTypeList'                   => array('type' => 'INT(1)', 'after' => 'showEndTimeList'),
+                    'showStartDateDetail'                => array('type' => 'INT(1)', 'after' => 'showTimeTypeList'),
+                    'showEndDateDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartDateDetail'),
+                    'showStartTimeDetail'                => array('type' => 'INT(1)', 'after' => 'showEndDateDetail'),
+                    'showEndTimeDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartTimeDetail'),
+                    'showTimeTypeDetail'                 => array('type' => 'INT(1)', 'after' => 'showEndTimeDetail'),
+                    'google'                             => array('type' => 'INT(11)', 'after' => 'showTimeTypeDetail'),
+                    'access'                             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'google'),
+                    'priority'                           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'access'),
+                    'price'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
+                    'link'                               => array('type' => 'VARCHAR(255)', 'after' => 'price'),
+                    'pic'                                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
+                    'attach'                             => array('type' => 'VARCHAR(255)', 'after' => 'pic'),
+                    'place_mediadir_id'                  => array('type' => 'INT(11)', 'after' => 'attach'),
+                    'catid'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'place_mediadir_id'),
+                    'show_in'                            => array('type' => 'VARCHAR(255)', 'after' => 'catid'),
+                    'invited_groups'                     => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'show_in'),
+                    'invited_mails'                      => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'invited_groups'),
+                    'invitation_sent'                    => array('type' => 'INT(1)', 'after' => 'invited_mails'),
+                    'invitation_email_template'          => array('type' => 'VARCHAR(255)', 'after' => 'invitation_sent'),
+                    'registration'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'invitation_email_template'),
+                    'registration_form'                  => array('type' => 'INT(11)', 'after' => 'registration'),
+                    'registration_num'                   => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'registration_form'),
+                    'registration_notification'          => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'registration_num'),
+                    'email_template'                     => array('type' => 'VARCHAR(255)', 'after' => 'registration_notification'),
+                    'ticket_sales'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email_template'),
+                    'num_seating'                        => array('type' => 'text', 'after' => 'ticket_sales'),
+                    'series_status'                      => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'num_seating'),
+                    'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_status'),
+                    'series_pattern_count'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_type'),
+                    'series_pattern_weekday'             => array('type' => 'VARCHAR(7)', 'after' => 'series_pattern_count'),
+                    'series_pattern_day'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_weekday'),
+                    'series_pattern_week'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_day'),
+                    'series_pattern_month'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_week'),
+                    'series_pattern_type'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_month'),
+                    'series_pattern_dourance_type'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_type'),
+                    'series_pattern_end'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_dourance_type'),
+                    'series_pattern_end_date'            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'series_pattern_end'),
+                    'series_pattern_begin'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end_date'),
+                    'series_pattern_exceptions'          => array('type' => 'longtext', 'after' => 'series_pattern_begin'),
+                    'status'                             => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'series_pattern_exceptions'),
+                    'confirmed'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'status'),
+                    'show_detail_view'                   => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'confirmed'),
+                    'author'                             => array('type' => 'VARCHAR(255)', 'after' => 'show_detail_view'),
+                    'all_day'                            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'author'),
+                    'location_type'                      => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'all_day'),
+                    'place'                              => array('type' => 'VARCHAR(255)', 'after' => 'location_type'),
+                    'place_id'                           => array('type' => 'INT(11)', 'after' => 'place'),
+                    'place_street'                       => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_id'),
+                    'place_zip'                          => array('type' => 'VARCHAR(10)', 'notnull' => false, 'after' => 'place_street'),
+                    'place_city'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_zip'),
+                    'place_country'                      => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_city'),
+                    'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_country'),
+                    'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_link'),
+                    'host_type'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'place_map'),
+                    'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'host_type'),
+                    'org_street'                         => array('type' => 'VARCHAR(255)', 'after' => 'org_name'),
+                    'org_zip'                            => array('type' => 'VARCHAR(10)', 'after' => 'org_street'),
+                    'org_city'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_zip'),
+                    'org_country'                        => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
+                    'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_country'),
+                    'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_link'),
+                    'host_mediadir_id'                   => array('type' => 'INT(11)', 'after' => 'org_email')
+                ),
+                array(
+                    'fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1' => array('fields' => array('catid'))
+                )
+            );
+
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+    // migrate image path
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        try {
+            //following queries for changing the path from images/calendar into images/Calendar
+            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_calendar_event` SET `pic` = REPLACE(`pic`, 'images/calendar', 'images/Calendar'),
+                                     `attach` = REPLACE(`attach`, 'images/calendar', 'images/Calendar'),
+                                     `place_map` = REPLACE(`place_map`, 'images/calendar', 'images/Calendar')
+                                     WHERE `pic` LIKE ('" . ASCMS_PATH_OFFSET . "/images/calendar%') ");
+
+            //Update script for moving the folder
+            $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
+            $sourceImagePath = $imagePath . '/calendar';
+            $targetImagePath = $imagePath . '/Calendar';
+            try {
+                \Cx\Lib\UpdateUtil::migrateOldDirectory($sourceImagePath, $targetImagePath);
+            } catch (\Exception $e) {
+                \DBG::log($e->getMessage());
+                setUpdateMsg(sprintf(
+                    $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
+                    $sourceImagePath, $targetImagePath
+                ));
+                return false;
+            }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
     return true;
 }
 
-class CalendarUpdate31
+class CalendarUpdate
 {
     protected $db;
     protected $categoryLanguages;
 
-    public function run()
-    {
-        global $objDatabase, $objUpdate;
+    public function __construct() {
+        global $objDatabase;
         $this->db = $objDatabase;
+
+        if (!isset($_SESSION['contrexx_update']['calendar'])) {
+            $_SESSION['contrexx_update']['calendar'] = array();
+        }
 
         // set constant for all table names
 
@@ -518,10 +534,9 @@ class CalendarUpdate31
         define('CALENDAR_NEW_REGISTRATION_FORM_FIELD_TABLE', DBPREFIX . 'module_calendar_registration_form_field');
         define('CALENDAR_NEW_REGISTRATION_FORM_FIELD_NAME_TABLE', DBPREFIX . 'module_calendar_registration_form_field_name');
         define('CALENDAR_NEW_REGISTRATION_FORM_FIELD_VALUE_TABLE', DBPREFIX . 'module_calendar_registration_form_field_value');
+    }
 
-        if (!isset($_SESSION['contrexx_update']['calendar'])) {
-            $_SESSION['contrexx_update']['calendar'] = array();
-        }
+    public function runUpdate31() {
         // create new tables
         if (empty($_SESSION['contrexx_update']['calendar']['tables_created'])) {
             $createTablesState = $this->createNewTables();
@@ -529,15 +544,6 @@ class CalendarUpdate31
                 return ($createTablesState === true ? 'timeout' : $createTablesState);
             }
             $_SESSION['contrexx_update']['calendar']['tables_created'] = true;
-        }
-
-        // insert demo data to settings tables
-        if (empty($_SESSION['contrexx_update']['calendar']['settings_demo_data'])) {
-            $settingsDemoData = $this->insertSettingsDemoData();
-            if ($settingsDemoData !== true || !checkMemoryLimit() || !checkTimeoutLimit()) {
-                return ($settingsDemoData === true ? 'timeout' : $settingsDemoData);
-            }
-            $_SESSION['contrexx_update']['calendar']['settings_demo_data'] = true;
         }
 
         // insert demo data for mail tables
@@ -600,13 +606,6 @@ class CalendarUpdate31
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
 
-        // migrate old content pages to new ones
-        try {
-            $this->migrateContentPages();
-        } catch (\Exception $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
-
         return true;
     }
 
@@ -648,49 +647,6 @@ class CalendarUpdate31
                     array(
                         'host_id' => array('type' => 'INT(11)'),
                         'event_id' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'host_id')
-                    )
-                );
-            }
-
-            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-                return 'timeout';
-            }
-
-            // settings table
-            if (!\Cx\Lib\UpdateUtil::table_empty(CALENDAR_OLD_SETTINGS_TABLE)) {
-                // remove old settings data
-                \Cx\Lib\UpdateUtil::drop_table(CALENDAR_NEW_SETTINGS_TABLE);
-            }
-            \Cx\Lib\UpdateUtil::table(
-                CALENDAR_NEW_SETTINGS_TABLE,
-                array(
-                    'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                    'section_id' => array('type' => 'INT(11)', 'after' => 'id'),
-                    'name' => array('type' => 'VARCHAR(255)', 'after' => 'section_id'),
-                    'title' => array('type' => 'VARCHAR(255)', 'after' => 'name'),
-                    'value' => array('type' => 'mediumtext', 'after' => 'title'),
-                    'info' => array('type' => 'mediumtext', 'after' => 'value'),
-                    'type' => array('type' => 'INT(11)', 'after' => 'info'),
-                    'options' => array('type' => 'mediumtext', 'after' => 'type'),
-                    'special' => array('type' => 'VARCHAR(255)', 'after' => 'options'),
-                    'order' => array('type' => 'INT(11)', 'after' => 'special')
-                )
-            );
-
-            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-                return 'timeout';
-            }
-
-            // settings section table
-            if (!\Cx\Lib\UpdateUtil::table_exist(CALENDAR_NEW_SETTINGS_SECTION_TABLE)) {
-                \Cx\Lib\UpdateUtil::table(
-                    CALENDAR_NEW_SETTINGS_SECTION_TABLE,
-                    array(
-                        'id' => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                        'parent' => array('type' => 'INT(11)', 'after' => 'id'),
-                        'order' => array('type' => 'INT(11)', 'after' => 'parent'),
-                        'name' => array('type' => 'VARCHAR(255)', 'after' => 'order'),
-                        'title' => array('type' => 'VARCHAR(255)', 'after' => 'name')
                     )
                 );
             }
@@ -871,7 +827,7 @@ class CalendarUpdate31
             // event table
             if (!\Cx\Lib\UpdateUtil::table_exist(CALENDAR_NEW_EVENT_TABLE)) {
                 \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX.'module_calendar_event',
+                    CALENDAR_NEW_EVENT_TABLE,
                     array(
                         'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                         'type'                               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
@@ -923,7 +879,8 @@ class CalendarUpdate31
                         'series_pattern_exceptions'          => array('type' => 'longtext', 'after' => 'series_pattern_begin'),
                         'status'                             => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'series_pattern_exceptions'),
                         'confirmed'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'status'),
-                        'author'                             => array('type' => 'VARCHAR(255)', 'after' => 'confirmed'),
+                        'show_detail_view'                   => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'confirmed'),
+                        'author'                             => array('type' => 'VARCHAR(255)', 'after' => 'show_detail_view'),
                         'all_day'                            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'author'),
                         'place'                              => array('type' => 'VARCHAR(255)', 'after' => 'all_day'),
                         'place_id'                           => array('type' => 'INT(11)', 'after' => 'place'),
@@ -959,7 +916,8 @@ class CalendarUpdate31
                         'event_id' => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
                         'lang_id' => array('type' => 'VARCHAR(225)', 'notnull' => false, 'after' => 'event_id'),
                         'title' => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'lang_id'),
-                        'description' => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'title'),
+                        'teaser' => array('type' => 'text', 'notnull' => false, 'after' => 'title'),
+                        'description' => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'teaser'),
                         'redirect' => array('type' => 'VARCHAR(255)', 'after' => 'description')
                     ),
                     array(
@@ -981,10 +939,64 @@ class CalendarUpdate31
      * insert demo data for settings tables
      * @return bool|string
      */
-    protected function insertSettingsDemoData()
+    public function migrateSettings()
     {
         global $_CONFIG;
+
+        if (!empty($_SESSION['contrexx_update']['calendar']['settings_migration'])) {
+            return true;
+        }
+
+        // migrate settings structure
         try {
+            if (\Cx\Lib\UpdateUtil::column_exist(CALENDAR_OLD_SETTINGS_TABLE, 'setname')) {
+                // remove old settings data
+                \Cx\Lib\UpdateUtil::drop_table(CALENDAR_OLD_SETTINGS_TABLE);
+            }
+
+            if (!\Cx\Lib\UpdateUtil::table_exist(CALENDAR_NEW_SETTINGS_TABLE)) {
+                \Cx\Lib\UpdateUtil::table(
+                    CALENDAR_NEW_SETTINGS_TABLE,
+                    array(
+                        'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'section_id' => array('type' => 'INT(11)', 'after' => 'id'),
+                        'name' => array('type' => 'VARCHAR(255)', 'after' => 'section_id'),
+                        'title' => array('type' => 'VARCHAR(255)', 'after' => 'name'),
+                        'value' => array('type' => 'mediumtext', 'after' => 'title'),
+                        'info' => array('type' => 'mediumtext', 'after' => 'value'),
+                        'type' => array('type' => 'INT(11)', 'after' => 'info'),
+                        'options' => array('type' => 'mediumtext', 'after' => 'type'),
+                        'special' => array('type' => 'VARCHAR(255)', 'after' => 'options'),
+                        'order' => array('type' => 'INT(11)', 'after' => 'special')
+                    )
+                );
+            }
+
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                return 'timeout';
+            }
+
+            // settings section table
+            if (!\Cx\Lib\UpdateUtil::table_exist(CALENDAR_NEW_SETTINGS_SECTION_TABLE)) {
+                \Cx\Lib\UpdateUtil::table(
+                    CALENDAR_NEW_SETTINGS_SECTION_TABLE,
+                    array(
+                        'id' => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'parent' => array('type' => 'INT(11)', 'after' => 'id'),
+                        'order' => array('type' => 'INT(11)', 'after' => 'parent'),
+                        'name' => array('type' => 'VARCHAR(255)', 'after' => 'order'),
+                        'title' => array('type' => 'VARCHAR(255)', 'after' => 'name')
+                    )
+                );
+            }
+
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                return 'timeout';
+            }
+
+
+
+            // migrate settings data
             if (\Cx\Lib\UpdateUtil::table_empty(CALENDAR_NEW_SETTINGS_TABLE)) {
                 $headlinesActivated = $_CONFIG['calendarheadlines'];
                 $headlinesCategory = $_CONFIG['calendarheadlinescat'];
@@ -1050,6 +1062,14 @@ class CalendarUpdate31
                 ");
             }
 
+            // fix ordering
+            \Cx\Lib\UpdateUtil::sql("UPDATE ".CALENDAR_NEW_SETTINGS_TABLE." SET `order` = 9 WHERE `name` = 'showStartTimeDetail'");
+            \Cx\Lib\UpdateUtil::sql("UPDATE ".CALENDAR_NEW_SETTINGS_TABLE." SET `order` = 10 WHERE `name` = 'showEndTimeDetail'");
+            \Cx\Lib\UpdateUtil::sql("UPDATE ".CALENDAR_NEW_SETTINGS_TABLE." SET `order` = 9 WHERE `name` = 'showStartTimeList'");
+            \Cx\Lib\UpdateUtil::sql("UPDATE ".CALENDAR_NEW_SETTINGS_TABLE." SET `order` = 10 WHERE `name` = 'showEndTimeList'");
+            \Cx\Lib\UpdateUtil::sql("UPDATE ".CALENDAR_NEW_SETTINGS_TABLE." SET `order` = 9 WHERE `name` = 'maxSeriesEndsYear'");
+            \Cx\Lib\UpdateUtil::sql("UPDATE ".CALENDAR_NEW_SETTINGS_TABLE." SET `order` = 10 WHERE `name` = 'showEventsOnlyInActiveLanguage'");
+
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                 return 'timeout';
             }
@@ -1079,10 +1099,16 @@ class CalendarUpdate31
                             (19, 1, 4, 'location_host', 'TXT_CALENDAR_EVENT_LOCATION')
                 ");
             }
+
+            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                return 'timeout';
+            }
+
+            $_SESSION['contrexx_update']['calendar']['settings_migration'] = true;
+            return true;
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-        return true;
     }
 
     /**
@@ -1093,6 +1119,30 @@ class CalendarUpdate31
     {
         try {
             if (\Cx\Lib\UpdateUtil::table_empty(CALENDAR_NEW_MAIL_TABLE)) {
+                // migrate old mail data
+                \Cx\Lib\UpdateUtil::sql("
+                    INSERT INTO  `" . CALENDAR_NEW_MAIL_TABLE . "` (`title`, `content_text`, `content_html`, `lang_id`, `action_id`,  `status`)
+                    SELECT title.setvalue, content.setvalue, REPLACE(content.setvalue, '\r\n', '<br />\n') , 1 , 4 , 1
+                    FROM `" . CALENDAR_OLD_SETTINGS_TABLE . "` as content
+                    JOIN `" . CALENDAR_OLD_SETTINGS_TABLE . "` as title ON title.setid = 1
+                    WHERE content.setid = 2
+                ");
+                \Cx\Lib\UpdateUtil::sql("
+                    INSERT INTO  `" . CALENDAR_NEW_MAIL_TABLE . "` (`title`, `content_text`, `content_html`, `lang_id`, `action_id`,  `status`)
+                    SELECT title.setvalue, content.setvalue, REPLACE(content.setvalue, '\r\n', '<br />\n') , 1 , 2 , 1
+                    FROM `" . CALENDAR_OLD_SETTINGS_TABLE . "` as content
+                    JOIN `" . CALENDAR_OLD_SETTINGS_TABLE . "` as title ON title.setid = 3
+                    WHERE content.setid = 4
+                ");
+                \Cx\Lib\UpdateUtil::sql("
+                    INSERT INTO  `" . CALENDAR_NEW_MAIL_TABLE . "` (`title`, `content_text`, `content_html`, `lang_id`, `action_id`,  `status`)
+                    SELECT title.setvalue, content.setvalue, REPLACE(content.setvalue, '\r\n', '<br />\n') , 1 , 3 , 1
+                    FROM `" . CALENDAR_OLD_SETTINGS_TABLE . "` as content
+                    JOIN `" . CALENDAR_OLD_SETTINGS_TABLE . "` as title ON title.setid = 5
+                    WHERE content.setid = 6
+                ");
+
+                // load demo mail data
                 \Cx\Lib\UpdateUtil::sql("
                     INSERT IGNORE INTO `" . CALENDAR_NEW_MAIL_TABLE . "` (`id`, `title`, `content_text`, `content_html`, `recipients`, `lang_id`, `action_id`, `is_default`, `status`)
                         VALUES
