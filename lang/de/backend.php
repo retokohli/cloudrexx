@@ -1143,6 +1143,7 @@ $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_TO'] = "Trennen Sie mehrere E-Mail Adres
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_CC'] = "Trennen Sie mehrere E-Mail Adressen durch Kommas.";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_BCC'] = "Trennen Sie mehrere E-Mail Adressen durch Kommas.";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_WARNING_NONE'] = "Es sind keine E-Mail Vorlagen vorhanden";
+$_ARRAYLANG['TXT_CORE_MAILTEMPLATE_ERROR_NO_SECTION_OR_GROUP'] = "Diesem Sprachplatzhalter ist kein Wert zugewiesen.";
 
 // core \Cx\Core\Setting
 $_ARRAYLANG['TXT_CORE_SETTING'] = "Einstellungen";
