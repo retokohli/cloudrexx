@@ -1154,7 +1154,7 @@ class Config
 
         $settingsContent = file_get_contents($file);
         // Execute code to load the settings into variable $_CONFIG.
-        // The '?>' is required as $settingsContent starts with a opening PHP tag (<?php).
+        // The closing PHP tag is required as $settingsContent starts with a opening PHP tag (<?php).
         try {
             eval('?>' . $settingsContent);
         } catch (\Exception $e) {
@@ -1180,7 +1180,7 @@ class Config
         try {
             // fetch $_CONFIG data from settings.php file
             // will be used for migration
-            $existingConfig = fetchConfigFromSettingsFile(self::getSettingsFile());
+            $existingConfig = self::fetchConfigFromSettingsFile(self::getSettingsFile());
 
             //site group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml', $configPath);
