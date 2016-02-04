@@ -1438,21 +1438,23 @@ CODE;
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $senderName);
             if (!empty($replyAddress)) {
                 $objMail->AddReplyTo($replyAddress);
 
                 if ($arrFormData['sendCopy'] == 1) {
                     $objMail->AddAddress($replyAddress);
                 }
-
-                if ($arrFormData['useEmailOfSender'] == 1) {
-                    $objMail->SetFrom(
-                        $replyAddress, 
-                        ($senderName !== $_CONFIG['coreGlobalPageTitle']) ? $senderName : ''
-                    );
-                }
             }
+
+            if (!empty($replyAddress) && $arrFormData['useEmailOfSender'] == 1) {
+                $objMail->SetFrom(
+                    $replyAddress, 
+                    ($senderName !== $_CONFIG['coreGlobalPageTitle']) ? $senderName : ''
+                );
+            } else {
+                $objMail->SetFrom($_CONFIG['coreAdminEmail'], $senderName);
+            }
+
             $objMail->Subject = $arrFormData['subject'];
 
             if ($isHtml) {

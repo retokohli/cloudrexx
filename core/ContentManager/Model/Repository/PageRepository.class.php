@@ -898,7 +898,7 @@ class PageRepository extends EntityRepository {
      *     'Link' => string
      * )
      */
-    public function searchResultsForSearchModule($string, $license) {
+    public function searchResultsForSearchModule($string, $license, $rootPage = null) {
         if ($string == '') {
             return array();
         }
@@ -937,6 +937,9 @@ class PageRepository extends EntityRepository {
                 $hasPageAccess = \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true);
             }
             if (!$page->isActive() || $isNotVisible || !$hasPageAccess) {
+                continue;
+            }
+            if ($rootPage && strpos($page->getPath(), $rootPage->getPath()) !== 0) {
                 continue;
             }
 // TODO: Add proper score with MATCH () AGAINST () or similar
