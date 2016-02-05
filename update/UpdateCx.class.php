@@ -55,25 +55,13 @@ class UpdateCx extends \Cx\Core\Core\Controller\Cx {
         global $connection, $_DBCONFIG, $_CONFIG;
 
         // Set database connection details
-        $objDb = new \Cx\Core\Model\Model\Entity\Db();
-        $objDb->setHost($_DBCONFIG['host']);
-        $objDb->setName($_DBCONFIG['database']);
-        $objDb->setTablePrefix($_DBCONFIG['tablePrefix']);
-        $objDb->setDbType($_DBCONFIG['dbType']);
-        $objDb->setCharset($_DBCONFIG['charset']);
-        $objDb->setCollation($_DBCONFIG['collation']);
-        $objDb->setTimezone((empty($_CONFIG['timezone'])?$_DBCONFIG['timezone']:$_CONFIG['timezone']));
+        $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
 
         // Set database user details
-        $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
-        $objDbUser->setName($_DBCONFIG['user']);
-        $objDbUser->setPassword($_DBCONFIG['password']);
+        $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG);
 
         // Initialize database connection
-        $this->db = new \Cx\Core\Model\Db($objDb, $objDbUser);
-        $this->db->setPdoConnection($connection);
-        $this->db->setAdoDb(\Env::get('db'));
-        $this->db->setEntityManager(\Env::get('em'));
+        $this->db = \Cx\Core\Model\Db::fromExistingConnection($objDb, $objDbUser, $connection, \Env::get('db'), \Env::get('em'));
 
         // initialize event manager
         $this->eventManager = new \Cx\Core\Event\Controller\EventManager();
