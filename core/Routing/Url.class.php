@@ -133,21 +133,35 @@ class Url {
      * Initializes $domain and $path.
      * @param string $url http://example.com/Test
      */
-    public function __construct($url) {
-        $matches = array();
-        $matchCount = preg_match('/^(https?:\/\/[^\/]+\/)(.*)?/', $url, $matches);
-        if ($matchCount == 0) {
-            throw new UrlException('Malformed URL: ' . $url);
+    public function __construct($url, $replacePorts = false) {
+        
+        $data = parse_url($url);
+        if (isset($data['host'])) {
+            $this->domain   = $data['host'];
         }
-
-        $this->domain = $matches[1];
-        if (isset($matches[2])) {
-            $this->setPath($matches[2]);
+        if (empty($this->domain)) {
+            $this->domain = \Env::get('config')['domainUrl'];
+        }
+        $this->protocol = $data['scheme'];
+        if (empty($this->protocol)) {
+            $this->protocol = 'http';
+        }
+        $path = '';
+        if (isset($data['path'])) {
+            $path = $data['path'];
+        }
+        $path = ltrim($path, '/');
+        
+        
+        if(!empty($data['query'])) {
+            $path .= '?' . $data['query'];
+        }
+        if (!empty($path)) {
+            $this->setPath($path);
         } else {
             $this->suggest();
         }
         
-        $data = parse_url($url);
         if (!empty($data['fragment'])) {
             $this->fragment = $data['fragment'];
         }
@@ -209,8 +223,19 @@ class Url {
     public function getPath() {
         return $this->path;
     }
+    
+    /**
+     * Returns the URL fragment (if any), including the #
+     * @return string URL fragment
+     */
+    public function getFragment() {
+        return (!empty($this->fragment) ? '#' . $this->fragment : '');
+    }
 
     public function setPath($path) {
+        $data = parse_url($path);
+        $path = $data['path'];
+        $this->fragment = (isset($data['fragment']) ? $data['fragment'] : '');
         $pathOffset = substr(ASCMS_INSTANCE_OFFSET, 1);
         if (!empty($pathOffset) && substr($path, 0, strlen($pathOffset)) == $pathOffset) {
             $path = substr($path, strlen($pathOffset) + 1);
