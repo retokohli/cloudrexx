@@ -314,3 +314,5 @@ $_ARRAYLANG['TXT_ACCESS_UNKNOWN'] = "unknown";
 
 $_ARRAYLANG['TXT_LOGIN_WELCOME_PAGE'] = 'Forward to the <a href="%s" title="Website">Website</a>';
 $_ARRAYLANG['TXT_BROWSE'] = 'Browse';
+
+$_ARRAYLANG['TXT_READ_MORE'] = "Continue reading"; 
