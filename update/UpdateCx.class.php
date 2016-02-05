@@ -44,4 +44,42 @@ class UpdateCx extends \Cx\Core\Core\Controller\Cx {
         $this->setCodeBaseRepository($_PATHCONFIG['ascms_installation_root'], $_PATHCONFIG['ascms_installation_offset']);
         $this->setWebsiteRepository($_PATHCONFIG['ascms_root'], $_PATHCONFIG['ascms_root_offset']);
     }
+
+    /**
+     * Loading EventManager, DB, License
+     * @global PDOConnection    $connection
+     * @global array            $_DBCONFIG
+     * @global array            $_CONFIG
+     */
+    public function minimalInit() {
+        global $connection, $_DBCONFIG, $_CONFIG;
+
+        // Set database connection details
+        $objDb = new \Cx\Core\Model\Model\Entity\Db();
+        $objDb->setHost($_DBCONFIG['host']);
+        $objDb->setName($_DBCONFIG['database']);
+        $objDb->setTablePrefix($_DBCONFIG['tablePrefix']);
+        $objDb->setDbType($_DBCONFIG['dbType']);
+        $objDb->setCharset($_DBCONFIG['charset']);
+        $objDb->setCollation($_DBCONFIG['collation']);
+        $objDb->setTimezone((empty($_CONFIG['timezone'])?$_DBCONFIG['timezone']:$_CONFIG['timezone']));
+
+        // Set database user details
+        $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
+        $objDbUser->setName($_DBCONFIG['user']);
+        $objDbUser->setPassword($_DBCONFIG['password']);
+
+        // Initialize database connection
+        $this->db = new \Cx\Core\Model\Db($objDb, $objDbUser);
+        $this->db->setPdoConnection($connection);
+        $this->db->setAdoDb(\Env::get('db'));
+        $this->db->setEntityManager(\Env::get('em'));
+
+        // initialize event manager
+        $this->eventManager = new \Cx\Core\Event\Controller\EventManager();
+        new \Cx\Core\Event\Controller\ModelEventWrapper($this);
+
+        // initialize license
+        $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
+    }
 }
