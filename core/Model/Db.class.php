@@ -135,11 +135,11 @@ namespace Cx\Core\Model {
          * @return  \Cx\Core\Model\Db   Instance based on existing database connection
          */
         public static function fromExistingConnection(\PDO $pdo, \ADONewConnection $adoDb, \Cx\Core\Model\Controller\EntityManager $em) {
-             global $_DBCONFIG, $_CONFIG;
+             global $_DBCONFIG;
 
             // instanciate new dummy object
-            $dbConnection = new \Cx\Core\Model\Model\Entity\Db();
-            $dbUser= new \Cx\Core\Model\Model\Entity\DbUser();
+            $dbConnection = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
+            $dbUser= new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG);
 
             // Bind database connection
             $db = new static($dbConnection, $dbUser);
