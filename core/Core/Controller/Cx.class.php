@@ -611,11 +611,13 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Register an \Cx\Core\Core\Controller\Cx compatible object as new instance
+         * Register a \Cx\Core\Core\Controller\Cx compatible object as new instance
          *
-         * @param   \Cx\Core\Core\Controller\Cx Instanciated Cx object
+         * @param   \Cx\Core\Core\Controller\Cx $cx Instanciated Cx object
+         * @param   string $configFilePath The absolute path to a Cloudrexx configuration file (configuration.php).
+         * @param   boolean $setAsPreferred Whether or not to set the Cx instance as preferred instance to be used
          */
-        public static function registerInstance($cx) {
+        public static function registerInstance($cx, $configFilePath = null, $setAsPreferred = false) {
             if (!isset(self::$instances[null])) {
                 $key = null;
             } else {
@@ -625,8 +627,13 @@ namespace Cx\Core\Core\Controller {
             self::$autoIncrementValueOfId++;
             $cx->setId(self::$autoIncrementValueOfId);
 
-            self::$instances[$key] = $cx;
-            self::$preferredInstance = $cx;
+            if (!count(self::$instances) || $setAsPreferred) {
+                self::$preferredInstance = $cx;
+            }
+            if (!isset(self::$instances[$configFilePath])) {
+                self::$instances[$configFilePath] = array();
+            }
+            self::$instances[$configFilePath][] = $cx;
         }
 
         /* STAGE 2: __construct(), early initializations */
@@ -638,19 +645,12 @@ namespace Cx\Core\Core\Controller {
          * @param string $configFilePath The absolute path to a Cloudrexx configuration
          *                               file (configuration.php) that shall be loaded
          *                               instead of the default one.
+         * @param   boolean $setAsPreferred Whether or not to set the Cx instance as preferred instance to be used
          */
         protected function __construct($mode = null, $configFilePath = null, $setAsPreferred = false, $checkInstallationStatus = true) {
-            /** setting up id of new initialized object**/
-            self::$autoIncrementValueOfId++;
-            $this->id = self::$autoIncrementValueOfId;
-
-            if (!count(self::$instances) || $setAsPreferred) {
-                self::$preferredInstance = $this;
-            }
-            if (!isset(self::$instances[$configFilePath])) {
-                self::$instances[$configFilePath] = array();
-            }
-            self::$instances[$configFilePath][] = $this;
+            // register this new Cx instance
+            // will be used by \Cx\Core\Core\Controller\Cx::instanciate()
+            self::registerInstance($this, $configFilePath, $setAsPreferred);
 
             try {
                 /**
