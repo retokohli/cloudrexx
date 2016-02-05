@@ -58,16 +58,10 @@ cx.ready(function() {
         }
 
         cx.trigger('loadingStart', 'hotOffer', {});
-        cx.ui.messages.showLoad();
-        cx.jQuery.ajax({
+        cx.ajax( 'Jobs', 'updateJobsHotOffer', {
             type     : 'POST',
-            url      : 'index.php?cmd=JsonData&object=Jobs&act=updateJobsHotOffer',
             data     : 'id=' + jobId + '&hotOffer=' + isChecked,
             dataType : 'json',
-            success: function( json ) {
-                var msg = (json.status === 'success') ? json.data.message : json.message;
-                cx.tools.StatusMessage.showMessage(msg, null, 3000);
-            },
             complete: function() {
                 cx.trigger('loadingEnd', 'hotOffer', {});
             }

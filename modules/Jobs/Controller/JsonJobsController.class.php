@@ -90,22 +90,26 @@ class JsonJobsController extends \Cx\Core\Core\Model\Entity\Controller
      */
     public function updateJobsHotOffer($params)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
+
+        $objDatabase = $this->cx->getDb()->getAdoDb();
+        $langData    = \Env::get('init')->loadLanguageData($this->getName());
+        $_ARRAYLANG  = array_merge($_ARRAYLANG, $langData);
 
         //get the input values
         $id       = isset($params['post']['id']) ? contrexx_input2int($params['post']['id']) : 0;
         $hotOffer = isset($params['post']['hotOffer']) ? contrexx_input2int($params['post']['hotOffer']) : 0;
 
         if (empty($id)) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_JOBS_RECORD_UPDATE_FAILED']);
+            throw new \Exception($_ARRAYLANG['TXT_JOBS_RECORD_UPDATE_FAILED']);
         }
 
         $query = 'UPDATE `' . DBPREFIX . 'module_jobs` 
                     SET `hot` = ' . $hotOffer . ' WHERE `id` = ' . $id;
         if (!$objDatabase->Execute($query)) {
-            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
+            throw new \Exception($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
         }
 
-        return array('status' => 'success', 'message' => $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
+        return array('status' => 'success');
     }
 }

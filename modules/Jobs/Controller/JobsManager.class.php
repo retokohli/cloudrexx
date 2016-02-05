@@ -169,6 +169,12 @@ class JobsManager extends JobsLibrary
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
+        //set the language variable
+        \ContrexxJavascript::getInstance()->setVariable(array(
+            'operationSuccessful' => $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'],
+            'operationFailed'     => $_ARRAYLANG['TXT_JOBS_RECORD_UPDATE_FAILED']
+        ),'contrexx/lang');
+
         // initialize variables
         $i=0;
         $jobslocationform = '';

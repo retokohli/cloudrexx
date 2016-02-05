@@ -116,15 +116,14 @@ class JobsLibrary
      */
     public function parseHotOrLatestJobs(\Cx\Core\Html\Sigma $objTemplate)
     {
-        global $objDatabase, $_LANGID;
-
         //If the block 'jobs_list' not exists, then return
         if (!$objTemplate->blockExists('jobs_list')) {
             return;
         }
 
         //Get the Settings values from DB
-        $settings = array();
+        $objDatabase = \Env::get('cx')->getDb()->getAdoDb();
+        $settings    = array();
         $query = 'SELECT `value`, `name`
                     FROM `' . DBPREFIX . 'module_jobs_settings`
                     WHERE name IN ("templateIntegration", "sourceOfJobs", "listingLimit")';
@@ -163,7 +162,7 @@ class JobsLibrary
                          `' . DBPREFIX . 'module_jobs_categories` AS jc
                     WHERE j.status  = 1
                         AND j.hot   = ' . $hotOffer . ' 
-                        AND j.lang  = ' . $_LANGID . ' 
+                        AND j.lang  = ' . FRONTEND_LANG_ID . ' 
                         AND j.catid = jc.catid
                         AND (j.startdate <= "' . date('Y-m-d') . '" OR j.startdate = "0000-00-00 00:00:00")
                         AND (j.enddate >= "' . date('Y-m-d') . '" OR j.enddate = "0000-00-00 00:00:00") 
@@ -171,7 +170,7 @@ class JobsLibrary
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
-                $detailUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Jobs', 'details', $_LANGID, array('id' => $objResult->fields['docid']));
+                $detailUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Jobs', 'details', FRONTEND_LANG_ID, array('id' => $objResult->fields['docid']));
                 $objTemplate->setVariable(array(
                     'JOBS_ID'	     => contrexx_input2int($objResult->fields['docid']),
                     'JOBS_LONG_DATE' => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
