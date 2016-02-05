@@ -1144,12 +1144,12 @@ class Config
      * Load a settings.php file and return its configuration ($_CONFIG) as array
      *
      * @param   string  $file   The path to the settings.php file to load the $_CONFIG from
-     * @return  mixed           Returns FALSE in case of an error.
-     *                          Returns the loaded array $_CONFIG from $file
+     * @return  array           Returns an array containing the loaded $_CONFIG from $file.
+     *                          If $file does not exists or on error, it returns an empty array
      */
     static function fetchConfigFromSettingsFile($file) {
         if (!file_exists($file)) {
-            return false;
+            return array();
         }
 
         $settingsContent = file_get_contents($file);
@@ -1165,11 +1165,11 @@ class Config
         try {
             eval('?>' . $settingsContent);
         } catch (\Exception $e) {
-            return false;
+            return array();
         }
 
         if (!isset($_CONFIG)) {
-            return false;
+            return array();
         }
 
         return $_CONFIG;
