@@ -126,6 +126,28 @@ namespace Cx\Core\Model {
             $this->db = $db;
             $this->dbUser = $dbUser;
         }
+
+        /**
+         * Creates a new instance by using an existing database connection
+         * @param   \PDO    $pdo    Existing PDO connection
+         * @param   \ADONewConnection   $adoDb  Existing AdoDb connection based on $pdo
+         * @param   \Cx\Core\Model\Controller\EntityManager $em Existing Entity Manager object based on $pdo
+         * @return  \Cx\Core\Model\Db   Instance based on existing database connection
+         */
+        public static function fromExistingConnection(\PDO $pdo, \ADONewConnection $adoDb, \Cx\Core\Model\Controller\EntityManager $em) {
+             global $_DBCONFIG, $_CONFIG;
+
+            // instanciate new dummy object
+            $dbConnection = new \Cx\Core\Model\Model\Entity\Db();
+            $dbUser= new \Cx\Core\Model\Model\Entity\DbUser();
+
+            // Bind database connection
+            $db = new static($dbConnection, $dbUser);
+            $db->setPdoConnection($pdo);
+            $db->setAdoDb($adoDb);
+            $db->setEntityManager($em);
+            return $db;
+        }
         
         /**
          * Sets the username for loggable listener
