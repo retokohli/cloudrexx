@@ -610,6 +610,25 @@ namespace Cx\Core\Core\Controller {
             return self::$preferredInstance;
         }
 
+        /**
+         * Register an \Cx\Core\Core\Controller\Cx compatible object as new instance
+         *
+         * @param   \Cx\Core\Core\Controller\Cx Instanciated Cx object
+         */
+        public static function registerInstance($cx) {
+            if (!isset(self::$instances[null])) {
+                $key = null;
+            } else {
+                $key = spl_object_hash($cx);
+            }
+
+            self::$autoIncrementValueOfId++;
+            $cx->setId(self::$autoIncrementValueOfId);
+
+            self::$instances[$key] = $cx;
+            self::$preferredInstance = $cx;
+        }
+
         /* STAGE 2: __construct(), early initializations */
 
         /**
@@ -3143,6 +3162,18 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteMediaDirectoryWebPath() {
             return $this->websiteMediaDirectoryWebPath;
+        }
+
+        /**
+         * Set the ID of the object
+         *
+         * WARNING: Setting the ID manually might break the system!
+         *          Only do it in respect to self::$autoIncrementValueOfId.
+         *
+         * @param int   ID this object shall be identified by
+         */
+        public function setId($id) {
+            $this->id = $id;
         }
 
         /**
