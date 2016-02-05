@@ -632,7 +632,7 @@ class Resolver {
         //if we followed one or more redirections, the user shall be redirected by 302.
         if ($this->isRedirection && !$this->forceInternalRedirection) {
             $params = $this->url->getSuggestedParams();
-            header('Location: '.$this->page->getURL($this->pathOffset, $params));
+            header('Location: '.$this->page->getURL($this->pathOffset, $params) . $this->url->getFragment());
             exit;
         }
 

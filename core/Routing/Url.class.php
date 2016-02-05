@@ -315,8 +315,19 @@ class Url {
     public function getPath() {
         return $this->path;
     }
+    
+    /**
+     * Returns the URL fragment (if any), including the #
+     * @return string URL fragment
+     */
+    public function getFragment() {
+        return (!empty($this->fragment) ? '#' . $this->fragment : '');
+    }
 
     public function setPath($path) {
+        $data = parse_url($path);
+        $path = $data['path'];
+        $this->fragment = (isset($data['fragment']) ? $data['fragment'] : '');
         $pathOffset = substr(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath(), 1);
         if (!empty($pathOffset) && substr($path, 0, strlen($pathOffset)) == $pathOffset) {
             $path = substr($path, strlen($pathOffset) + 1);
