@@ -136,7 +136,9 @@ namespace Cx\Core\Model {
          * @param   \Cx\Core\Model\Controller\EntityManager $em Existing Entity Manager object based on $pdo
          * @return  \Cx\Core\Model\Db   Instance based on existing database connection
          */
-        public static function fromExistingConnection(\Cx\Core\Model\Model\Entity\Db $dbInfo, \Cx\Core\Model\Model\Entity\DbUser $dbUser, \PDO $pdo, \ADONewConnection $adoDb, \Cx\Core\Model\Controller\EntityManager $em) {
+        public static function fromExistingConnection(\Cx\Core\Model\Model\Entity\Db $dbInfo, \Cx\Core\Model\Model\Entity\DbUser $dbUser,
+                                                      \PDO $pdo, \ADONewConnection $adoDb, \Cx\Core\Model\Controller\EntityManager $em
+        ) {
             // Bind database connection
             $db = new static($dbConnection, $dbUser);
             $db->setPdoConnection($pdo);
