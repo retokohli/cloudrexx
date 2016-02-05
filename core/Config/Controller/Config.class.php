@@ -1154,6 +1154,13 @@ class Config
 
         $settingsContent = file_get_contents($file);
         // Execute code to load the settings into variable $_CONFIG.
+        //
+        // We must use eval() here as we must not use include(_once) here.
+        // As we are not populating the loaded $_CONFIG array into the global space,
+        // any later running components (in particular Cx\Core\Core\Controller\Cx)
+        // would not be able to load the $_CONFIG array as the settings.php file
+        // has already been loaded.
+        //
         // The closing PHP tag is required as $settingsContent starts with a opening PHP tag (<?php).
         try {
             eval('?>' . $settingsContent);
@@ -1179,7 +1186,7 @@ class Config
 
         try {
             // fetch $_CONFIG data from settings.php file
-            // will be used for migration
+            // will be used for migration of basic configuration from contrexx_settings to \Cx\Core\Setting
             $existingConfig = self::fetchConfigFromSettingsFile(self::getSettingsFile());
 
             //site group
