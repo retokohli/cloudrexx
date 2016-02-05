@@ -1144,25 +1144,32 @@ class Config
      * Load a settings.php file and return its configuration ($_CONFIG) as array
      *
      * @param   string  $file   The path to the settings.php file to load the $_CONFIG from
-     * @return  mixed           Returns FALSE in case of an error.
-     *                          Returns the loaded array $_CONFIG from $file
+     * @return  array           Returns an array containing the loaded $_CONFIG from $file.
+     *                          If $file does not exists or on error, it returns an empty array
      */
     static function fetchConfigFromSettingsFile($file) {
         if (!file_exists($file)) {
-            return false;
+            return array();
         }
 
         $settingsContent = file_get_contents($file);
         // Execute code to load the settings into variable $_CONFIG.
+        //
+        // We must use eval() here as we must not use include(_once) here.
+        // As we are not populating the loaded $_CONFIG array into the global space,
+        // any later running components (in particular Cx\Core\Core\Controller\Cx)
+        // would not be able to load the $_CONFIG array as the settings.php file
+        // has already been loaded.
+        //
         // The closing PHP tag is required as $settingsContent starts with a opening PHP tag (<?php).
         try {
             eval('?>' . $settingsContent);
         } catch (\Exception $e) {
-            return false;
+            return array();
         }
 
         if (!isset($_CONFIG)) {
-            return false;
+            return array();
         }
 
         return $_CONFIG;
@@ -1179,7 +1186,7 @@ class Config
 
         try {
             // fetch $_CONFIG data from settings.php file
-            // will be used for migration
+            // will be used for migration of basic configuration from contrexx_settings to \Cx\Core\Setting
             $existingConfig = self::fetchConfigFromSettingsFile(self::getSettingsFile());
 
             //site group
