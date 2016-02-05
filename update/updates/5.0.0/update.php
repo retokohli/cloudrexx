@@ -190,13 +190,11 @@ function executeContrexxUpdate() {
      */
     require_once(ASCMS_CORE_PATH . '/ClassLoader/ClassLoader.class.php');
     require_once(dirname(UPDATE_PATH).'/core/Core/Controller/Cx.class.php');
+    require_once(dirname(UPDATE_PATH).'/core/Model/Model/Entity/Db.class.php');
     require_once(UPDATE_PATH.'/UpdateCx.class.php');
 
-    if (isset($_SESSION['contrexx_update']['newSystemReady'])) {
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-    } else {
-        $cx = new \UpdateCx();
-    }
+    $cx = new \UpdateCx();
+    \Cx\Core\Core\Controller\Cx::registerInstance($cx);
 
     Env::set('cx', $cx);
     $cl = new \Cx\Core\ClassLoader\ClassLoader($cx, true);
@@ -487,24 +485,36 @@ function executeContrexxUpdate() {
     /*******************************************************************************/
     /*******************************************************************************/
     if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-        $result = ContentManagerUpdate::updateContentManagerDbStructure();
-        if ($result === false) {
-            return false;
+        if (!in_array('updateContentManagerDbStructure', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            $result = ContentManagerUpdate::updateContentManagerDbStructure();
+            if ($result === false) {
+                return false;
+            }
+            $_SESSION['contrexx_update']['update']['done'][] = 'updateContentManagerDbStructure';
         }
 
-        $result = ContentManagerUpdate::fixPageLogs();
-        if ($result === false) {
-            return false;
+        if (!in_array('fixPageLogs', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            $result = ContentManagerUpdate::fixPageLogs();
+            if ($result === false) {
+                return false;
+            }
+            $_SESSION['contrexx_update']['update']['done'][] = 'fixPageLogs';
         }
 
-        $result = ContentManagerUpdate::fixFallbackPages();
-        if ($result === false) {
-            return false;
+        if (!in_array('fixFallbackPages', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            $result = ContentManagerUpdate::fixFallbackPages();
+            if ($result === false) {
+                return false;
+            }
+            $_SESSION['contrexx_update']['update']['done'][] = 'fixFallbackPages';
         }
 
-        $result = ContentManagerUpdate::fixTree();
-        if ($result === false) {
-            return false;
+        if (!in_array('fixTree', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+            $result = ContentManagerUpdate::fixTree();
+            if ($result === false) {
+                return false;
+            }
+            $_SESSION['contrexx_update']['update']['done'][] = 'fixTree';
         }
 
         $cx3Version = detectCx3Version();
@@ -636,7 +646,7 @@ function executeContrexxUpdate() {
     /*******************************************************************************/
     if (
         !in_array('coreSettings', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
-        !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
+        $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
     ) {
         \DBG::msg('update: update settings');
         $result = _updateSettings();
@@ -938,8 +948,19 @@ function executeContrexxUpdate() {
             return false;
         }
 
+        unset($_SESSION['contrexx_update']['update']['migratedApplicationContentPages']);
         $_SESSION['contrexx_update']['update']['done'][] = 'applicationTemplates';
     }
+
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** UPDATE SYSTEM INITIALIZATION - PHASE 5 *******************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    $cx->minimalInit();
 
 
     /*******************************************************************************/
@@ -950,8 +971,8 @@ function executeContrexxUpdate() {
     /*******************************************************************************/
     /*******************************************************************************/
     if (
-        !in_array('coreSettings2SettingDb', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
-        !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
+        !in_array('coreSettings2SettingDb', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) &&
+        $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')
     ) {
         \DBG::msg('update: migrate settings to \Cx\Core\Setting');
         $result = migrateSettingsToSettingDb();
@@ -990,7 +1011,6 @@ function executeContrexxUpdate() {
         }
 
         $_SESSION['contrexx_update']['update']['done'][] = 'createHtAccess';
-        //$_SESSION['contrexx_update']['update']['done'][] = 'newSystemReady';
 
         // force final reload
         setUpdateMsg(1, 'timeout');
@@ -1007,15 +1027,11 @@ function executeContrexxUpdate() {
     /*******************************************************************************/
     // Update license
     \DBG::msg('update: update license');
-// TODO
-    \DBG::msg('update: skip...');
-    return true;
     $arrUpdate = $objUpdate->getLoadedVersionInfo();
-    $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
 
     if (
         !in_array('coreLicense', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
-        !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
+        $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $arrUpdate['cmsVersion'])
     ) {
         $lupd = new License();
         try {
@@ -2673,14 +2689,18 @@ function migratePageApplicationNames() {
                         // TODO message
                         return false;
                     }
+                    $matchedComponentName = current($matchedComponentNames);
+                    if (empty($matchedComponentName)) {
+                        continue;
+                    }
 
                     // check if the page has already been migrated
-                    if ($page->getModule() == $matchedComponentNames[0]) {
+                    if ($page->getModule() == $matchedComponentName) {
                         continue;
                     }
 
                     // update page with new component name
-                    $page->setModule($matchedComponentNames[0]);
+                    $page->setModule($matchedComponentName);
                     $page->setUpdatedAtToNow();
                     $em->persist($page);
                 }
@@ -2698,8 +2718,8 @@ function migratePageApplicationNames() {
 // move content of application content pages into HTML files in associated themes and replace it by {APPLICATION_DATA} placeholder
 function installContentApplicationTemplates() {
     try {
-        if (!isset($_SESSION['contrexx_update']['migratedApplicationContentPapges'])) {
-            $_SESSION['contrexx_update']['migratedApplicationContentPapges'] = array();
+        if (!isset($_SESSION['contrexx_update']['update']['migratedApplicationContentPages'])) {
+            $_SESSION['contrexx_update']['update']['migratedApplicationContentPages'] = array();
         }
 
         $virtualComponents = array('Agb', 'Ids', 'Imprint', 'Privacy');
@@ -2710,7 +2730,7 @@ function installContentApplicationTemplates() {
         $pages      = $pageRepo->findBy(array('type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION));
         foreach ($pages As $page) {
             // skip already migrated pages
-            if (in_array($page->getId(), ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['migratedApplicationContentPapges']))) {
+            if (in_array($page->getId(), ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['migratedApplicationContentPages']))) {
                 continue;
             }
 
@@ -2761,7 +2781,7 @@ function installContentApplicationTemplates() {
             \Env::get('em')->persist($page);
             \Env::get('em')->flush();
 
-            $_SESSION['contrexx_update']['migratedApplicationContentPapges'][] = $page->getId();
+            $_SESSION['contrexx_update']['update']['migratedApplicationContentPages'][] = $page->getId();
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                 return 'timeout';
             }
@@ -2848,38 +2868,11 @@ function detectCx3Version() {
 }
 
 class License {
-
-    public function __construct() {
-
-    }
-
     public function update($getNew = true) {
-        global $documentRoot, $_CONFIG, $objUser, $license, $objDatabase, $objUpdate;
+        global $objUpdate;
 
-        if (false && @include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
-            $_GET['force'] = 'true';
-            $_GET['silent'] = 'true';
-            $documentRoot = ASCMS_DOCUMENT_ROOT;
+// TODO: load license from config/License.lic
 
-            $_CONFIG['licenseUpdateInterval'] = 0;
-            $_CONFIG['licenseSuccessfulUpdate'] = 0;
-            $_CONFIG['licenseState'] = '';
-            if ($getNew) {
-                $_CONFIG['installationId'] = '';
-                $_CONFIG['licenseKey'] = '';
-            }
-            
-            \DBG::msg(__METHOD__.': fetch objUser');
-            $objUser = \FWUser::getFWUserObject()->objUser;
-            \DBG::msg(__METHOD__.': fetch license');
-            $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
-
-            \DBG::msg(__METHOD__.': load versioncheck.php');
-            $return = @include_once(ASCMS_DOCUMENT_ROOT.'/core_modules/License/versioncheck.php');
-        }
-
-        // we force a version number update. if the license update failed
-        // version number will not be upgraded yet:
         \DBG::msg(__METHOD__.': manually update settings in case license update failed');
         $arrUpdate = $objUpdate->getLoadedVersionInfo();
         \DBG::dump(\Cx\Core\Setting\Controller\Setting::init('Config', 'release','Yaml'));
@@ -2892,7 +2885,6 @@ class License {
         \DBG::dump(\Cx\Core\Config\Controller\Config::updatePhpCache());
 
 // TODO: fix license
-        return false;
-        return ($return === true);
+        return true;
     }
 }

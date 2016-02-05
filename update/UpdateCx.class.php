@@ -44,4 +44,30 @@ class UpdateCx extends \Cx\Core\Core\Controller\Cx {
         $this->setCodeBaseRepository($_PATHCONFIG['ascms_installation_root'], $_PATHCONFIG['ascms_installation_offset']);
         $this->setWebsiteRepository($_PATHCONFIG['ascms_root'], $_PATHCONFIG['ascms_root_offset']);
     }
+
+    /**
+     * Loading EventManager, DB, License
+     * @global PDOConnection    $connection
+     * @global array            $_DBCONFIG
+     * @global array            $_CONFIG
+     */
+    public function minimalInit() {
+        global $connection, $_DBCONFIG, $_CONFIG;
+
+        // Set database connection details
+        $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
+
+        // Set database user details
+        $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG);
+
+        // Initialize database connection
+        $this->db = \Cx\Core\Model\Db::fromExistingConnection($objDb, $objDbUser, $connection, \Env::get('db'), \Env::get('em'));
+
+        // initialize event manager
+        $this->eventManager = new \Cx\Core\Event\Controller\EventManager();
+        new \Cx\Core\Event\Controller\ModelEventWrapper($this);
+
+        // initialize license
+        $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
+    }
 }

@@ -503,39 +503,41 @@ function _updateSettings()
 
 
 		//timezone (Contrexx 3.0.1)
-		$arrTimezoneIdentifiers = timezone_identifiers_list();
-		if (isset($_POST['timezone']) && array_key_exists($_POST['timezone'], $arrTimezoneIdentifiers)) {
-			$_SESSION['contrexx_update']['update']['timezone'] = $_POST['timezone'];
-		}
-		if (isset($_SESSION['contrexx_update']['update']['timezone']) && array_key_exists(ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['timezone']), $arrTimezoneIdentifiers)) {
-			try {
-				\Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = "'.$arrTimezoneIdentifiers[$_SESSION['contrexx_update']['update']['timezone']].'" WHERE `setname` = "timezone"');
-				// add timezone to $_CONFIG array so it will be written in configuration.php in components/core/core.php
-				$_CONFIG['timezone'] = $arrTimezoneIdentifiers[$_SESSION['contrexx_update']['update']['timezone']];
-			} catch (\Cx\Lib\UpdateException $e) {
-				return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-			}
-		} else {
-			$selected = -1;
-			if (($defaultTimezoneId = array_search(@date_default_timezone_get(), $arrTimezoneIdentifiers)) && !empty($defaultTimezoneId)) {
-				$selected = $defaultTimezoneId;
-			}
+        if (!isset($_CONFIG['timezone'])) {
+            $arrTimezoneIdentifiers = timezone_identifiers_list();
+            if (isset($_POST['timezone']) && array_key_exists($_POST['timezone'], $arrTimezoneIdentifiers)) {
+                $_SESSION['contrexx_update']['update']['timezone'] = $_POST['timezone'];
+            }
+            if (isset($_SESSION['contrexx_update']['update']['timezone']) && array_key_exists(ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['timezone']), $arrTimezoneIdentifiers)) {
+                try {
+                    \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = "'.$arrTimezoneIdentifiers[$_SESSION['contrexx_update']['update']['timezone']].'" WHERE `setname` = "timezone"');
+                    // add timezone to $_CONFIG array so it will be written in configuration.php in components/core/core.php
+                    $_CONFIG['timezone'] = $arrTimezoneIdentifiers[$_SESSION['contrexx_update']['update']['timezone']];
+                } catch (\Cx\Lib\UpdateException $e) {
+                    return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+                }
+            } else {
+                $selected = -1;
+                if (($defaultTimezoneId = array_search(@date_default_timezone_get(), $arrTimezoneIdentifiers)) && !empty($defaultTimezoneId)) {
+                    $selected = $defaultTimezoneId;
+                }
 
-			$options = '<option value="-1"'.($selected == -1 ? ' selected="selected"' : '').'>'.$_CORELANG['TXT_PLEASE_SELECT'].'</option>';
-			foreach ($arrTimezoneIdentifiers as $id => $name) {
-				$dateTimeZone = new DateTimeZone($name);
-				$dateTime = new DateTime('now', $dateTimeZone);
-				$timeOffset = $dateTimeZone->getOffset($dateTime);
-				$sign = $timeOffset < 0 ? '-' : '+';
-				$gmt = 'GMT '.$sign.gmdate('g:i', $timeOffset);
-				$options .= '<option value="'.$id.'"'.($selected == $id ? ' selected="selected"' : '').'>'.$name.' ('.$gmt.')'.'</option>';
-			}
+                $options = '<option value="-1"'.($selected == -1 ? ' selected="selected"' : '').'>'.$_CORELANG['TXT_PLEASE_SELECT'].'</option>';
+                foreach ($arrTimezoneIdentifiers as $id => $name) {
+                    $dateTimeZone = new DateTimeZone($name);
+                    $dateTime = new DateTime('now', $dateTimeZone);
+                    $timeOffset = $dateTimeZone->getOffset($dateTime);
+                    $sign = $timeOffset < 0 ? '-' : '+';
+                    $gmt = 'GMT '.$sign.gmdate('g:i', $timeOffset);
+                    $options .= '<option value="'.$id.'"'.($selected == $id ? ' selected="selected"' : '').'>'.$name.' ('.$gmt.')'.'</option>';
+                }
 
-			setUpdateMsg($_CORELANG['TXT_TIMEZONE'], 'title');
-			setUpdateMsg($_CORELANG['TXT_TIMEZONE_INTRODUCTION'].' <select name="timezone">'.$options.'</select>', 'msg');
-			setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
-			return false;
-		}
+                setUpdateMsg($_CORELANG['TXT_TIMEZONE'], 'title');
+                setUpdateMsg($_CORELANG['TXT_TIMEZONE_INTRODUCTION'].' <select name="timezone">'.$options.'</select>', 'msg');
+                setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+                return false;
+            }
+        }
 
 
 		// write settings
