@@ -168,6 +168,16 @@ namespace Cx\Core\Model {
         }
 
         /**
+         * Bind initialized PDO connection
+         * @param   \PDO    $pdo    Initialized PDO connection to be used as
+         *                          database connection.
+         */
+        public function setPdoConnection($pdo) {
+            $this->pdo = $pdo;
+            \Env::set('pdo', $this->pdo);
+        }
+
+        /**
          * Returns the AdoDB connection
          * @deprecated Use Doctrine (getEntityManager()) instead
          * @global string $ADODB_FETCH_MODE
@@ -199,6 +209,15 @@ namespace Cx\Core\Model {
                 return false;
             }
             return $this->adodb;
+        }
+
+        /**
+         * Returns the AdoDB connection
+         * @param \ADONewConnection $adoDb Initialized AdoDB connection to be
+         *                                 used for legacy database queries.
+         */
+        public function setAdoDb($adoDb) {
+            $this->adodb = $adoDb;
         }
         
         /**
@@ -322,6 +341,15 @@ namespace Cx\Core\Model {
             
             $this->em = $em;
             return $this->em;
+        }
+
+        /**
+         * Bind initialized Entity Manager
+         * @param \Doctrine\ORM\EntityManager   $em Initialized Entity Manager
+         *                                          to be used by doctrine.
+         */
+        public function setEntityManager($em) {
+            $this->em = $em;
         }
     }
 }
