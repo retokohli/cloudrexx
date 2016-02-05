@@ -321,7 +321,7 @@ class Calendar extends CalendarLibrary
         
         // In case $_GET['cmd'] is an integer, then we shall treat it as the
         // ID of a category and switch to category-mode
-        if (!empty($cmd) && intval($cmd) == $cmd) {
+        if (!empty($cmd) && (string)intval($cmd) == $cmd) {
             $catid = intval($cmd);
             $cmd == 'category';
             $this->simulateCategoryView = true;
