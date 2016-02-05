@@ -1144,25 +1144,32 @@ class Config
      * Load a settings.php file and return its configuration ($_CONFIG) as array
      *
      * @param   string  $file   The path to the settings.php file to load the $_CONFIG from
-     * @return  mixed           Returns FALSE in case of an error.
-     *                          Returns the loaded array $_CONFIG from $file
+     * @return  array           Returns an array containing the loaded $_CONFIG from $file.
+     *                          If $file does not exists or on error, it returns an empty array
      */
     static function fetchConfigFromSettingsFile($file) {
         if (!file_exists($file)) {
-            return false;
+            return array();
         }
 
         $settingsContent = file_get_contents($file);
         // Execute code to load the settings into variable $_CONFIG.
+        //
+        // We must use eval() here as we must not use include(_once) here.
+        // As we are not populating the loaded $_CONFIG array into the global space,
+        // any later running components (in particular Cx\Core\Core\Controller\Cx)
+        // would not be able to load the $_CONFIG array as the settings.php file
+        // has already been loaded.
+        //
         // The closing PHP tag is required as $settingsContent starts with a opening PHP tag (<?php).
         try {
             eval('?>' . $settingsContent);
         } catch (\Exception $e) {
-            return false;
+            return array();
         }
 
         if (!isset($_CONFIG)) {
-            return false;
+            return array();
         }
 
         return $_CONFIG;
@@ -1179,7 +1186,7 @@ class Config
 
         try {
             // fetch $_CONFIG data from settings.php file
-            // will be used for migration
+            // will be used for migration of basic configuration from contrexx_settings to \Cx\Core\Setting
             $existingConfig = self::fetchConfigFromSettingsFile(self::getSettingsFile());
 
             //site group
@@ -1230,13 +1237,13 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use");
             }            
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('portFrontendHTTP')
-                && !\Cx\Core\Setting\Controller\Setting::add('portFrontendHTTP',80, 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('portFrontendHTTP', isset($existingConfig['portFrontendHTTP']) ? $existingConfig['portFrontendHTTP'] : 80, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
                     \DBG::log("Failed to add Setting entry for core HTTP Port (Frontend)");
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTP Port (Frontend)");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('portFrontendHTTPS')
-                && !\Cx\Core\Setting\Controller\Setting::add('portFrontendHTTPS',443, 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('portFrontendHTTPS', isset($existingConfig['portFrontendHTTPS']) ? $existingConfig['portFrontendHTTPS'] : 443, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Frontend)");
             }
@@ -1292,12 +1299,12 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use Administrator");
             }            
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('portBackendHTTP')
-                && !\Cx\Core\Setting\Controller\Setting::add('portBackendHTTP',80, 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('portBackendHTTP', isset($existingConfig['portBackendHTTP']) ? $existingConfig['portBackendHTTP'] : 80, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTP Port (Backend)");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('portBackendHTTPS')
-                && !\Cx\Core\Setting\Controller\Setting::add('portBackendHTTPS',443, 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('portBackendHTTPS', isset($existingConfig['portBackendHTTPS']) ? $existingConfig['portBackendHTTPS'] : 443, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Backend)");
             }
@@ -1398,12 +1405,12 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Number of Characters in Search Results");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('googleMapsAPIKey')
-                && !\Cx\Core\Setting\Controller\Setting::add('googleMapsAPIKey','', 6,
+                && !\Cx\Core\Setting\Controller\Setting::add('googleMapsAPIKey', isset($existingConfig['googleMapsAPIKey']) ? $existingConfig['googleMapsAPIKey'] : '', 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'otherConfigurations')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Google-Map API key ");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('googleAnalyticsTrackingId')
-                && !\Cx\Core\Setting\Controller\Setting::add('googleAnalyticsTrackingId','', 7,
+                && !\Cx\Core\Setting\Controller\Setting::add('googleAnalyticsTrackingId', isset($existingConfig['googleAnalyticsTrackingId']) ? $existingConfig['googleAnalyticsTrackingId'] : '', 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'otherConfigurations')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Google Analytics Tracking ID");
             }
@@ -1421,7 +1428,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for lastAccessId");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('installationId')
-                && !\Cx\Core\Setting\Controller\Setting::add('installationId','', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('installationId', isset($existingConfig['installationId']) ? $existingConfig['installationId'] : '', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for installationId");
             }
@@ -1546,7 +1553,7 @@ class Config
             // license
             \Cx\Core\Setting\Controller\Setting::init('Config', 'license','Yaml', $configPath);
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseKey')
-                && !\Cx\Core\Setting\Controller\Setting::add('licenseKey','', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('licenseKey', isset($existingConfig['licenseKey']) ? $existingConfig['licenseKey'] : '', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseKey");
             }
@@ -1561,17 +1568,17 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseValidTo");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseMessage')
-                && !\Cx\Core\Setting\Controller\Setting::add('licenseMessage','', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('licenseMessage', isset($existingConfig['licenseMessage']) ? $existingConfig['licenseMessage'] : '', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseMessage");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licensePartner')
-                && !\Cx\Core\Setting\Controller\Setting::add('licensePartner','', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('licensePartner', isset($existingConfig['licensePartner']) ? $existingConfig['licensePartner'] : '', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licensePartner");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseCustomer')
-                && !\Cx\Core\Setting\Controller\Setting::add('licenseCustomer','', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('licenseCustomer', isset($existingConfig['licenseCustomer']) ? $existingConfig['licenseCustomer'] : '', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseCustomer");
             }
@@ -1581,7 +1588,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for upgradeUrl");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseGrayzoneMessages')
-                && !\Cx\Core\Setting\Controller\Setting::add('licenseGrayzoneMessages','', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('licenseGrayzoneMessages', isset($existingConfig['licenseGrayzoneMessages']) ? $existingConfig['licenseGrayzoneMessages'] : '', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseGrayzoneMessages");
             }
@@ -1591,7 +1598,7 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseGrayzoneTime");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseLockTime')
-                && !\Cx\Core\Setting\Controller\Setting::add('licenseLockTime','', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('licenseLockTime', isset($existingConfig['licenseLockTime']) ? $existingConfig['licenseLockTime'] : '', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseLockTime");
             }
@@ -1611,22 +1618,22 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseSuccessfulUpdate");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseCreatedAt')
-                && !\Cx\Core\Setting\Controller\Setting::add('licenseCreatedAt','', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('licenseCreatedAt', isset($existingConfig['licenseCreatedAt']) ? $existingConfig['licenseCreatedAt'] : '', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DATE, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseCreatedAt");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('licenseDomains')
-                && !\Cx\Core\Setting\Controller\Setting::add('licenseDomains','', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('licenseDomains', isset($existingConfig['licenseDomains']) ? $existingConfig['licenseDomains'] : '', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for licenseDomains");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('availableComponents')
-                && !\Cx\Core\Setting\Controller\Setting::add('availableComponents','', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('availableComponents', isset($existingConfig['availableComponents']) ? $existingConfig['availableComponents'] : '', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for availableComponents");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('dashboardMessages')
-                && !\Cx\Core\Setting\Controller\Setting::add('dashboardMessages','', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('dashboardMessages', isset($existingConfig['dashboardMessages']) ? $existingConfig['dashboardMessages'] : '', 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'license')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for dashboardMessages");
             }
