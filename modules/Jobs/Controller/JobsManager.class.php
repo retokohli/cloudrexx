@@ -848,9 +848,16 @@ class JobsManager extends JobsLibrary
         ));
 
         //get the input values
-        $settings            = isset($_POST['settings']) 
-                                ? array_map('contrexx_input2raw', $_POST['settings']) 
-                                : array();
+        $postValues = isset($_POST['settings']) ? $_POST['settings'] : array();
+        $settings   = array(
+            'footnote'  => isset($postValues['footnote']) ? contrexx_input2raw($postValues['footnote']) : '',
+            'link'      => isset($postValues['link']) ? contrexx_input2raw($postValues['link']) : '',
+            'url'       => isset($postValues['url']) ? contrexx_input2raw($postValues['url']) : '',
+            'show_location_fe'    => isset($postValues['show_location_fe']) ? contrexx_input2int($postValues['show_location_fe']) : 0,
+            'templateIntegration' => isset($postValues['templateIntegration']) ? contrexx_input2int($postValues['templateIntegration']) : 0,
+            'sourceOfJobs' => isset($postValues['sourceOfJobs']) ? contrexx_input2int($postValues['sourceOfJobs']) : 0,
+            'listingLimit' => isset($postValues['listingLimit']) ? contrexx_input2int($postValues['listingLimit']) : 0,
+        );
         $isFormSubmitted     = isset($_POST['updateFootnote']);
         $error               = false;
 
@@ -895,19 +902,16 @@ class JobsManager extends JobsLibrary
         }
 
         //Parse the settings value
-        $showLocationFe      = contrexx_input2int($settings['show_location_fe']);
-        $templateIntegration = contrexx_input2int($settings['templateIntegration']);
-        $sourceOfJobs        = contrexx_input2int($settings['sourceOfJobs']);
         $this->_objTpl->setVariable(array(
             'FOOTNOTE'            => contrexx_raw2xhtml($settings['footnote']),
             'LINK'                => contrexx_raw2xhtml($settings['link']),
             'URL'                 => contrexx_raw2xhtml($settings['url']),
-            'SHOW_LOCATION_FE'    => !empty($showLocationFe) ? 'checked=checked' : '' ,
-            'JOBS_SETTINGS_TEMPLATE_INTEGRATION' => !empty($templateIntegration) ? 'checked=checked' : '',
-            'JOBS_SETTINGS_LATEST_JOBS'          => empty($sourceOfJobs) ? 'checked=checked' : '',
-            'JOBS_SETTINGS_SOURCE_OF_JOBS'       => !empty($sourceOfJobs) ? 'checked=checked' : '',
+            'SHOW_LOCATION_FE'    => !empty($settings['show_location_fe']) ? 'checked=checked' : '' ,
+            'JOBS_SETTINGS_TEMPLATE_INTEGRATION' => !empty($settings['templateIntegration']) ? 'checked=checked' : '',
+            'JOBS_SETTINGS_LATEST_JOBS'          => empty($settings['sourceOfJobs']) ? 'checked=checked' : '',
+            'JOBS_SETTINGS_SOURCE_OF_JOBS'       => !empty($settings['sourceOfJobs']) ? 'checked=checked' : '',
             'JOBS_SETTINGS_LISTING_LIMIT'        => contrexx_input2int($settings['listingLimit']),
-            'JOBS_SETTINGS_DISPLAY_STATUS'       => $templateIntegration ? 'display: inline-grid' : 'display: none'
+            'JOBS_SETTINGS_DISPLAY_STATUS'       => $settings['templateIntegration'] ? 'display: inline-grid' : 'display: none'
         ));
     }
 
