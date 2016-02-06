@@ -816,29 +816,29 @@ class JobsManager extends JobsLibrary
         }
     }
 
-
     /**
-    * change Settings
-    * @global     object    $objDatabase
-    * @return    boolean   result
-    */
+     * Modify the settings
+     */
     function settings()
     {
         global $objDatabase, $_ARRAYLANG;
 
+        //Set the page title and load the template for settings page
         $this->pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('module_jobs_settings.html',true,true);
+
+        //Parse the language variable
         $this->_objTpl->setVariable(array(
-            'TXT_SETTINGS' => $_ARRAYLANG['TXT_SETTINGS'],
-            'TXT_FOOTNOTE' => $_ARRAYLANG['TXT_JOBS_FOOTNOTE'],
-            'TXT_LINK' => $_ARRAYLANG['TXT_JOBS_LINK'],
-            'TXT_URL' => $_ARRAYLANG['TXT_JOBS_URL'],
-            'TXT_FOOTNOTE_HELP' => $_ARRAYLANG['TXT_JOBS_FOOTNOTE_HELP'],
-            'TXT_LINK_HELP' => $_ARRAYLANG['TXT_JOBS_LINK_HELP'],
-            'TXT_URL_HELP' => $_ARRAYLANG['TXT_JOBS_URL_HELP'],
-            'TXT_SUBMIT' => $_ARRAYLANG['TXT_ACCEPT_CHANGES'],
-            'TXT_URL_INFO' => $_ARRAYLANG['TXT_JOBS_URL_INFO'],
-            'TXT_SHOW_LOCATION_FE' => $_ARRAYLANG['TXT_JOBS_SHOW_LOCATION_FE'],
+            'TXT_SETTINGS'          => $_ARRAYLANG['TXT_SETTINGS'],
+            'TXT_FOOTNOTE'          => $_ARRAYLANG['TXT_JOBS_FOOTNOTE'],
+            'TXT_LINK'              => $_ARRAYLANG['TXT_JOBS_LINK'],
+            'TXT_URL'               => $_ARRAYLANG['TXT_JOBS_URL'],
+            'TXT_FOOTNOTE_HELP'     => $_ARRAYLANG['TXT_JOBS_FOOTNOTE_HELP'],
+            'TXT_LINK_HELP'         => $_ARRAYLANG['TXT_JOBS_LINK_HELP'],
+            'TXT_URL_HELP'          => $_ARRAYLANG['TXT_JOBS_URL_HELP'],
+            'TXT_SUBMIT'            => $_ARRAYLANG['TXT_ACCEPT_CHANGES'],
+            'TXT_URL_INFO'          => $_ARRAYLANG['TXT_JOBS_URL_INFO'],
+            'TXT_SHOW_LOCATION_FE'  => $_ARRAYLANG['TXT_JOBS_SHOW_LOCATION_FE'],
             'TXT_JOBS_SETTINGS_TEMPLATE_INTEGRATION'       => $_ARRAYLANG['TXT_JOBS_SETTINGS_TEMPLATE_INTEGRATION'],
             'TXT_JOBS_SETTINGS_TEMPLATE_INTEGRATION_LABEL' => $_ARRAYLANG['TXT_JOBS_SETTINGS_TEMPLATE_INTEGRATION_LABEL'],
             'TXT_JOBS_SETTINGS_SOURCE_OF_JOBS'             => $_ARRAYLANG['TXT_JOBS_SETTINGS_SOURCE_OF_JOBS'],
@@ -848,106 +848,68 @@ class JobsManager extends JobsLibrary
         ));
 
         //get the input values
-        $templateIntegration = isset($_POST['templateIntegration']) 
-                                ? contrexx_input2int($_POST['templateIntegration']) : '';
-        $sourceOfJobs        = isset($_POST['sourceOfJobs']) 
-                                ? contrexx_input2int($_POST['sourceOfJobs']) : '';
-        $listingLimit        = isset($_POST['listingLimit']) 
-                                ? contrexx_input2int($_POST['listingLimit']) : '';
-// Unused
-//        $updaterrr = false;
-        if ($_POST['updateFootnote'] == "true" && !(preg_match('/^[A-Za-z0-9\.\/%&=\?\-_:#@;]+$/i', $_POST['url']) or empty($_POST['url']))) {
-            $this->strErrMessage = $_ARRAYLANG['TXT_JOBS_URL_ERROR'];
-            $updateerr = true;
+        $settings            = isset($_POST['settings']) 
+                                ? array_map('contrexx_input2raw', $_POST['settings']) 
+                                : array();
+        $isFormSubmitted     = isset($_POST['updateFootnote']);
+        $error               = false;
+
+        //Url validation
+        if ($isFormSubmitted) {
+            if (    empty($settings['url'])
+                ||  !preg_match('/^[A-Za-z0-9\.\/%&=\?\-_:#@;]+$/i', $settings['url']) 
+            ) {
+                $this->strErrMessage = $_ARRAYLANG['TXT_JOBS_URL_ERROR'];
+                $error = true;
+            }
         }
 
-        if ($_POST['updateFootnote'] == "true" && !$updateerr) {
-            $footnote = addslashes($_POST['footnote']);
-            $url = addslashes($_POST['url']);
-            $link = addslashes($_POST['link']);
-            $show_location_fe = intval($_POST['show_location_fe']);
-
+        //update the settings value
+        if ($isFormSubmitted && !$error) {
             $query = 'UPDATE `' . DBPREFIX . 'module_jobs_settings`
-                        SET `value` = (CASE WHEN `name` = "footnote"            THEN "' . $footnote . '"
-                                            WHEN `name` = "link"                THEN "' . $link . '" 
-                                            WHEN `name` = "url"                 THEN "' . $url . '" 
-                                            WHEN `name` = "show_location_fe"    THEN "' . $show_location_fe . '" 
-                                            WHEN `name` = "templateIntegration" THEN "' . contrexx_input2db($templateIntegration) . '" 
-                                            WHEN `name` = "sourceOfJobs"        THEN "' . contrexx_input2db($sourceOfJobs) . '" 
-                                            WHEN `name` = "listingLimit"        THEN "' . contrexx_input2db($listingLimit) . '"
+                        SET `value` = (CASE WHEN `name` = "footnote"            THEN "' . contrexx_raw2db($settings['footnote']) . '"
+                                            WHEN `name` = "link"                THEN "' . contrexx_raw2db($settings['link']) . '" 
+                                            WHEN `name` = "url"                 THEN "' . contrexx_raw2db($settings['url']) . '" 
+                                            WHEN `name` = "show_location_fe"    THEN "' . contrexx_raw2db($settings['show_location_fe']) . '" 
+                                            WHEN `name` = "templateIntegration" THEN "' . contrexx_raw2db($settings['templateIntegration']) . '" 
+                                            WHEN `name` = "sourceOfJobs"        THEN "' . contrexx_raw2db($settings['sourceOfJobs']) . '" 
+                                            WHEN `name` = "listingLimit"        THEN "' . contrexx_raw2db($settings['listingLimit']) . '"
                                        END)';
-            if (!$objDatabase->Execute($query)) {
-                $updateerr = true;
-            }
-
-            if (!$updateerr) {
-                $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+            if ($objDatabase->Execute($query)) {
+                $this->strOkMessage  = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
             }
-        }
-
-        /*
-        * just in case of a database or malformed URL Error, we put the POST Data back in the forms
-        */
-        if (isset($_POST['updateFootnote']) &&
-                $_POST['updateFootnote'] == "true") {
-            $footnote = $_POST['footnote'];
-            $url = $_POST['url'];
-            $link = $_POST['link'];
-            $show_location_fe = (intval($_POST['show_location_fe']) == 1) ? "checked" : "";
         } else {
+            //Fetch the setting values from DB
             $query = "SELECT *
                          FROM `".DBPREFIX."module_jobs_settings`
-                         WHERE 1
-                         ";
+                         WHERE 1";
             $objResult = $objDatabase->Execute($query);
-            $footnote = "";
-            $link = "";
-            $url = "";
-            $show_location_fe = "";
-            $dberr = ($objResult === false);
-            while(!$objResult->EOF && !$dberr) {
-                switch ($objResult->fields['name']) {
-                case 'footnote':
-                    $footnote = stripslashes($objResult->fields['value']);
-                    break;
-                case 'link':
-                    $link = stripslashes($objResult->fields['value']);
-                    break;
-                case 'url':
-                    $url = stripslashes($objResult->fields['value']);
-                    break;
-                case 'show_location_fe':
-                    $show_location_fe = intval($objResult->fields['value']);
-                    break;
-                case 'templateIntegration':
-                    $templateIntegration = contrexx_input2int($objResult->fields['value']);
-                    break;
-                case 'sourceOfJobs':
-                    $sourceOfJobs = contrexx_input2int($objResult->fields['value']);
-                    break;
-                case 'listingLimit':
-                    $listingLimit = contrexx_input2int($objResult->fields['value']);
-                    break;
+            if ($objResult && $objResult->RecordCount() > 0) {
+                while (!$objResult->EOF) {
+                    $settings[$objResult->fields['name']] = $objResult->fields['value'];
+                    $objResult->MoveNext();
                 }
-                $objResult->MoveNext();
             }
         }
+
+        //Parse the settings value
+        $showLocationFe      = contrexx_input2int($settings['show_location_fe']);
+        $templateIntegration = contrexx_input2int($settings['templateIntegration']);
+        $sourceOfJobs        = contrexx_input2int($settings['sourceOfJobs']);
         $this->_objTpl->setVariable(array(
-            'FOOTNOTE'            => stripslashes($footnote),
-            'LINK'                => stripslashes($link),
-            'URL'                 => stripslashes($url),
-            'SHOW_LOCATION_FE'    => empty($show_location_fe) ? 'checked=checked' : '' ,
-            'JOBS_SETTINGS_TEMPLATE_INTEGRATION' => $templateIntegration ? 'checked=checked' : '',
+            'FOOTNOTE'            => contrexx_raw2xhtml($settings['footnote']),
+            'LINK'                => contrexx_raw2xhtml($settings['link']),
+            'URL'                 => contrexx_raw2xhtml($settings['url']),
+            'SHOW_LOCATION_FE'    => !empty($showLocationFe) ? 'checked=checked' : '' ,
+            'JOBS_SETTINGS_TEMPLATE_INTEGRATION' => !empty($templateIntegration) ? 'checked=checked' : '',
             'JOBS_SETTINGS_LATEST_JOBS'          => empty($sourceOfJobs) ? 'checked=checked' : '',
             'JOBS_SETTINGS_SOURCE_OF_JOBS'       => !empty($sourceOfJobs) ? 'checked=checked' : '',
-            'JOBS_SETTINGS_LISTING_LIMIT'        => $listingLimit,
+            'JOBS_SETTINGS_LISTING_LIMIT'        => contrexx_input2int($settings['listingLimit']),
             'JOBS_SETTINGS_DISPLAY_STATUS'       => $templateIntegration ? 'display: inline-grid' : 'display: none'
         ));
-        return true;
     }
-
 
     /**
      * checks if date is valid
