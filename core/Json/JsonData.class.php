@@ -65,9 +65,6 @@ class JsonData {
         '\\Cx\\Core\\Json\\Adapter\\Calendar' => array(
             'JsonCalendar',
         ),
-        '\\Cx\\modules\\Survey\\Controller' => array(
-            'JsonSurvey',
-        ),
         '\\Cx\\Modules\\Crm\\Controller' => array(
             'JsonCrm',
         ),
@@ -145,7 +142,7 @@ class JsonData {
         $controllerClass = end($nsParts);
         
         // legacy adapter
-        if (in_array($possibleComponentName, array('Json', 'Survey', 'Crm'))) {
+        if (in_array($possibleComponentName, array('Json', 'Crm'))) {
             $this->loadLegacyAdapter($adapter);
             return;
         }
