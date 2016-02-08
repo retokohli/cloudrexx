@@ -123,17 +123,7 @@ class JobsLibrary
 
         //Get the Settings values from DB
         $objDatabase = \Env::get('cx')->getDb()->getAdoDb();
-        $settings    = array();
-        $query = 'SELECT `value`, `name`
-                    FROM `' . DBPREFIX . 'module_jobs_settings`
-                    WHERE name IN ("templateIntegration", "sourceOfJobs", "listingLimit")';
-        $objSettings = $objDatabase->Execute($query);
-        if ($objSettings && $objSettings->RecordCount() > 0) {
-            while (!$objSettings->EOF) {
-                $settings[$objSettings->fields['name']] = $objSettings->fields['value'];
-                $objSettings->MoveNext();
-            }
-        }
+        $settings    = $this->getSettings();
 
         //If the config option 'templateIntegration' is off, then return
         if (    !isset($settings['templateIntegration']) 
@@ -182,5 +172,30 @@ class JobsLibrary
                 $objResult->MoveNext();
             }
         }
+    }
+
+    /**
+     * Get all the setting values from DB
+     * 
+     * @return array array of setting values
+     */
+    public function getSettings()
+    {
+        global $objDatabase;
+
+        //Get the settings values from DB
+        $query = "SELECT `name`, `value`
+              FROM `".DBPREFIX."module_jobs_settings`";
+        $objResult = $objDatabase->Execute($query);
+
+        $settings = array();
+        if ($objResult && $objResult->RecordCount() > 0) {
+            while (!$objResult->EOF) {
+                $settings[$objResult->fields['name']] = $objResult->fields['value'];
+                $objResult->MoveNext();
+            }
+        }
+
+        return $settings;
     }
 }
