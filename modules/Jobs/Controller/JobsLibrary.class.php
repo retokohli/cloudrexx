@@ -130,7 +130,7 @@ class JobsLibrary
         $objSettings = $objDatabase->Execute($query);
         if ($objSettings && $objSettings->RecordCount() > 0) {
             while (!$objSettings->EOF) {
-                $settings[$objSettings->fields['name']] = contrexx_raw2xhtml($objSettings->fields['value']);
+                $settings[$objSettings->fields['name']] = $objSettings->fields['value'];
                 $objSettings->MoveNext();
             }
         }
