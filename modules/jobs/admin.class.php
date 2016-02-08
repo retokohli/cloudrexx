@@ -286,7 +286,7 @@ class jobsManager extends jobsLibrary
                 'JOBS_STATUS_PICTURE' => $statusPicture,
                 'TXT_TEMPLATE'    => $_ARRAYLANG['TXT_TEMPLATE'],
                 'TXT_EDIT'    => $_ARRAYLANG['TXT_EDIT'],
-                'JOBS_OVERVIEW_HOT_OFFER' => contrexx_input2int($objResult->fields['hot']) == 1 ? 'checked=checked' : ''
+                'JOBS_OVERVIEW_HOT_OFFER' => ($objResult->fields['hot'] == 1) ? 'checked=checked' : ''
             ));
             $this->_objTpl->parse('row');
             $objResult->MoveNext();
@@ -458,7 +458,7 @@ class jobsManager extends jobsLibrary
                     'JOBS_ENDDATE'    => $endDate,
                     'JOBS_STATUS'        => $status,
                     'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                    'JOBS_MODIFY_HOT_OFFER' => contrexx_input2int($objResult->fields['hot']) == 1 ? 'checked=checked' : ''
+                    'JOBS_MODIFY_HOT_OFFER' => ($objResult->fields['hot'] == 1) ? 'checked=checked' : ''
                 ));
             }
 
@@ -647,7 +647,7 @@ class jobsManager extends jobsLibrary
                 'JOBS_ENDDATE'    => $endDate,
                 'JOBS_STATUS'        => $status,
                 'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                'JOBS_MODIFY_HOT_OFFER' => contrexx_input2int($objResult->fields['hot']) == 1 ? 'checked=checked' : ''
+                'JOBS_MODIFY_HOT_OFFER' => ($objResult->fields['hot'] == 1) ? 'checked=checked' : ''
             ));
         }
         $this->_objTpl->setVariable(array(
@@ -904,7 +904,7 @@ class jobsManager extends jobsLibrary
             'JOBS_SETTINGS_TEMPLATE_INTEGRATION' => !empty($settings['templateIntegration']) ? 'checked=checked' : '',
             'JOBS_SETTINGS_LATEST_JOBS'          => empty($settings['sourceOfJobs']) ? 'checked=checked' : '',
             'JOBS_SETTINGS_SOURCE_OF_JOBS'       => !empty($settings['sourceOfJobs']) ? 'checked=checked' : '',
-            'JOBS_SETTINGS_LISTING_LIMIT'        => contrexx_input2int($settings['listingLimit']),
+            'JOBS_SETTINGS_LISTING_LIMIT'        => contrexx_raw2xhtml($settings['listingLimit']),
             'JOBS_SETTINGS_DISPLAY_STATUS'       => $settings['templateIntegration'] ? 'display: inline-grid' : 'display: none'
         ));
     }
