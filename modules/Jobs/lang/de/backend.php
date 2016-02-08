@@ -119,4 +119,4 @@ $_ARRAYLANG['TXT_JOBS_SETTINGS_LISTING_LIMIT'] = "Anzeige Limit";
 $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER_LABEL'] = "Stellenangebot bei der Template Integration anzeigen";
 $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER'] = "Heisses Angebot";
 $_ARRAYLANG['TXT_JOBS_OVERVIEW_HOT'] = "Heiss";
-$_ARRAYLANG['TXT_JOBS_RECORD_UPDATE_FAILED'] = "Failed to update the changes.";
+$_ARRAYLANG['TXT_JOBS_RECORD_UPDATE_FAILED'] = "Die Änderung konnte nicht gespeichert werden.";

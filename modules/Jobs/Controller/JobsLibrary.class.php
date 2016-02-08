@@ -130,7 +130,7 @@ class JobsLibrary
         $objSettings = $objDatabase->Execute($query);
         if ($objSettings && $objSettings->RecordCount() > 0) {
             while (!$objSettings->EOF) {
-                $settings[$objSettings->fields['name']] = contrexx_input2int($objSettings->fields['value']);
+                $settings[$objSettings->fields['name']] = contrexx_raw2xhtml($objSettings->fields['value']);
                 $objSettings->MoveNext();
             }
         }
@@ -151,7 +151,6 @@ class JobsLibrary
         }
 
         //get all the hot/newset jobs based on the config option 'sourceOfJobs'
-        $hotOffer = !empty($settings['sourceOfJobs']) ? 1 : 0;
         $query = 'SELECT j.date AS date,
                          j.id AS docid,
                          j.title AS title,
@@ -160,8 +159,8 @@ class JobsLibrary
                          jc.name AS name
                     FROM `' . DBPREFIX . 'module_jobs` AS j,
                          `' . DBPREFIX . 'module_jobs_categories` AS jc
-                    WHERE j.status  = 1
-                        AND j.hot   = ' . $hotOffer . ' 
+                    WHERE j.status  = 1 '
+                        . (!empty($settings['sourceOfJobs']) ? ' AND j.hot = 1 ' : '') . '
                         AND j.lang  = ' . FRONTEND_LANG_ID . ' 
                         AND j.catid = jc.catid
                         AND (j.startdate <= "' . date('Y-m-d') . '" OR j.startdate = "0000-00-00 00:00:00")
@@ -172,7 +171,7 @@ class JobsLibrary
             while (!$objResult->EOF) {
                 $detailUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Jobs', 'details', FRONTEND_LANG_ID, array('id' => $objResult->fields['docid']));
                 $objTemplate->setVariable(array(
-                    'JOBS_ID'	     => contrexx_input2int($objResult->fields['docid']),
+                    'JOBS_ID'	     => contrexx_raw2xhtml($objResult->fields['docid']),
                     'JOBS_LONG_DATE' => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
                     'JOBS_DATE'      => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
                     'JOBS_LINK'      => "<a href=\"" . $detailUrl->toString() . "\" title=\"".contrexx_raw2xhtml($objResult->fields['title'])."\">".contrexx_raw2xhtml($objResult->fields['title'])."</a>",
