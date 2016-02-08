@@ -125,7 +125,7 @@ class ComponentHandler {
         'Banner',
         'Market',
         'Shop',
-        
+        'Jobs',
         // backend only
         'Js',
         'ComponentHandler',

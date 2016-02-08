@@ -69,6 +69,9 @@ class JsonData {
         '\\Cx\\modules\\crm\\lib\\controllers' => array(
             'JsonCrm',
         ),
+        '\\Cx\\modules\\jobs\\lib\\controllers' => array(
+            'JsonJobs',
+        ),
     );
     
     /**

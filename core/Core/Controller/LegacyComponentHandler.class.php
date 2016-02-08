@@ -922,6 +922,15 @@ class LegacyComponentHandler {
                     },
                 ),
                 'postContentLoad' => array(
+                    'Jobs' => function() {
+                        global $objTemplate, $cl;
+
+                        if ($cl->loadFile(ASCMS_MODULE_PATH.'/jobs/lib/Library.class.php')) {
+                            //Parse the Hot / Latest jobs
+                            $jobLib = new \JobsLibrary();
+                            $jobLib->parseHotOrLatestJobs($objTemplate);
+                        }
+                    },
                     'Shop' => function() {
                         // Show the Shop navbar in the Shop, or on every page if configured to do so
                         if (!\Shop::isInitialized()
