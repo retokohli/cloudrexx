@@ -767,19 +767,6 @@ class MemberDirManager extends MemberDirLibrary
                   WHERE dirid = '$dirid'";
             $objDatabase->Execute($query);
 
-            // Delete Pictures
-            $query = "SELECT pic1, pic2 FROM ".DBPREFIX."module_memberdir_values WHERE
-                   dirid = '$dirid'";
-            $objResult = $objDatabase->Execute($query);
-
-            if ($objResult) {
-                while (!$objResult->EOF) {
-                    @unlink("../media/MemberDir/".$objResult->fields['pic1']);
-                    @unlink("../media/MemberDir/".$objResult->fields['pic2']);
-                    $objResult->MoveNext();
-                }
-            }
-
             $query = "DELETE FROM ".DBPREFIX."module_memberdir_values
                 WHERE dirid = '$dirid'";
             $objDatabase->Execute($query);
