@@ -176,212 +176,105 @@ class CrawlerResultController extends \Cx\Core\Core\Model\Entity\Controller {
     /**
      * Recheck the selected links status
      * 
-     * @global array $_ARRAYLANG
-     * 
      * @return null
      */
     public function recheckSelectedLinks()
-    {        
+    {
         global $_ARRAYLANG;
-        
+
+        //Get the post values
         $selectedIds = isset($_POST['selected']) ? $_POST['selected'] : '';
-        
+
         $links = $this->linkRepository->getSelectedLinks($selectedIds);
         if (!$links) {
             $links = array();
         }
-        $request = new \HTTP_Request2();
-        $htmlDom = new \DOMDocument();
+
         $pageLinks = array();
         foreach ($links As $link) {
-            if (!in_array($link->getEntryTitle(), $pageLinks)) {
-                $pageLinks[] = $link->getEntryTitle();
-                ${$link->getEntryTitle()} = $this->getPageLinks($request, $htmlDom, $link);
-            }
+            $refererPath = $link->getRefererPath();
+            $requestPath = $link->getRequestedPath();
+            $subLinks    = array();
+            $recheckPage = false;
 
-            if (!array_key_exists($link->getRequestedPath(), ${$link->getEntryTitle()})) {
-                $linkInputValues = array(
-                    'lang'         => $link->getLang(),
-                    'refererPath'  => $link->getRefererPath(), 
-                    'leadPath'     => $link->getLeadPath(), 
-                    'entryTitle'   => $link->getEntryTitle(),
-                    'detectedTime' => $link->getDetectedTime(),
-                    'updatedBy'    => 0,
-                );
-                $this->recheckPage(${$link->getEntryTitle()}, $linkInputValues, $request);
-                $this->em->remove($link);
+            // Get the Links in the referer
+            // Recheck the refer once (on first request of refer)
+            if (array_key_exists($refererPath, $pageLinks)) {
+                $subLinks = $pageLinks[$refererPath];
             } else {
-                try {
-                    $request->setUrl($link->getRequestedPath());
-                    $response  = $request->send();
-                    $urlStatus = $response->getStatus();
-                } catch (\Exception $e) {
-                    $urlStatus = 0;
-                }
-                if ($urlStatus == '200') {
-                    $this->em->remove($link);
-                } else {
-                    $link->setLinkStatusCode($urlStatus);
-                    $link->setLinkRecheck(true);
-                }
+                $pageLinks[$refererPath] = $subLinks = $this->getController('LinkCrawler')
+                                                            ->getPageLinks($refererPath);
+                $recheckPage = true;
+            }
+            if ($recheckPage) {
+                $this->recheckPage($link, $subLinks);
             }
             
-            $this->em->persist($link);
-            $this->em->flush();
+            // Check whether the request path exists in the referer page
+            // if not exists remove the link
+            if (!array_key_exists($requestPath, $subLinks)) {
+                $this->em->remove($link);
+            } else {
+                $urlStatus = $this->getUrlStatus($link->getRequestedPath());
+                $link->setLinkStatusCode($urlStatus);
+                $link->setFlagStatus($urlStatus == 200 ? 1 : 0);
+                $link->setLinkRecheck(true);
+            }
         }
-        
+
         //update the broken links count in crawler table
         foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
             $lastRunByLang = $this->crawlerRepository->getLastRunByLang($lang['id']);
             $brokenLinkCnt = $this->linkRepository->brokenLinkCountByLang($lang['id']);
             if ($lastRunByLang) {
                 $lastRunByLang->setTotalBrokenLinks($brokenLinkCnt);
-                $this->em->persist($lastRunByLang);
             }
         }
         $this->em->flush();
-        
         \Message::ok($_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_SUCCESS_MSG']);
     }
-    
+
     /**
-     * recheck all the links in the page and update those links status code
+     * Recheck all the links in the page and update those links status code
      * 
-     * @param array          $recheckLinks rechecking links
-     * @param array          $inputArray   default input values
-     * @param \HTTP_Request2 $request      http_request object
+     * @param \Cx\Core_Modules\LinkManager\Model\Entity\Link    $link       Parent link obejct
+     * @param array                                             $subLinks   Links in the parent link
+     *
+     * @return null
      */
-    public function recheckPage($recheckLinks, $inputArray, \HTTP_Request2 $request)
+    public function recheckPage(\Cx\Core_Modules\LinkManager\Model\Entity\Link $link, $subLinks = array())
     {
-        if (is_array($recheckLinks) && $request) {
-            foreach ($recheckLinks As $link => $text) {
-                $linkAlreadyExist = $this->linkRepository->getLinkByPath($link);
-                if (!$linkAlreadyExist) {
-                    try {
-                        $request->setUrl($link);
-                        $request->setConfig(array(
-                            'ssl_verify_peer' => false,
-                            'ssl_verify_host'  => false, 
-                            'follow_redirects' => true,
-                        ));
-                        $response     = $request->send();
-                        $urlStatus    = $response->getStatus();
-                    } catch (\Exception $e) {
-                        $urlStatus = preg_match('#^[mailto:|javascript:]# i', $link) ? 200 : 0;
-                    }
-                    
-                    $objFWUser    = \FWUser::getFWUserObject();
-                    $internalFlag = \Cx\Core_Modules\LinkManager\Controller\Url::isInternalUrl($link);
-                    $flagStatus   = ($urlStatus == '200') ? 1 : 0;
-                    $linkType     = $internalFlag ? 'internal' : 'external';
-                
-                    $inputArray['requestedPath']     = contrexx_raw2db($link);
-                    $inputArray['linkStatusCode']    = contrexx_raw2db($urlStatus);
-                    $inputArray['flagStatus']        = contrexx_raw2db($flagStatus);
-                    $inputArray['linkRecheck']       = 1;
-                    $inputArray['requestedLinkType'] = contrexx_raw2db($linkType);
-                    $inputArray['linkStatus']        = 1;
-                    $inputArray['updatedBy']         = contrexx_raw2db($objFWUser->objUser->getId());
-                    $inputArray['moduleName']        = '';
-                    $inputArray['moduleAction']      = '';
-                    $inputArray['moduleParams']      = '';
-                    $inputArray['brokenLinkText']    = contrexx_raw2db($text);
-                    
-                    $this->modifyLink($inputArray);
-                }
-            }
-        }
-    }
-    
-    /**
-     * Get all the links from the page
-     * 
-     * @param \HTTP_Request2                                 $request HTTP request object
-     * @param \DOMDocument                                   $htmlDom DOM node object
-     * @param \Cx\Core_Modules\LinkManager\Model\Entity\Link $link
-     * 
-     * @return array $linksList List of the links from the given page
-     */
-    public function getPageLinks(\HTTP_Request2 $request, 
-                                \DOMDocument $htmlDom, 
-                                \Cx\Core_Modules\LinkManager\Model\Entity\Link $link)
-    {
-        global $_ARRAYLANG;
-
-        $linksList = array();
-        //Get the referer page content
-        try {
-            $request->setUrl($link->getRefererPath());
-            $request->setConfig(array(
-                'ssl_verify_peer' => false,
-                'ssl_verify_host'  => false, 
-                'follow_redirects' => true,
-            ));
-            $response = $request->send();
-            libxml_use_internal_errors(true);
-            if (!$htmlDom->loadHTML($response->getBody())) {
-                return $linksList;
-            }
-            libxml_use_internal_errors(false);
-            $htmlXpath = new \DOMXPath($htmlDom);
-        } catch(\Exception $e) {
-            return $linksList;
+        //If there is no recheck links then return
+        if (!$subLinks) {
+            return;
         }
 
-        //remove the navigation menu
-        $navHtml = $htmlXpath->query(ASCMS_LINKMANAGER_NAVIGATION_QUERY);
-        if ($navHtml instanceof \DOMNodeList && $navHtml->length) {
-            foreach ($navHtml as $navNodes) {
-                $navNodes->parentNode->removeChild($navNodes);
-            }
-        }
-
-        // Find all the images
-        foreach ($htmlDom->getElementsByTagName('img') as $element) {
-            if (!preg_match('#\.(jpg|jpeg|gif|png)$# i', $element->getAttribute('src'))) {
+        foreach ($subLinks As $subLinkUrl => $subLinkName) {
+            //If the link already exists then proceed with next link
+            if ($this->linkRepository->getLinkByPath($subLinkUrl)) {
                 continue;
             }
-            $imgSrc = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->getAttribute('src'), null);
-            if (!empty($imgSrc)) {
-                $linksList[$imgSrc] = $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_IMAGE'];
-            }
-        }
+            $urlStatus      = $this->getUrlStatus($subLinkUrl);
+            $isInternalLink = $this->getController('Url')->isInternalUrl($subLinkUrl);
 
-        // Find all the links
-        foreach ($htmlDom->getElementsByTagName('a') as $element) {
-            $aHref = \Cx\Core_Modules\LinkManager\Controller\Url::checkPath($element->getAttribute('href'), $link->getRefererPath());
-            if (!empty($aHref)) {
-                $linkText = $element->nodeValue ? $element->nodeValue : $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_LINK'];
-                $linksList[$aHref] = $linkText;
-            }
-        }
+            $subLink = new \Cx\Core_Modules\LinkManager\Model\Entity\Link();
+            $subLink->setLang($link->getLang());
+            $subLink->setRefererPath($link->getRefererPath());
+            $subLink->setLeadPath($link->getLeadPath());
+            $subLink->setEntryTitle($link->getEntryTitle());
+            $subLink->setDetectedTime($link->getDetectedTime());
 
-        return $linksList;
-    }
-
-    /**
-     * Add and edit the link details
-     * 
-     * @param array $inputArray
-     * @param \Cx\Core_Modules\LinkManager\Model\Entity\Link $link
-     */
-    public function modifyLink(array $inputArray = array(), $link = '')
-    {
-        try {
-            if (empty($inputArray)) {
-                return;
-            }
+            $subLink->setUpdatedBy(\FWUser::getFWUserObject()->objUser->getId());
+            $subLink->setBrokenLinkText($subLinkName);
+            $subLink->setRequestedPath($subLinkUrl);
+            $subLink->setLinkStatusCode($urlStatus);
+            $subLink->setFlagStatus(($urlStatus == 200) ? 1 : 0);
+            $subLink->setLinkRecheck(1);
+            $subLink->setRequestedLinkType($isInternalLink ? 'internal' : 'external');
+            $subLink->setLinkStatus(1);
             
-            if (empty($link)) {
-                $link = new \Cx\Core_Modules\LinkManager\Model\Entity\Link;
-            }
-        
-            $link->updateFromArray($inputArray);        
-            
-            $this->em->persist($link);
-            $this->em->flush();
-        } catch(\Exception $error) {
-            die('Link Query ERROR!'.$error);
+            $this->em->persist($subLink);
         }
+        $this->em->flush();
     }        
 }

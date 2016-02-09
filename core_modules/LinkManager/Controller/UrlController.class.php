@@ -44,54 +44,46 @@ namespace Cx\Core_Modules\LinkManager\Controller;
  * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
+class UrlController extends \Cx\Core\Core\Model\Entity\Controller {
 
-class Url extends \Cx\Core\Routing\Url {
-    
     /**
      * Check if the link is internal or external link.
-     * 
-     * @global array $_CONFIG
-     * 
+     *
      * @param string $externalUrl
-     * 
+     *
      * @return boolean
      */
-    public static function isInternalUrl($externalUrl)
+    public function isInternalUrl($externalUrl)
     {
         global $_CONFIG;
-        
+
         //check the requested link is internal or external
         $baseInternalUrl  = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'];
         $baseInternalHost = parse_url($baseInternalUrl, PHP_URL_HOST);
         $externalHost     = parse_url($externalUrl, PHP_URL_HOST);
-        $internalFlag     = false;
-        if ($baseInternalHost == $externalHost || empty($externalHost)) {
-            $internalFlag = true;
-        }
-        return $internalFlag;
-    }        
-    
+
+        return (empty($externalHost) || $baseInternalHost == $externalHost);
+    }
+
     /**
      * Check the image and url path
-     * 
-     * @global array $_CONFIG
-     * 
+     *
      * @param string $path
-     * 
+     *
      * @return boolean|string
      */
-    public static function checkPath($path, $refererPath)
+    public function checkPath($path, $refererPath)
     {
         global $_CONFIG;
-        
+
         if (empty($path)) {
             return false;
         }
-        
+
         $baseInternalUrl = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'];
         $offsetPath      = ASCMS_PATH_OFFSET;
         $pattern         = '#^{$offsetPath}# i';
-        
+
         switch (true) {
             //If the url is correct one(http://www.example.com) or is a mailto(mailto: example@test.com) or is a javascript(javascript: void(0);), it returns the same url.
         case preg_match('/(^|[\n ])([\w]*?)(((ht|f)tp(s)?:\/\/)[\w]+[^ \,\"\n\r\t<]*)/is', $path) || preg_match('#^[mailto:|javascript:]# i', $path):
@@ -122,5 +114,5 @@ class Url extends \Cx\Core\Routing\Url {
             break;
         }
         return $src;
-    }        
+    }
 }
