@@ -325,7 +325,7 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
                 continue;
             }
             $fixPath = $this->getController('Url')->checkPath($urlPath, $url);
-            if (empty($fixPath) || !$this->isLinkExists($fixPath)) {
+            if ($this->isLinkProcessed($fixPath)) {
                 continue;
             }
             $tagValue = $isImage ? $_ARRAYLANG['TXT_CORE_MODULE_LINKMANAGER_NO_IMAGE']
@@ -340,19 +340,19 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
     }
 
     /**
-     * Check the url is already exist or not
+     * Check the url is already processed
      *
      * @param string $url requested link
      *
      * @return boolean
      */
-    public function isLinkExists($url)
+    public function isLinkProcessed($url)
     {
         if (empty($url) || in_array($url, $this->linkArray)) {
-            return false;
+            return true;
         }
         $this->linkArray[] = $url;
-        return true;
+        return false;
     }
 
     /**
