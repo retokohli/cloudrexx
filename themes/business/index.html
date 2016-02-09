@@ -81,6 +81,9 @@
             }
 
                 //google.maps.event.addDomListener(window, 'load', initialize);
+		jQuery(document).ready(function () {
+		   jQuery('.nivoSlider > img:even').removeAttr('title');
+	        });
         </script>
 
         <script type="text/javascript" src= "themes/business/js/javascript.js"></script>
@@ -107,6 +110,51 @@
             });
         </script>
         <![endif]-->
+        <style>
+            #navigation li a.starter_active,
+            #navigation li a:hover,
+            #subnavigation li a:hover,
+            #subnavigation li a.active {
+                border-bottom-color : {TEMPLATE_EDITOR_SECONDARY_COLOR};
+                color: {TEMPLATE_EDITOR_SECONDARY_COLOR};
+            }
+            a:hover,
+            #home_contents h1,
+            #page h1,h2,h3,
+            footer .imprint .copyright ul li a:hover {
+                color: {TEMPLATE_EDITOR_SECONDARY_COLOR} !important;
+            }
+            #contactForm #contactFrame div .contactFormClass_button,
+            .open_navigation .icon-bar,
+            table th,
+            button,
+            input[type="submit"],
+            input[type="button"],
+            input[type="reset"] {
+                background-color: {TEMPLATE_EDITOR_SECONDARY_COLOR};
+            }
+            a,
+            #navigation li a,
+            #home_content_texts,
+            .page_contents,
+            .sidebar ul li,
+            footer .imprint .copyright ul li,
+            footer .imprint .copyright ul li a {
+                color: {TEMPLATE_EDITOR_FONT_COLOR};
+            }
+            #home_content_texts,
+            .page_contents,
+            .sidebar ul li {
+                font-family: {TEMPLATE_EDITOR_REGULAR_TEXT};
+            }
+            h1, h2, h3, h4, h5, h6,
+            #navigation li a,
+            #subnavigation li a,
+            #home_contents h1,
+            #page h1 {
+                font-family: {TEMPLATE_EDITOR_TITLE_TEXT};
+            }
+        </style>
     </head>
 
     <body>
@@ -117,7 +165,7 @@
            
                         <!-- logo block start -->
                         
-                        <div id="logo"><a href="[[NODE_HOME]]"><img alt="logo" src="themes/business/images/Logo.png" /></a></div>
+                        <div id="logo"><a href="[[NODE_HOME]]"><img alt="logo" src="{TEMPLATE_EDITOR_LOGO}" /></a></div>
                         
                         <!-- logo block end -->
                         
