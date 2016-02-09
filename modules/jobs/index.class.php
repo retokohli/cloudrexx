@@ -125,34 +125,6 @@ class jobs extends jobsLibrary
         $link = "";
         $url = "";
 
-        if($id > 0) {
-	        $query = "SELECT *
-	                     FROM `".DBPREFIX."module_jobs_settings`
-	                     WHERE name = 'footnote'
-	                     OR name = 'link'
-	                     OR name = 'url'
-	                     ";
-	        $objResult = $objDatabase->Execute($query);
-
-	        while(!$objResult->EOF) {
-
-	            if($objResult->fields['name']== "footnote") {
-	                $footnote = stripslashes($objResult->fields['value']);
-	            }
-	            elseif($objResult->fields['name']== "link") {
-	                $link = stripslashes($objResult->fields['value']);
-	            }
-	            elseif($objResult->fields['name']== "url") {
-	                $url = stripslashes($objResult->fields['value']);
-	            }
-	            $objResult->movenext();
-	        }
-
-        }
-
-
-
-
         $this->_objTpl->setVariable(array(
             'TXT_JOBS_AUTOR' => $_ARRAYLANG['TXT_JOBS_AUTOR'],
             'TXT_JOBS_WORKLOC' => $_ARRAYLANG['TXT_JOBS_WORKLOC'],
@@ -162,6 +134,12 @@ class jobs extends jobsLibrary
             ));
 
         if ($id > 0) {
+            //Get the setting values from DB
+            $settings = $this->getSettings();
+            $footnote = stripslashes($settings['footnote']);
+            $link     = stripslashes($settings['link']);
+            $url      = stripslashes($settings['url']);
+
             $query = "SELECT id,
                                workloc,
                                changelog,
@@ -309,27 +287,19 @@ class jobs extends jobsLibrary
             $docFilter =" n.catid='$selectedId' AND ";
         }
 
-
-
-        $objRS = $objDatabase->Execute("SELECT id,value FROM `".DBPREFIX."module_jobs_settings` WHERE name = 'show_location_fe'");
-        if($objRS !== false ) {
-            if(intval($objRS->fields['value']) == 1) {
-                if(!empty($_REQUEST['locid'])) {
-                    $location = intval($_REQUEST['locid']);
-                    $locationFilter = ", `".DBPREFIX."module_jobs_rel_loc_jobs` AS rel WHERE  rel.job = n.id AND rel.location = '".$location."' AND ";
-                }
-
-                $jobslocationform ="
-    <select name=\"locid\" onchange=\"javascript:this.form.submit();\">
-    <option selected=\"selected\" value=''>".$_ARRAYLANG['TXT_JOBS_LOCATION_ALL']."</option>
-    ".$this->getLocationMenu($location)."
-    </select>";
+        $settings = $this->getSettings();
+        if (    isset($settings['show_location_fe']) 
+            &&  ($settings['show_location_fe'] == 1)
+        ) {
+            if (!empty($_REQUEST['locid'])) {
+                $location = intval($_REQUEST['locid']);
+                $locationFilter = ", `".DBPREFIX."module_jobs_rel_loc_jobs` AS rel WHERE  rel.job = n.id AND rel.location = '".$location."' AND ";
             }
+
+            $jobslocationform ="<select name=\"locid\" onchange=\"javascript:this.form.submit();\">
+                                <option selected=\"selected\" value=''>".$_ARRAYLANG['TXT_JOBS_LOCATION_ALL']."</option>
+                                ".$this->getLocationMenu($location)."</select>";
         }
-
-
-
-
 
         $jobscategoryform ="
     <select name=\"catid\" onchange=\"javascript:this.form.submit();\">

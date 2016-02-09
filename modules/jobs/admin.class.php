@@ -201,29 +201,35 @@ class jobsManager extends jobsLibrary
             'TXT_JOBS_OVERVIEW_HOT'      => $_ARRAYLANG['TXT_JOBS_OVERVIEW_HOT']
         ));
 
-        /* check if locations are activated */
-        $query = "
-            SELECT `value`
-              FROM `".DBPREFIX."module_jobs_settings`
-             WHERE name='show_location_fe'";
-        $objResult = $objDatabase->Execute($query);
+        //Get the settings value from DB
+        $settings = $this->getSettings();
 
-        //return if location fields are not activated in the backend
-        if (!$objResult->EOF) {
-            if (intval($objResult->fields['value']) == 1) {
-                if (isset($_REQUEST['location']) &&
-                        is_numeric($_REQUEST['location'])) {
-                    $location = $_REQUEST['location'];
-                    $locationFilter = ", `".DBPREFIX."module_jobs_rel_loc_jobs` AS rel WHERE rel.job = n.id AND rel.location = '".$location."' AND ";
-                }
-                $jobslocationform =
-                    '<select name="location">'.
-                    '<option selected="selected" value="">'.
-                    $_ARRAYLANG['TXT_LOCATION'].'</option>'.
-                    $this->getLocationMenu($location).
-                    '</select>';
-            }
+        if (isset($settings['show_location_fe']) && $settings['show_location_fe'] == 1) {
+            if (    isset($_REQUEST['location']) 
+                &&  is_numeric($_REQUEST['location'])
+            ) {
+                $location = $_REQUEST['location'];
+                $locationFilter = ", `".DBPREFIX."module_jobs_rel_loc_jobs` AS rel WHERE rel.job = n.id AND rel.location = '".$location."' AND ";
+             }
+            $jobslocationform =
+                '<select name="location">'.
+                '<option selected="selected" value="">'.
+                $_ARRAYLANG['TXT_LOCATION'].'</option>'.
+                $this->getLocationMenu($location).
+                '</select>';
         }
+
+        //Hide the column 'Hot' if the settings options 'templateIntegration' and 'sourceOfJobs' are active
+        $isHotOfferAvailable = (    isset($settings['templateIntegration']) 
+                                &&  ($settings['templateIntegration'] == 1) 
+                                &&  isset($settings['sourceOfJobs']) 
+                                &&  ($settings['sourceOfJobs'] == 1)
+                               );
+        if (!$isHotOfferAvailable) {
+            $this->_objTpl->hideBlock('showHotOfferLabel');
+        }
+        $this->_objTpl->setVariable('JOBS_OVERVIEW_COLSPAN', !$isHotOfferAvailable ? 9 : 10);
+
         if (isset($_REQUEST['category']) &&
                 is_numeric($_REQUEST['category'])) {
             $category = $_REQUEST['category'];
@@ -288,6 +294,9 @@ class jobsManager extends jobsLibrary
                 'TXT_EDIT'    => $_ARRAYLANG['TXT_EDIT'],
                 'JOBS_OVERVIEW_HOT_OFFER' => ($objResult->fields['hot'] == 1) ? 'checked=checked' : ''
             ));
+            if (!$isHotOfferAvailable) {
+                $this->_objTpl->hideBlock('showHotOffer');
+            }
             $this->_objTpl->parse('row');
             $objResult->MoveNext();
         }
@@ -312,19 +321,14 @@ class jobsManager extends jobsLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
-
-        $query = "
-            SELECT `value`
-              FROM `".DBPREFIX."module_jobs_settings`
-             WHERE name='show_location_fe'";
-        $objResult = $objDatabase->Execute($query);
-        //return if location fields are not activated in the backend
-        if ($objResult && !$objResult->EOF) {
-            if (intval($objResult->fields['value']) == 0) {
-                $this->_objTpl->hideBlock('modify_location');
-                return ;
-            }
+        $settings = $this->getSettings();
+        if (    isset($settings['show_location_fe']) 
+            &&  ($settings['show_location_fe'] == 0)
+        ) {
+            $this->_objTpl->hideBlock('modify_location');
+            return ;
         }
+
         $AssociatedLocations = '';
         $notAssociatedLocations = '';
         $this->_objTpl->setVariable(array(
@@ -508,11 +512,25 @@ class jobsManager extends jobsLibrary
                 $this->createRSS();
             }
         }
-        //set the language variables
-        $this->_objTpl->setVariable(array(
-            'TXT_JOBS_MODIFY_HOT_OFFER_LABEL' => $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER_LABEL'],
-            'TXT_JOBS_MODIFY_HOT_OFFER'       => $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER']
-        ));
+        //Get the settings value from DB
+        $settings = $this->getSettings();
+
+        //Hide the column 'Hot' if the settings options 'templateIntegration' and 'sourceOfJobs' are active
+        $isHotOfferAvailable = (    isset($settings['templateIntegration']) 
+                                &&  ($settings['templateIntegration'] == 1) 
+                                &&  isset($settings['sourceOfJobs']) 
+                                &&  ($settings['sourceOfJobs'] == 1)
+                               );
+
+        if ($isHotOfferAvailable) {
+            //set the language variables
+            $this->_objTpl->setVariable(array(
+                'TXT_JOBS_MODIFY_HOT_OFFER_LABEL' => $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER_LABEL'],
+                'TXT_JOBS_MODIFY_HOT_OFFER'       => $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER'],
+            ));
+        } else {
+            $this->_objTpl->hideBlock('showHotOffer');
+        }
     }
 
 
@@ -650,6 +668,21 @@ class jobsManager extends jobsLibrary
                 'JOBS_MODIFY_HOT_OFFER' => ($objResult->fields['hot'] == 1) ? 'checked=checked' : ''
             ));
         }
+
+        //Get the settings value from DB
+        $settings = $this->getSettings();
+
+        //Hide the column 'Hot' if the settings options 'templateIntegration' and 'sourceOfJobs' are active
+        $isHotOfferAvailable = (    isset($settings['templateIntegration']) 
+                                &&  ($settings['templateIntegration'] == 1) 
+                                &&  isset($settings['sourceOfJobs']) 
+                                &&  ($settings['sourceOfJobs'] == 1)
+                               );
+
+        if (!$isHotOfferAvailable) {
+            $this->_objTpl->hideBlock('showHotOffer');
+        }
+
         $this->_objTpl->setVariable(array(
             'TXT_JOBS_CATEGORY_SELECT' => $_ARRAYLANG['TXT_JOBS_CATEGORY_SELECT'],
             'JOBS_CAT_MENU' => $this->getCategoryMenu($this->langId, $catId),
@@ -883,16 +916,7 @@ class jobsManager extends jobsLibrary
             }
         } else {
             //Fetch the setting values from DB
-            $query = "SELECT *
-                         FROM `".DBPREFIX."module_jobs_settings`
-                         WHERE 1";
-            $objResult = $objDatabase->Execute($query);
-            if ($objResult && $objResult->RecordCount() > 0) {
-                while (!$objResult->EOF) {
-                    $settings[$objResult->fields['name']] = $objResult->fields['value'];
-                    $objResult->MoveNext();
-                }
-            }
+            $settings = $this->getSettings();
         }
 
         //Parse the settings value
