@@ -1,0 +1,33 @@
+options:
+  -
+    name: main_title
+    specific:
+      textvalue: 'Template Editor Test'
+  -
+    name: subtitle
+    specific:
+      textvalue: 'Testing the templateditor sfdsfs'
+  -
+    name: secondary_color
+    specific:
+      color: '#E5E5E5'
+  -
+    name: font_color
+    specific:
+      color: '#575756'
+  -
+    name: regular_text  
+    specific:
+      activeChoice: 'Lato'
+  -
+    name: title_text  
+    specific:
+      activeChoice: 'Lato'
+  -
+    name: logo
+    specific:
+      url: /themes/graham/images/logo.png
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption
+    translation:
+        1: logo
+        2: logo

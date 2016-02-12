@@ -39,6 +39,59 @@
         <script type="text/javascript" src= "themes/graham/freewall.js"></script>
         <script type="text/javascript" src= "themes/graham/jquery.fancybox.js"></script>      
         <script type="text/javascript" src= "themes/graham/jquery.mousewheel-3.0.6.pack.js"></script>          
+        <style>
+            button,
+            input,
+            optgroup,
+            select,
+            textarea,
+            html input[type="button"],
+            html input[type="reset"],
+            html input[type="submit"],
+            input[type=submit]:hover,
+            input[type=reset]:hover,
+            button[name="recipient_save"]:hover,
+            #podcast input:hover,
+            .btn-default:hover,
+            .btn-default:focus,
+            .btn-default:active,
+            .btn-default.active,
+            .open>.dropdown-toggle.btn-default {
+                background-color: {TEMPLATE_EDITOR_SECONDARY_COLOR};
+            }
+            button,
+            input,
+            optgroup,
+            select,
+            textarea,
+            form .is_required,
+            h1, h2, h3, h4, h5, h6,
+            .h1, .h2, .h3, .h4, .h5, .h6,
+            body a,
+            #page,
+            .navigation li a:hover,
+            .navigation li a.starter_active,
+            #footer .inner > div {
+                color: {TEMPLATE_EDITOR_FONT_COLOR};
+            }
+            #page,
+            #footer .inner > div,
+            button,
+            input,
+            optgroup,
+            select,
+            textarea {
+                font-family: {TEMPLATE_EDITOR_REGULAR_TEXT};
+            }
+            h1, h2, h3, h4, h5, h6,
+            .h1, .h2, .h3, .h4, .h5, .h6,
+            .navigation li a {
+                font-family: {TEMPLATE_EDITOR_TITLE_TEXT};
+            }
+            a.toggle-menu {
+                color: #575756;
+            }
+        </style>
     </head>
     <body>
         <div class="wrapper">
@@ -51,7 +104,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <a id="logo" href="{NODE_HOME}">GRAHAM</a>
+                        <a id="logo" href="{NODE_HOME}"><img src="{TEMPLATE_EDITOR_LOGO}" alt="logo"></a>
                         <div class="visible-lg" id="navigation-wrapper">{NAVBAR_FILE}</div>
                     </div>
                 </div>
