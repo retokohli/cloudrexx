@@ -1,0 +1,33 @@
+options:
+  -
+    name: main_title
+    specific:
+      textvalue: 'Template Editor Test'
+  -
+    name: subtitle
+    specific:
+      textvalue: 'Testing the templateditor sfdsfs'
+  -
+    name: secondary_color
+    specific:
+      color: '#67bfb6'
+  -
+    name: font_color
+    specific:
+      color: '#7a7a7a'
+  -
+    name: regular_text  
+    specific:
+      activeChoice: 'Arial'
+  -
+    name: title_text  
+    specific:
+      activeChoice: 'Arial'
+  -
+    name: logo
+    specific:
+      url: /themes/highwind/images/man.jpeg
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption
+    translation:
+        1: logo
+        2: logo

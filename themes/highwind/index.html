@@ -35,6 +35,52 @@
         <script type="text/javascript" src="themes/highwind/modernizr.js"></script>
         <script type="text/javascript" src="themes/highwind/jquery.cycle.js"></script>
         <script type="text/javascript" src="themes/highwind/javascript.js"></script>
+        <style>
+            @media (min-width: 992px) {
+                .main-nav ul > li:hover > a,
+                .main-nav ul > li > a:hover,
+                .navigation li a:hover,
+                .navigation li a:focus,
+                .main-nav ul ul.menu {
+                    background-color: {TEMPLATE_EDITOR_SECONDARY_COLOR};
+                }
+            }
+            .header,
+            .main-nav .buttons a,
+            .btn,
+            .sidebar-block,
+            input[type="submit"],
+            input[type="reset"],
+            input[type=button],
+            table th,
+            #page-right h3,
+            #shop figure a h3,
+            #shop button.details-button,
+            #shop button.add-to-cart {
+                background-color: {TEMPLATE_EDITOR_SECONDARY_COLOR};
+            }
+            .main-nav,
+            .main-nav ul > li.starter_active > a:before{
+                border-bottom-color:  {TEMPLATE_EDITOR_SECONDARY_COLOR};
+            }
+            body a,
+            body a:hover,
+            body a:focus,
+            #subnavigation li a:hover,
+            #subnavigation li a.active {
+                color: {TEMPLATE_EDITOR_SECONDARY_COLOR};
+            }
+            body {
+                color: {TEMPLATE_EDITOR_FONT_COLOR};
+                font-family: {TEMPLATE_EDITOR_REGULAR_TEXT};
+            }
+            h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+                font-family: {TEMPLATE_EDITOR_TITLE_TEXT};
+            }
+            .login-bottom a.btn-link {
+                background-color: #f7fcfb;
+            }
+        </style>
     </head>
     <body class="background-contrast">
         <div class="wrapper">
@@ -46,17 +92,17 @@
                                 <a href="javascript:void(0)" class="nav-toggle btn">&nbsp;Skip to&nbsp;navigation &nbsp;</a>&nbsp;
                             </p>
                             <a class="site-intro" href="javascript:void(0)">
-                                <img alt="image" src="themes/highwind/images/man.jpeg">
+                                <img alt="image" src="{TEMPLATE_EDITOR_LOGO}">
                                 <h1 class="title">James Koster</h1>
                                 <h2 class="description">WEB DUDE.</h2>
                             </a>
                             <div class="main-nav" id="navigation-wrapper">
                                 <ul class="buttons">
-				        <li class="home"><a href="{NODE_HOME}" class="nav-home btn"><span>Home</span></a></li>
-				        <li class="close"><a href="javascript:void(0)" class="nav-close btn"><span>Return to Content</span></a></li>
+                                    <li class="home"><a href="{NODE_HOME}" class="nav-home btn"><span>Home</span></a></li>
+                                    <li class="close"><a href="javascript:void(0)" class="nav-close btn"><span>Return to Content</span></a></li>
                                 </ul>
                                 <hr>
-                                    <h2>Navigation</h2>
+                                <h2>Navigation</h2>
                                 <div class="highwind-navigation">{NAVBAR_FILE}</div>                                    
                             </div>                                         
                         </div>
