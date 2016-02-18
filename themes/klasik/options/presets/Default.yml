@@ -1,0 +1,37 @@
+options:
+  -
+    name: main_title
+    specific:
+      textvalue: 'Template Editor Test'
+  -
+    name: subtitle
+    specific:
+      textvalue: 'Testing the templateditor sfdsfs'
+  -
+    name: secondary_color
+    specific:
+      color: '#666666'
+  -
+    name: font_color
+    specific:
+      color: '#606060'
+  -
+    name: regular_text  
+    specific:
+      activeChoice: 'Arial'
+  -
+    name: title_text  
+    specific:
+      activeChoice: 'Arial'
+  -
+    name: news_area
+    specific:
+      active: true
+  -
+    name: logo
+    specific:
+      url: /themes/klasik/images/logo.png
+    type: Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption
+    translation:
+        1: logo
+        2: logo

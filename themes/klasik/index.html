@@ -39,12 +39,50 @@
         <script type="text/javascript" src="themes/klasik/supersubs.js"></script>
         <script type="text/javascript" src="themes/klasik/jquery.cycle.js"></script>
         <script type="text/javascript" src="themes/klasik/javascript.js"></script>
+        <style>
+            body .button,
+            body button,
+            body input[type="submit"],
+            body input[type="reset"],
+            body input[type="button"],
+            button.btn.btn-primary.btn-lg,
+            .button:hover,
+            button:hover,
+            input[type="submit"]:hover,
+            input[type="reset"]:hover,
+            input[type="button"]:hover,
+            button.btn.btn-primary.btn-lg:hover,
+            #shop figure a h3 {
+                background-color: {TEMPLATE_EDITOR_SECONDARY_COLOR};
+            }
+            blockquote {
+                border-left-color: {TEMPLATE_EDITOR_SECONDARY_COLOR};
+            }
+            body, pre, .radio label, .checkbox label,legend, .breadcrumb li:empty {
+                color: {TEMPLATE_EDITOR_FONT_COLOR};
+            }
+            body,
+            #contactFrame textarea,
+            #contactFrame input[type="text"],
+            button, input, optgroup, select, textarea,
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            select, select.form-control,
+            .form input, 
+            .searchbox{
+                font-family: {TEMPLATE_EDITOR_REGULAR_TEXT};
+            }
+            h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+                font-family: {TEMPLATE_EDITOR_TITLE_TEXT};
+            }
+        </style>
     </head>
     <body>
         <div class="wrapper">
             <header>
                 <div class="container">
-                    <div id="logo"><a href="{NODE_HOME}"><img src="/themes/klasik/images/logo.png" alt="images" /></a></div>
+                    <div id="logo"><a href="{NODE_HOME}"><img src="{TEMPLATE_EDITOR_LOGO}" alt="images" /></a></div>
                     <div class="main-nav">
                         {NAVBAR_FILE}
                     </div>
