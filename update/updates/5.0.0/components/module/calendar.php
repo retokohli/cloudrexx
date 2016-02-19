@@ -324,11 +324,13 @@ function _calendarUpdate()
             // migrate dates to timestamp
             if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_calendar_event', 'startdate_timestamp')) {
                 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `startdate_timestamp` = FROM_UNIXTIME(`startdate`)');
+                \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."module_calendar_event` CHANGE `startdate` `startdate` timestamp NULL DEFAULT '0000-00-00 00:00:00'");
                 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `startdate` = `startdate_timestamp`');
                 \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_calendar_event` DROP COLUMN `startdate_timestamp`');
             }
             if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_calendar_event', 'enddate_timestamp')) {
                 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `enddate_timestamp` = FROM_UNIXTIME(`enddate`)');
+                \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."module_calendar_event` CHANGE `enddate` `enddate` timestamp NULL DEFAULT '0000-00-00 00:00:00'");
                 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET `enddate` = `enddate_timestamp`');
                 \Cx\Lib\UpdateUtil::sql('ALTER TABLE `'.DBPREFIX.'module_calendar_event` DROP COLUMN `enddate_timestamp`');
             }
@@ -582,7 +584,7 @@ class CalendarUpdate
         if (empty($_SESSION['contrexx_update']['calendar']['migration_completed']) == true) {
             $dropTables = $this->dropOldTables();
             if ($dropTables !== true || !checkMemoryLimit() || !checkTimeoutLimit()) {
-                return ($dropTables === true ? 'timeout' : $migrateCategories);
+                return ($dropTables === true ? 'timeout' : $dropTables);
             }
             $_SESSION['contrexx_update']['calendar']['migration_completed'] = true;
         }

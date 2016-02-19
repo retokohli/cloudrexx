@@ -2739,6 +2739,11 @@ function installContentApplicationTemplates() {
                 continue;
             }
 
+            // skip standard application pages
+            if ($page->getContent() == '{APPLICATION_DATA}') {
+                continue;
+            }
+
             $designTemplateName  = $page->getSkin() ? $themeRepo->findById($page->getSkin())->getFoldername() : $themeRepo->getDefaultTheme()->getFoldername();
             $cmd                 = !$page->getCmd() ? 'Default' : ucfirst($page->getCmd());
             $moduleFolderName    = \Cx\Core\ModuleChecker::getInstance(\Env::get('em'), \Env::get('db'), \Env::get('ClassLoader'))->isCoreModule($page->getModule()) ? 'core_modules' : 'modules';
