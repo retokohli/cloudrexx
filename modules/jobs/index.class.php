@@ -80,11 +80,16 @@ class jobs extends jobsLibrary
     // GET PAGE
     function getjobsPage()
     {
-        if (!isset($_REQUEST['cmd'])) {
-            $_REQUEST['cmd'] = '';
+        $cmd = '';
+        if (!empty($_REQUEST['cmd'])) {
+            $cmd = $_REQUEST['cmd'];
         }
 
-        switch( $_REQUEST['cmd']) {
+        if (substr($cmd, 0, strlen('details')) == 'details') {
+            $cmd = 'details';
+        }
+
+        switch ($cmd) {
             case 'details':
                 return $this->getDetails();
                 break;
@@ -121,6 +126,7 @@ class jobs extends jobsLibrary
 
         $footnotetext = "";
         $footnotelink = "";
+        $footnotelinkSrc = "";
     	$footnote = "";
         $link = "";
         $url = "";
@@ -194,16 +200,19 @@ class jobs extends jobsLibrary
 			        $url = str_replace("%URL%",urlencode($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']),$url);
 			        $url = htmlspecialchars(str_replace("%TITLE%",urlencode(stripslashes($title)),$url), ENT_QUOTES, CONTREXX_CHARSET);
 			        $footnotelink = "<a href='$url'>$link</a>";
+			        $footnotelinkSrc = $url;
 		        }
 
 
                 $this->_objTpl->setVariable(array(
+                    'JOBS_ID'	=> $objResult->fields['id'],
                     'JOBS_DATE' => date(ASCMS_DATE_FORMAT,$date),
                     'JOBS_TITLE'=> stripslashes($title),
                     'JOBS_AUTHOR'    => stripslashes($objResult->fields['author']),
                     'JOBS_TEXT' => stripslashes($objResult->fields['text']),
                     'JOBS_FOOTNOTE' => $footnotetext,
                     'JOBS_FOOTNOTE_LINK' => $footnotelink,
+                    'JOBS_FOOTNOTE_LINK_SRC' => $footnotelinkSrc,
                     'JOBS_WORKLOC' => $workloc,
                     'JOBS_WORKLOAD'=> $workload,
                     'JOBS_WORK_START' => $work_start));
@@ -361,7 +370,7 @@ class jobs extends jobsLibrary
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         if ($count > intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pos, "&section=jobs&catid=".$selectedId."&locid=".$location, $_ARRAYLANG['TXT_DOCUMENTS'], true);
+            $paging = getPaging($count, $pos, "catid=".$selectedId."&locid=".$location, $_ARRAYLANG['TXT_DOCUMENTS'], true);
         }
         $this->_objTpl->setVariable("JOBS_PAGING", $paging);
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos) ;
@@ -371,12 +380,16 @@ class jobs extends jobsLibrary
             while (!$objResult->EOF) {
                 ($i % 2) ? $class  = 'row1' : $class  = 'row2';
 
+                $detailUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Jobs', 'details', FRONTEND_LANG_ID, array('id' => $objResult->fields['docid']));
+
                 $this->_objTpl->setVariable(array(
                     'JOBS_STYLE'      => $class,
                     'JOBS_ID'			=> $objResult->fields['docid'],
                     'JOBS_LONG_DATE'  => date($this->dateLongFormat,$objResult->fields['date']),
                     'JOBS_DATE'       => date($this->dateFormat,$objResult->fields['date']),
-                    'JOBS_LINK'       => "<a href=\"?section=jobs&amp;cmd=details&amp;id=".$objResult->fields['docid']."\" title=\"".stripslashes($objResult->fields['title'])."\">".stripslashes($objResult->fields['title'])."</a>",
+                    'JOBS_LINK'         => "<a href=\"" . $detailUrl->toString() . "\" title=\"".stripslashes($objResult->fields['title'])."\">".stripslashes($objResult->fields['title'])."</a>",
+                    'JOBS_TITLE'        => contrexx_raw2xhtml($objResult->fields['title']),
+                    'JOBS_LINK_SRC'     => $detailUrl->toString(),
                     'JOBS_AUTHOR'       => stripslashes($objResult->fields['author']),
                     'JOBS_WORKLOAD' => stripslashes($objResult->fields['workload'])
                 ));

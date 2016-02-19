@@ -144,6 +144,7 @@ class jobsLibrary
                          j.id AS docid,
                          j.title AS title,
                          j.workload AS workload,
+                         j.workloc AS workloc,
                          j.author AS author,
                          jc.name AS name
                     FROM `' . DBPREFIX . 'module_jobs` AS j,
@@ -160,12 +161,15 @@ class jobsLibrary
             while (!$objResult->EOF) {
                 $detailUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Jobs', 'details', FRONTEND_LANG_ID, array('id' => $objResult->fields['docid']));
                 $objTemplate->setVariable(array(
-                    'JOBS_ID'	     => contrexx_raw2xhtml($objResult->fields['docid']),
+                    'JOBS_ID'	     => $objResult->fields['docid'],
                     'JOBS_LONG_DATE' => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
                     'JOBS_DATE'      => date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date']),
                     'JOBS_LINK'      => "<a href=\"" . $detailUrl->toString() . "\" title=\"".contrexx_raw2xhtml($objResult->fields['title'])."\">".contrexx_raw2xhtml($objResult->fields['title'])."</a>",
                     'JOBS_AUTHOR'    => contrexx_raw2xhtml($objResult->fields['author']),
-                    'JOBS_WORKLOAD'  => contrexx_raw2xhtml($objResult->fields['workload'])
+                    'JOBS_WORKLOAD'  => contrexx_raw2xhtml($objResult->fields['workload']),
+                    'JOBS_TITLE'     => contrexx_raw2xhtml($objResult->fields['title']),
+                    'JOBS_LINK_SRC'  => $detailUrl->toString(),
+                    'JOBS_WORKLOC'   => contrexx_raw2xhtml($objResult->fields['workloc']),
                 ));
                 $objTemplate->parse('jobs_list');
                 $objResult->MoveNext();
