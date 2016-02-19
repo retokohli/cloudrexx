@@ -231,10 +231,10 @@ class JobsManager extends JobsLibrary
         $isHotOfferAvailable = (    isset($settings['templateIntegration']) 
                                 &&  ($settings['templateIntegration'] == 1) 
                                 &&  isset($settings['sourceOfJobs']) 
-                                &&  ($settings['sourceOfJobs'] == 1)
+                                &&  ($settings['sourceOfJobs'] == 'manual')
                                );
         if (!$isHotOfferAvailable) {
-            $this->_objTpl->hideBlock('showHotOfferLabel');
+            $this->_objTpl->hideBlock('jobs_modify_show_hot_offer_label');
         }
         $this->_objTpl->setVariable('JOBS_OVERVIEW_COLSPAN', !$isHotOfferAvailable ? 9 : 10);
 
@@ -303,7 +303,7 @@ class JobsManager extends JobsLibrary
                 'JOBS_OVERVIEW_HOT_OFFER' => ($objResult->fields['hot'] == 1) ? 'checked=checked' : ''
             ));
             if (!$isHotOfferAvailable) {
-                $this->_objTpl->hideBlock('showHotOffer');
+                $this->_objTpl->hideBlock('jobs_overview_show_hot_offer');
             }
             $this->_objTpl->parse('row');
             $objResult->MoveNext();
@@ -331,8 +331,8 @@ class JobsManager extends JobsLibrary
 
         //return if location fields are not activated in the backend
         $settings = $this->getSettings();
-        if (    isset($settings['show_location_fe']) 
-            &&  ($settings['show_location_fe'] == 0)
+        if (    !isset($settings['show_location_fe']) 
+            ||  ($settings['show_location_fe'] == 0)
         ) {
             $this->_objTpl->hideBlock('modify_location');
             return ;
@@ -529,7 +529,7 @@ class JobsManager extends JobsLibrary
         $isHotOfferAvailable = (    isset($settings['templateIntegration']) 
                                 &&  ($settings['templateIntegration'] == 1) 
                                 &&  isset($settings['sourceOfJobs']) 
-                                &&  ($settings['sourceOfJobs'] == 1)
+                                &&  ($settings['sourceOfJobs'] == 'manual')
                                );
 
         if ($isHotOfferAvailable) {
@@ -539,7 +539,7 @@ class JobsManager extends JobsLibrary
                 'TXT_JOBS_MODIFY_HOT_OFFER'       => $_ARRAYLANG['TXT_JOBS_MODIFY_HOT_OFFER'],
             ));
         } else {
-            $this->_objTpl->hideBlock('showHotOffer');
+            $this->_objTpl->hideBlock('jobs_modify_show_hot_offer');
         }
     }
 
@@ -686,11 +686,11 @@ class JobsManager extends JobsLibrary
         $isHotOfferAvailable = (    isset($settings['templateIntegration']) 
                                 &&  ($settings['templateIntegration'] == 1) 
                                 &&  isset($settings['sourceOfJobs']) 
-                                &&  ($settings['sourceOfJobs'] == 1)
+                                &&  ($settings['sourceOfJobs'] == 'manual')
                                );
 
         if (!$isHotOfferAvailable) {
-            $this->_objTpl->hideBlock('showHotOffer');
+            $this->_objTpl->hideBlock('jobs_modify_show_hot_offer');
         }
 
         $this->_objTpl->setVariable(array(
@@ -891,7 +891,7 @@ class JobsManager extends JobsLibrary
             'url'       => isset($postValues['url']) ? contrexx_input2raw($postValues['url']) : '',
             'show_location_fe'    => isset($postValues['show_location_fe']) ? contrexx_input2int($postValues['show_location_fe']) : 0,
             'templateIntegration' => isset($postValues['templateIntegration']) ? contrexx_input2int($postValues['templateIntegration']) : 0,
-            'sourceOfJobs' => isset($postValues['sourceOfJobs']) ? contrexx_input2int($postValues['sourceOfJobs']) : 0,
+            'sourceOfJobs' => isset($postValues['sourceOfJobs']) ? contrexx_input2raw($postValues['sourceOfJobs']) : '',
             'listingLimit' => isset($postValues['listingLimit']) ? contrexx_input2int($postValues['listingLimit']) : 0,
         );
         $isFormSubmitted     = isset($_POST['updateFootnote']);
@@ -929,14 +929,15 @@ class JobsManager extends JobsLibrary
         }
 
         //Parse the settings value
+        $showLatestJobInTemplate = (isset($settings['sourceOfJobs']) && $settings['sourceOfJobs'] == 'latest');
         $this->_objTpl->setVariable(array(
             'FOOTNOTE'            => contrexx_raw2xhtml($settings['footnote']),
             'LINK'                => contrexx_raw2xhtml($settings['link']),
             'URL'                 => contrexx_raw2xhtml($settings['url']),
             'SHOW_LOCATION_FE'    => !empty($settings['show_location_fe']) ? 'checked=checked' : '' ,
             'JOBS_SETTINGS_TEMPLATE_INTEGRATION' => !empty($settings['templateIntegration']) ? 'checked=checked' : '',
-            'JOBS_SETTINGS_LATEST_JOBS'          => empty($settings['sourceOfJobs']) ? 'checked=checked' : '',
-            'JOBS_SETTINGS_SOURCE_OF_JOBS'       => !empty($settings['sourceOfJobs']) ? 'checked=checked' : '',
+            'JOBS_SETTINGS_LATEST_JOBS'          => $showLatestJobInTemplate ? 'checked=checked' : '',
+            'JOBS_SETTINGS_SOURCE_OF_JOBS'       => !$showLatestJobInTemplate ? 'checked=checked' : '',
             'JOBS_SETTINGS_LISTING_LIMIT'        => contrexx_raw2xhtml($settings['listingLimit']),
             'JOBS_SETTINGS_DISPLAY_STATUS'       => $settings['templateIntegration'] ? 'display: inline-grid' : 'display: none'
         ));
