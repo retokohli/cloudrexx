@@ -269,7 +269,7 @@ class JobsManager extends JobsLibrary
                          n.lang=l.id
                      AND n.lang=$this->langId
                      AND $docFilter nc.catid=n.catid
-                   ORDER BY n.id DESC";
+                   ORDER BY " . ($isHotOfferAvailable ? 'n.hot DESC,' : '') . " n.id DESC";
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
