@@ -217,7 +217,7 @@ cx.fe.contentEditor.initBlockCkEditors = function() {
             cx.fe.publishedBlocks["fe_block_" + blockId] = {};
             cx.fe.publishedBlocks["fe_block_" + blockId].contentHtml = cx.jQuery(this).html();
 
-            var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=block&act=getBlockContent&block=" + blockId + "&lang=" + cx.jQuery.cookie("langId");
+            var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=Block&act=getBlockContent&block=" + blockId + "&lang=" + cx.variables.get("langId", "FrontendEditing");
             cx.jQuery.ajax({
                 url: url,
                 complete: function(response) {
@@ -327,6 +327,8 @@ cx.fe.stopBlockEditing = function(editorInstance) {
                 cx.fe.saveBlock(editorInstance);
             }
         }
+        // load html content
+        editorInstance.setData(cx.fe.publishedBlocks[editorInstance.name].contentHtml);
     }
     // change value of cancel button
     cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_FINISH_EDIT_MODE);
@@ -334,8 +336,6 @@ cx.fe.stopBlockEditing = function(editorInstance) {
     cx.fe.actionButtons.hideBlockButtons();
     // show outlines
     cx.jQuery("#fe_content,#fe_title").attr("contenteditable", true).addClass("fe_outline");
-    // load html content
-    editorInstance.setData(cx.fe.publishedBlocks[editorInstance.name].contentHtml);
 };
 
 /**
@@ -726,7 +726,7 @@ cx.fe.editorLoaded = function() {
  * @param callback
  */
 cx.fe.loadPageData = function(historyId, putTheData, callback) {
-    var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=get&page=" + cx.variables.get("pageId", "FrontendEditing") + "&lang=" + cx.jQuery.cookie("langId") + "&userFrontendLangId=" + cx.jQuery.cookie("langId");
+    var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=get&page=" + cx.variables.get("pageId", "FrontendEditing") + "&lang=" + cx.variables.get("langId", "FrontendEditing") + "&userFrontendLangId=" + cx.variables.get("langId", "FrontendEditing");
     if (historyId) {
         url += "&history=" + historyId;
     }
@@ -983,7 +983,7 @@ cx.fe.savePage = function() {
  */
 cx.fe.saveBlock = function(editorInstance) {
     cx.jQuery.post(
-        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=block&act=saveBlockContent&block=" + editorInstance.name.substr(9) + "&lang=" + cx.jQuery.cookie("langId"),
+        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=Block&act=saveBlockContent&block=" + editorInstance.name.substr(9) + "&lang=" + cx.variables.get("langId", "FrontendEditing"),
         {
             content: editorInstance.getData()
         },
