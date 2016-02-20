@@ -52,6 +52,13 @@
 class jobsLibrary
 {
     /**
+     * Array of setting values
+     * 
+     * @var array 
+     */
+    protected $arrSettings = array();
+
+    /**
     * Gets the categorie option menu string
     *
     * @global    object     $objDatabase
@@ -150,7 +157,7 @@ class jobsLibrary
                     FROM `' . DBPREFIX . 'module_jobs` AS j,
                          `' . DBPREFIX . 'module_jobs_categories` AS jc
                     WHERE j.status  = 1 '
-                        . (!empty($settings['sourceOfJobs']) ? ' AND j.hot = 1 ' : '') . '
+                        . ((isset($settings['sourceOfJobs']) && $settings['sourceOfJobs'] == 'manual') ? ' AND j.hot = 1 ' : '') . '
                         AND j.lang  = ' . FRONTEND_LANG_ID . ' 
                         AND j.catid = jc.catid
                         AND (j.startdate <= "' . date('Y-m-d') . '" OR j.startdate = "0000-00-00 00:00:00")
@@ -186,19 +193,22 @@ class jobsLibrary
     {
         global $objDatabase;
 
+        if ($this->arrSettings) {
+            return $this->arrSettings;
+        }
+
         //Get the settings values from DB
         $query = "SELECT `name`, `value`
               FROM `".DBPREFIX."module_jobs_settings`";
         $objResult = $objDatabase->Execute($query);
 
-        $settings = array();
         if ($objResult && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
-                $settings[$objResult->fields['name']] = $objResult->fields['value'];
+                $this->arrSettings[$objResult->fields['name']] = $objResult->fields['value'];
                 $objResult->MoveNext();
             }
         }
 
-        return $settings;
+        return $this->arrSettings;
     }
 }
