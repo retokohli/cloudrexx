@@ -244,16 +244,17 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
         }
 
         register_shutdown_function(array(& $this, 'releaseLocks'));
-        
-            $this->initDatabase();
-            $this->initRememberMe();
-            $this->initSessionLifetime();
 
-        if (session_set_save_handler(
-            $this, true))
-        {
+        $this->initDatabase();
+        $this->initRememberMe();
+        $this->initSessionLifetime();
+
+        if (!empty($_GET['session'])) {
+            session_id($_GET['session']);
+        }
+
+        if (session_set_save_handler($this, true)) {
             session_start();
-
         } else {
             $this->cmsSessionError();
         }

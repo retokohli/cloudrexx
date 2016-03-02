@@ -53,6 +53,108 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
+     * Define the available commands for command line mode
+     *
+     * @return array
+     */
+    public function getCommandsForCommandMode()
+    {
+        return array('Login');
+    }
+
+    /**
+     * Callback for excuting the command
+     *
+     * @param string $command   Name of command to execute
+     * @param array  $arguments List of arguments for the command
+     */
+    public function executeCommand($command, $arguments)
+    {
+        switch ($command) {
+            case 'Login':
+            default:
+                echo $this->apiLogin($arguments);
+                break;
+        }
+    }
+
+    /**
+     * Authenticate the user
+     *
+     * @param array $params List of arguments for the login
+     */
+    public function apiLogin($params)
+    {
+        global $objInit, $_CORELANG;
+
+        $_CORELANG = $objInit->loadLanguageData('core');
+
+        $username = $params['username'] ? contrexx_input2raw($params['username']) : '';
+        $password = $params['password'] ? md5(contrexx_input2raw($params['password'])) : '';
+
+        if (!$username || !$password) {
+            return $this->parseJsonMessage($_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'], false);
+        }
+
+        \cmsSession::getInstance();
+
+        if (!isset($_SESSION['auth'])) {
+            $_SESSION['auth'] = array();
+        }
+        $fwUser = \FWUser::getFWUserObject();
+
+        // if already login, destroy session and relogin
+        if ($fwUser->objUser->login()) {
+            $fwUser->objUser->reset();
+            $fwUser->logoutAndDestroySession();
+            \cmsSession::getInstance();
+        }
+
+        if ($fwUser->objUser->checkLoginData($username, $password)) {
+            $fwUser->loginUser($fwUser->objUser);
+            $data = array(
+                'session' => $_SESSION->sessionid
+            );
+            return $this->parseJsonMessage($data);
+        } else {
+            return $this->parseJsonMessage($_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'], false);
+        }
+    }
+
+    /**
+     * Parse the message to the json output.
+     *
+     * @param  string  $message message
+     * @param  boolean $status  true | false (if status is true returns success json data)
+     *                          if status is false returns error message json.
+     *
+     * @return string
+     */
+    public function parseJsonMessage($message, $status = true)
+    {
+        $json = new \Cx\Core\Json\JsonData();
+        $data = array();
+
+        if (is_array($message)) {
+            $data = $message;
+        } else {
+            $data['message'] = $message;
+        }
+
+        if ($status) {
+            return $json->json(array(
+                        'status' => 'success',
+                        'data'   => $data
+            ));
+        } else {
+            return $json->json(array(
+                        'status'  => 'error',
+                        'message' => $message
+            ));
+        }
+    }
+
+    /**
      * Load your component.
      * 
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
