@@ -110,7 +110,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             \cmsSession::getInstance();
         }
 
-        if ($fwUser->objUser->checkLoginData($username, $password)) {
+        if ($fwUser->objUser->auth($username, $password)) {
             $fwUser->loginUser($fwUser->objUser);
             $data = array(
                 'session' => $_SESSION->sessionid
