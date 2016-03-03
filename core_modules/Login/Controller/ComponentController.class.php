@@ -142,15 +142,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         if ($status) {
-            return $json->json(array(
-                        'status' => 'success',
-                        'data'   => $data
-            ));
+            return $json->json(
+                array(
+                    'status' => 'success',
+                    'data'   => $data
+                ),
+                false,
+                ($_GET['callback'] ? $_GET['callback'] : '')
+            );
         } else {
-            return $json->json(array(
-                        'status'  => 'error',
-                        'message' => $message
-            ));
+            return $json->json(
+                array(
+                    'status'  => 'error',
+                    'message' => $message
+                ),
+                false,
+                ($_GET['callback'] ? $_GET['callback'] : '')
+            );
         }
     }
 

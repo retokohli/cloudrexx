@@ -196,11 +196,14 @@ class JsonData {
     
     /**
      * Parses data into JSON
-     * @param array $data Data to JSONify
-     * @param boolean $setContentType (optional) If true (NOT default) the content type is set to application/json
+     *
+     * @param array   $data             Data to JSONify
+     * @param boolean $setContentType   (optional) If true (NOT default) the content type is set to application/json
+     * @param string  $callback         (optional) Javascript callback method
+     *
      * @return String JSON data to return to client
      */
-    public function json($data, $setContentType = false) {
+    public function json($data, $setContentType = false, $callback = '') {
         if ($setContentType) {
             // browsers will pass rendering of application/* MIMEs to other
             // applications, usually.
@@ -213,7 +216,11 @@ class JsonData {
             // Search for a better way to disable CSRF!
             ini_set('url_rewriter.tags', '');
         }
-        return json_encode($data);
+        $json = json_encode($data);
+        if (!empty($callback)) {
+            $json = $callback . '('. $json .')';
+        }
+        return $json;
     }
 
     /**
