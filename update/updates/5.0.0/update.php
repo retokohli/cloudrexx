@@ -191,7 +191,7 @@ function executeContrexxUpdate() {
     require_once(ASCMS_CORE_PATH . '/ClassLoader/ClassLoader.class.php');
     require_once(dirname(UPDATE_PATH).'/core/Core/Controller/Cx.class.php');
     require_once(dirname(UPDATE_PATH).'/core/Model/Model/Entity/Db.class.php');
-    require_once(UPDATE_PATH.'/UpdateCx.class.php');
+    require_once(UPDATE_LIB . '/UpdateCx.class.php');
 
     $cx = new \UpdateCx();
     \Cx\Core\Core\Controller\Cx::registerInstance($cx);
