@@ -1351,6 +1351,7 @@ $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_HOME'] = "Startseite";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_CONTENT_SITE'] = "Inhaltseite";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_APPLICATION'] = "Anwendung";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_REDIRECTION'] = "Weiterleitung";
+$_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_SYMLINK'] = "Verknüpfung";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_FALLBACK'] = "Fallback";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_MOVE_INFO'] = "Verschieben Sie die Seite mittels Drag and Drop.";
 $_ARRAYLANG['TXT_CORE_CM_TRANSLATION_INFO'] = "Klicken Sie hier um die Seite in dieser Sprache zu editieren.";

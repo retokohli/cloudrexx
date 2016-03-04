@@ -1284,6 +1284,7 @@ $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_HOME'] = "homepage";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_CONTENT_SITE'] = "content page";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_APPLICATION'] = "application";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_REDIRECTION'] = "redirection";
+$_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_SYMLINK'] = "reference";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_TYPE_FALLBACK'] = "fallback";
 $_ARRAYLANG['TXT_CORE_CM_PAGE_MOVE_INFO'] = "Move the page by use of drag and drop.";
 $_ARRAYLANG['TXT_CORE_CM_TRANSLATION_INFO'] = "Click here to edit the page in this language.";
