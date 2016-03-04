@@ -227,6 +227,7 @@ class ContentManager extends \Module
                 'TXT_CORE_CM_PAGE_TYPE_CONTENT_SITE'            => 'TXT_CORE_CM_PAGE_TYPE_CONTENT_SITE',
                 'TXT_CORE_CM_PAGE_TYPE_APPLICATION'             => 'TXT_CORE_CM_PAGE_TYPE_APPLICATION',
                 'TXT_CORE_CM_PAGE_TYPE_REDIRECTION'             => 'TXT_CORE_CM_PAGE_TYPE_REDIRECTION',
+                'TXT_CORE_CM_PAGE_TYPE_SYMLINK'                 => 'TXT_CORE_CM_PAGE_TYPE_SYMLINK',
                 'TXT_CORE_CM_PAGE_TYPE_FALLBACK'                => 'TXT_CORE_CM_PAGE_TYPE_FALLBACK',
                 'TXT_CORE_CM_PAGE_MOVE_INFO'                    => 'TXT_CORE_CM_PAGE_MOVE_INFO',
                 'TXT_CORE_CM_TRANSLATION_INFO'                  => 'TXT_CORE_CM_TRANSLATION_INFO',

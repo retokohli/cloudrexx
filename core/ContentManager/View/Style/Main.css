@@ -643,6 +643,19 @@ li.jstree-closed, li.jstree-leaf {
     background-position: -33px -209px;
 }
 
+#site-tree .page.symlink {
+    background-position: 1px -238px;
+}
+#site-tree .page.symlink.protected {
+    background-position: -33px -238px;
+}
+#site-tree .page.symlink.fallback {
+    background-position: 1px -267px;
+}
+#site-tree .page.symlink.fallback.protected {
+    background-position: -33px -267px;
+}
+
 #content-manager.edit_view #site-structure .translations,
 #content-manager.edit_view #site-structure .translation,
 #content-manager.edit_view #site-structure .module,
