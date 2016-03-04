@@ -940,4 +940,57 @@ class UpdateUtil
         return true;
     }
 
+    /**
+     * Migrate paths in the database
+     * @param $table        string  Name of the database table doesn't need
+     *                              DBPREFIX
+     * @param $attribute    string  Name of attribute in the databse table
+     * @param $oldPath      string  The old path
+     * @param $newPath      string  The new path
+     * @return \ADORecordset
+     */
+    public static function migratePath($table, $attribute, $oldPath, $newPath)
+    {
+        self::regexpquote('table', $table);
+        self::regexpquote('attribute', $attribute);
+        $query = 'UPDATE ' . $table .
+                 ' SET ' . $attribute . ' = REPLACE(' . $attribute . ', \'' . $oldPath . '\', \'' . $newPath . '\')';
+
+        return self::sql($query);
+    }
+
+    /**
+     * Add backtiks and DBPREFIX to table and attribute if necessary
+     * @param $type     string  Either 'table' or 'attribute'
+     * @param $value    string  The name of the table or the attribute
+     */
+    private static function regexpquote($type, &$value)
+    {
+        // define backtik and regex variables
+        $backtik = '';
+        $regex = array(
+            'table'     => '/^(?P<first>`)?(?P<prefix>' . DBPREFIX . ')?(?P<name>[a-z_]+)(?P<last>`)?$/',
+            'attribute' => '/^(?P<first>`)?(?P<name>[a-z_]+)(?P<last>`)?$/',
+        );
+        preg_match($regex[$type], $value, $matches);
+        // Check if table has DBPREFIX assigned
+        if ($type == 'table' && empty($matches['prefix'])) {
+            // remove leading backtik if there is one
+            if (substr($value, 0, 1) == '`') {
+                $value = substr($value, 0, 1);
+                $backtik = '`';
+            }
+            // add database prefix with backtik
+            $value = $backtik . DBPREFIX . $value;
+        }
+        // add beginning backtik if missing
+        if (empty($matches['first']) && empty($backtik)) {
+            $value = '`' . $value;
+        }
+        // add the tailing backtik if missing
+        if (empty($matches['last'])) {
+            $value = $value . '`';
+        }
+    }
+
 }
