@@ -84,6 +84,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return \DateTime DateTime in internal timezone
      */
     public function user2db(\DateTime $datetime) {
+        if ($datetime->getTimezone()->getName() == $this->internalTimezone->getName()) {
+            $dateTimeString = $datetime->format('Y-m-d H:i:s');
+            $datetime = new \DateTime($dateTimeString, $this->userTimezone);
+        }
         return $datetime->setTimezone($this->internalTimezone);
     }
 }
