@@ -490,12 +490,23 @@ class CalendarLibrary
         }
                                                                    
         $year = substr($date, $posYear,4);
-        $month = substr($date, $posMonth,2);
-        $day = substr($date, $posDay,2);      
+        $month = str_pad(substr($date, $posMonth,2), 2, '0', STR_PAD_LEFT);
+        $day = str_pad(substr($date, $posDay,2), 2, '0', STR_PAD_LEFT);
+        $hour = str_pad($hour, 2, '0', STR_PAD_LEFT);
+        $minute = str_pad($minute, 2, '0', STR_PAD_LEFT);
         
-        $timestamp = mktime($hour,$minute,0,$month,$day,$year);   
+        $dateTimeRepresentation = new \DateTime(
+            $year . '-' . $month . '-' . $day . ' ' .
+            $hour . ':' . $minute . ':00'
+        );
         
-        return $timestamp;
+        // fetch DateTime component controller
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $dateTimeComponent = $componentRepo->findOneBy(array('name'=>'DateTime'));
+        
+        return $dateTimeComponent->user2db($dateTimeRepresentation)->getTimestamp();
     }
     
     /**

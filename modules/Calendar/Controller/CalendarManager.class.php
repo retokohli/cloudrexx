@@ -450,12 +450,26 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             $endDate->modify("+30 mins");
         }
         
+        if ($eventId) {
+            $startDate = new \DateTime('@' . $objEvent->startDate);
+            $endDate = new \DateTime('@' . $objEvent->endDate);
+        }
+        
+        // fetch DateTime component controller
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+        $dateTime = $componentRepo->findOneBy(array('name'=>'DateTime'));
+        
+        $eventStartDate = $dateTime->db2user($startDate)->format("$dateFomat H:i");
+        $eventEndDate = $dateTime->db2user($endDate)->format("$dateFomat H:i");
+        
         //parse globals  
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_TITLE'                            => $this->_pageTitle,
             'TXT_'.$this->moduleLangVar.'_EVENT'                            => $_ARRAYLANG['TXT_CALENDAR_EVENT'],
             'TXT_'.$this->moduleLangVar.'_SAVE'                             => $_ARRAYLANG['TXT_CALENDAR_SAVE'],
-            'TXT_'.$this->moduleLangVar.'_DELETE'                             => $_ARRAYLANG['TXT_CALENDAR_DELETE'],
+            'TXT_'.$this->moduleLangVar.'_DELETE'                           => $_ARRAYLANG['TXT_CALENDAR_DELETE'],
             'TXT_'.$this->moduleLangVar.'_CANCEL'                           => $_CORELANG['TXT_CANCEL'],      
             'TXT_'.$this->moduleLangVar.'_EXPAND'                           => $_ARRAYLANG['TXT_CALENDAR_EXPAND'],
             'TXT_'.$this->moduleLangVar.'_MINIMIZE'                         => $_ARRAYLANG['TXT_CALENDAR_MINIMIZE'],
@@ -578,8 +592,8 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                        => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'                     => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
-            $this->moduleLangVar.'_EVENT_START_DATE'                        => $eventId != 0 ? date("$dateFomat H:i", $objEvent->startDate) : $startDate->format("$dateFomat H:i"),
-            $this->moduleLangVar.'_EVENT_END_DATE'                          => $eventId != 0 ? date("$dateFomat H:i", $objEvent->endDate) : $endDate->format("$dateFomat H:i"),
+            $this->moduleLangVar.'_EVENT_START_DATE'                        => $eventStartDate,
+            $this->moduleLangVar.'_EVENT_END_DATE'                          => $eventEndDate,
             $this->moduleLangVar.'_EVENT_PRICE'                             => $eventId != 0 ? $objEvent->price : '',
             $this->moduleLangVar.'_EVENT_LINK'                              => $eventId != 0 ? $objEvent->link : '',
             $this->moduleLangVar.'_EVENT_PICTURE'                           => $eventId != 0 ? $objEvent->pic : '',
