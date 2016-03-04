@@ -2477,7 +2477,15 @@ class User extends User_Profile
         }
         return $result->fields['id'];
     }
-
+    
+    /**
+     * Returns this user's timezone
+     * @todo Implement a way to detect the real timezone
+     * @return \DateTimeZone User's timezone
+     */
+    public function getTimezone() {
+        return new \DateTimeZone('Europe/Paris');
+    }
 
     /**
      * Tries to form a valid and unique username from the words given
