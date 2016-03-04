@@ -1266,6 +1266,172 @@ EOF
     // add access id 4 for user groups which had access to 13 or 161
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
         try {
+            // Shop changes for versions rc1, rc2 and 3.0.0.1
+            if (
+                !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0') &&
+                $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.1')
+            ) {
+                \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`)
+                                         VALUES
+                                         (4, 1, "shop", "currency_name", "Euro"),
+                                         (5, 1, "shop", "currency_name", "United States Dollars")'
+                );
+                \Cx\Lib\UpdateUtil::sql('DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_countries`');
+                \Cx\Lib\UpdateUtil::table(DBPREFIX.'module_shop_currencies', array(
+                        'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'code'           => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                        'symbol'         => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'code'),
+                        'rate'           => array('type' => 'DECIMAL(10,4)', 'unsigned' => true, 'notnull' => true, 'default' => '1.0000', 'after' => 'symbol'),
+                        'ord'            => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'rate'),
+                        'active'         => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'ord'),
+                        'default'        => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'active'),
+                        'increment'      => array('type' => 'DECIMAL(6,5)', 'unsigned' => true, 'notnull' => true, 'default' => '0.01000', 'after' => 'default'),
+                    )
+                );
+                \Cx\Lib\UpdateUtil::sql('DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_mail`');
+                \Cx\Lib\UpdateUtil::sql('DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_mail_content`');
+                \Cx\Lib\UpdateUtil::table(DBPREFIX.'module_shop_payment_processors', array(
+                        'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'type'           => array('type' => 'ENUM(\'internal\',\'external\')', 'notnull' => true, 'default' => 'internal', 'after' => 'id'),
+                        'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'type'),
+                        'description'    => array('type' => 'text', 'after' => 'name'),
+                        'company_url'    => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'description'),
+                        'status'         => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'company_url'),
+                        'picture'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'status'),
+                    )
+                );
+                \Cx\Lib\UpdateUtil::sql('DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_products_downloads`');
+            }
+            // shop changes for versions 3.0.1 and 3.0.2
+            if (
+                !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0') &&
+                $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')
+            ) {
+                \Cx\Lib\UpdateUtil::table(DBPREFIX.'module_shop_currencies', array(
+                        'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'code' => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+                        'symbol' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'code'),
+                        'rate' => array('type' => 'DECIMAL(10,4)', 'unsigned' => true, 'notnull' => true, 'default' => '1.0000', 'after' => 'symbol'),
+                        'ord' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'rate'),
+                        'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'ord'),
+                        'default' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'active'),
+                        'increment' => array('type' => 'DECIMAL(6,5)', 'unsigned' => true, 'notnull' => true, 'default' => '0.01', 'after' => 'default'),
+                    )
+                );
+                \Cx\Lib\UpdateUtil::table(DBPREFIX.'module_shop_payment_processors', array(
+                        'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'type' => array('type' => 'ENUM(\'internal\',\'external\')', 'notnull' => true, 'default' => 'internal'),
+                        'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                        'description' => array('type' => 'TEXT'),
+                        'company_url' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                        'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                        'picture' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                    )
+                );
+                $table_name = DBPREFIX.'module_shop_currencies';
+                if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
+                    && \Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
+                    \DBG::msg('update3: update '.$table_name);
+                    $query = "UPDATE `$table_name` SET sort_order = 0 WHERE sort_order IS NULL";
+                    \Cx\Lib\UpdateUtil::sql($query);
+                    // Currencies table fields
+                    \Cx\Lib\UpdateUtil::table($table_name,
+                        array(
+                            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                            'code' => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => ''),
+                            'symbol' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                            'name' => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                            'rate' => array('type' => 'DECIMAL(10,4)', 'unsigned' => true, 'notnull' => true, 'default' => '1.0000'),
+                            'sort_order' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                            'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                            'is_default' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                        )
+                    );
+                }
+                $table_name = DBPREFIX.'module_shop_payment_processors';
+                if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
+                    \DBG::msg('update3: update '.$table_name);
+                    \Cx\Lib\UpdateUtil::table($table_name,
+                        array(
+                            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                            'type' => array('type' => 'ENUM(\'internal\',\'external\')', 'notnull' => true, 'default' => 'internal'),
+                            'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                            'description' => array('type' => 'TEXT'),
+                            'company_url' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                            'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                            'picture' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                        )
+                    );
+                }
+                // replace sigma template block in discounts page
+                \DBG::msg('update3: replace sigma template block in discounts page');
+                \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(
+                    array('module'=>'shop', 'cmd' => 'discounts'),
+                    '/<!--\s+(BEGIN|END)\s+shopProductRow1\s+-->/', '<!-- $1 shopProductRow -->',
+                    array('content'), '3.0.3'
+                );
+
+                // add product options to product-listing and discounts page
+                $search = array(
+                    '/.*\{SHOP_PRODUCT_DESCRIPTION\}.*/ms',
+                );
+                $callback = function($matches) {
+                    $htmlProductOptions = <<<HTML
+
+                    <!-- BEGIN shopProductOptionsRow -->
+                    <div class="shop_options">
+                        {SHOP_PRODUCT_OPTIONS_TITLE}<br />
+                        <div id="product_options_layer{SHOP_PRODUCT_ID}" style="display: none;">
+                            <div class="shop_options_click">
+                                <!-- BEGIN shopProductOptionsValuesRow -->
+                                <strong>
+                                    {SHOP_PRODUCT_OPTIONS_NAME}
+                                    <!-- BEGIN product_attribute_mandatory -->
+                                    <span class="mandatory">&nbsp;*</span>
+                                    <!-- END product_attribute_mandatory -->
+                                </strong><br />
+                                {SHOP_PRODCUT_OPTION}
+                                <!-- END shopProductOptionsValuesRow -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END shopProductOptionsRow -->
+
+HTML;
+                    if (!preg_match('/<!--\s+BEGIN\s+shopProductOptionsRow\s+-->.*<!--\s+END\s+shopProductOptionsRow\s+-->/ms', $matches[0])) {
+                        $placeholder = '{SHOP_PRODUCT_DESCRIPTION}';
+                        return str_replace($placeholder, $placeholder.$htmlProductOptions, $matches[0]);
+                    } else {
+                        return $matches[0];
+                    }
+                };
+                \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'shop', 'cmd' => ''), $search, $callback, array('content'), '3.0.3');
+                \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'shop', 'cmd' => 'discounts'), $search, $callback, array('content'), '3.0.3');
+
+                // add needed placeholders
+                // this adds the missing placeholders [[SHOP_AGB]], [[SHOP_CANCELLATION_TERMS_CHECKED]]
+                \DBG::msg('update3: migrate shop payment page');
+                $search = array(
+                    '/(<input[^>]+name=")(agb|cancellation_terms)(")([^>]*>)/ms',
+                );
+                $callback = function($matches) {
+                    switch ($matches[2]) {
+                        case 'agb':
+                            $placeholder = "{SHOP_AGB}";
+                            break;
+                        case 'cancellation_terms':
+                            $placeholder = "{SHOP_CANCELLATION_TERMS_CHECKED}";
+                            break;
+                    }
+                    if (strpos($matches[1].$matches[4], $placeholder) === false) {
+                        return $matches[1].$matches[2].$matches[3].' '.$placeholder.' '.$matches[4];
+                    } else {
+                        return $matches[0];
+                    }
+                };
+                \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'shop', 'cmd' => 'payment'), $search, $callback, array('content'), '3.0.3');
+                \Cx\Lib\UpdateUtil::setSourceModeOnContentPage(array('module' => 'shop', 'cmd' => 'payment'), '3.0.3');
+            }
             $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 13 OR access_id = 161 GROUP BY `group_id`");
             if ($result !== false) {
                 while (!$result->EOF) {
@@ -1281,6 +1447,82 @@ EOF
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
         try {
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
+                                     VALUES
+                                        ("shop","payment_lsv_active","config","text","1","",18)'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
+                                     VALUES
+                                        ("shop","paymill_active","config","text","1","",3)'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
+                                     VALUES
+                                        ("shop","paymill_live_private_key","config","text","","",0)'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
+                                     VALUES
+                                        ("shop","paymill_live_public_key","config","text","","",0)'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
+                                     VALUES
+                                        ("shop","paymill_live_public_key","config","text","","",0)'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
+                                     VALUES
+                                        ("shop","paymill_test_private_key","config","text","","",2)'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
+                                    VALUES
+                                        ("shop","paymill_test_public_key","config","text","","",16)'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
+                                     VALUES
+                                        ("shop","paymill_use_test_account","config","text","0","",15)'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
+                                     VALUES
+                                        ("shop","orderitems_amount_min","config","text","0","",0)'
+            );
+            \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'core_text`
+                                     SET `text` = "VISA, Mastercard (Saferpay)"
+                                     WHERE `key` = "payment_name"
+                                        AND `section` = "shop"
+                                        AND `text` LIKE "%PostFinance%"'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`)
+                                     VALUES
+                                        (16,1,"shop","payment_name","Kreditkarte (Paymill)")'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`)
+                                     VALUES
+                                        (16,2,"shop","payment_name","paymill")'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`)
+                                     VALUES
+                                        (17,1,"shop","payment_name","ELV (Paymill)")'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`)
+                                     VALUES
+                                        (18,1,"shop","payment_name","IBAN/BIC (Paymill)")'
+            );
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'module_shop_payment_processors` (`id`, `type`, `name`, `description`, `company_url`, `status`, `picture`) VALUES (12,"external","paymill_cc","","https://www.paymill.com",1,"")');
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'module_shop_payment_processors` (`id`, `type`, `name`, `description`, `company_url`, `status`, `picture`) VALUES (13,"external","paymill_elv","","https://www.paymill.com",1,"")');
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'module_shop_payment_processors` (`id`, `type`, `name`, `description`, `company_url`, `status`, `picture`) VALUES (14,"external","paymill_iban","","https://www.paymill.com",1,"")');
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'module_shop_rel_payment` (`zone_id`, `payment_id`) VALUES (1,16)');
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'module_shop_rel_payment` (`zone_id`, `payment_id`) VALUES (1,17)');
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'module_shop_rel_payment` (`zone_id`, `payment_id`) VALUES (1,18)');
+            \Cx\Lib\UpdateUtil::table(DBPREFIX.'module_shop_order_attributes',
+                array(
+                    'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'item_id'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                    'attribute_name'     => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'item_id'),
+                    'option_name'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'attribute_name'),
+                    'price'              => array('type' => 'DECIMAL(9,2)', 'unsigned' => false, 'notnull' => true, 'default' => '0.00', 'after' => 'option_name')
+                ),
+                array(
+                    'item_id'            => array('fields' => array('item_id'))
+                )
+            );
             // add some necessary buttons to the confirmation page
             // fix of http://bugs.contrexx.com/contrexx/ticket/2015
             Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(
