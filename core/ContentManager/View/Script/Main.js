@@ -655,6 +655,10 @@ cx.cm = function(target) {
                         page.visibility.type = "redirection";
                         page.visibility.fallback = false;
                         break;
+                    case "symlink":
+                        page.visibility.type = "symlink";
+                        page.visibility.fallback = false;
+                        break;
                     case "application": 
                         var module = cx.jQuery("[name=\"page[application]\"").val();
                         if (module != "Home") {
@@ -733,6 +737,10 @@ cx.cm = function(target) {
                         break;
                     case "redirect":
                         page.visibility.type = "redirection";
+                        page.visibility.fallback = false;
+                        break;
+                    case "symlink":
+                        page.visibility.type = "symlink";
                         page.visibility.fallback = false;
                         break;
                     case "application":
@@ -1532,7 +1540,16 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             // theres an error here, we'll fix it later:
             if (!cx.jQuery(element).children(".name").length) {
                 var pageName = jQuery.trim(cx.jQuery(element).text());
-                cx.jQuery(element).html(cx.jQuery(element).html().replace(pageName.replace("&", "&amp;"), " "));
+                cx.jQuery(element).contents().filter(function() {
+                    return this.nodeType == 3;
+                }).each(function(index, el) {
+                    // It would be nicer if we could select all page <a>
+                    // elements directly using a class and just remove all text
+                    // nodes or not to add the text nodes in the first place.
+                    // ATTENTION: The space " " is necessary otherwise drag&drop
+                    // stops working.
+                    el.textContent = " ";
+                });
                 cx.jQuery(element).append("<div class=\"name\">" + pageName + "</div>");
             }
             if (pageId) {
@@ -1618,7 +1635,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                         arrStatuses.push(cx.variables.get('TXT_CORE_CM_PAGE_STATUS_PROTECTED', 'contentmanager/lang/tooltip'));
                     }
 
-                    if (!objTrigger.hasClass('home') && !objTrigger.hasClass('application') && !objTrigger.hasClass('redirection')) {
+                    if (!objTrigger.hasClass('home') && !objTrigger.hasClass('application') && !objTrigger.hasClass('redirection') && !objTrigger.hasClass('symlink')) {
                         arrTypes.push(cx.variables.get('TXT_CORE_CM_PAGE_TYPE_CONTENT_SITE', 'contentmanager/lang/tooltip'));
                     }
                     if (objTrigger.hasClass('application')) {
@@ -1626,6 +1643,9 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     }
                     if (objTrigger.hasClass('redirection')) {
                         arrTypes.push(cx.variables.get('TXT_CORE_CM_PAGE_TYPE_REDIRECTION', 'contentmanager/lang/tooltip'));
+                    }
+                    if (objTrigger.hasClass('symlink')) {
+                        arrTypes.push(cx.variables.get('TXT_CORE_CM_PAGE_TYPE_SYMLINK', 'contentmanager/lang/tooltip'));
                     }
                     if (objTrigger.hasClass('home')) {
                         arrTypes.push(cx.variables.get('TXT_CORE_CM_PAGE_TYPE_HOME', 'contentmanager/lang/tooltip'));
@@ -2118,7 +2138,7 @@ cx.cm.updateTreeEntry = function(newStatus) {
         // Illegal fallback state
         return false;
     }
-    if (cx.jQuery.inArray(newStatus.visibility.type, ["standard", "application", "home", "redirection"]) < 0) {
+    if (cx.jQuery.inArray(newStatus.visibility.type, ["standard", "application", "home", "redirection", "symlink"]) < 0) {
         // Illegal type
         return false;
     }
@@ -2167,6 +2187,7 @@ cx.cm.updateTreeEntry = function(newStatus) {
         case "application":
         case "home":
         case "redirection":
+        case "symlink":
             visibility.addClass(newStatus.visibility.type);
         default:
             break;
@@ -2268,6 +2289,8 @@ cx.cm.getPageStatus = function(nodeId, lang) {
         type = "home";
     } else if (visibility.hasClass("redirection")) {
         type = "redirection";
+    } else if (visibility.hasClass("symlink")) {
+        type = "symlink";
     }
 
     var name = "";
@@ -2565,7 +2588,12 @@ cx.cm.destroyEditor = function() {
 cx.cm.setEditorData = function(pageContent) {
     cx.jQuery(document).ready(function() {
         if (!cx.jQuery('#page_sourceMode').prop('checked') && cx.cm.editorInUse()) {
-            CKEDITOR.instances.cm_ckeditor.setData(pageContent);
+            // This is bit of a hacky solution but CKEDITOR seems to have
+            // problems with setData() sometimes (without throwing an exception)
+            // and this seems to do the trick.
+            CKEDITOR.instances.cm_ckeditor.setData(pageContent, function() {
+                CKEDITOR.instances.cm_ckeditor.setData(pageContent);
+            });
         } else {
             cx.jQuery('#page textarea[name="page[content]"]').val(pageContent);
         }
@@ -2848,7 +2876,7 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
         cx.jQuery('#page input#refuse').hide();
     }
     
-    if (page.type == 'redirect') {
+    if (page.type == 'redirect' || page.type == 'symlink') {
         cx.jQuery('#preview').hide();
     }
     cx.jQuery('#page #preview').attr('href', cx.variables.get('basePath', 'contrexx') + page.lang + '/' + page.parentPath + page.slug + '?pagePreview=1');

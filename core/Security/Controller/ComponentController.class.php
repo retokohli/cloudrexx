@@ -221,7 +221,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->SetFrom($config['coreAdminEmail'], $config['coreAdminName']);
-            $objMail->AddReplyTo($config['coreAdminEmail']);
             $objMail->Subject = $_SERVER['HTTP_HOST']." : $type";
             $objMail->IsHTML(false);
             $objMail->Body = $message;
