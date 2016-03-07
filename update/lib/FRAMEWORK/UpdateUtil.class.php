@@ -75,6 +75,27 @@ class Update_DatabaseException extends UpdateException {
 class UpdateUtil
 {
     /**
+     * @var array $migrationPaths Array with the old and new path names
+     * @access private
+     */
+    private static $migrationPaths = array(
+        'images/access'     =>  'images/Access',
+        'images/blog'       =>  'images/Blog',
+        'images/calendar'   =>  'images/Calendar',
+        'images/crm'        =>  'images/Crm',
+        'images/downloads'  =>  'images/Downloads',
+        'images/gallery'    =>  'images/Gallery',
+        'images/mediadir'   =>  'images/MediaDir',
+        'images/podcast'    =>  'images/Podcast',
+        'images/shop'       =>  'images/Shop',
+        'media/crm'         =>  'media/Crm',
+        'media/directory'   =>  'media/Directory',
+        'media/filesharing' =>  'media/FileSharing',
+        'media/forum'       =>  'media/Forum',
+        'media/market'      =>  'media/Market',
+        'media/shop'        =>  'media/Shop',
+    );
+    /**
      * Creates or modifies a table to the given specification.
      *
      * @param string name - the name of the table. do not forget DBPREFIX!
@@ -944,7 +965,7 @@ class UpdateUtil
      * Migrate paths in the database
      * @param $table        string  Name of the database table doesn't need
      *                              DBPREFIX
-     * @param $attribute    string  Name of attribute in the databse table
+     * @param $attribute    string  Name of attribute in the database table
      * @param $oldPath      string  The old path
      * @param $newPath      string  The new path
      * @return \ADORecordset
@@ -977,7 +998,7 @@ class UpdateUtil
         if ($type == 'table' && empty($matches['prefix'])) {
             // remove leading backtik if there is one
             if (substr($value, 0, 1) == '`') {
-                $value = substr($value, 0, 1);
+                $value = substr($value, 1);
                 $backtik = '`';
             }
             // add database prefix with backtik
@@ -991,6 +1012,11 @@ class UpdateUtil
         if (empty($matches['last'])) {
             $value = $value . '`';
         }
+    }
+
+    public static function getMigrationPaths()
+    {
+        return self::$migrationPaths;
     }
 
 }
