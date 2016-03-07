@@ -45,6 +45,7 @@ class Wysiwyg
             \JS::registerJS('lib/javascript/jquery/jquery-1.6.1.min.js');
             \JS::registerCode('var $J = jQuery.noConflict();');
             \JS::registerJS('lib/ckeditor/ckeditor.js');
+            $this->registerFCKWrapperCode();
     
             $loadBBCodePlugin = $this->mode == 'forum' ? 1 : 0;
             $configPath = ASCMS_PATH_OFFSET . substr(
@@ -113,6 +114,18 @@ class Wysiwyg
                     break;
             }
     
+            $onReady[] = 'CKEDITOR.on("instanceReady", function(event){
+                var editor = event.editor;
+                editor.GetHTML = function() {
+                    return editor.getData();
+                };
+                editor.SetHTML = function(a) {
+                    editor.setData(a);
+                };
+                editor.GetData = function() {
+                    return editor.getData();
+                };
+            });';
             $onReady[0] = sprintf($onReady[0], implode(",\n", $arrCKEditorOptions));
     
             \JS::registerCode('
@@ -123,5 +136,20 @@ class Wysiwyg
         }
     
         return '<textarea name="'.$this->name.'" style="width: 100%; height: 450px;">'.$this->value.'</textarea>';
+    }
+    
+    function registerFCKWrapperCode()
+    {
+
+        $code = <<<CODE
+        var FCKeditorAPI;
+        FCKeditorAPI = {
+            Instances: CKEDITOR.instances,
+            GetInstance: function(instanceName) {
+                return CKEDITOR.instances[instanceName];
+            }
+        };
+CODE;
+        \JS::registerCode($code);
     }
 }
