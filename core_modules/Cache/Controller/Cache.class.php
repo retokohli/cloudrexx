@@ -175,6 +175,54 @@ class Cache extends \Cx\Core_Modules\Cache\Controller\CacheLib
         $File->write($strCacheContents);
     }
 
+    /**
+     * Parses ESI directives internally if configured to do so
+     * @param string $htmlCode HTML code to replace ESI directives in
+     * @return string Parsed HTML code
+     */
+    public function internalEsiParsing($htmlCode) {
+        global $objCache;
+        
+        if ($objCache->getEsiMode() != \Cx\Core_Modules\Cache\Controller\CacheLib::ESI_MODE_INTERN) {
+            return $htmlCode;
+        }
+        
+        $htmlCode = preg_replace_callback(
+            '#<esi:include src="([^"]+)" onerror="continue"/>#',
+            function($matches) {
+                $query = parse_url($matches[1], PHP_URL_QUERY);
+                $params = array();
+                parse_str($query, $params);
+                if (
+                    !isset($params['cmd']) ||
+                    $params['cmd'] != 'JsonData' ||
+                    !isset($params['object']) ||
+                    !isset($params['act'])
+                ) {
+                    return $matches[0];
+                }
+                $adapter = contrexx_input2raw($params['object']);
+                $method = contrexx_input2raw($params['act']);
+                unset($params['cmd']);
+                unset($params['object']);
+                unset($params['act']);
+                $arguments = array('get' => contrexx_input2raw($params));
+                $json = new \Cx\Core\Json\JsonData();
+                $response = $json->data($adapter, $method, $arguments);
+                if (
+                    !isset($response['status']) ||
+                    $response['status'] != 'success' ||
+                    !isset($response['data']) ||
+                    !isset($response['data']['content'])
+                ) {
+                    return $matches[0];
+                }
+                return $response['data']['content'];
+            },
+            $htmlCode
+        );
+        return $htmlCode;
+    }
 
     /**
      * Check the exception-list for this site

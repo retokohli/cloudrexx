@@ -1671,6 +1671,11 @@ class Config
                     \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'cache')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheVarnishStatus");
                 }
+                if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheEsiStatus')
+                    && !\Cx\Core\Setting\Controller\Setting::add('cacheEsiStatus', isset($existingConfig['cacheEsiStatus']) ? $existingConfig['cacheEsiStatus'] : 'intern', 1,
+                    \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getEsiModes()}', 'cache')){
+                        throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for cacheEsiStatus");
+                }
                 if (!\Cx\Core\Setting\Controller\Setting::isDefined('cacheUserCache')
                     && !\Cx\Core\Setting\Controller\Setting::add('cacheUserCache', isset($existingConfig['cacheUserCache']) ? $existingConfig['cacheUserCache'] : 'off', 1,
                     \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, 'on:TXT_ACTIVATED,off:TXT_DEACTIVATED', 'cache')){
@@ -1712,6 +1717,19 @@ class Config
             $display[] = $domain->getId() . ':' . $domain->getNameWithPunycode();
         }
         return implode(',', $display);
+    }
+    
+    public static function getEsiModes() {
+        $esiModes = array(
+            \Cx\Core_Modules\Cache\Controller\CacheLib::ESI_MODE_INTERN,
+            \Cx\Core_Modules\Cache\Controller\CacheLib::ESI_MODE_ESI,
+            \Cx\Core_Modules\Cache\Controller\CacheLib::ESI_MODE_SSI,
+        );
+        $esiModeTexts = array();
+        foreach ($esiModes as $esiMode) {
+            $esiModeTexts[$esiMode] = 'SETTINGS_ESI_CACHE_STATUS_' . strtoupper($esiMode);
+        }
+        return $esiModeTexts;
     }
     
     public function showFtp() {

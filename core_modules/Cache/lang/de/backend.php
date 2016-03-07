@@ -86,3 +86,10 @@ $_ARRAYLANG['TXT_CACHE_PROXY_PORT'] = 'Proxy Port';
 $_ARRAYLANG['TXT_SETTINGS_UPDATED'] = 'Die Einstellungen wurden gespeichert.';
 $_ARRAYLANG['TXT_CACHE_FOLDER_EMPTY'] = 'Cache-Ordner wurde geleert.';
 $_ARRAYLANG['TXT_CACHE_EMPTY_SUCCESS'] = 'Der Cache wurde erfolgreich geleert';
+
+$_ARRAYLANG['TXT_CACHE_ESI'] = 'Server/Edge Side Includes';
+$_ARRAYLANG['TXT_CACHE_ESI_STATUS'] = 'Modus';
+$_ARRAYLANG['TXT_CACHE_ESI_INTERN'] = 'Interne Verarbeitung';
+$_ARRAYLANG['TXT_CACHE_ESI_ESI'] = 'ESI fähiger Cache-Proxy';
+$_ARRAYLANG['TXT_CACHE_ESI_SSI'] = 'SSI fähiger Cache-Proxy';
+$_ARRAYLANG['TXT_CACHE_ESI_HELP'] = 'ESI/SSI wird verwendet um blablabla....';

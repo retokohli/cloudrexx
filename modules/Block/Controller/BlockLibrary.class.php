@@ -540,6 +540,18 @@ class BlockLibrary
     {
         global $objDatabase;
 
+        global $objCache;
+        $content = $objCache->getEsiContent(
+            'Block',
+            'getBlockContent',
+            array(
+                'block' => $id,
+                'lang' => FRONTEND_LANG_ID,
+            )
+        );
+        $code = str_replace("{".$this->blockNamePrefix.$id."}", $content, $code);
+        return;
+        
         $now = time();
         $query = "  SELECT
                         tblContent.content

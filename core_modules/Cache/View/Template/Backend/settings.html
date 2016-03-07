@@ -292,6 +292,28 @@
                 <td><input type="text" name="varnishCachingPort" id="varnishCachingPort" value="{VARNISH_PROXYCACHE_CONFIG_PORT}"></td>
             </tr>
         </table>
+        <br />
+        <br />
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+            <colgroup>
+                <col width="200" />
+                <col />
+            </colgroup>
+            <tr>
+                <th colspan="2">{TXT_CACHE_ESI}</th>
+            </tr>
+            <tr class="row2">
+                <td>{TXT_CACHE_ESI_STATUS}&nbsp;</td>
+                <td>
+                    <select name="cacheEsiStatus">
+                        <option {SETTINGS_ESI_CACHE_STATUS_INTERN} value="intern">{TXT_CACHE_ESI_INTERN}</option>
+                        <option {SETTINGS_ESI_CACHE_STATUS_ESI} value="esi">{TXT_CACHE_ESI_ESI}</option>
+                        <option {SETTINGS_ESI_CACHE_STATUS_SSI} value="ssi">{TXT_CACHE_ESI_SSI}</option>
+                    </select>
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CACHE_ESI_HELP}</span>
+                </td>
+            </tr>
+        </table>
         <!-- BEGIN cache_submit_button -->
         <br /><input type="submit" name="frmSettings_Submit" value="{TXT_SETTINGS_SAVE}">
         <!-- END cache_submit_button -->

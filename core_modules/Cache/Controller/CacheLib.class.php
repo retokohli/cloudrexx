@@ -92,6 +92,21 @@ class CacheLib
     const CACHE_ENGINE_OFF = 'off';
     
     /**
+     * Internal ESI parsing
+     */
+    const ESI_MODE_INTERN = 'intern';
+    
+    /**
+     * External ESI parsing
+     */
+    const ESI_MODE_ESI = 'esi';
+    
+    /**
+     * External SSI parsing
+     */
+    const ESI_MODE_SSI = 'ssi';
+    
+    /**
      * Used op cache engines
      * @var array Cache engine names, empty for none
      */
@@ -106,6 +121,11 @@ class CacheLib
     protected $opCacheEngine = null;
     protected $userCacheEngine = null;
     protected $memcache = null;
+    
+    /**
+     * @var string ESI mode
+     */
+    protected $esiMode;
 
     /**
      * Delete all cached file's of the cache system   
@@ -272,6 +292,11 @@ class CacheLib
         ) {
             $this->opCacheEngine = $_CONFIG['cacheOPCache'];
         }
+
+        $this->esiMode = static::ESI_MODE_INTERN;
+        if (isset($_CONFIG['cacheEsiStatus'])) {
+            $this->esiMode = $_CONFIG['cacheEsiStatus'];
+        }
     }
         
     public function deactivateNotUsedOpCaches()
@@ -335,6 +360,46 @@ class CacheLib
     
     public function getAllOpCacheEngines() {
         return array(self::CACHE_ENGINE_APC, self::CACHE_ENGINE_ZEND_OPCACHE);
+    }
+    
+    /**
+     * Returns the current ESI mode
+     * @return string ESI mode
+     */
+    public function getEsiMode() {
+        return $this->esiMode;
+    }
+    
+    /**
+     * Returns the ESI/SSI content for a (json)data call
+     * @param string $adapterName (Json)Data adapter name
+     * @param string $adapterMethod (Json)Data method name
+     * @param array $params (optional) params for (Json)Data method call
+     * @return string ESI/SSI directives to put into HTML code
+     */
+    public function getEsiContent($adapterName, $adapterMethod, $params = array()) {
+        $parseMode = $this->getEsiMode();
+        if ($parseMode == static::ESI_MODE_INTERN) {
+            $parseMode = static::ESI_MODE_ESI;
+        }
+        // the following line should be enough in the future:
+        //$url = \Cx\Core\Routing\Url::fromApi('Data', array($adapterName, $adapterMethod), $params);
+        // this will generate the same path as:
+        //$url->setPath('api/Data/' . $adapterName . '/' . $adapterMethod);
+        
+        // so the following code is temporary:
+        $url = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $url->setMode('backend');
+        $url->setPath('cadmin/');
+        $params['cmd'] = 'JsonData';
+        $params['object'] = $adapterName;
+        $params['act'] = $adapterMethod;
+        $url->setParams($params);
+        
+        $template = new \Cx\Core\Html\Sigma(dirname(dirname(__FILE__)) . '/View/Template/Global');
+        $template->loadTemplateFile('IncludeTag' . strtoupper($parseMode) . '.html');
+        $template->setVariable('INCLUDE_FILE', $url);
+        return $template->get();
     }
     
     protected function isInstalled($cacheEngine)

@@ -2060,7 +2060,7 @@ namespace Cx\Core\Core\Controller {
                     $endcode);
                 $endcode = $ls->replace();
 
-                echo $endcode;
+                echo $objCache->internalEsiParsing($endcode);
 
                 $objCache->endContrexxCaching($this->resolvedPage);
             } else {

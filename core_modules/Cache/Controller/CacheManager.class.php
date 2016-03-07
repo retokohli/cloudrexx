@@ -121,6 +121,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         global $objTemplate, $_ARRAYLANG;
 
         $this->objTpl->loadTemplateFile('settings.html');
+        $this->objTpl->setGlobalVariable($_ARRAYLANG);
         $this->objTpl->setVariable(array(
             'TXT_CACHE_GENERAL' => $_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'],
             'TXT_CACHE_STATS' => $_ARRAYLANG['TXT_CACHE_STATS'],
@@ -293,7 +294,10 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
             'SETTINGS_DB_CACHE_STATUS_ON'   => ($this->arrSettings['cacheDbStatus'] == 'on') ? 'checked' : '',
             'SETTINGS_DB_CACHE_STATUS_OFF'  => ($this->arrSettings['cacheDbStatus'] == 'off') ? 'checked' : '',
             'SETTINGS_VARNISH_CACHE_STATUS_ON'  => ($this->arrSettings['cacheVarnishStatus'] == 'on') ? 'checked' : '',
-            'SETTINGS_VARNISH_CACHE_STATUS_OFF' => ($this->arrSettings['cacheVarnishStatus'] == 'off') ? 'checked' : '',            
+            'SETTINGS_VARNISH_CACHE_STATUS_OFF' => ($this->arrSettings['cacheVarnishStatus'] == 'off') ? 'checked' : '',    
+            'SETTINGS_ESI_CACHE_STATUS_INTERN'  => ($this->arrSettings['cacheEsiStatus'] == 'intern') ? 'selected' : '',
+            'SETTINGS_ESI_CACHE_STATUS_ESI' => ($this->arrSettings['cacheEsiStatus'] == 'esi') ? 'selected' : '',
+            'SETTINGS_ESI_CACHE_STATUS_SSI' => ($this->arrSettings['cacheEsiStatus'] == 'ssi') ? 'selected' : '',
             'SETTINGS_EXPIRATION' => intval($this->arrSettings['cacheExpiration']),
             'STATS_CONTREXX_FILESYSTEM_CHACHE_PAGES_COUNT' => $intFilesPages,
             'STATS_FOLDERSIZE_PAGES'                => number_format($intFoldersizePages / 1024, 2, '.', '\''),
@@ -341,6 +345,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         \Cx\Core\Setting\Controller\Setting::set('cacheOpStatus', contrexx_input2db($_POST['cacheOpStatus']));
         \Cx\Core\Setting\Controller\Setting::set('cacheDbStatus', contrexx_input2db($_POST['cacheDbStatus']));
         \Cx\Core\Setting\Controller\Setting::set('cacheVarnishStatus', contrexx_input2db($_POST['cacheVarnishStatus']));
+        \Cx\Core\Setting\Controller\Setting::set('cacheEsiStatus', contrexx_input2db($_POST['cacheEsiStatus']));
 
         if(!empty($_POST['memcacheSettingIp']) || !empty($_POST['memcacheSettingPort'])){
             $settings = json_encode(
