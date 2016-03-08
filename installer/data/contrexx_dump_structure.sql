@@ -2271,7 +2271,7 @@ CREATE TABLE `contrexx_module_mediadir_forms` (
   `use_level` int(1) NOT NULL,
   `use_category` int(1) NOT NULL,
   `use_ready_to_confirm` int(1) NOT NULL,
-  `entries_per_page` int(7) NOT NULL,
+  `entries_per_page` int(7) NOT NULL DEFAULT '0',
   `cmd` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
@@ -2312,7 +2312,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `required` int(10) NOT NULL,
   `order` int(10) NOT NULL,
   `show_in` int(10) NOT NULL,
-  `context_type` enum('none','title','content','address','zip','city','country') NOT NULL,
+  `context_type` enum('none','title','address','zip','city','country') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_level_names` (

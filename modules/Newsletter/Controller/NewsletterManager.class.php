@@ -2966,8 +2966,8 @@ class NewsletterManager extends NewsletterLib
             }
         }
         $mail->CharSet  = CONTREXX_CHARSET;
-        $mail->SetFrom($sender_email, $sender_name);
         $mail->AddReplyTo($return_path);
+        $mail->SetFrom($sender_email, $sender_name);
         $mail->Subject  = $subject;
         $mail->Priority = $priority;
         $mail->Body     = $NewsletterBody_HTML;

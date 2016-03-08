@@ -1788,7 +1788,6 @@ class User extends User_Profile
 
             $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
-            $objMail->AddReplyTo($objUserMail->getSenderMail());
             $objMail->Subject = $objUserMail->getSubject();
 
             $placeholders = array(
