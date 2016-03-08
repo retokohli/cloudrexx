@@ -540,7 +540,6 @@ class FWUser extends User_Setting
 
         $objMail->CharSet = CONTREXX_CHARSET;
         $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
-        $objMail->AddReplyTo($objUserMail->getSenderMail());
         $objMail->Subject = $objUserMail->getSubject();
 
         $restoreLink = self::getPasswordRestoreLink($this->isBackendMode(), $objUser);

@@ -51,6 +51,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array();
     }
 
+    public function getControllersAccessableByJson() {
+        return array('JsonSurvey');
+    }
+
      /**
      * Load your component.
      * 

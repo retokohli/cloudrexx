@@ -237,9 +237,14 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
    
      public static function SearchFindContent($search) {
-         
         $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        $result = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($pageRepo->searchResultsForSearchModule($search->getTerm(), \Env::get('cx')->getLicense()));
+        $result = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(
+            $pageRepo->searchResultsForSearchModule(
+                $search->getTerm(),
+                \Env::get('cx')->getLicense(),
+                $search->getRootPage()
+            )
+        );
         $search->appendResult($result);
     }
 }
