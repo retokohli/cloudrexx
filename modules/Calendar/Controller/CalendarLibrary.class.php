@@ -159,6 +159,13 @@ class CalendarLibrary
     const ATTACHMENT_FIELD_KEY = 'attachment_id';
     
     /**
+     * Instance of DateTime entity
+     *
+     * @var CalendarDateTime
+     */
+    public $calendarDateTime;
+
+    /**
      * Assign the template path
      * Sets the Global variable for the calendar module
      * 
@@ -173,9 +180,18 @@ class CalendarLibrary
             $this->moduleLangVar.'_CSRF'         => 'csrf='.\Cx\Core\Csrf\Controller\Csrf::code(),     
             $this->moduleLangVar.'_DATE_FORMAT'  => self::getDateFormat(1),
             $this->moduleLangVar.'_JAVASCRIPT'   => self::getJavascript(),
-        ));        
-    }         
-    
+        ));
+    }
+
+    /**
+     * Initialize the CalendarDateTime instance
+     */
+    public function initDateTime()
+    {
+        $this->calendarDateTime = new CalendarDateTime();
+        $this->calendarDateTime->setDateFormat($this->getDateFormat());
+    }
+
     /**
      * Checks the access level for the given action     
      *      
@@ -384,12 +400,12 @@ class CalendarLibrary
     
     /**
      * Return's the dataformat based on the type
-     * 
-     * Return's the dateformat by the given type 
-     * 1 => frontend else backend
-     *      
-     * @param integer $type type 1 => frontend else backend
-     * 
+     *
+     * Return's the dateformat by the given type
+     * 1 => frontend (javascript format alone) else backend
+     *
+     * @param integer $type type 1 => frontend (javascript format alone) else backend
+     *
      * @return string Date format
      */
     function getDateFormat($type=null)
@@ -494,19 +510,10 @@ class CalendarLibrary
         $day = str_pad(substr($date, $posDay,2), 2, '0', STR_PAD_LEFT);
         $hour = str_pad($hour, 2, '0', STR_PAD_LEFT);
         $minute = str_pad($minute, 2, '0', STR_PAD_LEFT);
-        
-        $dateTimeRepresentation = new \DateTime(
-            $year . '-' . $month . '-' . $day . ' ' .
-            $hour . ':' . $minute . ':00'
-        );
-        
-        // fetch DateTime component controller
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $em = $cx->getDb()->getEntityManager();
-        $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-        $dateTimeComponent = $componentRepo->findOneBy(array('name'=>'DateTime'));
-        
-        return $dateTimeComponent->user2db($dateTimeRepresentation)->getTimestamp();
+
+        return $this->getDateTime(strtotime($year . '-' . $month . '-' . $day . ' ' .$hour . ':' . $minute . ':00'))
+                    ->getUser2db()
+                    ->getTimestamp();
     }
     
     /**
@@ -673,7 +680,7 @@ EOF;
                 $datePicker->setEvent($event["year"], $event["month"], $event["day"], " withEvent");
             }
 
-            $datePicker = $datePicker->showMonth();
+            $datePicker->showMonth();
         }
     }
     
@@ -696,12 +703,34 @@ EOF;
         
         $dayArray = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV2_ARRAY']);
         foreach ($objEventManager->eventList as $event) {
-            $exceptionDates[date(self::getDateFormat(), $event->startDate)] = $event->startDate != $event->endDate 
-                                                                              ? $dayArray[date("w", $event->startDate)] .", " . date(self::getDateFormat(), $event->startDate).' - '. $dayArray[date("w", $event->endDate)] .", ". date(self::getDateFormat(), $event->endDate)
-                                                                              : $dayArray[date("w", $event->startDate)] .", " . date(self::getDateFormat(), $event->startDate);
+            $startDate = $this->getDateTime($event->startDate);
+            $endDate   = $this->getDateTime($event->endDate);
+            $exceptionDates[$startDate->format2userDate()] = $startDate->format2userDate() != $endDate->format2userDate()
+                                                                ? $dayArray[$startDate->format2user("w")] .", " . $startDate->format2userDate() .' - ' . $dayArray[$endDate->format2user("w")] .", ". $endDate->format2userDate()
+                                                                : $dayArray[$startDate->format2user("w")] .", " . $startDate->format2userDate();
         }
-        
-        return $exceptionDates;        
+
+        return $exceptionDates;
     }
-    
+
+    /**
+     * Get Calendar DateTime instance
+     *
+     * @param integer $timestamp Unix timestamp for the datetime object
+     *
+     * @return CalendarDateTime
+     */
+    public function getDateTime($timestamp = null)
+    {
+        if (!($this->calendarDateTime instanceof CalendarDateTime)) {
+            $this->initDateTime();
+        }
+        $dateTime = clone $this->calendarDateTime;
+
+        if ($timestamp) {
+            $dateTime->setTimestamp($timestamp);
+        }
+
+        return $dateTime;
+    }
 }

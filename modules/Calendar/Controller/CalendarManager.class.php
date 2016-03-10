@@ -230,7 +230,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         if($_GET['list'] == 'actual' || !isset($_GET['list'])) {
             $styleListActual = 'underline';  
             $styleListAll = '';                                 
-            $startDate = mktime(); 
+            $startDate = $this->getDateTime(mktime())->getUser2db()->getTimestamp();
             $listType = 'upcoming';
         } else {
             $styleListActual = '';  
@@ -301,7 +301,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         }                                                                             
         
         $showSeries = ($listType == 'upcoming');        
-        $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($startDate,$endDate,$categoryId,$searchTerm,$showSeries,null,null,$startPos,$this->arrSettings['numPaging'], 'ASC', true, null, $listType);
+        $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($startDate, null,$categoryId,$searchTerm,$showSeries,null,null,$startPos,$this->arrSettings['numPaging'], 'ASC', true, null, $listType);
         $objEventManager->getEventList();
         
         if($objEventManager->countEvents > $this->arrSettings['numPaging']) {
@@ -389,8 +389,6 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 }     
         }
         
-        $dateFomat = parent::getDateFormat();
-        
         $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);   
         $objCategoryManager->getCategoryList();  
         
@@ -437,9 +435,12 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             $selectedCount = $value == $objEvent->seriesData['seriesPatternCount'] ? 'selected="selected"' : '';  
             $count .= '<option value="'.$value.'" '.$selectedCount.'>'.$name.'</option>';
         }
-                        
-        if (empty($eventId)) {
-            $startDate = new \DateTime("NOW");
+
+        if ($eventId) {
+            $startDate = $this->getDateTime($objEvent->startDate);
+            $endDate   = $this->getDateTime($objEvent->endDate);
+        } else {
+            $startDate = $this->getDateTime(strtotime('now'));
             $startMin  = (int) $startDate->format('i');
             // Adjust the time to next half hour
             if (!in_array($startMin, array(0, 30))) {
@@ -449,22 +450,11 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             $endDate   = clone $startDate;
             $endDate->modify("+30 mins");
         }
-        
-        if ($eventId) {
-            $startDate = new \DateTime('@' . $objEvent->startDate);
-            $endDate = new \DateTime('@' . $objEvent->endDate);
-        }
-        
-        // fetch DateTime component controller
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $em = $cx->getDb()->getEntityManager();
-        $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-        $dateTime = $componentRepo->findOneBy(array('name'=>'DateTime'));
-        
-        $eventStartDate = $dateTime->db2user($startDate)->format("$dateFomat H:i");
-        $eventEndDate = $dateTime->db2user($endDate)->format("$dateFomat H:i");
-        
-        //parse globals  
+
+        $eventStartDate = $startDate->format2userDateTime();
+        $eventEndDate   = $endDate->format2userDateTime();
+
+        //parse globals
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_TITLE'                            => $this->_pageTitle,
             'TXT_'.$this->moduleLangVar.'_EVENT'                            => $_ARRAYLANG['TXT_CALENDAR_EVENT'],
@@ -816,7 +806,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             $seriesPatternDourance3 = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? 'checked="checked"' : '';
             
             $seriesPatternEndsEvents = $objEvent->seriesData['seriesPatternDouranceType'] == 2 ? $objEvent->seriesData['seriesPatternEnd'] : 5;
-            $seriesPatternEndsDate   = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? date($dateFomat, $objEvent->seriesData['seriesPatternEndDate']) : '';
+            $seriesPatternEndsDate   = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? $this->getDateTime($objEvent->seriesData['seriesPatternEndDate'])->format2userDate() : '';
             
             
             
@@ -824,7 +814,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 
                 if($seriesExceptionDate != null) {
                     $this->_objTpl->setVariable(array(                        
-                        $this->moduleLangVar.'_SERIES_EXEPTION_DATE'        => date($dateFomat, $seriesExceptionDate),
+                        $this->moduleLangVar.'_SERIES_EXEPTION_DATE' => $this->getDateTime($seriesExceptionDate)->format2userDate(),
                     ));  
                     
                     $this->_objTpl->parse('eventExeptions');                      
@@ -1394,7 +1384,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     $objRegistration->tagExport();   
                 }  
                 
-                print (date(parent::getDateFormat(), $objRegistration->firstExport).$this->csvSeparator);
+                print ($this->getDateTime($objRegistration->firstExport)->format2userDate().$this->csvSeparator);
                    
                 if($objRegistration->type == '1') {                               
                     print ($_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].$this->csvSeparator);       
@@ -1404,7 +1394,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     print ($_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'].$this->csvSeparator);    
                 }
                 
-                print (html_entity_decode($objEvent->title, ENT_QUOTES)." - ".date(parent::getDateFormat(), $objRegistration->eventDate).$this->csvSeparator);  
+                print (html_entity_decode($objEvent->title, ENT_QUOTES)." - ". $this->getDateTime($objRegistration->eventDate)->format2userDate().$this->csvSeparator);
                 
                 if($objRegistration->langId == null) {  
                     print ($this->arrFrontendLanguages[$_LANGID]['name'].$this->csvSeparator); 
