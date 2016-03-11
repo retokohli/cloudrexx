@@ -139,7 +139,7 @@ class DownloadsLibrary
     {
         global $_LANGID;
 
-        $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+        $objCategory = Category::getCategories(null, null, $this->getCategoriesOrderBy());
         $arrCategories = array();
 
         switch ($accessType) {
@@ -222,7 +222,7 @@ class DownloadsLibrary
     {
         global $_LANGID;
 
-        $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
+        $objCategory = Category::getCategories(null, null, $this->getCategoriesOrderBy());
         $arrCategories = array();
 
         while (!$objCategory->EOF) {
@@ -339,7 +339,7 @@ class DownloadsLibrary
 
         while (!$objGroup->EOF) {
             $output = "<ul>\n";
-            $objCategory = Category::getCategories(array('id' => $objGroup->getAssociatedCategoryIds()), null, array( 'order' => 'asc', 'name' => 'asc'));
+            $objCategory = Category::getCategories(array('id' => $objGroup->getAssociatedCategoryIds()), null, $this->getCategoriesOrderBy());
             while (!$objCategory->EOF) {
                 $output .= '<li><a href="'.CONTREXX_SCRIPT_PATH.'?section=Downloads&amp;category='.$objCategory->getId().'" title="'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 $objCategory->next();
@@ -350,5 +350,83 @@ class DownloadsLibrary
             $objGroup->next();
         }
     }
+    
+    /**
+     * parse the settings dropdown
+     * 
+     * @param object $objTemplate   template object
+     * @param array  $settingValues array of setting values
+     * @param string $selected      selected dropdown value
+     * @param string $blockName     block name for template parsing
+     * 
+     * @return null
+     */
+    public function parseSettingsDropDown(  
+        \Cx\Core\Html\Sigma $objTemplate, 
+        $settingValues, 
+        $selected,
+        $blockName)
+    {
+        if (empty($settingValues)) {
+            return;
+        }
 
+        foreach ($settingValues as $key => $value) {
+            $selectedOption = ($selected == $key) ? 'selected="selected"' : '';
+            $objTemplate->setVariable(array(
+                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE'    => $key,
+                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME'     => $value,
+                'DOWNLOADS_SETTINGS_DROPDOWN_SELECTED_OPTION' => $selectedOption,
+            ));
+            $objTemplate->parse('downloads_settings_sorting_dropdown_' . $blockName);
+        }
+    }
+
+    /**
+     * Get the downloads orderby field with direction
+     * 
+     * @return array array of orderby fields with direction
+     */
+    public function getDownloadsOrderBy()
+    {
+        $orderBy = array();
+        switch ($this->arrConfig['downloads_sorting_order']) {
+            case 'custom':
+                $orderBy['order'] = 'ASC';
+                break;
+            case 'alphabetic':
+                $orderBy['name'] = 'DESC';
+                break;
+            case 'newestToOldest':
+                $orderBy['ctime'] = 'DESC';
+                break;
+            case 'oldestToNewest':
+                $orderBy['ctime'] = 'ASC';
+                break;
+        }
+        $orderBy['id'] = 'ASC';
+
+        return $orderBy;
+    }
+
+    /**
+     * Get the categories orderby field with direction
+     * 
+     * @return array array of orderby fields with direction
+     */
+    public function getCategoriesOrderBy()
+    {
+        $orderBy = array();
+        switch ($this->arrConfig['categories_sorting_order']) {
+            case 'custom':
+                $orderBy['order'] = 'ASC';
+                break;
+            case 'alphabetic':
+                $orderBy['name'] = 'DESC';
+                break;
+        }
+        $orderBy['id'] = 'ASC';
+
+        return $orderBy;
+    }
 }
