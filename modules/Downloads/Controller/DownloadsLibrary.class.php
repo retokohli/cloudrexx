@@ -78,22 +78,14 @@ class DownloadsLibrary
      * 
      * @var array
      */
-    protected static $downloadsSortingOption = array(
-        'custom'         => 'TXT_DOWNLOADS_SETTINGS_CUSTOM_LABEL', 
-        'alphabetic'     => 'TXT_DOWNLOADS_SETTINGS_ALPHABETIC_LABEL', 
-        'newestToOldest' => 'TXT_DOWNLOADS_SETTINGS_NEWEST_TO_OLDEST_LABEL', 
-        'oldestToNewest' => 'TXT_DOWNLOADS_SETTINGS_OLDEST_TO_NEWEST_LABEL'
-    );
+    protected $downloadsSortingOption = array('custom', 'alphabetic', 'newestToOldest', 'oldestToNewest');
 
     /**
      * Categories setting option
      * 
      * @var array
      */
-    protected static $categoriesSortingOption = array(
-        'custom'         => 'TXT_DOWNLOADS_SETTINGS_CUSTOM_LABEL', 
-        'alphabetic'     => 'TXT_DOWNLOADS_SETTINGS_ALPHABETIC_LABEL'
-    );
+    protected $categoriesSortingOption = array('custom', 'alphabetic');
 
     public function __construct()
     {
@@ -394,11 +386,11 @@ class DownloadsLibrary
             return;
         }
 
-        foreach ($settingValues as $key => $value) {
-            $selectedOption = ($selected == $key) ? 'selected="selected"' : '';
+        foreach ($settingValues as $value) {
+            $selectedOption = ($selected == $value) ? 'selected="selected"' : '';
             $objTemplate->setVariable(array(
-                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE'    => $key,
-                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME'     => $_ARRAYLANG[$value],
+                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE'    => $value,
+                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME'     => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_'.  strtoupper($value).'_LABEL'],
                 'DOWNLOADS_SETTINGS_DROPDOWN_SELECTED_OPTION' => $selectedOption,
             ));
             $objTemplate->parse('downloads_settings_sorting_dropdown_' . $blockName);

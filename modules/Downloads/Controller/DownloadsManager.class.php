@@ -2663,10 +2663,10 @@ class DownloadsManager extends DownloadsLibrary
             $this->arrConfig['updated_file_time_limit']     = !empty($_POST['downloads_settings_updated_file_time_limit']) ? intval($_POST['downloads_settings_updated_file_time_limit']) : $this->arrConfig['updated_file_time_limit'];
             $this->arrConfig['associate_user_to_groups']    = !empty($_POST['downloads_settings_associate_user_to_groups_associated_groups']) ? implode(',', array_map('intval', $_POST['downloads_settings_associate_user_to_groups_associated_groups'])) : $this->arrConfig['associate_user_to_groups'];
             $this->arrConfig['downloads_sorting_order']     = (     !empty($_POST['downloads_settings_sorting_downloads']) 
-                                                                &&  in_array($_POST['downloads_settings_sorting_downloads'], array_keys(self::$downloadsSortingOption))
+                                                                &&  in_array($_POST['downloads_settings_sorting_downloads'], $this->downloadsSortingOption) 
                                                               ) ? contrexx_input2db($_POST['downloads_settings_sorting_downloads']) : $this->arrConfig['downloads_sorting_order'];
             $this->arrConfig['categories_sorting_order']    = (     !empty($_POST['downloads_settings_sorting_categories'])
-                                                                &&  in_array($_POST['downloads_settings_sorting_categories'], array_keys(self::$categoriesSortingOption))    
+                                                                &&  in_array($_POST['downloads_settings_sorting_categories'], $this->categoriesSortingOption) 
                                                               ) ? contrexx_input2db($_POST['downloads_settings_sorting_categories']) : $this->arrConfig['categories_sorting_order'];
 
             $this->updateSettings();
@@ -2690,8 +2690,8 @@ class DownloadsManager extends DownloadsLibrary
         }
 
         //Parse the option 'Downloads' and 'Categories' dropdown in the 'Sorting' section
-        $this->parseSettingsDropDown($this->objTemplate, self::$downloadsSortingOption, $this->arrConfig['downloads_sorting_order'], 'downloads');
-        $this->parseSettingsDropDown($this->objTemplate, self::$categoriesSortingOption, $this->arrConfig['categories_sorting_order'], 'categories');
+        $this->parseSettingsDropDown($this->objTemplate, $this->downloadsSortingOption, $this->arrConfig['downloads_sorting_order'], 'downloads');
+        $this->parseSettingsDropDown($this->objTemplate, $this->categoriesSortingOption, $this->arrConfig['categories_sorting_order'], 'categories');
         
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_SETTINGS'                        => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'],
