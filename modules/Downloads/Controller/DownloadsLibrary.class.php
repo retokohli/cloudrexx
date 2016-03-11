@@ -73,6 +73,27 @@ class DownloadsLibrary
         'associate_user_to_groups'      => ''
     );
 
+    /**
+     * Downloads setting option
+     * 
+     * @var array
+     */
+    protected static $downloadsSortingOption = array(
+        'custom'         => 'TXT_DOWNLOADS_SETTINGS_CUSTOM_LABEL', 
+        'alphabetic'     => 'TXT_DOWNLOADS_SETTINGS_ALPHABETIC_LABEL', 
+        'newestToOldest' => 'TXT_DOWNLOADS_SETTINGS_NEWEST_TO_OLDEST_LABEL', 
+        'oldestToNewest' => 'TXT_DOWNLOADS_SETTINGS_OLDEST_TO_NEWEST_LABEL'
+    );
+
+    /**
+     * Categories setting option
+     * 
+     * @var array
+     */
+    protected static $categoriesSortingOption = array(
+        'custom'         => 'TXT_DOWNLOADS_SETTINGS_CUSTOM_LABEL', 
+        'alphabetic'     => 'TXT_DOWNLOADS_SETTINGS_ALPHABETIC_LABEL'
+    );
 
     public function __construct()
     {
@@ -367,6 +388,8 @@ class DownloadsLibrary
         $selected,
         $blockName)
     {
+        global $_ARRAYLANG;
+
         if (empty($settingValues)) {
             return;
         }
@@ -375,7 +398,7 @@ class DownloadsLibrary
             $selectedOption = ($selected == $key) ? 'selected="selected"' : '';
             $objTemplate->setVariable(array(
                 'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE'    => $key,
-                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME'     => $value,
+                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME'     => $_ARRAYLANG[$value],
                 'DOWNLOADS_SETTINGS_DROPDOWN_SELECTED_OPTION' => $selectedOption,
             ));
             $objTemplate->parse('downloads_settings_sorting_dropdown_' . $blockName);

@@ -896,7 +896,10 @@ class DownloadsManager extends DownloadsLibrary
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $orderDirection = !empty($_GET['sort']) ? $_GET['sort'] : 'asc';
         $orderBy = !empty($_GET['by']) ? $_GET['by'] : '';
-        $arrOrder = empty($orderBy) ? $this->getDownloadsOrderBy() : array($orderBy => $orderDirection);
+        $arrOrder = empty($orderBy) 
+                    ? $this->getDownloadsOrderBy() 
+                    : array_merge(array($orderBy => $orderDirection), $this->getDownloadsOrderBy());
+        
         //$categoryId = !empty($_REQUEST['category_id']) ? intval($_REQUEST['category_id']) : 0;
         $actualSearchTerm = !empty($_GET['search_term']) ? $_GET['search_term'] : Null;
         $searchTerm = ($actualSearchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD']) ? Null : $actualSearchTerm;
@@ -2050,7 +2053,9 @@ class DownloadsManager extends DownloadsLibrary
 
         $objFWUser = \FWUser::getFWUserObject();
 
-        $arrOrder = empty($categoryOrderBy) ? $this->getCategoriesOrderBy() : array($categoryOrderBy => $categoryOrderDirection);
+        $arrOrder = empty($categoryOrderBy) 
+                    ? $this->getCategoriesOrderBy() 
+                    : array_merge(array($categoryOrderBy => $categoryOrderDirection), $this->getCategoriesOrderBy());
 
         $minColspan = 7;
 
@@ -2349,7 +2354,7 @@ class DownloadsManager extends DownloadsLibrary
 
         $arrSort = empty($downloadOrderBy) 
                     ? $this->getDownloadsOrderBy() 
-                    : array($downloadOrderBy => $downloadOrderDirection);
+                    : array_merge(array($downloadOrderBy => $downloadOrderDirection), $this->getDownloadsOrderBy());
         $objDownload = new Download();
         $objDownload->loadDownloads(array('category_id' => $objCategory->getId()), $searchTerm, $arrSort, null, $_CONFIG['corePagingLimit'], $downloadLimitOffset, true);
         $downloadsAvailable = $objDownload->EOF ? false : true;
@@ -2657,8 +2662,12 @@ class DownloadsManager extends DownloadsLibrary
             $this->arrConfig['new_file_time_limit']         = !empty($_POST['downloads_settings_new_file_time_limit']) ? intval($_POST['downloads_settings_new_file_time_limit']) : $this->arrConfig['new_file_time_limit'];
             $this->arrConfig['updated_file_time_limit']     = !empty($_POST['downloads_settings_updated_file_time_limit']) ? intval($_POST['downloads_settings_updated_file_time_limit']) : $this->arrConfig['updated_file_time_limit'];
             $this->arrConfig['associate_user_to_groups']    = !empty($_POST['downloads_settings_associate_user_to_groups_associated_groups']) ? implode(',', array_map('intval', $_POST['downloads_settings_associate_user_to_groups_associated_groups'])) : $this->arrConfig['associate_user_to_groups'];
-            $this->arrConfig['downloads_sorting_order']     = !empty($_POST['downloads_settings_sorting_downloads']) ? contrexx_input2db($_POST['downloads_settings_sorting_downloads']) : $this->arrConfig['downloads_sorting_order'];
-            $this->arrConfig['categories_sorting_order']    = !empty($_POST['downloads_settings_sorting_categories']) ? contrexx_input2db($_POST['downloads_settings_sorting_categories']) : $this->arrConfig['categories_sorting_order'];
+            $this->arrConfig['downloads_sorting_order']     = (     !empty($_POST['downloads_settings_sorting_downloads']) 
+                                                                &&  in_array($_POST['downloads_settings_sorting_downloads'], array_keys(self::$downloadsSortingOption))
+                                                              ) ? contrexx_input2db($_POST['downloads_settings_sorting_downloads']) : $this->arrConfig['downloads_sorting_order'];
+            $this->arrConfig['categories_sorting_order']    = (     !empty($_POST['downloads_settings_sorting_categories'])
+                                                                &&  in_array($_POST['downloads_settings_sorting_categories'], array_keys(self::$categoriesSortingOption))    
+                                                              ) ? contrexx_input2db($_POST['downloads_settings_sorting_categories']) : $this->arrConfig['categories_sorting_order'];
 
             $this->updateSettings();
         }
@@ -2681,14 +2690,8 @@ class DownloadsManager extends DownloadsLibrary
         }
 
         //Parse the option 'Downloads' and 'Categories' dropdown in the 'Sorting' section
-        $settingValues = array(
-            'custom'         => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_CUSTOM_LABEL'],
-            'alphabetic'     => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_ALPHABETIC_LABEL']
-        );
-        $this->parseSettingsDropDown($this->objTemplate, $settingValues, $this->arrConfig['categories_sorting_order'], 'categories');
-        $settingValues['newestToOldest'] = $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_NEWEST_TO_OLDEST_LABEL'];
-        $settingValues['oldestToNewest'] = $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_OLDEST_TO_NEWEST_LABEL'];
-        $this->parseSettingsDropDown($this->objTemplate, $settingValues, $this->arrConfig['downloads_sorting_order'], 'downloads');
+        $this->parseSettingsDropDown($this->objTemplate, self::$downloadsSortingOption, $this->arrConfig['downloads_sorting_order'], 'downloads');
+        $this->parseSettingsDropDown($this->objTemplate, self::$categoriesSortingOption, $this->arrConfig['categories_sorting_order'], 'categories');
         
         $this->objTemplate->setVariable(array(
             'TXT_DOWNLOADS_SETTINGS'                        => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'],

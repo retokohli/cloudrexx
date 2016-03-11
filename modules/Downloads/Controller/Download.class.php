@@ -1021,11 +1021,15 @@ class Download {
 
         if (is_array($arrSort)) {
             foreach ($arrSort as $attribute => $direction) {
-                if (isset($this->arrAttributes['core'][$attribute])) {
-                    $arrSortExpressions[] = ($attribute == 'order' && $joinCategoryTbl ? 'tblRC' : 'tblD').'.`'.$attribute.'` '.$direction;
-                } elseif (isset($this->arrAttributes['locale'][$attribute])) {
-                    $arrSortExpressions[] = 'tblL.`'.$attribute.'` '.$direction;
-                    $joinLocaleTbl = true;
+                if (in_array(strtolower($direction), array('asc', 'desc'))) {
+                    if (isset($this->arrAttributes['core'][$attribute])) {
+                        $arrSortExpressions[] = ($attribute == 'order' && $joinCategoryTbl ? 'tblRC' : 'tblD').'.`'.$attribute.'` '.$direction;
+                    } elseif (isset($this->arrAttributes['locale'][$attribute])) {
+                        $arrSortExpressions[] = 'tblL.`'.$attribute.'` '.$direction;
+                        $joinLocaleTbl = true;
+                    }
+                } elseif ($attribute == 'special') {
+                    $arrSortExpressions[] = $direction;
                 }
             }
         }
