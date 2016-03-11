@@ -393,9 +393,10 @@ class DownloadsLibrary
         switch ($this->arrConfig['downloads_sorting_order']) {
             case 'custom':
                 $orderBy['order'] = 'ASC';
+                $orderBy['name'] = 'ASC';
                 break;
             case 'alphabetic':
-                $orderBy['name'] = 'DESC';
+                $orderBy['name'] = 'ASC';
                 break;
             case 'newestToOldest':
                 $orderBy['ctime'] = 'DESC';
@@ -420,9 +421,10 @@ class DownloadsLibrary
         switch ($this->arrConfig['categories_sorting_order']) {
             case 'custom':
                 $orderBy['order'] = 'ASC';
+                $orderBy['name'] = 'ASC';
                 break;
             case 'alphabetic':
-                $orderBy['name'] = 'DESC';
+                $orderBy['name'] = 'ASC';
                 break;
         }
         $orderBy['id'] = 'ASC';
