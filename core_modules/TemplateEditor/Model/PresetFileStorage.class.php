@@ -72,11 +72,10 @@ class PresetFileStorage implements Storable
      */
     public function retrieve($name)
     {
+        $presetFile = $this->path . '/options/presets/' . $name . '.yml';
         if (!file_exists(
             \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
-                ->getFilePath(
-                    $this->path . '/options/presets/' . $name . '.yml'
-                )
+                ->getFilePath($presetFile)
             )
         ) {
             throw new PresetRepositoryException(
@@ -85,9 +84,7 @@ class PresetFileStorage implements Storable
         }
         $file = file_get_contents(
             \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
-                ->getFilePath(
-                    $this->path . '/options/presets/' . $name . '.yml'
-                )
+                ->getFilePath($presetFile)
         );
         if ($file) {
             try {

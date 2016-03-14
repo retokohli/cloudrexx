@@ -35,6 +35,7 @@ use Cx\Core\Html\Sigma;
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Robin Glauser <robin.glauser@cloudrexx.com>
+ * @author      Adrian Berger <adrian.berger@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
@@ -91,7 +92,8 @@ class TextOption extends Option
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
             $this->cx->getCodeBaseCoreModulePath()
-            . '/TemplateEditor/View/Template/Backend/TextOption.html'
+            . '/TemplateEditor/View/Template/Backend/' .
+            end(explode('\\', get_class($this))) . '.html'
         );
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $this->string);
         $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
