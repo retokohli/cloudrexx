@@ -39,16 +39,6 @@ namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 class TextareaOption extends TextOption
 {
     /**
-     * @param String $name Name of the option
-     * @param array  $translations Array with translations for option.
-     * @param array  $data
-     */
-    public function __construct($name, $translations, $data)
-    {
-        parent::__construct($name, $translations, $data);
-    }
-
-    /**
      * Render the option in the frontend.
      *
      * @param Sigma $template
