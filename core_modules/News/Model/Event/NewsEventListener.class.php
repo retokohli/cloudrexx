@@ -123,11 +123,16 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         }
 
         $defaultLangId = \FWLanguage::getDefaultLangId();
-        foreach ($eventArgs[0] as $args) {
+        foreach ($eventArgs[0]['langData'] as $args) {
             $langId     = isset($args['langId']) ? $args['langId'] : 0;
             $langStatus = isset($args['status']) ? $args['status'] : 0;
 
-            if (empty($langId) || !isset($args['status'])) {
+            if (    empty($langId) 
+                ||  !isset($args['status']) 
+                ||  (    !$langStatus 
+                     &&  !$eventArgs[0]['langRemovalStatus']
+                    )
+            ) {
                 continue;
             }
 
@@ -142,16 +147,14 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                                     `text`, 
                                     `teaser_text`
                                 )
-                            SELECT * FROM 
-                                (SELECT `news_id`, 
+                                SELECT `news_id`, 
                                         ' . $langId . ',
                                         `is_active`, 
                                         `title`, 
                                         `text`, 
                                         `teaser_text` 
                                     FROM `' . DBPREFIX . 'module_news_locale` 
-                                    WHERE lang_id = ' . $defaultLangId . '
-                                ) as tmp' 
+                                    WHERE lang_id = ' . $defaultLangId
                         :   'DELETE FROM `' . DBPREFIX . 'module_news_locale` 
                                 WHERE lang_id = ' . $langId;
             $objDatabase->Execute($newsQuery);
@@ -164,13 +167,11 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                                     `lang_id`, 
                                     `name` 
                                 )
-                            SELECT * FROM 
-                                (SELECT `category_id`, 
+                                SELECT `category_id`, 
                                         ' . $langId . ',
                                         `name` 
                                     FROM `' . DBPREFIX . 'module_news_categories_locale` 
-                                    WHERE lang_id = ' . $defaultLangId . '
-                                ) as tmp'  
+                                    WHERE lang_id = ' . $defaultLangId
                         :   'DELETE FROM `' . DBPREFIX . 'module_news_categories_locale` 
                                 WHERE lang_id = ' . $langId;
             $objDatabase->Execute($catQuery);
