@@ -2200,24 +2200,31 @@ CREATE TABLE `contrexx_module_media_settings` (
   `value` varchar(250) NOT NULL,
   KEY `name` (`name`)
 ) ENGINE=InnoDB;
-CREATE TABLE `contrexx_module_mediadir_categories` (
-  `id` int(7) NOT NULL AUTO_INCREMENT,
-  `parent_id` int(7) NOT NULL,
-  `order` int(7) NOT NULL,
-  `show_subcategories` int(11) NOT NULL,
-  `show_entries` int(1) NOT NULL,
+CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) DEFAULT NULL,
+  `category_order` int(11) NOT NULL,
+  `show_subcategories` tinyint(1) NOT NULL,
+  `show_entries` tinyint(1) NOT NULL,
   `picture` mediumtext NOT NULL,
-  `active` int(1) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_mediadir_categories_names` (
+  `active` tinyint(1) NOT NULL,
+  `lft` int(11) NOT NULL,
+  `rgt` int(11) NOT NULL,
+  `lvl` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_D21E73DE727ACA70` (`parent_id`),
+  CONSTRAINT `contrexx_module_mediadir_categories_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_module_mediadir_categories` (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_categories_names` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `category_id` int(11) NOT NULL,
   `lang_id` int(1) NOT NULL,
-  `category_id` int(7) NOT NULL,
   `category_name` varchar(255) NOT NULL,
   `category_description` mediumtext NOT NULL,
-  KEY `lang_id` (`lang_id`),
-  KEY `category_id` (`category_id`)
-) ENGINE=MyISAM;
+  PRIMARY KEY (`id`),
+  KEY `IDX_D086836E12469DE2` (`category_id`),
+  CONSTRAINT `contrexx_module_mediadir_categories_names_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `contrexx_module_mediadir_categories` (`id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_mediadir_comments` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
   `entry_id` int(7) NOT NULL,

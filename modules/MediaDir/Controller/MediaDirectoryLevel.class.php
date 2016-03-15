@@ -504,13 +504,13 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         }                    
                     }
                     
-                    if($arrLevel['levelShowCategories'] == 1){
-                        if($bolExpandLevel) {
-	                    	$objCategories = new MediaDirectoryCategory(null, null, 0, $this->moduleName);
-	                        $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : null;
-	                        if($_GET['lid'] == $arrLevel['levelId']) {
-	                           $this->strNavigationPlaceholder .= $objCategories->listCategories($this->_objTpl, 6, $intCategoryId, null, null, null, intval(count($arrParentIds)+1));
-	                        }
+                    if ($arrLevel['levelShowCategories'] == 1) {
+                        if ($bolExpandLevel) {
+                            $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : null;
+                            $objCategories = new MediaDirectoryCategory($intCategoryId, null, $this->moduleName);
+                            if ($_GET['lid'] == $arrLevel['levelId']) {
+                                $this->strNavigationPlaceholder .= $objCategories->listCategories($this->_objTpl, 6);
+                            }
                         }
                     }
 

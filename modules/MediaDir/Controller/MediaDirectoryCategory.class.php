@@ -35,6 +35,9 @@
  * @todo        Edit PHP DocBlocks!
  */
 namespace Cx\Modules\MediaDir\Controller;
+
+use Cx\Modules\MediaDir\Model\Entity\Category as Category;
+
 /**
  * Media Directory Category Class
  *
@@ -45,280 +48,263 @@ namespace Cx\Modules\MediaDir\Controller;
  */
 class MediaDirectoryCategory extends MediaDirectoryLibrary
 {
+    /**
+     * Category id
+     *
+     * @var integer
+     */
     private $intCategoryId;
+
+    /**
+     * Parent category id
+     *
+     * @var integer
+     */
     private $intParentId;
-    private $intNumEntries;
-    private $bolGetChildren;
-    private $intRowCount;
-    private $arrExpandedCategoryIds = array();
 
-    private $strSelectedOptions;
-    private $strNotSelectedOptions;
-    private $arrSelectedCategories;
-    private $intCategoriesSortCounter = 0;
-    private $strNavigationPlaceholder;
+    /**
+     * Count number of entries for each categories
+     *
+     * @var boolean
+     */
+    protected $countEntries = false;
 
-    public $arrCategories = array();
-
+    /**
+     * Category repository
+     *
+     * @var \Cx\Modules\MediaDir\Model\Repository\CategoryRepository
+     */
+    public $categoryRepository;
 
     /**
      * Constructor
      */
-    function __construct($intCategoryId=null, $intParentId=null, $bolGetChildren=1, $name)
+    function __construct($intCategoryId = null, $intParentId = null, $name = '')
     {
-        $this->intCategoryId = intval($intCategoryId);
-        $this->intParentId = intval($intParentId);
-        $this->bolGetChildren = intval($bolGetChildren);
-        parent::__construct('.', $name);    
+        $this->intCategoryId  = contrexx_input2int($intCategoryId);
+        $this->intParentId    = contrexx_input2int($intParentId);
+
+        parent::__construct('.', $name);
         parent::getSettings();
         parent::getFrontendLanguages();
-        $this->loadCategories();
+
+        if ($this->arrSettings['settingsCountEntries'] == 1 || $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            $this->countEntries = true;
+        }
+        $this->categoryRepository = $this->em->getRepository('Cx\Modules\MediaDir\Model\Entity\Category');
     }
 
-    public function loadCategories() {
-        $this->arrCategories = self::getCategories($this->intCategoryId, $this->intParentId);
-    }
-
-    function getCategories($intCategoryId=null, $intParentId=null)
+    /**
+     * Setter for category id
+     *
+     * @param integer $categoryId
+     */
+    public function setCategoryId($categoryId)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
+        $this->intCategoryId = $categoryId;
+    }
 
-        $arrCategories = array();
+    /**
+     * Get the RecursiveIteratorIterator instance by category
+     *
+     * @return \RecursiveIteratorIterator
+     */
+    public function getCategoryIterator(Category $category)
+    {
+        $recursiveCategoryIterator  = new \RecursiveIteratorIterator(
+            $category,
+            \RecursiveIteratorIterator::SELF_FIRST,
+            \RecursiveIteratorIterator::CATCH_GET_CHILD
+        );
 
-        if(!empty($intCategoryId)) {
-            $whereCategoryId = "cat.id='".$intCategoryId."' AND";
-            $whereParentId = '';
-        } else {
-            if(!empty($intParentId)) {
-                $whereParentId = "AND (cat.parent_id='".$intParentId."') ";
+        return $recursiveCategoryIterator;
+    }
+
+    /**
+     * Parse the category details
+     *
+     * @param \Cx\Core\Html\Sigma   $objTpl             Instance of template object
+     * @param Category              $category           Instance of category to parse
+     * @param string                $strCategoryIcon    String category icon
+     * @param string                $strCategoryClass   Class name for the category
+     * @param string                $blockName          Parse block name
+     */
+    public function parseCategoryDetail(
+        \Cx\Core\Html\Sigma $objTpl,
+        Category $category,
+        $strCategoryIcon = null,
+        $strCategoryClass = 'inactive',
+        $blockName = 'CategoriesList'
+    ) {
+        $intSpacerSize = ($category->getLvl() - 1) * 21;
+        $spacer        = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
+
+        $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
+        $categoryName = $locale ? $locale->getCategoryName() : '';
+        $categoryDesc = $locale ? $locale->getCategoryDescription() : '';
+        //parse variables
+        $objTpl->setVariable(array(
+            $this->moduleLangVar.'_CATEGORY_ID'                   => $category->getId(),
+            $this->moduleLangVar.'_CATEGORY_ORDER'                => $category->getOrder(),
+            $this->moduleLangVar.'_CATEGORY_NAME'                 => contrexx_raw2xhtml($categoryName),
+            $this->moduleLangVar.'_CATEGORY_DESCRIPTION'          => $categoryDesc,
+            $this->moduleLangVar.'_CATEGORY_DESCRIPTION_ESCAPED'  => strip_tags($categoryDesc),
+            $this->moduleLangVar.'_CATEGORY_PICTURE'              => $category->getPicture(),
+            $this->moduleLangVar.'_CATEGORY_NUM_ENTRIES'          => $this->countEntries($category->getId()),
+            $this->moduleLangVar.'_CATEGORY_ICON'                 => $spacer.$strCategoryIcon,
+            $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_ACTION' => $category->getActive() == 0 ? 1 : 0,
+            $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_IMG'    => $category->getActive() == 0 ? 'off' : 'on',
+            $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $category->getLvl(),
+            $this->moduleLangVar.'_CATEGORY_ACTIVE_STATUS'        => $strCategoryClass,
+        ));
+
+        $objTpl->parse($this->moduleNameLC . $blockName);
+    }
+
+    /**
+     * Parse category tree
+     *
+     * @param \Cx\Core\Html\Sigma   $objTpl                 Instance of template
+     * @param Category              $category               Root category to parse
+     * @param array                 $expandedCategoryIds    Expanded category array
+     * @param boolean               $expandAll              True to expand all categories
+     * @param boolean               $checkShowSubCategory   True to check the show subcategory option
+     */
+    public function parseCategoryTree(
+        \Cx\Core\Html\Sigma $objTpl,
+        Category $category,
+        $expandedCategoryIds = array(),
+        $expandAll = false,
+        $checkShowSubCategory = false
+    ) {
+        foreach ($category as $subcategory) {
+            $hasChildren = count($subcategory->getAllChildren());
+            $isExpanded  = (!$checkShowSubCategory || $subcategory->getShowSubcategories())
+                           && ($expandAll || in_array($subcategory->getId(), $expandedCategoryIds));
+
+            $strCategoryClass = 'inactive';
+            if ($hasChildren) {
+                if ($isExpanded) {
+                    $expCatId = $subcategory->getParent()->getId();
+                    $iconFile = 'minuslink.gif';
+                    $strCategoryClass = 'active';
+                } else {
+                    $expCatId = $subcategory->getId();
+                    $iconFile = 'pluslink.gif';
+                }
+                $strCategoryIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_cat='. $expCatId .'"><img src="../core/Core/View/Media/icons/'. $iconFile .'" border="0" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" /></a>';
             } else {
-                $whereParentId = "AND (cat.parent_id='0') ";
+                $strCategoryIcon = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="11" height="11" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" />';
             }
+            $this->parseCategoryDetail($objTpl, $subcategory, $strCategoryIcon, $strCategoryClass);
 
-            $whereCategoryId = null;
-        }
-
-        if($objInit->mode == 'frontend') {
-            $whereActive = "AND (cat.active='1') ";
-        } else {
-			$whereActive = '';
-		}
-
-        switch($this->arrSettings['settingsCategoryOrder']) {
-            case 0;
-                //custom order
-                $sortOrder = "cat.`order` ASC";
-                break;
-            case 1;
-            case 2;
-                //abc order
-                $sortOrder = "cat_names.`category_name`";
-                break;
-        }
-
-        $objCategories = $objDatabase->Execute("
-            SELECT
-                cat.`id` AS `id`,
-                cat.`parent_id` AS `parent_id`,
-                cat.`order` AS `order`,
-                cat.`show_entries` AS `show_entries`,
-                cat.`show_subcategories` AS `show_subcategories`,
-                cat.`picture` AS `picture`,
-                cat.`active` AS `active`,
-                cat_names.`category_name` AS `name`,
-                cat_names.`category_description` AS `description`
-            FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_categories AS cat,
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names AS cat_names
-            WHERE
-                ($whereCategoryId cat_names.category_id=cat.id)
-                $whereParentId
-                $whereActive
-                AND (cat_names.lang_id='".$_LANGID."')
-            ORDER BY
-                ".$sortOrder."
-        ");
-
-        if ($objCategories !== false) {
-            while (!$objCategories->EOF) {
-                $arrCategory = array();
-                $arrCategoryName = array();
-                $arrCategoryDesc = array();
-                $this->intNumEntries = 0;
-                $arrCategory['catNumEntries'] = 0;
-
-                //get lang attributes
-                $arrCategoryName[0] = $objCategories->fields['name'];
-                $arrCategoryDesc[0] = $objCategories->fields['description'];
-
-                $objCategoryAttributes = $objDatabase->Execute("
-                    SELECT
-                        `lang_id` AS `lang_id`,
-                        `category_name` AS `name`,
-                        `category_description` AS `description`
-                    FROM
-                        ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names
-                    WHERE
-                        category_id=".$objCategories->fields['id']."
-                ");
-
-                if ($objCategoryAttributes !== false) {
-                    while (!$objCategoryAttributes->EOF) {
-                        $arrCategoryName[$objCategoryAttributes->fields['lang_id']] = htmlspecialchars($objCategoryAttributes->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                        $arrCategoryDesc[$objCategoryAttributes->fields['lang_id']] = htmlspecialchars($objCategoryAttributes->fields['description'], ENT_QUOTES, CONTREXX_CHARSET);
-
-                        $objCategoryAttributes->MoveNext();
-                    }
-                }
-
-                $arrCategory['catId'] = intval($objCategories->fields['id']);
-                $arrCategory['catParentId'] = intval($objCategories->fields['parent_id']);
-                $arrCategory['catOrder'] = intval($objCategories->fields['order']);
-                $arrCategory['catName'] = $arrCategoryName;
-                $arrCategory['catDescription'] = $arrCategoryDesc;
-                $arrCategory['catPicture'] = htmlspecialchars($objCategories->fields['picture'], ENT_QUOTES, CONTREXX_CHARSET);
-                if($this->arrSettings['settingsCountEntries'] == 1 || $objInit->mode == 'backend') {
-                    $arrCategory['catNumEntries'] = $this->countEntries(intval($objCategories->fields['id']), isset($_GET['lid']) ? intval($_GET['lid']) : NULL);
-                }
-                $arrCategory['catShowEntries'] = intval($objCategories->fields['show_entries']);
-                $arrCategory['catShowSubcategories'] = intval($objCategories->fields['show_subcategories']);
-                $arrCategory['catActive'] = intval($objCategories->fields['active']);
-
-                if($this->bolGetChildren){
-                    $arrCategory['catChildren'] = self::getCategories(null, $objCategories->fields['id']);
-                }
-
-                $arrCategories[$objCategories->fields['id']] = $arrCategory;
-                $objCategories->MoveNext();
+            if ($isExpanded) {
+                $this->parseCategoryTree($objTpl, $subcategory, $expandedCategoryIds, $expandAll);
             }
         }
-
-        return $arrCategories;
     }
 
-
-
-    function listCategories($objTpl, $intView, $intCategoryId=null, $arrParentIds=null, $intEntryId=null, $arrExistingBlocks=null, $intStartLevel=1)
+    /**
+     * Get categories related to the entry
+     *
+     * @param integer $entryId Entry id
+     *
+     * @return array Array of category id's
+     */
+    public function getSelectedCategoriesByEntryId($entryId)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $objInit;
+        global $objDatabase;
 
-        if(!isset($arrParentIds)) {
-            $arrCategories = $this->arrCategories;
-        } else {
-            $arrCategoryChildren = $this->arrCategories;
-
-            foreach ($arrParentIds as $key => $intParentId) {
-                $arrCategoryChildren = $arrCategoryChildren[$intParentId]['catChildren'];
-            }
-            $arrCategories = $arrCategoryChildren;
+        $entryId = contrexx_input2int($entryId);
+        if (!$entryId) {
+            return array();
         }
+        $categories = $objDatabase->Execute('SELECT
+                                               `category_id`
+                                            FROM
+                                                `'. DBPREFIX .'module_'. $this->moduleTablePrefix .'_rel_entry_categories`
+                                            WHERE
+                                                `entry_id` = "'. $entryId .'"');
+        if (!$categories) {
+            return array();
+        }
+        $selectedCategories = array();
+        while (!$categories->EOF) {
+            $selectedCategories[] = $categories->fields['category_id'];
+            $categories->MoveNext();
+        }
+        return $selectedCategories;
+    }
 
+    /**
+     * List the categories by the view type
+     *
+     * @param mixed   $objTpl             Instance of template or null
+     * @param integer $intView            View type
+     * @param integer $intEntryId         Entry id
+     * @param array   $arrExistingBlocks  Existing blocks to parse
+     *
+     * @return string
+     */
+    function listCategories($objTpl, $intView, $intEntryId = null, $arrExistingBlocks = null)
+    {
 
         switch ($intView) {
             case 1:
                 //Backend View
-                $exp_cat = isset($_GET['exp_cat']) ? $_GET['exp_cat'] : '';
-                foreach ($arrCategories as $key => $arrCategory) {
-                    //generate space
-                    $spacer = null;
-                    $intSpacerSize = null;
-                    $intSpacerSize = (count($arrParentIds)*21);
-                    $spacer .= '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
+                $expandCategory      = isset($_GET['exp_cat']) ? $_GET['exp_cat'] : '';
+                $expandedCategoryIds = $this->getExpandedCategories($expandCategory);
 
-                    //check expanded categories
-                    if($exp_cat == 'all') {
-                        $bolExpandCategory = true;
-                    } else {
-                        $this->arrExpandedCategoryIds = array();
-                        $bolExpandCategory = $this->getExpandedCategories($exp_cat, array($arrCategory));
-                    }
-
-                    if(!empty($arrCategory['catChildren'])) {
-                        if((in_array($arrCategory['catId'], $this->arrExpandedCategoryIds) && $bolExpandCategory) || $exp_cat == 'all'){
-                            $strCategoryIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_cat='.$arrCategory['catParentId'].'"><img src="../core/Core/View/Media/icons/minuslink.gif" border="0" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" /></a>';
-                        } else {
-                            $strCategoryIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_cat='.$arrCategory['catId'].'"><img src="../core/Core/View/Media/icons/pluslink.gif" border="0" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" /></a>';
-                        }
-                    } else {
-                        $strCategoryIcon = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="11" height="11" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" />';
-                    }
-
-                    //parse variables
-                    $objTpl->setVariable(array(
-                        $this->moduleLangVar.'_CATEGORY_ROW_CLASS' =>  $this->intRowCount%2==0 ? 'row1' : 'row2',
-                        $this->moduleLangVar.'_CATEGORY_ID' => $arrCategory['catId'],
-                        $this->moduleLangVar.'_CATEGORY_ORDER' => $arrCategory['catOrder'],
-                        $this->moduleLangVar.'_CATEGORY_NAME' => contrexx_raw2xhtml($arrCategory['catName'][0]),
-                        $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => $arrCategory['catDescription'][0],
-                        $this->moduleLangVar.'_CATEGORY_DESCRIPTION_ESCAPED' => strip_tags($arrCategory['catDescription'][0]),
-                        $this->moduleLangVar.'_CATEGORY_PICTURE' => $arrCategory['catPicture'],
-                        $this->moduleLangVar.'_CATEGORY_NUM_ENTRIES' => $arrCategory['catNumEntries'],
-                        $this->moduleLangVar.'_CATEGORY_ICON' => $spacer.$strCategoryIcon,
-                        $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_ACTION' => $arrCategory['catActive'] == 0 ? 1 : 0,
-                        $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_IMG' => $arrCategory['catActive'] == 0 ? 'off' : 'on',
-                    ));
-
-                    $objTpl->parse($this->moduleNameLC.'CategoriesList');
-                    $arrParentIds[] = $arrCategory['catId'];
-                    $this->intRowCount++;
-
-                    //get children
-                    if(!empty($arrCategory['catChildren'])){
-                        if($bolExpandCategory) {
-                            self::listCategories($objTpl, 1, $intCategoryId, $arrParentIds);
-                        }
-                    }
-
-                    @array_pop($arrParentIds);
-                }
+                $this->parseCategoryTree(
+                    $objTpl,
+                    $this->categoryRepository->getRoot(),
+                    $expandedCategoryIds,
+                    $expandCategory == 'all'
+                );
                 break;
             case 2:
                 //Frontend View
                 $intNumBlocks = count($arrExistingBlocks);
                 $strIndexHeader = '';
 
-
-                if($this->arrSettings['settingsCategoryOrder'] == 2) {
-                    $i = $intNumBlocks-1;
-                } else {
-                    $i = 0;
-                }
+                $i = $this->arrSettings['settingsCategoryOrder'] == 2
+                        ? $intNumBlocks - 1
+                        : 0;
 
                 //set first index header
                 if($this->arrSettings['settingsCategoryOrder'] == 2) {
                     $strFirstIndexHeader = null;
                 }
 
-                $intNumCategories = count($arrCategories);
+                $category = $this->categoryRepository->findOneById($this->intParentId);
+                if (!$category) {
+                    $category = $this->categoryRepository->getRoot();
+                }
+                $intNumCategories = count($category);
 
-                if($intNumCategories%$intNumBlocks != 0) {
-                	$intNumCategories = $intNumCategories+($intNumCategories%$intNumBlocks);
+                if ($intNumCategories % $intNumBlocks != 0) {
+                    $intNumCategories = $intNumCategories + ($intNumCategories % $intNumBlocks);
                 }
 
-                $intNumPerRow = intval($intNumCategories/$intNumBlocks);
-                $x=0;
+                $intNumPerRow = intval($intNumCategories / $intNumBlocks);
+                $x = 0;
 
-                foreach ($arrCategories as $key => $arrCategory) {
-                    $strLevelId = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
+                foreach ($category as $category) {
+                    $strLevelId        = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
 
+                    $strIndexHeaderTag = null;
                     if($this->arrSettings['settingsCategoryOrder'] == 2) {
                         $strIndexHeader = strtoupper(substr($arrCategory['catName'][0],0,1));
 
-                        if($strFirstIndexHeader != $strIndexHeader) {
-                            if ($i < $intNumBlocks-1) {
-                                ++$i;
-                            } else {
-                                $i = 0;
-                            }
-                            $strIndexHeaderTag = '<span class="'.$this->moduleNameLC.'LevelCategoryIndexHeader">'.$strIndexHeader.'</span><br />';
-                        } else {
-                            $strIndexHeaderTag = null;
+                        if ($strFirstIndexHeader != $strIndexHeader) {
+                            $i = $i < $intNumBlocks - 1 ? $i + 1 : 0;
+                            $strIndexHeaderTag = '<span class="' . $this->moduleNameLC . 'LevelCategoryIndexHeader">' . $strIndexHeader . '</span><br />';
                         }
                     } else {
-                        if($x == $intNumPerRow) {
+                        if ($x == $intNumPerRow) {
                             ++$i;
 
-                            if($i == $intNumBlocks) {
+                            if ($i == $intNumBlocks) {
                                 $i = 0;
                             }
 
@@ -326,31 +312,32 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         } else {
                             $x++;
                         }
-
-                        $strIndexHeaderTag = null;
                     }
 
                     //get ids
-                    if(isset($_GET['cmd'])) {
-                        $strCategoryCmd = '&amp;cmd='.$_GET['cmd'];
-                    } else {
-                        $strCategoryCmd = null;
-                    }
+                    $strCategoryCmd = isset($_GET['cmd'])
+                                        ? '&amp;cmd='.$_GET['cmd']
+                                        : '';
 
                     $childrenString = $this->createCategorieTree(
-                        $arrCategory,$strCategoryCmd,$strLevelId
+                        $category,
+                        $strCategoryCmd,
+                        $strLevelId
                     );
+                    $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
+                    $categoryName = $locale ? $locale->getCategoryName() : '';
+                    $categoryDesc = $locale ? $locale->getCategoryDescription() : '';
 
                     //parse variables
                     $objTpl->setVariable(array(
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrCategory['catId'],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrCategory['catName'][0]),
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$arrCategory['catId'].'">'.contrexx_raw2xhtml($arrCategory['catName'][0]).'</a>',
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrCategory['catDescription'][0],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategory['catPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrCategory['catName'][0]).'" />',
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategory['catPicture'],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategory['catNumEntries'],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_CHILDREN' => $childrenString,
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $category->getId(),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_NAME'           => contrexx_raw2xhtml($categoryName),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK'           => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$category->getId().'">'.contrexx_raw2xhtml($categoryName).'</a>',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION'    => contrexx_raw2xhtml($categoryDesc),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE'        => '<img src="'.$category->getPicture().'" border="0" alt="'.contrexx_raw2xhtml($categoryName).'" />',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $category->getPicture(),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES'    => count($category),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_CHILDREN'       => $childrenString,
                     ));
 
                     $intBlockId = $arrExistingBlocks[$i];
@@ -364,353 +351,266 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 break;
             case 3:
                 //Category Dropdown Menu
-				$strDropdownOptions = '';
-                foreach ($arrCategories as $key => $arrCategory) {
-                    $spacer = null;
-                    $intSpacerSize = null;
+                $recursiveCategoryIterator = $this->getCategoryIterator($this->categoryRepository->getRoot());
 
-                    if($arrCategory['catId'] == $intCategoryId) {
-                        $strSelected = 'selected="selected"';
-                    } else {
-                        $strSelected = '';
-                    }
+		$strDropdownOptions = '';
+                foreach ($recursiveCategoryIterator as $category) {
+                    $strSelected  = $this->intCategoryId == $category->getId() ? 'selected="selected"' : '';
+                    $spacer       = str_repeat('----', $recursiveCategoryIterator->getDepth());
+                    $spacer      .= $recursiveCategoryIterator->getDepth() > 0 ? '&nbsp;' : '';
+                    $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
+                    $categoryName = $locale ? $locale->getCategoryName() : '';
 
-                    //generate space
-                    $intSpacerSize = (count($arrParentIds));
-                    for($i = 0; $i < $intSpacerSize; $i++) {
-                        $spacer .= "----";
-                    }
-
-                    if($spacer != null) {
-                    	$spacer .= "&nbsp;";
-                    }
-
-                    $strDropdownOptions .= '<option value="'.$arrCategory['catId'].'" '.$strSelected.' >'.$spacer.contrexx_raw2xhtml($arrCategory['catName'][0]).'</option>';
-
-                    if(!empty($arrCategory['catChildren'])) {
-                        $arrParentIds[] = $arrCategory['catId'];
-                        $strDropdownOptions .= self::listCategories($objTpl, 3, $intCategoryId, $arrParentIds);
-                        @array_pop($arrParentIds);
-                    }
+                    $strDropdownOptions .= '<option value="'. $category->getId() .'" '. $strSelected .' >'. $spacer . contrexx_raw2xhtml($categoryName) .'</option>';
                 }
-
                 return $strDropdownOptions;
                 break;
             case 4:
                 //Category Selector (modify view)
-                if(!isset($this->arrSelectedCategories) && $intEntryId!=null) {
-                    $this->arrSelectedCategories = array();
+                $arrSelectedCategories     = $this->getSelectedCategoriesByEntryId($intEntryId);
+                $recursiveCategoryIterator = $this->getCategoryIterator($this->categoryRepository->getRoot());
 
-                    $objCategorySelector = $objDatabase->Execute("
-                        SELECT
-                            `category_id`
-                        FROM
-                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories
-                        WHERE
-                            `entry_id` = '".$intEntryId."'
-                    ");
+                $strSelectedOptions = $strNotSelectedOptions = '';
+                foreach ($recursiveCategoryIterator as $category) {
+                    $spacer       = str_repeat('----', $recursiveCategoryIterator->getDepth());
+                    $spacer      .= $recursiveCategoryIterator->getDepth() > 0 ? '&nbsp;' : '';
+                    $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
+                    $categoryName = $locale ? $locale->getCategoryName() : '';
 
-                    if ($objCategorySelector !== false) {
-                        while (!$objCategorySelector->EOF) {
-                            $this->arrSelectedCategories[] = intval($objCategorySelector->fields['category_id']);
-                            $objCategorySelector->MoveNext();
-                        }
-                    }
-                }
-
-                foreach ($arrCategories as $key => $arrCategory) {
-                    $spacer = null;
-                    $intSpacerSize = null;
-                    $strOptionId = $arrCategory['catId'];
-
-                     //generate space
-                    $intSpacerSize = (count($arrParentIds));
-                    for($i = 0; $i < $intSpacerSize; $i++) {
-                        $spacer .= "----";
-                    }
-
-                    if($spacer != null) {
-                        $spacer .= "&nbsp;";
-                    }
-
-                    if(in_array($arrCategory['catId'], $this->arrSelectedCategories)) {
-                      $this->strSelectedOptions .= '<option name="'.$strOptionId.'" value="'.$arrCategory['catId'].'">'.$spacer.contrexx_raw2xhtml($arrCategory['catName'][0]).'</option>';
+                    $option = '<option value="'. $category->getId() .'">'. $spacer . contrexx_raw2xhtml($categoryName).'</option>';
+                    if (in_array($category->getId(), $arrSelectedCategories)) {
+                        $strSelectedOptions .= $option;
                     } else {
-                      $this->strNotSelectedOptions .= '<option name="'.$strOptionId.'" value="'.$arrCategory['catId'].'">'.$spacer.contrexx_raw2xhtml($arrCategory['catName'][0]).'</option>';
-                    }
-
-                    $this->intCategoriesSortCounter++;
-                    if(!empty($arrCategory['catChildren'])) {
-                        $arrParentIds[] = $arrCategory['catId'];
-                        self::listCategories($objTpl, 4, $intCategoryId, $arrParentIds, $intEntryId);
-                        @array_pop($arrParentIds);
+                        $strNotSelectedOptions .= $option;
                     }
                 }
 
-                $arrSelectorOptions['selected'] = $this->strSelectedOptions;
-                $arrSelectorOptions['not_selected'] = $this->strNotSelectedOptions;
+                $arrSelectorOptions['selected']     = $strSelectedOptions;
+                $arrSelectorOptions['not_selected'] = $strNotSelectedOptions;
 
                 return $arrSelectorOptions;
-                
                 break;
             case 5:
                 //Frontend View Detail
+                $category  = $this->categoryRepository->findOneById($this->intCategoryId);
+                if (!$category) {
+                    $objTpl->hideBlock($this->moduleNameLC.'CategoryLevelDetail');
+                    return;
+                }
+
                 $strLevelId = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
-                
-                $thumbImage = $this->getThumbImage($arrCategories[$intCategoryId]['catPicture']);
+                $categoryName = $categoryDescription = '';
+                $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
+                if ($locale) {
+                    $categoryName        = $locale->getCategoryName();
+                    $categoryDescription = $locale->getCategoryDescription();
+                }
+                $thumbImage   = $this->getThumbImage($category->getPicture());
                 $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrCategories[$intCategoryId]['catId'],
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]),
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$arrCategories[$intCategoryId]['catId'].'">'.contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]).'</a>',
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrCategories[$intCategoryId]['catDescription'][0],
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'. $thumbImage .'" border="0" alt="'.$arrCategories[$intCategoryId]['catName'][0].'" />',
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategories[$intCategoryId]['catNumEntries'],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $category->getId(),
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_NAME'           => contrexx_raw2xhtml($categoryName),
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK'           => '<a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$category->getId().'">'.contrexx_raw2xhtml($categoryName).'</a>',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION'    => contrexx_raw2xhtml($categoryDescription),
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE'        => '<img src="'. $thumbImage .'" border="0" alt="'. contrexx_raw2xhtml($categoryName) .'" />',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $category->getPicture(),
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES'    => $this->countEntries($category->getId()),
                 ));
 
-                if(!empty($arrCategories[$intCategoryId]['catPicture']) && $this->arrSettings['settingsShowCategoryImage'] == 1) {
+                if(!\FWValidator::isEmpty($category->getPicture()) && $this->arrSettings['settingsShowCategoryImage'] == 1) {
                     $objTpl->parse($this->moduleNameLC.'CategoryLevelPicture');
                 } else {
                     $objTpl->hideBlock($this->moduleNameLC.'CategoryLevelPicture');
                 }
 
-                if(!empty($arrCategories[$intCategoryId]['catDescription'][0]) && $this->arrSettings['settingsShowCategoryDescription'] == 1) {
+                if(!empty($categoryDescription) && $this->arrSettings['settingsShowCategoryDescription'] == 1) {
                     $objTpl->parse($this->moduleNameLC.'CategoryLevelDescription');
                 } else {
                     $objTpl->hideBlock($this->moduleNameLC.'CategoryLevelDescription');
                 }
 
-                if(!empty($arrCategories)) {
-                    $objTpl->parse($this->moduleNameLC.'CategoryLevelDetail');
-                } else {
-                    $objTpl->hideBlock($this->moduleNameLC.'CategoryLevelDetail');
-                }
+                $objTpl->parse($this->moduleNameLC.'CategoryLevelDetail');
 
                 break;
             case 6:
                 //Frontend Tree Placeholder
-                foreach ($arrCategories as $key => $arrCategory) {
-                	$this->arrExpandedCategoryIds = array();
-                    $bolExpandCategory = $this->getExpandedCategories($intCategoryId, array($arrCategory));
-                    $strLevelId = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
-                    $strLinkClass = $bolExpandCategory ? 'active' : 'inactive';
-                    $strListClass = 'level_'.intval(count($arrParentIds)+$intStartLevel);
-                    
-                    $this->strNavigationPlaceholder .= '<li class="'.$strListClass.'"><a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$arrCategory['catId'].'" class="'.$strLinkClass.'">'.contrexx_raw2xhtml($arrCategory['catName'][0]).'</a></li>';
-            
-                    $arrParentIds[] = $arrCategory['catId'];
-
-                    //get children
-                    if(!empty($arrCategory['catChildren']) && $arrCategory['catShowSubcategories'] == 1){
-                    	if($bolExpandCategory) {
-                            self::listCategories($objTpl, 6, $intCategoryId, $arrParentIds, null, null, $intStartLevel);
-                    	}                    
-                    }
-                    @array_pop($arrParentIds);
+                $expandedCategoryIds = $this->getExpandedCategories($this->intCategoryId);
+                
+                $category = $this->categoryRepository->findOneById($this->intCategoryId);
+                if (!$category) {
+                    $category = $this->categoryRepository->getRoot();
                 }
-                
-                return $this->strNavigationPlaceholder;
-                
+
+                $tpl = <<<TEMPLATE
+    <!-- BEGIN {$this->moduleNameLC}CategoriesList -->
+    <li class="level_{{$this->moduleLangVar}_CATEGORY_LEVEL_ID}">
+        <a href="index.php?section={$this->moduleName}{$strLevelId}&amp;cid={{$this->moduleLangVar}_CATEGORY_ID}" class="{{$this->moduleLangVar}_CATEGORY_ACTIVE_STATUS}">
+            {{$this->moduleLangVar}_CATEGORY_NAME}
+        </a>
+    </li>
+    <!-- END {$this->moduleNameLC}CategoriesList -->
+TEMPLATE;
+                $template = new \Cx\Core\Html\Sigma('.');
+                $template->setTemplate($tpl);
+                $this->parseCategoryTree(
+                    $template,
+                    $category,
+                    $expandedCategoryIds,
+                    $expandCategory == 'all',
+                    $arrCategory['catShowSubcategories'] == 1
+                );
+                return $template->get();
                 break;
         }
     }
 
-
-
-    function getExpandedCategories($intExpand, $arrData)
+    /**
+     * Get all parent categories of given category id
+     *
+     * @param integer $categoryId Category id
+     *
+     * @return array
+     */
+    function getExpandedCategories($categoryId)
     {
-        foreach ($arrData as $key => $arrCategory) {
-            if ($arrCategory['catId'] != $intExpand) {
-                if(!empty($arrCategory['catChildren'])) {
-                    $this->arrExpandedCategoryIds[] = $arrCategory['catId'];
-                    $this->getExpandedCategories($intExpand, $arrCategory['catChildren']);
-                }
-            } else {
-                $this->arrExpandedCategoryIds[] = $arrCategory['catId'];
-                $this->arrExpandedCategoryIds[] = "found";
-            }
+        $categoryId = contrexx_input2int($categoryId);
+        if (!$categoryId) {
+            return array();
+        }
+        $category = $this->categoryRepository->findOneById($categoryId);
+        if (!$category) {
+            return array();
+        }
+        $parentIds = array($categoryId);
+        while ($category->getParent()) {
+            $parentIds[] = $category->getParent()->getId();
+            $category    = $category->getParent();
         }
 
-        if(in_array("found", $this->arrExpandedCategoryIds)) {
-            return true;
-        } else {
-           return false;
-        }
-
-
+        return $parentIds;
     }
 
-
-
-    function saveCategory($arrData, $intCategoryId=null)
+    /**
+     * Save category
+     *
+     * @param Category $category Category instance
+     * @param array    $arrData  Array data to save
+     *
+     * @return boolean TRUE on success, false otherwise
+     */
+    function saveCategory(Category $category, $arrData)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG;
 
-        //get data
-        $intId = intval($intCategoryId);
-        $intParentId = intval($arrData['categoryPosition']);
-        $intShowEntries = intval($arrData['categoryShowEntries']);
-        $intShowCategories = isset($arrData['categoryShowSubcategories']) ? contrexx_input2int($arrData['categoryShowSubcategories']) : 0;
-        $intActive = intval($arrData['categoryActive']);
-        $strPicture = contrexx_addslashes(contrexx_strip_tags($arrData['categoryImage']));
-        
-        $arrName = $arrData['categoryName'];
-        
-        $arrDescription = $arrData['categoryDescription'];
+        $intParentId  = intval($arrData['categoryPosition']);
 
-        if(empty($intId)) {
-            //insert new category
-            $objInsertAttributes = $objDatabase->Execute("
-                INSERT INTO
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_categories
-                SET
-                    `parent_id`='".$intParentId."',
-                    `order`= 0,
-                    `show_entries`='".$intShowEntries."',
-                    `show_subcategories`='".$intShowCategories."',
-                    `picture`='".$strPicture."',
-                    `active`='".$intActive."'
-            ");
-
-            if($objInsertAttributes !== false) {
-                $intId = $objDatabase->Insert_ID();
-
-                foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                    if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_CATEGORY']."]]";
-
-                    $strName = $arrName[$arrLang['id']];
-                    $strDescription = $arrDescription[$arrLang['id']];
-
-                    if(empty($strName)) $strName = $arrName[0];
-
-                    $objInsertNames = $objDatabase->Execute("
-                        INSERT INTO
-                            ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names
-                        SET
-                            `lang_id`='".intval($arrLang['id'])."',
-                            `category_id`='".intval($intId)."',
-                            `category_name`='".contrexx_raw2db($strName)."',
-                            `category_description`='".contrexx_raw2db($strDescription)."'
-                    ");
-                }
-
-                if($objInsertNames !== false) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
+        $parentCategory = null;
+        if ($intParentId) {
+            $parentCategory = $this->categoryRepository->findOneById($intParentId);
         } else {
-            //update category
-            if($intParentId == $intCategoryId) {
-                $parentSql = null;
-            } else {
-                $parentSql = "`parent_id`='".$intParentId."',";
-            }
-
-            $objUpdateAttributes = $objDatabase->Execute("
-                UPDATE
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_categories
-                SET
-                    ".$parentSql."
-                    `show_entries`='".$intShowEntries."',
-                    `show_subcategories`='".$intShowCategories."',
-                    `picture`='".$strPicture."',
-                    `active`='".$intActive."'
-                WHERE
-                    `id`='".$intId."'
-            ");
-
-            if($objUpdateAttributes !== false) {
-                
-                $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names WHERE category_id='".$intId."'");
-
-                if($objInsertNames !== false) {
-                    foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                        if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_CATEGORY']."]]";
-                        
-                        $strName = $arrName[$arrLang['id']];
-                        $strDescription = $arrDescription[$arrLang['id']];
-
-                        if(empty($strName)) $strName = $arrName[0];
-
-                        $objInsertNames = $objDatabase->Execute("
-                            INSERT INTO
-                                ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names
-                            SET
-                                `lang_id`='".intval($arrLang['id'])."',
-                                `category_id`='".intval($intId)."',
-                                `category_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
-                                `category_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
-                        ");
-                    }
-
-                    if($objInsertNames !== false) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
+            $parentCategory = $this->categoryRepository->getRoot();
         }
-    }
-
-
-
-
-    function deleteCategory($intCategoryId=null)
-    {
-        global $objDatabase;
-
-        $intCategoryId = intval($intCategoryId);
-
-        $objSubCategoriesRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_categories WHERE parent_id='".$intCategoryId."'");
-        if ($objSubCategoriesRS !== false) {
-            while (!$objSubCategoriesRS->EOF) {
-                $intSubCategoryId = $objSubCategoriesRS->fields['id'];
-                $this->deleteCategory($intSubCategoryId);
-                $objSubCategoriesRS->MoveNext();
-            };
-        }
-
-        $objDeleteCategoryRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_categories WHERE id='$intCategoryId'");
-        $objDeleteCategoryRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names WHERE category_id='$intCategoryId'");
-        $objDeleteCategoryRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories WHERE category_id='$intCategoryId'");
-
-        if ($objDeleteCategoryRS !== false) {
-            return true;
-        } else {
+        if (!$parentCategory) {
             return false;
         }
+
+        $intId    = $category->getId();
+
+        //get data
+        $intShowEntries    = intval($arrData['categoryShowEntries']);
+        $intShowCategories = isset($arrData['categoryShowSubcategories']) ? contrexx_input2int($arrData['categoryShowSubcategories']) : 0;
+        $intActive         = intval($arrData['categoryActive']);
+        $strPicture        = contrexx_addslashes(contrexx_strip_tags($arrData['categoryImage']));
+        $arrName           = $arrData['categoryName'];
+        $arrDescription    = $arrData['categoryDescription'];
+
+        $category->setParent($parentCategory);
+        $category->setShowEntries($intShowEntries);
+        $category->setShowSubcategories($intShowCategories);
+        $category->setActive($intActive);
+        $category->setPicture($strPicture);
+        
+        if (empty($intId)) {
+            $category->setOrder(0);
+            $this->em->persist($category);
+        }
+
+        if(empty($arrName[0])) {
+            $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_CATEGORY']."]]";
+        }
+        foreach ($this->arrFrontendLanguages as $arrLang) {
+            $langId         = $arrLang['id'];
+            $strName        = $arrName[$langId] ? $arrName[$langId] : $arrName[0];
+            $strDescription = $arrDescription[$langId];
+
+            $categoryLocale = $category->getLocaleByLang($langId);
+            if (!$categoryLocale) {
+                $categoryLocale = new \Cx\Modules\MediaDir\Model\Entity\CategoryLocale();
+            }
+
+            $categoryLocale->setCategory($category);
+            $categoryLocale->setLangId($arrLang['id']);
+            $categoryLocale->setCategoryName($strName);
+            $categoryLocale->setCategoryDescription($strDescription);
+            $this->em->persist($categoryLocale);
+        }
+        $this->em->flush();
+
+        return true;
     }
 
+    /**
+     * Delete cateogry from the tree
+     *
+     * @param integer $intCategoryId Category id to delete
+     *
+     * @return boolean
+     */
+    function deleteCategory($intCategoryId = null)
+    {
+        if (!$intCategoryId) {
+            return false;
+        }
+        $category = $this->categoryRepository->findOneById($intCategoryId);
+        $this->em->remove($category);
+        $this->em->flush();
+    }
 
-
-    function countEntries($intCategoryId=null, $intLevelId=null)
+    /**
+     * Count number of entries for the category
+     *
+     * @param integer $intCategoryId Category id
+     *
+     * @return int
+     */
+    function countEntries($intCategoryId = null)
     {
         global $objDatabase, $_LANGID;
 
-        $intCategoryId = intval($intCategoryId);
-        $intLevelId = intval($intLevelId);
+        if (!$this->countEntries) {
+            return 0;
+        }
 
-        $objSubCategoriesRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_categories WHERE parent_id='".$intCategoryId."'");
-        if ($objSubCategoriesRS !== false) {
-            while (!$objSubCategoriesRS->EOF) {
-                $intSubCategoryId = $objSubCategoriesRS->fields['id'];
-                $this->countEntries($intSubCategoryId, $intLevelId);
-                $objSubCategoriesRS->MoveNext();
-            };
+        $intCategoryId = intval($intCategoryId);
+
+        if (!$intCategoryId) {
+            $category = $this->categoryRepository->getRoot();
+        } else {
+            $category = $this->categoryRepository->findOneById($intCategoryId);
+        }
+
+        if (!$category) {
+            return 0;
+        }
+
+        $recursiveCategoryIterator = $this->getCategoryIterator($category);
+        $categories = array($category->getId());
+        foreach ($recursiveCategoryIterator as $subCategory) {
+            $categories[] = $subCategory->getId();
         }
         
         $whereCategory = '';
-        if ($intCategoryId && $intCategoryId > 0) {
-            $whereCategory = " AND `rel_categories`.`category_id` = " . intval($intCategoryId);
+        if ($categories) {
+            $whereCategory = " AND `rel_categories`.`category_id` IN (" . implode(', ', contrexx_input2int($categories)) .")";
         }
         $objCountEntriesRS = $objDatabase->Execute("
                                                 SELECT COUNT(*) as c
@@ -738,45 +638,55 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                                                 GROUP BY
                                                     `rel_categories`.`category_id`");
 
-        $this->intNumEntries += $objCountEntriesRS->fields['c'];
-
-        return intval($this->intNumEntries);
+        return contrexx_input2int($objCountEntriesRS->fields['c']);
     }
 
-
-
+    /**
+     * Save the category order
+     *
+     * @param array $arrData
+     *
+     * @return boolean
+     */
     function saveOrder($arrData) {
-        global $objDatabase;
-
         foreach($arrData['catOrder'] as $intCatId => $intCatOrder) {
-            $objRSCatOrder = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_categories SET `order`='".intval($intCatOrder)."' WHERE `id`='".intval($intCatId)."'");
-
-            if ($objRSCatOrder === false) {
-                return false;
+            $category = $this->categoryRepository->findOneById($intCatId);
+            if (!$category) {
+                continue;
             }
+            $category->setOrder(contrexx_input2int($intCatOrder));
         }
+        $this->em->flush();
+        $this->categoryRepository->reorder($this->categoryRepository->getRoot(), 'order');
 
         return true;
     }
 
     /**
-     * @param $arrCategory
+     * Create UL/LI of category tree
      *
-     * @return array
+     * @param Category  $category       Instance of category id
+     * @param string    $strCategoryCmd Url category id
+     * @param string    $strLevelId     Url level id
+     *
+     * @return string
      */
-    public function createCategorieTree($arrCategory,$strCategoryCmd,$strLevelId) {
+    public function createCategorieTree(Category $category, $strCategoryCmd, $strLevelId)
+    {
+        if (\FWValidator::isEmpty($category->getAllChildren())) {
+            return '';
+        }
         $childrenString = '<ul>';
-        if (!empty($arrCategory['catChildren'])) {
-            foreach ($arrCategory['catChildren'] as $children) {
-                $childrenString .= '<li><a href="index.php?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$children['catId'].'">' . $children['catName'][0] .'</a>';
-                if (!empty($children['catChildren'])) {
-                    $childrenString .= $this->createCategorieTree($children,$strCategoryCmd,$strLevelId);
-                }
-                $childrenString .= '</li>';
-            }
+        foreach ($category as $subCategory) {
+            $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
+            $categoryName = $locale ? $locale->getCategoryName() : '';
+
+            $childrenString .= '<li><a href="index.php?section=' . $this->moduleName . $strCategoryCmd . $strLevelId . '&amp;cid=' . $subCategory->getId() . '">' . contrexx_raw2xhtml($categoryName) . '</a>';
+            $childrenString .= $this->createCategorieTree($subCategory, $strCategoryCmd, $strLevelId);
+            $childrenString .= '</li>';
         }
         $childrenString .= '</ul>';
+
         return $childrenString;
     }
 }
-?>

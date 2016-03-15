@@ -64,7 +64,7 @@ class MediaDirectoryAccessIDs {
  */
 class MediaDirectoryLibrary
 {
-	public $_objTpl;
+    public $_objTpl;
     public $pageContent;
 
     public $arrFrontendLanguages = array();
@@ -73,8 +73,6 @@ class MediaDirectoryLibrary
 
     public $strJavascript;
     
-    
-    
     public $moduleName             = '';
 
     public $moduleNameLC             = '';
@@ -82,6 +80,18 @@ class MediaDirectoryLibrary
     public $moduleTablePrefix = "mediadir";
     public $moduleLangVar = "MEDIADIR";
     public $moduleConstVar = "MEDIADIR";
+
+    /**
+     *
+     * @var \Cx\Core\Core\Controller\Cx
+     */
+    public $cx;
+
+    /**
+     *
+     * @var \Cx\Core\Model\Controller\EntityManager
+     */
+    public $em;
 
     /**
      * Constructor
@@ -93,6 +103,8 @@ class MediaDirectoryLibrary
         
         $this->moduleName    = $name;
         $this->moduleNameLC  = strtolower($this->moduleName);
+        $this->cx            = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->em            = $this->cx->getDb()->getEntityManager();
 
     	$this->_objTpl->setGlobalVariable(array(
             'MODULE_NAME' =>  $this->moduleName,

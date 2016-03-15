@@ -1,0 +1,59 @@
+Cx\Modules\MediaDir\Model\Entity\Category:
+  type: entity
+  repositoryClass: Cx\Modules\MediaDir\Model\Repository\CategoryRepository
+  table: module_mediadir_categories
+  gedmo:
+    tree:
+      type: nested
+
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+
+  fields:
+    order:
+      type: integer
+      column: category_order
+    show_subcategories:
+        type: boolean
+    show_entries:
+        type: boolean
+    picture:
+        type: text
+        length: 3
+    active:
+        type: boolean
+    lft:
+      type: integer
+      gedmo:
+        - treeLeft
+    rgt:
+      type: integer
+      gedmo:
+        - treeRight
+    lvl:
+      type: integer
+      gedmo:
+        - treeLevel
+
+  manyToOne:
+    parent:
+      targetEntity: Cx\Modules\MediaDir\Model\Entity\Category
+      inversedBy: children
+      joinColumn:
+        name: parent_id
+        referencedColumnName: id
+        cascade: [remove]
+      gedmo:
+        - treeParent
+  oneToMany:
+    children:
+      targetEntity: Cx\Modules\MediaDir\Model\Entity\Category
+      mappedBy: parent
+      orderBy:
+        lft: ASC
+    locale:
+      targetEntity: Cx\Modules\MediaDir\Model\Entity\CategoryLocale
+      mappedBy: category

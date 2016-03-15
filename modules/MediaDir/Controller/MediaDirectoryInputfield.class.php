@@ -439,8 +439,8 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 	                            $strSelectedOptionsName = "selectedLevels";
 	                            $strNotSelectedOptionsName = "deselectedLevels";
 	                        } else {
-	                            $objCategory = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
-	                            $arrSelectorOptions = $objCategory->listCategories($objTpl, 4, null, null, $intEntryId);
+	                            $objCategory = new MediaDirectoryCategory(null, null, $this->moduleName);
+	                            $arrSelectorOptions = $objCategory->listCategories($objTpl, 4, $intEntryId);
 	                            $strSelectedOptionsName = "selectedCategories";
 	                            $strNotSelectedOptionsName = "deselectedCategories";
 	                        }

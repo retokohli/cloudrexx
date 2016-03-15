@@ -1,0 +1,28 @@
+Cx\Modules\MediaDir\Model\Entity\CategoryLocale:
+  type: entity
+  repositoryClass: Cx\Modules\MediaDir\Model\Repository\CategoryLocaleRepository
+  table: module_mediadir_categories_names
+
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+
+  fields:
+    lang_id:
+      type: integer
+    category_id:
+        type: integer
+    category_name:
+        type: string
+    category_description:
+        type: text
+  manyToOne:
+    category:
+      targetEntity: Cx\Modules\MediaDir\Model\Entity\Category
+      inversedBy: locale
+      joinColumn:
+        name: category_id
+        referencedColumnName: id
+        cascade: [remove]

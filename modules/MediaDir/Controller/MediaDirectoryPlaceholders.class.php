@@ -67,10 +67,10 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
 	        
 	        $this->strPlaceholder = $objLevels->listLevels($this->_objTpl, 6, $intLevelId);
         } else {
-        	$objCategories = new MediaDirectoryCategory(null, null, 0, $this->moduleName);
             $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : null;
-        
-            $this->strPlaceholder = $objCategories->listCategories($this->_objTpl, 6, $intCategoryId, null, null, null, 1);
+            $objCategories = new MediaDirectoryCategory($intCategoryId, null, $this->moduleName);
+
+            $this->strPlaceholder = $objCategories->listCategories($this->_objTpl, 6);
         }
         
         return '<ul id="'.$this->moduleNameLC.'NavigationPlacholder">'.$this->strPlaceholder.'</ul>';
