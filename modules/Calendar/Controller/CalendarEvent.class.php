@@ -1596,7 +1596,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $objVEvent = new \vevent(); 
         
         // start
-        $startDate   = $this->getDateTime($this->startDate)->getDb2user();
+        $startDate   = $this->convertDbDateTime2user($this->getDateTime($this->startDate));
         $objVEvent->setProperty(
             'dtstart',
             array(
@@ -1610,7 +1610,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         );
 
         // end
-        $endDate   = $this->getDateTime($this->endDate)->getDb2user();
+        $endDate   = $this->convertDbDateTime2user($this->getDateTime($this->endDate));
         $objVEvent->setProperty(
             'dtend',
             array(

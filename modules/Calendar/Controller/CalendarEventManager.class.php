@@ -656,12 +656,12 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
 
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
-                $this->moduleLangVar.'_EVENT_START'             => $startDate->format2userDateTime(),
-                $this->moduleLangVar.'_EVENT_START_DATE'        => $startDate->format2userDate(),
-                $this->moduleLangVar.'_EVENT_START_TIME'        => $startDate->format2userTime(),
-                $this->moduleLangVar.'_EVENT_END'               => $endDate->format2userDateTime(),
-                $this->moduleLangVar.'_EVENT_END_DATE'          => $endDate->format2userDate(),
-                $this->moduleLangVar.'_EVENT_END_TIME'          => $endDate->format2userTime(),
+                $this->moduleLangVar.'_EVENT_START'             => $this->format2userDateTime($startDate),
+                $this->moduleLangVar.'_EVENT_START_DATE'        => $this->format2userDate($startDate),
+                $this->moduleLangVar.'_EVENT_START_TIME'        => $this->format2userTime($startDate),
+                $this->moduleLangVar.'_EVENT_END'               => $this->format2userDateTime($endDate),
+                $this->moduleLangVar.'_EVENT_END_DATE'          => $this->format2userDate($endDate),
+                $this->moduleLangVar.'_EVENT_END_TIME'          => $this->format2userTime($endDate),
                 $this->moduleLangVar.'_EVENT_TITLE'             => $objEvent->title,                                                      
                 $this->moduleLangVar.'_EVENT_ATTACHMENT'        => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',                             
                 $this->moduleLangVar.'_EVENT_ATTACHMENT_SOURCE' => $objEvent->attach,
@@ -694,7 +694,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 $showTimeTypeDetail   = $objEvent->useCustomDateDisplay ? $objEvent->showTimeTypeDetail : 1;
                 
                 // get date for several days format > show starttime with startdate and endtime with enddate > only if several days event and all values (dates/times) are displayed
-                if($startDate->format2userDate() != $endDate->format2userDate() && ($showStartDateDetail && $showEndDateDetail && $showStartTimeDetail && $showEndTimeDetail)) {
+                if($this->format2userDate($startDate) != $this->format2userDate($endDate) && ($showStartDateDetail && $showEndDateDetail && $showStartTimeDetail && $showEndTimeDetail)) {
                     //part 1
                     $part = 1;
                     $this->getMultiDateBlock($objEvent, $this->arrSettings['separatorDateTimeDetail'], $this->arrSettings['separatorSeveralDaysDetail'], ($this->arrSettings['showClockDetail'] == 1), $part);
@@ -969,13 +969,13 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                     $this->moduleLangVar.'_EVENT_LINK_SOURCE'    => $objEvent->link,
                     $this->moduleLangVar.'_EVENT_ATTACHMENT'     => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',
                     $this->moduleLangVar.'_EVENT_ATTACHMENT_SOURCE' => $objEvent->attach,
-                    $this->moduleLangVar.'_EVENT_START'          => $startDate->format2userDateTime(),
-                    $this->moduleLangVar.'_EVENT_START_DATE'     => $startDate->format2userDate(),
-                    $this->moduleLangVar.'_EVENT_START_TIME'     => $startDate->format2userTime(),
-                    $this->moduleLangVar.'_EVENT_DATE'           => $startDate->format2userDate(),
-                    $this->moduleLangVar.'_EVENT_END'            => $endDate->format2userDateTime(),
-                    $this->moduleLangVar.'_EVENT_END_DATE'       => $endDate->format2userDate(),
-                    $this->moduleLangVar.'_EVENT_END_TIME'       => $endDate->format2userTime(),
+                    $this->moduleLangVar.'_EVENT_START'          => $this->format2userDateTime($startDate),
+                    $this->moduleLangVar.'_EVENT_START_DATE'     => $this->format2userDate($startDate),
+                    $this->moduleLangVar.'_EVENT_START_TIME'     => $this->format2userTime($startDate),
+                    $this->moduleLangVar.'_EVENT_DATE'           => $this->format2userDate($startDate),
+                    $this->moduleLangVar.'_EVENT_END'            => $this->format2userDateTime($endDate),
+                    $this->moduleLangVar.'_EVENT_END_DATE'       => $this->format2userDate($endDate),
+                    $this->moduleLangVar.'_EVENT_END_TIME'       => $this->format2userTime($endDate),
                     $this->moduleLangVar.'_EVENT_LANGUAGES'      => $languages,
                     $this->moduleLangVar.'_EVENT_CATEGORY'       => $objCategory->name,
                     $this->moduleLangVar.'_EVENT_DETAIL_LINK'    => $objEvent->type==0 ? self::_getDetailLink($objEvent) : $objEvent->arrData['redirect'][$_LANGID],
@@ -1038,8 +1038,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                     $showTimeTypeList   = $objEvent->useCustomDateDisplay ? $objEvent->showTimeTypeList : 1;
                     
                     // get date for several days format > show starttime with startdate and endtime with enddate > only if several days event and all values (dates/times) are displayed
-                    if($startDate->format2userDate() != $endDate->format2userDate() && ($showStartDateList && $showEndDateList && $showStartTimeList && $showEndTimeList)) {
-                        
+                    if ($this->format2userDate($startDate) != $this->format2userDate($endDate) && ($showStartDateList && $showEndDateList && $showStartTimeList && $showEndTimeList)) {
+
                         //part 1
                         $part = 1;
                         $this->getMultiDateBlock($objEvent, $this->arrSettings['separatorDateTimeList'], $this->arrSettings['separatorSeveralDaysList'], ($this->arrSettings['showClockList'] == 1), $part);
@@ -1111,7 +1111,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
     function getEventsWithDate() {
         $arrEvents = array();
         foreach ($this->eventList as $objEvent) {
-            $eventDate = $this->getDateTime($objEvent->startDate)->getDb2user();
+            $eventDate = $this->convertDbDateTime2user($this->getDateTime($objEvent->startDate));
             $arrEvents[] = array(
                 'year'  => $eventDate->format('Y'),
                 'month' => $eventDate->format('m'),
@@ -1544,11 +1544,11 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
 
         //date
         if($showStartDate && $showEndDate) {
-            $this->date = $startDate->format2userDate() . $separatorDate . $endDate->format2userDate();
+            $this->date = $this->format2userDate($startDate) . $separatorDate . $this->format2userDate($endDate);
         } else if($showStartDate) {
-            $this->date = $startDate->format2userDate();
+            $this->date = $this->format2userDate($startDate);
         } else if($showEndDate) {
-            $this->date = $endDate->format2userDate();
+            $this->date = $this->format2userDate($endDate);
         } else {
             $this->date = '';
         }
@@ -1558,13 +1558,13 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
             //start and/or end time
             if($showStartTime && $showEndTime) {
                 $this->sepDateTime = html_entity_decode($separatorDateTime);
-                $this->time = $startDate->format2userTime() . $separatorTime . $endDate->format2userTime();
+                $this->time = $this->format2userTime($startDate) . $separatorTime . $this->format2userTime($endDate);
             } else if($showStartTime) {
                 $this->sepDateTime = html_entity_decode($separatorDateTime);
-                $this->time = $startDate->format2userTime();
+                $this->time = $this->format2userTime($startDate);
             } else if($showEndTime) {
                 $this->sepDateTime = html_entity_decode($separatorDateTime);
-                $this->time = $endDate->format2userTime();
+                $this->time = $this->format2userTime($endDate);
             } else {
                 $this->time = '';
             }
@@ -1602,9 +1602,9 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
             // parse part 1 (start)
             //date
             $startDate  = $this->getDateTime($objEvent->startDate);
-            $this->date = $startDate->format2userDate();
+            $this->date = $this->format2userDate($startDate);
             //time
-            $this->time = $startDate->format2userTime();
+            $this->time = $this->format2userTime($startDate);
             //show / hide clock
             ($showClock && $this->time != '') ? $this->clock = '&nbsp;'.$_ARRAYLANG['TXT_CALENDAR_OCLOCK'] : $this->clock = '';
             //add separator for several days
@@ -1617,9 +1617,9 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
             // parse part 2 (end)
             //date
             $endDate   = $this->getDateTime($objEvent->endDate);
-            $this->date = $endDate->format2userDate();
+            $this->date = $this->format2userDate($endDate);
             //time
-            $this->time = $endDate->format2userTime();
+            $this->time = $this->format2userTime($endDate);
             //show / hide clock
             ($showClock && $this->time != '') ? $this->clock = '&nbsp;'.$_ARRAYLANG['TXT_CALENDAR_OCLOCK'] : $this->clock = '';
         }
@@ -1679,8 +1679,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 if ($objEvent->access && $objInit->mode == 'frontend' && !\Permission::checkAccess(116, 'static', true)) {
                     continue;
                 }
-                $startdate     = $this->getDateTime($objEvent->startDate)->getDb2user();
-                $enddate       = $this->getDateTime($objEvent->endDate)->getDb2user();
+                $startdate     = $this->convertDbDateTime2user($this->getDateTime($objEvent->startDate));
+                $enddate       = $this->convertDbDateTime2user($this->getDateTime($objEvent->endDate));
 
                 $eventYear     = $startdate->format('y');
                 $eventMonth    = $startdate->format('m');

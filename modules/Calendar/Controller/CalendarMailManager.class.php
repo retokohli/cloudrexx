@@ -257,13 +257,13 @@ class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
             }
                                                                                                   
             $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";
-            $date       = $this->getDateTime(strtotime('now'))->format2userDateTime();
+            $date       = $this->format2userDateTime($this->getDateTime(strtotime('now')));
             $startDate  = $this->getDateTime($objEvent->startDate);
             $endDate    = $this->getDateTime($objEvent->endDate);
 
             $eventTitle = $objEvent->title;
-            $eventStart = $objEvent->all_day ? $startDate->format2userDate() : $startDate->format2user(parent::getDateFormat() . ' (H:i:s)');
-            $eventEnd   = $objEvent->all_day ? $endDate->format2userDate() : $endDate->format2user(parent::getDateFormat() . ' (H:i:s)');
+            $eventStart = $objEvent->all_day ? $this->format2userDate($startDate) : $this->formatDateTime2user($startDate, parent::getDateFormat() . ' (H:i:s)');
+            $eventEnd   = $objEvent->all_day ? $this->format2userDate($endDate) : $this->formatDateTime2user($endDate, parent::getDateFormat() . ' (H:i:s)');
 
             $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
             

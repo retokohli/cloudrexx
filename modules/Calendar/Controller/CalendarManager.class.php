@@ -230,7 +230,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         if($_GET['list'] == 'actual' || !isset($_GET['list'])) {
             $styleListActual = 'underline';  
             $styleListAll = '';                                 
-            $startDate = $this->getDateTime(mktime())->getUser2db()->getTimestamp();
+            $startDate = $this->convertUserDateTime2db($this->getDateTime(mktime()))->getTimestamp();
             $listType = 'upcoming';
         } else {
             $styleListActual = '';  
@@ -451,8 +451,8 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             $endDate->modify("+30 mins");
         }
 
-        $eventStartDate = $startDate->format2userDateTime();
-        $eventEndDate   = $endDate->format2userDateTime();
+        $eventStartDate = $this->format2userDateTime($startDate);
+        $eventEndDate   = $this->format2userDateTime($endDate);
 
         //parse globals
         $this->_objTpl->setGlobalVariable(array(
@@ -806,7 +806,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             $seriesPatternDourance3 = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? 'checked="checked"' : '';
             
             $seriesPatternEndsEvents = $objEvent->seriesData['seriesPatternDouranceType'] == 2 ? $objEvent->seriesData['seriesPatternEnd'] : 5;
-            $seriesPatternEndsDate   = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? $this->getDateTime($objEvent->seriesData['seriesPatternEndDate'])->format2userDate() : '';
+            $seriesPatternEndsDate   = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? $this->format2userDate($this->getDateTime($objEvent->seriesData['seriesPatternEndDate'])) : '';
             
             
             
@@ -814,7 +814,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 
                 if($seriesExceptionDate != null) {
                     $this->_objTpl->setVariable(array(                        
-                        $this->moduleLangVar.'_SERIES_EXEPTION_DATE' => $this->getDateTime($seriesExceptionDate)->format2userDate(),
+                        $this->moduleLangVar.'_SERIES_EXEPTION_DATE' => $this->format2userDate($this->getDateTime($seriesExceptionDate)),
                     ));  
                     
                     $this->_objTpl->parse('eventExeptions');                      
@@ -1384,7 +1384,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     $objRegistration->tagExport();   
                 }  
                 
-                print ($this->getDateTime($objRegistration->firstExport)->format2userDate().$this->csvSeparator);
+                print ($this->format2userDate($this->getDateTime($objRegistration->firstExport)).$this->csvSeparator);
                    
                 if($objRegistration->type == '1') {                               
                     print ($_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].$this->csvSeparator);       
@@ -1394,7 +1394,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     print ($_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'].$this->csvSeparator);    
                 }
                 
-                print (html_entity_decode($objEvent->title, ENT_QUOTES)." - ". $this->getDateTime($objRegistration->eventDate)->format2userDate().$this->csvSeparator);
+                print (html_entity_decode($objEvent->title, ENT_QUOTES)." - ". $this->format2userDate($this->getDateTime($objRegistration->eventDate)).$this->csvSeparator);
                 
                 if($objRegistration->langId == null) {  
                     print ($this->arrFrontendLanguages[$_LANGID]['name'].$this->csvSeparator); 

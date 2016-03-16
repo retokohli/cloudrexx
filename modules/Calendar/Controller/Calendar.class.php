@@ -255,8 +255,7 @@ class Calendar extends CalendarLibrary
             $startMonth = isset($_GET['month']) ? $_GET['month'] : date("m", time());
             $startYear  = isset($_GET['year']) ? $_GET['year'] : date("Y", time());
 
-            $this->startDate = $this->getDateTime(mktime(0, 0, 0, $startMonth, $startDay, $startYear))
-                                    ->getUser2db()
+            $this->startDate = $this->convertUserDateTime2db($this->getDateTime(mktime(0, 0, 0, $startMonth, $startDay, $startYear)))
                                     ->getTimestamp();
         }
 
@@ -272,8 +271,7 @@ class Calendar extends CalendarLibrary
 
             $endYear = empty($_GET['endYear']) && empty($_GET['endMonth']) ? $endYear+10: $endYear;
 
-            $this->endDate = $this->getDateTime(mktime(23, 59, 59, $endMonth, $endDay, $endYear))
-                                  ->getUser2db()
+            $this->endDate = $this->convertUserDateTime2db($this->getDateTime(mktime(23, 59, 59, $endMonth, $endDay, $endYear)))
                                   ->getTimestamp();
         }
 
@@ -288,7 +286,7 @@ class Calendar extends CalendarLibrary
 
             $dateObj->modify("first day of this month");
             $dateObj->setTime(0, 0, 0);
-            $this->startDate = $dateObj->getUser2db()->getTimestamp();
+            $this->startDate = $this->convertUserDateTime2db($dateObj)->getTimestamp();
             
             // add months for the list view(month view)
             if ((empty($_GET['act']) || $_GET['act'] != 'list') && empty($_REQUEST['dayID'])) {
@@ -297,7 +295,7 @@ class Calendar extends CalendarLibrary
             
             $dateObj->modify("last day of this month");
             $dateObj->setTime(23, 59, 59);
-            $this->endDate = $dateObj->getUser2db()->getTimestamp();
+            $this->endDate = $this->convertUserDateTime2db($dateObj)->getTimestamp();
 
          } elseif (isset ($_GET["yearID"]) && isset ($_GET["monthID"]) && isset ($_GET["dayID"])) {
 
@@ -305,11 +303,9 @@ class Calendar extends CalendarLibrary
             $month = isset($_REQUEST["monthID"]) ? intval($_REQUEST["monthID"]) : date('m', time());
             $day = isset($_REQUEST["dayID"]) ? intval($_REQUEST["dayID"]) : date('d', time());
 
-            $this->startDate = $this->getDateTime(mktime(0, 0, 0, $month, $day, $year))
-                                    ->getUser2db()
+            $this->startDate = $this->convertUserDateTime2db($this->getDateTime(mktime(0, 0, 0, $month, $day, $year)))
                                     ->getTimestamp();
-            $this->endDate   = $this->getDateTime(mktime(23, 59, 59, $month, $day, $year))
-                                    ->getUser2db()
+            $this->endDate   = $this->convertUserDateTime2db($this->getDateTime(mktime(23, 59, 59, $month, $day, $year)))
                                     ->getTimestamp();
         }
         
@@ -572,8 +568,8 @@ UPLOADER;
             $endDate->modify("+30 mins");
         }
 
-        $eventStartDate = $startDate->format2userDateTime();
-        $eventEndDate   = $endDate->format2userDateTime();
+        $eventStartDate = $this->format2userDateTime($startDate);
+        $eventEndDate   = $this->format2userDateTime($endDate);
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT'],
@@ -848,7 +844,7 @@ UPLOADER;
         
         $numRegistrations = (int) $objEvent->registrationCount;
         
-        $this->pageTitle = $this->getDateTime((isset($_GET['date']) ? $_GET['date'] : $objEvent->startDate))->format2userDate()
+        $this->pageTitle = $this->format2userDate($this->getDateTime((isset($_GET['date']) ? $_GET['date'] : $objEvent->startDate)))
                             . ": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
         if(time() <= intval($_REQUEST['date'])) {
