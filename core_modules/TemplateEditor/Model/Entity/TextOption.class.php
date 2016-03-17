@@ -91,17 +91,18 @@ class TextOption extends Option
     {
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            $this->cx->getCodeBaseCoreModulePath()
-            . '/TemplateEditor/View/Template/Backend/' .
-            end(explode('\\', get_class($this))) . '.html'
+            $this->getDirectory() . '/View/Template/Backend/'
+            . end(explode('\\', get_class($this))) . '.html'
         );
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $this->string);
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
-        $subTemplate->setVariable(
-            'TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName
-        );
-        $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
-        $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'text');
+        $subTemplate->setVariable(array(
+            'TEMPLATEEDITOR_OPTION_VALUE'       => $this->string,
+            'TEMPLATEEDITOR_OPTION_NAME'        => $this->name,
+            'TEMPLATEEDITOR_OPTION_HUMAN_NAME'  => $this->humanName
+        ));
+        $template->setVariable(array(
+            'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
+            'TEMPLATEEDITOR_OPTION_TYPE' => 'text'
+        ));
         $template->parse('option');
     }
 

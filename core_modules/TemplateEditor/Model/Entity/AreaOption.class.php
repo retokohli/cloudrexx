@@ -68,18 +68,17 @@ class AreaOption extends Option
     {
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            $this->cx->getCodeBaseCoreModulePath()
-            . '/TemplateEditor/View/Template/Backend/AreaOption.html'
+            $this->getDirectory() . '/View/Template/Backend/AreaOption.html'
         );
-        $subTemplate->setVariable(
-            'TEMPLATEEDITOR_OPTION_VALUE', ($this->active) ? 'checked' : ''
-        );
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
-        $subTemplate->setVariable(
-            'TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName
-        );
-        $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
-        $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'area');
+        $subTemplate->setVariable(array(
+            'TEMPLATEEDITOR_OPTION_VALUE'   => ($this->active) ? 'checked' : '',
+            'TEMPLATEEDITOR_OPTION_NAME'    => $this->name,
+            'TEMPLATEEDITOR_OPTION_HUMAN_NAME' => $this->humanName
+        ));
+        $template->setVariable(array(
+            'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
+            'TEMPLATEEDITOR_OPTION_TYPE' => 'area'
+        ));
         $template->parse('option');
     }
 

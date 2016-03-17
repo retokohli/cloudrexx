@@ -78,14 +78,13 @@ class ColorOption extends Option
         global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            $this->cx->getCodeBaseCoreModulePath()
-            . '/TemplateEditor/View/Template/Backend/ColorOption.html'
+            $this->getDirectory() . '/View/Template/Backend/ColorOption.html'
         );
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $this->color);
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
-        $subTemplate->setVariable(
-            'TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName
-        );
+        $subTemplate->setVariable(array(
+            'TEMPLATEEDITOR_OPTION_VALUE'      => $this->color,
+            'TEMPLATEEDITOR_OPTION_NAME'       => $this->name,
+            'TEMPLATEEDITOR_OPTION_HUMAN_NAME' => $this->humanName
+        ));
         if ($this->choice) {
             $subTemplate->setVariable(
                 'TEMPLATEEDITOR_OPTION_CHOICE', json_encode($this->choice)
@@ -99,8 +98,10 @@ class ColorOption extends Option
             ),
             'TemplateEditor'
         );
-        $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
-        $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'color');
+        $template->setVariable(array(
+            'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
+            'TEMPLATEEDITOR_OPTION_TYPE' => 'color'
+        ));
         $template->parse('option');
     }
 

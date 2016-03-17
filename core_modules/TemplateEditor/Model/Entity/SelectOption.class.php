@@ -75,8 +75,7 @@ class SelectOption extends Option
         global $_LANGID;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            $this->cx->getCodeBaseCoreModulePath()
-            . '/TemplateEditor/View/Template/Backend/SelectOption.html'
+            $this->getDirectory() . '/View/Template/Backend/SelectOption.html'
         );
         foreach ($this->choice as $value => $choice) {
             $subTemplate->setVariable(
@@ -91,15 +90,15 @@ class SelectOption extends Option
             }
             $subTemplate->parse('choices');
         }
-        $subTemplate->setVariable(
-            'TEMPLATEEDITOR_OPTION_VALUE', $this->activeChoice
-        );
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
-        $subTemplate->setVariable(
-            'TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName
-        );
-        $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
-        $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'select');
+        $subTemplate->setVariable(array(
+            'TEMPLATEEDITOR_OPTION_VALUE'      => $this->activeChoice,
+            'TEMPLATEEDITOR_OPTION_NAME'       => $this->name,
+            'TEMPLATEEDITOR_OPTION_HUMAN_NAME' => $this->humanName
+        ));
+        $template->setVariable(array(
+            'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
+            'TEMPLATEEDITOR_OPTION_TYPE' => 'select'
+        ));
         $template->parse('option');
     }
 

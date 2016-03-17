@@ -75,8 +75,8 @@ class ImageSeriesOption extends Option
         global $_ARRAYLANG;
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
-            $this->cx->getCodeBaseCoreModulePath()
-            . '/TemplateEditor/View/Template/Backend/ImagesSeriesOption.html'
+            $this->getDirectory()
+            . '/View/Template/Backend/ImagesSeriesOption.html'
         );
         $subTemplate->setGlobalVariable($_ARRAYLANG);
 
@@ -99,25 +99,24 @@ class ImageSeriesOption extends Option
             )
         );
         $mediaBrowser->setCallback('callback_' . $this->name);
-        $subTemplate->setVariable(
-            'MEDIABROWSER_BUTTON',
-            $mediaBrowser->getXHtml(
-                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PICTURE']
-            )
-        );
-        $subTemplate->setVariable('MEDIABROWSER_ID', $mediaBrowserId);
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
-        $subTemplate->setVariable(
-            'TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName
-        );
+
         //Get last key
         end($this->urls);
         $key = key($this->urls);
-        $key = $key != null ? $key : '0';
-        $subTemplate->setVariable('TEMPLATEEDITOR_LASTID', $key);
-        $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
-        $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'img series');
-
+        $subTemplate->setVariable(array(
+            'MEDIABROWSER_BUTTON' =>
+                $mediaBrowser->getXHtml(
+                    $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PICTURE']
+                ),
+            'MEDIABROWSER_ID'                   => $mediaBrowserId,
+            'TEMPLATEEDITOR_OPTION_NAME'        => $this->name,
+            'TEMPLATEEDITOR_OPTION_HUMAN_NAME'  => $this->humanName,
+            'TEMPLATEEDITOR_LASTID'             => $key != null ? $key : '0'
+        ));
+        $template->setVariable(array(
+            'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
+            'TEMPLATEEDITOR_OPTION_TYPE' => 'img series'
+        ));
         $template->parse('option');
     }
 
