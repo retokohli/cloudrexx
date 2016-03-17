@@ -645,7 +645,7 @@ function executeContrexxUpdate() {
     /*******************************************************************************/
     /*******************************************************************************/
     if (
-        !in_array('coreSettings', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) ||
+        !in_array('coreSettings', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) &&
         $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
     ) {
         \DBG::msg('update: update settings');
@@ -2209,9 +2209,12 @@ function migrateSessionTable()
  */
 function insertSessionArray($sessionId, $sessionArr, $parentId = 0)
 {
-    global $objDatabase;
+    global $objDatabase, $sessionObj;
 
     if ($parentId == 0) {
+        // get user id from session to prevent creation of database tables which
+        // could cause the update to fail
+        $userId = $sessionObj->userId;
         \Cx\Lib\UpdateUtil::sql('
             INSERT INTO
                 '. DBPREFIX .'sessions
@@ -2221,7 +2224,7 @@ function insertSessionArray($sessionId, $sessionArr, $parentId = 0)
                 `startdate` = \'' . time() . '\',
                 `lastupdated` = \'' . time() . '\',
                 `status` = \'backend\',
-                `user_id` = \'' . \FWUser::getFWUserObject()->objUser->getId() . '\'
+                `user_id` = \'' . $userId . '\'
         ');
     }
     foreach ($sessionArr as $key => $value) {

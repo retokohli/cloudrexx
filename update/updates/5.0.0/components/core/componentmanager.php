@@ -39,7 +39,7 @@ function _updateComponent() {
         foreach ($arrComponents as $component) {
             Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."component` (`id`,
                                         `name`, `type`)
-                                    VALUES (" . $component['id']. ", " . $component['name'] . ", " . $component['type'] . ")");
+                                    VALUES (" . $component['id']. ", '" . $component['name'] . "', '" . $component['type'] . "')");
         }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);

@@ -638,7 +638,10 @@ function _updateSettings()
         return 'timeout';
     }
 
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+    if (
+        !in_array('imageSettings', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done'])) &&
+        $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')
+    ) {
 		try {
 			\Cx\Lib\UpdateUtil::table(
 				DBPREFIX.'settings_image',
@@ -663,6 +666,7 @@ function _updateSettings()
 				return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
 			}
 		}
+        $_SESSION['contrexx_update']['update']['done'][] = 'imageSettings';
 	}
 
     return true;
