@@ -1448,24 +1448,34 @@ class CalendarEvent extends CalendarLibrary
         // create an event calendar component                                                                     
         $objVEvent = new vevent(); 
         
-        // start  
-        $startYear = date("Y", $this->startDate);
-        $startMonth = date("m", $this->startDate); 
-        $startDay = date("d", $this->startDate);
-        $startHour = date("H", $this->startDate);
-        $startMinute = date("i", $this->startDate);
-        
-        $objVEvent->setProperty( 'dtstart', array( 'year'=>$startYear, 'month'=>$startMonth, 'day'=>$startDay, 'hour'=>$startHour, 'min'=>$startMinute, 'sec'=>0 ));
-         
-        // end  
-        $endYear = date("Y", $this->endDate);
-        $endMonth = date("m", $this->endDate); 
-        $endDay = date("d", $this->endDate);
-        $endHour = date("H", $this->endDate);
-        $endMinute = date("i", $this->endDate);
-          
-        $objVEvent->setProperty( 'dtend', array( 'year'=>$endYear, 'month'=>$endMonth, 'day'=>$endDay, 'hour'=>$endHour, 'min'=>$endMinute, 'sec'=>0 )); 
-        
+        // start
+        $startDate   = $this->convertDbDateTime2user($this->getDateTime($this->startDate));
+        $objVEvent->setProperty(
+            'dtstart',
+            array(
+                'year'  => $startDate->format('Y'),
+                'month' => $startDate->format('m'),
+                'day'   => $startDate->format('d'),
+                'hour'  => $startDate->format('H'),
+                'min'   => $startDate->format('i'),
+                'sec'   => 0
+            )
+        );
+
+        // end
+        $endDate   = $this->convertDbDateTime2user($this->getDateTime($this->endDate));
+         $objVEvent->setProperty(
+             'dtend',
+             array(
+                 'year'  => $endDate->format('Y'),
+                 'month' => $endDate->format('m'),
+                 'day'   => $endDate->format('d'),
+                 'hour'  => $endDate->format('H'),
+                 'min'   => $endDate->format('i'),
+                 'sec'   => 0
+             )
+         );
+
         // place   
         if(!empty($this->place)) {  
             $objVEvent->setProperty( 'location', html_entity_decode($this->place, ENT_QUOTES, CONTREXX_CHARSET));

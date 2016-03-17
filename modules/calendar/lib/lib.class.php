@@ -9,6 +9,7 @@
  * @version    1.00
  */
 
+class CalendarException extends \Exception { }
 
 /**
  * Calendar
@@ -350,12 +351,11 @@ class CalendarLibrary
     
     /**
      * Return's the dataformat based on the type
-     * 
-     * Return's the dateformat by the given type 
-     * 1 => frontend else backend
-     *      
-     * @param integer $type type 1 => frontend else backend
-     * 
+     *
+     * 1 => frontend (javascript format alone) else backend
+     *
+     * @param integer $type type 1 => frontend (javascript format alone) else backend
+     *
      * @return string Date format
      */
     function getDateFormat($type=null)
@@ -459,9 +459,8 @@ class CalendarLibrary
         $month = substr($date, $posMonth,2);
         $day = substr($date, $posDay,2);      
         
-        $timestamp = mktime($hour,$minute,0,$month,$day,$year);   
-        
-        return $timestamp;
+        return $this->convertUserDateTime2db($this->getDateTime(strtotime($year . '-' . $month . '-' . $day . ' ' .$hour . ':' . $minute . ':00')))
+                     ->getTimestamp();
     }
     
     /**
@@ -628,7 +627,7 @@ EOF;
                 $datePicker->setEvent($event["year"], $event["month"], $event["day"], " withEvent");
             }
 
-            $datePicker = $datePicker->showMonth();
+            $datePicker->showMonth();
         }
     }
     
@@ -709,12 +708,123 @@ EOF;
         
         $dayArray = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV2_ARRAY']);
         foreach ($objEventManager->eventList as $event) {
-            $exceptionDates[date(self::getDateFormat(), $event->startDate)] = $event->startDate != $event->endDate 
-                                                                              ? $dayArray[date("w", $event->startDate)] .", " . date(self::getDateFormat(), $event->startDate).' - '. $dayArray[date("w", $event->endDate)] .", ". date(self::getDateFormat(), $event->endDate)
-                                                                              : $dayArray[date("w", $event->startDate)] .", " . date(self::getDateFormat(), $event->startDate);
+            $startDate = $this->getDateTime($event->startDate);
+            $endDate   = $this->getDateTime($event->endDate);
+            $exceptionDates[$this->format2userDate($startDate)] = $this->format2userDate($startDate) != $this->format2userDate($endDate)
+                                                                    ? $dayArray[$this->formatDateTime2user($startDate, "w")] .", " . $this->format2userDate($startDate) .' - ' . $dayArray[$this->formatDateTime2user($endDate, "w")] .", ". $this->format2userDate($endDate)
+                                                                    : $dayArray[$this->formatDateTime2user($startDate, "w")] .", " . $this->format2userDate($startDate);
         }
         
         return $exceptionDates;        
     }
     
+    /* Get component controller object
+     *
+     * @param string $name  component name
+     *
+     * @return \Cx\Core\Core\Model\Entity\SystemComponentController
+     * The requested component controller or null if no such component exists
+     */
+    public function getComponent($name)
+    {
+        if (empty($name)) {
+            return null;
+        }
+
+        $componentRepo = \Env::get('cx')
+                            ->getDb()
+                            ->getEntityManager()
+                            ->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
+
+        $component     = $componentRepo->findOneBy(array('name' => $name));
+        if (!$component) {
+            throw new CalendarException('The component => '. $name .' not available');
+        }
+        return $component;
+    }
+
+    /**
+      * Get Calendar DateTime instance
+      *
+      * @param integer $timestamp Unix timestamp for the datetime object
+      *
+     * @return DateTime
+      */
+     public function getDateTime($timestamp = null)
+     {
+
+        $dateTime = new \DateTime();
+
+         if ($timestamp) {
+             $dateTime->setTimestamp($timestamp);
+         }
+
+         return $dateTime;
+     }
+
+     /**
+      * Format to user date with time
+      *
+      * @return string Formatted string
+      */
+     public function format2userDateTime(\DateTime $dateTime)
+     {
+         return $this->formatDateTime2user($dateTime, $this->getDateFormat() .' H:i');
+     }
+
+     /**
+      * Format to user date
+      *
+      * @return string Formatted string
+      */
+     public function format2userDate(\DateTime $dateTime)
+     {
+         return $this->formatDateTime2user($dateTime, $this->getDateFormat());
+     }
+
+     /**
+      * Format to user time
+      *
+      * @return string Formatted string
+      */
+     public function format2userTime(\DateTime $dateTime)
+     {
+         return $this->formatDateTime2user($dateTime, 'H:i');
+     }
+
+     /**
+      * Format the datetime instance to user timezone by given format
+      *
+      * @param string $format Format string
+      *
+      * @return string Formatted string
+      */
+     public function formatDateTime2user(\DateTime $dateTime, $format)
+     {
+         return $this->convertDbDateTime2user($dateTime)
+                     ->format($format);
+     }
+
+     /**
+      * Wrapper method to call the DateTime component user2db method
+      *
+      * @return \DateTime
+      */
+     public function convertUserDateTime2db(\DateTime $dateTime)
+     {
+         return $this->getComponent('DateTime')
+                     ->user2db($dateTime);
+     }
+
+     /**
+      * Wrapper method to call the DateTime component db2user method
+      *
+      * @return \DateTime
+      */
+     public function convertDbDateTime2user(\DateTime $dateTime)
+     {
+         return $this->getComponent('DateTime')
+                     ->db2user($dateTime);
+     }
+
 }
