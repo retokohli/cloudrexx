@@ -150,7 +150,7 @@ class EgovManager extends EgovLibrary
         if (!isset($_REQUEST['id'])) {
             return false;
         }
-        $product_id = $_REQUEST['id'];
+        $product_id = intval($_REQUEST['id']);
         $product_autostatus =
             EgovLibrary::GetProduktValue("product_autostatus", $product_id);
         $product_name =
@@ -205,7 +205,7 @@ class EgovManager extends EgovLibrary
         ")) {
             $_REQUEST['id'] = $objDatabase->Insert_ID();
             foreach ($arrFields as $arrField) {
-                $this->_addFormField($_REQUEST['id'], $arrField['name'],
+                $this->_addFormField(intval($_REQUEST['id']), $arrField['name'],
                     $arrField['type'], $arrField['attributes'],
                     $arrField['order_id'], $arrField['is_required'],
                     $arrField['check_type']);
