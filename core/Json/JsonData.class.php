@@ -65,9 +65,6 @@ class JsonData {
         '\\Cx\\Core\\Json\\Adapter\\Calendar' => array(
             'JsonCalendar',
         ),
-        '\\Cx\\modules\\Survey\\Controller' => array(
-            'JsonSurvey',
-        ),
         '\\Cx\\Modules\\Crm\\Controller' => array(
             'JsonCrm',
         ),
