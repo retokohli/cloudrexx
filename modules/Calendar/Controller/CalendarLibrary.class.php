@@ -161,13 +161,6 @@ class CalendarLibrary
     const ATTACHMENT_FIELD_KEY = 'attachment_id';
     
     /**
-     * Instance of DateTime entity
-     *
-     * @var CalendarDateTime
-     */
-    public $calendarDateTime;
-
-    /**
      * Assign the template path
      * Sets the Global variable for the calendar module
      * 
@@ -183,15 +176,6 @@ class CalendarLibrary
             $this->moduleLangVar.'_DATE_FORMAT'  => self::getDateFormat(1),
             $this->moduleLangVar.'_JAVASCRIPT'   => self::getJavascript(),
         ));
-    }
-
-    /**
-     * Initialize the CalendarDateTime instance
-     */
-    public function initDateTime()
-    {
-        $this->calendarDateTime = new CalendarDateTime();
-        $this->calendarDateTime->setDateFormat($this->getDateFormat());
     }
 
     /**
