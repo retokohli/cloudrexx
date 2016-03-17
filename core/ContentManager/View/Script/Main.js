@@ -866,12 +866,7 @@ cx.cm = function(target) {
 
                 //check whether the application type contains the placeholder [[APPLICATION_DATA]] in ckeditor
                 if (!pattern.test(content)) {
-                    var range = CKEDITOR.instances['cm_ckeditor'].createRange();
-                    if (range && CKEDITOR.instances['cm_ckeditor'].getSelection()!=null) {
-                        range.moveToPosition(range.root, CKEDITOR.POSITION_BEFORE_END);
-                        CKEDITOR.instances['cm_ckeditor'].getSelection().selectRanges([range]);
-                    }
-                    CKEDITOR.instances['cm_ckeditor'].insertText('[[APPLICATION_DATA]]');
+                    CKEDITOR.instances['cm_ckeditor'].setData(content + '[[APPLICATION_DATA]]');
                 }
             }
             cx.jQuery('#page #application_toggle label').text(cx.jQuery(this).next().text());
