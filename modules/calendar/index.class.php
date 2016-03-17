@@ -248,7 +248,8 @@ class Calendar extends CalendarLibrary
             $startMonth = isset($_GET['month']) ? $_GET['month'] : date("m", mktime());
             $startYear  = isset($_GET['year']) ? $_GET['year'] : date("Y", mktime());
 
-            $this->startDate = mktime(0, 0, 0, $startMonth, $startDay, $startYear);
+            $this->startDate = $this->convertUserDateTime2db($this->getDateTime(mktime(0, 0, 0, $startMonth, $startDay, $startYear)))
+                                     ->getTimestamp();
         }
 
         // get enddate
@@ -263,7 +264,8 @@ class Calendar extends CalendarLibrary
 
             $endYear = empty($_GET['endYear']) && empty($_GET['endMonth']) ? $endYear+10: $endYear;
 
-            $this->endDate = mktime(23, 59, 59, $endMonth, $endDay, $endYear);
+            $this->endDate = $this->convertUserDateTime2db($this->getDateTime(mktime(23, 59, 59, $endMonth, $endDay, $endYear)))
+                                   ->getTimestamp();
         }
 
 
@@ -273,11 +275,11 @@ class Calendar extends CalendarLibrary
             $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : date('m');
             $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : date('d');
 
-            $dateObj = new DateTime("{$year}-{$month}-{$day}");
+            $dateObj = $this->getDateTime(strtotime("{$year}-{$month}-{$day}"));;
 
             $dateObj->modify("first day of this month");
             $dateObj->setTime(0, 0, 0);
-            $this->startDate = $dateObj->getTimestamp();
+            $this->startDate = $this->convertUserDateTime2db($dateObj)->getTimestamp();
 
             // add months for the list view(month view)
             if ((empty($_GET['act']) || $_GET['act'] != 'list') && empty($_REQUEST['dayID'])) {
@@ -287,7 +289,7 @@ class Calendar extends CalendarLibrary
 
              $dateObj->modify("last day of this month");
              $dateObj->setTime(23, 59, 59);
-             $this->endDate = $dateObj->getTimestamp();
+             $this->endDate = $this->convertUserDateTime2db($dateObj)->getTimestamp();
 
 
          } elseif ($_GET["yearID"] && $_GET["monthID"] && $_GET["dayID"]) {
@@ -296,8 +298,10 @@ class Calendar extends CalendarLibrary
             $month = $_REQUEST["monthID"] ? $_REQUEST["monthID"] : date('m', mktime());
             $day = $_REQUEST["dayID"] ? $_REQUEST["dayID"] : date('d', mktime());
 
-            $this->startDate = mktime(0, 0, 0, $month, $day, $year);
-            $this->endDate = mktime(23, 59, 59, $month, $day, $year);
+            $this->startDate = $this->convertUserDateTime2db($this->getDateTime(mktime(0, 0, 0, $month, $day, $year)))
+                                     ->getTimestamp();
+            $this->endDate   = $this->convertUserDateTime2db($this->getDateTime(mktime(23, 59, 59, $month, $day, $year)))
+                                     ->getTimestamp();
         }
 
         $this->searchTerm = !empty($_GET['term']) ? contrexx_addslashes($_GET['term']) : null;
@@ -534,7 +538,25 @@ UPLOADER;
 
         $objCategoryManager = new CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
+
+        if ($eventId) {
+            $startDate = $this->getDateTime($objEvent->startDate);
+            $endDate   = $this->getDateTime($objEvent->endDate);
+        } else {
+            $startDate = $this->getDateTime(strtotime('now'));
+            $startMin  = (int) $startDate->format('i');
+            // Adjust the time to next half hour
+            if (!in_array($startMin, array(0, 30))) {
+                $minAdj = (60 - $startMin) > 30 ? (30 - $startMin) : (60 - $startMin);
+                $startDate->setTime($startDate->format('H'), $startDate->format('i') + $minAdj, 00);
+            }
+            $endDate   = clone $startDate;
+            $endDate->modify("+30 mins");
+        }
         
+        $eventStartDate = $this->format2userDateTime($startDate);
+        $eventEndDate   = $this->format2userDateTime($endDate);
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DETAILS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAILS'],
@@ -574,8 +596,8 @@ UPLOADER;
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
-            $this->moduleLangVar.'_EVENT_START_DATE'                => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->startDate) : date(parent::getDateFormat()." H:i"),
-            $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->endDate) : date(parent::getDateFormat()." H:i"),
+            $this->moduleLangVar.'_EVENT_START_DATE'                => $eventStartDate,
+            $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventEndDate,
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
             $this->moduleLangVar.'_EVENT_PICTURE_THUMB'             => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
             $this->moduleLangVar.'_EVENT_ATTACHMENT'                => $objEvent->attach,
@@ -793,7 +815,8 @@ UPLOADER;
         
         $numRegistrations = (int) $objEvent->registrationCount;
         
-        $this->pageTitle = date("d.m.Y", (isset($_GET['date']) ? $_GET['date'] : $objEvent->startDate)).": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
+        $this->pageTitle = $this->format2userDate($this->getDateTime((isset($_GET['date']) ? $_GET['date'] : $objEvent->startDate)))
+                            .": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
         if(mktime() <= intval($_REQUEST['date'])) {
             if($numRegistrations < $objEvent->numSubscriber) {

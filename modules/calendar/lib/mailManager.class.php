@@ -274,12 +274,14 @@ class CalendarMailManager extends CalendarLibrary {
             }
                                                                                                   
             $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";            
-            $date       = date(parent::getDateFormat()." - H:i:s");       
-            
-            $eventTitle = $objEvent->title; 
-            $eventStart = $objEvent->all_day ? date(parent::getDateFormat(), $objEvent->startDate) : date(parent::getDateFormat()." (H:i:s)", $objEvent->startDate); 
-            $eventEnd   = $objEvent->all_day ? date(parent::getDateFormat(), $objEvent->endDate) : date(parent::getDateFormat()." (H:i:s)", $objEvent->endDate);
-            
+            $date       = $this->format2userDateTime($this->getDateTime(strtotime('now')));
+            $startDate  = $this->getDateTime($objEvent->startDate);
+            $endDate    = $this->getDateTime($objEvent->endDate);
+
+            $eventTitle = $objEvent->title;
+            $eventStart = $objEvent->all_day ? $this->format2userDate($startDate) : $this->formatDateTime2user($startDate, parent::getDateFormat() . ' (H:i:s)');
+            $eventEnd   = $objEvent->all_day ? $this->format2userDate($endDate) : $this->formatDateTime2user($endDate, parent::getDateFormat() . ' (H:i:s)');
+
             $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
             
             $recipients = $this->getSendMailRecipients($actionId, $objEvent, $regId, $objRegistration);
