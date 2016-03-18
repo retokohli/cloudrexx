@@ -361,7 +361,7 @@ function _crmUpdate() {
 
 function installCrmMailTemplates() {
     if (
-        !\MailTemplate::store('Crm', array(
+        !\Cx\Core\MailTemplate\Controller\MailTemplate::store('Crm', array(
             'key' => 'crm_user_account_created',
             'lang_id' => '1',
             'sender' => 'Ihr Firmenname',
@@ -381,7 +381,7 @@ function installCrmMailTemplates() {
         return false;
     }
     if (
-        !\MailTemplate::store('Crm', array(
+        !\Cx\Core\MailTemplate\Controller\MailTemplate::store('Crm', array(
             'key' => 'crm_task_assigned',
             'lang_id' => '1',
             'sender' => 'Ihr Firmenname',
@@ -401,7 +401,7 @@ function installCrmMailTemplates() {
         return false;
     }
     if (
-        !\MailTemplate::store('Crm', array(
+        !\Cx\Core\MailTemplate\Controller\MailTemplate::store('Crm', array(
             'key' => 'crm_notify_staff_on_contact_added',
             'lang_id' => '1',
             'sender' => 'Ihr Firmenname',
