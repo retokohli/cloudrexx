@@ -73,33 +73,26 @@ class SelectOption extends Option
     public function renderOptionField($template)
     {
         global $_LANGID;
-        $subTemplate = new Sigma();
-        $subTemplate->loadTemplateFile(
-            $this->getDirectory() . '/View/Template/Backend/SelectOption.html'
-        );
+        $choices = array();
         foreach ($this->choice as $value => $choice) {
-            $subTemplate->setVariable(
-                'CHOICE_NAME',
+            $choices['choices'][$value]['CHOICE_NAME'] =
                 isset($choice[$_LANGID])
                     ? $choice[$_LANGID]
-                    : (isset($choice[2]) ? $choice[2] : $value)
-            );
-            $subTemplate->setVariable('CHOICE_VALUE', $value);
+                    : (isset($choice[2])
+                        ? $choice[2]
+                        : $value
+                    );
+            $choices['choices'][$value]['CHOICE_VALUE'] = $value;
             if ($value == $this->activeChoice) {
-                $subTemplate->setVariable('CHOICE_ACTIVE', 'selected');
+                $choices['choices'][$value]['CHOICE_ACTIVE'] = 'selected';
             }
-            $subTemplate->parse('choices');
         }
-        $subTemplate->setVariable(array(
-            'TEMPLATEEDITOR_OPTION_VALUE'      => $this->activeChoice,
-            'TEMPLATEEDITOR_OPTION_NAME'       => $this->name,
-            'TEMPLATEEDITOR_OPTION_HUMAN_NAME' => $this->humanName
-        ));
-        $template->setVariable(array(
-            'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
-            'TEMPLATEEDITOR_OPTION_TYPE' => 'select'
-        ));
-        $template->parse('option');
+        parent::renderOptionField(
+            $template,
+            array('TEMPLATEEDITOR_OPTION_VALUE' => $this->activeChoice),
+            null,
+            $choices
+        );
     }
 
     /**

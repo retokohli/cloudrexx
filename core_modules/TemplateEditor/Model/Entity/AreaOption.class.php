@@ -66,20 +66,13 @@ class AreaOption extends Option
      */
     public function renderOptionField($template)
     {
-        $subTemplate = new Sigma();
-        $subTemplate->loadTemplateFile(
-            $this->getDirectory() . '/View/Template/Backend/AreaOption.html'
+        parent::renderOptionField(
+            $template,
+            array(
+                'TEMPLATEEDITOR_OPTION_VALUE' =>
+                    ($this->active) ? 'checked' : '',
+            )
         );
-        $subTemplate->setVariable(array(
-            'TEMPLATEEDITOR_OPTION_VALUE'   => ($this->active) ? 'checked' : '',
-            'TEMPLATEEDITOR_OPTION_NAME'    => $this->name,
-            'TEMPLATEEDITOR_OPTION_HUMAN_NAME' => $this->humanName
-        ));
-        $template->setVariable(array(
-            'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
-            'TEMPLATEEDITOR_OPTION_TYPE' => 'area'
-        ));
-        $template->parse('option');
     }
 
     /**

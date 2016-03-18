@@ -89,21 +89,10 @@ class TextOption extends Option
      */
     public function renderOptionField($template)
     {
-        $subTemplate = new Sigma();
-        $subTemplate->loadTemplateFile(
-            $this->getDirectory() . '/View/Template/Backend/'
-            . end(explode('\\', get_class($this))) . '.html'
+        parent::renderOptionField(
+            $template,
+            array('TEMPLATEEDITOR_OPTION_VALUE' => $this->string)
         );
-        $subTemplate->setVariable(array(
-            'TEMPLATEEDITOR_OPTION_VALUE'       => $this->string,
-            'TEMPLATEEDITOR_OPTION_NAME'        => $this->name,
-            'TEMPLATEEDITOR_OPTION_HUMAN_NAME'  => $this->humanName
-        ));
-        $template->setVariable(array(
-            'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
-            'TEMPLATEEDITOR_OPTION_TYPE' => 'text'
-        ));
-        $template->parse('option');
     }
 
     /**

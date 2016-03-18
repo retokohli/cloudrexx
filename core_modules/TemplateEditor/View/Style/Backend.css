@@ -250,8 +250,8 @@ body {
     opacity: 0.8;
     cursor: not-allowed;
 }
-
-.img.option img {
+.imageseries.option img,
+.image.option img {
     margin: auto;
     display: block;
     max-width: 100%;
@@ -266,7 +266,7 @@ body {
     position: relative;
 }
 
-.img.series.option img {
+.imageseries.option img {
     margin-top: 10px;
 }
 
