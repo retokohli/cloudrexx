@@ -162,11 +162,15 @@ body {
 
 #content .option.saved input,
 #content .option .image.saved input,
-#content .option .image.saved img {
+#content .option .element.saved input,
+#content .option .image.saved img,
+#content .option .element.saved img {
     border: 1px solid #00C755;
 }
 
-#content .option:after, #content .option .image:after {
+#content .option:after,
+#content .option .image:after,
+#content .option .element:after {
     content: "\2713 ";
     opacity: 0;
     -webkit-transition: opacity 0.6s;
@@ -189,6 +193,7 @@ body {
 #content .option.color:after,
 #content .option.text:after,
 #content .option.image:after,
+#content .option.element:after,
 #content .option.area:after {
     bottom: 12px;
     right: 13px;
@@ -199,13 +204,17 @@ body {
     bottom:15px;
 }
 
-#content .option.saving:after, #content .option .image.saving:after {
+#content .option.saving:after,
+#content .option .image.saving:after,
+#content .option .element.saving:after {
     opacity: 1;
     content: '';
     background: #FFFFFF url(../../../lib/javascript/jquery/jstree/themes/default/throbber.gif);
 }
 
-#content .option.saved:after,  #content .option .image.saved:after  {
+#content .option.saved:after,
+#content .option .image.saved:after,
+#content .option .element.saved:after  {
     opacity: 1;
 }
 
@@ -246,7 +255,7 @@ body {
     cursor: not-allowed;
 }
 
-.img.option img {
+.elm.option img {
     margin: auto;
     display: block;
     max-width: 100%;
@@ -261,7 +270,7 @@ body {
     position: relative;
 }
 
-.img.series.option img {
+.elm.series.option img {
     margin-top: 10px;
 }
 

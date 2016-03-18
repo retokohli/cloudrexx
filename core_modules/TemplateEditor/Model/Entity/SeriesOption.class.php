@@ -33,22 +33,22 @@ use Cx\Core\Html\Sigma;
 use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 
 /**
- * Class ImageSeriesOption
+ * Class SeriesOption
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Robin Glauser <robin.glauser@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class ImageSeriesOption extends Option
+class SeriesOption extends Option
 {
 
     /**
-     * Array with urls for images
+     * Array with values for serie
      *
      * @var array
      */
-    protected $urls;
+    protected $elements;
 
     /**
      * @param String $name Name of the option
@@ -58,9 +58,9 @@ class ImageSeriesOption extends Option
     public function __construct($name, $translations, $data)
     {
         parent::__construct($name, $translations, $data);
-        foreach ($data['urls'] as $key => $url) {
-            if (!empty($url)) {
-                $this->urls[$key] = $url;
+        foreach ($data['elements'] as $key => $elm) {
+            if (!empty($elm)) {
+                $this->elements[$key] = $elm;
             }
         }
     }
@@ -76,14 +76,14 @@ class ImageSeriesOption extends Option
         $subTemplate = new Sigma();
         $subTemplate->loadTemplateFile(
             $this->cx->getCodeBaseCoreModulePath()
-            . '/TemplateEditor/View/Template/Backend/ImagesSeriesOption.html'
+            . '/TemplateEditor/View/Template/Backend/SeriesOption.html'
         );
         $subTemplate->setGlobalVariable($_ARRAYLANG);
 
-        foreach ($this->urls as $id => $url) {
-            $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $url);
+        foreach ($this->elements as $id => $elm) {
+            $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $elm);
             $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_ID', $id);
-            $subTemplate->parse('images');
+            $subTemplate->parse('serie');
         }
         $mediaBrowser   = new MediaBrowser();
         $mediaBrowserId = $this->name . '_mediabrowser';
@@ -111,12 +111,12 @@ class ImageSeriesOption extends Option
             'TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName
         );
         //Get last key
-        end($this->urls);
-        $key = key($this->urls);
+        end($this->elements);
+        $key = key($this->elements);
         $key = $key != null ? $key : '0';
         $subTemplate->setVariable('TEMPLATEEDITOR_LASTID', $key);
         $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
-        $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'img series');
+        $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'elm series');
 
         $template->parse('option');
     }
@@ -130,10 +130,10 @@ class ImageSeriesOption extends Option
     {
         $blockName = strtolower('TEMPLATE_EDITOR_' . $this->name);
         if ($template->blockExists($blockName)) {
-            foreach ($this->urls as $id => $url) {
+            foreach ($this->elements as $id => $elm) {
                 $template->setVariable(
                     strtoupper('TEMPLATE_EDITOR_' . $this->name),
-                    contrexx_raw2xhtml($url)
+                    contrexx_raw2xhtml($elm)
                 );
                 $template->parse($blockName);
             }
@@ -160,9 +160,9 @@ class ImageSeriesOption extends Option
         if (empty($data['id']) && $data['id'] != 0) {
             throw new OptionValueNotValidException("Needs a id to work");
         }
-        if (empty($data['url'])) {
+        if (empty($data['elm'])) {
             if (isset($data['action']) && $data['action'] == 'remove') {
-                unset($this->urls[intval($data['id'])]);
+                unset($this->elements[intval($data['id'])]);
             } else {
                 throw new OptionValueNotValidException(
                     sprintf(
@@ -171,45 +171,45 @@ class ImageSeriesOption extends Option
                 );
             }
         }
-        $url = parse_url($data['url']);
-        if (!isset($url['host'])) {
+        $elm = parse_url($data['elm']);
+        if (!isset($elm['host'])) {
             if (!file_exists(
-                $this->cx->getWebsitePath() . $url['path']
+                $this->cx->getWebsitePath() . $elm['path']
             )
             ) {
                 if (!file_exists(
-                    $this->cx->getCodeBasePath() . $url['path']
+                    $this->cx->getCodeBasePath() . $elm['path']
                 )
                 ) {
                     throw new OptionValueNotValidException(
                         sprintf(
                             $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'],
-                            $url['path']
+                            $elm['path']
                         )
                     );
                 }
             }
         }
-        $this->urls[$data['id']] = $data['url'];
-        return array('urls' => $this->urls);
+        $this->elements[$data['id']] = $data['elm'];
+        return array('elements' => $this->elements);
     }
 
     /**
-     * Get array with urls
+     * Get array with elements
      *
      * @return Option[]
      */
-    public function getUrls()
+    public function getElements()
     {
-        return $this->urls;
+        return $this->elements;
     }
 
     /**
-     * @param Option[] $urls
+     * @param Option[] $elements
      */
-    public function setUrls($urls)
+    public function setElements($elements)
     {
-        $this->urls = $urls;
+        $this->elements = $elements;
     }
 
     /**
@@ -220,7 +220,7 @@ class ImageSeriesOption extends Option
     public function getValue()
     {
         return array(
-            'urls' => $this->urls
+            'elements' => $this->elements
         );
     }
 }

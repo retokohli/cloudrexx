@@ -34,7 +34,7 @@ use Cx\Core\Test\Model\Entity\ContrexxTestCase;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\AreaOption;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\ImageSeriesOption;
+use Cx\Core_Modules\TemplateEditor\Model\Entity\SeriesOption;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\OptionValueNotValidException;
 use Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption;
 
@@ -127,17 +127,17 @@ class OptionTest extends ContrexxTestCase
     }
 
     public function testImageSeriesOption() {
-        $urls = array('https://placekitten.com/1500/300');
-        $imageOption = new ImageSeriesOption( 'test', array(1 => 'Unit-Test'),
+        $elements = array('https://placekitten.com/1500/300');
+        $imageOption = new SeriesOption( 'test', array(1 => 'Unit-Test'),
             array(
-                'urls' => $urls
+                'elements' => $elements
             ));
         $backendTemplate = new Sigma();
         $backendTemplate->setTemplate($this->template);
         $imageOption->renderOptionField($backendTemplate);
         $renderedTemplate = $backendTemplate->get();
-        foreach ($urls as $url) {
-            $this->assertTrue((strpos($renderedTemplate, $url) !== 0));
+        foreach ($elements as $element) {
+            $this->assertTrue((strpos($renderedTemplate, $element) !== 0));
         }
     }
 
