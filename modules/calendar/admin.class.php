@@ -231,7 +231,7 @@ class CalendarManager extends CalendarLibrary
         if($_GET['list'] == 'actual' || !isset($_GET['list'])) {
             $styleListActual = 'underline';  
             $styleListAll = '';                                 
-            $startDate = $this->convertUserDateTime2db($this->getDateTime(time()))->getTimestamp();
+            $startDate = $this->convertUserDateTime2db($this->getDateTime())->getTimestamp();
             $listType = 'upcoming';
         } else {
             $styleListActual = '';  
@@ -414,7 +414,7 @@ class CalendarManager extends CalendarLibrary
             $startDate = $this->getDateTime($objEvent->startDate);
             $endDate   = $this->getDateTime($objEvent->endDate);
         } else {
-            $startDate = $this->getDateTime(strtotime('now'));
+            $startDate = $this->getDateTime();
             $startMin  = (int) $startDate->format('i');
             // Adjust the time to next half hour
             if (!in_array($startMin, array(0, 30))) {

@@ -274,7 +274,7 @@ class CalendarMailManager extends CalendarLibrary {
             }
                                                                                                   
             $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";            
-            $date       = $this->format2userDateTime($this->getDateTime(strtotime('now')));
+            $date       = $this->format2userDateTime($this->getDateTime());
             $startDate  = $this->getDateTime($objEvent->startDate);
             $endDate    = $this->getDateTime($objEvent->endDate);
 

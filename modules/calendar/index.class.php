@@ -543,15 +543,8 @@ UPLOADER;
             $startDate = $this->getDateTime($objEvent->startDate);
             $endDate   = $this->getDateTime($objEvent->endDate);
         } else {
-            $startDate = $this->getDateTime(strtotime('now'));
-            $startMin  = (int) $startDate->format('i');
-            // Adjust the time to next half hour
-            if (!in_array($startMin, array(0, 30))) {
-                $minAdj = (60 - $startMin) > 30 ? (30 - $startMin) : (60 - $startMin);
-                $startDate->setTime($startDate->format('H'), $startDate->format('i') + $minAdj, 00);
-            }
-            $endDate   = clone $startDate;
-            $endDate->modify("+30 mins");
+            $startDate = $this->getDateTime();
+            $endDate = $this->getDateTime();
         }
         
         $eventStartDate = $this->format2userDateTime($startDate);
