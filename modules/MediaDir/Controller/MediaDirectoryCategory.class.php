@@ -154,7 +154,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
             $this->moduleLangVar.'_CATEGORY_ICON'                 => $spacer.$strCategoryIcon,
             $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_ACTION' => $category->getActive() == 0 ? 1 : 0,
             $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_IMG'    => $category->getActive() == 0 ? 'off' : 'on',
-            $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $category->getLvl(),
+            $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $category->getLvl() - 1,
             $this->moduleLangVar.'_CATEGORY_ACTIVE_STATUS'        => $strCategoryClass,
         ));
 
@@ -177,8 +177,9 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         $expandAll = false,
         $checkShowSubCategory = false
     ) {
-        foreach ($category as $subcategory) {
-            $hasChildren = count($subcategory->getAllChildren());
+        $subCategories = $this->getSubCategoriesByCategory($category);
+        foreach ($subCategories as $subcategory) {
+            $hasChildren = !\FWValidator::isEmpty($this->getSubCategoriesByCategory($subcategory));
             $isExpanded  = (!$checkShowSubCategory || $subcategory->getShowSubcategories())
                            && ($expandAll || in_array($subcategory->getId(), $expandedCategoryIds));
 
@@ -280,7 +281,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 if (!$category) {
                     $category = $this->categoryRepository->getRoot();
                 }
-                $intNumCategories = count($category);
+                $intNumCategories = $this->categoryRepository->getChildCount($category, true);
 
                 if ($intNumCategories % $intNumBlocks != 0) {
                     $intNumCategories = $intNumCategories + ($intNumCategories % $intNumBlocks);
@@ -289,7 +290,8 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 $intNumPerRow = intval($intNumCategories / $intNumBlocks);
                 $x = 0;
 
-                foreach ($category as $category) {
+                $subCategories = $this->getSubCategoriesByCategory($category);
+                foreach ($subCategories as $subCategory) {
                     $strLevelId        = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
 
                     $strIndexHeaderTag = null;
@@ -320,23 +322,23 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                                         : '';
 
                     $childrenString = $this->createCategorieTree(
-                        $category,
+                        $subCategory,
                         $strCategoryCmd,
                         $strLevelId
                     );
-                    $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
+                    $locale       = $subCategory->getLocaleByLang(FRONTEND_LANG_ID);
                     $categoryName = $locale ? $locale->getCategoryName() : '';
                     $categoryDesc = $locale ? $locale->getCategoryDescription() : '';
 
                     //parse variables
                     $objTpl->setVariable(array(
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $category->getId(),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $subCategory->getId(),
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NAME'           => contrexx_raw2xhtml($categoryName),
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK'           => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$category->getId().'">'.contrexx_raw2xhtml($categoryName).'</a>',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK'           => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$subCategory->getId().'">'.contrexx_raw2xhtml($categoryName).'</a>',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION'    => contrexx_raw2xhtml($categoryDesc),
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE'        => '<img src="'.$category->getPicture().'" border="0" alt="'.contrexx_raw2xhtml($categoryName).'" />',
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $category->getPicture(),
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES'    => count($category),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE'        => '<img src="'.$subCategory->getPicture().'" border="0" alt="'.contrexx_raw2xhtml($categoryName).'" />',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $subCategory->getPicture(),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES'    => $this->countEntries($category->getId()),
                         $this->moduleLangVar.'_CATEGORY_LEVEL_CHILDREN'       => $childrenString,
                     ));
 
@@ -351,43 +353,16 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 break;
             case 3:
                 //Category Dropdown Menu
-                $recursiveCategoryIterator = $this->getCategoryIterator($this->categoryRepository->getRoot());
-
-		$strDropdownOptions = '';
-                foreach ($recursiveCategoryIterator as $category) {
-                    $strSelected  = $this->intCategoryId == $category->getId() ? 'selected="selected"' : '';
-                    $spacer       = str_repeat('----', $recursiveCategoryIterator->getDepth());
-                    $spacer      .= $recursiveCategoryIterator->getDepth() > 0 ? '&nbsp;' : '';
-                    $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
-                    $categoryName = $locale ? $locale->getCategoryName() : '';
-
-                    $strDropdownOptions .= '<option value="'. $category->getId() .'" '. $strSelected .' >'. $spacer . contrexx_raw2xhtml($categoryName) .'</option>';
-                }
-                return $strDropdownOptions;
+                return $this->getCategoryDropDown($this->categoryRepository->getRoot());
                 break;
             case 4:
                 //Category Selector (modify view)
-                $arrSelectedCategories     = $this->getSelectedCategoriesByEntryId($intEntryId);
-                $recursiveCategoryIterator = $this->getCategoryIterator($this->categoryRepository->getRoot());
-
-                $strSelectedOptions = $strNotSelectedOptions = '';
-                foreach ($recursiveCategoryIterator as $category) {
-                    $spacer       = str_repeat('----', $recursiveCategoryIterator->getDepth());
-                    $spacer      .= $recursiveCategoryIterator->getDepth() > 0 ? '&nbsp;' : '';
-                    $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
-                    $categoryName = $locale ? $locale->getCategoryName() : '';
-
-                    $option = '<option value="'. $category->getId() .'">'. $spacer . contrexx_raw2xhtml($categoryName).'</option>';
-                    if (in_array($category->getId(), $arrSelectedCategories)) {
-                        $strSelectedOptions .= $option;
-                    } else {
-                        $strNotSelectedOptions .= $option;
-                    }
-                }
-
-                $arrSelectorOptions['selected']     = $strSelectedOptions;
-                $arrSelectorOptions['not_selected'] = $strNotSelectedOptions;
-
+                $arrSelectedCategories = $this->getSelectedCategoriesByEntryId($intEntryId);
+                list($selectedOptions, $notSelectedOptions) = $this->getCategoryOptions4EditView($this->categoryRepository->getRoot(), $arrSelectedCategories);
+                $arrSelectorOptions = array(
+                  'selected'     => $selectedOptions,
+                  'not_selected' => $notSelectedOptions
+                );
                 return $arrSelectorOptions;
                 break;
             case 5:
@@ -461,6 +436,99 @@ TEMPLATE;
                 return $template->get();
                 break;
         }
+    }
+
+    /**
+     * Get category dropdown for Entry edit view
+     *
+     * @param Category  $category               Parent category
+     * @param array     $arrSelectedCategories  Array selected categories
+     *
+     * @return array
+     */
+    public function getCategoryOptions4EditView(Category $category, $arrSelectedCategories)
+    {
+        $subCategories = $this->getSubCategoriesByCategory($category);
+        $strSelectedOptions = $strNotSelectedOptions = '';
+        foreach ($subCategories as $subCategory) {
+            $spacer       = str_repeat('----', $subCategory->getLvl() - 1);
+            $spacer      .= $subCategory->getLvl() > 0 ? '&nbsp;' : '';
+            $locale       = $subCategory->getLocaleByLang(FRONTEND_LANG_ID);
+            $categoryName = $locale ? $locale->getCategoryName() : '';
+
+            $option = '<option value="'. $subCategory->getId() .'">'. $spacer . contrexx_raw2xhtml($categoryName).'</option>';
+            if (in_array($subCategory->getId(), $arrSelectedCategories)) {
+                $strSelectedOptions .= $option;
+            } else {
+                $strNotSelectedOptions .= $option;
+            }
+            list($selectedOptions, $notSelectedOptions) = $this->getCategoryOptions4EditView($subCategory, $arrSelectedCategories);
+            $strSelectedOptions    .= $selectedOptions;
+            $strNotSelectedOptions .= $notSelectedOptions;
+        }
+        return array($strSelectedOptions, $strNotSelectedOptions);
+    }
+
+    /**
+     * Get settings sorting field
+     *
+     * @return string
+     */
+    public function getSortingField()
+    {
+        switch($this->arrSettings['settingsCategoryOrder']) {
+            case 0;
+                $sortOrder = 'node.order';
+                break;
+            case 1;
+            case 2;
+                $sortOrder = 'lc.category_name';
+                break;
+        }
+        return $sortOrder;
+    }
+
+    /**
+     * Get sub categories of a category, by applying the sorting and status
+     *
+     * @param Category $category
+     *
+     * @return array Array collection of subcategories
+     */
+    public function getSubCategoriesByCategory(Category $category)
+    {
+        global $_LANGID;
+
+        return $this->categoryRepository->getChildren(
+            $category,
+            $_LANGID,
+            $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND,
+            $this->getSortingField()
+        );
+    }
+
+    /**
+     * Get the category dropdown
+     * 
+     * @param Category $category
+     *
+     * @return string
+     */
+    public function getCategoryDropDown(Category $category)
+    {
+        $strDropdownOptions = '';
+        $subCategories      = $this->getSubCategoriesByCategory($category);
+        foreach ($subCategories as $subCategory) {
+            $strSelected  = $this->intCategoryId == $subCategory->getId() ? 'selected="selected"' : '';
+            $spacer       = str_repeat('----', $subCategory->getLvl() - 1);
+            $spacer      .= $subCategory->getLvl() > 0 ? '&nbsp;' : '';
+            $locale       = $subCategory->getLocaleByLang(FRONTEND_LANG_ID);
+            $categoryName = $locale ? $locale->getCategoryName() : '';
+
+            $strDropdownOptions .= '<option value="'. $subCategory->getId() .'" '. $strSelected .' >'. $spacer . contrexx_raw2xhtml($categoryName) .'</option>';
+            $strDropdownOptions .= $this->getCategoryDropDown($subCategory);
+        }
+        return $strDropdownOptions;
     }
 
     /**
@@ -573,6 +641,28 @@ TEMPLATE;
         $category = $this->categoryRepository->findOneById($intCategoryId);
         $this->em->remove($category);
         $this->em->flush();
+
+        return true;
+    }
+
+    /**
+     * Get subcategories id
+     *
+     * @param Category $category
+     *
+     * @return array subcategory id's
+     */
+    public function getSubCategories(Category $category)
+    {
+        $categories    = array();
+        $subCategories = $this->getSubCategoriesByCategory($category);
+        foreach ($subCategories as $subCategory) {
+            $categories = array_merge(
+                array($subCategory->getId()),
+                $this->getSubCategories($subCategory)
+            );
+        }
+        return $categories;
     }
 
     /**
@@ -602,18 +692,16 @@ TEMPLATE;
             return 0;
         }
 
-        $recursiveCategoryIterator = $this->getCategoryIterator($category);
-        $categories = array($category->getId());
-        foreach ($recursiveCategoryIterator as $subCategory) {
-            $categories[] = $subCategory->getId();
-        }
-        
+        $categories = array_merge(
+            array($category->getId()),
+            $this->getSubCategories($category)
+        );
         $whereCategory = '';
         if ($categories) {
             $whereCategory = " AND `rel_categories`.`category_id` IN (" . implode(', ', contrexx_input2int($categories)) .")";
         }
         $objCountEntriesRS = $objDatabase->Execute("
-                                                SELECT COUNT(*) as c
+                                                SELECT COUNT(`entry`.`id`) as c
                                                 FROM
                                                         `" . DBPREFIX . "module_".$this->moduleTablePrefix."_entries` AS `entry`
                                                 INNER JOIN
@@ -673,11 +761,12 @@ TEMPLATE;
      */
     public function createCategorieTree(Category $category, $strCategoryCmd, $strLevelId)
     {
-        if (\FWValidator::isEmpty($category->getAllChildren())) {
+        $subCategories = $this->getSubCategoriesByCategory($category);
+        if (empty($subCategories)) {
             return '';
         }
         $childrenString = '<ul>';
-        foreach ($category as $subCategory) {
+        foreach ($subCategories as $subCategory) {
             $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
             $categoryName = $locale ? $locale->getCategoryName() : '';
 

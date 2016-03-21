@@ -43,14 +43,85 @@ namespace Cx\Modules\MediaDir\Model\Repository;
  * @package     cloudrexx
  * @subpackage  module_mediadir
  */
-class CategoryRepository extends \Gedmo\Tree\Entity\Repository\NestedTreeRepository
+class CategoryRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
      * Returns the root node.
      * @todo DO NOT use NestedTreeRepository->getRootNodes(), it needs a lot of RAM, implement own query to get all root nodes
      * @return \Cx\Core\ContentManager\Model\Entity\Node
      */
-    public function getRoot() {
+    public function getRoot()
+    {
         return $this->findOneById(1);
+    }
+
+    /**
+     * Get sub categories by given criteria
+     *
+     * @param \Cx\Modules\MediaDir\Model\Entity\Category    $category       Parent category
+     * @param integer                                       $langId         Language id
+     * @param boolean                                       $activeOnly     Get active only
+     * @param string                                        $sortByField    Sorting field
+     * @param string                                        $direction      Sort direction ASC|DESC
+     *
+     * @return array Subcategory array
+     */
+    public function getChildren(\Cx\Modules\MediaDir\Model\Entity\Category $category, $langId = null, $activeOnly = false, $sortByField = null, $direction = 'ASC')
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select('node')
+           ->from('\Cx\Modules\MediaDir\Model\Entity\Category', 'node');
+        if ($langId) {
+           $qb->innerJoin('node.locale', 'lc', \Doctrine\ORM\Query\Expr\Join::WITH, 'lc.lang_id = '. $langId);
+        }
+
+        $left  = $category->getLft();
+        $right = $category->getRgt();
+        if ($left && $right) {
+            $qb->where('node.rgt < '. $right)
+               ->andWhere('node.lft > '. $left);
+        }
+        $qb->andWhere("node.parent = ". $category->getId());
+        if ($activeOnly) {
+           $qb->andWhere('node.active = 1');
+        }
+        if (!$sortByField) {
+            $qb->orderBy('node.lft', 'ASC');
+        } else {
+            $qb->orderBy($sortByField, $direction);
+        }
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Get count of subcategories
+     *
+     * @param \Cx\Modules\MediaDir\Model\Entity\Category $category
+     * @param boolean $activeOnly                        Get only active subcategories
+     *
+     * @return integer Count of subcategories
+     */
+    public function getChildCount(\Cx\Modules\MediaDir\Model\Entity\Category $category, $activeOnly = false)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select('COUNT(node.id)')
+           ->from('\Cx\Modules\MediaDir\Model\Entity\Category', 'node');
+
+        $left  = $category->getLft();
+        $right = $category->getRgt();
+        if ($left && $right) {
+            $qb->where('node.rgt < '. $right)
+               ->andWhere('node.lft > '. $left);
+        }
+
+        if ($activeOnly) {
+            $qb->andWhere('node.active = 1');
+        }
+
+        $q = $qb->getQuery();
+
+        return intval($q->getSingleScalarResult());
     }
 }

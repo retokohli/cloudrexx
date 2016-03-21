@@ -43,7 +43,7 @@ namespace Cx\Modules\MediaDir\Model\Entity;
  * @package     cloudrexx
  * @subpackage  module_mediadir
  */
-class Category extends \Cx\Model\Base\EntityBase implements \RecursiveIterator, \Countable
+class Category extends \Cx\Model\Base\EntityBase
 {
     /**
      * @var integer $id
@@ -104,8 +104,6 @@ class Category extends \Cx\Model\Base\EntityBase implements \RecursiveIterator, 
      * @var Cx\Modules\MediaDir\Model\Entity\Category
      */
     private $parent;
-    
-    private $position = 0;
 
     public function __construct()
     {
@@ -300,7 +298,7 @@ class Category extends \Cx\Model\Base\EntityBase implements \RecursiveIterator, 
      */
     public function getChildren()
     {
-        return $this->valid() ? $this->children[$this->position] : null;
+        return $this->children;
     }
 
     /**
@@ -360,85 +358,5 @@ class Category extends \Cx\Model\Base\EntityBase implements \RecursiveIterator, 
     public function getParent()
     {
         return $this->parent;
-    }
-
-    /**
-     * Get all children
-     *
-     * @return \Doctrine\Common\Collections\ArrayCollection
-     */
-    public function getAllChildren()
-    {
-        return $this->children;
-    }
-    
-    /**
-     * Check node has children
-     *
-     * @return boolean
-     */
-    public function hasChildren()
-    {
-        if (!$this->valid()) {
-            return false;
-        }
-        
-        return count($this->children[$this->position]) > 0;
-    }
-
-    /**
-     * Get current children in the iterator
-     *
-     * @return Category
-     */
-    public function current()
-    {
-        return $this->children[$this->position];
-    }
-
-    /**
-     * Move to next position
-     */
-    public function next()
-    {
-        $this->position++;
-    }
-
-    /**
-     * Get current position
-     *
-     * @return integer
-     */
-    public function key()
-    {
-        return $this->position;
-    }
-
-    /**
-     * Verify the current children is valid
-     *
-     * @return boolean
-     */
-    public function valid()
-    {
-        return isset($this->children[$this->position]);
-    }
-
-    /**
-     * Reset the iterator position
-     */
-    public function rewind()
-    {
-        $this->position = 0;
-    }
-    
-    /**
-     * Get the number of sub categories
-     *
-     * @return integer The number of elements in iterator.
-     */
-    public function count()
-    {
-        return iterator_count(new \RecursiveIteratorIterator($this, \RecursiveIteratorIterator::SELF_FIRST));
     }
 }

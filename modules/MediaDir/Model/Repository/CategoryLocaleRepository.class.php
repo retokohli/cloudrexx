@@ -43,4 +43,4 @@ namespace Cx\Modules\MediaDir\Model\Repository;
  * @package     cloudrexx
  * @subpackage  module_mediadir
  */
-class CategoryLocaleRepository extends \Gedmo\Translatable\Entity\Repository\TranslationRepository  {}
+class CategoryLocaleRepository extends \Doctrine\ORM\EntityRepository  {}

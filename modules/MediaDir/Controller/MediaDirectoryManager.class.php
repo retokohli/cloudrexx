@@ -659,7 +659,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
         $categoryRepository = $this->em->getRepository('Cx\Modules\MediaDir\Model\Entity\Category');
 
-        $category = $categoryRepository->findOneById(intval($_GET['id']));
+        $category = $categoryRepository->findOneById(intval($_REQUEST['id']));
         if (!$category) {
             $category = new \Cx\Modules\MediaDir\Model\Entity\Category();
         }
