@@ -1247,6 +1247,11 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Frontend)");
             }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('timezone')
+                && !\Cx\Core\Setting\Controller\Setting::add('timezone', isset($existingConfig['timezone']) ? $existingConfig['timezone'] : 'Europe/Zurich', 7,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getTimezoneOptions()}', 'site')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Time zone");
+            }
 
             //administrationArea group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml', $configPath);
@@ -1287,11 +1292,6 @@ class Config
                     \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'administrationArea')){
                         throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Dns Server");
                 }
-            }
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('timezone')
-                && !\Cx\Core\Setting\Controller\Setting::add('timezone', isset($existingConfig['timezone']) ? $existingConfig['timezone'] : 'Europe/Zurich', 7,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\'.__CLASS__.'::getTimezoneOptions()}', 'administrationArea')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Time zone");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('forceProtocolBackend')
                 && !\Cx\Core\Setting\Controller\Setting::add('forceProtocolBackend', isset($existingConfig['forceProtocolBackend']) ? $existingConfig['forceProtocolBackend'] : 'none', 8,
