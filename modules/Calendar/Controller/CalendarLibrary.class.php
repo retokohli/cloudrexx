@@ -665,7 +665,7 @@ EOF;
                 $datePicker->setEvent($event["year"], $event["month"], $event["day"], " withEvent");
             }
 
-            $datePicker->showMonth();
+            $datePicker = $datePicker->showMonth();
         }
     }
     
