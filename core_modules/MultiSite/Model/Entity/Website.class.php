@@ -987,6 +987,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE.':'.\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE, 'config')){
                     throw new WebsiteException("Failed to add Setting entry for MultiSite mode");
             }
+            //website group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem', $websiteConfigPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHostname','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHostname', $serviceHostname, 2,
@@ -1038,6 +1039,22 @@ class Website extends \Cx\Model\Base\EntityBase {
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new WebsiteException("Failed to add website entry for website FTP user");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('website_mode','MultiSite') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('website_mode', 'standalone', 11,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'standalone:standalone, client:client, server:server', 'website')){
+                    throw new MultiSiteException("Failed to add Setting entry for website mode");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('website_server','MultiSite') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('website_server', '', 12,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\Cx\\Core_Modules\\MultiSite\\Controller\\ComponentController::getWebsiteList()}', 'website')){
+                    throw new MultiSiteException("Failed to add Setting entry for website server");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('website_shared_folder','MultiSite') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('website_shared_folder', $this->cx->getWebsiteImagesWebPath(), 13,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'website')){
+                    throw new MultiSiteException("Failed to add Setting entry for website shared folder");
+            }
+
         } catch (\Exception $e) {
             // we must re-initialize the original MultiSite settings of the main installation
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem', null, \Cx\Core\Setting\Controller\Setting::REPOPULATE);

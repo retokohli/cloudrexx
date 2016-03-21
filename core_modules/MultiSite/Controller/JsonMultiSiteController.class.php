@@ -172,6 +172,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             'getDomainSslCertificate' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'linkSsl'                 => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'setWebsiteOwner' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'getWebsiteList' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
         );  
     }
 
@@ -7169,5 +7170,48 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
         \Cx\Core\Setting\Controller\Setting::set('websiteUserId', $userId);
         \Cx\Core\Setting\Controller\Setting::update('websiteUserId');
+    }
+
+    /**
+     * Get the website list from service server by using website owner id
+     * 
+     * @param array $params supplied arguments from JsonData-request
+     * 
+     * @return array JsonData-response
+     * @throws MultiSiteJsonException
+     */
+    public function getWebsiteList($params) {
+        global $_ARRAYLANG;
+
+        if (empty($params['post']) || empty($params['post']['ownerId'])) {
+            \DBG::msg('JsonMultiSiteController::getWebsiteList() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']);
+        }
+
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite'), array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']);
+        }
+
+        try {
+            $em = $this->cx->getDb()->getEntityManager();
+            $ownerId = contrexx_input2db($params['post']['ownerId']);
+            $websiteRepository = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $websites = $websiteRepository->findWebsitesByCriteria(array('user.id' => $ownerId));
+            $websiteList = array();
+            if (empty($websites) || !is_array($websites)) {
+                return array('websiteList' => $websiteList);
+            }
+
+            foreach ($websites as $website) {
+                if ($website->getStatus() !== \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) {
+                    continue;
+                }
+                $websiteList[] = $website->getId() . ':' . $website->getName();
+            }
+            return array('websiteList' => $websiteList);
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']);
+        }
     }
 }

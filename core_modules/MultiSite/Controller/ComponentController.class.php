@@ -3132,7 +3132,32 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         return implode(',', $display);
     }
-    
+
+    /**
+     * Get the website list by using website owner id
+     * 
+     * @return string list of websites seperate by comma
+     */
+    public static function getWebsiteList() 
+    {
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
+        if ($mode !== self::MODE_WEBSITE) {
+            return '';
+        }
+
+        $ownerId = \FWUser::getFWUserObject()->objUser->getId();
+        if ($ownerId != \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite')) {
+            return '';
+        }
+
+        $response = JsonMultiSiteController::executeCommandOnMyServiceServer('getWebsiteList', array('ownerId' => $ownerId));
+        if (!$response || $response->status === 'error' || empty($response->data->websiteList)) {
+            return '';
+        }
+
+        return implode(',', $response->data->websiteList);
+    }
+
     /**
      * Get the product list
      * 
