@@ -2826,10 +2826,13 @@ class User extends User_Profile
     /**
      * Returns this user's timezone
      * @todo Implement a way to detect the real timezone
+     * @todo Implement DateTime postResolve() to set $this->userTimezone again once the sign-in user has been loaded
      * @return \DateTimeZone User's timezone
      */
     public function getTimezone() {
-        return new \DateTimeZone('Europe/Paris');
+        global $_CONFIG;
+        
+        return new \DateTimeZone($_CONFIG['timezone']);
     }
 
     /**
