@@ -105,22 +105,6 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
     }
 
     /**
-     * Get the RecursiveIteratorIterator instance by category
-     *
-     * @return \RecursiveIteratorIterator
-     */
-    public function getCategoryIterator(Category $category)
-    {
-        $recursiveCategoryIterator  = new \RecursiveIteratorIterator(
-            $category,
-            \RecursiveIteratorIterator::SELF_FIRST,
-            \RecursiveIteratorIterator::CATCH_GET_CHILD
-        );
-
-        return $recursiveCategoryIterator;
-    }
-
-    /**
      * Parse the category details
      *
      * @param \Cx\Core\Html\Sigma   $objTpl             Instance of template object
@@ -139,14 +123,12 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         $intSpacerSize = ($category->getLvl() - 1) * 21;
         $spacer        = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
 
-        $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
-        $categoryName = $locale ? $locale->getCategoryName() : '';
-        $categoryDesc = $locale ? $locale->getCategoryDescription() : '';
+        $categoryDesc = $this->getCategoryDescription($category);
         //parse variables
         $objTpl->setVariable(array(
             $this->moduleLangVar.'_CATEGORY_ID'                   => $category->getId(),
             $this->moduleLangVar.'_CATEGORY_ORDER'                => $category->getOrder(),
-            $this->moduleLangVar.'_CATEGORY_NAME'                 => contrexx_raw2xhtml($categoryName),
+            $this->moduleLangVar.'_CATEGORY_NAME'                 => contrexx_raw2xhtml($this->getCategoryName($category)),
             $this->moduleLangVar.'_CATEGORY_DESCRIPTION'          => $categoryDesc,
             $this->moduleLangVar.'_CATEGORY_DESCRIPTION_ESCAPED'  => strip_tags($categoryDesc),
             $this->moduleLangVar.'_CATEGORY_PICTURE'              => $category->getPicture(),
@@ -159,6 +141,36 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         ));
 
         $objTpl->parse($this->moduleNameLC . $blockName);
+    }
+
+    /**
+     * Get name of category by output language
+     *
+     * @param Category $category
+     *
+     * @return string
+     */
+    public function getCategoryName(Category $category)
+    {
+        global $_LANGID;
+
+        $locale       = $category->getLocaleByLang($_LANGID);
+        return $locale ? $locale->getCategoryName() : '';
+    }
+
+    /**
+     * Get category description by output language
+     *
+     * @param Category $category
+     *
+     * @return string
+     */
+    public function getCategoryDescription(Category $category)
+    {
+        global $_LANGID;
+
+        $locale       = $category->getLocaleByLang($_LANGID);
+        return $locale ? $locale->getCategoryDescription() : '';
     }
 
     /**
@@ -326,10 +338,9 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         $strCategoryCmd,
                         $strLevelId
                     );
-                    $locale       = $subCategory->getLocaleByLang(FRONTEND_LANG_ID);
-                    $categoryName = $locale ? $locale->getCategoryName() : '';
-                    $categoryDesc = $locale ? $locale->getCategoryDescription() : '';
 
+                    $categoryName = $this->getCategoryName($subCategory);
+                    $categoryDesc = $this->getCategoryDescription($subCategory);
                     //parse variables
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $subCategory->getId(),
@@ -373,14 +384,10 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                     return;
                 }
 
-                $strLevelId = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
-                $categoryName = $categoryDescription = '';
-                $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
-                if ($locale) {
-                    $categoryName        = $locale->getCategoryName();
-                    $categoryDescription = $locale->getCategoryDescription();
-                }
-                $thumbImage   = $this->getThumbImage($category->getPicture());
+                $strLevelId          = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
+                $categoryName        = $this->getCategoryName($category);
+                $categoryDescription = $this->getCategoryDescription($category);
+                $thumbImage          = $this->getThumbImage($category->getPicture());
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $category->getId(),
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NAME'           => contrexx_raw2xhtml($categoryName),
@@ -453,8 +460,7 @@ TEMPLATE;
         foreach ($subCategories as $subCategory) {
             $spacer       = str_repeat('----', $subCategory->getLvl() - 1);
             $spacer      .= $subCategory->getLvl() > 0 ? '&nbsp;' : '';
-            $locale       = $subCategory->getLocaleByLang(FRONTEND_LANG_ID);
-            $categoryName = $locale ? $locale->getCategoryName() : '';
+            $categoryName = $this->getCategoryName($subCategory);
 
             $option = '<option value="'. $subCategory->getId() .'">'. $spacer . contrexx_raw2xhtml($categoryName).'</option>';
             if (in_array($subCategory->getId(), $arrSelectedCategories)) {
@@ -522,8 +528,7 @@ TEMPLATE;
             $strSelected  = $this->intCategoryId == $subCategory->getId() ? 'selected="selected"' : '';
             $spacer       = str_repeat('----', $subCategory->getLvl() - 1);
             $spacer      .= $subCategory->getLvl() > 0 ? '&nbsp;' : '';
-            $locale       = $subCategory->getLocaleByLang(FRONTEND_LANG_ID);
-            $categoryName = $locale ? $locale->getCategoryName() : '';
+            $categoryName = $this->getCategoryName($subCategory);
 
             $strDropdownOptions .= '<option value="'. $subCategory->getId() .'" '. $strSelected .' >'. $spacer . contrexx_raw2xhtml($categoryName) .'</option>';
             $strDropdownOptions .= $this->getCategoryDropDown($subCategory);
@@ -767,8 +772,7 @@ TEMPLATE;
         }
         $childrenString = '<ul>';
         foreach ($subCategories as $subCategory) {
-            $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
-            $categoryName = $locale ? $locale->getCategoryName() : '';
+            $categoryName = $this->getCategoryName($subCategory);
 
             $childrenString .= '<li><a href="index.php?section=' . $this->moduleName . $strCategoryCmd . $strLevelId . '&amp;cid=' . $subCategory->getId() . '">' . contrexx_raw2xhtml($categoryName) . '</a>';
             $childrenString .= $this->createCategorieTree($subCategory, $strCategoryCmd, $strLevelId);
