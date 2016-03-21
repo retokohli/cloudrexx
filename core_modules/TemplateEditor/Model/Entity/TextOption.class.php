@@ -70,10 +70,11 @@ class TextOption extends Option
      * @param String $name Name of the option
      * @param array  $translations Array with translations for option.
      * @param array  $data
+     * @param bool   $series        handel the elements as series if true
      */
-    public function __construct($name, $translations, $data)
+    public function __construct($name, $translations, $data, $series = false)
     {
-        parent::__construct($name, $translations, $data);
+        parent::__construct($name, $translations, $data, $series);
         $this->string     = isset($data['textvalue']) ? $data['textvalue'] : '';
         $this->regex      = isset($data['regex']) ? $data['regex'] : null;
         $this->html       = isset($data['html']) ? $data['html'] : false;

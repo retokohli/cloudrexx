@@ -52,10 +52,11 @@ class AreaOption extends Option
      * @param String $name Name of the option
      * @param array  $translations Array with translations for option.
      * @param array  $data
+     * @param bool   $series        handel the elements as series if true
      */
-    public function __construct($name, $translations, $data)
+    public function __construct($name, $translations, $data, $series = false)
     {
-        parent::__construct($name, $translations, $data);
+        parent::__construct($name, $translations, $data, $series);
         $this->active = $data['active'] == 'true';
     }
 

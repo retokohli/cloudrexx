@@ -319,7 +319,12 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
 
 //        $this->options = array();
         foreach ($data['options'] as $option) {
-            $optionReflection = new \ReflectionClass($option['type']);
+            $optionType = $option['type'];
+            if ($option['series']) {
+                $optionType =
+                    'Cx\Core_Modules\TemplateEditor\Model\Entity\SeriesOption';
+            }
+            $optionReflection = new \ReflectionClass($optionType);
             if ($optionReflection->isSubclassOf('Cx\Core_Modules\TemplateEditor\Model\Entity\Option')
             ) {
                 if ($this->cx->getMode() == Cx::MODE_BACKEND
@@ -339,7 +344,10 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                 }
                 $this->options[$option['name']]
                     = $optionReflection->newInstance(
-                    $option['name'], $option['translation'], $option['specific']
+                    $option['name'],
+                    $option['translation'],
+                    $option['specific'],
+                    $option['series']
                 );
             }
         }

@@ -82,8 +82,9 @@ abstract class Option extends \Cx\Model\Base\EntityBase
      * @param String $name Name of the option
      * @param array  $translations Array with translations for option.
      * @param array  $data
+     * @param bool   $series       handel the elements as series if true
      */
-    public function __construct($name, $translations, $data) {
+    public function __construct($name, $translations, $data, $series = false) {
         global $_LANGID;
         $this->name         = $name;
         $this->humanName    = isset($translations[$_LANGID])
