@@ -77,21 +77,6 @@ class ColorOption extends Option
     public function renderOptionField($template)
     {
         global $_ARRAYLANG;
-        $subTemplate = new Sigma();
-        $subTemplate->loadTemplateFile(
-            $this->cx->getCodeBaseCoreModulePath()
-            . '/TemplateEditor/View/Template/Backend/ColorOption.html'
-        );
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $this->color);
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
-        $subTemplate->setVariable(
-            'TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName
-        );
-        if ($this->choice) {
-            $subTemplate->setVariable(
-                'TEMPLATEEDITOR_OPTION_CHOICE', json_encode($this->choice)
-            );
-        }
         \ContrexxJavascript::getInstance()->setVariable(
             array(
                 'select' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_SELECT'],
@@ -100,9 +85,13 @@ class ColorOption extends Option
             ),
             'TemplateEditor'
         );
-        $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
-        $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'color');
-        $template->parse('option');
+        $subTemplateVariables = array();
+        if ($this->choice) {
+            $subTemplateVariables['TEMPLATEEDITOR_OPTION_CHOICE'] =
+                json_encode($this->choice);
+        }
+        $subTemplateVariables['TEMPLATEEDITOR_OPTION_VALUE'] = $this->color;
+        parent::renderOptionField($template, $subTemplateVariables);
     }
 
     /**

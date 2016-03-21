@@ -154,10 +154,15 @@ body {
     background: none;
 }
 
-#content .option input[type=text] {
+#content .option input[type=text],
+#content .option textarea {
     width: calc(100% - 13px);
     padding: 2px 5px;
     margin-top: 5px;
+}
+
+#content .option textarea {
+    resize: vertical;
 }
 
 #content .option.saved input,
@@ -255,7 +260,8 @@ body {
     cursor: not-allowed;
 }
 
-.elm.option img {
+.elm.option img,
+.image.option img {
     margin: auto;
     display: block;
     max-width: 100%;
