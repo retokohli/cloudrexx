@@ -548,7 +548,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
             self::_setNextSeriesElement($objEvent);
         }
         foreach ($this->eventList as $tmpKey => $tmpObjEvent) {  
-            if ($tmpObjEvent->startDate != $eventStartDate) {
+            if ($tmpObjEvent->startDate->getTimestamp() != $eventStartDate) {
                 unset($this->eventList[$tmpKey]);
             }
         }
@@ -570,7 +570,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
         self::_importEvents();  
 
         foreach ($this->eventList as $tmpKey => $tmpObjEvent) {          
-            if ($tmpObjEvent->startDate != $eventStartDate) {
+            if ($tmpObjEvent->startDate->getTimestamp() != $eventStartDate) {
                 unset($this->eventList[$tmpKey]);
             }
         }
@@ -820,10 +820,10 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 $objTpl->parse('calendarEventHost');
             }
              
-            if(($objEvent->registration == 1) && (time() <= $objEvent->startDate)) {  
+            if(($objEvent->registration == 1) && (time() <= $objEvent->startDate->getTimestamp())) {  
                 
                 if($numRegistrations < $objEvent->numSubscriber || $objEvent->external == 1) {
-                    $regLinkSrc = $hostUri. '/' .CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate;
+                    $regLinkSrc = $hostUri. '/' .CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate->getTimestamp();
                     $regLink = '<a href="'.$regLinkSrc.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_EVENT_REGISTRATION_LINK'    => $regLink,
@@ -1133,7 +1133,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
         $url = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail');
         $url->setParams(array(
             'id' => $objEvent->id,
-            'date' => $this->getUserDateTimeFromIntern($objEvent->startDate)->getTimestamp()
+            'date' => $objEvent->startDate->getTimestamp()
         ));
         
         if($objEvent->external) {
@@ -1196,7 +1196,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
             case 1:
                 //daily
                 if ($objCloneEvent->seriesData['seriesPatternType'] == 1) {
-                    $modifyString = '+ ' . intval($objEvent->seriesData['seriesPatternDay']) . 'days';
+                    $modifyString = '+' . intval($objEvent->seriesData['seriesPatternDay']) . ' days';
                 } else {
                     $modifyString = '+1 Weekday';
                 }
@@ -1223,7 +1223,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 if ($nxtWeekDay !== null) {
                     $objCloneEvent->startDate->modify('next '. $weekdays[$nxtWeekDay]);
                 }
-                $addDays = $objCloneEvent->startDate->diff($objEvent->startDate)->h;
+                $addDays = $objCloneEvent->startDate->diff($objEvent->startDate)->d;
 
                 $compareDate = clone $objCloneEvent->startDate;
                 $compareDate->setTime(0, 0, 0);
@@ -1241,16 +1241,16 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                     if ($addMonths > 1) {
                         $tempStartDate = clone $objEvent->startDate;
                         for ($i = 1; $i < $addMonths; $i++) {
-                            $tempStartDate->modify('+'. 1 .'months');
+                            $tempStartDate->modify('+'. 1 .' months');
                             $addDays += $tempStartDate->format('t');
                         }
                     }
 
-                    $objCloneEvent->startDate->modify('+ '. ($day + $addDays) .' days');
+                    $objCloneEvent->startDate->modify('+'. ($day + $addDays) .' days');
                     $compareDate = clone $objCloneEvent->startDate;
                     $compareDate->setTime(0, 0, 0);
 
-                    $objCloneEvent->endDate->modify('+ '. ($day + $addDays) .' days');
+                    $objCloneEvent->endDate->modify('+'. ($day + $addDays) .' days');
                 } else {
                     $hour       = date("H", $objEvent->startDate);
                     $minutes    = date("i", $objEvent->startDate);
@@ -1286,7 +1286,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                         $d      = 1;
 
                         while (!$match) {
-                            $tempStartDate->modify('+'. intval($monthPattern) . 'months');
+                            $tempStartDate->modify('+'. intval($monthPattern) . ' months');
                             $tempStartDate->setDate($tempStartDate->format('Y'), $tempStartDate->format('m'), $d);
                             $checkDay = $tempStartDate->format("w");
                             
@@ -1298,7 +1298,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                         }
                         $countPattern = ($countPattern > 1) ? 7 * ($countPattern - 1) : 0;
                     } else {
-                        $tempStartDate->modify('+'. intval($monthPattern) . 'months');
+                        $tempStartDate->modify('+'. intval($monthPattern) . ' months');
                         $match          = false;
                         $d              = $tempStartDate->format('t');
                         $countPattern   = 0;
@@ -1607,8 +1607,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 if ($objEvent->access && $objInit->mode == 'frontend' && !\Permission::checkAccess(116, 'static', true)) {
                     continue;
                 }
-                $startdate     = $this->convertInternDateTime2user($objEvent->startDate);
-                $enddate       = $this->convertInternDateTime2user($objEvent->endDate);
+                $startdate     = $this->getUserDateTimeFromIntern($objEvent->startDate);
+                $enddate       = $this->getUserDateTimeFromIntern($objEvent->endDate);
 
                 $eventYear     = $startdate->format('Y');
                 $eventMonth    = $startdate->format('m');
