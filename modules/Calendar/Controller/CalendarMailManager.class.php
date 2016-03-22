@@ -257,7 +257,7 @@ class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
             }
                                                                                                   
             $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";
-            $date       = $this->format2userDateTime($this->getInternDateTimeFromUser());
+            $date       = $this->format2userDateTime(new \DateTime());
             $startDate  = $objEvent->startDate;
             $endDate    = $objEvent->endDate;
 
@@ -316,9 +316,9 @@ class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
                     if ($actionId == self::MAIL_NOTFY_NEW_APP && $objEvent->arrSettings['confirmFrontendEvents'] == 1) {
                         $eventLink = $domain."/cadmin/index.php?cmd={$this->moduleName}&act=modify_event&id={$objEvent->id}&confirm=1";
                     } else {
-                        $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate))->toString();
+                        $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate->getTimestamp()))->toString();
                     }            
-                    $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate))->toString();
+                    $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate->getTimestamp()))->toString();
 
                     $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $userNick, $userFirstname, $userLastname, $domain, $date);
 

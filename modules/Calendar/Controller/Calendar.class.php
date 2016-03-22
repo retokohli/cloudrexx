@@ -251,7 +251,7 @@ class Calendar extends CalendarLibrary
             $this->startDate = null;
             $this->sortDirection = 'DESC';
         } else {
-            $this->startDate = $this->getInternDateTimeFromUser();
+            $this->startDate = new \DateTime();
 
             $startDay   = isset($_GET['day']) ? $_GET['day'] : $this->startDate->format('d');
             $startMonth = isset($_GET['month']) ? $_GET['month'] : $this->startDate->format('m');
@@ -265,13 +265,13 @@ class Calendar extends CalendarLibrary
         if (!empty($till)) {
             $this->endDate = parent::getDateTime($till);
         } else if ($cmd == 'archive') {
-            $this->endDate = $this->getInternDateTimeFromUser();
+            $this->endDate = new \DateTime();
         } else {
-            $this->endDate = $this->getInternDateTimeFromUser();
+            $this->endDate = new \DateTime();
 
-            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : $this->startDate->format('d');
-            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : $this->startDate->format('m');
-            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : $this->startDate->format('Y');
+            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : $this->endDate->format('d');
+            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : $this->endDate->format('m');
+            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : $this->endDate->format('Y');
 
             $endYear = empty($_GET['endYear']) && empty($_GET['endMonth']) ? $endYear+10: $endYear;
 
@@ -283,7 +283,7 @@ class Calendar extends CalendarLibrary
         // get datepicker-time
         if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $cmd != 'boxes') {
 
-            $this->startDate = $this->getInternDateTimeFromUser();
+            $this->startDate = new \DateTime();
             $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : $this->startDate->format('Y');
             $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : $this->startDate->format('m');
             $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : $this->startDate->format('d');
@@ -301,7 +301,7 @@ class Calendar extends CalendarLibrary
             $this->endDate->modify("last day of this month");
             $this->endDate->setTime(23, 59, 59);
         } elseif (isset ($_GET["yearID"]) && isset ($_GET["monthID"]) && isset ($_GET["dayID"])) {
-            $this->startDate = $this->getInternDateTimeFromUser();
+            $this->startDate = new \DateTime();
 
             $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : $this->startDate->format('Y');
             $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : $this->startDate->format('m');
@@ -561,8 +561,8 @@ UPLOADER;
             $startDate = $objEvent->startDate;
             $endDate   = $objEvent->endDate;
         } else {
-            $startDate = $this->getInternDateTimeFromUser();
-            $endDate   = $this->getInternDateTimeFromUser();
+            $startDate = new \DateTime();
+            $endDate   = new \DateTime();
         }
 
         $eventStartDate = $this->format2userDateTime($startDate);
@@ -841,7 +841,14 @@ UPLOADER;
         
         $numRegistrations = (int) $objEvent->registrationCount;
         
-        $this->pageTitle = $this->format2userDate((isset($_GET['date']) ? $this->getInternDateTimeFromUser('@'.$_GET['date']) : $objEvent->startDate))
+        if (isset($_GET['date'])) {
+            $dateFromGet = new \DateTime();
+            $dateFromGet->setTimestamp(intval($_GET['date']));
+            $dateForPageTitle = $dateFromGet;
+        } else {
+            $dateForPageTitle = $objEvent->startDate;
+        }
+        $this->pageTitle = $this->format2userDate($dateForPageTitle)
                             . ": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
         if(time() <= intval($_REQUEST['date'])) {

@@ -1155,7 +1155,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $seriesPatternDouranceType      = 0;
         $seriesPatternEnd               = 0;
         $seriesExeptions                = '';
-        $seriesPatternEndDate           = 0;
+        $seriesPatternEndDate           = '0000-00-00 00:00:00';
         
         if($seriesStatus == 1) {
             if(!empty($data['seriesExeptions'])) {
@@ -1510,7 +1510,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             }
                 
             $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;            
-            $seriesPatternEndDate = '';
+            $seriesPatternEndDate = new \DateTime();
             switch($seriesPatternDouranceType) {
                 case 1:
                     $seriesPatternEnd   = 0;
@@ -1534,7 +1534,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $this->seriesData['seriesPatternType'] = intval($seriesPatternType); 
         $this->seriesData['seriesPatternDouranceType'] = intval($seriesPatternDouranceType); 
         $this->seriesData['seriesPatternEnd'] = intval($seriesPatternEnd); 
-        $this->seriesData['seriesPatternEndDate'] = intval($seriesPatternEndDate); 
+        $this->seriesData['seriesPatternEndDate'] = $seriesPatternEndDate; 
         $this->seriesData['seriesPatternBegin'] = 0; 
         $this->seriesData['seriesPatternExceptions'] = array();
         
@@ -1656,26 +1656,6 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
          
         $objVCalendar->returnCalendar();     
         exit;          
-    }
-    
-    /**
-     * set the event start date
-     * 
-     * @param integer $value start date
-     */
-    function setStartDate($value){
-        $this->startDate = intval($value);
-    }
-    
-    /**
-     * set the event end date
-     * 
-     * @param integer $value End date
-     * 
-     * @return null
-     */
-    function setEndDate($value){
-        $this->endDate = intval($value);
     }
     
     /**

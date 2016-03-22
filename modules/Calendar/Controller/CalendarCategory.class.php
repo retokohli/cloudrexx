@@ -351,8 +351,9 @@ class CalendarCategory extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         } else if ($_GET['cmd'] == 'archive') {                             
             $startDate = null; 
         } else {
-            $startDate = $this->getInternDateTimeFromUser();
+            $startDate = new \DateTime();
             $startDay   = isset($_GET['day']) ? $_GET['day'] : $startDate->format('d');   
+            $startDay   = $_GET['cmd'] == 'boxes' ? 1 : $startDay;
             $startMonth = isset($_GET['month']) ? $_GET['month'] : $startDate->format('m'); 
             $startYear  = isset($_GET['year']) ? $_GET['year'] : $startDate->format('Y');
             $startDate->setDate($startYear, $startMonth, $startDay);
@@ -363,9 +364,9 @@ class CalendarCategory extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         if (!empty($_GET['till'])) {
             $endDate = parent::getDateTime($_GET['till']); 
         } else if ($_GET['cmd'] == 'archive') {
-            $endDate = $this->getInternDateTimeFromUser();
+            $endDate = new \DateTime();
         } else {
-            $endDate = $this->getInternDateTimeFromUser();
+            $endDate = new \DateTime();
             $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : $endDate->format('d');
             $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : $endDate->format('m');
             $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : $endDate->format('Y');

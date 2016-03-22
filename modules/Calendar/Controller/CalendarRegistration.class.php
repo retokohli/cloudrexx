@@ -478,7 +478,7 @@ class CalendarRegistration extends \Cx\Modules\Calendar\Controller\CalendarLibra
     function tagExport() { 
         global $objDatabase, $_LANGID;
         
-        $now = mktime();
+        $now = time();
         
         if(intval($this->id) != 0) {
             $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration SET `export` = '".intval($now)."' WHERE `id` = '".intval($this->id)."'";              
