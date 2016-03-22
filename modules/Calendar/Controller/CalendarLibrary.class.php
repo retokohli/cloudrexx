@@ -453,7 +453,7 @@ class CalendarLibrary
      * 
      * @return integer Unix timestamp value
      */
-    function getDateTimestamp($date, $hour=0, $minute=0)
+    function getDateTime($date, $hour = 0, $minute = 0)
     {
         self::getSettings();
         
@@ -497,8 +497,7 @@ class CalendarLibrary
         $hour = str_pad($hour, 2, '0', STR_PAD_LEFT);
         $minute = str_pad($minute, 2, '0', STR_PAD_LEFT);
 
-        return $this->convertUserDateTime2db($this->getDateTime(strtotime($year . '-' . $month . '-' . $day . ' ' .$hour . ':' . $minute . ':00')))
-                    ->getTimestamp();
+        return $this->getInternDateTimeFromUser($year . '-' . $month . '-' . $day . ' ' .$hour . ':' . $minute . ':00');
     }
     
     /**
@@ -688,8 +687,8 @@ EOF;
         
         $dayArray = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV2_ARRAY']);
         foreach ($objEventManager->eventList as $event) {
-            $startDate = $this->getDateTime($event->startDate);
-            $endDate   = $this->getDateTime($event->endDate);
+            $startDate = $event->startDate;
+            $endDate   = $event->endDate;
             $exceptionDates[$this->format2userDate($startDate)] = $this->format2userDate($startDate) != $this->format2userDate($endDate)
                                                                     ? $dayArray[$this->formatDateTime2user($startDate, "w")] .", " . $this->format2userDate($startDate) .' - ' . $dayArray[$this->formatDateTime2user($endDate, "w")] .", ". $this->format2userDate($endDate)
                                                                     : $dayArray[$this->formatDateTime2user($startDate, "w")] .", " . $this->format2userDate($startDate);
@@ -720,25 +719,6 @@ EOF;
             throw new CalendarException('The component => '. $name .' not available');
         }
         return $component;
-    }
-
-    
-    /**
-     * Get Calendar DateTime instance
-     *
-     * @param integer $timestamp Unix timestamp for the datetime object
-     *
-     * @return DateTime
-     */
-    public function getDateTime($timestamp = null)
-    {
-        $dateTime = new \DateTime();
-
-        if ($timestamp) {
-            $dateTime->setTimestamp($timestamp);
-        }
-
-        return $dateTime;
     }
 
     /**
@@ -780,30 +760,71 @@ EOF;
      */
     public function formatDateTime2user(\DateTime $dateTime, $format)
     {
-        return $this->convertDbDateTime2user($dateTime)
+        return $this->getUserDateTimeFromIntern($dateTime)
                     ->format($format);
     }
 
     /**
-     * Wrapper method to call the DateTime component user2db method
+     * Get user datetime instance from intern datetime
+     * 
+     * @param \DateTime $dateTime
      *
      * @return \DateTime
      */
-    public function convertUserDateTime2db(\DateTime $dateTime)
+    public function getUserDateTimeFromIntern(\DateTime $dateTime)
     {
-        return $this->getComponent('DateTime')
-                    ->user2db($dateTime);
+        return $this->getComponent('DateTime')->intern2user($dateTime);        
     }
 
     /**
-     * Wrapper method to call the DateTime component db2user method
-     *
+     * Get internal datetime from user timezone using give time string
+     * 
+     * @param string $time
+     * 
      * @return \DateTime
      */
-    public function convertDbDateTime2user(\DateTime $dateTime)
+    public function getInternDateTimeFromUser($time = 'now')
     {
-        return $this->getComponent('DateTime')
-                    ->db2user($dateTime);
+        $dateTime = $this->getComponent('DateTime')->createDateTimeForUser($time);
+        return $this->getComponent('DateTime')->user2intern($dateTime);
     }
 
+    /**
+     * Get internal datetime from db timezone using give time string
+     * 
+     * @param string $time
+     * 
+     * @return \DateTime
+     */
+    public function getInternDateTimeFromDb($time = 'now')
+    {
+        $dateTime = $this->getComponent('DateTime')->createDateTimeForDb($time);
+        return $this->getComponent('DateTime')->db2intern($dateTime);
+    }
+
+    /**
+     * Get database datetime from internal timezone
+     * 
+     * @param \DateTime $dateTime
+     * 
+     * @return \DateTime
+     */
+    public function getDbDateTimeFromIntern(\DateTime $dateTime)
+    {
+        return $this->getComponent('DateTime')
+                    ->intern2db($dateTime);
+    }
+
+    /**
+     * Get database datetime from internal timezone
+     * 
+     * @param \DateTime $dateTime
+     * 
+     * @return \DateTime
+     */
+    public function convertInternDateTime2user(\DateTime $dateTime)
+    {
+        return $this->getComponent('DateTime')
+                    ->intern2user($dateTime);
+    }
 }

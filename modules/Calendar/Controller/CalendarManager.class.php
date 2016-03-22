@@ -228,9 +228,9 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         
         $listType = 'all';
         if($_GET['list'] == 'actual' || !isset($_GET['list'])) {
-            $styleListActual = 'underline';  
-            $styleListAll = '';                                 
-            $startDate = $this->convertUserDateTime2db($this->getDateTime())->getTimestamp();
+            $styleListActual = 'underline';
+            $styleListAll = '';
+            $startDate = $this->getInternDateTimeFromUser();
             $listType = 'upcoming';
         } else {
             $styleListActual = '';  
@@ -437,10 +437,10 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         }
 
         if ($eventId) {
-            $startDate = $this->getDateTime($objEvent->startDate);
-            $endDate   = $this->getDateTime($objEvent->endDate);
+            $startDate = $objEvent->startDate;
+            $endDate   = $objEvent->endDate;
         } else {
-            $startDate = $this->getDateTime();
+            $startDate = $this->getInternDateTimeFromUser();
             $startMin  = (int) $startDate->format('i');
             // Adjust the time to next half hour
             if (!in_array($startMin, array(0, 30))) {
@@ -806,7 +806,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             $seriesPatternDourance3 = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? 'checked="checked"' : '';
             
             $seriesPatternEndsEvents = $objEvent->seriesData['seriesPatternDouranceType'] == 2 ? $objEvent->seriesData['seriesPatternEnd'] : 5;
-            $seriesPatternEndsDate   = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? $this->format2userDate($this->getDateTime($objEvent->seriesData['seriesPatternEndDate'])) : '';
+            $seriesPatternEndsDate   = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? $this->format2userDate($objEvent->seriesData['seriesPatternEndDate']) : '';
             
             
             
@@ -814,7 +814,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 
                 if($seriesExceptionDate != null) {
                     $this->_objTpl->setVariable(array(                        
-                        $this->moduleLangVar.'_SERIES_EXEPTION_DATE' => $this->format2userDate($this->getDateTime($seriesExceptionDate)),
+                        $this->moduleLangVar.'_SERIES_EXEPTION_DATE' => $this->format2userDate($seriesExceptionDate),
                     ));  
                     
                     $this->_objTpl->parse('eventExeptions');                      
@@ -1384,7 +1384,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     $objRegistration->tagExport();   
                 }  
                 
-                print ($this->format2userDate($this->getDateTime($objRegistration->firstExport)).$this->csvSeparator);
+                print ($this->format2userDate($this->getInternDateTimeFromDb($objRegistration->firstExport)).$this->csvSeparator);
                    
                 if($objRegistration->type == '1') {                               
                     print ($_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].$this->csvSeparator);       
@@ -1394,7 +1394,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     print ($_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'].$this->csvSeparator);    
                 }
                 
-                print (html_entity_decode($objEvent->title, ENT_QUOTES)." - ". $this->format2userDate($this->getDateTime($objRegistration->eventDate)).$this->csvSeparator);
+                print (html_entity_decode($objEvent->title, ENT_QUOTES)." - ". $this->format2userDate($this->getInternDateTimeFromDb($objRegistration->eventDate)).$this->csvSeparator);
                 
                 if($objRegistration->langId == null) {  
                     print ($this->arrFrontendLanguages[$_LANGID]['name'].$this->csvSeparator); 
