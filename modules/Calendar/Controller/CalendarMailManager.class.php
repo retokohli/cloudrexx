@@ -257,9 +257,9 @@ class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
             }
                                                                                                   
             $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";
-            $date       = $this->format2userDateTime($this->getDateTime());
-            $startDate  = $this->getDateTime($objEvent->startDate);
-            $endDate    = $this->getDateTime($objEvent->endDate);
+            $date       = $this->format2userDateTime($this->getInternDateTimeFromUser());
+            $startDate  = $objEvent->startDate;
+            $endDate    = $objEvent->endDate;
 
             $eventTitle = $objEvent->title;
             $eventStart = $objEvent->all_day ? $this->format2userDate($startDate) : $this->formatDateTime2user($startDate, parent::getDateFormat() . ' (H:i:s)');

@@ -217,9 +217,9 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
      * @param boolean $onlyConfirmed only confirmed Entries
      * @param string  $author        author name
      */
-    function __construct($startDate=null, $endDate=null, $categoryId=null, $searchTerm=null, $showSeries=true, $needAuth=false, $onlyActive=false, $startPos=0, $numEvents='n', $sortDirection='ASC', $onlyConfirmed=true, $author=null, $listType = 'all') {
-        $this->startDate = intval($startDate);
-        $this->endDate = intval($endDate);
+    function __construct(\DateTime $startDate = null, \DateTime $endDate = null, $categoryId=null, $searchTerm=null, $showSeries=true, $needAuth=false, $onlyActive=false, $startPos=0, $numEvents='n', $sortDirection='ASC', $onlyConfirmed=true, $author=null, $listType = 'all') {
+        $this->startDate = $startDate;
+        $this->endDate   = $endDate;
         $this->categoryId = intval($categoryId);
         $this->showSeries = $showSeries;
         $this->searchTerm = contrexx_addslashes($searchTerm);
@@ -244,8 +244,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
         parent::getSettings();
         
         // need for database TIMESTAMP
-        $startDate = !empty($this->startDate) ? date("Y-m-d H:i:s", $this->startDate) : '0000-00-00 00:00:00';
-        $endDate   = !empty($this->endDate) ? date("Y-m-d H:i:s", $this->endDate) : '0000-00-00 00:00:00';
+        $startDate = $this->startDate ? $this->getDbDateTimeFromIntern($this->startDate)->format('Y-m-d H:i:s') : '0000-00-00 00:00:00';
+        $endDate   = $this->endDate ? $this->getDbDateTimeFromIntern($this->endDate)->format("Y-m-d H:i:s") : '0000-00-00 00:00:00';
         
         $onlyActive_where = ($this->onlyActive == true ? ' AND event.status=1' : '');  
         $categoryId_where = ($this->categoryId != 0 ? ' AND event.catid='.$this->categoryId : '');  
@@ -267,7 +267,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
             } 
         }                                                                                        
 
-        if (isset($this->endDate) && $this->endDate != 0) {
+        if ($this->endDate !== null) {
             $dateScope_where = '((
                 ((event.startdate <= "'.$startDate.'") AND ("'.$endDate.'" <= event.enddate)) OR
                 ((("'.$startDate.'" <= event.startdate) AND ("'.$endDate.'" <= event.enddate)) AND ((event.startdate <= "'.$endDate.'") AND ("'.$endDate.'" <= event.enddate))) OR
@@ -473,14 +473,14 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
      * @return boolean true if the event is valid, false oterwise
      */
     function _addToEventList($objEvent) {
-        if ($this->startDate == 0) {
-            if($objEvent->endDate < $this->endDate || $this->endDate == 0) {
+        if ($this->startDate == null) {
+            if($objEvent->endDate < $this->endDate || $this->endDate == null) {
                 return true;
             } else {
                 return false;
             }
-        } else { 
-            if ($this->endDate == 0) {
+        } else {
+            if ($this->endDate == null) {
                 if(($objEvent->endDate >= $this->startDate) || ($objEvent->startDate >= $this->startDate)) {
                     return true;
                 } else {
@@ -545,7 +545,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
         $this->eventList[] = $objEvent;
         
         if($objEvent->seriesStatus == 1 && $objInit->mode == 'frontend') {
-            self::_setNextSeriesElement($objEvent); 
+            self::_setNextSeriesElement($objEvent);
         }
         foreach ($this->eventList as $tmpKey => $tmpObjEvent) {  
             if ($tmpObjEvent->startDate != $eventStartDate) {
@@ -651,8 +651,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
             
             $objEscortManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($objEvent->id, true, false);            
 
-            $startDate = $this->getDateTime($objEvent->startDate);
-            $endDate   = $this->getDateTime($objEvent->endDate);
+            $startDate = $objEvent->startDate;
+            $endDate   = $objEvent->endDate;
 
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
@@ -948,8 +948,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                     list($hostLink, $hostLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->host_mediadir_id, 'host');                    
                 }
                 
-                $startDate = $this->getDateTime($objEvent->startDate);
-                $endDate   = $this->getDateTime($objEvent->endDate);
+                $startDate = $objEvent->startDate;
+                $endDate   = $objEvent->endDate;
 
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_ROW'            => $i%2==0 ? 'row1' : 'row2',
@@ -1111,7 +1111,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
     function getEventsWithDate() {
         $arrEvents = array();
         foreach ($this->eventList as $objEvent) {
-            $eventDate = $this->convertDbDateTime2user($this->getDateTime($objEvent->startDate));
+            $eventDate = $this->getUserDateTimeFromIntern($objEvent->startDate);
             $arrEvents[] = array(
                 'year'  => $eventDate->format('Y'),
                 'month' => $eventDate->format('m'),
@@ -1133,7 +1133,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
         $url = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail');
         $url->setParams(array(
             'id' => $objEvent->id,
-            'date' => intval($objEvent->startDate)
+            'date' => $this->getUserDateTimeFromIntern($objEvent->startDate)->getTimestamp()
         ));
         
         if($objEvent->external) {
@@ -1188,154 +1188,69 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
      * 
      * @return null
      */
-    function _setNextSeriesElement($objEvent) {  
+    function _setNextSeriesElement($objEvent) {
         $objCloneEvent = clone $objEvent;
-        
+
         parent::getSettings();
-        
         switch ($objCloneEvent->seriesData['seriesType']){
             case 1:
                 //daily
                 if ($objCloneEvent->seriesData['seriesPatternType'] == 1) {
-                    $hour       = date("H", $objEvent->startDate);
-                    $minutes    = date("i", $objEvent->startDate);
-                    $seconds    = date("s", $objEvent->startDate);
-                    $day        = date("d", $objEvent->startDate)+$objEvent->seriesData['seriesPatternDay'];
-                    $month      = date("m", $objEvent->startDate);
-                    $year       = date("Y", $objEvent->startDate);
-
-                    $objCloneEvent->startDate = mktime($hour, $minutes, $seconds, $month, $day, $year);
-                    $compareDate = mktime(0, 0, 0, $month, $day, $year);
-
-                    $hour       = date("H", $objEvent->endDate);
-                    $minutes    = date("i", $objEvent->endDate);
-                    $seconds    = date("s", $objEvent->endDate);
-                    $day        = date("d", $objEvent->endDate)+$objEvent->seriesData['seriesPatternDay'];
-                    $month      = date("m", $objEvent->endDate);
-                    $year       = date("Y", $objEvent->endDate);
-
-                    $objCloneEvent->endDate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+                    $modifyString = '+ ' . intval($objEvent->seriesData['seriesPatternDay']) . 'days';
                 } else {
-                    $oldWeekday = date("w", $objEvent->startDate);
-
-                    if ($oldWeekday == 5) {
-                        $addDays = 3;
-                    } else {
-                        $addDays = 1;
-                    }
-
-                    $hour       = date("H", $objEvent->startDate);
-                    $minutes    = date("i", $objEvent->startDate);
-                    $seconds    = date("s", $objEvent->startDate);
-                    $day        = date("d", $objEvent->startDate)+$addDays;
-                    $month      = date("m", $objEvent->startDate);
-                    $year       = date("Y", $objEvent->startDate);
-
-                    $objCloneEvent->startDate = mktime($hour, $minutes, $seconds, $month, $day, $year);
-                    $compareDate = mktime(0, 0, 0, $month, $day, $year);
-
-                    $hour       = date("H", $objEvent->endDate);
-                    $minutes    = date("i", $objEvent->endDate);
-                    $seconds    = date("s", $objEvent->endDate);
-                    $day        = date("d", $objEvent->endDate)+$addDays;
-                    $month      = date("m", $objEvent->endDate);
-                    $year       = date("Y", $objEvent->endDate);
-
-                    $objCloneEvent->endDate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+                    $modifyString = '+1 Weekday';
                 }
+
+                $objCloneEvent->startDate->modify($modifyString);
+                $compareDate = clone $objCloneEvent->startDate;
+                $compareDate->setTime(0, 0, 0);
+
+                $objCloneEvent->endDate->modify($modifyString);
             break;
             case 2:
                 //weekly
-                $oldWeekday         = date("w", $objEvent->startDate);
+                $weekdays = array('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');
+                $oldWeekday         = $objEvent->startDate->format('w');
                 $weekdayPattern     = $objEvent->seriesData['seriesPatternWeekday'];
-                $match              = false;
-                $i                  = 0;
-                $oldKW              = date("W", $objEvent->startDate);
 
-                while(!$match){
-                    $i++;
-
-                    if(substr($weekdayPattern, $oldWeekday, 1) == 1) {
-                        $addDays = $i;
-                        $match = true;
-                    } else {
-                        $oldWeekday++;
-                    }
-
-                    if ($oldWeekday > 6) {
-                        $oldWeekday = 0;
-                    }
-
-                    if ($i > 8){
-                        break;
-                    }
-
-                }
-                
-                $hour       = date("H", $objEvent->startDate);
-                $minutes    = date("i", $objEvent->startDate);
-                $seconds    = date("s", $objEvent->startDate);
-                $day        = date("d", $objEvent->startDate)+$addDays;
-                $month      = date("m", $objEvent->startDate);
-                $year       = date("Y", $objEvent->startDate);
-
-
-                $newKW = date("W", mktime($hour, $minutes, $seconds, $month, $day, $year));
-
-                $addWeeks = 0;
-                if ($objEvent->seriesData['seriesPatternWeek'] > 1) {
-                    if ($oldKW < $newKW) {
-                        $addWeeks = ($objEvent->seriesData['seriesPatternWeek']-1)*7;
-                    }
+                $nxtWeekDay = null;
+                if (($pos = strpos($weekdayPattern, '1', $oldWeekday)) !== false) {
+                    $nxtWeekDay = $pos;
+                } elseif (($pos = strpos($weekdayPattern, '1', 0)) !== false) {
+                    $nxtWeekDay = $pos;
                 }
 
-                $objCloneEvent->startDate = mktime($hour, $minutes, $seconds, $month, $day+$addWeeks, $year);
-                $compareDate = mktime(0, 0, 0, $month, $day+$addWeeks, $year);
+                if ($nxtWeekDay !== null) {
+                    $objCloneEvent->startDate->modify('next '. $weekdays[$nxtWeekDay]);
+                }
+                $addDays = $objCloneEvent->startDate->diff($objEvent->startDate)->h;
 
-                $hour       = date("H", $objEvent->endDate);
-                $minutes    = date("i", $objEvent->endDate);
-                $seconds    = date("s", $objEvent->endDate);
-                $day        = date("d", $objEvent->endDate)+$addDays+$addWeeks;
-                $month      = date("m", $objEvent->endDate);
-                $year       = date("Y", $objEvent->endDate);
-
-                $objCloneEvent->endDate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+                $compareDate = clone $objCloneEvent->startDate;
+                $compareDate->setTime(0, 0, 0);
+                $objCloneEvent->endDate->modify('+'. $addDays .' days');
             break;
             case 3:
                 //monthly
                 if ($objCloneEvent->seriesData['seriesPatternType'] == 1) {
-                    $monthDays = 0;
-                    
-                    $hour       = date("H", $objEvent->startDate);
-                    $minutes    = date("i", $objEvent->startDate);
-                    $seconds    = date("s", $objEvent->startDate);
-                    $day        = date("d", $objEvent->startDate);
-                    $month      = date("m", $objEvent->startDate);
-                    $year       = date("Y", $objEvent->startDate);
 
-                    $monthDays  = date("t", $objEvent->startDate);
-
-                    $addDays    = $monthDays-$day+$objEvent->seriesData['seriesPatternDay'];
+                    $day        = $objEvent->startDate->format('d');
+                    $monthDays  = $objEvent->startDate->format('t');
+                    $addDays    = $monthDays - $day + $objEvent->seriesData['seriesPatternDay'];
                     $addMonths  = $objEvent->seriesData['seriesPatternMonth'];
 
-                    if($addMonths > 1) {
+                    if ($addMonths > 1) {
+                        $tempStartDate = clone $objEvent->startDate;
                         for ($i = 1; $i < $addMonths; $i++) {
-                           $nextMonthDays = date("t", mktime($hour, $minutes, $seconds, $month+$i, $day, $year));
-                           $addDays = $addDays+$nextMonthDays;
+                            $tempStartDate->modify('+'. 1 .'months');
+                            $addDays += $tempStartDate->format('t');
                         }
                     }
 
-                    $objCloneEvent->startDate = mktime($hour, $minutes, $seconds, $month, $day+$addDays, $year);
-                    $compareDate = mktime(0, 0, 0, $month, $day+$addDays, $year);
+                    $objCloneEvent->startDate->modify('+ '. ($day + $addDays) .' days');
+                    $compareDate = clone $objCloneEvent->startDate;
+                    $compareDate->setTime(0, 0, 0);
 
-                    $hour       = date("H", $objEvent->endDate);
-                    $minutes    = date("i", $objEvent->endDate);
-                    $seconds    = date("s", $objEvent->endDate);
-                    $day        = date("d", $objEvent->endDate);
-                    $month      = date("m", $objEvent->endDate);
-                    $year       = date("Y", $objEvent->endDate);
-
-                    $objCloneEvent->endDate = mktime($hour, $minutes, $seconds, $month, $day+$addDays, $year);
+                    $objCloneEvent->endDate->modify('+ '. ($day + $addDays) .' days');
                 } else {
                     $hour       = date("H", $objEvent->startDate);
                     $minutes    = date("i", $objEvent->startDate);
@@ -1353,8 +1268,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                     $i      = 0;
                     
                     while (!$match) {
-                        if(substr($weekdayPattern, $i, 1) == 1) {
-                            $weekday = $i+1;
+                        if (substr($weekdayPattern, $i, 1) == 1) {
+                            $weekday = $i + 1;
                             $match = true;
                         } else {
                             $i++;
@@ -1365,13 +1280,15 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                         $weekday = 0;
                     }
 
+                    $tempStartDate = clone $objEvent->startDate;
                     if($countPattern < 5) {
                         $match  = false;
                         $d      = 1;
 
                         while (!$match) {
-                            $checkDate  = mktime($hour, $minutes, $seconds, $nextMonth, $d, $year);
-                            $checkDay  = date("w", $checkDate);
+                            $tempStartDate->modify('+'. intval($monthPattern) . 'months');
+                            $tempStartDate->setDate($tempStartDate->format('Y'), $tempStartDate->format('m'), $d);
+                            $checkDay = $tempStartDate->format("w");
                             
                             if ($checkDay == $weekday) {
                                 $match = true;
@@ -1379,20 +1296,16 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                                 $d++;
                             }
                         }
-
-                        if($countPattern > 1) {
-                           $countPattern = 7*($countPattern-1);
-                        } else {
-                           $countPattern = 0;
-                        }
+                        $countPattern = ($countPattern > 1) ? 7 * ($countPattern - 1) : 0;
                     } else {
+                        $tempStartDate->modify('+'. intval($monthPattern) . 'months');
                         $match          = false;
-                        $d              = date("t", mktime($hour, $minutes, $seconds, $nextMonth, $day, $year));
+                        $d              = $tempStartDate->format('t');
                         $countPattern   = 0;
 
                         while (!$match) {
-                            $checkDate  = mktime($hour, $minutes, $seconds, $nextMonth, $d, $year);
-                            $checkDay  = date("w", $checkDate);
+                            $tempStartDate->setDate($tempStartDate->format('Y'), $tempStartDate->format('m'), $d);
+                            $checkDay = $tempStartDate->format("w");
 
                             if ($checkDay == $weekday) {
                                 $match = true;
@@ -1402,40 +1315,36 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                         }
                     }
 
-                    $addMonth   = $nextMonth-$month;
-                    $newDay     = $d+$countPattern;
-                    
-                    $objCloneEvent->startDate = mktime($hour, $minutes, $seconds, $month+$addMonth, $newDay, $year);
-                    $compareDate = mktime(0, 0, 0, $month+$addMonth, $newDay, $year);
-                    
-                    $hour       = date("H", $objEvent->endDate);
-                    $minutes    = date("i", $objEvent->endDate);
-                    $seconds    = date("s", $objEvent->endDate);
-                    $dayStart   = $objEvent->startDate;
-                    $dayEnd     = $objEvent->endDate;
-                    $dayDiff    = date("d",$dayEnd-$dayStart)-1;
-                    $month      = date("m", $objEvent->endDate);
-                    $year       = date("Y", $objEvent->endDate);
+                    $addMonth = $nextMonth - $month;
+                    $newDay   = $d + $countPattern;
 
-                    $objCloneEvent->endDate = mktime($hour, $minutes, $seconds, $month+$addMonth, $newDay+$dayDiff, $year);
+                    $objCloneEvent->startDate->setDate($objCloneEvent->startDate->format('Y'), $tempStartDate->format('m')+$addMonth, $newDay);
+                    $compareDate = clone $objCloneEvent->startDate;
+                    $compareDate->setTime(0, 0, 0);
+
+                    $dayStart = $objEvent->startDate->getTimestamp();
+                    $dayEnd   = $objEvent->endDate->getTimestamp();
+                    $dayDiff  = date("d", $dayEnd - $dayStart) - 1;
+
+                    $objCloneEvent->endDate->setDate($objCloneEvent->endDate->format('Y'), $objCloneEvent->endDate->format('m') + $addMonth, $newDay + $dayDiff);
                 }
             break;
         }
-        
+
         $isAllowedEvent = true;
         switch($objCloneEvent->seriesData['seriesPatternDouranceType']) {
             case 1:                                
                 $getNextEvent = false;
-                
-                if ($this->startDate != null) {                    
-                    $lastDate = mktime(date("H", $this->startDate), date("i", $this->startDate), date("s", $this->startDate), date("m", $this->startDate), date("d", $this->startDate), date("Y", $this->startDate)+intval($this->arrSettings['maxSeriesEndsYear'])+1); 
+
+                if ($this->startDate != null) {
+                    $lastDate = clone $this->startDate;
+                    $lastDate->setDate($lastDate->format('Y') + intval($this->arrSettings['maxSeriesEndsYear']) + 1, $lastDate->format('m'), $lastDate->format('d'));
                     if ($objCloneEvent->startDate <= $lastDate) {
                         $getNextEvent = true;
                     } else {
                         $getNextEvent = false;
                     }
-                } elseif($this->endDate != null) { // start date will be null only on archive                    
-                    
+                } elseif ($this->endDate != null) { // start date will be null only on archive
                     if ($objCloneEvent->endDate <= $this->endDate) {
                         $getNextEvent = true;
                     } else {
@@ -1445,7 +1354,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 break;
             case 2:
                 $objCloneEvent->seriesData['seriesPatternEnd'] = $objCloneEvent->seriesData['seriesPatternEnd']-1;
-                
+
                 if ($objCloneEvent->seriesData['seriesPatternEnd'] > 1) {
                     $getNextEvent = true;
                 } else {
@@ -1463,23 +1372,42 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 }
                 break;
         }
-        
+
         if (   $isAllowedEvent
-            && !in_array($compareDate, $objCloneEvent->seriesData['seriesPatternExceptions'])
+            && !$this->isDateExists($compareDate, $objCloneEvent->seriesData['seriesPatternExceptions'])
             && self::_addToEventList($objCloneEvent)
         ) {
-            array_push($this->eventList, $objCloneEvent);              
+            array_push($this->eventList, $objCloneEvent);
             if ($this->listType == 'upcoming') {
                 // if list type is set to upcoming the the will be shown only once
                 $getNextEvent = false;
             }
         }
-        
+
         if ($getNextEvent) {
-            self::_setNextSeriesElement($objCloneEvent);    
+            self::_setNextSeriesElement($objCloneEvent);
         }
     }
-    
+
+    /**
+     * Check whether the given date exists in the datetime array
+     *
+     * @param \DateTime $dateTime
+     * @param array     $dateTimeArray
+     *
+     * @return boolean True when date exists, false otherwise
+     */
+    public function isDateExists(\DateTime $dateTime, $dateTimeArray = array())
+    {
+        $timestamp = $dateTime->getTimestamp();
+        foreach ($dateTimeArray as $targetDateTime) {
+            if ($timestamp == $targetDateTime->getTimestamp()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Return Coorinates
      *      
@@ -1539,8 +1467,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
     function getSingleDateBlock($objEvent, $showStartDate, $showEndDate, $separatorDate, $showTimeType, $showStartTime, $showEndTime, $separatorDateTime, $separatorTime, $showClock) {
         global $_ARRAYLANG;
         
-        $startDate = $this->getDateTime($objEvent->startDate);
-        $endDate   = $this->getDateTime($objEvent->endDate);
+        $startDate = $objEvent->startDate;
+        $endDate   = $objEvent->endDate;
 
         //date
         if($showStartDate && $showEndDate) {
@@ -1601,7 +1529,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
         if($part == 1) {
             // parse part 1 (start)
             //date
-            $startDate  = $this->getDateTime($objEvent->startDate);
+            $startDate  = $objEvent->startDate;
             $this->date = $this->format2userDate($startDate);
             //time
             $this->time = $this->format2userTime($startDate);
@@ -1616,7 +1544,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
         } else {
             // parse part 2 (end)
             //date
-            $endDate   = $this->getDateTime($objEvent->endDate);
+            $endDate   = $objEvent->endDate;
             $this->date = $this->format2userDate($endDate);
             //time
             $this->time = $this->format2userTime($endDate);
@@ -1679,10 +1607,10 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 if ($objEvent->access && $objInit->mode == 'frontend' && !\Permission::checkAccess(116, 'static', true)) {
                     continue;
                 }
-                $startdate     = $this->convertDbDateTime2user($this->getDateTime($objEvent->startDate));
-                $enddate       = $this->convertDbDateTime2user($this->getDateTime($objEvent->endDate));
+                $startdate     = $this->convertInternDateTime2user($objEvent->startDate);
+                $enddate       = $this->convertInternDateTime2user($objEvent->endDate);
 
-                $eventYear     = $startdate->format('y');
+                $eventYear     = $startdate->format('Y');
                 $eventMonth    = $startdate->format('m');
                 $eventDay      = $startdate->format('d');
                 $eventEndDay   = $enddate->format('d');

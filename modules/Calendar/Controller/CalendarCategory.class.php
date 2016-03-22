@@ -342,46 +342,49 @@ class CalendarCategory extends \Cx\Modules\Calendar\Controller\CalendarLibrary
      *      
      * @return integer Entry count of the category
      */
-    function countEntries($getAll = false, $onlyActive = false){
-        global $objDatabase;  
-        
+    function countEntries($getAll = false, $onlyActive = false)
+    {
+
         // get startdate
         if (!empty($_GET['from'])) {
-            $startDate = parent::getDateTimestamp($_GET['from']); 
+            $startDate = parent::getDateTime($_GET['from']); 
         } else if ($_GET['cmd'] == 'archive') {                             
             $startDate = null; 
         } else {
-            $startDay   = isset($_GET['day']) ? $_GET['day'] : date("d", mktime());   
-            $startMonth = isset($_GET['month']) ? $_GET['month'] : date("m", mktime()); 
-            $startYear  = isset($_GET['year']) ? $_GET['year'] : date("Y", mktime());     
-            $startDay = $_GET['cmd'] == 'boxes' ? 1 : $startDay;        
-            $startDate = mktime(0, 0, 0, $startMonth, $startDay, $startYear);  
+            $startDate = $this->getInternDateTimeFromUser();
+            $startDay   = isset($_GET['day']) ? $_GET['day'] : $startDate->format('d');   
+            $startMonth = isset($_GET['month']) ? $_GET['month'] : $startDate->format('m'); 
+            $startYear  = isset($_GET['year']) ? $_GET['year'] : $startDate->format('Y');
+            $startDate->setDate($startYear, $startMonth, $startDay);
+            $startDate->setTime(0, 0, 0);
         }                   
         
         // get enddate
         if (!empty($_GET['till'])) {
-            $endDate = parent::getDateTimestamp($_GET['till']); 
+            $endDate = parent::getDateTime($_GET['till']); 
         } else if ($_GET['cmd'] == 'archive') {
-            $endDate = mktime(); 
+            $endDate = $this->getInternDateTimeFromUser();
         } else {
-            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : date("d", mktime());   
-            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : date("m", mktime()); 
-            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : date("Y", mktime());            
-            $endYear = empty($_GET['endYear']) && empty($_GET['endMonth']) ? $endYear+10: $endYear;          
-            $endDate = mktime(23, 59, 59, $endMonth, $endDay, $endYear);      
+            $endDate = $this->getInternDateTimeFromUser();
+            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : $endDate->format('d');
+            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : $endDate->format('m');
+            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : $endDate->format('Y');
+            $endYear = empty($_GET['endYear']) && empty($_GET['endMonth']) ? $endYear + 10 : $endYear;
+            $endDate->setDate($endYear, $endMonth, $endDay);
+            $endDate->setTime(23, 59, 59);
         }
-        
+
         $searchTerm = !empty($_GET['term']) ? contrexx_addslashes($_GET['term']) : null;
-        
+
         // set the start date as null if $getAll is true
         if ($getAll) {
             $startDate = null;
         }
-        
-        $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($startDate,$endDate,$this->id,$searchTerm, true, false, $onlyActive);
-        $objEventManager->getEventList();            
+
+        $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($startDate, $endDate, $this->id, $searchTerm, true, false, $onlyActive);
+        $objEventManager->getEventList();
         $count = count($objEventManager->eventList);
-        
+
         return $count;
     }
 }

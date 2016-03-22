@@ -246,67 +246,71 @@ class Calendar extends CalendarLibrary
         
         // get startdate
         if (!empty($from)) {
-            $this->startDate = parent::getDateTimestamp($from);
+            $this->startDate = parent::getDateTime($from);
         } else if ($cmd == 'archive') {
             $this->startDate = null;
             $this->sortDirection = 'DESC';
         } else {
-            $startDay   = isset($_GET['day']) ? $_GET['day'] : date("d", time());
-            $startMonth = isset($_GET['month']) ? $_GET['month'] : date("m", time());
-            $startYear  = isset($_GET['year']) ? $_GET['year'] : date("Y", time());
+            $this->startDate = $this->getInternDateTimeFromUser();
 
-            $this->startDate = $this->convertUserDateTime2db($this->getDateTime(mktime(0, 0, 0, $startMonth, $startDay, $startYear)))
-                                    ->getTimestamp();
+            $startDay   = isset($_GET['day']) ? $_GET['day'] : $this->startDate->format('d');
+            $startMonth = isset($_GET['month']) ? $_GET['month'] : $this->startDate->format('m');
+            $startYear  = isset($_GET['year']) ? $_GET['year'] : $this->startDate->format('Y');
+
+            $this->startDate->setDate($startYear, $startMonth, $startDay);
+            $this->startDate->setTime(0, 0, 0);
         }
 
         // get enddate
         if (!empty($till)) {
-            $this->endDate = parent::getDateTimestamp($till);
+            $this->endDate = parent::getDateTime($till);
         } else if ($cmd == 'archive') {
-            $this->endDate = time();
+            $this->endDate = $this->getInternDateTimeFromUser();
         } else {
-            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : date("d", time());
-            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : date("m", time());
-            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : date("Y", time());
+            $this->endDate = $this->getInternDateTimeFromUser();
+
+            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : $this->startDate->format('d');
+            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : $this->startDate->format('m');
+            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : $this->startDate->format('Y');
 
             $endYear = empty($_GET['endYear']) && empty($_GET['endMonth']) ? $endYear+10: $endYear;
 
-            $this->endDate = $this->convertUserDateTime2db($this->getDateTime(mktime(23, 59, 59, $endMonth, $endDay, $endYear)))
-                                  ->getTimestamp();
+            $this->endDate->setDate($endYear, $endMonth, $endDay);
+            $this->endDate->setTime(23, 59, 59);
         }
 
 
         // get datepicker-time
-         if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $cmd != 'boxes') {
-            $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : date('Y');
-            $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : date('m');
-            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : date('d');
-            
-            $dateObj = $this->getDateTime(strtotime("{$year}-{$month}-{$day}"));
+        if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $cmd != 'boxes') {
 
-            $dateObj->modify("first day of this month");
-            $dateObj->setTime(0, 0, 0);
-            $this->startDate = $this->convertUserDateTime2db($dateObj)->getTimestamp();
-            
+            $this->startDate = $this->getInternDateTimeFromUser();
+            $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : $this->startDate->format('Y');
+            $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : $this->startDate->format('m');
+            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : $this->startDate->format('d');
+
+            $this->startDate->setDate($year, $month, $day);
+            $this->startDate->modify("first day of this month");
+            $this->startDate->setTime(0, 0, 0);
+
+            $this->endDate = clone $this->startDate;
             // add months for the list view(month view)
             if ((empty($_GET['act']) || $_GET['act'] != 'list') && empty($_REQUEST['dayID'])) {
-                $dateObj->modify("+{$this->boxCount} months");
+                $this->endDate->modify("+{$this->boxCount} months");
             }
-            
-            $dateObj->modify("last day of this month");
-            $dateObj->setTime(23, 59, 59);
-            $this->endDate = $this->convertUserDateTime2db($dateObj)->getTimestamp();
 
-         } elseif (isset ($_GET["yearID"]) && isset ($_GET["monthID"]) && isset ($_GET["dayID"])) {
+            $this->endDate->modify("last day of this month");
+            $this->endDate->setTime(23, 59, 59);
+        } elseif (isset ($_GET["yearID"]) && isset ($_GET["monthID"]) && isset ($_GET["dayID"])) {
+            $this->startDate = $this->getInternDateTimeFromUser();
 
-            $year = isset($_REQUEST["yearID"]) ? intval($_REQUEST["yearID"]) : date('Y', time());
-            $month = isset($_REQUEST["monthID"]) ? intval($_REQUEST["monthID"]) : date('m', time());
-            $day = isset($_REQUEST["dayID"]) ? intval($_REQUEST["dayID"]) : date('d', time());
+            $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : $this->startDate->format('Y');
+            $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : $this->startDate->format('m');
+            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : $this->startDate->format('d');
 
-            $this->startDate = $this->convertUserDateTime2db($this->getDateTime(mktime(0, 0, 0, $month, $day, $year)))
-                                    ->getTimestamp();
-            $this->endDate   = $this->convertUserDateTime2db($this->getDateTime(mktime(23, 59, 59, $month, $day, $year)))
-                                    ->getTimestamp();
+            $this->startDate->setDate($year, $month, $day);
+            $this->startDate->setTime(0, 0, 0);
+            $this->endDate   = clone $this->startDate;
+            $this->endDate->setTime(23, 59, 59);
         }
         
         
@@ -554,11 +558,11 @@ UPLOADER;
         $objCategoryManager->getCategoryList();
 
         if ($eventId) {
-            $startDate = $this->getDateTime($objEvent->startDate);
-            $endDate   = $this->getDateTime($objEvent->endDate);
+            $startDate = $objEvent->startDate;
+            $endDate   = $objEvent->endDate;
         } else {
-            $startDate = $this->getDateTime();
-            $endDate   = $this->getDateTime();
+            $startDate = $this->getInternDateTimeFromUser();
+            $endDate   = $this->getInternDateTimeFromUser();
         }
 
         $eventStartDate = $this->format2userDateTime($startDate);
@@ -837,7 +841,7 @@ UPLOADER;
         
         $numRegistrations = (int) $objEvent->registrationCount;
         
-        $this->pageTitle = $this->format2userDate($this->getDateTime((isset($_GET['date']) ? $_GET['date'] : $objEvent->startDate)))
+        $this->pageTitle = $this->format2userDate((isset($_GET['date']) ? $this->getInternDateTimeFromUser('@'.$_GET['date']) : $objEvent->startDate))
                             . ": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
         if(time() <= intval($_REQUEST['date'])) {
