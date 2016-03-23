@@ -70,7 +70,7 @@ class CalendarFeed extends CalendarLibrary {
             }
             
             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
-            $objRSSWriter->channelLastBuildDate = date('r', mktime());
+            $objRSSWriter->channelLastBuildDate = date('r', time());
             
             foreach($this->objEventManager->eventList as $eventKey => $objEvent) {
                 $objFWUser = FWUser::getFWUserObject();

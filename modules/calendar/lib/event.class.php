@@ -828,8 +828,10 @@ class CalendarEvent extends CalendarLibrary
         //event data
         $id            = isset($data['copy']) && !empty($data['copy']) ? 0 : (isset($data['id']) ? intval($data['id']) : 0);
         $type          = isset($data['type']) ? intval($data['type']) : 0;
-        $startDate     = date("Y-m-d H:i:s", parent::getDateTimestamp($startDate, intval($startHour), intval($startMin)));
-        $endDate       = date("Y-m-d H:i:s", parent::getDateTimestamp($endDate, intval($endHour), intval($endMin)));
+
+        $startDate = $this->getDbDateTimeFromIntern($this->getDateTime($startDate, intval($startHour), intval($startMin)))->format('Y-m-d H:i:s');
+        $endDate   = $this->getDbDateTimeFromIntern($this->getDateTime($endDate, intval($endHour), intval($endMin)))->format('Y-m-d H:i:s');
+
         $google        = isset($data['map'][$_LANGID]) ? intval($data['map'][$_LANGID]) : 0;
         $allDay        = isset($data['all_day']) ? 1 : 0;
         $convertBBCode = ($objInit->mode == 'frontend' && empty($id));

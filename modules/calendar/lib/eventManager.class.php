@@ -793,7 +793,7 @@ class CalendarEventManager extends CalendarLibrary
             if(($objEvent->registration == 1) && (time() <= $objEvent->startDate->getTimestamp())) {  
                 
                 if($numRegistrations < $objEvent->numSubscriber || $objEvent->external == 1) {
-                    $regLink = '<a href="'.$hostUri.CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
+                    $regLink = '<a href="'.$hostUri.CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate->getTimestamp().'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
                 } else {
                     $regLink = '<i>'.$_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'].'</i>';
                 }
