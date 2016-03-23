@@ -806,6 +806,7 @@ class CalendarEvent extends CalendarLibrary
                     $this->seriesData['seriesPatternExceptions'] = array_map(array($this, 'getInternDateTimeFromDb'), (array) explode(",", $objResult->fields['series_pattern_exceptions']));
                 }    
                   
+                
                 $this->invitedGroups = explode(',', $objResult->fields['invited_groups']);     
                 $this->invitedMails =  htmlentities($objResult->fields['invited_mails'], ENT_QUOTES, CONTREXX_CHARSET);  
                 $this->registration = intval($objResult->fields['registration']);  
@@ -1422,9 +1423,6 @@ class CalendarEvent extends CalendarLibrary
         //event data        
         $startDate     = $this->getDateTime($startDate, intval($startHour), intval($startMin));
         $endDate       = $this->getDateTime($endDate, intval($endHour), intval($endMin));
-
-        $startDate->modify('midnight');
-        $endDate->modify('midnight');
 
         $this->startDate = $startDate;
         $this->endDate   = $endDate;

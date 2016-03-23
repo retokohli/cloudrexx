@@ -1237,9 +1237,19 @@ class CalendarEventManager extends CalendarLibrary
                 if ($objEvent->seriesData['seriesPatternWeek'] > 1 && ($oldWeekNum < $newWeekNum)) {
                     $objCloneEvent->startDate->modify('+'. ($objEvent->seriesData['seriesPatternWeek'] - 1) .' weeks');
                 }
-                $addDays = $objCloneEvent->startDate->diff($objEvent->startDate)->days;
+                $objCloneEvent->startDate->setTime(
+                    $objEvent->startDate->format('H'),
+                    $objEvent->startDate->format('i'),
+                    $objEvent->startDate->format('s')
+                );
 
+                $addDays = $objCloneEvent->startDate->diff($objEvent->startDate)->days;
                 $objCloneEvent->endDate->modify('+'. $addDays .' days');
+                $objCloneEvent->endDate->setTime(
+                    $objEvent->endDate->format('H'),
+                    $objEvent->endDate->format('i'),
+                    $objEvent->endDate->format('s')
+                );
             break;
             case 3:
                 //monthly
@@ -1276,15 +1286,21 @@ class CalendarEventManager extends CalendarLibrary
                         );
                     }
                 }
+                $objCloneEvent->startDate->setTime(
+                    $objEvent->startDate->format('H'),
+                    $objEvent->startDate->format('i'),
+                    $objEvent->startDate->format('s')
+                );
+
                 $addDays = $objCloneEvent->startDate->diff($objEvent->startDate)->days;
                 $objCloneEvent->endDate->modify('+'. $addDays .' days');
+                $objCloneEvent->endDate->setTime(
+                    $objEvent->endDate->format('H'),
+                    $objEvent->endDate->format('i'),
+                    $objEvent->endDate->format('s')
+                );
             break;
         }
-
-        // used to check the exception dates,
-        // exception dates are set as midnigt of a day
-        $compareDate = clone $objCloneEvent->startDate;
-        $compareDate->setTime('midnight');
 
         $isAllowedEvent = true;
         switch($objCloneEvent->seriesData['seriesPatternDouranceType']) {
@@ -1319,7 +1335,7 @@ class CalendarEventManager extends CalendarLibrary
                 $isAllowedEvent = (boolean) $objCloneEvent->seriesData['seriesPatternEnd']; 
                 break;
             case 3:
-                if($objCloneEvent->startDate <= $objCloneEvent->seriesData['seriesPatternEndDate']) {
+                if ($objCloneEvent->startDate <= $objCloneEvent->seriesData['seriesPatternEndDate']) {
                     $getNextEvent = true;
                 } else {
                     // don't show the event when startdate is greater then seriesPatternEndDate
@@ -1329,7 +1345,7 @@ class CalendarEventManager extends CalendarLibrary
         }
 
         if (   $isAllowedEvent
-            && !$this->isDateExists($compareDate, $objCloneEvent->seriesData['seriesPatternExceptions'])
+            && !$this->isDateExists($objCloneEvent->startDate, $objCloneEvent->seriesData['seriesPatternExceptions'])
             && self::_addToEventList($objCloneEvent)
         ) {
             array_push($this->eventList, $objCloneEvent);
@@ -1354,9 +1370,9 @@ class CalendarEventManager extends CalendarLibrary
      */
     public function isDateExists(\DateTime $dateTime, $dateTimeArray = array())
     {
-        $timestamp = $dateTime->getTimestamp();
+        $date = $dateTime->format('Y-m-d');
         foreach ($dateTimeArray as $targetDateTime) {
-            if ($timestamp == $targetDateTime->getTimestamp()) {
+            if ($date == $targetDateTime->format('Y-m-d')) {
                 return true;
             }
         }
