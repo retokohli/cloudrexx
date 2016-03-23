@@ -192,10 +192,14 @@ class CalendarMailManager extends CalendarLibrary {
             $eventManager->_setNextSeriesElement($objEvent);
 
             $lastEvent = null;
-            while ($objEvent->startDate != $_POST['date']){
-                foreach ($eventManager->eventList as $event){
-                    if ($event->startDate == $_POST['date']){
-                        $objEvent = $event;
+            if (isset($_POST['date'])) {
+                $postDate = $this->getInternDateTimeFromUser($_POST['date']);
+                while ($objEvent->startDate->getTimestamp() != $postDate->getTimestamp()){
+                    foreach ($eventManager->eventList as $event){
+                        if ($event->startDate->getTimestamp() == $postDate->getTimestamp()){
+                            $objEvent = $event;
+                        }
+                        $lastEvent = $event;
                     }
                     $lastEvent = $event;
                 }
@@ -244,15 +248,15 @@ class CalendarMailManager extends CalendarLibrary {
                 $regSearch     = array('[[REGISTRATION_TYPE]]', '[[REGISTRATION_SALUTATION]]', '[[REGISTRATION_FIRSTNAME]]', '[[REGISTRATION_LASTNAME]]', '[[REGISTRATION_EMAIL]]');
                 $regReplace    = array(      $regType,                 $regSalutation,                $regFirstname,                $regLastname,                $regMail);
             }
-                                                                                                  
-            $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";            
-            $date       = $this->format2userDateTime($this->getDateTime(strtotime('now')));
-            $startDate  = $this->getDateTime($objEvent->startDate);
-            $endDate    = $this->getDateTime($objEvent->endDate);
+
+            $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";
+            $date       = $this->format2userDateTime(new \DateTime());
+            $startDate  = $objEvent->startDate;
+            $endDate    = $objEvent->endDate;
 
             $eventTitle = $objEvent->title;
-            $eventStart = $objEvent->all_day ? $this->format2userDate($startDate) : $this->formatDateTime2user($startDate, parent::getDateFormat() . ' (H:i:s)');
-            $eventEnd   = $objEvent->all_day ? $this->format2userDate($endDate) : $this->formatDateTime2user($endDate, parent::getDateFormat() . ' (H:i:s)');
+            $eventStart = $objEvent->all_day ? $this->format2userDate($startDate) : $this->formatDateTime2user($startDate, $this->getDateFormat() . ' (H:i:s)');
+            $eventEnd   = $objEvent->all_day ? $this->format2userDate($endDate) : $this->formatDateTime2user($endDate, $this->getDateFormat() . ' (H:i:s)');
 
             $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
             
@@ -307,9 +311,9 @@ class CalendarMailManager extends CalendarLibrary {
                     if ($actionId == self::MAIL_NOTFY_NEW_APP && $objEvent->arrSettings['confirmFrontendEvents'] == 1) {
                         $eventLink = $domain."/cadmin/index.php?cmd={$this->moduleName}&act=modify_event&id={$objEvent->id}&confirm=1";
                     } else {
-                        $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate))->toString();
+                        $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate->getTimestamp()))->toString();
                     }            
-                    $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate))->toString();
+                    $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate->getTimestamp()))->toString();
 
                     $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $userNick, $userFirstname, $userLastname, $domain, $date);
 

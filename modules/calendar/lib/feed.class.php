@@ -99,7 +99,7 @@ class CalendarFeed extends CalendarLibrary {
                     $itemComments = null;
                     $itemEnclosure = array();
                     $itemGuid = array(); 
-                    $itemPubDate = contrexx_raw2xml($objEvent->startDate);
+                    $itemPubDate = $objEvent->startDate->getTimestamp();
                     $itemSource = array();
                     
                     
