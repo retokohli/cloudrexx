@@ -1202,10 +1202,20 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 }
 
                 $objCloneEvent->startDate->modify($modifyString);
+                $objCloneEvent->startDate->setTime(
+                    $objEvent->startDate->format('H'),
+                    $objEvent->startDate->format('i'),
+                    $objEvent->startDate->format('s')
+                );
                 $compareDate = clone $objCloneEvent->startDate;
                 $compareDate->setTime(0, 0, 0);
 
                 $objCloneEvent->endDate->modify($modifyString);
+                $objCloneEvent->endDate->setTime(
+                    $objEvent->endDate->format('H'),
+                    $objEvent->endDate->format('i'),
+                    $objEvent->endDate->format('s')
+                );
             break;
             case 2:
                 //weekly
