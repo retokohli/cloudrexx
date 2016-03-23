@@ -1208,13 +1208,18 @@ class CalendarEventManager extends CalendarLibrary
                     $addMonths  = intval($objEvent->seriesData['seriesPatternMonth']);
 
                     $objCloneEvent->startDate->modify('+'. $addMonths .' months');
-                    if ($objCloneEvent->startDate->format('t') >= $patternDay) {
-                        $objCloneEvent->startDate->setDate(
-                            $objCloneEvent->startDate->format('Y'),
-                            $objCloneEvent->startDate->format('m'),
-                            $patternDay
-                        );
+                    
+                    // if the recurrence day is beyond the number of days the current
+                    // month has, then we have to fast-forward to the next month
+                    while ($patternDay > $objCloneEvent->startDate->format('t')) {
+                        $objCloneEvent->startDate->modify('+'. $addMonths .' months');
                     }
+
+                    $objCloneEvent->startDate->setDate(
+                        $objCloneEvent->startDate->format('Y'),
+                        $objCloneEvent->startDate->format('m'),
+                        $patternDay
+                    );
                 } else {
                     $weekdays         = array('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');
                     $weekDayCountType = array(1 => 'first', 2 => 'second', 3 => 'third', 4 => 'fourth', 5 => 'last');
@@ -1226,14 +1231,18 @@ class CalendarEventManager extends CalendarLibrary
                     $objCloneEvent->startDate->modify('+'. $addMonths .' months');
 
                     $weekDay = null;
-                    if (($pos = strpos($weekdayPattern, '1', $oldWeekday)) !== false) {
+                    if (($pos = strpos($weekdayPattern, '1')) !== false) {
                         $weekDay = $pos;
                     }
-                    if ($weekDay !== null && $weekDayCountType[$countPattern]) {
-                        $objCloneEvent->startDate->modify(
-                            $weekDayCountType[$countPattern] .' '. $weekdays[$weekDay] .' of this month'
-                        );
+
+                    // abort in case the event has an invalid recurrence
+                    if ($weekDay === null || !isset($weekDayCountType[$countPattern])) {
+                        return;
                     }
+
+                    $objCloneEvent->startDate->modify(
+                        $weekDayCountType[$countPattern] .' '. $weekdays[$weekDay] .' of this month'
+                    );
                 }
                 $objCloneEvent->startDate->setTime(
                     $objEvent->startDate->format('H'),
