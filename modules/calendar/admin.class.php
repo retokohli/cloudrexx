@@ -229,9 +229,9 @@ class CalendarManager extends CalendarLibrary
         
         $listType = 'all';
         if($_GET['list'] == 'actual' || !isset($_GET['list'])) {
-            $styleListActual = 'underline';  
-            $styleListAll = '';                                 
-            $startDate = $this->convertUserDateTime2db($this->getDateTime())->getTimestamp();
+            $styleListActual = 'underline';
+            $styleListAll = '';
+            $startDate = new \DateTime();
             $listType = 'upcoming';
         } else {
             $styleListActual = '';  
@@ -296,7 +296,7 @@ class CalendarManager extends CalendarLibrary
         }       
         
         if($this->arrSettings['rssFeedStatus'] == 1) {
-            $objFeedEventManager = new CalendarEventManager(mktime(),null,null,null,true);
+            $objFeedEventManager = new CalendarEventManager(time(),null,null,null,true);
             $objFeed = new CalendarFeed($objFeedEventManager);
             $objFeed->creatFeed();   
         }                                                                             
@@ -318,7 +318,7 @@ class CalendarManager extends CalendarLibrary
         $objEventManager->showEventList($this->_objTpl);
     }
     
-    
+        
     /**
      * Add / Edit of the Event
      *      
@@ -357,7 +357,7 @@ class CalendarManager extends CalendarLibrary
 	        }
             
                 if($this->arrSettings['rssFeedStatus'] == 1) {
-                    $objFeedEventManager = new CalendarEventManager(mktime(),null,null,null,true);
+                    $objFeedEventManager = new CalendarEventManager(time(), null, null, null, true);
                     $objFeed = new CalendarFeed($objFeedEventManager);
                     $objFeed->creatFeed();   
                 }     
@@ -411,10 +411,10 @@ class CalendarManager extends CalendarLibrary
         }
 
         if ($eventId) {
-            $startDate = $this->getDateTime($objEvent->startDate);
-            $endDate   = $this->getDateTime($objEvent->endDate);
+            $startDate = $objEvent->startDate;
+            $endDate   = $objEvent->endDate;
         } else {
-            $startDate = $this->getDateTime();
+            $startDate = new \DateTime();
             $startMin  = (int) $startDate->format('i');
             // Adjust the time to next half hour
             if (!in_array($startMin, array(0, 30))) {
@@ -774,15 +774,15 @@ class CalendarManager extends CalendarLibrary
             $seriesPatternDourance3 = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? 'checked="checked"' : '';
             
             $seriesPatternEndsEvents = $objEvent->seriesData['seriesPatternDouranceType'] == 2 ? $objEvent->seriesData['seriesPatternEnd'] : 5;
-            $seriesPatternEndsDate   = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? $this->format2userDate($this->getDateTime($objEvent->seriesData['seriesPatternEndDate'])) : '';
+            $seriesPatternEndsDate   = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? $this->format2userDate($objEvent->seriesData['seriesPatternEndDate']) : '';
             
             
             
-            foreach ($objEvent->seriesData['seriesPatternExceptions'] as $key => $seriesExceptionDate) {                     
+            foreach ($objEvent->seriesData['seriesPatternExceptions'] as $key => $seriesExceptionDate) {
                 
                 if($seriesExceptionDate != null) {
                     $this->_objTpl->setVariable(array(                        
-                        $this->moduleLangVar.'_SERIES_EXEPTION_DATE'        => $this->format2userDate($this->getDateTime($seriesExceptionDate)),
+                        $this->moduleLangVar.'_SERIES_EXEPTION_DATE' => $this->format2userDate($seriesExceptionDate),
                     ));  
                     
                     $this->_objTpl->parse('eventExeptions');                      
@@ -1352,7 +1352,10 @@ class CalendarManager extends CalendarLibrary
                     $objRegistration->tagExport();   
                 }  
                 
-                print ($this->format2userDate($this->getDateTime($objRegistration->firstExport)).$this->csvSeparator);
+                // $objRegistration->eventDate is a UTC unix timestamp
+                $exportDate = new \DateTime();
+                $exportDate->setTimestamp($objRegistration->firstExport);
+                print ($this->format2userDate($exportDate).$this->csvSeparator);
                    
                 if($objRegistration->type == '1') {                               
                     print ($_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].$this->csvSeparator);       
@@ -1361,8 +1364,11 @@ class CalendarManager extends CalendarLibrary
                 } else {   
                     print ($_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'].$this->csvSeparator);    
                 }
-                
-                print (html_entity_decode($objEvent->title, ENT_QUOTES)." - ". $this->format2userDate($this->getDateTime($objRegistration->eventDate)).$this->csvSeparator);
+
+                // $objRegistration->eventDate is a UTC unix timestamp
+                $registrationDate = new \DateTime();
+                $registrationDate->setTimestamp($objRegistration->eventDate);
+                print (html_entity_decode($objEvent->title, ENT_QUOTES)." - ". $this->format2userDate($registrationDate).$this->csvSeparator);
                 
                 if($objRegistration->langId == null) {  
                     print ($this->arrFrontendLanguages[$_LANGID]['name'].$this->csvSeparator); 
@@ -1623,7 +1629,7 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_REGISTRATION_ID'              => $regId,
             $this->moduleLangVar.'_REGISTRATION_TYPE'            => $objRegistration->type,
             $this->moduleLangVar.'_FORM_ID'                      => $objEvent->registrationForm,
-            $this->moduleLangVar.'_EVENT_DATE'                   => $objEvent->startDate,
+            $this->moduleLangVar.'_EVENT_DATE'                   => $objEvent->startDate->getTimestamp(),
             $this->moduleLangVar.'_USER_ID'                      => $userId,
         ));
     }

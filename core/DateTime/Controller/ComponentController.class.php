@@ -43,6 +43,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     protected $databaseTimezone;
     
     /**
+     * @var \DateTimeZone Internal timezone
+     */
+    protected $internalTimezone;
+    
+    /**
      * @var \DateTimeZone User's timezone
      */
     protected $userTimezone;
@@ -60,40 +65,95 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\Routing\Url $request Request URL
      */
     public function preResolve(\Cx\Core\Routing\Url $request) {
-        global $_DBCONFIG;
-        
-        $databaseTimezoneString = $_DBCONFIG['timezone'];
+        $databaseTimezoneString = $this->cx->getDb()->getDb()->getTimezone();
         $this->databaseTimezone = new \DateTimeZone($databaseTimezoneString);
+        
+        $internalTimezoneString = \Cx\Core\Setting\Controller\Setting::getValue('timezone', 'Config');
+        $this->internalTimezone = new \DateTimeZone($internalTimezoneString);
         
         $this->userTimezone = \FWUser::getFWUserObject()->objUser->getTimezone();
     }
     
     /**
-     * Accepts a datetime in database timezone and converts it to user's timezone
+     * Converts a \DateTime object in DB timezone to internal timezone
      * @param \DateTime $datetime DateTime in database timezone
-     * @return \DateTime DateTime in user's timezone
+     * @return \DateTime DateTime in internal timezone
      */
-    public function db2user(\DateTime $datetime) {
-        // $datetime will probably be in internal timezone instead of database timezone (if different)
-        if ($datetime->getTimezone()->getName() != $this->databaseTimezone->getName()) {
-            $dateTimeString = $datetime->format('Y-m-d H:i:s');
-            $datetime = new \DateTime($dateTimeString, $this->databaseTimezone);
-        }
-        return $datetime->setTimezone($this->userTimezone);
+    public function db2intern(\DateTime $datetime) {
+        return $datetime->setTimezone($this->internalTimezone);
     }
     
     /**
-     * Accepts a datetime in user's timezone and converts it to database timezone
+     * Converts a \DateTime object in internal timezone to a user's timezone
+     * @param \DateTime $datetime DateTime in internal timezone
+     * @param \User $user (optional) User object to get timezone of
+     * @return \DateTime DateTime in user's timezone
+     */
+    public function intern2user(\DateTime $datetime, $user = null) {
+        $userTimezone = $this->userTimezone;
+        if ($user) {
+            $userTimezone = $user->getTimezone();
+        }
+        return $datetime->setTimezone($userTimezone);
+    }
+    
+    /**
+     * Converts a \DateTime object in user's timezone to internal timezone
+     * @param \DateTime $datetime DateTime in user's timezone
+     * @return \DateTime DateTime in internal timezone
+     */
+    public function user2intern(\DateTime $datetime) {
+        return $datetime->setTimezone($this->internalTimezone);
+    }
+    
+    /**
+     * Converts a \DateTime object in internal timezone to DB timezone
+     * @param \DateTime $datetime DateTime in internal timezone
+     * @return \DateTime DateTime in DB timezone
+     */
+    public function intern2db(\DateTime $datetime) {
+        return $datetime->setTimezone($this->databaseTimezone);
+    }
+    
+    /**
+     * Converts a \DateTime object in DB timezone to a user's timezone
+     * @param \DateTime $datetime DateTime in database timezone
+     * @param \User $user (optional) User object to get timezone of
+     * @return \DateTime DateTime in user's timezone
+     */
+    public function db2user(\DateTime $datetime, $user = null) {
+        return $this->intern2user($this->db2intern($datetime), $user);
+    }
+    
+    /**
+     * Converts a \DateTime object in a user's timezone to DB timezone
      * @param \DateTime $datetime DateTime in user's timezone
      * @return \DateTime DateTime in database timezone
      */
     public function user2db(\DateTime $datetime) {
-        // $datetime will probably be in internal timezone instead of user timezone (if different)
-        if ($datetime->getTimezone()->getName() != $this->userTimezone->getName()) {
-            $dateTimeString = $datetime->format('Y-m-d H:i:s');
-            $datetime = new \DateTime($dateTimeString, $this->userTimezone);
+        return $this->intern2db($this->user2intern($datetime));
+    }
+    
+    /**
+     * Returns a \DateTime object in a user's timezone
+     * @param string A date/time string. Argument for \DateTime::construct()
+     * @param \User $user (optional) User object to get timezone of
+     * @return \DateTime DateTime object in user's timezone
+     */
+    public function createDateTimeForUser($time, $user = null) {
+        $userTimezone = $this->userTimezone;
+        if ($user) {
+            $userTimezone = $user->getTimezone();
         }
-        return $datetime->setTimezone($this->databaseTimezone);
+        return new \DateTime($time, $userTimezone);
+    }
+    
+    /**
+     * Returns a \DateTime object in DB timezone
+     * @param string A date/time string. Argument for \DateTime::construct()
+     * @return \DateTime DateTime object in DB timezone
+     */
+    public function createDateTimeForDb($time) {
+        return new \DateTime($time, $this->databaseTimezone);
     }
 }
-

@@ -77,12 +77,12 @@ class CalendarHeadlines extends CalendarLibrary
     function loadEventManager()
     {
         if($this->arrSettings['headlinesStatus'] == 1 && $this->_objTpl->blockExists('calendar_headlines_row')) {                        
-            $startDate = mktime(0, 0, 0, date("m", mktime()), date("d", mktime()), date("Y", mktime()));                                   
-            $enddate = mktime(23, 59, 59, date("m", mktime()), date("d", mktime()), date("Y", mktime())+10);       
-            $categoryId = intval($this->arrSettings['headlinesCategory']) != 0 ? intval($this->arrSettings['headlinesCategory']) : null;        
-            
-            $startPos = 0;   
-            $endPos = $this->arrSettings['headlinesNum'];             
+            $startDate = mktime(0, 0, 0, date("m", time()), date("d", time()), date("Y", time()));
+            $endDate = mktime(23, 59, 59, date("m", time()), date("d", time()), date("Y", time())+10);
+            $categoryId = intval($this->arrSettings['headlinesCategory']) != 0 ? intval($this->arrSettings['headlinesCategory']) : null;
+
+            $startPos = 0;
+            $endPos = $this->arrSettings['headlinesNum'];
 
             $this->objEventManager = new CalendarEventManager($startDate,$endDate,$categoryId,$searchTerm,true,$needAuth,true,$startPos,$endPos);
             $this->objEventManager->getEventList();
