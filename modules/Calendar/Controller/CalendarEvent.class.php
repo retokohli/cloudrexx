@@ -1418,15 +1418,14 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         
         list($endDate, $strEndTime)     = explode(' ', $data['endDate']);
         list($endHour, $endMin)         = explode(':', $strEndTime);
-        
-        list($startHour, $startMin) = array(0, 0);
-        list($endHour, $endMin)     = array(0, 0);
-        
-        
+
         //event data        
         $startDate     = parent::getDateTime($startDate, intval($startHour), intval($startMin));
         $endDate       = parent::getDateTime($endDate, intval($endHour), intval($endMin));
-        
+
+        $startDate->modify('midnight');
+        $endDate->modify('midnight');
+
         $this->startDate = $startDate;
         $this->endDate   = $endDate;
         
