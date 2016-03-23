@@ -1207,8 +1207,6 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                     $objEvent->startDate->format('i'),
                     $objEvent->startDate->format('s')
                 );
-                $compareDate = clone $objCloneEvent->startDate;
-                $compareDate->setTime(0, 0, 0);
 
                 $objCloneEvent->endDate->modify($modifyString);
                 $objCloneEvent->endDate->setTime(
@@ -1237,113 +1235,54 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 if ($objEvent->seriesData['seriesPatternWeek'] > 1 && ($oldWeekNum < $newWeekNum)) {
                     $objCloneEvent->startDate->modify('+'. ($objEvent->seriesData['seriesPatternWeek'] - 1) .' weeks');
                 }
-                $addDays = $objCloneEvent->startDate->diff($objEvent->startDate)->d;
+                $addDays = $objCloneEvent->startDate->diff($objEvent->startDate)->days;
 
-                $compareDate = clone $objCloneEvent->startDate;
-                $compareDate->setTime(0, 0, 0);
                 $objCloneEvent->endDate->modify('+'. $addDays .' days');
             break;
             case 3:
                 //monthly
                 if ($objCloneEvent->seriesData['seriesPatternType'] == 1) {
 
-                    $day        = $objEvent->startDate->format('d');
-                    $monthDays  = $objEvent->startDate->format('t');
-                    $addDays    = $monthDays - $day + $objEvent->seriesData['seriesPatternDay'];
-                    $addMonths  = $objEvent->seriesData['seriesPatternMonth'];
+                    $patternDay = intval($objEvent->seriesData['seriesPatternDay']);
+                    $addMonths  = intval($objEvent->seriesData['seriesPatternMonth']);
 
-                    if ($addMonths > 1) {
-                        $tempStartDate = clone $objEvent->startDate;
-                        for ($i = 1; $i < $addMonths; $i++) {
-                            $tempStartDate->modify('+'. 1 .' months');
-                            $addDays += $tempStartDate->format('t');
-                        }
+                    $objCloneEvent->startDate->modify('+'. $addMonths .' months');
+                    if ($objCloneEvent->startDate->format('t') >= $patternDay) {
+                        $objCloneEvent->startDate->setDate(
+                            $objCloneEvent->startDate->format('Y'),
+                            $objCloneEvent->startDate->format('m'),
+                            $patternDay
+                        );
                     }
-
-                    $objCloneEvent->startDate->modify('+'. ($day + $addDays) .' days');
-                    $compareDate = clone $objCloneEvent->startDate;
-                    $compareDate->setTime(0, 0, 0);
-
-                    $objCloneEvent->endDate->modify('+'. ($day + $addDays) .' days');
                 } else {
-                    $hour       = date("H", $objEvent->startDate);
-                    $minutes    = date("i", $objEvent->startDate);
-                    $seconds    = date("s", $objEvent->startDate);
-                    $day        = date("d", $objEvent->startDate);
-                    $month      = date("m", $objEvent->startDate);
-                    $year       = date("Y", $objEvent->startDate);
+                    $weekdays         = array('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');
+                    $weekDayCountType = array(1 => 'first', 2 => 'second', 3 => 'third', 4 => 'fourth', 5 => 'last');
 
                     $weekdayPattern = $objEvent->seriesData['seriesPatternWeekday'];
-                    $countPattern   = $objEvent->seriesData['seriesPatternCount'];
-                    $monthPattern   = $objEvent->seriesData['seriesPatternMonth'];
-                    $nextMonth      = $month + $monthPattern;
+                    $countPattern   = intval($objEvent->seriesData['seriesPatternCount']);
+                    $addMonths      = intval($objEvent->seriesData['seriesPatternMonth']);
 
-                    $match  = false;
-                    $i      = 0;
-                    
-                    while (!$match) {
-                        if (substr($weekdayPattern, $i, 1) == 1) {
-                            $weekday = $i + 1;
-                            $match = true;
-                        } else {
-                            $i++;
-                        }
+                    $objCloneEvent->startDate->modify('+'. $addMonths .' months');
+
+                    $weekDay = null;
+                    if (($pos = strpos($weekdayPattern, '1', $oldWeekday)) !== false) {
+                        $weekDay = $pos;
                     }
-
-                    if ($weekday > 6) {
-                        $weekday = 0;
+                    if ($weekDay !== null && $weekDayCountType[$countPattern]) {
+                        $objCloneEvent->startDate->modify(
+                            $weekDayCountType[$countPattern] .' '. $weekdays[$weekDay] .' of this month'
+                        );
                     }
-
-                    $tempStartDate = clone $objEvent->startDate;
-                    if($countPattern < 5) {
-                        $match  = false;
-                        $d      = 1;
-
-                        while (!$match) {
-                            $tempStartDate->modify('+'. intval($monthPattern) . ' months');
-                            $tempStartDate->setDate($tempStartDate->format('Y'), $tempStartDate->format('m'), $d);
-                            $checkDay = $tempStartDate->format("w");
-                            
-                            if ($checkDay == $weekday) {
-                                $match = true;
-                            } else {
-                                $d++;
-                            }
-                        }
-                        $countPattern = ($countPattern > 1) ? 7 * ($countPattern - 1) : 0;
-                    } else {
-                        $tempStartDate->modify('+'. intval($monthPattern) . ' months');
-                        $match          = false;
-                        $d              = $tempStartDate->format('t');
-                        $countPattern   = 0;
-
-                        while (!$match) {
-                            $tempStartDate->setDate($tempStartDate->format('Y'), $tempStartDate->format('m'), $d);
-                            $checkDay = $tempStartDate->format("w");
-
-                            if ($checkDay == $weekday) {
-                                $match = true;
-                            } else {
-                                $d--;
-                            }
-                        }
-                    }
-
-                    $addMonth = $nextMonth - $month;
-                    $newDay   = $d + $countPattern;
-
-                    $objCloneEvent->startDate->setDate($objCloneEvent->startDate->format('Y'), $tempStartDate->format('m')+$addMonth, $newDay);
-                    $compareDate = clone $objCloneEvent->startDate;
-                    $compareDate->setTime(0, 0, 0);
-
-                    $dayStart = $objEvent->startDate->getTimestamp();
-                    $dayEnd   = $objEvent->endDate->getTimestamp();
-                    $dayDiff  = date("d", $dayEnd - $dayStart) - 1;
-
-                    $objCloneEvent->endDate->setDate($objCloneEvent->endDate->format('Y'), $objCloneEvent->endDate->format('m') + $addMonth, $newDay + $dayDiff);
                 }
+                $addDays = $objCloneEvent->startDate->diff($objEvent->startDate)->days;
+                $objCloneEvent->endDate->modify('+'. $addDays .' days');
             break;
         }
+
+        // used to check the exception dates,
+        // exception dates are set as midnigt of a day
+        $compareDate = clone $objCloneEvent->startDate;
+        $compareDate->setTime('midnight');
 
         $isAllowedEvent = true;
         switch($objCloneEvent->seriesData['seriesPatternDouranceType']) {
