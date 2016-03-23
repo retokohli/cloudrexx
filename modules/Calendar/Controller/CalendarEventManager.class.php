@@ -1209,9 +1209,10 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
             break;
             case 2:
                 //weekly
-                $weekdays = array('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');
-                $oldWeekday         = $objEvent->startDate->format('w');
-                $weekdayPattern     = $objEvent->seriesData['seriesPatternWeekday'];
+                $weekdays       = array('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');
+                $oldWeekday     = $objCloneEvent->startDate->format('w');
+                $oldWeekNum     = $objCloneEvent->startDate->format('W');
+                $weekdayPattern = $objCloneEvent->seriesData['seriesPatternWeekday'];
 
                 $nxtWeekDay = null;
                 if (($pos = strpos($weekdayPattern, '1', $oldWeekday)) !== false) {
@@ -1219,9 +1220,12 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                 } elseif (($pos = strpos($weekdayPattern, '1', 0)) !== false) {
                     $nxtWeekDay = $pos;
                 }
-
                 if ($nxtWeekDay !== null) {
                     $objCloneEvent->startDate->modify('next '. $weekdays[$nxtWeekDay]);
+                }
+                $newWeekNum = $objCloneEvent->startDate->format('W');
+                if ($objEvent->seriesData['seriesPatternWeek'] > 1 && ($oldWeekNum < $newWeekNum)) {
+                    $objCloneEvent->startDate->modify('+'. ($objEvent->seriesData['seriesPatternWeek'] - 1) .' weeks');
                 }
                 $addDays = $objCloneEvent->startDate->diff($objEvent->startDate)->d;
 
