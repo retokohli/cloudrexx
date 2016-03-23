@@ -162,7 +162,7 @@ class Calendar extends CalendarLibrary
         global $_ARRAYLANG, $objTemplate;
 
         parent::__construct('.');
-        parent::getSettings();
+        $this->getSettings();
         
         $this->pageContent = $pageContent;
     }
@@ -206,15 +206,15 @@ class Calendar extends CalendarLibrary
                 self::showCategoryView();
                 break;
             case 'add':                
-                parent::checkAccess('add_event');
+                $this->checkAccess('add_event');
                 self::modifyEvent();
                 break;
             case 'edit':
-                parent::checkAccess('edit_event');
+                $this->checkAccess('edit_event');
                 self::modifyEvent(intval($id));
                 break;
             case 'my_events':
-                parent::checkAccess('my_events');
+                $this->checkAccess('my_events');
                 self::myEvents();
                 break;
             case 'success':
@@ -246,7 +246,7 @@ class Calendar extends CalendarLibrary
         
         // get startdate
         if (!empty($from)) {
-            $this->startDate = parent::getDateTime($from);
+            $this->startDate = $this->getDateTime($from);
         } else if ($cmd == 'archive') {
             $this->startDate = null;
             $this->sortDirection = 'DESC';
@@ -263,7 +263,7 @@ class Calendar extends CalendarLibrary
 
         // get enddate
         if (!empty($till)) {
-            $this->endDate = parent::getDateTime($till);
+            $this->endDate = $this->getDateTime($till);
         } else if ($cmd == 'archive') {
             $this->endDate = new \DateTime();
         } else {
@@ -370,9 +370,9 @@ class Calendar extends CalendarLibrary
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
        
-        parent::getSettings();
+        $this->getSettings();
         
-        $dateFormat = parent::getDateFormat(1);
+        $dateFormat = $this->getDateFormat(1);
         
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
@@ -474,8 +474,8 @@ EOF;
         
         \JS::registerJS('modules/Calendar/View/Script/Frontend.js');
          
-        parent::getFrontendLanguages();
-        parent::getSettings();
+        $this->getFrontendLanguages();
+        $this->getSettings();
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
         $showFrom = true;
@@ -506,7 +506,7 @@ EOF;
             $objEvent->getData();
         }
 
-        $dateFormat = parent::getDateFormat(1);
+        $dateFormat = $this->getDateFormat(1);
         
         $locationType = $this->arrSettings['placeData'] == 3 ? ($eventId != 0 ? $objEvent->locationType : 1) : $this->arrSettings['placeData'];
         $hostType     = $this->arrSettings['placeDataHost'] == 3 ? ($eventId != 0 ? $objEvent->hostType : 1) : $this->arrSettings['placeDataHost'];
@@ -907,7 +907,7 @@ UPLOADER;
                             /* if($_POST["paymentMethod"] == 2) {
                                 $objRegistration->get($objRegistration->id);
                                 $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($objRegistration->eventId);                                
-                                parent::getSettings();
+                                $this->getSettings();
                                 $amount  = (int) $objEvent->price * 100;
                                 $status .= \Cx\Modules\Calendar\Controller\CalendarPayment::_yellowpay(array("orderID" => $objRegistration->id, "amount" => $amount, "currency" => $this->arrSettings["paymentCurrency"], "language" => "DE"));
                             } */
@@ -1012,7 +1012,7 @@ UPLOADER;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         if($_REQUEST["handler"] == "yellowpay") {
             $orderId = \Yellowpay::getOrderId();
-            parent::getSettings();
+            $this->getSettings();
             if (\Yellowpay::checkin($this->arrSettings["paymentYellowpayShaOut"])) {
                 switch(abs($_REQUEST["result"])) {
                     case 2:

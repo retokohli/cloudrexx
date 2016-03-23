@@ -43,7 +43,7 @@ namespace Cx\Modules\Calendar\Controller;
  * @package     cloudrexx
  * @subpackage  module_calendar
  */
-class CalendarFeed extends \Cx\Modules\Calendar\Controller\CalendarLibrary {
+class CalendarFeed extends CalendarLibrary {
     /**
      * Object Event manager
      * 
@@ -75,8 +75,8 @@ class CalendarFeed extends \Cx\Modules\Calendar\Controller\CalendarLibrary {
     function creatFeed(){
         global $_CONFIG, $objDatabase;
         
-        parent::getFrontendLanguages();
-        parent::getSettings();
+        $this->getFrontendLanguages();
+        $this->getSettings();
         
         $this->objEventManager->getEventlist();
         

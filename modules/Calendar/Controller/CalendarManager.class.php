@@ -45,7 +45,7 @@ namespace Cx\Modules\Calendar\Controller;
  * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
-class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
+class CalendarManager extends CalendarLibrary
 {
     /**
      * Page title
@@ -145,7 +145,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $this->_objTpl->loadTemplateFile('module_calendar_overview.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW'];
         
-        parent::getSettings();
+        $this->getSettings();
         
         if(isset($_GET['switch_status'])) {
             \Permission::checkAccess(180, 'static');  
@@ -358,8 +358,8 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $this->_objTpl->loadTemplateFile('module_calendar_modify_event.html');
         \JS::registerJS("modules/{$this->moduleName}/View/Script/jquery.pagination.js");
         
-        parent::getSettings();
-        parent::getFrontendLanguages();
+        $this->getSettings();
+        $this->getFrontendLanguages();
         if(isset($_POST['submitModifyEvent']) || isset($_POST['save_and_publish'])) {
         	$objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent();
 	        
@@ -573,7 +573,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             
             $this->moduleLangVar.'_EVENT_ID'                                => $eventId,
             $this->moduleLangVar.'_EVENT_DEFAULT_LANG_ID'                   => $_LANGID,
-            $this->moduleLangVar.'_EVENT_DATE_FORMAT'                       => parent::getDateFormat(1),            
+            $this->moduleLangVar.'_EVENT_DATE_FORMAT'                       => $this->getDateFormat(1),            
             $this->moduleLangVar.'_EVENT_CURRENCY'                          => $this->arrSettings['paymentCurrency'],
             $this->moduleLangVar.'_EVENT_CATEGORIES'                        => $objCategoryManager->getCategoryDropdown(intval($objEvent->catId), 2),
             $this->moduleLangVar.'_EVENT_SERIES_PATTERN_MONTHLY_COUNT'      => $count,
@@ -887,7 +887,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         /* } */   
         
         //parse ivited groups   
-        parent::getCommunityGroups();       
+        $this->getCommunityGroups();       
         foreach ($this->arrCommunityGroups as $key => $arrGroup) {
              if(in_array($arrGroup['id'], $objEvent->invitedGroups)) {
                  $selectedGroups .=  '<option value="'.$arrGroup['id'].'">'.htmlentities($arrGroup['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
@@ -1194,8 +1194,8 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             $objCategory = $objCategoryManager->categoryList[$categoryId]; 
         }
         
-        parent::getFrontendLanguages();
-        parent::getSettings();
+        $this->getFrontendLanguages();
+        $this->getSettings();
         
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {
             if($categoryId != 0){
@@ -1350,7 +1350,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 break;
         }
              
-        parent::getFrontendLanguages();   
+        $this->getFrontendLanguages();   
         
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);      
         
@@ -1632,7 +1632,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $objRegistrationManager->getRegistrationList();
         $objRegistrationManager->showRegistrationInputfields($objEvent->registrationForm, $regId, $this->_objTpl);
         
-        parent::getSettings();
+        $this->getSettings();
         if ($this->arrSettings['paymentStatus'] == '1' && ($this->arrSettings['paymentBillStatus'] == '1' || $this->arrSettings['paymentYellowpayStatus'] == '1')) {
             $selectedBill      = $objRegistration->paymentMethod == 1 ? 'selected="selected"' : '';
             $selectedYellowpay = $objRegistration->paymentMethod == 2 ? 'selected="selected"' : '';

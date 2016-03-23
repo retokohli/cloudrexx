@@ -45,7 +45,7 @@ namespace Cx\Modules\Calendar\Controller;
  * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
-class CalendarCategory extends \Cx\Modules\Calendar\Controller\CalendarLibrary
+class CalendarCategory extends CalendarLibrary
 {
     /**
      * category id
@@ -347,7 +347,7 @@ class CalendarCategory extends \Cx\Modules\Calendar\Controller\CalendarLibrary
 
         // get startdate
         if (!empty($_GET['from'])) {
-            $startDate = parent::getDateTime($_GET['from']); 
+            $startDate = $this->getDateTime($_GET['from']); 
         } else if ($_GET['cmd'] == 'archive') {                             
             $startDate = null; 
         } else {
@@ -362,7 +362,7 @@ class CalendarCategory extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         
         // get enddate
         if (!empty($_GET['till'])) {
-            $endDate = parent::getDateTime($_GET['till']); 
+            $endDate = $this->getDateTime($_GET['till']); 
         } else if ($_GET['cmd'] == 'archive') {
             $endDate = new \DateTime();
         } else {
