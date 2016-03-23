@@ -45,7 +45,7 @@ namespace Cx\Modules\Calendar\Controller;
  * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
-class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
+class CalendarEventManager extends CalendarLibrary
 {   
     /**
      * Start date
@@ -241,7 +241,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
     function getEventList() {
         global $objDatabase, $_ARRAYLANG, $_LANGID, $objInit; 
         
-        parent::getSettings();
+        $this->getSettings();
         
         // need for database TIMESTAMP
         $startDate = $this->startDate ? $this->getDbDateTimeFromIntern($this->startDate)->format('Y-m-d H:i:s') : '0000-00-00 00:00:00';
@@ -373,7 +373,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
         global $objDatabase, $objInit, $_LANGID, $_CONFIG;               
         
         if($objInit->mode == 'frontend') {
-            parent::getSettings();
+            $this->getSettings();
             
             $objHostManager = new \Cx\Modules\Calendar\Controller\CalendarHostManager($this->categoryId, true, true);
             $objHostManager->getHostList();  
@@ -414,11 +414,11 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                         
                         $catId = $objHost->catId;
                         $key = $objHost->key;           
-                                                
+
                         $foreignHostData = $objWebserviceClient->verifyHost($myHost,$key); 
                         
                         if($foreignHostData != false) {  
-                            $arrEvents = $objWebserviceClient->getEventList($this->startDate, $this->endDate, $this->needAuth, $this->searchTerm, $_LANGID, $foreignHostData['id'], $id, $this->arrSettings['showEventsOnlyInActiveLanguage']); 
+                            $arrEvents = $objWebserviceClient->getEventList($this->startDate->getTimestamp(), $this->endDate->getTimestamp(), $this->needAuth, $this->searchTerm, $_LANGID, $foreignHostData['id'], $id, $this->arrSettings['showEventsOnlyInActiveLanguage']); 
 
                             if(!empty($arrEvents[0])) {
                                 foreach ($arrEvents as $key => $objExternalEvent) {
@@ -432,6 +432,8 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
                                     $objExternalEvent->showStartTimeDetail = intval($this->arrSettings['showStartTimeDetail']);
                                     $objExternalEvent->showEndTimeDetail = intval($this->arrSettings['showEndTimeDetail']);
                                     $objExternalEvent->showTimeTypeDetail = intval($this->arrSettings['showTimeTypeDetail']);*/
+                                    $objExternalEvent->startDate = $this->getInternDateTimeFromDb($objExternalEvent->startDate);
+                                    $objExternalEvent->endDate   = $this->getInternDateTimeFromDb($objExternalEvent->endDate);
 
                                     if($objExternalEvent->seriesStatus == 1 && $_GET['cmd'] != 'my_events') {
                                         self::_setNextSeriesElement($objExternalEvent); 
@@ -590,7 +592,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
     function showEvent($objTpl, $eventId, $eventStartDate) {   
         global $objInit, $_ARRAYLANG, $_LANGID, $_CONFIG;
         
-        parent::getSettings();
+        $this->getSettings();
         
         if($objInit->mode == 'frontend' && ($eventId != null && $eventStartDate != null)) {   
             $objEvent = $this->eventList[0];
@@ -866,7 +868,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
     function showEventList($objTpl, $type='') {
         global $objInit, $_ARRAYLANG, $_LANGID;
         
-        parent::getFrontendLanguages();
+        $this->getFrontendLanguages();
         
         //if($objInit->mode == 'backend') {
             $i=0;
@@ -1191,7 +1193,7 @@ class CalendarEventManager extends \Cx\Modules\Calendar\Controller\CalendarLibra
     function _setNextSeriesElement($objEvent) {
         $objCloneEvent = clone $objEvent;
 
-        parent::getSettings();
+        $this->getSettings();
         switch ($objCloneEvent->seriesData['seriesType']){
             case 1:
                 //daily

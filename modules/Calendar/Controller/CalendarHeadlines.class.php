@@ -45,7 +45,7 @@ namespace Cx\Modules\Calendar\Controller;
  * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
-class CalendarHeadlines extends \Cx\Modules\Calendar\Controller\CalendarLibrary
+class CalendarHeadlines extends CalendarLibrary
 {    
     /**
      * Event manager object
@@ -62,7 +62,7 @@ class CalendarHeadlines extends \Cx\Modules\Calendar\Controller\CalendarLibrary
      */
     function __construct($pageContent) {
         parent::__construct('.');   
-        parent::getSettings();   
+        $this->getSettings();   
         
         $this->pageContent = $pageContent;    
         

@@ -43,7 +43,7 @@ namespace Cx\Modules\Calendar\Controller;
  * @package     cloudrexx
  * @subpackage  module_calendar
  */
-class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary {
+class CalendarMailManager extends CalendarLibrary {
     /**
      * Mail list array
      * 
@@ -77,7 +77,7 @@ class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
      */
     function __construct()
     {
-        parent::getFrontendLanguages();
+        $this->getFrontendLanguages();
     }
     
     /**
@@ -262,8 +262,8 @@ class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
             $endDate    = $objEvent->endDate;
 
             $eventTitle = $objEvent->title;
-            $eventStart = $objEvent->all_day ? $this->format2userDate($startDate) : $this->formatDateTime2user($startDate, parent::getDateFormat() . ' (H:i:s)');
-            $eventEnd   = $objEvent->all_day ? $this->format2userDate($endDate) : $this->formatDateTime2user($endDate, parent::getDateFormat() . ' (H:i:s)');
+            $eventStart = $objEvent->all_day ? $this->format2userDate($startDate) : $this->formatDateTime2user($startDate, $this->getDateFormat() . ' (H:i:s)');
+            $eventEnd   = $objEvent->all_day ? $this->format2userDate($endDate) : $this->formatDateTime2user($endDate, $this->getDateFormat() . ' (H:i:s)');
 
             $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
             
