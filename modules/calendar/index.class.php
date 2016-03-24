@@ -1132,7 +1132,7 @@ JAVASCRIPT;
     {
         global $_ARRAYLANG;
 
-        $objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,0,'n',$this->sortDirection,true,$this->author);
+        $objEventManager = new CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,0,'n',$this->sortDirection,true,$this->author);
         $objEventManager->getEventList();  
         $this->_objTpl->setTemplate($this->pageContent);
         if ($_REQUEST['cmd'] == 'boxes') {
