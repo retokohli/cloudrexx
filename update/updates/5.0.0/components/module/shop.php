@@ -1848,7 +1848,7 @@ function _shopInstall()
                     ('Shop','paymill_live_public_key','config','text','','',0),
                     ('Shop','paymill_test_private_key','config','text','','',2),
                     ('Shop','paymill_test_public_key','config','text','','',16),
-                    ('Shop','paymill_use_test_account','config','text','0','',15)
+                    ('Shop','paymill_use_test_account','config','text','0','',15),
                     ('Shop','orderitems_amount_min','config','text','0','',0)
             ON DUPLICATE KEY UPDATE `section` = `section`
         ");
