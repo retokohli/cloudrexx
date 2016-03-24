@@ -77,8 +77,11 @@ class CalendarHeadlines extends CalendarLibrary
     function loadEventManager()
     {
         if($this->arrSettings['headlinesStatus'] == 1 && $this->_objTpl->blockExists('calendar_headlines_row')) {                        
-            $startDate = mktime(0, 0, 0, date("m", time()), date("d", time()), date("Y", time()));                                   
-            $endDate = mktime(23, 59, 59, date("m", time()), date("d", time()), date("Y", time())+10);       
+            $startDate = new \DateTime();
+            $startDate->setTime(0, 0, 0);
+            $endDate = new \DateTime();
+            $endDate->setTime(23, 59, 59);
+            $endDate->modify('+10 years');    
             $categoryId = intval($this->arrSettings['headlinesCategory']) != 0 ? intval($this->arrSettings['headlinesCategory']) : null;        
             
             $startPos = 0;   
