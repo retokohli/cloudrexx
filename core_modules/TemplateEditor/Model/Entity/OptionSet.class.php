@@ -159,7 +159,19 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     public function renderOptions($template)
     {
         foreach ($this->options as $option) {
-            $option->renderOptionField($template);
+            $subTemplate = $option->renderOptionField();
+            $optionName = str_replace( // replace 'Option' so we get the net name
+                'Option',
+                '',
+                end( // last value of the array is the class name
+                    explode('\\', $option->getType()) // get array for class namespace
+                )
+            );
+            $template->setVariable(array(
+                'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
+                'TEMPLATEEDITOR_OPTION_TYPE' => strtolower($optionName),
+            ));
+            $template->parse('option');
         }
     }
 
@@ -347,6 +359,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                     $option['name'],
                     $option['translation'],
                     $option['specific'],
+                    $option['type'],
                     $option['series']
                 );
             }

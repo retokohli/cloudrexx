@@ -54,11 +54,17 @@ class SeriesOption extends Option
      * @param String $name Name of the option
      * @param array  $translations Array with translations for option.
      * @param array  $data
+     * @param String $type          the type of the option
      * @param bool   $series        handel the elements as series if true
      */
-    public function __construct($name, $translations, $data, $series = false)
-    {
-        parent::__construct($name, $translations, $data, $series);
+    public function __construct(
+        $name,
+        $translations,
+        $data,
+        $type,
+        $series = false
+    ) {
+        parent::__construct($name, $translations, $data, $type, $series);
         foreach ($data['elements'] as $key => $elm) {
             if (!empty($elm)) {
                 $this->elements[$key] = $elm;
@@ -68,17 +74,25 @@ class SeriesOption extends Option
 
     /**
      * Render the option field in the backend.
-     *
-     * @param Sigma $template
      */
-    public function renderOptionField($template)
+    public function renderOptionField()
     {
         global $_ARRAYLANG;
 
         $images = array();
+        $entryHtml = "";
         foreach ($this->elements as $id => $elm) {
-            $images['images'][$id]['TEMPLATEEDITOR_OPTION_VALUE'] = $elm;
-            $images['images'][$id]['TEMPLATEEDITOR_OPTION_ID'] = $id;
+            $optionReflection = new \ReflectionClass($this->type);
+            if ($optionReflection->isSubclassOf('Cx\Core_Modules\TemplateEditor\Model\Entity\Option')
+            ) {
+                $instance = $optionReflection->newInstance(
+                    $this->name.'_seriesId'.$id,
+                    "",
+                    $elm, // $option['specific'],
+                    $this->type
+                );
+                $entryHtml .= $instance->renderOptionField()->get();
+            }
         }
 
         $mediaBrowser   = new MediaBrowser();
@@ -99,15 +113,15 @@ class SeriesOption extends Option
         //Get last key
         end($this->elements);
         $key = key($this->elements);
-        parent::renderOptionField(
-            $template,
+        return parent::renderOptionField(
             array(
                 'MEDIABROWSER_BUTTON' =>
                     $mediaBrowser->getXHtml(
-                        $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PICTURE']
+                        $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_ELEMENT']
                     ),
                 'MEDIABROWSER_ID'       => $mediaBrowserId,
                 'TEMPLATEEDITOR_LASTID' => $key != null ? $key : '0',
+                'TEMPLATEEDITOR_SERIE_CONTENT' => $entryHtml,
             ),
             $_ARRAYLANG,
             $images
@@ -124,11 +138,13 @@ class SeriesOption extends Option
         $blockName = strtolower('TEMPLATE_EDITOR_' . $this->name);
         if ($template->blockExists($blockName)) {
             foreach ($this->elements as $id => $elm) {
-                $template->setVariable(
-                    strtoupper('TEMPLATE_EDITOR_' . $this->name),
-                    contrexx_raw2xhtml($elm)
-                );
-                $template->parse($blockName);
+                foreach($elm as $val){
+                    $template->setVariable(
+                        strtoupper('TEMPLATE_EDITOR_' . $this->name),
+                        contrexx_raw2xhtml($val)
+                    );
+                    $template->parse($blockName);
+                }
             }
         }
     }
@@ -153,8 +169,8 @@ class SeriesOption extends Option
         if (empty($data['id']) && $data['id'] != 0) {
             throw new OptionValueNotValidException("Needs a id to work");
         }
-        if (empty($data['elm'])) {
-            if (isset($data['action']) && $data['action'] == 'remove') {
+        if (empty($data['value']['elm'])) {
+            if (isset($data['value']['action']) && $data['value']['action'] == 'remove') {
                 unset($this->elements[intval($data['id'])]);
             } else {
                 throw new OptionValueNotValidException(
@@ -163,27 +179,43 @@ class SeriesOption extends Option
                     )
                 );
             }
-        }
-        $elm = parse_url($data['elm']);
-        if (!isset($elm['host'])) {
-            if (!file_exists(
-                $this->cx->getWebsitePath() . $elm['path']
-            )
-            ) {
+        } else {
+            /*$newValue = parse_url($data['value']);
+            if (!isset($newValue['host'])) {
                 if (!file_exists(
-                    $this->cx->getCodeBasePath() . $elm['path']
+                    $this->cx->getWebsitePath() . $newValue['path']
                 )
                 ) {
-                    throw new OptionValueNotValidException(
-                        sprintf(
-                            $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'],
-                            $elm['path']
-                        )
-                    );
+                    if (!file_exists(
+                        $this->cx->getCodeBasePath() . $newValue['path']
+                    )
+                    ) {
+                        throw new OptionValueNotValidException(
+                            sprintf(
+                                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'],
+                                $newValue['path']
+                            )
+                        );
+                    }
                 }
+            }*/
+            // create new instance for this single element, so the option rendering
+            // can be done directly over the type of the field and we do not need to
+            // implement rendering for all types in the series itself
+            $optionReflection = new \ReflectionClass($this->type);
+            if ($optionReflection->isSubclassOf('Cx\Core_Modules\TemplateEditor\Model\Entity\Option')
+            ) {
+                $seriesElement
+                    = $optionReflection->newInstance(
+                    '',
+                    array(),
+                    array(),
+                    $this->type
+                );
             }
+            $this->elements[$data['id']] =
+                $seriesElement->handleChange($data['value']);
         }
-        $this->elements[$data['id']] = $data['elm'];
         return array('elements' => $this->elements);
     }
 

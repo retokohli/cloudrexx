@@ -1,26 +1,20 @@
 <label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
-<div class="serie-list">
-<!-- BEGIN serie -->
-<div class="element">
-    <img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"
-         id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}_img"/>
-    <div class="actions">
-        <button class="remove-element button" data-id="{TEMPLATEEDITOR_OPTION_ID}">
-            {TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_PICTURE}
-        </button>
-        <button class="change-element button" data-id="{TEMPLATEEDITOR_OPTION_ID}">
-            {TXT_CORE_MODULE_TEMPLATEEDITOR_CHANGE_PICTURE}
-        </button>
+<div class="series-list">
+    <div class="elements">
+        {TEMPLATEEDITOR_SERIE_CONTENT}
     </div>
-    <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}" class="{TEMPLATEEDITOR_OPTION_NAME}" data-id="{TEMPLATEEDITOR_OPTION_ID}"
-           value="{TEMPLATEEDITOR_OPTION_VALUE}"/>
-    <div class="error-box"></div>
-</div>
-<!-- END serie -->
 </div>
 <div class="clearfix"></div>
 {MEDIABROWSER_BUTTON}
 <script>
+    jQuery('.elements .element').each(function(){
+        if(!jQuery(this).children().last().hasClass('remove-element')){
+            jQuery(this).append( "<button class='remove-element button'>{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_ELEMENT}</button>" );
+        }
+    });
+
+    jQuery('.remove-element').click(removeElement);
+    /*
     var template = '<div class="element"><img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}_img"/> <div class="actions"> <button class="remove-element button" data-id="{TEMPLATEEDITOR_OPTION_ID}"> Entfernen </button> <button class="change-element button" data-id="{TEMPLATEEDITOR_OPTION_ID}">Ändern </button> </div> <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}" class="{TEMPLATEEDITOR_OPTION_NAME}" data-id="{TEMPLATEEDITOR_OPTION_ID}"value="{TEMPLATEEDITOR_OPTION_VALUE}"/> <div class="error-box"></div></div>';
 
     var lastId = {TEMPLATEEDITOR_LASTID};
@@ -88,12 +82,12 @@
             newElement.find('.remove-element').data('id', lastId).click(removeElement);
             newElement.find('.change-element').data('id', lastId).click(updateElement);
             newElement.find('input').val(callback.data[0].datainfo.filepath).data('id', lastId).attr('id', '{TEMPLATEEDITOR_OPTION_NAME}_'+lastId);
-            jQuery('.serie-list').append(newElement);
+            jQuery('.series-list').append(newElement);
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId ).change(changeElement);
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId ).trigger('change');
             jQuery('.options').animate({ scrollTop: (jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId).offset().top)}, 2000);
         }
     }
 
-    jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').change(changeElement);
+    jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').change(changeElement);*/
 </script>

@@ -1,20 +1,31 @@
-<label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
-<textarea rows="3" id="{TEMPLATEEDITOR_OPTION_NAME}" />{TEMPLATEEDITOR_OPTION_VALUE}</textarea>
-<div class="error-box">
-
+<div class="element">
+    <label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
+    <textarea rows="3" id="{TEMPLATEEDITOR_OPTION_NAME}" />{TEMPLATEEDITOR_OPTION_VALUE}</textarea>
+    <div class="error-box"></div>
 </div>
 <script>
     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').change(function () {
         jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saving');
-        updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val(), function(reponse){
-            if (reponse.status == 'error'){
+        updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val(), function(response){
+            if (response.status == 'error'){
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').text(reponse.message).slideDown();
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').text(response.message).slideDown();
             }
             else {
+                var splitedId = '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_seriesId');
+                if (splitedId[1]
+                        !== undefined) {
+                    var textvalue = seriesCheck(
+                            'textvalue',
+                            splitedId[1],
+                            response.data
+                    );
+                } else {
+                    var textvalue = response.data.textvalue;
+                }
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideUp();
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('error');
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(reponse.data.textvalue);
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(textvalue);
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saved');
                 setTimeout(function(){

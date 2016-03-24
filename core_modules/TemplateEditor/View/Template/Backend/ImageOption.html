@@ -1,15 +1,22 @@
-<label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
-<img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"/>
-<input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}" value="{TEMPLATEEDITOR_OPTION_VALUE}"/>
-<div class="error-box">
-
+<div class="element">
+    <label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
+        <img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"
+             id="{TEMPLATEEDITOR_OPTION_NAME}_img" />
+        <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}"
+               value="{TEMPLATEEDITOR_OPTION_VALUE}"
+               class="{TEMPLATEEDITOR_OPTION_NAME}"
+               data-id="{TEMPLATEEDITOR_OPTION_ID}"
+        />
+        <div class="error-box">
+    </div>
+    {MEDIABROWSER_BUTTON}
 </div>
-{MEDIABROWSER_BUTTON}
+
 <script>
     function callback_{TEMPLATEEDITOR_OPTION_NAME}(callback){
         if (callback.type == 'file'){
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(callback.data[0].datainfo.filepath);
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',callback.data[0].datainfo.filepath);
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_img').attr('src',callback.data[0].datainfo.filepath);
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').trigger('change');
         }
     }
@@ -23,9 +30,20 @@
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').text(response.message).slideDown();
             }
             else {
+                var splitedText = '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_seriesId');
+                if (splitedText[1]
+                        !== undefined) {
+                    var data = seriesCheck(
+                            'url',
+                            splitedText[1],
+                            response.data
+                    );
+                } else {
+                    var data = response.data.url;
+                }
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',response.data.url);
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(response.data.url);
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',data);
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(data);
                 parent.removeClass('saving');
                 parent.addClass('saved');
                 setTimeout(function(){

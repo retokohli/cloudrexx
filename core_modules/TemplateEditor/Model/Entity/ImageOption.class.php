@@ -53,20 +53,24 @@ class ImageOption extends Option
      * @param String $name Name of the option
      * @param array  $translations Array with translations for option.
      * @param array  $data
-     * @param bool   $series        handel the elements as series if true
+     * @param String $type         the type of the option
+     * @param bool   $series       handel the elements as series if true
      */
-    public function __construct($name, $translations, $data, $series = false)
-    {
-        parent::__construct($name, $translations, $data, $series);
+    public function __construct(
+        $name,
+        $translations,
+        $data,
+        $type,
+        $series = false
+    ) {
+        parent::__construct($name, $translations, $data, $type, $series);
         $this->url = $data['url'];
     }
 
     /**
      * Render the option field in the backend.
-     *
-     * @param Sigma $template
      */
-    public function renderOptionField($template)
+    public function renderOptionField()
     {
         global $_ARRAYLANG;
         $mediaBrowser = new MediaBrowser();
@@ -77,13 +81,12 @@ class ImageOption extends Option
             )
         );
         $mediaBrowser->setCallback('callback_' . $this->name);
-        parent::renderOptionField(
-            $template,
+        return parent::renderOptionField(
             array(
                 'TEMPLATEEDITOR_OPTION_VALUE' => $this->url,
                 'MEDIABROWSER_BUTTON'         =>
                     $mediaBrowser->getXHtml(
-                        $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CHOOSE_PICTURE']
+                        $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CHANGE_PICTURE']
                     ),
             ),
             $_ARRAYLANG

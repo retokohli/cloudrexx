@@ -259,3 +259,27 @@ jQuery(function(){
     });
 
 });
+
+function seriesCheck (param, id, data) {
+    if (data['elements'] !== undefined) {
+        return data['elements'][id][param];
+    } else {
+        console.error('Elements not found in return value');
+    }
+}
+
+var removeElement = function () {
+    var id = jQuery(this).parent().children('input').attr('id');
+    var parent = jQuery(this).parent();
+    parent.addClass('saving');
+    updateOption(id, {elm: '', action:'remove'}, function () {
+        parent.removeClass('saving');
+        parent.addClass('saved');
+        setTimeout(function () {
+            parent.removeClass('saved');
+        }, 2000);
+        parent.slideUp(function(){
+            parent.remove();
+        });
+    })
+};
