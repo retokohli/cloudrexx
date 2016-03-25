@@ -68,9 +68,9 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
             $this->strPlaceholder = $objLevels->listLevels($this->_objTpl, 6, $intLevelId);
         } else {
             $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : null;
-            $objCategories = new MediaDirectoryCategory($intCategoryId, null, $this->moduleName);
+            $objCategories = new MediaDirectoryCategory($this->moduleName);
 
-            $this->strPlaceholder = $objCategories->listCategories($this->_objTpl, 6);
+            $this->strPlaceholder = $objCategories->listCategories($this->_objTpl, 6, $intCategoryId);
         }
 
         return '<ul id="' . $this->moduleNameLC . 'NavigationPlacholder">' . $this->strPlaceholder . '</ul>';
@@ -100,4 +100,3 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
         return '<ul id="'.$this->moduleNameLC.'LatestPlacholder">'.$this->strPlaceholder.'</ul>'; 
     }
 }
-?>

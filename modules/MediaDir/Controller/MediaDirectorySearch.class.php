@@ -207,7 +207,7 @@ EOF;
         $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : $intCategoryId;
 
         if ($bolShowCategorySelector) {
-            $objCategories = new MediaDirectoryCategory($intCategoryId, null, $this->moduleName);
+            $objCategories = new MediaDirectoryCategory($this->moduleName);
             $strCategoryDropdown = $objCategories->listCategories($this->_objTpl, 3);
             $strCategoryName = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY'];
 

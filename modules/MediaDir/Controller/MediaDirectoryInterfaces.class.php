@@ -140,7 +140,7 @@ class MediaDirectoryInterfaces extends MediaDirectoryLibrary
             $objTpl->hideBlock($this->moduleNameLC.'InterfacesExportSelectLevels'); 
         }
         
-        $objCategories = new MediaDirectoryCategory(null, null, $this->moduleName);
+        $objCategories = new MediaDirectoryCategory($this->moduleName);
         $arrCategories = $objCategories->listCategories($objTpl, 4);
         
         $objForms = new MediaDirectoryForm(null, $this->moduleName);

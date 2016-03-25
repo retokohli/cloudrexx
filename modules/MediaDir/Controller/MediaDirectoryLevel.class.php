@@ -48,6 +48,12 @@ use Cx\Modules\MediaDir\Model\Entity\Level as Level;
  */
 class MediaDirectoryLevel extends MediaDirectoryLibrary
 {
+    /**
+     * Count number of entries for each levels
+     *
+     * @var boolean
+     */
+    protected $countEntries = false;
 
     /**
      * @var Cx\Modules\MediaDir\Model\Repository\LevelRepository
@@ -153,6 +159,18 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
         }
     }
 
+    /**
+     * List the levels by the view type
+     *
+     * @param type $objTpl
+     * @param type $intView
+     * @param type $levelId
+     * @param type $parentLevelId
+     * @param type $intEntryId
+     * @param type $arrExistingBlocks
+     *
+     * @return type
+     */
     function listLevels(
         $objTpl,
         $intView,

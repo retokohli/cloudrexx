@@ -49,20 +49,6 @@ use Cx\Modules\MediaDir\Model\Entity\Category as Category;
 class MediaDirectoryCategory extends MediaDirectoryLibrary
 {
     /**
-     * Category id
-     *
-     * @var integer
-     */
-    private $intCategoryId;
-
-    /**
-     * Parent category id
-     *
-     * @var integer
-     */
-    private $intParentId;
-
-    /**
      * Count number of entries for each categories
      *
      * @var boolean
@@ -79,11 +65,8 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
     /**
      * Constructor
      */
-    function __construct($intCategoryId = null, $intParentId = null, $name = '')
+    function __construct($name = '')
     {
-        $this->intCategoryId  = contrexx_input2int($intCategoryId);
-        $this->intParentId    = contrexx_input2int($intParentId);
-
         parent::__construct('.', $name);
         parent::getSettings();
         parent::getFrontendLanguages();
@@ -92,16 +75,6 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
             $this->countEntries = true;
         }
         $this->categoryRepository = $this->em->getRepository('Cx\Modules\MediaDir\Model\Entity\Category');
-    }
-
-    /**
-     * Setter for category id
-     *
-     * @param integer $categoryId
-     */
-    public function setCategoryId($categoryId)
-    {
-        $this->intCategoryId = $categoryId;
     }
 
     /**
@@ -252,21 +225,29 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
     /**
      * List the categories by the view type
      *
-     * @param mixed   $objTpl             Instance of template or null
-     * @param integer $intView            View type
-     * @param integer $intEntryId         Entry id
-     * @param array   $arrExistingBlocks  Existing blocks to parse
+     * @param mixed     $objTpl             Instance of template or null
+     * @param integer   $intView            View type
+     * @param integer   $categoryId         Category id
+     * @param integer   $parentCategoryId   Parent category id
+     * @param integer   $intEntryId         Entry id
+     * @param array     $arrExistingBlocks  Existing blocks to parse
      *
      * @return string
      */
-    function listCategories($objTpl, $intView, $intEntryId = null, $arrExistingBlocks = null)
-    {
+    function listCategories(
+        $objTpl,
+        $intView,
+        $categoryId = null,
+        $parentCategoryId = null,
+        $intEntryId = null,
+        $arrExistingBlocks = null
+    ) {
 
         switch ($intView) {
             case 1:
                 //Backend View
                 $expandCategory      = isset($_GET['exp_cat']) ? $_GET['exp_cat'] : '';
-                $expandedCategoryIds = $this->getExpandedCategories($expandCategory);
+                $expandedCategoryIds = $this->getExpandedCategoryIds($expandCategory);
 
                 $this->parseCategoryTree(
                     $objTpl,
@@ -289,7 +270,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                     $strFirstIndexHeader = null;
                 }
 
-                $category = $this->categoryRepository->findOneById($this->intParentId);
+                $category = $this->categoryRepository->findOneById($parentCategoryId);
                 if (!$category) {
                     $category = $this->categoryRepository->getRoot();
                 }
@@ -333,7 +314,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                                         ? '&amp;cmd='.$_GET['cmd']
                                         : '';
 
-                    $childrenString = $this->createCategorieTree(
+                    $childrenString = $this->createCategoryTree(
                         $subCategory,
                         $strCategoryCmd,
                         $strLevelId
@@ -364,7 +345,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 break;
             case 3:
                 //Category Dropdown Menu
-                return $this->getCategoryDropDown($this->categoryRepository->getRoot());
+                return $this->getCategoryDropDown($this->categoryRepository->getRoot(), $categoryId);
                 break;
             case 4:
                 //Category Selector (modify view)
@@ -378,7 +359,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 break;
             case 5:
                 //Frontend View Detail
-                $category  = $this->categoryRepository->findOneById($this->intCategoryId);
+                $category  = $this->categoryRepository->findOneById($categoryId);
                 if (!$category) {
                     $objTpl->hideBlock($this->moduleNameLC.'CategoryLevelDetail');
                     return;
@@ -415,16 +396,16 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 break;
             case 6:
                 //Frontend Tree Placeholder
-                $expandedCategoryIds = $this->getExpandedCategories($this->intCategoryId);
+                $expandedCategoryIds = $this->getExpandedCategoryIds($categoryId);
                 
-                $category = $this->categoryRepository->findOneById($this->intCategoryId);
+                $category = $this->categoryRepository->findOneById($categoryId);
                 if (!$category) {
                     $category = $this->categoryRepository->getRoot();
                 }
 
                 $tpl = <<<TEMPLATE
     <!-- BEGIN {$this->moduleNameLC}CategoriesList -->
-    <li class="level_{{$this->moduleLangVar}_CATEGORY_LEVEL_ID}">
+    <li class="level_{{$this->moduleLangVar}_CATEGORY_ID}">
         <a href="index.php?section={$this->moduleName}{$strLevelId}&amp;cid={{$this->moduleLangVar}_CATEGORY_ID}" class="{{$this->moduleLangVar}_CATEGORY_ACTIVE_STATUS}">
             {{$this->moduleLangVar}_CATEGORY_NAME}
         </a>
@@ -516,32 +497,51 @@ TEMPLATE;
     /**
      * Get the category dropdown
      * 
-     * @param Category $category
+     * @param Category $category            Parent category instance
+     * @param integer  $selectedCategoryId  Selected category id
      *
      * @return string
      */
-    public function getCategoryDropDown(Category $category)
+    public function getCategoryDropDown(Category $category, $selectedCategoryId = null)
     {
         $strDropdownOptions = '';
         $subCategories      = $this->getSubCategoriesByCategory($category);
         foreach ($subCategories as $subCategory) {
-            $strSelected  = $this->intCategoryId == $subCategory->getId() ? 'selected="selected"' : '';
+            $strSelected  = $selectedCategoryId == $subCategory->getId() ? 'selected="selected"' : '';
             $spacer       = str_repeat('----', $subCategory->getLvl() - 1);
             $spacer      .= $subCategory->getLvl() > 0 ? '&nbsp;' : '';
             $categoryName = $this->getCategoryName($subCategory);
 
             $strDropdownOptions .= '<option value="'. $subCategory->getId() .'" '. $strSelected .' >'. $spacer . contrexx_raw2xhtml($categoryName) .'</option>';
-            $strDropdownOptions .= $this->getCategoryDropDown($subCategory);
+            $strDropdownOptions .= $this->getCategoryDropDown($subCategory, $selectedCategoryId);
         }
         return $strDropdownOptions;
     }
 
     /**
-     * Get all parent categories of given category id
+     * Get expanaged category id's
      *
      * @param integer $categoryId Category id
      *
-     * @return array
+     * @return Array
+     */
+    public function getExpandedCategoryIds($categoryId)
+    {
+        $categories = $this->getExpandedCategories($categoryId);
+        $categoryIds = array();
+        foreach ($categories as $category) {
+            $categoryIds[] = $category->getId();
+        }
+
+        return $categoryIds;
+    }
+
+    /**
+     * Get all expanded categories
+     *
+     * @param type $categoryId
+     *
+     * @return Array
      */
     function getExpandedCategories($categoryId)
     {
@@ -553,13 +553,12 @@ TEMPLATE;
         if (!$category) {
             return array();
         }
-        $parentIds = array($categoryId);
-        while ($category->getParent()) {
-            $parentIds[] = $category->getParent()->getId();
-            $category    = $category->getParent();
+        $categories = array($category);
+        while ($category = $category->getParent()) {
+            $categories[] = $category;
         }
 
-        return $parentIds;
+        return $categories;
     }
 
     /**
@@ -764,7 +763,7 @@ TEMPLATE;
      *
      * @return string
      */
-    public function createCategorieTree(Category $category, $strCategoryCmd, $strLevelId)
+    public function createCategoryTree(Category $category, $strCategoryCmd, $strLevelId)
     {
         $subCategories = $this->getSubCategoriesByCategory($category);
         if (empty($subCategories)) {
@@ -775,7 +774,7 @@ TEMPLATE;
             $categoryName = $this->getCategoryName($subCategory);
 
             $childrenString .= '<li><a href="index.php?section=' . $this->moduleName . $strCategoryCmd . $strLevelId . '&amp;cid=' . $subCategory->getId() . '">' . contrexx_raw2xhtml($categoryName) . '</a>';
-            $childrenString .= $this->createCategorieTree($subCategory, $strCategoryCmd, $strLevelId);
+            $childrenString .= $this->createCategoryTree($subCategory, $strCategoryCmd, $strLevelId);
             $childrenString .= '</li>';
         }
         $childrenString .= '</ul>';

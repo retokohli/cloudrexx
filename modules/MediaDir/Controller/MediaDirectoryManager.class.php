@@ -170,7 +170,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 }
                 break;
             case 'delete_category':
-                $objCategory = new MediaDirectoryCategory(null, null, $this->moduleName);
+                $objCategory = new MediaDirectoryCategory($this->moduleName);
                 $strStatus = $objCategory->deleteCategory(intval($_GET['id']));
 
                 if($strStatus) {
@@ -180,7 +180,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 }
                 break;
             case 'order_category':
-                $objCategory = new MediaDirectoryCategory(null, null, $this->moduleName);
+                $objCategory = new MediaDirectoryCategory($this->moduleName);
                 $strStatus = $objCategory->saveOrder($_POST);
 
                 if($strStatus) {
@@ -195,7 +195,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         parent::getSettings();
 
         //get search dropdowns
-        $objCategories = new MediaDirectoryCategory(null, null, $this->moduleName);
+        $objCategories = new MediaDirectoryCategory($this->moduleName);
         $catDropdown = $objCategories->listCategories(null, 3);
 
         $objLevels = new MediaDirectoryLevel($this->moduleName);
@@ -667,7 +667,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $intCategoryId = $category->getId();
 
         //get category object
-        $objCategories = new MediaDirectoryCategory(null, null, $this->moduleName);
+        $objCategories = new MediaDirectoryCategory($this->moduleName);
 
         //save category data
         if(isset($_POST['submitCategoryModfyForm'])) {
@@ -756,7 +756,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         }
 
         //get category dropdown
-        $catDropdown = $objCategories->listCategories($this->_objTpl, 3);
+        $catDropdown = $objCategories->listCategories($this->_objTpl, 3, ($category->getParent() ? $category->getParent()->getId() : null));
 
         //parse global variables
         $this->_objTpl->setGlobalVariable(array(
@@ -898,6 +898,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         //save level data
         if(isset($_POST['submitLevelModfyForm'])) {
             $status = $objLevels->saveLevel($level, $_POST);
+            $this->em->refresh($level);
 
             if(!empty($_POST['levelId'])) {
                 if($status == true) {
@@ -940,7 +941,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         }
 
         //get level dropdown
-        $levelDropdown = $objLevels->listLevels($this->_objTpl, 3, $levelId);
+        $levelDropdown = $objLevels->listLevels($this->_objTpl, 3, ($level->getParent() ? $level->getParent()->getId() : null));
 
         //parse data variables
         $this->_objTpl->setGlobalVariable(array(
@@ -1103,8 +1104,8 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $intFormId     = $_SESSION[$this->moduleName]['searchFilter']['form_id'];
         $strTerm       = $_SESSION[$this->moduleName]['searchFilter']['term'];
 
-        $objCategories = new MediaDirectoryCategory($intCategoryId, null, $this->moduleName);
-        $catDropdown = $objCategories->listCategories(null, 3);
+        $objCategories = new MediaDirectoryCategory($this->moduleName);
+        $catDropdown = $objCategories->listCategories(null, 3, $intCategoryId);
 
         $objLevels = new MediaDirectoryLevel($this->moduleName);
         $levelDropdown = $objLevels->listLevels(null, 3, $intLevelId);
