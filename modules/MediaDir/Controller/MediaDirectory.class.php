@@ -232,6 +232,13 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : $intCategoryId;
 
+        $level = false;
+        if ($intLevelId) {
+            $level = $this->em
+                        ->getRepository('Cx\Modules\MediaDir\Model\Entity\Level')
+                        ->findOneById($intLevelId);
+        }
+
         // show block {$this->moduleNameLC}Overview
         if (empty($intCategoryId) && empty($intLevelId) && $this->_objTpl->blockExists($this->moduleNameLC.'Overview')) {
             $this->_objTpl->touchBlock($this->moduleNameLC.'Overview');
@@ -251,7 +258,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         //get level / category details
         if($this->_objTpl->blockExists($this->moduleNameLC.'CategoryLevelDetail')){
             if ($intCategoryId == 0 && $intLevelId != 0 && $this->arrSettings['settingsShowLevels'] == 1) {
-                $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
+                $objLevel = new MediaDirectoryLevel($this->moduleName);
                 $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
             }
 
@@ -289,23 +296,18 @@ class MediaDirectory extends MediaDirectoryLibrary
             }
 
             if($this->arrSettings['settingsShowLevels'] == 1 && $intCategoryId == 0 && $bolFormUseLevel) {
-                $objLevels = new MediaDirectoryLevel(null, $intLevelId, 1, $this->moduleName);
+                $objLevels = new MediaDirectoryLevel($this->moduleName);
                 $objCategories = new MediaDirectoryCategory(null, $intCategoryId, $this->moduleName);
-                $objLevels->listLevels($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
+                $objLevels->listLevels($this->_objTpl, 2, null, $intLevelId, null, $arrExistingBlocks);
                 $this->_objTpl->clearVariables();
                 $this->_objTpl->parse($this->moduleNameLC.'CategoriesLevelsList');
             }
 
-            if((((isset($objLevel) && $objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1) || $intLevelId === 0) || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) || ($bolFormUseCategory && !$bolFormUseLevel)) {
+            if((((isset($objLevel) && ($level && $level->getShowCategories())) || $intLevelId === 0) || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) || ($bolFormUseCategory && !$bolFormUseLevel)) {
                 $objCategories = new MediaDirectoryCategory(null, $intCategoryId, $this->moduleName);
                 $objCategories->listCategories($this->_objTpl, 2, null, $arrExistingBlocks);
                 $this->_objTpl->clearVariables();
                 $this->_objTpl->parse($this->moduleNameLC.'CategoriesLevelsList');
-            }
-
-            if(empty($objLevel->arrLevels) && empty($objCategories->arrCategories)) {
-                $this->_objTpl->hideBlock($this->moduleNameLC.'CategoriesLevelsList');
-                $this->_objTpl->clearVariables();
             }
         }
         
@@ -333,7 +335,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             }
 
             //check show entries
-            if((isset($objLevel) && $objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1) || (isset($objCategory) && $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1) || $bolLatest == true || (!$bolFormUseCategory && !$bolFormUseLevel)) {
+            if((isset($objLevel) && ($level && $level->getShowEntries())) || (isset($objCategory) && $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1) || $bolLatest == true || (!$bolFormUseCategory && !$bolFormUseLevel)) {
                 $objEntries = new MediaDirectoryEntry($this->moduleName);
                 
                 $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd, null, null, $intCmdFormId);
@@ -1016,8 +1018,6 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
     }
 
-
-
     function getNavtreeCategories($intCategoryId)
     {
         $objCategory = new MediaDirectoryCategory($intCategoryId, null, $this->moduleName);
@@ -1036,25 +1036,19 @@ class MediaDirectory extends MediaDirectoryLibrary
         }
     }
 
-
-
     function getNavtreeLevels($intLevelId)
     {
-        $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
-        $objLevel->arrLevels[$intLevelId];
+        $strLevelCmd = isset($_GET['cmd'])
+                        ? '&amp;cmd=' . $_GET['cmd']
+                        : '';
 
-        if(isset($_GET['cmd'])) {
-            $strLevelCmd = '&amp;cmd='.$_GET['cmd'];
-        } else {
-            $strLevelCmd = null;
-        }
-        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$objLevel->arrLevels[$intLevelId]['levelId'].'">'.contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]).'</a>';
+        $objLevel = new MediaDirectoryLevel($this->moduleName);
+        $levels   = $objLevel->getExpandedLevels($intLevelId);
 
-        if($objLevel->arrLevels[$intLevelId]['levelParentId'] != 0) {
-            $this->getNavtreeLevels($objLevel->arrLevels[$intLevelId]['levelParentId']);
+        foreach ($levels as $level) {
+            $this->arrNavtree[] = '<a href="?section=' . $this->moduleName . $strLevelCmd . '&amp;lid=' . $level->getId() . '">' . contrexx_raw2xhtml($objLevel->getLevelName($level)) . '</a>';
         }
     }
-
 
     function getPageTitle() {
         return $this->pageTitle;
@@ -1064,4 +1058,3 @@ class MediaDirectory extends MediaDirectoryLibrary
         return $this->metaTitle;
     }
 }
-?>

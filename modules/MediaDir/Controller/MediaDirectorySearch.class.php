@@ -176,7 +176,7 @@ EOF;
 
             $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : $intLevelId;
 
-            $objLevels = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
+            $objLevels = new MediaDirectoryLevel($this->moduleName);
             $strLevelDropdown = $objLevels->listLevels($this->_objTpl, 3, $intLevelId);
             $strLevelName = $_ARRAYLANG['TXT_MEDIADIR_LEVEL'];
             $strInputfieldSearch = $this->moduleNameLC."InputfieldSearch";

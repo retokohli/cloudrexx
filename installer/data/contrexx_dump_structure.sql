@@ -2322,25 +2322,32 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `context_type` enum('none','title','address','zip','city','country') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_mediadir_level_names` (
-  `lang_id` int(1) NOT NULL,
-  `level_id` int(7) NOT NULL,
+CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_levels` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) DEFAULT NULL,
+  `level_order` int(11) NOT NULL,
+  `show_sublevels` tinyint(1) NOT NULL,
+  `show_categories` tinyint(1) NOT NULL,
+  `show_entries` tinyint(1) NOT NULL,
+  `picture` tinytext NOT NULL,
+  `active` tinyint(1) NOT NULL,
+  `lft` int(11) NOT NULL,
+  `rgt` int(11) NOT NULL,
+  `lvl` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_5F1EAE73727ACA70` (`parent_id`),
+  CONSTRAINT `contrexx_module_mediadir_levels_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_module_mediadir_levels` (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_level_names` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `level_id` int(11) NOT NULL,
+  `lang_id` int(11) NOT NULL,
   `level_name` varchar(255) NOT NULL,
-  `level_description` mediumtext NOT NULL,
-  KEY `lang_id` (`lang_id`),
-  KEY `category_id` (`level_id`)
-) ENGINE=MyISAM;
-CREATE TABLE `contrexx_module_mediadir_levels` (
-  `id` int(7) NOT NULL AUTO_INCREMENT,
-  `parent_id` int(7) NOT NULL,
-  `order` int(7) NOT NULL,
-  `show_sublevels` int(11) NOT NULL,
-  `show_categories` int(1) NOT NULL,
-  `show_entries` int(1) NOT NULL,
-  `picture` mediumtext NOT NULL,
-  `active` int(1) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM ;
+  `level_description` longtext NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_BA00B7C55FB14BA7` (`level_id`),
+  CONSTRAINT `contrexx_module_mediadir_level_names_ibfk_1` FOREIGN KEY (`level_id`) REFERENCES `contrexx_module_mediadir_levels` (`id`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_mediadir_mail_actions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,

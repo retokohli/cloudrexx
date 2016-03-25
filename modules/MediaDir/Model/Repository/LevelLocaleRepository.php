@@ -26,7 +26,7 @@
  */
 
 /**
- * Class CategoryRepository
+ * Class LevelLocaleRepository
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
@@ -36,11 +36,11 @@
 namespace Cx\Modules\MediaDir\Model\Repository;
 
 /**
- * Class CategoryRepository
+ * Class LevelLocaleRepository
  * 
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  module_mediadir
  */
-class CategoryRepository extends NestedTreeRespository { }
+class LevelLocaleRepository extends \Doctrine\ORM\EntityRepository  {}

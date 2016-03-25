@@ -1,0 +1,32 @@
+Cx\Modules\MediaDir\Model\Entity\LevelLocale:
+  type: entity
+  repositoryClass: Cx\Modules\MediaDir\Model\Repository\LevelLocaleRepository
+  table: module_mediadir_level_names
+
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+
+  fields:
+    lang_id:
+      type: integer
+
+    level_id:
+      type: integer
+
+    level_name:
+      type: string
+
+    level_description:
+      type: text
+
+  manyToOne:
+    level:
+      targetEntity: Cx\Modules\MediaDir\Model\Entity\Level
+      inversedBy: locale
+      joinColumn:
+        name: level_id
+        referencedColumnName: id
+        cascade: [remove]

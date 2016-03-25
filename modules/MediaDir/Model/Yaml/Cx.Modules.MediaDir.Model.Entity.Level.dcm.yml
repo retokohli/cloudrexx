@@ -1,0 +1,71 @@
+Cx\Modules\MediaDir\Model\Entity\Level:
+  type: entity
+  repositoryClass: Cx\Modules\MediaDir\Model\Repository\LevelRepository
+  table: module_mediadir_levels
+  gedmo:
+    tree:
+      type: nested
+
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+
+  fields:
+    order:
+      type: integer
+      column: level_order
+
+    show_sublevels:
+        type: boolean
+
+    show_categories:
+        type: boolean
+
+    show_entries:
+        type: boolean
+
+    picture:
+        type: text
+        length: 3
+
+    active:
+        type: boolean
+
+    lft:
+      type: integer
+      gedmo:
+        - treeLeft
+
+    rgt:
+      type: integer
+      gedmo:
+        - treeRight
+
+    lvl:
+      type: integer
+      gedmo:
+        - treeLevel
+
+  manyToOne:
+    parent:
+      targetEntity: Cx\Modules\MediaDir\Model\Entity\Level
+      inversedBy: children
+      joinColumn:
+        name: parent_id
+        referencedColumnName: id
+        cascade: [remove]
+      gedmo:
+        - treeParent
+
+  oneToMany:
+    children:
+      targetEntity: Cx\Modules\MediaDir\Model\Entity\Level
+      mappedBy: parent
+      orderBy:
+        lft: ASC
+    locale:
+      targetEntity: Cx\Modules\MediaDir\Model\Entity\LevelLocale
+      mappedBy: level
+      cascade: [remove]

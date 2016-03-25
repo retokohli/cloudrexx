@@ -131,7 +131,7 @@ class MediaDirectoryInterfaces extends MediaDirectoryLibrary
             $strFormOnSubmit = "selectAll(document.interfacesExportForm.elements['selectedCategories']); ";
             $strFormOnSubmit .= "selectAll(document.interfacesExportForm.elements['selectedLevels']); ";
             
-            $objLevels = new MediaDirectoryLevel(null,null,true, $this->moduleName);
+            $objLevels = new MediaDirectoryLevel($this->moduleName);
             $arrLevels = $objLevels->listLevels($objTpl, 4);
         
             $objTpl->parse($this->moduleNameLC.'InterfacesExportSelectLevels');
