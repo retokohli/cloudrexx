@@ -30,3 +30,7 @@ Cx\Modules\MediaDir\Model\Entity\LevelLocale:
         name: level_id
         referencedColumnName: id
         cascade: [remove]
+
+  lifecycleCallbacks:
+      prePersist: [validate]
+      onFlush: [validate]

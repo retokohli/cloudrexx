@@ -208,7 +208,7 @@ EOF;
 
         if ($bolShowCategorySelector) {
             $objCategories = new MediaDirectoryCategory($this->moduleName);
-            $strCategoryDropdown = $objCategories->listCategories($this->_objTpl, 3);
+            $strCategoryDropdown = $objCategories->listCategories($this->_objTpl, 3, $intCategoryId);
             $strCategoryName = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY'];
 
             $strExpandedInputfields .= <<<EOF

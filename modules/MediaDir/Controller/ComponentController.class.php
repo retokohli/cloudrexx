@@ -193,5 +193,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $eventListener = new MediaDirEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('SearchFindContent',$eventListener);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
+
+        $categoryListener = new \Cx\Modules\MediaDir\Model\Event\CategoryEventListener($this->cx);
+        $levelListener    = new \Cx\Modules\MediaDir\Model\Event\LevelEventListener($this->cx);
+        $this->cx->getEvents()->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Modules\\MediaDir\\Model\\Entity\\Category', $categoryListener);
+        $this->cx->getEvents()->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Modules\\MediaDir\\Model\\Entity\\Level', $levelListener);
     }
 }

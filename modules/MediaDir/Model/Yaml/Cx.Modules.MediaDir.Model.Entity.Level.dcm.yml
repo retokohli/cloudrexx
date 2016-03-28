@@ -61,6 +61,7 @@ Cx\Modules\MediaDir\Model\Entity\Level:
 
   oneToMany:
     children:
+      fetch: LAZY
       targetEntity: Cx\Modules\MediaDir\Model\Entity\Level
       mappedBy: parent
       orderBy:
@@ -69,3 +70,6 @@ Cx\Modules\MediaDir\Model\Entity\Level:
       targetEntity: Cx\Modules\MediaDir\Model\Entity\LevelLocale
       mappedBy: level
       cascade: [remove]
+
+  lifecycleCallbacks:
+      prePersist: [validate]

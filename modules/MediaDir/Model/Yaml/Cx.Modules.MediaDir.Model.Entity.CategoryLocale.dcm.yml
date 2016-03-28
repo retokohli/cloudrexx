@@ -26,3 +26,7 @@ Cx\Modules\MediaDir\Model\Entity\CategoryLocale:
         name: category_id
         referencedColumnName: id
         cascade: [remove]
+
+  lifecycleCallbacks:
+      prePersist: [validate]
+      onFlush: [validate]

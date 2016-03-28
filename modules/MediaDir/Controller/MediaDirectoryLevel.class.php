@@ -108,7 +108,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             $this->moduleLangVar.'_LEVEL_ICON'                 => $spacer.$strLevelIcon,
             $this->moduleLangVar.'_LEVEL_VISIBLE_STATE_ACTION' => $level->getActive() == 0 ? 1 : 0,
             $this->moduleLangVar.'_LEVEL_VISIBLE_STATE_IMG'    => $level->getActive() == 0 ? 'off' : 'on',
-            $this->moduleLangVar.'_LEVEL_LEVEL_ID'             => $level->getLvl() - 1,
+            $this->moduleLangVar.'_LEVEL_LEVEL_NUMBER'         => $level->getLvl() - 1,
             $this->moduleLangVar.'_LEVEL_ACTIVE_STATUS'        => $strLevelClass,
         ));
 
@@ -195,54 +195,42 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 break;
             case 2:
                 //Frontend View
-                $intNumBlocks = count($arrExistingBlocks);
+                $intNumBlocks   = count($arrExistingBlocks);
                 $strIndexHeader = '';
-
-                $i = $this->arrSettings['settingsLevelOrder'] == 2
-                        ? $intNumBlocks - 1
-                        : 0;
+                $i              = $intNumBlocks - 1;
 
                 //set first index header
                 if($this->arrSettings['settingsLevelOrder'] == 2) {
                     $strFirstIndexHeader = null;
                 }
 
-                $level = $this->levelRepository->findOneById($parentLevelId);
+                $level = $parentLevelId ? $this->levelRepository->findOneById($parentLevelId) : false;
                 if (!$level) {
                     $level = $this->levelRepository->getRoot();
                 }
-                $intNumLevels = $this->levelRepository->getChildCount($level, true);
-
-                if ($intNumLevels % $intNumBlocks != 0) {
-                    $intNumLevels = $intNumLevels + ($intNumLevels % $intNumBlocks);
-                }
-
-                $intNumPerRow = intval($intNumLevels / $intNumBlocks);
-                $x = 0;
 
                 $subLevels = $this->getSubLevelsByLevel($level);
                 foreach ($subLevels as $subLevel) {
-                    $strLevelId        = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
+                    $levelName = $this->getLevelName($subLevel);
+                    $levelDesc = $this->getLevelDescription($subLevel);
 
                     $strIndexHeaderTag = null;
-                    if($this->arrSettings['settingsLevelOrder'] == 2) {
-                        $strIndexHeader = strtoupper(substr($arrLevel['levelName'][0],0,1));
+                    if ($this->arrSettings['settingsLevelOrder'] == 2) {
+                        $strIndexHeader = strtoupper(substr($levelName, 0, 1));
 
                         if ($strFirstIndexHeader != $strIndexHeader) {
-                            $i = $i < $intNumBlocks - 1 ? $i + 1 : 0;
-                            $strIndexHeaderTag = '<span class="' . $this->moduleNameLC . 'LevelLevelIndexHeader">' . $strIndexHeader . '</span><br />';
-                        }
-                    } else {
-                        if ($x == $intNumPerRow) {
-                            ++$i;
-
-                            if ($i == $intNumBlocks) {
+                            if ($i < $intNumBlocks - 1) {
+                                ++$i;
+                            } else {
                                 $i = 0;
                             }
-
-                            $x = 1;
+                            $strIndexHeaderTag = '<span class="' . $this->moduleNameLC . 'LevelCategoryIndexHeader">' . $strIndexHeader . '</span><br />';
+                        }
+                    } else {
+                        if ($i < $intNumBlocks - 1) {
+                            ++$i;
                         } else {
-                            $x++;
+                            $i = 0;
                         }
                     }
 
@@ -251,30 +239,20 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                                         ? '&amp;cmd='.$_GET['cmd']
                                         : '';
 
-                    $childrenString = $this->createLevelsTree(
-                        $subLevel,
-                        $strLevelCmd,
-                        $strLevelId
-                    );
-
-                    $levelName = $this->getLevelName($subLevel);
-                    $levelDesc = $this->getLevelDescription($subLevel);
                     //parse variables
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $subLevel->getId(),
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NAME'           => contrexx_raw2xhtml($levelName),
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK'           => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strLevelCmd.$strLevelId.'&amp;cid='.$subLevel->getId().'">'.contrexx_raw2xhtml($levelName).'</a>',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK'           => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$subLevel->getId().'">'.contrexx_raw2xhtml($levelName).'</a>',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION'    => contrexx_raw2xhtml($levelDesc),
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE'        => '<img src="'.$subLevel->getPicture().'" border="0" alt="'.contrexx_raw2xhtml($levelName).'" />',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $subLevel->getPicture(),
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES'    => $this->countEntries($level->getId()),
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_CHILDREN'       => $childrenString,
                     ));
 
                     $intBlockId = $arrExistingBlocks[$i];
 
-
-                    $objTpl->parse($this->moduleNameLC.'LevelsLevels_row_'.$intBlockId);
+                    $objTpl->parse($this->moduleNameLC.'CategoriesLevels_row_'.$intBlockId);
                     $objTpl->clearVariables();
 
                     $strFirstIndexHeader = $strIndexHeader;
@@ -342,7 +320,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
                 $tpl = <<<TEMPLATE
     <!-- BEGIN {$this->moduleNameLC}LevelsList -->
-    <li class="level_{{$this->moduleLangVar}_LEVEL_ID}">
+    <li class="level_{{$this->moduleLangVar}_LEVEL_LEVEL_NUMBER}">
         <a href="index.php?section={$this->moduleName}{$strLevelId}&amp;cid={{$this->moduleLangVar}_LEVEL_ID}" class="{{$this->moduleLangVar}_LEVEL_ACTIVE_STATUS}">
             {{$this->moduleLangVar}_LEVEL_NAME}
         </a>
@@ -356,7 +334,7 @@ TEMPLATE;
                     $level,
                     $expandedLevelIds,
                     $expandLevel == 'all',
-                    $arrLevel['catShowSublevels'] == 1
+                    $level->getShowSublevels()
                 );
                 return $template->get();
                 break;
@@ -377,7 +355,7 @@ TEMPLATE;
         $strSelectedOptions = $strNotSelectedOptions = '';
         foreach ($subLevels as $subLevel) {
             $spacer       = str_repeat('----', $subLevel->getLvl() - 1);
-            $spacer      .= $subLevel->getLvl() > 0 ? '&nbsp;' : '';
+            $spacer      .= $subLevel->getLvl() > 1 ? '&nbsp;' : '';
             $levelName = $this->getLevelName($subLevel);
 
             $option = '<option value="'. $subLevel->getId() .'">'. $spacer . contrexx_raw2xhtml($levelName).'</option>';
@@ -753,33 +731,5 @@ TEMPLATE;
                                                     `rel_levels`.`level_id`");
 
         return contrexx_input2int($objCountEntriesRS->fields['c']);
-    }
-
-    /**
-     * Create UL/LI of level tree
-     *
-     * @param Level  $level       Instance of level id
-     * @param string    $strLevelCmd Url level id
-     * @param string    $strLevelId     Url level id
-     *
-     * @return string
-     */
-    public function createLevelsTree(Level $level, $strLevelCmd, $strLevelId)
-    {
-        $subLevels = $this->getSubLevelsByLevel($level);
-        if (empty($subLevels)) {
-            return '';
-        }
-        $childrenString = '<ul>';
-        foreach ($subLevels as $subLevel) {
-            $levelName = $this->getLevelName($subLevel);
-
-            $childrenString .= '<li><a href="index.php?section=' . $this->moduleName . $strLevelCmd . $strLevelId . '&amp;cid=' . $subLevel->getId() . '">' . contrexx_raw2xhtml($levelName) . '</a>';
-            $childrenString .= $this->createLevelsTree($subLevel, $strLevelCmd, $strLevelId);
-            $childrenString .= '</li>';
-        }
-        $childrenString .= '</ul>';
-
-        return $childrenString;
     }
 }

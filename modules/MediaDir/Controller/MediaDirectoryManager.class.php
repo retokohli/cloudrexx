@@ -659,12 +659,12 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
         $categoryRepository = $this->em->getRepository('Cx\Modules\MediaDir\Model\Entity\Category');
 
-        $category = $categoryRepository->findOneById(intval($_REQUEST['id']));
+        $id       = isset($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
+        $category = $id ? $categoryRepository->findOneById(intval($_REQUEST['id'])) : false;
         if (!$category) {
             $category = new \Cx\Modules\MediaDir\Model\Entity\Category();
         }
-
-        $intCategoryId = $category->getId();
+        $categoryId = $category->getId();
 
         //get category object
         $objCategories = new MediaDirectoryCategory($this->moduleName);
@@ -672,6 +672,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         //save category data
         if(isset($_POST['submitCategoryModfyForm'])) {
             $status = $objCategories->saveCategory($category, $_POST);
+            $this->em->refresh($category);
 
             if(!empty($_POST['categoryId'])) {
                 if($status == true) {
@@ -688,33 +689,15 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             }
         }
 
+        $showEntries        = empty($categoryId) ? true : $category->getShowEntries();
+        $showSubCategories  = empty($categoryId) ? true : $category->getShowSubcategories();
+        $active             = empty($categoryId) ? true : $category->getActive();
+        $categoryName       = $categoryDesc = $categoryImage = '';
+
         //load category data
-        if(isset($_GET['id']) && $_GET['id'] != 0) {
+        $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'];
+        if($categoryId) {
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']. " ".$_ARRAYLANG['TXT_MEDIADIR_EDIT'];
-
-            if($category->getShowEntries()) {
-                $showEntriesOn = 'checked="checked"';
-                $showEntriesOff = '';
-            } else {
-                $showEntriesOn = '';
-                $showEntriesOff = 'checked="checked"';
-            }
-
-            if($category->getShowSubcategories()) {
-                $showCategoriesOn = 'checked="checked"';
-                $showCategoriesOff = '';
-            } else {
-                $showCategoriesOn = '';
-                $showCategoriesOff = 'checked="checked"';
-            }
-
-            if($category->getActive()) {
-                $activeOn = 'checked="checked"';
-                $activeOff = '';
-            } else {
-                $activeOn = '';
-                $activeOff = 'checked="checked"';
-            }
 
             $catPicture =  !\FWValidator::isEmpty($category->getPicture())
                             ? $category->getPicture()
@@ -729,34 +712,25 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
             $categoryName = $locale ? $locale->getCategoryName() : '';
             $categoryDesc = $locale ? $locale->getCategoryDescription() : '';
-
-            //parse data variables
-            $this->_objTpl->setGlobalVariable(array(
-                $this->moduleLangVar.'_CATEGORY_ID' => $intCategoryId,
-                $this->moduleLangVar.'_CATEGORY_NAME_MASTER' => $categoryName,
-                $this->moduleLangVar.'_CATEGORY_DESCRIPTION_MASTER' => $categoryDesc,
-                $this->moduleLangVar.'_CATEGORY_PICTURE' => $category->getPicture(),
-                $this->moduleLangVar.'_CATEGORY_SHOW_ENTRIES_ON' => $showEntriesOn,
-                $this->moduleLangVar.'_CATEGORY_SHOW_ENTRIES_OFF' => $showEntriesOff,
-                $this->moduleLangVar.'_CATEGORY_ACTIVE_ON' => $activeOn,
-                $this->moduleLangVar.'_CATEGORY_ACTIVE_OFF' => $activeOff,
-                $this->moduleLangVar.'_CATEGORY_PICTURE_THUMB' => $catImage,
-                $this->moduleLangVar.'_CATEGORY_SHOW_SUBCATEGORIES_ON' => $showCategoriesOn,
-                $this->moduleLangVar.'_CATEGORY_SHOW_SUBCATEGORIES_OFF' => $showCategoriesOff,
-            ));
-        } else {
-            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'];
-
-            //parse global variables
-	        $this->_objTpl->setGlobalVariable(array(
-	            $this->moduleLangVar.'_CATEGORY_SHOW_ENTRIES_ON' => 'checked="checked"',
-	            $this->moduleLangVar.'_CATEGORY_SHOW_SUBCATEGORIES_ON' => 'checked="checked"',
-	            $this->moduleLangVar.'_CATEGORY_ACTIVE_ON' => 'checked="checked"',
-	        ));
         }
 
         //get category dropdown
         $catDropdown = $objCategories->listCategories($this->_objTpl, 3, ($category->getParent() ? $category->getParent()->getId() : null));
+
+        //parse data variables
+        $this->_objTpl->setGlobalVariable(array(
+            $this->moduleLangVar.'_CATEGORY_ID'                     => $categoryId,
+            $this->moduleLangVar.'_CATEGORY_NAME_MASTER'            => $categoryName,
+            $this->moduleLangVar.'_CATEGORY_DESCRIPTION_MASTER'     => $categoryDesc,
+            $this->moduleLangVar.'_CATEGORY_PICTURE_THUMB'          => $catImage,
+            $this->moduleLangVar.'_CATEGORY_PICTURE'                => $category->getPicture(),
+            $this->moduleLangVar.'_CATEGORY_SHOW_ENTRIES_ON'        => $showEntries ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_CATEGORY_SHOW_ENTRIES_OFF'       => !$showEntries ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_CATEGORY_ACTIVE_ON'              => $active ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_CATEGORY_ACTIVE_OFF'             => !$active ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_CATEGORY_SHOW_SUBCATEGORIES_ON'  => $showSubCategories ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_CATEGORY_SHOW_SUBCATEGORIES_OFF' => !$showSubCategories ? 'checked="checked"' : '',
+        ));
 
         //parse global variables
         $this->_objTpl->setGlobalVariable(array(
@@ -798,12 +772,11 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {
             $langId = $arrLang['id'];
             $catName = $catDescription = '';
-            if ($intCategoryId) {
-                $locale = $category->getLocaleByLang($langId);
-                if ($locale) {
-                    $catName        = $locale->getCategoryName();
-                    $catDescription = $locale->getCategoryDescription();
-                }
+
+            $locale = $category->getLocaleByLang($langId);
+            if ($locale) {
+                $catName        = $locale->getCategoryName();
+                $catDescription = $locale->getCategoryDescription();
             }
 
             $this->_objTpl->setVariable(array(

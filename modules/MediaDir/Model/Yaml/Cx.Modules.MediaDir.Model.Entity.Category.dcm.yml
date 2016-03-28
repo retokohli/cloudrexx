@@ -50,6 +50,7 @@ Cx\Modules\MediaDir\Model\Entity\Category:
         - treeParent
   oneToMany:
     children:
+      fetch: LAZY
       targetEntity: Cx\Modules\MediaDir\Model\Entity\Category
       mappedBy: parent
       orderBy:
@@ -57,4 +58,6 @@ Cx\Modules\MediaDir\Model\Entity\Category:
     locale:
       targetEntity: Cx\Modules\MediaDir\Model\Entity\CategoryLocale
       mappedBy: category
-      cascade: [remove]
+
+  lifecycleCallbacks:
+      prePersist: [validate]

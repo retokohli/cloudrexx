@@ -109,7 +109,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
             $this->moduleLangVar.'_CATEGORY_ICON'                 => $spacer.$strCategoryIcon,
             $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_ACTION' => $category->getActive() == 0 ? 1 : 0,
             $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_IMG'    => $category->getActive() == 0 ? 'off' : 'on',
-            $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $category->getLvl() - 1,
+            $this->moduleLangVar.'_CATEGORY_LEVEL_NUMBER'         => $category->getLvl() - 1,
             $this->moduleLangVar.'_CATEGORY_ACTIVE_STATUS'        => $strCategoryClass,
         ));
 
@@ -266,11 +266,11 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                         : 0;
 
                 //set first index header
-                if($this->arrSettings['settingsCategoryOrder'] == 2) {
+                if ($this->arrSettings['settingsCategoryOrder'] == 2) {
                     $strFirstIndexHeader = null;
                 }
 
-                $category = $this->categoryRepository->findOneById($parentCategoryId);
+                $category = $parentCategoryId ? $this->categoryRepository->findOneById($parentCategoryId) : false;
                 if (!$category) {
                     $category = $this->categoryRepository->getRoot();
                 }
@@ -283,14 +283,14 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 $intNumPerRow = intval($intNumCategories / $intNumBlocks);
                 $x = 0;
 
+                $strLevelId    = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
+
                 $subCategories = $this->getSubCategoriesByCategory($category);
                 foreach ($subCategories as $subCategory) {
-                    $strLevelId        = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
 
                     $strIndexHeaderTag = null;
-                    if($this->arrSettings['settingsCategoryOrder'] == 2) {
-                        $strIndexHeader = strtoupper(substr($arrCategory['catName'][0],0,1));
-
+                    if ($this->arrSettings['settingsCategoryOrder'] == 2) {
+                        $strIndexHeader = strtoupper(substr($this->getCategoryName($subCategory), 0, 1));
                         if ($strFirstIndexHeader != $strIndexHeader) {
                             $i = $i < $intNumBlocks - 1 ? $i + 1 : 0;
                             $strIndexHeaderTag = '<span class="' . $this->moduleNameLC . 'LevelCategoryIndexHeader">' . $strIndexHeader . '</span><br />';
@@ -397,7 +397,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
             case 6:
                 //Frontend Tree Placeholder
                 $expandedCategoryIds = $this->getExpandedCategoryIds($categoryId);
-                
+
                 $category = $this->categoryRepository->findOneById($categoryId);
                 if (!$category) {
                     $category = $this->categoryRepository->getRoot();
@@ -405,7 +405,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
 
                 $tpl = <<<TEMPLATE
     <!-- BEGIN {$this->moduleNameLC}CategoriesList -->
-    <li class="level_{{$this->moduleLangVar}_CATEGORY_ID}">
+    <li class="level_{{$this->moduleLangVar}_CATEGORY_LEVEL_NUMBER}">
         <a href="index.php?section={$this->moduleName}{$strLevelId}&amp;cid={{$this->moduleLangVar}_CATEGORY_ID}" class="{{$this->moduleLangVar}_CATEGORY_ACTIVE_STATUS}">
             {{$this->moduleLangVar}_CATEGORY_NAME}
         </a>
@@ -419,7 +419,7 @@ TEMPLATE;
                     $category,
                     $expandedCategoryIds,
                     $expandCategory == 'all',
-                    $arrCategory['catShowSubcategories'] == 1
+                    $category->getShowSubcategories()
                 );
                 return $template->get();
                 break;
@@ -509,7 +509,7 @@ TEMPLATE;
         foreach ($subCategories as $subCategory) {
             $strSelected  = $selectedCategoryId == $subCategory->getId() ? 'selected="selected"' : '';
             $spacer       = str_repeat('----', $subCategory->getLvl() - 1);
-            $spacer      .= $subCategory->getLvl() > 0 ? '&nbsp;' : '';
+            $spacer      .= $subCategory->getLvl() > 1 ? '&nbsp;' : '';
             $categoryName = $this->getCategoryName($subCategory);
 
             $strDropdownOptions .= '<option value="'. $subCategory->getId() .'" '. $strSelected .' >'. $spacer . contrexx_raw2xhtml($categoryName) .'</option>';
