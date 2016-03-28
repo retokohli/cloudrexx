@@ -2213,17 +2213,17 @@ CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_categories` (
   `lvl` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_D21E73DE727ACA70` (`parent_id`),
-  CONSTRAINT `contrexx_module_mediadir_categories_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_module_mediadir_categories` (`id`)
+  CONSTRAINT `contrexx_module_mediadir_categories_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_module_mediadir_categories` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_categories_names` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `category_id` int(11) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
   `lang_id` int(1) NOT NULL,
   `category_name` varchar(255) NOT NULL,
   `category_description` mediumtext NOT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_D086836E12469DE2` (`category_id`),
-  CONSTRAINT `contrexx_module_mediadir_categories_names_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `contrexx_module_mediadir_categories` (`id`)
+  CONSTRAINT `contrexx_module_mediadir_categories_names_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `contrexx_module_mediadir_categories` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_mediadir_comments` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
@@ -2336,17 +2336,17 @@ CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_levels` (
   `lvl` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_5F1EAE73727ACA70` (`parent_id`),
-  CONSTRAINT `contrexx_module_mediadir_levels_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_module_mediadir_levels` (`id`)
+  CONSTRAINT `contrexx_module_mediadir_levels_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_module_mediadir_levels` (`id`)  ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_level_names` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `level_id` int(11) NOT NULL,
+  `level_id` int(11) DEFAULT NULL,
   `lang_id` int(11) NOT NULL,
   `level_name` varchar(255) NOT NULL,
   `level_description` longtext NOT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_BA00B7C55FB14BA7` (`level_id`),
-  CONSTRAINT `contrexx_module_mediadir_level_names_ibfk_1` FOREIGN KEY (`level_id`) REFERENCES `contrexx_module_mediadir_levels` (`id`)
+  CONSTRAINT `contrexx_module_mediadir_level_names_ibfk_1` FOREIGN KEY (`level_id`) REFERENCES `contrexx_module_mediadir_levels` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_mediadir_mail_actions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
