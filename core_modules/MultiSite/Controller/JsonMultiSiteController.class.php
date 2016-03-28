@@ -173,6 +173,8 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             'linkSsl'                 => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'setWebsiteOwner' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'getWebsiteList' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'getServerWebsitePath' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'updateWebsiteDomainThemeMap' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
         );  
     }
 
@@ -7196,22 +7198,141 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             $em = $this->cx->getDb()->getEntityManager();
             $ownerId = contrexx_input2db($params['post']['ownerId']);
             $websiteRepository = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            $websites = $websiteRepository->findWebsitesByCriteria(array('user.id' => $ownerId));
+            $websites = $websiteRepository->findWebsitesByCriteria(array('user.id' => $ownerId, 'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE));
             $websiteList = array();
             if (empty($websites) || !is_array($websites)) {
                 return array('websiteList' => $websiteList);
             }
 
             foreach ($websites as $website) {
-                if ($website->getStatus() !== \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) {
-                    continue;
-                }
                 $websiteList[] = $website->getId() . ':' . $website->getName();
             }
             return array('websiteList' => $websiteList);
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']);
+        }
+    }
+
+    /**
+     * Get the server website path
+     *
+     * @param array $params supplied arguments from JsonData-request
+     *
+     * @return array JsonData-response
+     * @throws MultiSiteJsonException
+     */
+    public function getServerWebsitePath($params) {
+        global $_ARRAYLANG;
+
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
+                case ComponentController::MODE_SERVICE:
+                case ComponentController::MODE_HYBRID:
+                    if (empty($params['post']) || empty($params['post']['websiteId'])) {
+                        \DBG::msg('JsonMultiSiteController::getServerWebsitePath() failed: Insufficient arguments supplied: ' . var_export($params, true));
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_PATH_ERROR']);
+                    }
+
+                    $em = $this->cx->getDb()->getEntityManager();
+                    $websiteId = contrexx_input2db($params['post']['websiteId']);
+                    $websiteRepository = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $websites = $websiteRepository->findWebsitesByCriteria(array('website.id' => $websiteId, 'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE));
+                    $website  = current($websites);
+                    if (!$website) {
+                        \DBG::log('JsonMultiSiteController::getServerWebsitePath() failed: invalid websiteId supplied: ');
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_PATH_ERROR']);
+                    }
+                    $response = self::executeCommandOnWebsite('getServerWebsitePath', '', $website);
+                    if (!$response || $response->status == 'error' || empty($response->data->serverWebsitePath)) {
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_PATH_ERROR']);
+                    }
+                    return array('serverWebsitePath' => $response->data->serverWebsitePath);
+                    break;
+                case ComponentController::MODE_WEBSITE:
+                    $websitePath = array(
+                        'path'             => $this->cx->getWebsitePath(),
+                        'documentRootPath' => $this->cx->getWebsiteDocumentRootPath()
+                    );
+                    return array('status' => 'success', 'serverWebsitePath' => $websitePath);
+                    break;
+            }
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_PATH_ERROR']);
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_PATH_ERROR']);
+        }
+    }
+
+    /**
+     * Update website domain theme map
+     *
+     * @param array $params supplied arguments from JsonData-request
+     *
+     * @return array JsonData-response
+     * @throws MultiSiteJsonException
+     */
+    public function updateWebsiteDomainThemeMap($params) {
+        global $_ARRAYLANG;
+
+        if (empty($params['post']) || empty($params['post']['websiteName']) || empty($params['post']['serverWebsite'])) {
+            \DBG::msg('JsonMultiSiteController::updateWebsiteDomainThemeMap() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']);
+        }
+
+        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite'), array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']);
+        }
+
+        try {
+            $em                = $this->cx->getDb()->getEntityManager();
+            $filePath          = $this->cx->getWebsiteDocumentRootPath() . '/core_modules/MultiSite/Data';
+            $websitePath       = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite');
+            $websiteOffsetPath = substr($websitePath, strlen(\Env::get('cx')->getWebsiteDocumentRootPath()));
+            $websiteName       = contrexx_input2db($params['post']['websiteName']);
+            $serverWebsiteId   = contrexx_input2db($params['post']['serverWebsite']);
+            //get the website
+            $websiteRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $websites    = $websiteRepo->findWebsitesByCriteria(array('website.name' => $websiteName, 'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE));
+            $website     = current($websites);
+            if (!$website) {
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']);
+            }
+            //get the server website
+            $serverWebsites = $websiteRepo->findWebsitesByCriteria(array('website.id' => $serverWebsiteId, 'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE));
+            $serverWebsite  = current($serverWebsites);
+            if (!$serverWebsite) {
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']);
+            }
+
+            //get the website theme path
+            $domains = $website->getDomains();
+            $websiteDomainTheme = array();
+            foreach($domains as $domain) {
+                $websiteDomainTheme[] = "{$domain->getName()}\t$websiteOffsetPath/{$serverWebsite->getName()}";
+            }
+
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File($filePath .'/WebsiteDomainThemeMap.txt');
+                $content = $objFile->getData();
+                $matches = null;
+                preg_match_all('/(\w.*\.\w{3})\s(.*)/', $content, $matches);
+                $oldWebsiteDomainThemeContent = array();
+                foreach ($matches[1] as $key => $domainName) {
+                    $oldWebsiteDomainThemeContent[] = "$domainName\t{$matches[2][$key]}";
+                }
+                $websiteDomainThemeContent = !count(array_intersect($oldWebsiteDomainThemeContent, $websiteDomainTheme))
+                                                ? array_merge($oldWebsiteDomainThemeContent, $websiteDomainTheme)
+                                                : array_diff($oldWebsiteDomainThemeContent, $websiteDomainTheme);
+                $objFile->write(join("\n", $websiteDomainThemeContent));
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
+                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']);
+            }
+            return array('status' => 'success');
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']);
         }
     }
 }

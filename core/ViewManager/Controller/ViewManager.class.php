@@ -106,6 +106,9 @@ class ViewManager
     public $websiteThemesPath;                // website themes path
     public $codeBaseThemesFilePath;           // default codebase current themes path
     public $websiteThemesFilePath;            // website current themes path
+    public $serverWebsitePath;                // server website path
+    public $serverWebsiteThemesPath;          // server website themes path
+    public $serverWebsiteThemesFilePath;      // server website current themes path
     public $tableExists;                      // Table exists
     public $oldTable;                         // old Theme-Table name
 
@@ -116,22 +119,25 @@ class ViewManager
     {
         global  $_ARRAYLANG, $objTemplate, $objDatabase;
 
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         //add preview.gif to required files
         $this->filenames[] = \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE;
         //get path variables
-        $this->path = \Env::get('cx')->getWebsiteThemesPath() . '/';
-        $this->arrWebPaths  = array(\Env::get('cx')->getWebsiteThemesWebPath() . '/');
-        $this->codeBasePath = \Env::get('cx')->getCodeBaseDocumentRootPath() . '/';
-        $this->codeBaseThemesPath = \Env::get('cx')->getCodeBaseThemesPath() . '/';
-        $this->websitePath  = \Env::get('cx')->getWebsiteDocumentRootPath() . '/';
-        $this->websiteThemesPath  = \Env::get('cx')->getWebsiteThemesPath() . '/';
+        $this->path = $cx->getWebsiteThemesPath() . '/';
+        $this->arrWebPaths  = array($cx->getWebsiteThemesWebPath() . '/');
+        $this->codeBasePath = $cx->getCodeBaseDocumentRootPath() . '/';
+        $this->codeBaseThemesPath = $cx->getCodeBaseThemesPath() . '/';
+        $this->websitePath  = $cx->getWebsiteDocumentRootPath() . '/';
+        $this->websiteThemesPath  = $cx->getWebsiteThemesPath() . '/';
+        $this->serverWebsitePath  = $cx->getServerWebsiteDocumentRootPath() . '/';
+        $this->serverWebsiteThemesPath = $cx->getServerWebsiteThemesPath() . '/';
         $this->themeZipPath = '/themezips/';
-        $this->_archiveTempWebPath = \Env::get('cx')->getWebsiteTempWebPath() . $this->themeZipPath;
-        $this->_archiveTempPath = \Env::get('cx')->getWebsiteTempPath() . $this->themeZipPath;
+        $this->_archiveTempWebPath = $cx->getWebsiteTempWebPath() . $this->themeZipPath;
+        $this->_archiveTempPath = $cx->getWebsiteTempPath() . $this->themeZipPath;
         //create /tmp/zip path if it doesnt exists
         if (!file_exists($this->_archiveTempPath)){
-            if (!\Cx\Lib\FileSystem\FileSystem::make_folder(\Env::get('cx')->getWebsiteTempPath() . $this->themeZipPath)){
-                $this->strErrMessage = \Env::get('cx')->getWebsiteTempPath() . $this->themeZipPath .":".$_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'];
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($cx->getWebsiteTempPath() . $this->themeZipPath)){
+                $this->strErrMessage = $cx->getWebsiteTempPath() . $this->themeZipPath .":".$_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'];
             }
         }
         $this->webPath = $this->arrWebPaths[0];
@@ -420,8 +426,9 @@ class ViewManager
             $this->strErrMessage = sprintf($_ARRAYLANG['TXT_THEME_NOT_COMPONENT'], contrexx_raw2xhtml($theme->getThemesname()));
         }
         
-        $this->codeBaseThemesFilePath = $this->codeBaseThemesPath . $theme->getFoldername();
-        $this->websiteThemesFilePath  = $this->websiteThemesPath . $theme->getFoldername();
+        $this->codeBaseThemesFilePath      = $this->codeBaseThemesPath . $theme->getFoldername();
+        $this->websiteThemesFilePath       = $this->websiteThemesPath . $theme->getFoldername();
+        $this->serverWebsiteThemesFilePath = $this->serverWebsiteThemesPath . $theme->getFoldername();
         
         $filePath = '';
         $relativeFilePath = '';
@@ -429,10 +436,15 @@ class ViewManager
             list($filePath, $relativeFilePath) = $this->getFileFullPath($themesPage, $isComponentFile);
         }
         
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if (!is_file($filePath)) {
             $filePath   = file_exists($this->websiteThemesFilePath . '/index.html') 
                           ? $this->websiteThemesFilePath . '/index.html'
-                          : $this->codeBaseThemesFilePath . '/index.html';
+                          : ((  !empty($cx->getServerWebsitePath()) 
+                             && file_exists($this->serverWebsiteThemesFilePath . '/index.html')
+                             )  ? $this->serverWebsiteThemesFilePath . '/index.html' 
+                                : $this->codeBaseThemesFilePath . '/index.html'
+                            );
             $relativeFilePath = '/index.html';
             $themesPage = '/index.html';
         }
@@ -450,7 +462,7 @@ class ViewManager
             'THEME_IS_APPLICATION'      => $isComponentFile ? 1 : 0,
             'THEME_EDIT_PATH'           => (!$isComponentFile ? '/'.$theme->getFoldername() : '') . $themesPage,
             'THEMES_MENU'               => $this->getThemesDropdown($theme),
-            'CONTREXX_BASE_URL'         => \Env::get('cx')->getWebsiteOffsetPath() . '/',
+            'CONTREXX_BASE_URL'         => $cx->getWebsiteOffsetPath() . '/',
         ));
         
         
@@ -1017,6 +1029,7 @@ CODE;
         
         $codeBaseFiles = array();
         $websiteThemesFiles = array();
+        $serverWebsiteThemesFiles = array();
         if (file_exists($this->codeBaseThemesFilePath)) {
             $codeBaseIterator = new \DirectoryIterator($this->codeBaseThemesFilePath);
             $codeBaseFiles = $this->directoryIteratorToArray($codeBaseIterator);
@@ -1024,6 +1037,13 @@ CODE;
         if (file_exists($this->websiteThemesFilePath)) {
             $websiteIterator = new \DirectoryIterator($this->websiteThemesFilePath);
             $websiteThemesFiles = $this->directoryIteratorToArray($websiteIterator);
+        }
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if ($cx->getServerWebsitePath() && file_exists($this->serverWebsiteThemesFilePath)) {
+            $serverWebsiteIterator    = new \DirectoryIterator($this->serverWebsiteThemesFilePath);
+            $serverWebsiteThemesFiles = $this->directoryIteratorToArray($serverWebsiteIterator);
+            $this->array_merge_recursive_distinct($serverWebsiteThemesFiles, $websiteThemesFiles);
+            $websiteThemesFiles = $serverWebsiteThemesFiles;
         }
 
         $this->array_merge_recursive_distinct($codeBaseFiles, $websiteThemesFiles);
@@ -1379,17 +1399,21 @@ CODE;
         if (file_exists($this->websiteThemesPath)) {
             $websiteDir = $this->readFiles($this->websiteThemesPath);
         }
-        
-       $mergeFolders = array_unique(array_merge($codeBaseDir, $websiteDir));
-       sort($mergeFolders);
-       $result = '';
-       foreach($mergeFolders as $folder) {
-           if (!$this->themeRepository->findOneBy(array('foldername' => $folder))) {
+        $mergeFolders = array_unique(array_merge($codeBaseDir, $websiteDir));
+        $cx           = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (!empty($cx->getServerWebsitePath()) && file_exists($this->serverWebsiteThemesPath)) {
+            $serverWebsiteDir = $this->readFiles($this->serverWebsiteThemesPath);
+            $mergeFolders = array_unique(array_merge($mergeFolders, $serverWebsiteDir));
+        }
+        sort($mergeFolders);
+        $result = '';
+        foreach($mergeFolders as $folder) {
+            if (!$this->themeRepository->findOneBy(array('foldername' => $folder))) {
                $result .= "<option value='".$folder."'>".$folder."</option>\n";
-           }
-       }
-       
-       return $result;
+            }
+        }
+
+        return $result;
     }
     /**
      * reading the directories of the file sytem with the specified path
@@ -1535,12 +1559,14 @@ CODE;
             $fileTypeComponent = self::isFileTypeComponent($filePath);
         }
         
-        $websitePath  = $this->websiteThemesFilePath;
-        $codebasePath = $this->codeBaseThemesFilePath;
+        $websitePath       = $this->websiteThemesFilePath;
+        $codebasePath      = $this->codeBaseThemesFilePath;
+        $serverWebsitePath = $this->serverWebsiteThemesFilePath;
         
         if ($fileTypeComponent && $isComponentFile) { // selected from create overrides
-            $websitePath  = $this->websitePath;
-            $codebasePath = $this->codeBasePath;
+            $websitePath       = $this->websitePath;
+            $codebasePath      = $this->codeBasePath;
+            $serverWebsitePath = $this->serverWebsitePath;
         }
         
         $relativeFilePath = $filePath;
@@ -1548,15 +1574,20 @@ CODE;
             $relativeFilePath = self::getComponentFilePath($filePath, $isComponentFile);
         }
         
-        $websiteFilePath  = $websitePath . $relativeFilePath;
-        $codeBaseFilePath = $codebasePath . $relativeFilePath;
+        $websiteFilePath       = $websitePath . $relativeFilePath;
+        $codeBaseFilePath      = $codebasePath . $relativeFilePath;
+        $serverWebsiteFilePath = $serverWebsitePath . $relativeFilePath;
         
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if (file_exists($websiteFilePath)) {
             $filePath = $websiteFilePath;
-            $relativeFilePath = preg_replace('#' . \Env::get('cx')->getWebsitePath() . '#', '', $websiteFilePath);
+            $relativeFilePath = preg_replace('#' . $cx->getWebsitePath() . '#', '', $websiteFilePath);
+        } elseif (!empty($cx->getServerWebsitePath()) && file_exists($serverWebsiteFilePath)) {
+            $filePath = $serverWebsiteFilePath;
+            $relativeFilePath = preg_replace('#' . $cx->getServerWebsitePath() . '#', '', $serverWebsiteFilePath);
         } elseif (file_exists($codeBaseFilePath)) {
             $filePath = $codeBaseFilePath;
-            $relativeFilePath = preg_replace('#' . \Env::get('cx')->getCodeBasePath() . '#', '', $codeBaseFilePath);
+            $relativeFilePath = preg_replace('#' . $cx->getCodeBasePath() . '#', '', $codeBaseFilePath);
         } else {
             $filePath = $relativeFilePath = '';
         }

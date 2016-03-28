@@ -535,3 +535,9 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHANGE_OWNER_USER_ERROR'] = 'Error while 
 
 //get website list
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']= 'Failed to get the website list.';
+
+//get server website path
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_PATH_ERROR']= 'Failed to get the server website path.';
+
+//update the website domain theme map
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']= 'Failed to update the website domain theme map.';

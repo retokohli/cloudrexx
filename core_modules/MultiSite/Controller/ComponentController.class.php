@@ -38,6 +38,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     const MODE_SERVICE = 'service';
     const MODE_HYBRID = 'hybrid';
     const MODE_WEBSITE = 'website';
+    const WEBSITE_MODE_STANDALONE = 'standalone';
+    const WEBSITE_MODE_SERVER = 'server';
+    const WEBSITE_MODE_CLIENT = 'client';
     
     /**
      * Main Domain
@@ -2819,7 +2822,40 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener('terminated',                    'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
         $evm->addModelListener('payComplete',                   'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
     }
-    
+
+    /**
+     * Do something before resolving is done
+     *
+     * @param \Cx\Core\Routing\Url $request
+     *
+     * @return null
+     */
+    public function preResolve(\Cx\Core\Routing\Url $request) {
+        // Abort in case the request has been made to a unsupported cx-mode
+        $cx = $this->cx;
+        if (!in_array($cx->getMode(), array($cx::MODE_FRONTEND, $cx::MODE_BACKEND, $cx::MODE_MINIMAL))) {
+            return;
+        }
+
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') != self::MODE_WEBSITE) {
+            return;
+        }
+
+        //Initialize the server website path and its themes path
+        //if the current website mode is set as client and server website repository is set
+        $websiteMode     = \Cx\Core\Setting\Controller\Setting::getValue('website_mode','MultiSite');
+        $serverWebsiteId = \Cx\Core\Setting\Controller\Setting::getValue('website_server','MultiSite');
+        if ($websiteMode == self::WEBSITE_MODE_CLIENT && !empty($serverWebsiteId)) {
+            $response = JsonMultiSiteController::executeCommandOnMyServiceServer('getServerWebsitePath', array('websiteId' => $serverWebsiteId));
+            if ($response && $response->status == 'success' && !empty($response->data->serverWebsitePath)) {
+                $serverWebsitePath = $response->data->serverWebsitePath;
+                $this->cx->setServerWebsitePath($serverWebsitePath->path);
+                $this->cx->setServerWebsiteDocumentRootPath($serverWebsitePath->documentRootPath);
+                $this->cx->setServerWebsiteThemesPath($serverWebsitePath->documentRootPath . \Cx\Core\Core\Controller\Cx::FOLDER_NAME_THEMES);
+            }
+        }
+    }
+
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
         global $_CONFIG;
 

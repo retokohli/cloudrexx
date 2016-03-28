@@ -1398,6 +1398,24 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             throw new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException('Problem in service servers update setup process'.$errMsg);    
                         }
                     }
+                } elseif ($mode == ComponentController::MODE_WEBSITE && isset($_GET['active_tab']) && $_GET['active_tab'] == 1) {
+                    //get post values
+                    $postWebsiteMode   = isset($_POST['website_mode']) ? contrexx_input2raw($_POST['website_mode']) : '';
+                    $postWebsiteServer = isset($_POST['website_server']) ? contrexx_input2raw($_POST['website_server']) : '';
+                    //get settings value
+                    $websiteMode       = \Cx\Core\Setting\Controller\Setting::getValue('website_mode','MultiSite');
+                    $websiteServer     = \Cx\Core\Setting\Controller\Setting::getValue('website_server','MultiSite');
+                    $websiteName       = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
+
+                    $isPostWebsiteModeCli = ($postWebsiteMode == self::WEBSITE_MODE_CLIENT);
+                    if (    $isPostWebsiteModeCli
+                        ||  (!$isPostWebsiteModeCli && ($websiteMode == self::WEBSITE_MODE_CLIENT))
+                        ||  ($isPostWebsiteModeCli && ($websiteServer != $postWebsiteServer))
+                    ) {
+                        $params = array('websiteName' => $websiteName, 'serverWebsite' => $postWebsiteServer);
+                        JsonMultiSiteController::executeCommandOnMyServiceServer('updateWebsiteDomainThemeMap', $params);
+                    }
+                    \Cx\Core\Setting\Controller\Setting::storeFromPost();
                 } else {
                     \Cx\Core\Setting\Controller\Setting::storeFromPost();
                 }

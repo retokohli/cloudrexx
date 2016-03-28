@@ -531,6 +531,25 @@ namespace Cx\Core\Core\Controller {
         protected $websiteImagesAccessPhotoPath;
         
         /**
+         * The absolute path to the server website's data repository.
+         * @var string
+         */
+        protected $serverWebsitePath = null;
+
+        /**
+         * The absolute path to the server website's data repository including path offset
+         * @var string
+         */
+        protected $serverWebsiteDocumentRootPath = null;
+
+        /**
+         * The absolute path to the themes storage location (/themes)
+         * of the associated Data repository of the server website.
+         * @var string
+         */
+        protected $serverWebsiteThemesPath = null;
+        
+        /**
          * @var \Cx\Core\MediaSource\Model\Entity\MediaSourceManager
          */
         protected $mediaSourceManager;
@@ -3018,6 +3037,57 @@ namespace Cx\Core\Core\Controller {
             return $this->websiteImagesAccessPhotoPath;
         }
 
+        /**
+         * Set the absolute path of the server website's data repository.
+         * 
+         * @param string $serverWebsitePath
+         */
+        public function setServerWebsitePath($serverWebsitePath) {
+            $this->serverWebsitePath = $serverWebsitePath;
+        }
+
+        /**
+         * Get the absolute path of the server website's data repository.
+         * 
+         * @return string
+         */
+        public function getServerWebsitePath() {
+            return $this->serverWebsitePath;
+        }
+
+        /**
+         * Set the absolute path of server website's data repository including path offset
+         * @param string $serverWebsiteDocumentRootPath
+         */
+        public function setServerWebsiteDocumentRootPath($serverWebsiteDocumentRootPath) {
+            $this->serverWebsiteDocumentRootPath = $serverWebsiteDocumentRootPath;
+        }
+
+        /**
+         * Return the absolute path to the server website's data repository including path offset
+         * @return string
+         */
+        public function getServerWebsiteDocumentRootPath() {
+            return $this->serverWebsiteDocumentRootPath;
+        }
+
+        /**
+         * Set the offset path to the themes storage location (/themes)
+         * of the associated Data repository of the server website.
+         * @return string
+         */
+        public function setServerWebsiteThemesPath($serverWebsiteThemesPath) {
+            $this->serverWebsiteThemesPath = $serverWebsiteThemesPath;
+        }
+
+        /**
+         * Return the offset path to the themes storage location (/themes)
+         * of the associated Data repository of the server website.
+         * @return string
+         */
+        public function getServerWebsiteThemesPath() {
+            return $this->serverWebsiteThemesPath;
+        }
 
         /**
          * @return int
