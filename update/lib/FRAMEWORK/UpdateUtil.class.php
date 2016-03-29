@@ -94,6 +94,7 @@ class UpdateUtil
         'media/forum'       =>  'media/Forum',
         'media/market'      =>  'media/Market',
         'media/shop'        =>  'media/Shop',
+        'webcam'            =>  'media/Webcam',
     );
     /**
      * Creates or modifies a table to the given specification.
@@ -103,15 +104,15 @@ class UpdateUtil
      *     array with the keys being the column names and the values being an array
      *     with the following keys:
      *       array(
-     *           'type'            => 'INT', # or VARCHAR(30) or whatever
-     *           'notnull'         => true/false, # optional, defaults to true
-     *           'auto_increment'  => true/false, # optional, defaults to false
-     *           'default'         => 'value',    # optional, defaults to '' (or 0 if type is INT)
-     *           'default_expr'    => expression, # use this instead of 'default' to use NOW(), CURRENT_TIMESTAMP etc
-     *           'primary'         => true/false, # optional, defaults to false
-     *           'renamefrom'      => 'a_name'    # optional. Use this if the column existed previously with another name
-     *           'on_update'       => value for ON UPDATE #optional, defaults to none
-     *           'on_delete'       => value for ON DELETE #optional, defaults to none
+     *           'type'            => 'INT',                # or VARCHAR(30) or whatever
+     *           'notnull'         => true/false,           # optional, defaults to true
+     *           'auto_increment'  => true/false,           # optional, defaults to false
+     *           'default'         => 'value',              # optional, defaults to '' (or 0 if type is INT)
+     *           'default_expr'    => expression,           # use this instead of 'default' to use NOW(), CURRENT_TIMESTAMP etc
+     *           'primary'         => true/false/0-9,       # optional, defaults to false
+     *           'renamefrom'      => 'a_name'              # optional. Use this if the column existed previously with another name
+     *           'on_update'       => value for ON UPDATE   # optional, defaults to none
+     *           'on_delete'       => value for ON DELETE   # optional, defaults to none
      *       )
      * @param array idx - optional. Additional index specification. This is an associative array
      *     where the keys are index names and the values are arrays with the following
@@ -351,13 +352,21 @@ class UpdateUtil
             $cols[] = "`$col` ". self::_colspec($spec, true);
         }
         $colspec    = join(",\n", $cols);
-        $primaries  = join("`,\n`", self::_getprimaries($struc));
-        $comment    = !empty($comment) ? ' COMMENT="'.$comment.'"' : '';
+        $primaries  = self::_getprimaries($struc);
+        foreach ($primaries as &$primary) {
+            if (preg_match('/(\w+)(\(\d+\))?/', $primary, $match)) {
+                $primary =
+                    '`'.$match[1].'`'.
+                    (empty($match[2]) ? '' : $match[2]);
+            }
+        }
+        $primaries = join(",\n", $primaries);
+            $comment    = !empty($comment) ? ' COMMENT="'.$comment.'"' : '';
         $charset    = ' DEFAULT CHARACTER SET '.$_DBCONFIG['charset'].' COLLATE '.$_DBCONFIG['collation'];
 
         $table_stmt = "CREATE TABLE `$name`(
             $colspec".(!empty($primaries) ? ",
-            PRIMARY KEY (`$primaries`)" : '')."
+            PRIMARY KEY ($primaries)" : '')."
         ) ENGINE=$engine$charset$comment";
 
         self::sql($table_stmt);
