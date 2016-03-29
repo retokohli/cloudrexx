@@ -108,7 +108,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             $this->moduleLangVar.'_LEVEL_ICON'                 => $spacer.$strLevelIcon,
             $this->moduleLangVar.'_LEVEL_VISIBLE_STATE_ACTION' => $level->getActive() == 0 ? 1 : 0,
             $this->moduleLangVar.'_LEVEL_VISIBLE_STATE_IMG'    => $level->getActive() == 0 ? 'off' : 'on',
-            $this->moduleLangVar.'_LEVEL_LEVEL_NUMBER'         => $level->getLvl() - 1,
+            $this->moduleLangVar.'_LEVEL_LEVEL_NUMBER'         => $level->getLvl(),
             $this->moduleLangVar.'_LEVEL_ACTIVE_STATUS'        => $strLevelClass,
         ));
 
@@ -313,7 +313,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 //Frontend Tree Placeholder
                 $expandedLevelIds = $this->getExpandedLevelIds($levelId);
 
-                $level = $this->levelRepository->findOneById($levelId);
+                $level = $levelId ? $this->levelRepository->findOneById($levelId) : false;
                 if (!$level) {
                     $level = $this->levelRepository->getRoot();
                 }

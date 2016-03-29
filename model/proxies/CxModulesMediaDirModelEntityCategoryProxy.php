@@ -171,54 +171,6 @@ class CxModulesMediaDirModelEntityCategoryProxy extends \Cx\Modules\MediaDir\Mod
         return parent::getParent();
     }
 
-    public function getAllChildren()
-    {
-        $this->_load();
-        return parent::getAllChildren();
-    }
-
-    public function hasChildren()
-    {
-        $this->_load();
-        return parent::hasChildren();
-    }
-
-    public function current()
-    {
-        $this->_load();
-        return parent::current();
-    }
-
-    public function next()
-    {
-        $this->_load();
-        return parent::next();
-    }
-
-    public function key()
-    {
-        $this->_load();
-        return parent::key();
-    }
-
-    public function valid()
-    {
-        $this->_load();
-        return parent::valid();
-    }
-
-    public function rewind()
-    {
-        $this->_load();
-        return parent::rewind();
-    }
-
-    public function count()
-    {
-        $this->_load();
-        return parent::count();
-    }
-
     public function __get($name)
     {
         $this->_load();

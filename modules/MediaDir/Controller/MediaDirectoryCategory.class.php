@@ -109,7 +109,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
             $this->moduleLangVar.'_CATEGORY_ICON'                 => $spacer.$strCategoryIcon,
             $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_ACTION' => $category->getActive() == 0 ? 1 : 0,
             $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_IMG'    => $category->getActive() == 0 ? 'off' : 'on',
-            $this->moduleLangVar.'_CATEGORY_LEVEL_NUMBER'         => $category->getLvl() - 1,
+            $this->moduleLangVar.'_CATEGORY_LEVEL_NUMBER'         => $category->getLvl(),
             $this->moduleLangVar.'_CATEGORY_ACTIVE_STATUS'        => $strCategoryClass,
         ));
 
@@ -398,7 +398,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                 //Frontend Tree Placeholder
                 $expandedCategoryIds = $this->getExpandedCategoryIds($categoryId);
 
-                $category = $this->categoryRepository->findOneById($categoryId);
+                $category = $categoryId ? $this->categoryRepository->findOneById($categoryId) : false;
                 if (!$category) {
                     $category = $this->categoryRepository->getRoot();
                 }
