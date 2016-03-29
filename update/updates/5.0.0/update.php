@@ -2286,7 +2286,7 @@ function migrateSessionTable()
  */
 function insertSessionArray($sessionId, $sessionArr, $parentId = 0)
 {
-    global $objDatabase, $sessionObj;
+    global $objDatabase;
 
     if ($parentId == 0) {
         \Cx\Lib\UpdateUtil::sql('
