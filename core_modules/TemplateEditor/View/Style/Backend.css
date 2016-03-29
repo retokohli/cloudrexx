@@ -176,7 +176,6 @@ body {
 
 #content .option .element{
     position: relative;
-    float: left;
 }
 #content .option .elements .element .mediabrowser-button{
     margin-right: 5px;

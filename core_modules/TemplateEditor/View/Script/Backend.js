@@ -269,7 +269,7 @@ function seriesCheck (param, id, data) {
 }
 
 var removeElement = function () {
-    var id = jQuery(this).parent().children('input').attr('id');
+    var id = jQuery(this).parent().children('input, textarea').attr('id');
     var parent = jQuery(this).parent();
     parent.addClass('saving');
     updateOption(id, {elm: '', action:'remove'}, function () {

@@ -113,7 +113,7 @@ class PresetFileStorage extends \Cx\Model\Base\EntityBase implements Storable
         mkdir($this->path . '/options/presets');
         return file_put_contents(
             $this->path . '/options/presets/' . $name . '.yml',
-            Yaml::dump($data->yamlSerialize(), 5)
+            Yaml::dump($data->yamlSerialize(), 6)
         );
     }
 

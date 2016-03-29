@@ -103,7 +103,7 @@ class OptionSetFileStorage implements Storable
         return file_put_contents(
             $this->path
             . '/' . $name . '/options/options.yml',
-            Yaml::dump($data->yamlSerialize(), 5)
+            Yaml::dump($data->yamlSerialize(), 6)
         );
     }
 

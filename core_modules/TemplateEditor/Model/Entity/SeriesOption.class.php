@@ -169,7 +169,7 @@ class SeriesOption extends Option
         if (empty($data['id']) && $data['id'] != 0) {
             throw new OptionValueNotValidException("Needs a id to work");
         }
-        if (empty($data['value']['elm'])) {
+        if ($data['value']['elm'] === '') {
             if (isset($data['value']['action']) && $data['value']['action'] == 'remove') {
                 unset($this->elements[intval($data['id'])]);
             } else {
