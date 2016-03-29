@@ -235,14 +235,14 @@ function executeContrexxUpdate() {
         array (
             'table' => DBPREFIX . 'core_country',
             'structure' => array(
-                'id' => array('type' => 'INT(10)', 'default' => 'none'),
+                'id' => array('type' => 'INT(10)', 'primary' => true),
                 'alpha2' => array('type' => 'CHAR(2)', 'default' => ''),
                 'alpha3' => array('type' => 'CHAR(3)', 'default' => ''),
                 'ord' => array('type' => 'INT(5)', 'default' => 0),
                 'active' => array('type' => 'TINYINT(1)', 'default' => 1),
             ),
             'comment' => 'cx3upgrade',
-            'engine' => ''
+            'engine' => 'MyISAM'
         ),
         array (
             'table' => DBPREFIX . 'core_text',
@@ -250,12 +250,12 @@ function executeContrexxUpdate() {
                 'id' => array('type' => 'INT(10)', 'default' => 0, 'primary' => true),
                 'lang_id' => array('type' => 'INT(10)', 'default' => 1, 'primary' => true),
                 'section' => array('type' => 'VARCHAR(32)', 'default' => '', 'primary' => true),
-                'key' => array('type' => 'VARCHAR(255)', 'default' => '', 'primary' => true),
-                'text' => array('type' => 'text', 'default' => '', 'primary' => true),
+                'key' => array('type' => 'VARCHAR(255)', 'default' => '', 'primary' => 32),
+                'text' => array('type' => 'TEXT', 'default' => ''),
             ),
-            'keys' => array('text' => array('fields' => 'text', 'type' => 'FULLTEXT')),
+            'keys' => array('text' => array('fields' => array('text'), 'type' => 'FULLTEXT')),
             'comment' => 'cx3upgrade',
-            'engine' => '',
+            'engine' => 'MyISAM',
         )
     );
     foreach($possiblyMissingTables as $possiblyMissingTable) {
