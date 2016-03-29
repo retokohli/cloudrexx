@@ -417,7 +417,12 @@ function getComponents()
             'id'					=> 108,
             'name'					=> 'Html',
             'type'					=> 'core',
-        )
+        ),
+		array(
+			'id'					=> 109,
+			'name'					=> 'MediaSource',
+			'type'					=> 'core',
+		)
     );
 
     return $arrComponents;

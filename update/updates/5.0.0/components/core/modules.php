@@ -723,7 +723,25 @@ function getModules()
 			'status'				=> 'y',
 			'is_required'			=> 1,
 			'is_core'				=> 1,
-                        'is_active'                             => 1
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 108,
+			'name'					=> 'Html',
+			'description_variable'	=> 'TXT_CORE_HTML_DESCRIPTION',
+			'status'				=> 'y',
+			'is_required'			=> 1,
+			'is_core'				=> 1,
+			'is_active'				=> 1
+		),
+		array(
+			'id'					=> 109,
+			'name'					=> 'MediaSource',
+			'description_variable'	=> 'TXT_CORE_MEDIASOURCE_DESCRIPTION',
+			'status'				=> 'y',
+			'is_required'			=> 1,
+			'is_core'				=> 1,
+			'is_active'				=> 1
 		)
 	);
 
