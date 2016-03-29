@@ -1049,7 +1049,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('website_server','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('website_server', '', 12,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\Cx\\Core_Modules\\MultiSite\\Controller\\ComponentController::getWebsiteList()}', 'website')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\Cx\\Core_Modules\\MultiSite\\Controller\\ComponentController::getServerWebsiteList()}', 'website')){
                     throw new MultiSiteException("Failed to add Setting entry for website server");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('website_shared_folder','MultiSite') === NULL
