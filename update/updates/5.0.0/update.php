@@ -2289,9 +2289,6 @@ function insertSessionArray($sessionId, $sessionArr, $parentId = 0)
     global $objDatabase, $sessionObj;
 
     if ($parentId == 0) {
-        // get user id from session to prevent creation of database tables which
-        // could cause the update to fail
-        $userId = $sessionObj->userId;
         \Cx\Lib\UpdateUtil::sql('
             INSERT INTO
                 '. DBPREFIX .'sessions
@@ -2301,7 +2298,7 @@ function insertSessionArray($sessionId, $sessionArr, $parentId = 0)
                 `startdate` = \'' . time() . '\',
                 `lastupdated` = \'' . time() . '\',
                 `status` = \'backend\',
-                `user_id` = \'' . $userId . '\'
+                `user_id` = \'' . \FWUser::getFWUserObject()->objUser->getId() . '\'
         ');
     }
     foreach ($sessionArr as $key => $value) {
