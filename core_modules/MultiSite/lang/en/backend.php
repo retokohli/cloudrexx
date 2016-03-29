@@ -535,3 +535,6 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHANGE_OWNER_USER_ERROR'] = 'Error while 
 
 //get website list
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']= 'Failed to get the website list.';
+
+//get the website mode
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_MODE_ERROR']= 'Failed to get the website mode.';

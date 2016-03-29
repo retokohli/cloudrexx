@@ -172,7 +172,8 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             'getDomainSslCertificate' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'linkSsl'                 => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'setWebsiteOwner' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
-            'getWebsiteList' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'getServerWebsiteList' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'getWebsiteMode' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
         );  
     }
 
@@ -7173,14 +7174,14 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
     }
 
     /**
-     * Get the website list from service server by using website owner id
+     * Get the server website list from service server by using website owner id
      * 
      * @param array $params supplied arguments from JsonData-request
      * 
      * @return array JsonData-response
      * @throws MultiSiteJsonException
      */
-    public function getWebsiteList($params) {
+    public function getServerWebsiteList($params) {
         global $_ARRAYLANG;
 
         if (empty($params['post']) || empty($params['post']['ownerId'])) {
@@ -7196,14 +7197,19 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             $em = $this->cx->getDb()->getEntityManager();
             $ownerId = contrexx_input2db($params['post']['ownerId']);
             $websiteRepository = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            $websites = $websiteRepository->findWebsitesByCriteria(array('user.id' => $ownerId));
+            $websites = $websiteRepository->findWebsitesByCriteria(array('user.id' => $ownerId, 'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE));
             $websiteList = array();
             if (empty($websites) || !is_array($websites)) {
                 return array('websiteList' => $websiteList);
             }
 
             foreach ($websites as $website) {
-                if ($website->getStatus() !== \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE) {
+                $response = self::executeCommandOnWebsite('getWebsiteMode', '', $website);
+                if (    !$response 
+                    ||  $response->status == 'error' 
+                    ||  empty($response->data->websiteMode)
+                    ||  $response->data->websiteMode !== 'server'
+                ) {
                     continue;
                 }
                 $websiteList[] = $website->getId() . ':' . $website->getName();
@@ -7213,5 +7219,24 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             \DBG::log($e->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']);
         }
+    }
+
+    /**
+     * Get the website mode
+     *
+     * @param array $params supplied arguments from JsonData-request
+     *
+     * @return array JsonData-response
+     * @throws MultiSiteJsonException
+     */
+    public function getWebsiteMode($params) {
+        global $_ARRAYLANG;
+
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite') != ComponentController::MODE_WEBSITE) {
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_MODE_ERROR']);
+        }
+
+        $websiteMode = \Cx\Core\Setting\Controller\Setting::getValue('website_mode', 'MultiSite');
+        return array('status' => 'success', 'websiteMode' => $websiteMode);
     }
 }

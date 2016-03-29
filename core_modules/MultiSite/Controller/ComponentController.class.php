@@ -3134,11 +3134,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     /**
-     * Get the website list by using website owner id
+     * Get the server website list by using website owner id
      * 
      * @return string list of websites seperate by comma
      */
-    public static function getWebsiteList() 
+    public static function getServerWebsiteList()
     {
         $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
         if ($mode !== self::MODE_WEBSITE) {
@@ -3150,7 +3150,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return '';
         }
 
-        $response = JsonMultiSiteController::executeCommandOnMyServiceServer('getWebsiteList', array('ownerId' => $ownerId));
+        $response = JsonMultiSiteController::executeCommandOnMyServiceServer('getServerWebsiteList', array('ownerId' => $ownerId));
         if (!$response || $response->status === 'error' || empty($response->data->websiteList)) {
             return '';
         }

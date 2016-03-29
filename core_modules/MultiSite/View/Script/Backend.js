@@ -712,6 +712,15 @@
                 );
             } 
         };
+        if ($('#website_mode').length) {
+            $('#website_mode').change(function(){
+                var that = $(this).val();
+                if (that === 'server') {
+                    $('#website_server').closest('tr').hide();
+                }
+            });
+            $('#website_mode').trigger('change');
+        }
     });
 })(jQuery);
 
