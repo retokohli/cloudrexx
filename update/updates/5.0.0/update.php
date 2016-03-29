@@ -212,7 +212,51 @@ function executeContrexxUpdate() {
     /*******************************************************************************/
     /*******************************************************************************/
     /*******************************************************************************/
-    /******************** STAGE 2 CREATE POSSIBLY MISSING TABLES *******************/
+    /******************** STAGE 2 - UTF-8 MIGRATION ********************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    if (!include_once(dirname(__FILE__) . '/components/core/core.php')) {
+        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/core.php'));
+        return false;
+    }
+    if (!include_once(dirname(__FILE__) . '/components/core/utf8.php')) {
+        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/utf8.php'));
+        return false;
+    }
+    if (!in_array('utf8', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        $result = _utf8Update();
+        if ($result === 'timeout') {
+            setUpdateMsg(1, 'timeout');
+            return false;
+        } elseif (!$result) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UTF_CONVERSION']), 'title');
+            }
+            return false;
+        }
+        if ($result === 'charset_changed') {
+            // write new charset/collation definition to config file
+            if (!_writeNewConfigurationFile()) {
+                return false;
+            }
+        }
+
+        $_SESSION['contrexx_update']['update']['done'][] = 'utf8';
+
+        // _utf8Update() might have changed the charset/collation and migrated some tables,
+        // therefore, we will force a reinitialization of the update system
+        // to ensure that all db-connections are using the proper charset/collation
+        \DBG::msg('Changed collation to: '.$_DBCONFIG['collation']);
+        \DBG::msg('Force reinitialization of update...');
+        setUpdateMsg(1, 'timeout');
+        return false;
+    }
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /******************** STAGE 3 CREATE POSSIBLY MISSING TABLES *******************/
     /*******************************************************************************/
     /*******************************************************************************/
     /*******************************************************************************/
@@ -289,51 +333,6 @@ function executeContrexxUpdate() {
         }
     }
 
-    /*******************************************************************************/
-    /*******************************************************************************/
-    /*******************************************************************************/
-    /******************** STAGE 3 - UTF-8 MIGRATION ********************************/
-    /*******************************************************************************/
-    /*******************************************************************************/
-    /*******************************************************************************/
-    if (!include_once(dirname(__FILE__) . '/components/core/core.php')) {
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/core.php'));
-        return false;
-    }
-    if (!include_once(dirname(__FILE__) . '/components/core/utf8.php')) {
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/utf8.php'));
-        return false;
-    }
-    if (!in_array('utf8', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
-        $result = _utf8Update();
-        if ($result === 'timeout') {
-            setUpdateMsg(1, 'timeout');
-            return false;
-        } elseif (!$result) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UTF_CONVERSION']), 'title');
-            }
-            return false;
-        }
-        if ($result === 'charset_changed') {
-            // write new charset/collation definition to config file
-            if (!_writeNewConfigurationFile()) {
-                return false;
-            }
-        }
-
-        $_SESSION['contrexx_update']['update']['done'][] = 'utf8';
-
-        // _utf8Update() might have changed the charset/collation and migrated some tables,
-        // therefore, we will force a reinitialization of the update system
-        // to ensure that all db-connections are using the proper charset/collation
-        \DBG::msg('Changed collation to: '.$_DBCONFIG['collation']);
-        \DBG::msg('Force reinitialization of update...');
-        setUpdateMsg(1, 'timeout');
-        return false;
-    }
-
-    
     /*******************************************************************************/
     /*******************************************************************************/
     /*******************************************************************************/
