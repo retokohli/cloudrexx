@@ -371,7 +371,7 @@ namespace Cx\Core\Core\Controller {
             @ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
             
             // Set timezone
-            @ini_set('date.timezone', $_DBCONFIG['timezone']);
+            @ini_set('date.timezone', $_CONFIG['timezone']);
             
             /**
              * -------------------------------------------------------------------------
