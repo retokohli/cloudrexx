@@ -715,6 +715,7 @@
         if ($('#website_mode').length) {
             $('#website_mode').change(function(){
                 var that = $(this).val();
+                $('#website_server').closest('tr').show();
                 if (that === 'server') {
                     $('#website_server').closest('tr').hide();
                 }
