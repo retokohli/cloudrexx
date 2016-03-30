@@ -1152,11 +1152,8 @@ class MediaLibrary
                                         file_name += i > 0 ? "." : "";
                                         file_name += file.split('.')[i];
                                     }
-                                    actionPath = 'index.php?section=$this->archive&act=rename&path=$this->webPath&file='+file_name;
+                                    actionPath = \$J(this).data('actionUrl');
 
-                                    if (\$J(this).parent().parent().find('.file_size').html() != '&nbsp;-') {
-                                        actionPath += file_ext;
-                                    }
                                     //Rename Form
                                     \$J(this).parent().parent().find('.file_name')
                                     .append('<div id="insertform"><input type="text" id="filename" name="filename" style="padding:0px;" value="'+file_name+'"/>'+file_ext
@@ -1332,5 +1329,52 @@ END;
         }
         return false;
     }
+
+    /**
+     * Get files by search term
+     *
+     * @param string    $path           Path to search files
+     * @param string    $searchTerm     Search term
+     * @param array     $resultFiles    Result files array
+     * @param boolean   $recursive      True to search recursive
+     *
+     * @return array   Files array by given search term
+     */
+    public function getFilesBySearchTerm($path = '', $searchTerm = '', & $resultFiles = array(), $recursive = true)
+    {
+        if (empty($path) || empty($searchTerm)) {
+            return array();
+        }
+
+        if (!is_dir($path)) {
+            return array();
+        }
+
+        $files = array_filter(glob($path . $searchTerm . '*'), 'is_file');
+        foreach ($files as $file) {
+            $fileName = basename($file);
+            if (!\FWSystem::detectUtf8($fileName)) {
+                $fileName = utf8_encode($fileName);
+            }
+            if (   preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $fileName)
+                || self::isIllegalFileName($fileName)
+            ) {
+                continue;
+            }
+            $resultFiles['icon'][] = self::getFileTypeIconWebPath($file);
+            $resultFiles['name'][] = $fileName;
+            $resultFiles['size'][] = $this->_getSize($file);
+            $resultFiles['type'][] = $this->_getType($file);
+            $resultFiles['date'][] = $this->_getDate($file);
+            $resultFiles['perm'][] = $this->_getPerm($file);
+            $resultFiles['path'][] = dirname($file);
+        }
+        if ($recursive) {
+            foreach (glob($path .'*', GLOB_ONLYDIR | GLOB_MARK) as $dir) {
+                $this->getFilesBySearchTerm($dir, $searchTerm, $resultFiles, $recursive);
+            }
+        }
+
+        return $resultFiles;
+    }
 }
-?>
