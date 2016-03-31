@@ -87,7 +87,8 @@ class MarketLibrary
         if($where != '' && $like != ''){
             $where = "WHERE $where LIKE $like";
         }
-
+        $specFieldCount = $objDatabase->Execute("SELECT COUNT(*) AS `count` FROM `" . DBPREFIX . "module_market_spez_fields`");
+        $specFieldCount = $specFieldCount->fields['count'];
         $objResultEntries = $objDatabase->Execute('SELECT * FROM '.DBPREFIX.'module_market '.$where.' '.$orderBy);
            if ($objResultEntries !== false){
                while (!$objResultEntries->EOF) {
@@ -109,11 +110,9 @@ class MarketLibrary
                    $this->entries[$objResultEntries->fields['id']]['status']             = $objResultEntries->fields['status'];
                    $this->entries[$objResultEntries->fields['id']]['regkey']             = $objResultEntries->fields['regkey'];
                    $this->entries[$objResultEntries->fields['id']]['sort_id']             = $objResultEntries->fields['sort_id'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_1']     = $objResultEntries->fields['spez_field_1'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_2']     = $objResultEntries->fields['spez_field_2'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_3']     = $objResultEntries->fields['spez_field_3'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_4']     = $objResultEntries->fields['spez_field_4'];
-                   $this->entries[$objResultEntries->fields['id']]['spez_field_5']     = $objResultEntries->fields['spez_field_5'];
+                   for ($i = 1; $i <= $specFieldCount; ++$i) {
+                       $this->entries[$objResultEntries->fields['id']]['spez_field_' . $i]      = $objResultEntries->fields['spez_field_' . $i];
+                   }
                    $objResultEntries->MoveNext();
                }
            }
@@ -198,7 +197,7 @@ class MarketLibrary
             }
 
             $objFWUser = \FWUser::getFWUserObject();
-
+            $specFields = $this->getSpecFieldsQueryPart($objDatabase, $_POST);
             $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_market SET
                                 type='".contrexx_addslashes($_POST['type'])."',
                                   title='".contrexx_addslashes($_POST['title'])."',
@@ -213,12 +212,8 @@ class MarketLibrary
                                   userid='".($objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0)."',
                                   name='".contrexx_addslashes($_POST['name'])."',
                                   email='".contrexx_addslashes($_POST['email'])."',
-                                  userdetails='".contrexx_addslashes($_POST['userdetails'])."',
-                                  spez_field_1='".contrexx_addslashes($_POST['spez_1'])."',
-                                  spez_field_2='".contrexx_addslashes($_POST['spez_2'])."',
-                                  spez_field_3='".contrexx_addslashes($_POST['spez_3'])."',
-                                  spez_field_4='".contrexx_addslashes($_POST['spez_4'])."',
-                                  spez_field_5='".contrexx_addslashes($_POST['spez_5'])."',
+                                  userdetails='".contrexx_addslashes($_POST['userdetails'])."', ".
+                                  $specFields."
                                   regkey='".$key."',
                                   status='".$status."'");
 
@@ -590,6 +585,24 @@ class MarketLibrary
             'style' => 'display:none'
         ));
         return $uploader;
+    }
+
+    /**
+     * Get the string to insert or update special fields
+     * @param $dbCon    \ADOConnection  The database connection
+     * @param $data     array           The POST data
+     * @return string
+     */
+    protected function getSpecFieldsQueryPart($dbCon, $data)
+    {
+        $specFields = '';
+        $specFieldCount = $dbCon->Execute("SELECT COUNT(*) AS `count` FROM `" . DBPREFIX . "module_market_spez_fields`");
+        $specFieldCount = $specFieldCount->fields['count'];
+        for ($i = 1; $i <= $specFieldCount; ++$i) {
+            $specFields .= 'spez_field_' . $i . '=\'' . contrexx_addslashes($data['spez_' . $i]) . '\', ';
+        }
+
+        return $specFields;
     }
 
 }

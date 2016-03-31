@@ -765,6 +765,18 @@ class Market extends MarketLibrary
                 }
               }
 
+            $spezVariables = array();
+            if (isset($spezFields)) {
+                foreach ($spezFields as $spezFieldId => $value) {
+                    $txtKey = 'TXT_MARKET_SPEZ_FIELD_' . $spezFieldId;
+                    $valueKey = 'MARKET_SPEZ_FIELD_' . $spezFieldId;
+                    $entryKey = 'spez_field_' . $spezFieldId;
+                    $spezVariables[$txtKey] = $value;
+                    $spezVariables[$valueKey] = $this->entries[$id][$entryKey];
+                }
+
+            }
+
             //price
             if ($this->entries[$id]['price'] == 'forfree') {
                    $price = $_ARRAYLANG['TXT_MARKET_FREE'];
@@ -807,17 +819,9 @@ class Market extends MarketLibrary
                 'TXT_MARKET_EMAIL'                 => $_CORELANG['TXT_EMAIL'],
                 'TXT_MARKET_PRICE_MSG'             => $_ARRAYLANG['TXT_MARKET_PRICE_IS'],
                 'TXT_MARKET_NEW_PRICE'             => $_ARRAYLANG['TXT_PRICE_EXPECTATION'],
-                'TXT_MARKET_SPEZ_FIELD_1'        => $spezFields[1],
-                'TXT_MARKET_SPEZ_FIELD_2'        => $spezFields[2],
-                'TXT_MARKET_SPEZ_FIELD_3'        => $spezFields[3],
-                'TXT_MARKET_SPEZ_FIELD_4'        => $spezFields[4],
-                'TXT_MARKET_SPEZ_FIELD_5'        => $spezFields[5],
-                'MARKET_SPEZ_FIELD_1'            => $this->entries[$id]['spez_field_1'],
-                'MARKET_SPEZ_FIELD_2'            => $this->entries[$id]['spez_field_2'],
-                'MARKET_SPEZ_FIELD_3'            => $this->entries[$id]['spez_field_3'],
-                'MARKET_SPEZ_FIELD_4'            => $this->entries[$id]['spez_field_4'],
-                'MARKET_SPEZ_FIELD_5'            => $this->entries[$id]['spez_field_5'],
             ));
+
+            $this->_objTpl->setVariable($spezVariables);
 
             if ($this->_objTpl->blockExists('market_picture')) {
                 if (!empty($this->entries[$id]['picture'])) {
