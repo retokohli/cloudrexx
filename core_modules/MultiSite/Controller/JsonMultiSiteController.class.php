@@ -176,6 +176,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             'getWebsiteMode' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'getServerWebsitePath' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
             'updateWebsiteDomainThemeMap' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
+            'getServerWebsiteByMode' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), false, null, null, array($this, 'auth')),
         );
     }
 
@@ -7186,7 +7187,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
     public function getServerWebsiteList($params) {
         global $_ARRAYLANG;
 
-        if (empty($params['post']) || empty($params['post']['ownerId'])) {
+        if (empty($params['post']) || empty($params['post']['ownerId']) || empty($params['post']['websiteName'])) {
             \DBG::msg('JsonMultiSiteController::getWebsiteList() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']);
         }
@@ -7197,9 +7198,15 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
 
         try {
             $em = $this->cx->getDb()->getEntityManager();
-            $ownerId = contrexx_input2db($params['post']['ownerId']);
+            $ownerId     = contrexx_input2db($params['post']['ownerId']);
+            $websiteName = contrexx_input2db($params['post']['websiteName']);
             $websiteRepository = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            $websites = $websiteRepository->findWebsitesByCriteria(array('user.id' => $ownerId, 'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE));
+            $args = array(
+                'user.id'        => $ownerId,
+                'neq'            => array(array('website.name', $websiteName)),
+                'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE
+            );
+            $websites = $websiteRepository->findWebsitesByCriteria($args);
             $websiteList = array();
             if (empty($websites) || !is_array($websites)) {
                 return array('websiteList' => $websiteList);
@@ -7303,7 +7310,11 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
     public function updateWebsiteDomainThemeMap($params) {
         global $_ARRAYLANG;
 
-        if (empty($params['post']) || empty($params['post']['websiteName']) || empty($params['post']['serverWebsite'])) {
+        if (    empty($params['post'])
+            ||  empty($params['post']['websiteName'])
+            ||  empty($params['post']['serverWebsite'])
+            ||  empty($params['post']['changeRequest'])
+        ) {
             \DBG::msg('JsonMultiSiteController::updateWebsiteDomainThemeMap() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']);
         }
@@ -7313,12 +7324,14 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         }
 
         try {
-            $em                = $this->cx->getDb()->getEntityManager();
-            $filePath          = $this->cx->getWebsiteDocumentRootPath() . '/core_modules/MultiSite/Data';
-            $websitePath       = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite');
-            $websiteOffsetPath = substr($websitePath, strlen(\Env::get('cx')->getWebsiteDocumentRootPath()));
-            $websiteName       = contrexx_input2db($params['post']['websiteName']);
-            $serverWebsiteId   = contrexx_input2db($params['post']['serverWebsite']);
+            $em                 = $this->cx->getDb()->getEntityManager();
+            $filePath           = $this->cx->getWebsiteDocumentRootPath() . '/core_modules/MultiSite/Data';
+            $websitePath        = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite');
+            $websiteOffsetPath  = substr($websitePath, strlen(\Env::get('cx')->getWebsiteDocumentRootPath()));
+            $websiteName        = contrexx_input2db($params['post']['websiteName']);
+            $serverWebsiteId    = contrexx_input2db($params['post']['serverWebsite']);
+            $changeRequest      = contrexx_input2raw($params['post']['changeRequest']);
+            $oldServerWebsiteId = contrexx_input2db($params['post']['oldServerWebsite']);
             //get the website
             $websiteRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
             $websites    = $websiteRepo->findWebsitesByCriteria(array('website.name' => $websiteName, 'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE));
@@ -7332,27 +7345,50 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             if (!$serverWebsite) {
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']);
             }
-
-            //get the website theme path
-            $domains = $website->getDomains();
-            $websiteDomainTheme = array();
-            foreach($domains as $domain) {
-                $websiteDomainTheme[] = "{$domain->getName()}\t$websiteOffsetPath/{$serverWebsite->getName()}";
+            //get the old server website
+            if (!empty($oldServerWebsiteId)) {
+                $oldServerWebsites = $websiteRepo->findWebsitesByCriteria(array('website.id' => $oldServerWebsiteId, 'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE));
+                $oldServerWebsite  = current($oldServerWebsites);
+                if (!$oldServerWebsite) {
+                    throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']);
+                }
             }
-
+            //get the website theme path
+            $newContent = array();
+            $contentForOldServer = array();
+            foreach($website->getDomains() as $domain) {
+                $newContent[] = "{$domain->getName()}\t$websiteOffsetPath/{$serverWebsite->getName()}";
+                if ($oldServerWebsite) {
+                    $contentForOldServer[] = "{$domain->getName()}\t$websiteOffsetPath/{$oldServerWebsite->getName()}";
+                }
+            }
             try {
                 $objFile = new \Cx\Lib\FileSystem\File($filePath .'/WebsiteDomainThemeMap.txt');
                 $content = $objFile->getData();
                 $matches = null;
-                preg_match_all('/(\w.*\.\w{3})\s(.*)/', $content, $matches);
-                $oldWebsiteDomainThemeContent = array();
+                preg_match_all('/(\w.*\.\w{3,5})\s(.*)/', $content, $matches);
+                $oldContent = array();
                 foreach ($matches[1] as $key => $domainName) {
-                    $oldWebsiteDomainThemeContent[] = "$domainName\t{$matches[2][$key]}";
+                    $oldContent[] = "$domainName\t{$matches[2][$key]}";
                 }
-                $websiteDomainThemeContent = !count(array_intersect($oldWebsiteDomainThemeContent, $websiteDomainTheme))
-                                                ? array_merge($oldWebsiteDomainThemeContent, $websiteDomainTheme)
-                                                : array_diff($oldWebsiteDomainThemeContent, $websiteDomainTheme);
-                $objFile->write(join("\n", $websiteDomainThemeContent));
+                $isEntryExists = count(array_intersect($oldContent, $newContent));
+                switch ($changeRequest) {
+                    case 'removeThenAdd':
+                        $oldContent = count(array_intersect($oldContent, $contentForOldServer))
+                                    ? array_diff($oldContent, $contentForOldServer)
+                                    : $oldContent;
+                    case 'add':
+                        $content = !$isEntryExists
+                                    ? array_merge($oldContent, $newContent)
+                                    : $oldContent;
+                        break;
+                    case 'remove':
+                        $content = $isEntryExists
+                                    ? array_diff($oldContent, $newContent)
+                                    : $oldContent;
+                        break;
+                }
+                $objFile->write(join("\n", $content));
             } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 \DBG::msg($e->getMessage());
                 throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']);
@@ -7361,6 +7397,77 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']);
+        }
+    }
+
+    /**
+     * Get the server websites by mode client
+     *
+     * @param array $params supplied arguments from JsonData-request
+     *
+     * @return array JsonData-response
+     * @throws MultiSiteJsonException
+     */
+    public function getServerWebsiteByMode($params) {
+        global $_ARRAYLANG;
+
+        if (empty($params['post']) ||  empty($params['post']['websiteMode'])) {
+            \DBG::msg('JsonMultiSiteController::getClientWebsiteByServer() failed: Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_BY_MODE_CLIENT_ERROR_MSG']);
+        }
+
+        $websiteMode = contrexx_input2raw($params['post']['websiteMode']);
+        try {
+            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite')) {
+                case ComponentController::MODE_SERVICE:
+                case ComponentController::MODE_HYBRID:
+                    if (empty($params['post']['websiteName'])) {
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_BY_MODE_CLIENT_ERROR_MSG']);
+                    }
+
+                    $em          = $this->cx->getDb()->getEntityManager();
+                    $websiteRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                    $websiteName = contrexx_input2db($params['post']['websiteName']);
+
+                    //get the website
+                    $serverWebsites = $websiteRepo->findWebsitesByCriteria(array('website.name' => $websiteName, 'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE));
+                    $serverWebsite  = current($serverWebsites);
+                    if (!$serverWebsite) {
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_BY_MODE_CLIENT_ERROR_MSG']);
+                    }
+
+                    //get all the websites under the server website's ownerId
+                    $ownerId        = $serverWebsite->getOwner()->getId();
+                    $clientWebsites = $websiteRepo->findWebsitesByCriteria(
+                        array(
+                            'user.id'        => $ownerId,
+                            'neq'            => array(array('website.id', $serverWebsite->getId())),
+                            'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE
+                        )
+                    );
+                    if (!$clientWebsites) {
+                        throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_BY_MODE_CLIENT_ERROR_MSG']);
+                    }
+
+                    foreach ($clientWebsites as $website) {
+                        $response = self::executeCommandOnWebsite('getServerWebsiteByMode', array('websiteMode' => $websiteMode), $website);
+                        if (!$response || $response->status == 'error' || empty($response->data->serverWebsite)) {
+                            continue;
+                        }
+                        $serverWebsiteList[] = $response->data->serverWebsite;
+                    }
+                    return array('serverWebsites' => $serverWebsiteList, 'requestedServerId' => $serverWebsite->getId());
+                    break;
+                case ComponentController::MODE_WEBSITE:
+                    $mode   = \Cx\Core\Setting\Controller\Setting::getValue('website_mode', 'MultiSite');
+                    $server = \Cx\Core\Setting\Controller\Setting::getValue('website_server', 'MultiSite');
+                    return array('serverWebsite' => ($websiteMode == $mode) ? $server : 0);
+                    break;
+            }
+            return array('status' => 'error', 'message' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_BY_MODE_CLIENT_ERROR_MSG']);
+        } catch (\Exception $e) {
+            \DBG::log($e->getMessage());
+            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_BY_MODE_CLIENT_ERROR_MSG']);
         }
     }
 }

@@ -870,21 +870,30 @@ CODE;
                 \Message::add(contrexx_raw2xhtml($themeName).' ('.$themeDirectory.') '.$_ARRAYLANG['TXT_THEME_SUCCESSFULLY_IMPORTED']);
                 break;
             case 'filesystem':
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                 $themeName = null;        
                 $existingThemeInFilesystem = !empty($_POST['existingdirName']) ? contrexx_input2raw($_POST['existingdirName']) : null;
 
-                $themePath = file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem) ? \Env::get('cx')->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem : \Env::get('cx')->getCodeBaseThemesPath() . '/'. $existingThemeInFilesystem;        
+                $themePath = file_exists($cx->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem) 
+                                ? $cx->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem 
+                                : ((   !empty($cx->getServerWebsitePath())
+                                    && file_exists($cx->getServerWebsiteThemesPath() . '/' . $existingThemeInFilesystem))
+                                    ? $cx->getServerWebsiteThemesPath() . '/' . $existingThemeInFilesystem 
+                                    : $cx->getCodeBaseThemesPath() . '/'. $existingThemeInFilesystem);
         
                 if (!file_exists($themePath)) {
                     \Message::add($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS'], \Message::CLASS_ERROR);
                     return false;
                 }
                 
-                $yamlFile =  file_exists(\Env::get('cx')->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml')
-                           ? \Env::get('cx')->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml'
-                           : ( file_exists(\Env::get('cx')->getCodeBaseThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml')
-                              ? \Env::get('cx')->getCodeBaseThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml'
-                              : '');
+                $yamlFile =  file_exists($cx->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml')
+                           ? $cx->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml'
+                           : ((   !empty($cx->getServerWebsitePath())
+                               && file_exists($cx->getServerWebsiteThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml'))
+                                ? $cx->getServerWebsiteThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml'
+                                : ( file_exists($cx->getCodeBaseThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml')
+                                    ? $cx->getCodeBaseThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml'
+                                    : ''));
                 if ($yamlFile) {
                     $objFile = new \Cx\Lib\FileSystem\File($yamlFile);
                     $yaml = new \Symfony\Component\Yaml\Yaml();

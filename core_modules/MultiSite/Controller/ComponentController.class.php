@@ -3181,12 +3181,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return '';
         }
 
-        $ownerId = \FWUser::getFWUserObject()->objUser->getId();
+        $ownerId     = \FWUser::getFWUserObject()->objUser->getId();
+        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
         if ($ownerId != \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite')) {
             return '';
         }
 
-        $response = JsonMultiSiteController::executeCommandOnMyServiceServer('getServerWebsiteList', array('ownerId' => $ownerId));
+        $response = JsonMultiSiteController::executeCommandOnMyServiceServer(
+            'getServerWebsiteList',
+            array('ownerId' => $ownerId, 'websiteName' => $websiteName)
+        );
         if (!$response || $response->status === 'error' || empty($response->data->websiteList)) {
             return '';
         }

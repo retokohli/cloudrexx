@@ -133,18 +133,22 @@ class Theme extends \Cx\Model\Base\EntityBase
      * @return string the preview image source web path
      */
     public function getPreviewImage() {
-        $websiteFilePath  = \Env::get('cx')->getWebsiteThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
-        $codeBaseFilePath = \Env::get('cx')->getCodeBaseThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
-        $filePath         = file_exists($websiteFilePath) 
-                            ? $websiteFilePath
-                            : ( file_exists($codeBaseFilePath)
-                                ? $codeBaseFilePath
-                                : ''
-                              );
+        $websiteFilePath       = $this->cx->getWebsiteThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
+        $serverWebsiteFilePath = $this->cx->getServerWebsiteThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
+        $codeBaseFilePath      = $this->cx->getCodeBaseThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
+        $filePath              = file_exists($websiteFilePath) 
+                                    ? $websiteFilePath
+                                    : (  (!empty($this->cx->getServerWebsitePath())
+                                      && file_exists($serverWebsiteFilePath)) 
+                                        ? $serverWebsiteFilePath
+                                        : (file_exists($codeBaseFilePath)
+                                            ? $codeBaseFilePath
+                                            : '')
+                                        );
         if ($filePath && file_exists($filePath)) {
-            return \Env::get('cx')->getWebsiteThemesWebPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
+            return $this->cx->getWebsiteThemesWebPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
         }
-        return \Env::get('cx')->getCodeBaseOffsetPath(). self::THEME_DEFAULT_PREVIEW_FILE;
+        return $this->cx->getCodeBaseOffsetPath(). self::THEME_DEFAULT_PREVIEW_FILE;
     }
     
     /**

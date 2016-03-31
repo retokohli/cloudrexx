@@ -542,10 +542,13 @@ class InitCMS
         $filePath = $themesPath.'/'.$file;
         $content = '';
         
-        if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath)) {
-            $content = file_get_contents(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath);
-        } elseif (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath)) {
-            $content = file_get_contents(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (file_exists($cx->getWebsiteThemesPath().'/'.$filePath)) {
+            $content = file_get_contents($cx->getWebsiteThemesPath().'/'.$filePath);
+        } elseif (!empty($cx->getServerWebsitePath()) && file_exists($cx->getServerWebsiteThemesPath().'/'.$filePath)) {
+            $content = file_get_contents($cx->getServerWebsiteThemesPath().'/'.$filePath);
+        } elseif (file_exists($cx->getCodeBaseThemesPath().'/'.$filePath)) {
+            $content = file_get_contents($cx->getCodeBaseThemesPath().'/'.$filePath);
         }
 
         return $content;
@@ -620,11 +623,15 @@ class InitCMS
         $result = array();
         $templateFiles = array();
         $folder = $customTemplateForTheme->getFoldername();
-        if (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$folder)) {
-            $templateFiles = scandir(\Env::get('cx')->getCodeBaseThemesPath().'/'.$folder);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        if (file_exists($cx->getCodeBaseThemesPath().'/'.$folder)) {
+            $templateFiles = scandir($cx->getCodeBaseThemesPath().'/'.$folder);
         }
-        if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$folder)) {
-            $templateFiles = array_unique(array_merge($templateFiles, scandir(\Env::get('cx')->getWebsiteThemesPath().'/'.$folder)));
+        if (!empty($cx->getServerWebsitePath()) && file_exists($cx->getServerWebsiteThemesPath().'/'.$folder)) {
+            $templateFiles = array_unique(array_merge($templateFiles, scandir($cx->getServerWebsiteThemesPath().'/'.$folder)));
+        }
+        if (file_exists($cx->getWebsiteThemesPath().'/'.$folder)) {
+            $templateFiles = array_unique(array_merge($templateFiles, scandir($cx->getWebsiteThemesPath().'/'.$folder)));
         }
 
         foreach ($templateFiles as $f){
