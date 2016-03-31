@@ -605,64 +605,6 @@ class MediaLibrary
         return $path;
     }
 
-
-    // makes the dir tree with variables: icon, name, size, type, date, perm
-    function _dirTree($path)
-    {
-        $dir  = array();
-        $file = array();
-        $forbidden_files = array('.', '..', '.svn', '.htaccess', 'index.php');
-        if (is_dir($path)) {
-            $fd = @opendir($path);
-            $name = @readdir($fd);
-            while ($name !== false) {
-                if (!in_array($name, $forbidden_files)) {
-                    if (is_dir($path.$name)) {
-                        $dirName = $name;
-                        if (!\FWSystem::detectUtf8($dirName)) {
-                            $dirName = utf8_encode($dirName);
-                        }
-
-                        $dir['icon'][] = self::getFileTypeIconWebPath($path.$name);
-                        $dir['name'][] = $dirName;
-                        $dir['size'][] = $this->_getSize($path.$name);
-                        $dir['type'][] = $this->_getType($path.$name);
-                        $dir['date'][] = $this->_getDate($path.$name);
-                        $dir['perm'][] = $this->_getPerm($path.$name);
-                    } elseif (is_file($path.$name)) {
-// TODO
-// This won't work for .jpg thumbnails made from .png images and other
-// ways to create thumbnail file names.  See the Image class.
-                        if (preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $name)) {
-                            $originalFileName = preg_replace("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)(\.[^.]+)$)|(?:\.thumb)$/mi", "$1", $name);
-                            if (!file_exists($path . $originalFileName)) {
-                                @unlink($path . $name);
-                            }
-                        } else {
-                            $fileName = $name;
-                            if (!\FWSystem::detectUtf8($fileName)) {
-                                $fileName = utf8_encode($fileName);
-                            }
-                                $file['icon'][] = self::getFileTypeIconWebPath($path.$name);
-                                $file['name'][] = $fileName;
-                                $file['size'][] = $this->_getSize($path . $name);
-                                $file['type'][] = $this->_getType($path . $name);
-                                $file['date'][] = $this->_getDate($path . $name);
-                                $file['perm'][] = $this->_getPerm($path . $name);
-                            }
-                    }
-                }
-                $name = @readdir($fd);
-            }
-            @closedir($fd);
-            clearstatcache();
-        }
-        $dirTree['dir']  = $dir;
-        $dirTree['file'] = $file;
-        return $dirTree;
-    }
-
-
     function _sortDirTree($tree)
     {
         $d    = $tree['dir'];
@@ -672,30 +614,30 @@ class MediaLibrary
         switch ($this->sortBy) {
             // sort by size
             case 'size':
-                @array_multisort($d['size'], $direction, $d['name'], $d['type'], $d['date'], $d['perm'], $d['icon']);
-                @array_multisort($f['size'], $direction, $f['name'], $f['type'], $f['date'], $f['perm'], $f['icon']);
+                @array_multisort($d['size'], $direction, $d['name'], $d['type'], $d['date'], $d['perm'], $d['icon'], $d['path']);
+                @array_multisort($f['size'], $direction, $f['name'], $f['type'], $f['date'], $f['perm'], $f['icon'], $f['path']);
                 break;
             // sort by type
             case 'type':
-                @array_multisort($d['type'], $direction, $d['name'], $d['size'], $d['date'], $d['perm'], $d['icon']);
-                @array_multisort($f['type'], $direction, $f['name'], $f['size'], $f['date'], $f['perm'], $f['icon']);
+                @array_multisort($d['type'], $direction, $d['name'], $d['size'], $d['date'], $d['perm'], $d['icon'], $d['path']);
+                @array_multisort($f['type'], $direction, $f['name'], $f['size'], $f['date'], $f['perm'], $f['icon'], $f['path']);
                 break;
             //sort by date
             case 'date':
-                @array_multisort($d['date'], $direction, $d['name'], $d['size'], $d['type'], $d['perm'], $d['icon']);
-                @array_multisort($f['date'], $direction, $f['name'], $f['size'], $f['type'], $f['perm'], $f['icon']);
+                @array_multisort($d['date'], $direction, $d['name'], $d['size'], $d['type'], $d['perm'], $d['icon'], $d['path']);
+                @array_multisort($f['date'], $direction, $f['name'], $f['size'], $f['type'], $f['perm'], $f['icon'], $f['path']);
                 break;
             //sort by perm
             case 'perm':
                 $direction = !$this->sortDesc ? SORT_DESC : SORT_ASC;
-                @array_multisort($d['perm'], $direction, $d['name'], $d['size'], $d['type'], $d['date'], $d['icon']);
-                @array_multisort($f['perm'], $direction, $f['name'], $f['size'], $f['type'], $f['date'], $f['icon']);
+                @array_multisort($d['perm'], $direction, $d['name'], $d['size'], $d['type'], $d['date'], $d['icon'], $d['path']);
+                @array_multisort($f['perm'], $direction, $f['name'], $f['size'], $f['type'], $f['date'], $f['icon'], $f['path']);
                 break;
             // sort by name
             case 'name':
             default:
-                @array_multisort($d['name'], $direction, SORT_NATURAL | SORT_FLAG_CASE, $d['size'], $d['type'], $d['date'], $d['perm'], $d['icon']);
-                @array_multisort($f['name'], $direction, SORT_NATURAL | SORT_FLAG_CASE, $f['size'], $f['type'], $f['date'], $f['perm'], $f['icon']);
+                @array_multisort($d['name'], $direction, SORT_NATURAL | SORT_FLAG_CASE, $d['size'], $d['type'], $d['date'], $d['perm'], $d['icon'], $d['path']);
+                @array_multisort($f['name'], $direction, SORT_NATURAL | SORT_FLAG_CASE, $f['size'], $f['type'], $f['date'], $f['perm'], $f['icon'], $f['path']);
                 break;
         }
         
@@ -1324,7 +1266,7 @@ END;
      * @return boolean
      */
     public static function isIllegalFileName($file) {
-        if (preg_match('#^(\.htaccess|\.ftpaccess|\.passwd|web\.config)$#i', $file)) {
+        if (preg_match('#^(\index.php|\.htaccess|\.ftpaccess|\.passwd|web\.config)$#i', $file)) {
             return true;
         }
         return false;
@@ -1335,14 +1277,14 @@ END;
      *
      * @param string    $path           Path to search files
      * @param string    $searchTerm     Search term
-     * @param array     $resultFiles    Result files array
+     * @param array     $result         Result files and directory array
      * @param boolean   $recursive      True to search recursive
      *
      * @return array   Files array by given search term
      */
-    public function getFilesBySearchTerm($path = '', $searchTerm = '', & $resultFiles = array(), $recursive = true)
+    public function getDirectoryTree($path = '', $searchTerm = '', & $result = array(), $recursive = false)
     {
-        if (empty($path) || empty($searchTerm)) {
+        if (empty($path)) {
             return array();
         }
 
@@ -1350,31 +1292,69 @@ END;
             return array();
         }
 
-        $files = array_filter(glob($path . $searchTerm . '*'), 'is_file');
-        foreach ($files as $file) {
-            $fileName = basename($file);
-            if (!\FWSystem::detectUtf8($fileName)) {
-                $fileName = utf8_encode($fileName);
+        if (!empty($searchTerm)) {
+            $mediaArray = glob($path . '*' .$searchTerm . '*');
+        } else {
+            $mediaArray = glob($path . '*');
+        }
+        if (empty($result)) {
+            $result = array(
+                'dir'  => array(),
+                'file' => array(),
+            );
+        }
+        foreach ($mediaArray as $media) {
+            $mediaName = basename($media);
+            if (!\FWSystem::detectUtf8($mediaName)) {
+                $mediaName = utf8_encode($mediaName);
             }
-            if (   preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $fileName)
-                || self::isIllegalFileName($fileName)
-            ) {
+
+            $mediaType = is_dir($media) ? 'dir' : 'file';
+            $mediaPath = dirname($media);
+            if ($mediaType == 'file' && !$this->isFileValidToShow($mediaPath, $mediaName)) {
                 continue;
             }
-            $resultFiles['icon'][] = self::getFileTypeIconWebPath($file);
-            $resultFiles['name'][] = $fileName;
-            $resultFiles['size'][] = $this->_getSize($file);
-            $resultFiles['type'][] = $this->_getType($file);
-            $resultFiles['date'][] = $this->_getDate($file);
-            $resultFiles['perm'][] = $this->_getPerm($file);
-            $resultFiles['path'][] = dirname($file);
+
+            $result[$mediaType]['icon'][] = self::getFileTypeIconWebPath($media);
+            $result[$mediaType]['name'][] = $mediaName;
+            $result[$mediaType]['size'][] = $this->_getSize($media);
+            $result[$mediaType]['type'][] = $this->_getType($media);
+            $result[$mediaType]['date'][] = $this->_getDate($media);
+            $result[$mediaType]['perm'][] = $this->_getPerm($media);
+            $result[$mediaType]['path'][] = $mediaPath;
         }
         if ($recursive) {
             foreach (glob($path .'*', GLOB_ONLYDIR | GLOB_MARK) as $dir) {
-                $this->getFilesBySearchTerm($dir, $searchTerm, $resultFiles, $recursive);
+                $this->getDirectoryTree($dir, $searchTerm, $result, $recursive);
             }
         }
 
-        return $resultFiles;
+        return $result;
+    }
+
+    /**
+     * Return whether file is valid to show or not
+     *
+     * @param string $filePath  Folder path to the file
+     * @param string $fileName  File name
+     *
+     * @return boolean True when file is valid to show, False otherwise
+     */
+    public function isFileValidToShow($filePath, $fileName)
+    {
+        if (   empty($filePath)
+            || empty($fileName)
+            || self::isIllegalFileName($fileName)
+        ) {
+            return false;
+        }
+        if (preg_match("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)\.[^.]+$)|(?:\.thumb)$/i", $fileName)) {
+            $originalFileName = preg_replace("/(?:\.(?:thumb_thumbnail|thumb_medium|thumb_large)(\.[^.]+)$)|(?:\.thumb)$/mi", "$1", $fileName);
+            if (!\Cx\Lib\FileSystem\FileSystem::exists($filePath . '/' . $originalFileName)) {
+                \Cx\Lib\FileSystem\FileSystem::delete_file($filePath . '/'. $fileName);
+            }
+            return false;
+        }
+        return true;
     }
 }

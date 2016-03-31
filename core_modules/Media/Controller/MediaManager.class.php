@@ -614,7 +614,7 @@ class MediaManager extends MediaLibrary
 
         // media directory tree
         $i       = 0;
-        $dirTree = $this->_dirTree($this->path);
+        $dirTree = $this->getDirectoryTree($this->path);
         $dirTree = $this->_sortDirTree($dirTree);
         
         foreach(array_keys($dirTree) as $key)

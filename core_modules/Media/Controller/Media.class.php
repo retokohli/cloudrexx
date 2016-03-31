@@ -66,9 +66,6 @@ class Media extends MediaLibrary
 
     var $highlightName     = array();   // highlight added name
     var $highlightColor    = '#d8ffca'; // highlight color for added name [#d8ffca]
-    var $_strOkMessage  = '';           // success message
-    var $_strErrorMessage  = '';        // error message
-
 
     /**
      * PHP5 constructor
@@ -141,7 +138,8 @@ class Media extends MediaLibrary
         $this->getCmd = !empty($_GET['cmd']) ? '&amp;cmd='.htmlentities($_GET['cmd'], ENT_QUOTES, CONTREXX_CHARSET) : '';
 
         $this->_overviewMedia();
-        $this->_parseMessages();
+        \Message::show($this->_objTpl);
+
         return $this->_objTpl->get();
     }
 
@@ -156,7 +154,7 @@ class Media extends MediaLibrary
     {
         global $_ARRAYLANG, $_CORELANG;
 
-        $searchTerm = !empty($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
+        $searchTerm = !empty($_GET['term']) ? \FWValidator::getCleanFileName(contrexx_input2raw($_GET['term'])) : '';
 
         switch ($this->getAct) {
             case 'download':
@@ -202,27 +200,28 @@ class Media extends MediaLibrary
             }
         }
 
-        if (isset($_GET['deletefolder']) && $_GET['deletefolder'] = "success"){
-            $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'];
-        }
         if (!empty($_GET['highlightFiles'])) {
             $this->highlightName = array_merge($this->highlightName, array_map('basename', json_decode(contrexx_stripslashes(urldecode($_GET['highlightFiles'])))));
         }
         
         // media directory tree
-        $i = 0;
-        if (!empty($searchTerm)) {
-            $dirTree['file'] = $this->getFilesBySearchTerm($this->path, $searchTerm);
-        } else {
-            $dirTree = $this->_sortDirTree($this->_dirTree($this->path));
-        }
+        $dirTree = array();
+        $this->getDirectoryTree($this->path, $searchTerm, $dirTree, !empty($searchTerm));
+        $dirTree = $this->_sortDirTree($dirTree);
 
-        $deleteUrl  = \Env::get('cx')->getRequest()->getUrl();
+        $deleteUrl  = \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
+        $deleteUrl->setParam('act', null);
+
         $previewUrl = clone $deleteUrl;
+        $renameUrl  = clone $deleteUrl;
 
-        $deleteUrl->setParam('redirect', urlencode(base64_encode($deleteUrl->toString(false))));
+        $redirect = urlencode(base64_encode($deleteUrl->toString(false)));
+        $renameUrl->setParam('redirect', $redirect);
+        $deleteUrl->setParam('redirect', $redirect);
+        $renameUrl->setParam('act', 'rename');
         $deleteUrl->setParam('act', 'delete');
 
+        $i = 0;
         foreach (array_keys($dirTree) as $key) {
             if (!is_array($dirTree[$key]['icon'])) {
                 continue;
@@ -256,8 +255,6 @@ class Media extends MediaLibrary
                     'MEDIA_DELETE_TITLE'  => $_ARRAYLANG['TXT_MEDIA_DELETE'],
                 ));
 
-                $previewUrl->setParam('act', null);
-
                 $image        = false;
                 $imagePreview = '';
                 $mediaPath    = $this->path;
@@ -269,12 +266,11 @@ class Media extends MediaLibrary
                     $mediaWebPath = '/'. $mediaWebPath; // Filesysystem removes the begining slash(/)
                 }
 
+                $file = rawurlencode($fileName);
                 if ($key == 'dir') {
                     $path = rawurlencode($mediaWebPath . $fileName . '/');
-                    $file = null;
                 } elseif ($key == 'file') {
                     $path = rawurlencode($mediaWebPath);
-                    $file = rawurlencode($fileName);
 
                     $filePath = $mediaPath . $fileName;
                     if ($this->_isImage($filePath)) {
@@ -286,14 +282,14 @@ class Media extends MediaLibrary
                     }
                 }
                 $deleteUrl->setParam('path', $path);
-                $deleteUrl->setParam('file', $file);
+                $deleteUrl->setParam('file', $key == 'dir' ? null : $file);
+
+                $renameUrl->setParam('path', rawurlencode($mediaWebPath));
+                $renameUrl->setParam('file', $file);
 
                 if (!$image) {
                     $previewUrl->setParam('path', $path);
                 }
-
-                $renameUrl  = clone $deleteUrl;
-                $renameUrl->setParam('act', 'rename');
                 $this->_objTpl->setVariable(array(
                     'MEDIA_FILE_NAME_HREF'   => $image ? $imagePreview : $previewUrl->toString(false),
                     'MEDIA_FILE_RENAME_HREF' => $renameUrl->toString(false),
@@ -316,7 +312,7 @@ class Media extends MediaLibrary
         }
 
         // parse variables
-        $tmpHref = CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . '&amp;path=' . rawurlencode($this->webPath);
+        $tmpHref = CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . (!empty($searchTerm) ? '&amp;term='. contrexx_raw2xhtml($searchTerm) : '') . '&amp;path=' . rawurlencode($this->webPath);
         $tmpIcon = $this->_sortingIcons();
 
         if ($this->_objTpl->blockExists('manage_access_header')) {
@@ -397,7 +393,7 @@ class Media extends MediaLibrary
             $this->_objTpl->setVariable(array(
                 'TXT_MEDIA_CREATE_DIRECTORY'        => $_ARRAYLANG['TXT_MEDIA_CREATE_DIRECTORY'],
                 'TXT_MEDIA_CREATE_NEW_DIRECTORY'    => $_ARRAYLANG['TXT_MEDIA_CREATE_NEW_DIRECTORY'],
-                'MEDIA_CREATE_DIRECTORY_URL'        => CONTREXX_SCRIPT_PATH . '?section=' . $this->archive . $this->getCmd . '&amp;act=newDir&amp;path=' . $this->webPath
+                'MEDIA_CREATE_DIRECTORY_URL'        => CONTREXX_SCRIPT_PATH . '?section=' . $this->archive . $this->getCmd . '&amp;act=newDir&amp;path=' . rawurlencode($this->webPath)
             ));
             $this->_objTpl->parse('media_create_directory');
             
@@ -517,7 +513,7 @@ CODE;
 
         if (empty($dir_name)) {
             if (!isset($_GET['highlightFiles'])) {
-                $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_EMPTY_DIR_NAME'];
+                \Message::error($_ARRAYLANG['TXT_MEDIA_EMPTY_DIR_NAME']);
             }
             return;
         } else {
@@ -525,7 +521,7 @@ CODE;
         }
 
         if (!$this->uploadAccessGranted()) {
-            $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
+            \Message::error($_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED']);
             return;
         }
 
@@ -534,21 +530,10 @@ CODE;
         $creationStatus = $obj_file->mkDir($this->path, $this->webPath, $dir_name);
         if ($creationStatus != "error") {
             $this->highlightName[] = $dir_name;
-            $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_MSG_NEW_DIR'];
+            \Message::ok($_ARRAYLANG['TXT_MEDIA_MSG_NEW_DIR']);
         } else {
-            $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_NEW_DIR'];
+            \Message::error($_ARRAYLANG['TXT_MEDIA_MSG_ERROR_NEW_DIR']);
         }
-    }
-
-    /**
-     * Adding success and error messages to template
-     */
-    private function _parseMessages()
-    {
-        $this->_objTpl->setVariable(array(
-            'MEDIA_MSG_OK'      => $this->_strOkMessage,
-            'MEDIA_MSG_ERROR'   => $this->_strErrorMessage
-        ));
     }
 
     /**
@@ -560,7 +545,7 @@ CODE;
 
         // check permissions
         if (!$this->uploadAccessGranted()) {
-            $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
+            \Message::error($_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED']);
             return;
         }
         $this->processFormUpload();
@@ -613,13 +598,13 @@ CODE;
                 $errorMsg[] = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_UPLOAD_FAILED'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
             }
         }
-        
+
         if (!empty($errorMsg)) {
-            $this->_strErrorMessage = explode('<br>', $errorMsg);
+            \Message::error(explode('<br>', $errorMsg));
             return false;
         }
-        
-        $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADED_SUCESSFULLY'];
+
+        \Message::ok($_ARRAYLANG['TXT_MEDIA_FILE_UPLOADED_SUCESSFULLY']);
         return true;
     }
 
@@ -643,7 +628,7 @@ CODE;
             \Message::error($_ARRAYLANG['TXT_MEDIA_FILE_DONT_EDIT']);
             return $this->handleRedirect();
         }
-        
+
         if (isset($_GET['newfile']) && file_exists($this->path.$this->getFile)) {
             $newFile = trim(preg_replace('/[^a-z0-9_\-\. ]/i', '_', $_GET['newfile']));
             if ($newFile != "") {
@@ -662,6 +647,7 @@ CODE;
         } else {
             \Message::error(sprintf($_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'], htmlentities($this->getFile, ENT_QUOTES, CONTREXX_CHARSET)));
         }
+
         $this->handleRedirect();
     }
 
@@ -728,27 +714,14 @@ CODE;
     {
         global $_ARRAYLANG;
 
-        $dir_handle = is_dir($dirName) ? opendir($dirName) : "";
-        if (!$dir_handle) {
+        try {
+            \Cx\Lib\FileSystem\FileSystem::delete_folder($dirName, true);
+            \Message::ok($_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY']);
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
             return false;
         }
 
-        while ($file = readdir($dir_handle)) {
-            if ($file != "." && $file != "..") {
-                if (!is_dir($dirName."/".$file)) {
-                    unlink($dirName."/".$file);
-                } else {
-                    $this->deleteDirectory($dirName.'/'.$file);
-                }
-            }
-        }
-        closedir($dir_handle);
-        rmdir($dirName);
-        /* Redirect to previous path */
-        $new_path_arr = explode("/", trim($this->webPath, "/"));
-        array_pop($new_path_arr);
-        $newPath = "/".implode("/", $new_path_arr)."/";
-        header("Location: index.php?section=" . $this->archive . $this->getCmd . "&deletefolder=success&path=". rawurlencode($newPath));
         return true;
     }
 
