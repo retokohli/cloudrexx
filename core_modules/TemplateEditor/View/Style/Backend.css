@@ -176,6 +176,7 @@ body {
 
 #content .option .element{
     position: relative;
+    overflow: auto;
 }
 #content .option .elements .element .mediabrowser-button{
     margin-right: 5px;
@@ -212,6 +213,7 @@ body {
     color: #fff;
     text-align: center;
     border-radius: 100%;
+    line-height: 16px;
 }
 
 #content .option.color:after,
