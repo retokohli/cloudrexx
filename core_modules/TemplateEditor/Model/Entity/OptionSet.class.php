@@ -333,6 +333,16 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
         foreach ($data['options'] as $option) {
             $optionType = $option['type'];
             if ($option['series']) {
+                // series are not allowed for options area and selection and
+                // therefore will not be parsed as such
+                if ($optionType ===
+                    'Cx\Core_Modules\TemplateEditor\Model\Entity\AreaOption'
+                || $optionType ===
+                    'Cx\Core_Modules\TemplateEditor\Model\Entity\SelectOption'
+                ){
+                    \DBG::msg('area and select series are not available');
+                    continue;
+                }
                 $optionType =
                     'Cx\Core_Modules\TemplateEditor\Model\Entity\SeriesOption';
             }
