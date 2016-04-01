@@ -324,7 +324,7 @@ class ViewManager
         }
 
         $objTemplate->setVariable(array(
-            'THEME_PREVIEW'                      => $theme->getPreviewImage(),
+            'THEME_PREVIEW'                      => $this->themeRepository->getPreviewImage($theme->getFoldername()),
             'THEME_ID'                           => $theme->getId(),
             'THEME_FOLDER_NAME'                  => $theme->getFoldername(),
             'THEME_ACTIVATE_DISABLED'            => count($frontendLanguages) == count($activeLanguages) ? 'disabled' : '' ,
@@ -438,13 +438,7 @@ class ViewManager
         
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if (!is_file($filePath)) {
-            $filePath   = file_exists($this->websiteThemesFilePath . '/index.html') 
-                          ? $this->websiteThemesFilePath . '/index.html'
-                          : ((  !empty($cx->getServerWebsitePath()) 
-                             && file_exists($this->serverWebsiteThemesFilePath . '/index.html')
-                             )  ? $this->serverWebsiteThemesFilePath . '/index.html' 
-                                : $this->codeBaseThemesFilePath . '/index.html'
-                            );
+            $filePath = $this->themeRepository->getThemesFilePath($theme->getFoldername() . '/index.html');
             $relativeFilePath = '/index.html';
             $themesPage = '/index.html';
         }
@@ -874,26 +868,13 @@ CODE;
                 $themeName = null;        
                 $existingThemeInFilesystem = !empty($_POST['existingdirName']) ? contrexx_input2raw($_POST['existingdirName']) : null;
 
-                $themePath = file_exists($cx->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem) 
-                                ? $cx->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem 
-                                : ((   !empty($cx->getServerWebsitePath())
-                                    && file_exists($cx->getServerWebsiteThemesPath() . '/' . $existingThemeInFilesystem))
-                                    ? $cx->getServerWebsiteThemesPath() . '/' . $existingThemeInFilesystem 
-                                    : $cx->getCodeBaseThemesPath() . '/'. $existingThemeInFilesystem);
-        
+                $themePath = $this->themeRepository->getThemesFilePath($existingThemeInFilesystem);
                 if (!file_exists($themePath)) {
                     \Message::add($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS'], \Message::CLASS_ERROR);
                     return false;
                 }
                 
-                $yamlFile =  file_exists($cx->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml')
-                           ? $cx->getWebsiteThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml'
-                           : ((   !empty($cx->getServerWebsitePath())
-                               && file_exists($cx->getServerWebsiteThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml'))
-                                ? $cx->getServerWebsiteThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml'
-                                : ( file_exists($cx->getCodeBaseThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml')
-                                    ? $cx->getCodeBaseThemesPath() . '/' . $existingThemeInFilesystem . '/component.yml'
-                                    : ''));
+                $yamlFile = $this->themeRepository->getThemesFilePath($existingThemeInFilesystem . '/component.yml');
                 if ($yamlFile) {
                     $objFile = new \Cx\Lib\FileSystem\File($yamlFile);
                     $yaml = new \Symfony\Component\Yaml\Yaml();

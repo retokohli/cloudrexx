@@ -285,19 +285,9 @@ class ThemeRepository
      * 
      * @param \Cx\Core\View\Model\Entity\Theme $theme
      */
-    public function loadComponentData(\Cx\Core\View\Model\Entity\Theme &$theme) {
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $websiteFilePath       = $cx->getWebsiteThemesPath() . '/' . $theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_COMPONENT_FILE;
-        $serverWebsiteFilePath = $cx->getServerWebsiteThemesPath() . '/' . $theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_COMPONENT_FILE;
-        $codeBaseFilePath      = $cx->getCodeBaseThemesPath() . '/' . $theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_COMPONENT_FILE;
-        $filePath              = file_exists($websiteFilePath)
-                                    ? $websiteFilePath
-                                    : ( (  !empty($cx->getServerWebsitePath())
-                                        && file_exists($serverWebsiteFilePath))
-                                            ? $serverWebsiteFilePath
-                                            : (file_exists($codeBaseFilePath)
-                                                ? $codeBaseFilePath
-                                                : ''));
+    public function loadComponentData(\Cx\Core\View\Model\Entity\Theme &$theme)
+    {
+        $filePath = $this->getThemesFilePath($theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_COMPONENT_FILE);
         if ($filePath) {
             try {
                 $objYaml = new \Symfony\Component\Yaml\Yaml();
@@ -351,14 +341,7 @@ class ThemeRepository
             }
         }
         
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $themePath =  file_exists($cx->getWebsiteThemesPath() . '/' . $foldername)
-                    ? $cx->getWebsiteThemesPath() . '/' . $foldername
-                    : ((   !empty($cx->getServerWebsitePath())
-                        && file_exists($cx->getServerWebsiteThemesPath() . '/' . $foldername))
-                        ? $cx->getServerWebsiteThemesPath() . '/' . $foldername
-                        : $cx->getCodeBaseThemesPath() . '/'. $foldername);
-        
+        $themePath = $this->getThemesFilePath($foldername);
         if (!file_exists($themePath)) {
             \DBG::log($foldername. ' :Theme folder not Exists');
             return $theme;
@@ -557,5 +540,58 @@ class ThemeRepository
         $this->currentXmlElement = &$this->arrParentXmlElement[$name];
         unset($this->arrParentXmlElement[$name]);
     }
-}
 
+    /**
+     * Get the themes file path
+     *
+     * @param type $filePath
+     * @return string
+     */
+    public function getThemesFilePath($filePath)
+    {
+        if (empty($filePath)) {
+            return '';
+        }
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        //Check the website's data repository
+        if (file_exists($cx->getWebsiteThemesPath() . '/' . $filePath)) {
+            return $cx->getWebsiteThemesPath() . '/' . $filePath;
+        }
+
+        //check the server website's data repository
+        if (    !empty($cx->getServerWebsitePath())
+            &&  file_exists($cx->getServerWebsiteThemesPath() . '/' . $filePath)
+        ) {
+            return $cx->getServerWebsiteThemesPath() . '/' . $filePath;
+        }
+
+        //Check the codebase repository
+        if (file_exists($cx->getCodeBaseThemesPath() . '/'. $filePath)) {
+            return $cx->getCodeBaseThemesPath() . '/'. $filePath;
+        }
+
+        return '';
+    }
+
+    /**
+     * Preview image source web path
+     *
+     * @param string $folderName foldername of theme
+     *
+     * @return string the preview image source web path
+     */
+    public function getPreviewImage($folderName)
+    {
+        if (empty($folderName)) {
+            return;
+        }
+
+        $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
+        $filePath = $this->getThemesFilePath($folderName . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE);
+        if ($filePath && file_exists($filePath)) {
+            return $cx->getWebsiteThemesWebPath() . '/' . $folderName . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE;
+        }
+        return $cx->getCodeBaseOffsetPath(). \Cx\Core\View\Model\Entity\Theme::THEME_DEFAULT_PREVIEW_FILE;
+    }
+}

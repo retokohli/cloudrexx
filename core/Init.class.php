@@ -541,14 +541,11 @@ class InitCMS
     {
         $filePath = $themesPath.'/'.$file;
         $content = '';
-        
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if (file_exists($cx->getWebsiteThemesPath().'/'.$filePath)) {
-            $content = file_get_contents($cx->getWebsiteThemesPath().'/'.$filePath);
-        } elseif (!empty($cx->getServerWebsitePath()) && file_exists($cx->getServerWebsiteThemesPath().'/'.$filePath)) {
-            $content = file_get_contents($cx->getServerWebsiteThemesPath().'/'.$filePath);
-        } elseif (file_exists($cx->getCodeBaseThemesPath().'/'.$filePath)) {
-            $content = file_get_contents($cx->getCodeBaseThemesPath().'/'.$filePath);
+
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $contentPath     = $themeRepository->getThemesFilePath($filePath);
+        if ($contentPath) {
+            $content = file_get_contents($contentPath);
         }
 
         return $content;
