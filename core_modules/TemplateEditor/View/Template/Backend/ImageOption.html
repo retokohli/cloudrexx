@@ -12,7 +12,7 @@
     {MEDIABROWSER_BUTTON}
 </div>
 
-<script>
+<script type="text/javascript">
     function callback_{TEMPLATEEDITOR_OPTION_NAME}(callback){
         if (callback.type == 'file'){
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(callback.data[0].datainfo.filepath);
@@ -33,10 +33,10 @@
                 var splitedText = '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_seriesId');
                 if (splitedText[1]
                         !== undefined) {
-                    var data = seriesCheck(
+                    var data = getSeriesElementValueById(
                             'url',
                             splitedText[1],
-                            response.data
+                            response.data['elements']
                     );
                 } else {
                     var data = response.data.url;

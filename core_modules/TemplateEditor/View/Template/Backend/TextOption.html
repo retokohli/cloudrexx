@@ -3,7 +3,7 @@
     <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}" value="{TEMPLATEEDITOR_OPTION_VALUE}"/>
     <div class="error-box"></div>
 </div>
-<script>
+<script type="text/javascript">
     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').change(function () {
         jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saving');
         updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val(), function(response){
@@ -15,10 +15,10 @@
                 var splitedId = '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_seriesId');
                 if (splitedId[1]
                         !== undefined) {
-                    var textvalue = seriesCheck(
+                    var textvalue = getSeriesElementValueById(
                             'textvalue',
                             splitedId[1],
-                            response.data
+                            response.data['elements']
                     );
                 } else {
                     var textvalue = response.data.textvalue;

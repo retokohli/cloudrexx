@@ -180,11 +180,14 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
                 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_EMPTY']
             );
         }
-        // handle changes for series
-        $seriesPosition = strpos($name, '_seriesId');
+        // if the element is part of an series, we need to load the seriesId
+        // of the element, so we know which element we want to change. We do
+        // this over the name of the series
+        $seriesSuffix = '_seriesId';
+        $seriesPosition = strpos($name, $seriesSuffix);
         if ($seriesPosition !== false) {
             $data = array(
-                'id' => substr($name, $seriesPosition + 9),
+                'id' => substr($name, $seriesPosition + strlen($seriesSuffix)),
                 'value' => $data
             );
             $name = substr($name, 0, $seriesPosition);

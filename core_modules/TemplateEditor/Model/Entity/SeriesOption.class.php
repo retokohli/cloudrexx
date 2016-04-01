@@ -74,6 +74,8 @@ class SeriesOption extends Option
 
     /**
      * Render the option field in the backend.
+     *
+     * @return Sigma    the template
      */
     public function renderOptionField()
     {
@@ -81,47 +83,18 @@ class SeriesOption extends Option
 
         $images = array();
         $entryHtml = "";
+        // load the rendered template form the option foreach element in the
+        // series, so there is only one template needed per option and we do not
+        // need to write a {Option}SeriesOption.html foreach option
         foreach ($this->elements as $id => $elm) {
-            $optionReflection = new \ReflectionClass($this->type);
-            if ($optionReflection->isSubclassOf('Cx\Core_Modules\TemplateEditor\Model\Entity\Option')
-            ) {
-                $instance = $optionReflection->newInstance(
-                    $this->name.'_seriesId'.$id,
-                    "",
-                    $elm, // $option['specific'],
-                    $this->type
-                );
-                $entryHtml .= $instance->renderOptionField()->get();
-            }
+            $entryHtml .= $this->getElementHtmlTemplate($id, $elm);
         }
 
-        $mediaBrowser   = new MediaBrowser();
-        $mediaBrowserId = $this->name . '_mediabrowser';
-        $mediaBrowser->setOptions(
-            array(
-                'id' => $mediaBrowserId
-            )
-        );
-        $mediaBrowser->setOptions(
-            array(
-                'views' => 'uploader,filebrowser',
-                'startview' => 'filebrowser',
-            )
-        );
-        $mediaBrowser->setCallback('callback_' . $this->name);
-
-        //Get last key
-        end($this->elements);
-        $key = key($this->elements);
         return parent::renderOptionField(
             array(
-                'MEDIABROWSER_BUTTON' =>
-                    $mediaBrowser->getXHtml(
-                        $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_ELEMENT']
-                    ),
-                'MEDIABROWSER_ID'       => $mediaBrowserId,
-                'TEMPLATEEDITOR_LASTID' => $key != null ? $key : '0',
                 'TEMPLATEEDITOR_SERIE_CONTENT' => $entryHtml,
+                'TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_ELEMENT' =>
+                    $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_ELEMENT'],
             ),
             $_ARRAYLANG,
             $images
@@ -170,8 +143,35 @@ class SeriesOption extends Option
             throw new OptionValueNotValidException("Needs a id to work");
         }
         if ($data['value']['elm'] === '') {
-            if (isset($data['value']['action']) && $data['value']['action'] == 'remove') {
-                unset($this->elements[intval($data['id'])]);
+            if (isset($data['value']['action'])) {
+                switch ($data['value']['action']) {
+                    case 'remove':
+                        unset($this->elements[intval($data['id'])]);
+                        break;
+                    case 'add':
+                        end($this->elements);
+                        $key = key($this->elements);
+                        $this->elements[] =
+                            array_fill_keys(
+                                array_keys($this->elements[$key]),
+                                ""
+                            );
+                        return
+                            array(
+                                'elements' => $this->elements,
+                                'html' => $this->getElementHtmlTemplate(
+                                        $key + 1,
+                                        array()
+                                    ),
+                            );
+                        break;
+                    default:
+                        throw new OptionValueNotValidException(
+                            sprintf(
+                                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ACTION_UNKNOWN']
+                            )
+                        );
+                }
             } else {
                 throw new OptionValueNotValidException(
                     sprintf(
@@ -180,25 +180,6 @@ class SeriesOption extends Option
                 );
             }
         } else {
-            /*$newValue = parse_url($data['value']);
-            if (!isset($newValue['host'])) {
-                if (!file_exists(
-                    $this->cx->getWebsitePath() . $newValue['path']
-                )
-                ) {
-                    if (!file_exists(
-                        $this->cx->getCodeBasePath() . $newValue['path']
-                    )
-                    ) {
-                        throw new OptionValueNotValidException(
-                            sprintf(
-                                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'],
-                                $newValue['path']
-                            )
-                        );
-                    }
-                }
-            }*/
             // create new instance for this single element, so the option rendering
             // can be done directly over the type of the field and we do not need to
             // implement rendering for all types in the series itself
@@ -247,5 +228,26 @@ class SeriesOption extends Option
         return array(
             'elements' => $this->elements
         );
+    }
+
+    /**
+     * Get the rendered html template for an element
+     *
+     * @param   int     $id         the seriesId of the element
+     * @param   array   $specific   the specific values of the element
+     * @return  String              the rendered html template
+     */
+    protected function getElementHtmlTemplate ($id, $specific) {
+        $optionReflection = new \ReflectionClass($this->type);
+        if ($optionReflection->isSubclassOf('Cx\Core_Modules\TemplateEditor\Model\Entity\Option')
+        ) {
+            $instance = $optionReflection->newInstance(
+                $this->name.'_seriesId'.$id,
+                "",
+                $specific,
+                $this->type
+            );
+            return $instance->renderOptionField()->get();
+        }
     }
 }

@@ -5,10 +5,10 @@
  * or remove this file if you don't need it
  */
 
-function updateOption(optionName,optionData, callback){
+function updateOption(optionName, optionData, callback){
     jQuery('#saveOptionsButton').attr("disabled", "disabled");
-    jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=updateOption&tid="+cx.variables.get('themeid','TemplateEditor'), { optionName: optionName, optionData:optionData }, function (reponse) {
-        if (reponse.status != 'error'){
+    jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=updateOption&tid="+cx.variables.get('themeid','TemplateEditor'), { optionName: optionName, optionData:optionData }, function (response) {
+        if (response.status != 'error'){
             var previewIframe = jQuery("#preview-template-editor");
             try {
                 var iframeLocation = previewIframe.get(0).contentDocument.location;
@@ -23,7 +23,7 @@ function updateOption(optionName,optionData, callback){
                 previewIframe.attr('src', cx.variables.get('iframeUrl','TemplateEditor'));
             }
         }
-        callback(reponse);
+        callback(response);
         jQuery('#saveOptionsButton').removeAttr("disabled");
     }, "json");
 }
@@ -260,26 +260,50 @@ jQuery(function(){
 
 });
 
-function seriesCheck (param, id, data) {
-    if (data['elements'] !== undefined) {
-        return data['elements'][id][param];
+/**
+ * Get the value of a series element by its id
+ *
+ * @param   string  name     the name of the field, of which the value is needed
+ * @param   string  id       the id of the element of which the field is needed
+ * @param   array   elements should contain all elements
+ * @returns string           returns the value. If not found an empty string
+ */
+function getSeriesElementValueById (name, id, elements) {
+    if (elements[id] !== undefined) {
+        if (elements[id][name] !== undefined) {
+            return elements[id][name];
+        }
+        console.error('Element value was not found in element');
     } else {
-        console.error('Elements not found in return value');
+        console.error('Element not found in elements');
     }
+    return '';
 }
 
-var removeElement = function () {
-    var id = jQuery(this).parent().children('input, textarea').attr('id');
-    var parent = jQuery(this).parent();
+/**
+ * Remove an element from a series
+ *
+ * @param object button     the button which was clicked
+ */
+function removeElement(button) {
+    var id = jQuery(button).parent().children('input, textarea').attr('id');
+    var parent = jQuery(button).parent();
     parent.addClass('saving');
-    updateOption(id, {elm: '', action:'remove'}, function () {
-        parent.removeClass('saving');
-        parent.addClass('saved');
-        setTimeout(function () {
-            parent.removeClass('saved');
-        }, 2000);
-        parent.slideUp(function(){
-            parent.remove();
-        });
-    })
-};
+    updateOption(
+        id,
+        {
+            elm: '',
+            action:'remove'
+        },
+        function () {
+            parent.removeClass('saving');
+            parent.addClass('saved');
+            setTimeout(function () {
+                parent.removeClass('saved');
+            }, 2000);
+            parent.slideUp(function(){
+                parent.remove();
+            });
+        }
+    )
+}

@@ -91,6 +91,8 @@ class TextOption extends Option
 
     /**
      * Render the option field in the backend.
+     *
+     * @return Sigma    the template
      */
     public function renderOptionField()
     {

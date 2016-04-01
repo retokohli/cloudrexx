@@ -1,93 +1,58 @@
-<label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
-<div class="series-list">
+<label for="{TEMPLATEEDITOR_OPTION_NAME}">
+    {TEMPLATEEDITOR_OPTION_HUMAN_NAME}
+</label>
+<div id="{TEMPLATEEDITOR_OPTION_NAME}" class="series-list">
     <div class="elements">
         {TEMPLATEEDITOR_SERIE_CONTENT}
     </div>
+    <button class="button add-element">
+        {TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_ELEMENT}
+    </button>
 </div>
-<div class="clearfix"></div>
-{MEDIABROWSER_BUTTON}
-<script>
+<script type="text/javascript">
+    var removeTemplate =
+            '<button class="remove-element button" onclick="removeElement(this)">' +
+            '{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_ELEMENT}</button>';
+
+    // add the remove button to the template. It is not delivered from
+    // the template of the element (because it is not only used in series),
+    // so we need to do it here
     jQuery('.elements .element').each(function(){
         if(!jQuery(this).children().last().hasClass('remove-element')){
-            jQuery(this).append( "<button class='remove-element button'>{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_ELEMENT}</button>" );
+            jQuery(this).append(removeTemplate);
         }
     });
 
-    jQuery('.remove-element').click(removeElement);
-    /*
-    var template = '<div class="element"><img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}_img"/> <div class="actions"> <button class="remove-element button" data-id="{TEMPLATEEDITOR_OPTION_ID}"> Entfernen </button> <button class="change-element button" data-id="{TEMPLATEEDITOR_OPTION_ID}">Ändern </button> </div> <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}_{TEMPLATEEDITOR_OPTION_ID}" class="{TEMPLATEEDITOR_OPTION_NAME}" data-id="{TEMPLATEEDITOR_OPTION_ID}"value="{TEMPLATEEDITOR_OPTION_VALUE}"/> <div class="error-box"></div></div>';
-
-    var lastId = {TEMPLATEEDITOR_LASTID};
-
-    var updateElement = function () {
-        var id = jQuery(this).data('id');
-        cx.variables.get('jquery', 'mediabrowser')('#{MEDIABROWSER_ID}').trigger("click", {
-            callback: function (callback) {
-                if (callback.type == 'file') {
-                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + id).val(callback.data[0].datainfo.filepath);
-                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + id + '_img').attr('src', callback.data[0].datainfo.filepath);
-                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + id ).trigger('change');
+    // The add button is used to add a new element to a series
+    // The template will be loaded over a call to the server
+    jQuery('#{TEMPLATEEDITOR_OPTION_NAME} .add-element').bind( "click",
+        function () {
+            updateOption(
+                '{TEMPLATEEDITOR_OPTION_NAME}_seriesId',
+                {
+                    elm: '',
+                    action:'add'
+                },
+                function(response) {
+                    var newElement = jQuery(response.data.html);
+                    // add the remove button to this element, this is not included
+                    // in the template we get from the call to server (newElement)
+                    jQuery(newElement).append(removeTemplate);
+                    // if we have a media browser button
+                    // (case: series of images), we need to initialize the
+                    // button, otherwise click will not open anything
+                    var mediaButton =
+                            jQuery(newElement).children('.mediabrowser-button');
+                    if (mediaButton !== undefined) {
+                        initializeMediaButton.call(mediaButton);
+                        mediaButton.trigger('click');
+                    }
+                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}')
+                            .children('.elements').append(newElement);
+                    jQuery(newElement).children('input, textarea')
+                            .trigger("change");
                 }
-            }
-        });
-    };
-
-    jQuery('.change-element').click(updateElement);
-
-    var removeElement = function () {
-        var id = jQuery(this).data('id');
-        var parent = jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + id ).parent();
-        parent.addClass('saving');
-        updateOption('{TEMPLATEEDITOR_OPTION_NAME}', {elm: '', id: jQuery(this).data('id'), action:'remove'}, function () {
-            parent.removeClass('saving');
-            parent.addClass('saved');
-            setTimeout(function () {
-                parent.removeClass('saved');
-            }, 2000);
-            parent.slideUp(function(){
-                parent.remove();
-            });
-        })
-    };
-
-    jQuery('.remove-element').click(removeElement);
-
-    var changeElement = function () {
-        var parent = jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + jQuery(this).data('id') ).parent();
-        var id = jQuery(this).data('id');
-        parent.addClass('saving');
-        updateOption('{TEMPLATEEDITOR_OPTION_NAME}', {elm: jQuery(this).val(), id: id}, function (response) {
-            if (response.status == 'error'){
-                parent.addClass('error');
-                parent.find('.error-box').text(response.message).slideDown();
-            }
-            else {
-                parent.find('.error-box').slideUp();
-                parent.find('img').attr('src', response.data.elements[id]);
-                parent.removeClass('saving');
-                parent.addClass('saved');
-                setTimeout(function () {
-                    parent.removeClass('saved');
-                }, 2000);
-            }
-        })
-    };
-
-    function callback_{TEMPLATEEDITOR_OPTION_NAME}(callback)
-    {
-        if (callback.type == 'file') {
-            lastId++;
-            var newElement = jQuery(template);
-            newElement.find('img').attr('src', callback.data[0].datainfo.filepath).attr('id', '{TEMPLATEEDITOR_OPTION_NAME}_'+lastId+'_img');
-            newElement.find('.remove-element').data('id', lastId).click(removeElement);
-            newElement.find('.change-element').data('id', lastId).click(updateElement);
-            newElement.find('input').val(callback.data[0].datainfo.filepath).data('id', lastId).attr('id', '{TEMPLATEEDITOR_OPTION_NAME}_'+lastId);
-            jQuery('.series-list').append(newElement);
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId ).change(changeElement);
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId ).trigger('change');
-            jQuery('.options').animate({ scrollTop: (jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_' + lastId).offset().top)}, 2000);
+            );
         }
-    }
-
-    jQuery('.{TEMPLATEEDITOR_OPTION_NAME}').change(changeElement);*/
+    );
 </script>
