@@ -577,20 +577,16 @@ class ThemeRepository
     /**
      * Preview image source web path
      *
-     * @param string $folderName foldername of theme
+     * @param \Cx\Core\View\Model\Entity\Theme $theme
      *
      * @return string the preview image source web path
      */
-    public function getPreviewImage($folderName)
+    public function getPreviewImage(\Cx\Core\View\Model\Entity\Theme $theme)
     {
-        if (empty($folderName)) {
-            return;
-        }
-
         $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
-        $filePath = $this->getThemesFilePath($folderName . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE);
+        $filePath = $this->getThemesFilePath($theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE);
         if ($filePath && file_exists($filePath)) {
-            return $cx->getWebsiteThemesWebPath() . '/' . $folderName . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE;
+            return $cx->getWebsiteThemesWebPath() . '/' . $theme->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE;
         }
         return $cx->getCodeBaseOffsetPath(). \Cx\Core\View\Model\Entity\Theme::THEME_DEFAULT_PREVIEW_FILE;
     }

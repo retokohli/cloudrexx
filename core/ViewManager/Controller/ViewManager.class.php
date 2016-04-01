@@ -324,7 +324,7 @@ class ViewManager
         }
 
         $objTemplate->setVariable(array(
-            'THEME_PREVIEW'                      => $this->themeRepository->getPreviewImage($theme->getFoldername()),
+            'THEME_PREVIEW'                      => $this->themeRepository->getPreviewImage($theme),
             'THEME_ID'                           => $theme->getId(),
             'THEME_FOLDER_NAME'                  => $theme->getFoldername(),
             'THEME_ACTIVATE_DISABLED'            => count($frontendLanguages) == count($activeLanguages) ? 'disabled' : '' ,
