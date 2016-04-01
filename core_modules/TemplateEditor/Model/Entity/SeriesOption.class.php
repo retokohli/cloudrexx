@@ -111,6 +111,9 @@ class SeriesOption extends Option
         $blockName = strtolower('TEMPLATE_EDITOR_' . $this->name);
         if ($template->blockExists($blockName)) {
             foreach ($this->elements as $id => $elm) {
+                // even though we have only one element in the array, we need to
+                // build a foreach, so we can read the value without knowing
+                // the array index
                 foreach($elm as $val){
                     $template->setVariable(
                         strtoupper('TEMPLATE_EDITOR_' . $this->name),
