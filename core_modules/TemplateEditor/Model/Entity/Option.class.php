@@ -95,9 +95,71 @@ abstract class Option extends \Cx\Model\Base\EntityBase
     /**
      * Render the option field in the backend.
      *
-     * @param Sigma $template The template of the backend view.
+     * @param Sigma $template          The template of the backend view.
+     * @param array $optionProperties  Values to parse into subTemplate
+     * @param array $globalVariables   Variables which should be global
+     * @param array $subTemplateBlocks subBlocks to parse. Example:
+     *    array() {
+     *      ["subBlockName1"]=> array() {
+     *          [0]=> array() {
+     *              ["PLACEHOLDER_1"] => "example"
+     *              ["PLACEHOLDER_2"] => "example 2"
+     *          }
+     *          [1] => array(...)
+     *      }
+     *      ["subBlockName2"] => array(...)
+     *   }
      */
-    public abstract function renderOptionField($template);
+    public function renderOptionField(
+        $template,
+        $optionProperties = array(),
+        $globalVariables = array(),
+        $subTemplateBlocks = array()
+    ) {
+        $subTemplate = new Sigma();
+        // load subTemplate file for the given option.
+        // pattern for html file is: {optionName}Option.html
+        $optionName = str_replace( // replace 'Option' so we get the net name
+            'Option',
+            '',
+            end( // last value of the array is the class name
+                explode('\\', get_class($this)) // get array for class namespace
+            )
+        );
+        $subTemplate->loadTemplateFile(
+            $this->getDirectory() . '/View/Template/Backend/'
+            .  $optionName . 'Option.html'
+        );
+
+        // get all placeholders to replace in subTemplate into one array
+        $subTemplateVariables = array_merge(
+            array(
+            'TEMPLATEEDITOR_OPTION_NAME'        => $this->name,
+            'TEMPLATEEDITOR_OPTION_HUMAN_NAME'  => $this->humanName,
+            ),
+            $optionProperties
+        );
+
+        // render subBlocks of subTemplate
+        foreach ($subTemplateBlocks as $blockName => $block) {
+            foreach ($block as $variables) {
+                $subTemplate->setVariable($variables);
+                $subTemplate->parse($blockName);
+            }
+        }
+
+        // render subTemplate
+        $subTemplate->setVariable($subTemplateVariables);
+        if (!empty($globalVariables)) {
+            $subTemplate->setGlobalVariable($globalVariables);
+        }
+
+        $template->setVariable(array(
+            'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
+            'TEMPLATEEDITOR_OPTION_TYPE' => strtolower($optionName),
+        ));
+        $template->parse('option');
+    }
 
     /**
      * Render the option in the frontend.

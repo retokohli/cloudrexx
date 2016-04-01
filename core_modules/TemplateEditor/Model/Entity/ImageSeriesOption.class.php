@@ -73,18 +73,13 @@ class ImageSeriesOption extends Option
     public function renderOptionField($template)
     {
         global $_ARRAYLANG;
-        $subTemplate = new Sigma();
-        $subTemplate->loadTemplateFile(
-            $this->cx->getCodeBaseCoreModulePath()
-            . '/TemplateEditor/View/Template/Backend/ImagesSeriesOption.html'
-        );
-        $subTemplate->setGlobalVariable($_ARRAYLANG);
 
+        $images = array();
         foreach ($this->urls as $id => $url) {
-            $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $url);
-            $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_ID', $id);
-            $subTemplate->parse('images');
+            $images['images'][$id]['TEMPLATEEDITOR_OPTION_VALUE'] = $url;
+            $images['images'][$id]['TEMPLATEEDITOR_OPTION_ID'] = $id;
         }
+
         $mediaBrowser   = new MediaBrowser();
         $mediaBrowserId = $this->name . '_mediabrowser';
         $mediaBrowser->setOptions(
@@ -99,26 +94,23 @@ class ImageSeriesOption extends Option
             )
         );
         $mediaBrowser->setCallback('callback_' . $this->name);
-        $subTemplate->setVariable(
-            'MEDIABROWSER_BUTTON',
-            $mediaBrowser->getXHtml(
-                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PICTURE']
-            )
-        );
-        $subTemplate->setVariable('MEDIABROWSER_ID', $mediaBrowserId);
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
-        $subTemplate->setVariable(
-            'TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName
-        );
+
         //Get last key
         end($this->urls);
         $key = key($this->urls);
-        $key = $key != null ? $key : '0';
-        $subTemplate->setVariable('TEMPLATEEDITOR_LASTID', $key);
-        $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
-        $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'img series');
-
-        $template->parse('option');
+        parent::renderOptionField(
+            $template,
+            array(
+                'MEDIABROWSER_BUTTON' =>
+                    $mediaBrowser->getXHtml(
+                        $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_PICTURE']
+                    ),
+                'MEDIABROWSER_ID'       => $mediaBrowserId,
+                'TEMPLATEEDITOR_LASTID' => $key != null ? $key : '0',
+            ),
+            $_ARRAYLANG,
+            $images
+        );
     }
 
     /**

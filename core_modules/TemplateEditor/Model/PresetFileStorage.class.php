@@ -45,7 +45,7 @@ use Symfony\Component\Yaml\Yaml;
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class PresetFileStorage implements Storable
+class PresetFileStorage extends \Cx\Model\Base\EntityBase implements Storable
 {
     /**
      * @var String
@@ -72,22 +72,16 @@ class PresetFileStorage implements Storable
      */
     public function retrieve($name)
     {
+        $presetFile = $this->path . '/options/presets/' . $name . '.yml';
         if (!file_exists(
-            \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
-                ->getFilePath(
-                    $this->path . '/options/presets/' . $name . '.yml'
-                )
-            )
-        ) {
+            $this->cx->getClassLoader()->getFilePath($presetFile)
+        )) {
             throw new PresetRepositoryException(
                 'Preset ' . $name . ' not found.'
             );
         }
         $file = file_get_contents(
-            \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
-                ->getFilePath(
-                    $this->path . '/options/presets/' . $name . '.yml'
-                )
+            $this->cx->getClassLoader()->getFilePath($presetFile)
         );
         if ($file) {
             try {

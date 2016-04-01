@@ -68,17 +68,6 @@ class ImageOption extends Option
     public function renderOptionField($template)
     {
         global $_ARRAYLANG;
-        $subTemplate = new Sigma();
-        $subTemplate->loadTemplateFile(
-            $this->cx->getCodeBaseCoreModulePath()
-            . '/TemplateEditor/View/Template/Backend/ImageOption.html'
-        );
-        $subTemplate->setGlobalVariable($_ARRAYLANG);
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_VALUE', $this->url);
-        $subTemplate->setVariable('TEMPLATEEDITOR_OPTION_NAME', $this->name);
-        $subTemplate->setVariable(
-            'TEMPLATEEDITOR_OPTION_HUMAN_NAME', $this->humanName
-        );
         $mediaBrowser = new MediaBrowser();
         $mediaBrowser->setOptions(
             array(
@@ -87,15 +76,17 @@ class ImageOption extends Option
             )
         );
         $mediaBrowser->setCallback('callback_' . $this->name);
-        $subTemplate->setVariable(
-            'MEDIABROWSER_BUTTON',
-            $mediaBrowser->getXHtml(
-                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CHOOSE_PICTURE']
-            )
+        parent::renderOptionField(
+            $template,
+            array(
+                'TEMPLATEEDITOR_OPTION_VALUE' => $this->url,
+                'MEDIABROWSER_BUTTON'         =>
+                    $mediaBrowser->getXHtml(
+                        $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CHOOSE_PICTURE']
+                    ),
+            ),
+            $_ARRAYLANG
         );
-        $template->setVariable('TEMPLATEEDITOR_OPTION', $subTemplate->get());
-        $template->setVariable('TEMPLATEEDITOR_OPTION_TYPE', 'img');
-        $template->parse('option');
     }
 
     /**
