@@ -19,7 +19,11 @@
         preferredFormat: 'hex'
     });
     jQuery("#{TEMPLATEEDITOR_OPTION_NAME}").show();
-
+    // we need to trigger the change event also on focus out, because otherwise
+    // it would be possible to add empty elements to a series
+    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').focusout(function () {
+        jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').trigger('change');
+    });
     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').change(function () {
         var color = new tinycolor(jQuery(this).val());
         if (!color.isValid()){

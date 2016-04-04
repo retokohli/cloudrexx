@@ -49,8 +49,8 @@
                     }
                     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}')
                             .children('.elements').append(newElement);
-                    jQuery(newElement).children('input, textarea')
-                            .trigger("change");
+                    // set focus to new created element for better ux
+                    jQuery(newElement).children('input, textarea').focus();
                 }
             );
         }

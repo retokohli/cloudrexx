@@ -8,7 +8,7 @@
     <div class="error-box"></div>
 </div>
 <script type="text/javascript">
-    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').change(function () {
+    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').focusout(function () {
         jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saving');
         updateOption(
             '{TEMPLATEEDITOR_OPTION_NAME}',
