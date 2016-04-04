@@ -85,7 +85,7 @@ class MarketLibrary
         }
 
         if($where != '' && $like != ''){
-            $where = "WHERE $where LIKE $like";
+            $where = "WHERE ".contrexx_addslashes($where)." LIKE ".contrexx_addslashes($like);
         }
 
         $objResultEntries = $objDatabase->Execute('SELECT * FROM '.DBPREFIX.'module_market '.$where.' '.$orderBy);
@@ -161,6 +161,13 @@ class MarketLibrary
     public function insertEntry($backend){
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
+        $settings = $this->getSettings();
+
+        if ($settings['useTerms'] && !isset($_POST['confirm'])) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_MARKET_CONFIRM_TERMS'];
+            return;
+        }
+
         if ($_POST['uploadImage'] != "") {
             $picture = $this->uploadPicture();
         } elseif (isset($_POST['picOld'])) {
@@ -170,7 +177,6 @@ class MarketLibrary
         }
 
         if($picture != "error"){
-
             if($_POST['forfree'] == 1){
                 $price = "forfree";
             }elseif($_POST['agreement'] == 1){
@@ -270,7 +276,7 @@ class MarketLibrary
                 $mailTitle            = $objResult->fields['title'];
                 $mailContent        = $objResult->fields['content'];
                 $mailCC                = $objResult->fields['mailcc'];
-                $mailTo                = $objResult->fields['mailcc'];
+                $mailTo                = $objResult->fields['mailto'];
                 $mailOn                = $objResult->fields['active'];
                 $objResult->MoveNext();
             };
@@ -288,9 +294,6 @@ class MarketLibrary
 
         for($x = 0; $x < 8; $x++){
           $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
-        }
-
-        for($x = 0; $x < 8; $x++){
           $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
         }
 
@@ -388,7 +391,7 @@ class MarketLibrary
         if($mailOn == 1){
             $array = explode('; ',$mailCC);
             $url    = $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET;
-            $link    = "http://".$url."/index.php?section=Market&cmd=detail&id=".$entryId;
+            $link    = "http://".$url."/index.php?section=Market&amp;cmd=detail&amp;id=".$entryId;
             $now     = date(ASCMS_DATE_FORMAT);
 
             //replase placeholder
@@ -398,9 +401,6 @@ class MarketLibrary
 
             for($x = 0; $x < 8; $x++){
               $mailTitle = str_replace($array_1[$x], $array_2[$x], $mailTitle);
-            }
-
-            for($x = 0; $x < 8; $x++){
               $mailContent = str_replace($array_1[$x], $array_2[$x], $mailContent);
             }
 

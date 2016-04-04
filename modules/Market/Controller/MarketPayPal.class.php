@@ -69,7 +69,7 @@ class MarketPayPal
 	{
 
 	}
-	
+
 	/**
 	 * PHP 4.3 constructor
 	 *
@@ -77,9 +77,9 @@ class MarketPayPal
 	 */
 	function PayPal()
 	{
-		$this->__construct();	
+		$this->__construct();
 	}
-	
+
 	/**
 	 * Returns the form for PayPal accessing
 	 *
@@ -88,21 +88,20 @@ class MarketPayPal
 	function getForm($orderId)
 	{
 		global $_ARRAYLANG;
-		
+
 		$business = $this->getBusiness();
 		$currency_code = "EUR";
 		$amount = $this->getPrice($orderId);
 
-		$sum = md5("contrexx".$_SERVER['HTTP_HOST'].intval($amount).$orderid);
+		$sum = md5("contrexx".$_SERVER['HTTP_HOST'].intval($amount).$orderId);
 		$host = ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
-		$return = $host. "/index.php?section=Market&cmd=paypal_successfull&id=$orderId";
+		$return = $host. "/index.php?section=Market&amp;cmd=paypal_successfull&amp;id=$orderId";
 		$cancel_return = $host."/index.php?section=Market&amp;paypal_error&amp;id=$orderId";
 		$notify_url = $host."/index.php?section=Market&amp;act=paypalIpnCheck";
-		$item_name = "Insarat";
+		$item_name = "Inserat";
 
-		
-		$retval .= "\n<form name=\"paypal\" action=\"https://www.sandbox.paypal.com/ch/cgi-bin/webscr\" method=\"post\">\n";		
-		//$retval .= "\n<form name=\"paypal\" action=\"https://www.paypal.com/ch/cgi-bin/webscr\" method=\"post\">\n";		
+		$retval  = "\n<form name=\"paypal\" action=\"https://www.sandbox.paypal.com/ch/cgi-bin/webscr\" method=\"post\">\n";
+		//$retval .= "\n<form name=\"paypal\" action=\"https://www.paypal.com/ch/cgi-bin/webscr\" method=\"post\">\n";
 		$retval .= $this->getInput("cmd", "_xclick");
 		$retval .= $this->getInput("business", $business);
 		$retval .= $this->getInput("item_name", $item_name);
@@ -115,12 +114,12 @@ class MarketPayPal
 		$retval .= "{$_ARRAYLANG['TXT_PAYPAL_SUBMIT']}Text<br /><br />";
 		$retval .= "<input id=\"submit\" type=\"submit\" name=\"submit\" value=\"Button{$_ARRAYLANG['TXT_PAYPAL_SUBMIT_BUTTON']}\">\n";
 		$retval .= "</form>\n";
-		
+
 		return $retval;
 	}
-	
+
 	/**
-	 * Generates an hidden input field 
+	 * Generates a hidden input field
 	 *
 	 * @param $field Array containing the name and the value of the field
 	 */
@@ -128,8 +127,7 @@ class MarketPayPal
 	{
 		return "<input type=\"hidden\" name=\"$name\" value=\"$value\">\n";
 	}
-	
-	
+
 	/**
 	 * reads the paypal email address out of the database
 	 */
@@ -144,18 +142,17 @@ class MarketPayPal
 				$objReslut->MoveNext();
 			}
       	}
-      	
+
       	return $paypalProfile;
 	}
-	
-	
+
 	/**
 	 * reads the price out of the database
 	 */
 	function getPrice($orderId)
 	{
 		global $objDatabase;
-		
+
 		$objReslut = $objDatabase->Execute("SELECT premium FROM ".DBPREFIX."module_market WHERE id = '".$orderId."'");
       	if($objReslut !== false){
 			while(!$objReslut->EOF){
@@ -163,7 +160,7 @@ class MarketPayPal
 				$objReslut->MoveNext();
 			}
       	}
-		
+
 		$objReslut = $objDatabase->Execute("SELECT price, price_premium FROM ".DBPREFIX."module_market_paypal WHERE id = '1'");
       	if($objReslut !== false){
 			while(!$objReslut->EOF){
@@ -172,24 +169,23 @@ class MarketPayPal
 				$objReslut->MoveNext();
 			}
       	}
-      	
+
       	if($premium == '1'){
       		$paypalTotal = $paypalPrice+$paypalPremium;
       	}else{
       		$paypalTotal = $paypalPrice;
       	}
-      	
+
       	return $paypalTotal;
 	}
-	
-	
+
 	/**
 	 * confirms the payment
 	 */
 	function payConfirm()
 	{
 		global $objDatabase;
-		
+
 		if (!empty($_GET['orderid'])) {
 				$orderid = intval($_GET['orderid']);
 		}
@@ -197,31 +193,30 @@ class MarketPayPal
 		if (!$objResult = $objDatabase->Execute($query)) {
 			return false;
 		}
-		
+
 		if ($objResult->fields['order_status'] == 1) {
-			return $orderid;	
+			return $orderid;
 		} else {
 			return NULL;
 		}
 	}
 
-	
 	/**
      * Communicates with paypal
      */
 	function ipnCheck()
 	{
 		global $objDatabase;
-		
+
 		// read the post from PayPal system and add 'cmd'
 		$req = 'cmd=_notify-validate';
 		foreach ($_POST as $key => $value) {
 			$value = urlencode(stripslashes($value));
 			$req .= "&$key=$value";
 		}
-				
+
 		// post back to PayPal system to validate
-		$header .= "POST /cgi-bin/webscr HTTP/1.0\r\n";
+		$header  = "POST /cgi-bin/webscr HTTP/1.0\r\n";
 		$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
 		$header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
 		$fp = fsockopen ('www.sandbox.paypal.com', 80, $errno, $errstr, 30);
@@ -235,9 +230,9 @@ class MarketPayPal
 				$res = fgets ($fp, 1024);
 				if (strcmp ($res, "VERIFIED") == 0) {
 					//wenn bezahlung ok, mach...
-					
+
 					//$amount = $this->getPrice($orderId);
-					
+
 					//if ($payment_amount == $amount && $payment_currency == "EUR") {
 						$query = "UPDATE ".DBPREFIX."module_market SET paypal='1' WHERE id ='175' ";
 						$objResult = $objDatabase->Execute($query);

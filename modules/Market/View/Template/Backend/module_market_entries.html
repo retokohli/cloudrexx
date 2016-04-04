@@ -1,9 +1,9 @@
 <!-- START module_market_overview.html -->
 <script language="JavaScript" type="text/javascript">
 // <![CDATA[
-function deleteEntry(entryId){ 
-    if (confirm('{TXT_DELETE_ENTRY}')) 
-        window.location.replace("index.php?cmd=Market&{CSRF_PARAM}&act=deleteEntry&id="+entryId);
+function deleteEntry(entryId){
+    if (confirm('{TXT_DELETE_ENTRY}'))
+        window.location.replace("index.php?cmd=Market&amp;{CSRF_PARAM}&amp;act=deleteEntry&id="+entryId);
 }
 
 function selectMultiAction()
@@ -24,14 +24,14 @@ function selectMultiAction()
 					submit();
 				}
 			break;
-			default: //do nothing			
+			default: //do nothing
 		}
 	}
 }
 // ]]>
 </script>
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="adminlist">
-    <tr> 
+    <tr>
         <th>{TXT_CORE_FILTER}</th>
     </tr>
     <tr class="row1"> 
@@ -50,7 +50,7 @@ function selectMultiAction()
         <th colspan="10">{TXT_CORE_MARKET_TITLE}</th>
     </tr>
 	<tr class="row3">
-	 	<td width="1%" style="text-align: center;">#</th>
+	 	<td width="1%" style="text-align: center;">#</td>
 		<td width="1%" style="text-align: center;"><a href="index.php?cmd=Market&amp;act=entries&amp;sort=id{ENTRY_SORT_ID}" target="_self">ID</a></td>
 		<td width="1%" style="text-align: center;"><a href="index.php?cmd=Market&amp;act=entries&amp;sort=status{ENTRY_SORT_ID}" target="_self">{TXT_STATUS}</a></td>
         <td width="1%">{TXT_CORE_SORTING_ORDER}</td>

@@ -2,25 +2,24 @@
 <script language="JavaScript" type="text/javascript">
 function CheckForm() {
   with( document.formCat ) {
-    if (status.value == "" || name.value == "") 
+    if (status.value == "" || name.value == "")
     {
-        alert ("{TXT_FIELDS_REQUIRED}");       
+        alert ("{TXT_FIELDS_REQUIRED}");
         return false;
-    }   	
+    }
     return true;
   }
 }
 </script>
-<form name="formCat" method="post" action="?cmd=Market&amp;act={FORM_ACTION}" onsubmit="return CheckForm()">
-<input type="hidden" name="id" value="{CAT_ID}">	
+<form name="formCat" method="post" action="index.php?cmd=Market&amp;act={FORM_ACTION}" onsubmit="return CheckForm()">
+<input type="hidden" name="id" value="{CAT_ID}">
 	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
 		<tr>
 			<th colspan="2" align="left">{TXT_TITLE}</th>
 		</tr>
 		<tr valign="top" class="row1">
-			<td nowrap="nowrap" width="150">{TXT_NAME}<font color="red"> *</font></td>		
+			<td nowrap="nowrap" width="150">{TXT_NAME}<font color="red"> *</font></td>
 			<td><input name="name" size="70" maxlength="100" value="{CAT_NAME}"></td>
-		</td>		
 		</tr>
 		<tr valign="top" class="row2">
 			<td nowrap="nowrap">{TXT_DESCRIPTION}</td>
