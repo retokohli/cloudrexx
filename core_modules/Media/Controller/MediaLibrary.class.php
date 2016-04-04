@@ -1292,23 +1292,22 @@ END;
             return array();
         }
 
-        if (!empty($searchTerm)) {
-            $mediaArray = glob($path . '*' .$searchTerm . '*');
-        } else {
-            $mediaArray = glob($path . '*');
-        }
         if (empty($result)) {
             $result = array(
                 'dir'  => array(),
                 'file' => array(),
             );
         }
+
+        $mediaArray = glob($path . '*');
         foreach ($mediaArray as $media) {
             $mediaName = basename($media);
             if (!\FWSystem::detectUtf8($mediaName)) {
                 $mediaName = utf8_encode($mediaName);
             }
-
+            if (!empty($searchTerm) && !preg_match('/'. $searchTerm .'/i', $mediaName)) {
+                continue;
+            }
             $mediaType = is_dir($media) ? 'dir' : 'file';
             $mediaPath = dirname($media);
             if ($mediaType == 'file' && !$this->isFileValidToShow($mediaPath, $mediaName)) {

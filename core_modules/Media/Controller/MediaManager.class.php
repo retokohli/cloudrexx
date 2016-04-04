@@ -1061,6 +1061,9 @@ class MediaManager extends MediaLibrary
             'TXT_MEDIA_CHECK_ALL'                   => $_ARRAYLANG['TXT_MEDIA_CHECK_ALL'],
             'TXT_MEDIA_UNCHECK_ALL'                 => $_ARRAYLANG['TXT_MEDIA_UNCHECK_ALL'],
             'TXT_BUTTON_SAVE'                       => $_ARRAYLANG['TXT_MEDIA_SAVE'],
+            'TXT_CORE_MODULE_MEDIA_SEARCH_FUNCTION' => $_ARRAYLANG['TXT_CORE_MODULE_MEDIA_SEARCH_FUNCTION'],
+            'TXT_CORE_MODULE_MEDIA_ENABLE_SEARCH_FUNCTIONALITY' => $_ARRAYLANG['TXT_CORE_MODULE_MEDIA_ENABLE_SEARCH_FUNCTIONALITY'],
+            'TXT_CORE_MODULE_MEDIA_DISABLED'        => $_ARRAYLANG['TXT_CORE_MODULE_MEDIA_DISABLED'],
         ));
 
         for ($k = 1; $k <= 4; $k++)
@@ -1139,6 +1142,8 @@ class MediaManager extends MediaLibrary
                     'MEDIA_MANAGE_DISPLAY'                  => (is_numeric($this->_arrSettings['media' . $k . '_frontend_managable'])) ? 'block' : 'none',
                     'MEDIA_MANAGE_ASSOCIATED_GROUPS'        => implode("\n", $arrAssociatedGroupManageOptions),
                     'MEDIA_MANAGE_NOT_ASSOCIATED_GROUPS'    => implode("\n", $arrNotAssociatedGroupManageOptions),
+                    'MEDIA_ALLOW_USER_SEARCH_ON'            => ($this->_arrSettings['media' . $k . '_frontend_search'] == 'on') ? 'checked="checked"' : '',
+                    'MEDIA_ALLOW_USER_SEARCH_OFF'           => ($this->_arrSettings['media' . $k . '_frontend_search'] == 'off') ? 'checked="checked"' : '',
             ));
             if ($this->_objTpl->blockExists("mediaAccessSection")) {
                 $this->_objTpl->parse("mediaAccessSection");
@@ -1158,6 +1163,13 @@ class MediaManager extends MediaLibrary
         $this->_arrSettings = $this->createSettingsArray();
         for ($i = 0; $i <=4; $i++)
         {
+            $settingFrontendSearch = !empty($_POST['mediaSettings_Media'. $i .'FrontendSearch'])
+                                      ? contrexx_input2raw($_POST['mediaSettings_Media'. $i .'FrontendSearch'])
+                                      : 'off';
+            $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_media_settings
+                                            SET `value` = "' . contrexx_raw2db($settingFrontendSearch) . '"
+                                            WHERE `name` = "media' . $i . '_frontend_search"
+                                        ');
             $oldMediaSetting = $this->_arrSettings['media' . $i . '_frontend_changable'];
             $newMediaSetting = '';
             if (isset($_POST['mediaSettings_Media' . $i . 'FrontendChangable'])) {

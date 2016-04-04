@@ -154,7 +154,9 @@ class Media extends MediaLibrary
     {
         global $_ARRAYLANG, $_CORELANG;
 
-        $searchTerm = !empty($_GET['term']) ? \FWValidator::getCleanFileName(contrexx_input2raw($_GET['term'])) : '';
+        $searchTerm = $this->isSearchActivated() && !empty($_GET['term'])
+                        ? \FWValidator::getCleanFileName(contrexx_input2raw($_GET['term']))
+                        : '';
 
         switch ($this->getAct) {
             case 'download':
@@ -350,6 +352,10 @@ class Media extends MediaLibrary
             'TXT_MEDIA_SEARCH_TERM' => $_ARRAYLANG['TXT_MEDIA_SEARCH_TERM'],
         ));
 
+        if (!$this->isSearchActivated()) {
+            $this->_objTpl->hideBlock('media_archive_search_form');
+        }
+
         // Hide folder creation and file upload functionalies,
         // when permission denied and on search mode
         if (!$this->uploadAccessGranted() || !empty($searchTerm)) {
@@ -411,7 +417,7 @@ class Media extends MediaLibrary
                 'id'    => 'custom_'.$uploadId,
             ));
 
-            $folderWidget   = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($_SESSION->getTempPath() . '/' . $uploadId, true);
+            $folderWidget   = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget(\cmsSession::getInstance()->getTempPath() . '/' . $uploadId, true);
             $folderWidgetId = $folderWidget->getId();
             $extendedFileInputCode = <<<CODE
     <script type="text/javascript">
@@ -472,6 +478,23 @@ CODE;
            && \Permission::checkAccess(intval($manageAccessSetting), 'dynamic', true)) { // access group
             return true;
         } else if ($manageAccessSetting == 'on') {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check the whether the search setting activated
+     *
+     * @return boolean
+     */
+    public function isSearchActivated()
+    {
+        $settingKey    = strtolower($this->archive) . '_frontend_search';
+        $searchSetting = isset($this->_arrSettings[$settingKey])
+                            ? $this->_arrSettings[$settingKey]
+                            : '';
+        if ($searchSetting == 'on') {
             return true;
         }
         return false;
