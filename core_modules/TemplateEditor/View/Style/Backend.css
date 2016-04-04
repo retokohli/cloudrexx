@@ -178,9 +178,7 @@ body {
     position: relative;
     overflow: auto;
 }
-#content .option .elements .element .mediabrowser-button{
-    margin-right: 5px;
-}
+
 #content .option.saved input,
 #content .option.saved textarea,
 #content .option .image.saved input,
@@ -214,6 +212,20 @@ body {
     text-align: center;
     border-radius: 100%;
     line-height: 16px;
+}
+
+#content .option #text_series .element:after,
+#content .option #image_series .element:after,
+#content .option #color_series .element:after {
+    right: 35px;
+}
+
+#content .option #image_series .element:after{
+    right: 35px;
+}
+
+#content .option.image .element:after {
+    bottom: 30px;
 }
 
 #content .option.color:after,
@@ -270,13 +282,26 @@ body {
 
 #content .option .button {
     margin-top: 5px;
-    background: #dadada url(../../../../core/Core/View/Media/button_bg.png) repeat-x scroll left top;
-    border: 1px solid #BBBBBB;
-    color: #444444;
+    background: #0071BD;
+    border: 1px solid #0071BD;
+    color: white;
     margin-bottom: 2px;
     padding: 2px 10px;
-    text-shadow: 1px 1px #FFFFFF;
-    float: left;
+    text-shadow: none;
+    float: right;
+    cursor: pointer;
+}
+
+#content .option .button:hover {
+    margin-top: 5px;
+    background: #005ca1;
+    border: 1px solid #005ca1;
+    color: white;
+    margin-bottom: 2px;
+    padding: 2px 10px;
+    text-shadow: none;
+    float: right;
+    cursor: pointer;
 }
 
 #content .option .button[disabled] {
@@ -284,11 +309,33 @@ body {
     cursor: not-allowed;
 }
 
+#content .option .element .remove-element {
+    position: absolute;
+    top: 5px;
+    right: 1px;
+    background: #c0392b;
+    color: white;
+    border: 0px;
+    text-shadow: none;
+    margin: 0;
+    height: 21px;
+}
+
+#content .option .element .remove-element:hover {
+    background: #a23029;
+    cursor: pointer;
+}
+
+#content .option #image_series .element .remove-element {
+    top: initial;
+    bottom: 28px;
+}
+
 .series-list .elements img,
 .image.option img {
     margin: auto;
     display: block;
-    max-width: 100%;
+    max-width: calc(100% - 2px);
     -webkit-transition: border 0.5s;
     -moz-transition: border 0.5s;
     -ms-transition: border 0.5s;

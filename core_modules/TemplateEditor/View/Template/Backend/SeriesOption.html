@@ -11,8 +11,10 @@
 </div>
 <script type="text/javascript">
     var removeTemplate =
-            '<button class="remove-element button" onclick="removeElement(this)">' +
-            '{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_ELEMENT}</button>';
+            '<input type="button" class="remove-element button" ' +
+            'onclick="removeElement(this)" ' +
+            'value="x"' +
+            'title="{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_ELEMENT}" />';
 
     // add the remove button to the template. It is not delivered from
     // the template of the element (because it is not only used in series),
@@ -50,7 +52,8 @@
                     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}')
                             .children('.elements').append(newElement);
                     // set focus to new created element for better ux
-                    jQuery(newElement).children('input, textarea').focus();
+                    jQuery(newElement).children('input, textarea')
+                            .first().focus();
                     return true;
                 }
             );

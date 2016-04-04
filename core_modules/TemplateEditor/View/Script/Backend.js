@@ -297,7 +297,8 @@ function getSeriesElementValueById (name, id, elements) {
  * @param {object} button     the button which was clicked
  */
 function removeElement(button) {
-    var id = jQuery(button).parent().children('input, textarea').attr('id');
+    var id = jQuery(button).parent().children('input, textarea')
+        .first().attr('id');
     var parent = jQuery(button).parent();
     parent.addClass('saving');
     updateOption(
