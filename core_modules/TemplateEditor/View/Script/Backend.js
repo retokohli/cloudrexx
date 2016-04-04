@@ -8,10 +8,10 @@
 /**
  * Update the option on the server over jQuery.post
  *
- * @param string    optionName  the name of the option
- * @param array     optionData  the data which should be updated
- * @param function  callback    function which will be executed (should return
- *                              true to enable save button (false to disable it)
+ * @param {string}    optionName  the name of the option
+ * @param {array}     optionData  the data which should be updated
+ * @param {function}  callback    function which will be executed (should return
+ *                                true to enable save button (false to disable it)
  */
 function updateOption(optionName, optionData, callback){
     jQuery('#saveOptionsButton').attr("disabled", "disabled");
@@ -36,7 +36,9 @@ function updateOption(optionName, optionData, callback){
         }
     }, "json");
 }
-
+/**
+ * Save the option to yaml on server over jQuery.post
+ */
 var saveOptions = function (){
     if (jQuery(this).attr('disabled')){
         return;
@@ -272,10 +274,10 @@ jQuery(function(){
 /**
  * Get the value of a series element by its id
  *
- * @param   string  name     the name of the field, of which the value is needed
- * @param   string  id       the id of the element of which the field is needed
- * @param   array   elements should contain all elements
- * @returns string           returns the value. If not found an empty string
+ * @param   {string}  name     the name of which field the value is needed
+ * @param   {string}  id       the id of which element the field is needed
+ * @param   {array}   elements should contain all elements
+ * @returns {string}           returns the value. If not found an empty string
  */
 function getSeriesElementValueById (name, id, elements) {
     if (elements[id] !== undefined) {
@@ -292,7 +294,7 @@ function getSeriesElementValueById (name, id, elements) {
 /**
  * Remove an element from a series
  *
- * @param object button     the button which was clicked
+ * @param {object} button     the button which was clicked
  */
 function removeElement(button) {
     var id = jQuery(button).parent().children('input, textarea').attr('id');
