@@ -377,6 +377,10 @@ class Product
      */
     function active($active=null)
     {
+        // set active to false, when product stock == 0
+        if ($this->stock_visible && empty($this->stock)) {
+            $active = false;
+        }
         if (isset($active)) {
             $this->active = (boolean)$active;
         }
