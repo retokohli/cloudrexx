@@ -509,50 +509,31 @@ class eGov extends eGovLibrary
         $NewPosition = 0;
         if (isset($_REQUEST['Direction'])) {
             $query = "
-                SELECT count(*) AS anzahl
-                  FROM ".DBPREFIX."module_egov_products";
-            $objResult = $objDatabase->Execute($query);
-            $anzahl = $objResult->fields['anzahl'];
-            if ($_REQUEST['Direction'] == 'up') {
-                $NewPosition = eGovLibrary::GetProduktValue(
-                    'product_orderby', $_REQUEST['id'])-1;
-            }
-            if ($_REQUEST['Direction'] == 'down') {
-                $NewPosition = eGovLibrary::GetProduktValue(
-                    'product_orderby', $_REQUEST['id'])+1;
-            }
-            if ($NewPosition < 0) {
-                $NewPosition = 0;
-            }
-            if ($NewPosition > $anzahl) {
-                $NewPosition = $anzahl;
-            }
-            $query = "
                 SELECT product_id
                   FROM ".DBPREFIX."module_egov_products
-                 WHERE product_orderby=$NewPosition";
+                 ORDER BY product_orderby";
             $objResult = $objDatabase->Execute($query);
-            $TauschID = $objResult->fields['product_id'];
-            $query = "
-                SELECT product_orderby
-                  FROM ".DBPREFIX."module_egov_products
-                 WHERE product_id=".$_REQUEST['id'];
-            $objResult = $objDatabase->Execute($query);
-            $TauschPosition = $objResult->fields['product_orderby'];
-            $query = "
-                UPDATE ".DBPREFIX."module_egov_products
-                   SET product_orderby=".$TauschPosition."
-                 WHERE product_id=$TauschID";
-            if ($objDatabase->Execute($query)) {
-                $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
+            $arrProducts = array();
+            while (!$objResult->EOF) {
+                $arrProducts[] = $objResult->fields['product_id'];
+                $objResult->MoveNext();
             }
-            $query = "
-                UPDATE ".DBPREFIX."module_egov_products
-                   SET product_orderby=$NewPosition
-                 WHERE product_id=".$_REQUEST['id'];
-            if ($objDatabase->Execute($query)) {
-                $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
+            $productId = intval($_REQUEST['id']);
+            $productIdx = array_search($productId, $arrProducts);
+            $idxOffset = $_REQUEST['Direction'] == 'up' ? -1 : 1;
+            $productSwitchIdx = $productIdx + $idxOffset;
+            if (isset($arrProducts[$productSwitchIdx])) {
+                $arrProducts[$productIdx] = $arrProducts[$productSwitchIdx];
+                $arrProducts[$productSwitchIdx] = $productId;
             }
+
+            $orderIdx = 0;
+            foreach ($arrProducts as $productId) {
+                $query = 'UPDATE `'.DBPREFIX.'module_egov_products` SET `product_orderby`='.$orderIdx++.' WHERE `product_id`='.$productId;
+                $objDatabase->Execute($query);
+            }
+            // TODO: implement proper status message
+            $this->_strOkMessage = $_ARRAYLANG['TXT_EGOV_PRODUCT_SUCCESSFULLY_SAVED'];
         }
         $this->objTemplate->setVariable(array(
             'TXT_PRODUCTS' => $_ARRAYLANG['TXT_PRODUCTS'],

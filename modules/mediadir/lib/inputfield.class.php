@@ -515,6 +515,12 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                                 }
 
                                 if(!empty($arrInputfieldContent)) {
+                                    $config = \Env::get('config');
+                                    $cx = \Env::get('cx');
+                                    if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND && $config['blockStatus']) {
+                                        $arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = preg_replace('/\\[\\[([A-Z][A-Z0-9_-]+)\\]\\]/', '{\\1}', $arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE']);
+                                        \block::setBlocks($arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'], $cx->getPage());
+                                    }
                                     foreach ($arrInputfieldContent as $strPlaceHolder => $strContent) {
                                         $objTpl->setVariable(array(
                                             strtoupper($strPlaceHolder) => $strContent
