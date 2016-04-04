@@ -32,29 +32,28 @@
             if (response.status == 'error'){
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').text(response.message).slideDown();
+                return false;
             }
-            else {
-                var splitedText = '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_seriesId');
-                if (splitedText[1]
-                        !== undefined) {
-                    var data = getSeriesElementValueById(
-                            'url',
-                            splitedText[1],
-                            response.data['elements']
-                    );
-                } else {
-                    var data = response.data.url;
-                }
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',data);
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(data);
-                parent.removeClass('saving');
-                parent.addClass('saved');
-                setTimeout(function(){
-                    parent.removeClass('saved');
-                }, 2000);
+            var splitedText = '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_seriesId');
+            if (splitedText[1]
+                    !== undefined) {
+                var data = getSeriesElementValueById(
+                        'url',
+                        splitedText[1],
+                        response.data['elements']
+                );
+            } else {
+                var data = response.data.url;
             }
-
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',data);
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(data);
+            parent.removeClass('saving');
+            parent.addClass('saved');
+            setTimeout(function(){
+                parent.removeClass('saved');
+            }, 2000);
+            return true;
         })
     });
 </script>

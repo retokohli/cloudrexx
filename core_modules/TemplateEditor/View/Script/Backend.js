@@ -5,6 +5,14 @@
  * or remove this file if you don't need it
  */
 
+/**
+ * Update the option on the server over jQuery.post
+ *
+ * @param string    optionName  the name of the option
+ * @param array     optionData  the data which should be updated
+ * @param function  callback    function which will be executed (should return
+ *                              true to enable save button (false to disable it)
+ */
 function updateOption(optionName, optionData, callback){
     jQuery('#saveOptionsButton').attr("disabled", "disabled");
     jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=updateOption&tid="+cx.variables.get('themeid','TemplateEditor'), { optionName: optionName, optionData:optionData }, function (response) {
@@ -23,8 +31,9 @@ function updateOption(optionName, optionData, callback){
                 previewIframe.attr('src', cx.variables.get('iframeUrl','TemplateEditor'));
             }
         }
-        callback(response);
-        jQuery('#saveOptionsButton').removeAttr("disabled");
+        if(callback(response)) {
+            jQuery('#saveOptionsButton').removeAttr("disabled");
+        }
     }, "json");
 }
 

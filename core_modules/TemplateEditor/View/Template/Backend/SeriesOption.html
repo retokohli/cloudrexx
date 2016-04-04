@@ -51,6 +51,7 @@
                             .children('.elements').append(newElement);
                     // set focus to new created element for better ux
                     jQuery(newElement).children('input, textarea').focus();
+                    return true;
                 }
             );
         }

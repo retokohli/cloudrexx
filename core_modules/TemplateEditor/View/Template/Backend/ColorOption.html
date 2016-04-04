@@ -37,17 +37,15 @@
             if (response.status == 'error'){
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').text(response.message).slideDown();
+                return false;
             }
-            else {
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saved');
-                setTimeout(function () {
-                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saved');
-                }, 2000);
-            }
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saved');
+            setTimeout(function () {
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saved');
+            }, 2000);
+            return true;
         })
-
-
     });
 </script>

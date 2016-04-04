@@ -19,28 +19,28 @@
                     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
                     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box')
                             .text(response.message).slideDown();
+                    return false;
                 }
-                else {
-                    var splitedId =
-                            '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_seriesId');
-                    if (splitedId.length > 1) { // case: series
-                        var textvalue = getSeriesElementValueById(
-                                'textvalue',
-                                splitedId[1],
-                                response.data['elements']
-                        );
-                    } else { // case: single textarea
-                        var textvalue = response.data.textvalue;
-                    }
-                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideUp();
-                    parent.removeClass('error');
-                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(textvalue);
-                    parent.removeClass('saving');
-                    parent.addClass('saved');
-                    setTimeout(function(){
-                        parent.removeClass('saved');
-                    }, 2000);
+                var splitedId =
+                        '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_seriesId');
+                if (splitedId.length > 1) { // case: series
+                    var textvalue = getSeriesElementValueById(
+                            'textvalue',
+                            splitedId[1],
+                            response.data['elements']
+                    );
+                } else { // case: single textarea
+                    var textvalue = response.data.textvalue;
                 }
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideUp();
+                parent.removeClass('error');
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(textvalue);
+                parent.removeClass('saving');
+                parent.addClass('saved');
+                setTimeout(function(){
+                    parent.removeClass('saved');
+                }, 2000);
+                return true;
             }
         )
     });
