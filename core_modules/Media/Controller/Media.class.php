@@ -604,7 +604,7 @@ CODE;
         }
 
         if (!empty($errorMsg)) {
-            \Message::error(explode('<br>', $errorMsg));
+            \Message::error(implode('<br>', $errorMsg));
             return false;
         }
 
