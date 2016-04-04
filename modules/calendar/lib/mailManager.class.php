@@ -219,7 +219,7 @@ class CalendarMailManager extends CalendarLibrary {
 
             $lastEvent = null;
             if (isset($_POST['date'])) {
-                $postDate = $this->getInternDateTimeFromUser($_POST['date']);
+                $postDate = $this->getInternDateTimeFromUser('@' . $_POST['date']);
                 while ($objEvent->startDate->getTimestamp() != $postDate->getTimestamp()){
                     foreach ($eventManager->eventList as $event){
                         if ($event->startDate->getTimestamp() == $postDate->getTimestamp()){
