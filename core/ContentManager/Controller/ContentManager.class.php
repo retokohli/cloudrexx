@@ -147,10 +147,15 @@ class ContentManager extends \Module
 
         if (\Permission::checkAccess(78, 'static', true)) {
             \JS::registerCode("var publishAllowed = true;");
+        } else {
+            \JS::registerCode("var publishAllowed = false;");
+        }
+        if (\Permission::checkAccess(115, 'static', true)) {
+            \JS::registerCode("var aliasManagementAllowed = true;");
             $alias_permission = "block";
             $alias_denial     = "none !important";
         } else {
-            \JS::registerCode("var publishAllowed = false;");
+            \JS::registerCode("var aliasManagementAllowed = false;");
             $alias_permission = "none !important";
             $alias_denial     = "block";
         }

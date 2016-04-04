@@ -342,18 +342,6 @@ cx.ready(function() {
         }
     });
     
-    // aliases:
-    if (!publishAllowed) {
-        cx.jQuery("div.page_alias").each(function (index, field) {
-            field = cx.jQuery(field);
-            field.removeClass("empty");
-            if (field.children("span.noedit").html() == "") {
-                field.addClass("empty");
-            }
-        });
-        cx.jQuery(".empty").hide();
-    }
-    
     // alias input fields
     cx.jQuery("div.page_alias input").keyup(function() {
         cx.jQuery("div.page_alias input.warning").removeClass("warning");
@@ -563,6 +551,12 @@ cx.ready(function() {
     }*/
     if (cx.jQuery.getUrlVar("page") || cx.jQuery.getUrlVar("node")) {
         cx.cm.loadPage(cx.jQuery.getUrlVar("page"), cx.jQuery.getUrlVar("node"), cx.jQuery.getUrlVar("version"), cx.jQuery.getUrlVar("tab"));
+    }
+    
+    // we hide aliases and title if alias management is forbidden:
+    if (!aliasManagementAllowed) {
+        cx.jQuery("div.page_alias").hide();
+        cx.jQuery("label[for=page_alias]").parent().hide();
     }
 
     cx.cm();
@@ -2906,16 +2900,16 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
         myField.children("input").attr("id", "page_alias_" + index);
         myField.children("span.noedit").html(alias);
         field.before(myField);
+        // if alias management is forbidden, aliases are hidden. we want to show
+        // readonly aliases anyway:
+        if (!aliasManagementAllowed) {
+            myField.show();
+        }
     });
-    if (!publishAllowed) {
-        cx.jQuery("div.page_alias").each(function (index, field) {
-            field = cx.jQuery(field);
-            field.removeClass("empty");
-            if (field.children("span.noedit").html() == "") {
-                field.addClass("empty");
-            }
-        });
-        cx.jQuery(".empty").hide();
+    // if alias management is forbidden, alias title is hidden. If we show
+    // readonly aliases, we also want the title:
+    if (!aliasManagementAllowed && page.aliases.length) {
+        cx.jQuery("label[for=page_alias]").parent().show();
     }
     
     if (selectTab != undefined) {
