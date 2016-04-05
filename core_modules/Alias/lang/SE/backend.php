@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_alias
  */
 $_ARRAYLANG['TXT_ALIAS_ALIASES'] = "SEO URL Aliases";
@@ -41,7 +67,7 @@ $_ARRAYLANG['TXT_ALIAS_NO_ALIASES_MSG'] = "There are no aliases defined!";
 $_ARRAYLANG['TXT_ALIAS_REQUIREMENTS_DESC'] = "Using aliases, you can make a complicated URL like <b>www.yourdomain.com/index.php?page=84472</b> look more friendly. With an alias defined, the URL might become <b>www.yourdomain.com/services</b>. This not only makes it more readable, but also improves placement in search results. <br/><br/>Note: The alias administration does only work on an <strong>Apache</strong> webserver with the extension <strong>mod_rewrite</strong> enabled.<br /> Also, the usage of <strong>.htaccess</strong> files must be allowed by the server.";
 $_ARRAYLANG['TXT_ALIAS_USE_ALIAS_ADMINISTRATION'] = "Use alias administration";
 $_ARRAYLANG['TXT_ALIAS_APACHE_MISSING'] = "You are using another webserver than Apache. Alias management only works with Apache, so you cannot use aliases on this server.";
-$_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Contrexx could not determine whether the extension <strong>mod_rewrite</strong> is enabled. Therefore, the alias management cannot be activated, as it would render the site inaccessible if the extension <strong>mod_rewrite</strong> was missing.<br/><br/>
+$_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Cloudrexx could not determine whether the extension <strong>mod_rewrite</strong> is enabled. Therefore, the alias management cannot be activated, as it would render the site inaccessible if the extension <strong>mod_rewrite</strong> was missing.<br/><br/>
 If you are sure that the extension <strong>mod_rewrite</strong> is available, you can enable the alias management manually. To do so, create a new file named <strong>.htaccess</strong> in the top directory of the web site with the following content:
 <br/><div style=\"margin: 10px;\"><code>RewriteEngine On</code></div>
 Next time you access alias management, it will be activated automatically.";

@@ -1,26 +1,52 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Block
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_block
  * @todo        Edit PHP DocBlocks!
  */
 
 namespace Cx\Modules\Block\Controller;
+use Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser;
 
 /**
  * Block
  *
  * block module class
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_block
  */
 class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
@@ -485,8 +511,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'TXT_BLOCK_CATEGORY_SEPERATOR'          => $_ARRAYLANG['TXT_BLOCK_CATEGORY_SEPERATOR'],
             'BLOCK_CATEGORY_ID'                     => $catId,
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'      => $this->_getCategoriesDropdown($arrCategory['parent'], $catId),
-            'BLOCK_CATEGORY_NAME'                   => $arrCategory['name'],
-            'BLOCK_CATEGORY_SEPERATOR'              => $arrCategory['seperator'],
+            'BLOCK_CATEGORY_NAME'                   => contrexx_raw2xhtml($arrCategory['name']),
+            'BLOCK_CATEGORY_SEPERATOR'              => contrexx_raw2xhtml($arrCategory['seperator']),
             'DIRECTORY_INDEX'                       => CONTREXX_DIRECTORY_INDEX,
             'CSRF_PARAM'                            => \Cx\Core\Csrf\Controller\Csrf::param(),
         ));
@@ -623,6 +649,14 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         \JS::activate('cx');
         \JS::activate('ckeditor');
 
+        $mediaBrowserCkeditor = new MediaBrowser();
+        $mediaBrowserCkeditor->setCallback('ckeditor_image_button');
+        $mediaBrowserCkeditor->setOptions(array(
+            'id' => 'ckeditor_image_button',
+            'type' => 'button',
+            'style' => 'display:none'
+        ));
+        
         $blockId                = !empty($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
         $blockCat               = 0;
         $blockName              = '';
@@ -782,6 +816,9 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'BLOCK_CATEGORY_0'                  => $blockCategory == '0' ? 'checked="checked"' : '',
             'BLOCK_CATEGORY_1'                  => $blockCategory == '1' ? 'checked="checked"' : '',
             'BLOCK_CATEGORY_SHOW_PAGE_SELECTOR' => $blockCategory == '1' ? 'block' : 'none',
+
+            // mediabrowser
+            'BLOCK_WYSIWYG_MEDIABROWSER' => $mediaBrowserCkeditor->getXHtml()
         ));
         
         $jsonData =  new \Cx\Core\Json\JsonData();

@@ -1,8 +1,33 @@
 <?php
 
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  config
  * @todo        Edit PHP DocBlocks!
  */
@@ -37,8 +62,11 @@ define('ASCMS_CONTENT_IMAGE_PATH',          ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_O
 define('ASCMS_CONTENT_IMAGE_WEB_PATH',      ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/content');
 // Cx::getWebsiteFeedPath()
 define('ASCMS_FEED_PATH',                   ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/feed');
+// Cx::getWebsiteFeedWebPath()
 define('ASCMS_FEED_WEB_PATH',               ASCMS_INSTANCE_OFFSET.'/feed');
+// Cx::getWebsiteMediaForumUploadPath()
 define('ASCMS_FORUM_UPLOAD_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/Forum/upload');
+// Cx::getWebsiteMediaForumUploadWebPath()
 define('ASCMS_FORUM_UPLOAD_WEB_PATH',       ASCMS_INSTANCE_OFFSET.'/media/Forum/upload');
 define('ASCMS_GALLERY_THUMBNAIL_WEB_PATH',  ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/gallery_thumbs');
 define('ASCMS_GALLERY_THUMBNAIL_PATH',      ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/gallery_thumbs');
@@ -110,9 +138,13 @@ define('ASCMS_DIR_PATH',                    ASCMS_DOCUMENT_ROOT.ASCMS_MODULE_FOL
 define('ASCMS_DIR_WEB_PATH',                ASCMS_PATH_OFFSET.ASCMS_MODULE_FOLDER.'/Directory');
 define('ASCMS_DIRECTORY_FEED_PATH',         ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/Directory/feeds');
 define('ASCMS_DIRECTORY_FEED_WEB_PATH',     ASCMS_INSTANCE_OFFSET.'/media/Directory/feeds');
+// Cx::getWebsiteMediaDirectoryPath()
 define('ASCMS_MODULE_MEDIA_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/Directory');
+// Cx::getWebsiteMediaDirectoryWebPath()
 define('ASCMS_MODULE_MEDIA_WEB_PATH',       ASCMS_INSTANCE_OFFSET.'/media/Directory');
+// Cx::getWebsiteMediaMarketPath()
 define('ASCMS_MARKET_MEDIA_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/Market');
+// Cx::getWebsiteMediaMarketWebPath()
 define('ASCMS_MARKET_MEDIA_WEB_PATH',       ASCMS_INSTANCE_OFFSET.'/media/Market');
 define('ASCMS_CACHE_PATH',                  ASCMS_TEMP_PATH.'/cache');
 define('ASCMS_ECARD_OPTIMIZED_PATH',        ASCMS_MEDIA_PATH.'/Ecard/ecards_optimized');

@@ -1,24 +1,60 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Wrapper class for the recursive array
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     3.1.2
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core 
  */
 
 namespace Cx\Core\Model;
 
 /**
+ * Exception class for recursive array access
+ *
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Adrian Berger <adrian.berger@cloudrexx.com>
+ * @version     1.0.0
+ * @package     cloudrexx
+ * @subpackage  core
+ */
+class RecursiveArrayAccessException extends \Exception {}
+
+/**
  * Wrapper class for the recursive array
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     $Id:    Exp $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * 
  * @see         /core/session.class.php
@@ -153,6 +189,24 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
     }
 
     /**
+     * This function checks if the value of an array-index, which is not on first level of the main array, is set
+     * e.g $array['level1']['level2']['level3']
+     *
+     * @param string $offset     string containing the offset e.g 'level1/level2/level3'
+     * @param string $delimiter  the delimiter used in $offset e.g '/'
+     * @return boolean
+     * @throws RecursiveArrayAccessException
+     */
+    public function recursiveOffsetExists($offset, $delimiter = '/') {
+        try {
+            $this->recursiveOffsetGet($offset, $delimiter);
+        } catch(RecursiveArrayAccessException $e){
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Offset to retrieve
      *
      * @link http://php.net/manual/en/arrayaccess.offsetget.php
@@ -167,6 +221,31 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
         } else {
             return isset($this->data[$offset]) ? $this->data[$offset] : null;
         }
+    }
+
+    /**
+     * This function returns the value of an array-index which is not on first level of the main array
+     * e.g $array['level1']['level2']['level3']
+     *
+     * @access public
+     * @param string $offset     string containing the offset e.g 'level1/level2/level3'
+     * @param string $delimiter  the delimiter used in $offset e.g '/'
+     * @return mixed value of the array index
+     * @throws RecursiveArrayAccessException
+     */
+    public function recursiveOffsetGet($offset, $delimiter = '/') {
+        $offsetParts = explode($delimiter, $offset);
+        $array = $this->data;
+
+        foreach ($offsetParts as $offsetPart) {
+            // if the array-index is not set, we throw an RecursiveArrayAccessException.
+            // recursiveOffsetExists() will catch this
+            if (!isset($array[$offsetPart])) {
+                throw new RecursiveArrayAccessException('RecursiveArrayOffset "' . $offset . '" could not be found');
+            }
+            $array = $array[$offsetPart];
+        }
+        return $array;
     }
 
     /**
@@ -250,6 +329,38 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
 
         if ($this->callableOnSet) {
             call_user_func($this->callableOnSet, $this);
+        }
+    }
+
+    /**
+     * This function sets the value of an array-index which is not on first level of the main array
+     * e.g $array['level1']['level2']['level3']
+     * If the previous index i.e ['level1'] is not set it will be set to array.
+     * Note: If it is set but not an array it will be overwritten
+     *
+     * @access public
+     * @param mixed  $value      the value which should be set
+     * @param string $offset     string containing the offset e.g 'level1/level2/level3'
+     * @param string $delimiter  the delimiter used in $offset e.g '/'
+     */
+    public function recursiveOffsetSet($value, $offset, $delimiter = '/') {
+        $offsetParts = explode($delimiter, $offset);
+
+        $arrayPointer = $this;
+        foreach ($offsetParts as $index=>$offset) {
+            // if index is the last value of the offset, we set it to $value
+            if ($index == count($offsetParts) - 1) {
+                $arrayPointer[$offset] = $value;
+                break;
+            }
+            // If the index is not set or not an RecursiveArrayAccess instance, we set/reset it to an array
+            if (
+                !isset($arrayPointer[$offset]) ||
+                !is_a($arrayPointer[$offset], __CLASS__)
+            ) {
+                $arrayPointer[$offset] = array();
+            }
+            $arrayPointer = $arrayPointer[$offset];
         }
     }
 

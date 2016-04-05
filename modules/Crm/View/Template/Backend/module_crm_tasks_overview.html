@@ -141,6 +141,14 @@
                     <input type="text" placeholder="{TXT_CRM_ENTER_SEARCH_TERM}" name="searchTitle" id="searchTitle" size="30" value="{TXT_SEARCH_VALUE}" style="float: left;width: 300px;"/>&nbsp;
                     <input type="submit" value="{TXT_CRM_SEARCH}" title="{TXT_CRM_SEARCH}" />&nbsp;
                     <div style="float: right;margin-top: -6px;">
+                        {TXT_CRM_FILTER_STATUS}:
+                        <label>
+                            <input type="checkbox" name="status[]" value="0" class="searchForm" {CRM_TASK_STATUS_OPEN} />{TXT_CRM_TASK_STATUS_OPEN}
+                        </label>
+                        <label>
+                            <input type="checkbox" name="status[]" value="1" class="searchForm" {CRM_TASK_STATUS_COMPLETED} />{TXT_CRM_TASK_STATUS_COMPLETED}
+                        </label>
+                        &nbsp;&nbsp;
                         <select class="searchForm" name="searchType" id="task_type" style="width: 257px;margin-right: 15px;" >
                             <option value="">{TXT_CRM_FILTER_TASK_TYPE}</option>
                             <!-- BEGIN tastType -->

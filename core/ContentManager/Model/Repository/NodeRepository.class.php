@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * NodeRepository
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 
@@ -21,9 +46,9 @@ use Doctrine\ORM\EntityManager,
 /**
  * NodeRepository
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 class NodeRepository extends NestedTreeRepository {
@@ -356,7 +381,11 @@ class NodeRepository extends NestedTreeRepository {
     {
         $result = false;
         $meta = $this->getClassMetadata();
-        if ($node instanceof $meta->name) {
+        if (!$node instanceof $meta->name) {
+            throw new InvalidArgumentException("Node is not related to this repository");
+        }
+        $this->_em->getConnection()->beginTransaction();
+        try {
             $config = $this->listener->getConfiguration($this->_em, $meta->name);
             $nextSiblings = $this->getNextSiblings($node, false, $skipAliasNodes);
             if ($numSiblings = count($nextSiblings)) {
@@ -370,8 +399,10 @@ class NodeRepository extends NestedTreeRepository {
                     ->getStrategy($this->_em, $meta->name)
                     ->updateNode($this->_em, $node, $nextSiblings[$number - 1], Nested::NEXT_SIBLING);
             }
-        } else {
-            throw new InvalidArgumentException("Node is not related to this repository");
+            $this->_em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $this->_em->getConnection()->rollback();
+            throw $e;
         }
         return $result;
     }
@@ -390,7 +421,11 @@ class NodeRepository extends NestedTreeRepository {
     {
         $result = false;
         $meta = $this->getClassMetadata();
-        if ($node instanceof $meta->name) {
+        if (!$node instanceof $meta->name) {
+            throw new InvalidArgumentException("Node is not related to this repository");
+        }
+        $this->_em->getConnection()->beginTransaction();
+        try {
             $config = $this->listener->getConfiguration($this->_em, $meta->name);
             $prevSiblings = array_reverse($this->getPrevSiblings($node, false, $skipAliasNodes));
             if ($numSiblings = count($prevSiblings)) {
@@ -404,8 +439,10 @@ class NodeRepository extends NestedTreeRepository {
                     ->getStrategy($this->_em, $meta->name)
                     ->updateNode($this->_em, $node, $prevSiblings[$number - 1], Nested::PREV_SIBLING);
             }
-        } else {
-            throw new InvalidArgumentException("Node is not related to this repository");
+            $this->_em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $this->_em->getConnection()->rollback();
+            throw $e;
         }
         return $result;
     }

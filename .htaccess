@@ -7,6 +7,15 @@
     # I.e.: /
     RewriteBase /
 
+    # Denied the access to the files from the downloads (DAM) component
+    # Exceptions are the thumbnail files
+    RewriteCond %{REQUEST_URI} images\/Downloads\/
+    RewriteCond %{REQUEST_URI} !\.thumb$
+    RewriteCond %{REQUEST_URI} !\.thumb_thumbnail\.[^\/]*$
+    RewriteCond %{REQUEST_URI} !\.thumb_medium\.[^\/]*$
+    RewriteCond %{REQUEST_URI} !\.thumb_large\.[^\/]*$
+    RewriteRule . - [F]
+
     # Strip virtual language directory for MEDIA RESSOURCES, CONTENT DATA and THEME
     # IMPORTANT: When running Contrexx in a subdirectory (relativ to the webserver's DocumentRoot)
     #            then you'll have to comment-out the following ruleset

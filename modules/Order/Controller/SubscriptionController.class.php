@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * SubscriptionController
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_order
  */
 
@@ -15,9 +40,9 @@ namespace Cx\Modules\Order\Controller;
  * 
  * SubscriptionController for displaying all the subscriptions.
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_order
  */
 class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
@@ -83,7 +108,11 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
         } else {
             $subscriptions = $this->subscriptionRepo->getSubscriptionsByCriteria(null, array('s.id' => 'DESC'));
         }
-        
+
+        $subscriptions = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($subscriptions);
+        // setDataType is used to make the ViewGenerator load the proper options if $subscriptions is empty
+        $subscriptions->setDataType('Cx\Modules\Order\Model\Entity\Subscription');
+
         $products = \Env::get('em')->getRepository('Cx\Modules\Pim\Model\Entity\Product')->findAll();
         $this->getSearchFilterDropDown($products, $filterProduct, 'product');
         
@@ -93,125 +122,9 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
                                     \Cx\Modules\Order\Model\Entity\Subscription::STATE_CANCELLED
                               );
         $this->getSearchFilterDropDown($subscriptionStates, $filterState, 'state');
-        
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($subscriptions, array(
-            'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_SUBSCRIPTION'],
-            'functions' => array(
-                'add'       => true,
-                'edit'      => true,
-                'delete'    => true,
-                'sorting'   => true,
-                'paging'    => true,
-                'filtering' => false,
-                ),
-            'fields' => array(
-                'id' => array(
-                  'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_ID']  
-                ),
-                'subscriptionDate' => array(
-                  'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_DATE']  
-                ),
-                'expirationDate' => array(
-                  'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_EXPIRATION_DATE']  
-                ),
-                'productEntityId' => array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PRODUCT_ENTITY'],
-                    'table' => array(
-                        'parse' => function($value, $rowData) {
-                            $subscription  = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
-                            $productEntity = $subscription->getProductEntity();
-                            if(!$productEntity) {
-                                return;
-                            }
-                            $productEditLink = $productEntity;
-                            if (method_exists($productEntity, 'getEditLink')) {
-                                $productEditLink = $productEntity->getEditLink();
-                            }
-                            
-                            return $productEditLink;
-                        }
-                    )
-                ),
-                'paymentAmount' => array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PAYMENT_AMOUNT'],
-                    'table' => array(
-                        'parse' => function($value, $rowData) {
-                            if (\FWValidator::isEmpty(floatval($value))) {
-                                return null;
-                            }
-                            $subscription    = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
-                            $currency = '';
-                            $order = $subscription->getOrder();
-                            if ($order) {
-                                $currency  = !\FWValidator::isEmpty($order->getCurrency()) ? $order->getCurrency() : '';
-                            }
-                            $paymentInterval = $subscription->getRenewalUnit();
-                            return $value . ' ' . $currency . ' / ' . $paymentInterval;
-                        }
-                    )
-                ),
-                'renewalUnit' => array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_RENEWAL_UNIT'],
-                    'table' => array(
-                        'parse' => function($value, $rowData) {
-                            if (empty($value)) {
-                                return null;
-                            }
-                            $subscription    = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
-                            $renewalDate     = '';
-                            if ($subscription->getRenewalDate()) {
-                                $renewalDate  = $subscription->getRenewalDate();
-                                $quantifier   = $subscription->getRenewalQuantifier();
-                                $renewalDate->modify("-$quantifier $value");
-                                return $renewalDate->format('d.M.Y H:i:s');
-                            }
-                            return $renewalDate;
-                        }
-                    )
-                ),
-                'renewalQuantifier' => array(
-                    'showOverview' => false
-                ),
-                'renewalDate' => array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_RENEWAL_DATE']
-                ),
-                'description' => array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_DESCRIPTION']
-                ),
-                'state' => array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_STATE']
-                ),
-                'terminationDate' => array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_TERMI_DATE']
-                ),
-                'note' => array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_NOTE']
-                ),
-                'product'  => array(
-                    'header' => $_ARRAYLANG['TXT_MODULE_ORDER_SUBSCRIPTION_PRODUCT'],
-                    'table' => array(
-                        'parse' => function($value, $rowData) {
-                            $subscription  = $this->subscriptionRepo->findOneBy(array('id' => $rowData['id']));
-                            $product       = $subscription->getProduct();
-                            if (!$product) {
-                                return;
-                            }
-                            return $product->getName();
-                        }
-                    )
-                ),
-                'paymentState' => array(
-                    'showOverview' => false
-                ),
-                'externalSubscriptionId' => array(
-                    'showOverview' => false
-                ),
-                'order' => array(
-                    'showOverview' => false
-                ),
-                
-            ),
-        ));
+
+        $options = $this->getController('Backend')->getAllViewGeneratorOptions();
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($subscriptions, $options);
 
         $this->template->setVariable(array(
             'TXT_ORDER_SUBSCRIPTIONS_FILTER'       => $_ARRAYLANG['TXT_MODULE_ORDER_FILTER'],

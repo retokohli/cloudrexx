@@ -1,16 +1,42 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * This is the crmInterface class file for handling the all functionalities under interface menu.
  *
  * PHP version 5.3 or >
  *
  * @category   CrmInterface
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
  * @version    1.0.0
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 namespace Cx\Modules\Crm\Controller;
@@ -19,12 +45,12 @@ namespace Cx\Modules\Crm\Controller;
  * This is the crmInterface class file for handling the all functionalities under interface menu.
  *
  * @category   CrmInterface
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
  * @version    1.0.0
- * @link       www.contrexx.com
+ * @link       www.cloudrexx.com
  */
 
 class CrmInterface extends CrmLibrary
@@ -264,48 +290,6 @@ class CrmInterface extends CrmLibrary
         exit();
     }
 
-    /**
-     * Upload a Csv File
-     *
-     * @param String $name File name
-     * @param String $path uploading file path
-     *
-     * @return String
-     */
-    function uploadCSV($name, $path)
-    {
-        //check file array
-        if (isset($_FILES) && !empty($_FILES)) {
-            //get file info
-            $status = "";
-            $tmpFile = $_FILES[$name]['tmp_name'];
-            $fileName = $_FILES[$name]['name'];
-            $fileType = $_FILES[$name]['type'];
-            $fileSize = $_FILES[$name]['size'];
-
-            if ($fileName != "" && \FWValidator::is_file_ending_harmless($fileName)) {
-
-                //check extension
-                $info = pathinfo($fileName);
-                $exte = $info['extension'];
-                $exte = (!empty($exte)) ? '.' . $exte : '';
-                $fileName = time() . $exte;
-                
-                //upload file
-                if (@move_uploaded_file($tmpFile, $path.$fileName)) {
-                    @chmod($path.$fileName, '0777');
-                    $status = $fileName;
-                } else {
-                    $status = "error";
-                }
-
-            } else {
-                $status = "error";
-            }
-        }
-        return $status;
-
-    }
     /**
      * It displayes the import menu
      *

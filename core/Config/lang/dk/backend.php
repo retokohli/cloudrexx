@@ -1,10 +1,35 @@
-<?php 
+<?php
 
- /** 
- * @copyright   CONTREXX CMS - COMVATION AG 
- * @author      Comvation Development Team <info@comvation.com>
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/** 
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public 
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_config
  */ 
 global $_ARRAYLANG; 
@@ -34,12 +59,12 @@ $_ARRAYLANG['TXT_SETTINGS_DEBUGGING_FLAG_DB_CHANGE'] = 'Datenbank: Änderungen (
 $_ARRAYLANG['TXT_SETTINGS_DEBUGGING_FLAG_DB_ERROR'] = 'Datenbank: Fehler';
 $_ARRAYLANG['TXT_SETTINGS_DEBUGGING_FLAG_LOG_FILE'] = 'Ausgabe in Datei';
 $_ARRAYLANG['TXT_SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP'] = 'Ausgabe in FirePHP';
-$_ARRAYLANG['TXT_DEBUGGING_EXPLANATION'] = 'Mode that helps contrexx developers with troubleshooting tasks. Activated for the currently logged in user only. Settings are discarded as soon as the session is closed.';
+$_ARRAYLANG['TXT_DEBUGGING_EXPLANATION'] = 'Mode that helps cloudrexx developers with troubleshooting tasks. Activated for the currently logged in user only. Settings are discarded as soon as the session is closed.';
 $_ARRAYLANG['TXT_SAVE'] = 'Gem';
 $_ARRAYLANG['TXT_CORE_CONFIG_SYSTEMSTATUS'] = 'Sidestatus';
 $_ARRAYLANG['TXT_CORE_CONFIG_SYSTEMSTATUS_TOOLTIP_HELP'] = 'Is the page activated? - Status (on | off)';
 $_ARRAYLANG['TXT_CORE_CONFIG_COREIDSSTATUS'] = 'Sikkerhedssystem';
-$_ARRAYLANG['TXT_CORE_CONFIG_COREIDSSTATUS_TOOLTIP_HELP'] = 'Contrexx Intrusion Detection System - Reporting Status (on | off)';
+$_ARRAYLANG['TXT_CORE_CONFIG_COREIDSSTATUS_TOOLTIP_HELP'] = 'Cloudrexx Intrusion Detection System - Reporting Status (on | off)';
 $_ARRAYLANG['TXT_CORE_CONFIG_XMLSITEMAPSTATUS'] = 'XML Sitemap';
 $_ARRAYLANG['TXT_CORE_CONFIG_XMLSITEMAPSTATUS_TOOLTIP_HELP'] = 'Automatisk generering af XML Sitemap - status (on | off).';
 $_ARRAYLANG['TXT_CORE_CONFIG_COREGLOBALPAGETITLE'] = 'Global sidetitel';
@@ -87,7 +112,7 @@ $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY'] = 'Passwords must meet the com
 $_ARRAYLANG['TXT_CORE_CONFIG_PASSWORDCOMPLEXITY_TOOLTIP_HELP'] = 'Password must contain the following characters: upper and lower case character and number';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADBACKEND'] = 'Erweiterte Dateiuploadmöglickeiten (Administrationsoberfläche)';
 $_ARRAYLANG['TXT_CORE_CONFIG_ADVANCEDUPLOADFRONTEND'] = 'Erweiterte Dateiuploadmöglickeiten (Frontend)';
-$_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLFRONTEND_TOOLTIP_HELP'] = $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLBACKEND_TOOLTIP_HELP'] = 'Contrexx erzwingt standardmässig kein Protokoll. Sie können HTTP erzwingen um die Suchmaschinen-Bewertung zu verbessern oder HTTPS (Hypertext Transfer Protocol Secure), ein Protokoll das zusätzlich mehr Sicherheit garantiert, aktivieren. Sollte Ihr Webserver dies nicht unterstützen, deaktiviert Contrexx diese Einstellung automatisch wieder.';
+$_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLFRONTEND_TOOLTIP_HELP'] = $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLBACKEND_TOOLTIP_HELP'] = 'Cloudrexx erzwingt standardmässig kein Protokoll. Sie können HTTP erzwingen um die Suchmaschinen-Bewertung zu verbessern oder HTTPS (Hypertext Transfer Protocol Secure), ein Protokoll das zusätzlich mehr Sicherheit garantiert, aktivieren. Sollte Ihr Webserver dies nicht unterstützen, deaktiviert Cloudrexx diese Einstellung automatisch wieder.';
 $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLBACKEND'] = 'Verwendetes Protokoll (Administrationsoberfläche)';
 $_ARRAYLANG['TXT_CORE_CONFIG_FORCEPROTOCOLFRONTEND'] = 'Verwendetes Protokoll (Frontend)';
 $_ARRAYLANG['TXT_SETTINGS_FORCE_PROTOCOL_NONE'] = 'dynamisch';

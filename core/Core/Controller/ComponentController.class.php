@@ -1,5 +1,31 @@
 <?php
 
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+
 namespace Cx\Core\Core\Controller;
 
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
@@ -31,7 +57,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
             case 'version':
                 if ($short) {
-                    return 'Displays info about the version of Contrexx';
+                    return 'Displays info about the version of Cloudrexx';
                 }
                 return '(todo)';
                 break;
@@ -60,7 +86,7 @@ cx(.bat) uninstall [core|core_module|module|lib|theme] {component name}';
         
         switch ($command) {
             case 'help':
-                echo 'Contrexx command mode help.
+                echo 'Cloudrexx command mode help.
 
 ';
                 //if (count($arguments))
@@ -161,7 +187,7 @@ Available commands:
         if (!file_exists($file)) {
             return 'deleted';
         }
-        // get path relative to Contrexx root
+        // get path relative to Cloudrexx root
         // md5sum not matching
             // return 'irregular';
         // exists in customizing

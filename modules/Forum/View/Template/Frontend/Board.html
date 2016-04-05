@@ -67,7 +67,11 @@
                 <!-- </p> -->
                 <p><label for="thread_subject">{TXT_FORUM_SUBJECT}</label><input type="text" name="thread_subject" value="{FORUM_SUBJECT}" /></p>
                 <p><label for="thread_keywords">{TXT_FORUM_KEYWORDS}</label><input onfocus="showToolTip('{TXT_FORUM_COMMA_SEPARATED_KEYWORDS}', this, 'forumKeywordsHelp')" onblur="hideToolTip('forumKeywordsHelp')" title="{TXT_FORUM_COMMA_SEPARATED_KEYWORDS}"  type="text" name="thread_keywords" value="{FORUM_KEYWORDS}" /></p>
-                <p><label for="forum_attachment">{TXT_FORUM_FILE_ATTACHMENT}</label><input class="inputtext" type="file" value="{FORUM_ATTACHMENT_VALUE}" name="forum_attachment" /></p>
+                <p><label for="forum_attachment">{TXT_FORUM_FILE_ATTACHMENT}</label>
+                <input type="hidden" value="{FORUM_UPLOADER_ID}" name="forumUploaderId" />
+                <input type="text" value="{FORUM_ATTACHMENT_VALUE}" name="forum_attachment" class="inputtext" id="forum_attachment"/>
+                <input type="button" value="{TXT_FORUM_CHOOSE_FILE}" id="forum-attachment-board"  />
+                </p>
                 <p><label for="thread_message">{TXT_FORUM_MESSAGE}</label>{FORUM_MESSAGE_INPUT}</p>
                 <!-- BEGIN captcha -->
                 <p>
@@ -93,3 +97,19 @@
     </div>
     <!-- END addThread -->
 </div>
+{FORUM_UPLOADER}
+<script type="text/javascript">
+function forumFileUploaderCallback(callback) {
+    if (typeof callback[0] !== 'undefined') {
+        var data     = callback[0].split('/'),
+            fileName = data.pop();
+        $J('#forum_attachment').val(fileName);
+    }
+}
+$J(document).ready(function(){
+    $J('#forum-attachment-board').click(function(){
+        $J('#forum-attachment-uploader').trigger('click');
+    });
+});
+
+</script>

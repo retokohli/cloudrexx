@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * User Profile
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 
@@ -13,10 +38,10 @@
  * User Profile
  *
  * The User object is used for all user related operations.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @uses        /lib/FRAMEWORK/User/User_Profile_Attribute.class.php
  */
@@ -194,6 +219,7 @@ class User_Profile
         global $objDatabase, $_CORELANG;
 
         $error = false;
+        
         foreach ($this->arrLoadedUsers[$this->id]['profile'] as $attributeId => $arrValue)
         {
             foreach ($arrValue as $historyId => $value)
@@ -201,10 +227,10 @@ class User_Profile
                 $newValue = !isset($this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]);
                 if ($newValue || $value != $this->arrCachedUsers[$this->id]['profile'][$attributeId][$historyId]) {
                     $query = $this->objAttribute->isCoreAttribute($attributeId) ?
-                        "UPDATE `".DBPREFIX."access_user_profile` SET `".$attributeId."` = '".addslashes($value)."' WHERE `user_id` = ".$this->id :
+                        "UPDATE `".DBPREFIX."access_user_profile` SET `".$attributeId."` = '" . contrexx_raw2db($value) . "' WHERE `user_id` = ".$this->id :
                         ($newValue ?
-                            "INSERT INTO `".DBPREFIX."access_user_attribute_value` (`user_id`, `attribute_id`, `history_id`, `value`) VALUES (".$this->id.", ".$attributeId.", ".$historyId.", '".addslashes($value)."')" :
-                            "UPDATE `".DBPREFIX."access_user_attribute_value` SET `value` = '".addslashes($value)."' WHERE `user_id` = ".$this->id." AND `attribute_id` = ".$attributeId." AND `history_id` = ".$historyId
+                            "INSERT INTO `".DBPREFIX."access_user_attribute_value` (`user_id`, `attribute_id`, `history_id`, `value`) VALUES (".$this->id.", ".$attributeId.", ".$historyId.", '" . contrexx_raw2db($value) . "')" :
+                            "UPDATE `".DBPREFIX."access_user_attribute_value` SET `value` = '" . contrexx_raw2db($value) . "' WHERE `user_id` = ".$this->id." AND `attribute_id` = ".$attributeId." AND `history_id` = ".$historyId
                         );
 
                     if ($objDatabase->Execute($query) === false) {

@@ -1,11 +1,37 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Member directory manager
- * @copyright   CONTREXX CMS - 2005 COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - 2005 CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     v1.0.0
  * @uses        ImportExport
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_memberdir
  * @todo        Edit PHP DocBlocks!
  */
@@ -19,11 +45,11 @@ $_ARRAYLANG['TXT_ALL_LANGUAGES'] = "Alle Sprachen";
  * Member directory manager
  *
  * For managing the member directory
- * @copyright   CONTREXX CMS - 2005 COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - 2005 CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     v1.0.0
  * @uses        ImportExport
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_memberdir
  */
 class MemberDirManager extends MemberDirLibrary
@@ -740,19 +766,6 @@ class MemberDirManager extends MemberDirLibrary
             $query = "DELETE FROM ".DBPREFIX."module_memberdir_name
                   WHERE dirid = '$dirid'";
             $objDatabase->Execute($query);
-
-            // Delete Pictures
-            $query = "SELECT pic1, pic2 FROM ".DBPREFIX."module_memberdir_values WHERE
-                   dirid = '$dirid'";
-            $objResult = $objDatabase->Execute($query);
-
-            if ($objResult) {
-                while (!$objResult->EOF) {
-                    @unlink("../media/MemberDir/".$objResult->fields['pic1']);
-                    @unlink("../media/MemberDir/".$objResult->fields['pic2']);
-                    $objResult->MoveNext();
-                }
-            }
 
             $query = "DELETE FROM ".DBPREFIX."module_memberdir_values
                 WHERE dirid = '$dirid'";
@@ -1756,7 +1769,7 @@ class MemberDirManager extends MemberDirLibrary
                 \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=MemberDir&act=showdir&id=".$_POST['directory']);
             }
 
-        } elseif ($_FILES['importfile']['size'] == 0) {
+        } elseif (empty($_POST['importfile'])) {
             $importlib->initFileSelectTemplate($this->_objTpl);
 
             /*
@@ -1786,6 +1799,7 @@ class MemberDirManager extends MemberDirLibrary
              * file selection template to the next step of importing
              */
             $this->_objTpl->setVariable(array(
+                "IMPORT_ACTION"     => "?cmd=MemberDir&amp;act=import",
                 "IMPORT_HIDDEN_NAME" => "directory",
                 "IMPORT_HIDDEN_VALUE" => $_POST['directory'],
             ));

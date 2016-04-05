@@ -1,12 +1,37 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Initialize the CMS
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
@@ -14,11 +39,11 @@
 /**
  * Initialize the CMS
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core
  * @todo        Any methods handling content or language should be moved
  *              away from here to a distinct class!
@@ -46,6 +71,13 @@ class InitCMS
     public $arrModulePath = array();
 
     /**
+     * Current view type(web, app, mobile, etc)
+     *
+     * @var string
+     */
+    protected $currentChannel;
+
+    /**
     * int $isMobileDevice
     * whether we're dealing with a mobile device.
     * values 1 or 0.
@@ -69,6 +101,11 @@ class InitCMS
     public $mode;
     
     protected $themeRepository;
+    
+    /**
+     * @var array Language var cache
+     */
+    protected $moduleSpecificLanguageData = array();
 
     /**
      * Constructor
@@ -199,22 +236,27 @@ class InitCMS
         // Load print template
         if (isset($_GET['printview']) && $_GET['printview'] == 1) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['print_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT;
         }
         // Load PDF template
         elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['pdf_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF;
         }
         // Load mobile template
         elseif ($this->isMobileDevice and $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['mobile_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE;
         }
         // Load app template
         elseif (isset($_GET['appview']) && $_GET['appview'] == 1) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['app_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP;
         }
         // Load regular content template
         else {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['themesid'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB;
         }
         
         $this->channelThemeId = $this->currentThemesId;
@@ -456,18 +498,16 @@ class InitCMS
             $this->customContentTemplate=$_GET['custom_content'];
         }
 
-        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
-
         if (isset($_GET['preview']) && intval($_GET['preview'])){
             $id = intval($_GET['preview']);
-            $theme = $themeRepository->findById($id);
+            $theme = $this->themeRepository->findById($id);
             if ($theme){
                 $this->currentThemesId = $id;
             }
         }
 
-		// get theme object so we get the configured libraries
-        $theme = $themeRepository->findById($this->currentThemesId);
+        // get theme object so we get the configured libraries
+        $theme = $this->getFrontendTemplate();
         $themesPath = $theme->getFoldername();
         if ($theme && $theme->isComponent()) {
             $libraries = JS::getConfigurableLibraries();
@@ -501,6 +541,8 @@ class InitCMS
         $this->templates['sidebar']                 = $this->getThemeFileContent($themesPath, 'sidebar.html');
         $this->templates['top_news']                = $this->getThemeFileContent($themesPath, 'top_news.html');
         $this->templates['shopnavbar']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html');
+        $this->templates['shopnavbar2']              = $this->getThemeFileContent($themesPath, 'shopnavbar2.html');
+        $this->templates['shopnavbar3']              = $this->getThemeFileContent($themesPath, 'shopnavbar3.html');
         $this->templates['headlines']               = $this->getThemeFileContent($themesPath, 'headlines.html');
         $this->templates['headlines2']              = $this->getThemeFileContent($themesPath, 'headlines2.html');
         $this->templates['headlines3']              = $this->getThemeFileContent($themesPath, 'headlines3.html');
@@ -523,6 +565,43 @@ class InitCMS
         }
 
         return $this->templates;
+    }
+
+    /**
+     * Load the frontend template
+     *
+     * @return Cx\Core\View\Model\Entity\Theme Template instance
+     * @throws \Exception Throws exception when no template was found
+     */
+    protected function getFrontendTemplate()
+    {
+        // fetch and return the configured frontend template
+        $theme = $this->themeRepository->findById($this->currentThemesId);
+        if ($theme) {
+            return $theme;
+        }
+
+        // The configured frontend template does not exist
+        \DBG::msg('Template width ID '.$this->currentThemesId.' does not exist!');
+
+        // We will try to load the frontend template of a fallback-language therefore
+        $langId = $this->frontendLangId;
+        while ($langId = \FWLanguage::getFallbackLanguageIdById($langId)) {
+            // fetch and return default template of fallback language
+            $theme = $this->themeRepository->getDefaultTheme($this->currentChannel, $langId);
+            if ($theme) {
+                // reset local variables based on the loaded fallback frontend template
+                $this->channelThemeId = $this->currentThemesId = $theme->getId();
+                return $theme;
+            }
+
+            // template of fallback language does not exist
+            \DBG::msg('Default template of language '.$langId.' does not exist!');
+        }
+
+        // None of the fallback-languages did have an existing frontend template.
+        // Therefore, we will abort the system execution now
+        throw new \Exception('Unable to load a webdesign template!');
     }
 
     /**
@@ -675,6 +754,7 @@ class InitCMS
                         case 'NetManager':
                         case 'Wysiwyg':
                         case 'Routing':
+                        case 'Html':
                             $this->arrModulePath[$objResult->fields['name']] = ASCMS_CORE_PATH.'/'. $objResult->fields['name'] . '/lang/';
                             break;
                         default:
@@ -746,6 +826,59 @@ class InitCMS
         }
         return $_CORELANG;
     }
+    
+    /**
+     * Get component specific language data
+     * State of the init will be backedup and restored while loading the language
+     * data
+     *
+     * @param string $componentName Name of the desired component
+     * @param bool|true $frontend true if desired mode is frontend false otherwise
+     * @param integer $languageId Id of the desired language i.e. 1 for german
+     * @return array The language data which has been loaded
+     */
+    public function getComponentSpecificLanguageData($componentName, $frontend = true, $languageId) {
+        global $_ARRAYLANG;
+
+        $mode = $frontend ? 'frontend' : 'backend';
+
+        if ($componentName == 'Core') {
+            $componentName = lcfirst($componentName);
+        }
+        
+        if (!isset($this->moduleSpecificLanguageData[$languageId])) {
+            $this->moduleSpecificLanguageData[$languageId] = array();
+        }
+        if (!isset($this->moduleSpecificLanguageData[$languageId][$frontend])) {
+            $this->moduleSpecificLanguageData[$languageId][$frontend] = array();
+        }
+        
+        if (isset($this->moduleSpecificLanguageData[$languageId][$frontend][$componentName])) {
+            return $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName];
+        }
+
+        // save init state
+        $langBackup = $_ARRAYLANG;
+        $modeBackup = $this->mode;
+        $frontentLangIdBackup = $this->frontendLangId;
+        $backendLangIdBackup = $this->backendLangId;
+
+        // set custom init state
+        $this->mode = $mode;
+        $this->frontentLangId = $languageId;
+        $this->backendLangId = $languageId;
+
+        // load language data
+        $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName] = $this->loadLanguageData($componentName);
+
+        // restore init state
+        $_ARRAYLANG = $langBackup;
+        $this->mode = $modeBackup;
+        $this->frontendLangId = $frontentLangIdBackup;
+        $this->backendLangId = $backendLangIdBackup;
+
+        return $this->moduleSpecificLanguageData[$languageId][$frontend][$componentName];
+    }
 
     protected function getLangFilePath($module, $langId) {
         // check whether the language file exists
@@ -783,10 +916,10 @@ class InitCMS
         $isCustomized = false;
         $customizedPath = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
         if (file_exists($path) || !file_exists($customizedPath)) {
-            require $path;
+            require_once $path;
         }
         if ($isCustomized) {
-            require $customizedPath;
+            require_once $customizedPath;
         }
         
         return $_ARRAYLANG;

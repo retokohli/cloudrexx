@@ -85,6 +85,7 @@
                     </div>
                 </div>
             </div>
+            <input type="hidden" name="productOptionsUploaderId" value="{SHOP_PRODUCT_OPTIONS_UPLOADER_ID}"/>
             <div class="functions">
                 <button class="btn btn-primary add-to-cart" type="submit" onclick="{SHOP_PRODUCT_SUBMIT_FUNCTION}" name="{SHOP_PRODUCT_SUBMIT_NAME}">{TXT_ADD_TO_CARD}</button>
                 <div class="price">
@@ -92,9 +93,9 @@
                     <span itemprop="priceCurrency">{SHOP_PRODUCT_PRICE_UNIT}</span> <span itemprop="price">{SHOP_PRODUCT_PRICE}</span>
                     <!-- END price -->
                     <!-- BEGIN price_discount -->
-                    statt <span itemprop="price">{SHOP_PRODUCT_PRICE}</span>
+                    {SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_1} <span itemprop="price">{SHOP_PRODUCT_PRICE}</span>
                     <span class="discount">
-                        nur <span itemprop="priceCurrency">{SHOP_PRODUCT_DISCOUNTPRICE_UNIT}</span> <span itemprop="price">{SHOP_PRODUCT_DISCOUNTPRICE}</span>
+                        {SHOP_PRODUCT_DISCOUNTPRICE_TEXTBLOCK_2} <span itemprop="priceCurrency">{SHOP_PRODUCT_DISCOUNTPRICE_UNIT}</span> <span itemprop="price">{SHOP_PRODUCT_DISCOUNTPRICE}</span>
                     </span>
                     <!-- END price_discount -->
                 </div>
@@ -116,4 +117,5 @@
         <h2>{TXT_SHOP_NO_PRODUCTS}</h2>
     </div>
     <!-- END no_product -->
+    {SHOP_PRODUCT_OPTIONS_UPLOADER_CODE}
 </div>

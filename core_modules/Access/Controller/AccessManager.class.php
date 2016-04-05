@@ -1,10 +1,35 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
 * User Management
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author       COMVATION Development Team <info@comvation.com>
-* @package      contrexx
+* @copyright    CLOUDREXX CMS - CLOUDREXX AG
+* @author       CLOUDREXX Development Team <info@cloudrexx.com>
+* @package      cloudrexx
 * @subpackage   coremodule_access
 * @version      1.0.0
 */
@@ -13,9 +38,9 @@ namespace Cx\Core_Modules\Access\Controller;
 
 /**
 * User Management Backend
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author       COMVATION Development Team <info@comvation.com>
-* @package      contrexx
+* @copyright    CLOUDREXX CMS - CLOUDREXX AG
+* @author       CLOUDREXX Development Team <info@cloudrexx.com>
+* @package      cloudrexx
 * @subpackage   coremodule_access
 * @version      1.0.0
 */
@@ -639,21 +664,45 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $objResult = $objDatabase->Execute("
             SELECT
-                `area_id`,
-                `area_name`,
-                `access_id`,
-                `is_active`,
-                `type`,
-                `scope`,
-                `parent_area_id`
-            FROM `".DBPREFIX."backend_areas`
-            WHERE `is_active` = 1 AND `access_id` != '0'
-            ORDER BY `parent_area_id`, `order_id`
-            ");
+                `areas`.`area_id`,
+                `areas`.`area_name`,
+                `areas`.`access_id`,
+                `areas`.`is_active`,
+                `areas`.`type`,
+                `areas`.`scope`,
+                `areas`.`parent_area_id`,
+                `modules`.`name` AS `module_name`
+            FROM
+                `".DBPREFIX."backend_areas` AS `areas`
+            INNER JOIN
+                `".DBPREFIX."modules` AS `modules`
+            ON
+                `modules`.`id` = `areas`.`module_id`
+            WHERE
+                `areas`.`is_active` = 1 AND
+                `areas`.`access_id` != '0'
+            ORDER BY
+                `areas`.`parent_area_id`,
+                `areas`.`order_id`
+        ");
         if ($objResult) {
             while (!$objResult->EOF) {
+
+                if (isset($_CORELANG[$objResult->fields['area_name']])) {
+                    $areaName = $_CORELANG[$objResult->fields['area_name']];
+                } else {
+                    // load language file
+                    $objInit = \Env::get('init');
+                    $moduleLanguageData = $objInit->getComponentSpecificLanguageData($objResult->fields['module_name'], false, $objInit->backendLangId);
+                    if (isset($moduleLanguageData[$objResult->fields['area_name']])) {
+                        $areaName = $moduleLanguageData[$objResult->fields['area_name']];
+                    } else {
+                        $areaName = $objResult->fields['area_name'];
+                    }
+                }
+
                 $arrAreas[$objResult->fields['area_id']] = array(
-                    'name'      => $objResult->fields['area_name'],
+                    'name'      => $areaName,
                     'access_id' => $objResult->fields['access_id'],
                     'status'    => $objResult->fields['is_active'],
                     'type'      => $objResult->fields['type'],
@@ -1207,6 +1256,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         if (isset($_POST['access_save_user'])) {
+            $arrSettings = \User_Setting::getSettings();
+
             // only administrators are allowed to change a users account. or users may be allowed to change their own account
             if (!\Permission::hasAllAccess() && ($objUser->getId() != $objFWUser->objUser->getId() || !\Permission::checkAccess(31, 'static', true))) {
                 \Permission::noAccess();
@@ -1227,9 +1278,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             if (isset($_POST['access_profile_attribute']) && is_array($_POST['access_profile_attribute'])) {
                 $arrProfile = $_POST['access_profile_attribute'];
-
-                if (isset($_FILES['access_profile_attribute_images']) && is_array($_FILES['access_profile_attribute_images'])) {
-                    $upload_res = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_FILES['access_profile_attribute_images']);
+                if (   !empty($_POST['access_image_uploader_id']) 
+                    && isset($_POST['access_profile_attribute_images']) 
+                    && is_array($_POST['access_profile_attribute_images'])
+                ) {
+                    $upload_res = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_POST['access_profile_attribute_images'], $_POST['access_image_uploader_id']);
                     if (is_array($upload_res)) {
                         self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $upload_res);
                     }
@@ -1256,7 +1309,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     (!isset($_POST['access_user_validity']) || $_REQUEST['access_user_validity'] == 'current' || $objUser->setValidityTimePeriod(intval($_POST['access_user_validity'])))
                 )) &&
                 // administrators aren't forced to fill out all mandatory profile attributes
-                (\Permission::hasAllAccess() || $objUser->checkMandatoryCompliance()) &&
+                (\Permission::hasAllAccess() || !$arrSettings['user_account_verification']['value'] || $objUser->checkMandatoryCompliance()) &&
                 $objUser->store()
             ) {
                 self::$arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'];
@@ -1390,6 +1443,9 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 break;
         }
 
+        $this->attachJavaScriptFunction('addHistoryField');
+        
+        $uploader = $this->getImageUploader();
         $this->_objTpl->setVariable(array(
             'ACCESS_USER_ID'                       => $objUser->getId(),
             'ACCESS_USER_IS_ADMIN'                 => $objUser->getAdminStatus() ? 'checked="checked"' : '',
@@ -1406,6 +1462,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'SOURCE'                               => $source, //if source was newletter for ex.
             'CANCEL_URL'                           => $cancelUrl,
             'URL_PARAMS'                           => $urlParams,
+            'ACCESS_IMAGE_UPLOADER_ID'             => $uploader->getId(),
+            'ACCESS_IMAGE_UPLOADER_CODE'           => $uploader->getXHtml(),
         ));
 
         $rowNr = 0;
@@ -1606,9 +1664,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $objUserMail->getSenderMail();
-            $objMail->FromName = $objUserMail->getSenderName();
-            $objMail->AddReplyTo($objUserMail->getSenderMail());
+            $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
             $objMail->Subject = $objUserMail->getSubject();
 
             if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
@@ -2022,7 +2078,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'         => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'],
         ));
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_ACCESS_SOCIALLOGIN_MANUAL'                     => sprintf($_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'], "http://www.contrexx.com/wiki/de/index.php?title=Social_Login"),
+            'TXT_ACCESS_SOCIALLOGIN_MANUAL'                     => sprintf($_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'], "http://www.cloudrexx.com/wiki/de/index.php?title=Social_Login"),
         ));
 
         if (isset($_POST['access_save_settings'])) {

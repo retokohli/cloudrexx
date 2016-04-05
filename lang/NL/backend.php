@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lang
  */
 $_ARRAYLANG['TXT_INTERNAL'] = "internal";
@@ -173,7 +199,7 @@ $_ARRAYLANG['TXT_WELCOME_MESSAGE'] = "Welkom";
 $_ARRAYLANG['TXT_ADMINISTSRATORS_ONLINE'] = "Administrators online";
 $_ARRAYLANG['TXT_LAST_LOGIN'] = "Last login";
 $_ARRAYLANG['TXT_LAST_LOGINS'] = "Last logins";
-$_ARRAYLANG['TXT_CONTREXX_NEWS'] = "Contrexx News";
+$_ARRAYLANG['TXT_CONTREXX_NEWS'] = "Cloudrexx News";
 $_ARRAYLANG['TXT_CREATING_AND_PUBLISHING'] = "Creating and publishing";
 $_ARRAYLANG['TXT_EVALUATE_AND_VIEW'] = "Evaluate and view";
 $_ARRAYLANG['TXT_MANAGE'] = "Manage";
@@ -766,7 +792,7 @@ $_ARRAYLANG['TXT_AUCTION_MODULE_DESCRIPTION'] = "Auktionen";
 $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auktionen";
 $_ARRAYLANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'] = "Unable to update the XML sitemap %s due it's write-protected!";
 $_ARRAYLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "The file %s can't be updated due it's write-protected! Please remove the write-protection for letting the system working properly.";
-$_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Contrexx specific directives!";
+$_ARRAYLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Unable to read the HtAccess file %s due to invalid Cloudrexx specific directives!";
 $_ARRAYLANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'] = "This function depends on a system running on an Apache web server. As well does it require the Apache module mod_rewrite. The system was unable to determine if those requirements are fulfilled!";
 $_ARRAYLANG['TXT_DBM_ERROR_GETTING_TABLES_INFO'] = "Fehler:  Konnte keine Informationen über vorhandene Tabellen lesen";
 $_ARRAYLANG['TXT_DBM_CSV_FOLDER'] = "Verzeichnis: '%1\$s'";
@@ -801,7 +827,7 @@ $_ARRAYLANG['TXT_CORE_SETTING_VALUE'] = "Einstellung";
 $_ARRAYLANG['TXT_CORE_SETTINGS_ERROR_RETRIEVING'] = "Fehler bei der Abfrage der Einstellungen";
 $_ARRAYLANG['TXT_CORE_SETTINGS_NONE_FOUND'] = "Keine Einstellungen gefunden";
 $_ARRAYLANG['TXT_ECARD_MODULE_DESCRIPTION'] = "Digital Postcards";
-$_ARRAYLANG['TXT_CSRF_TITLE'] = "Contrexx security information";
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Cloudrexx security information";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = 'You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <a href="%1$s">save changes</a></li><li>after clicking a link inside an e-mail message or outside the administration interface, click <a href="%2$s">discard changes</a></li></ul>';
 $_ARRAYLANG['TXT_CSRF_ABORT'] = "discard changes";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "save changes";
@@ -817,7 +843,7 @@ $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCRIPTION'] = 'Flexible and customizable medi
 $_ARRAYLANG['TXT_CHECKOUT_MODULE'] = "Online Payment";
 $_ARRAYLANG['TXT_CHECKOUT_MODULE_DESCRIPTION'] = "Easy solution to process transactions on Yellowpay.";
 $_ARRAYLANG['TXT_LICENSE_KEY'] = 'License key';
-$_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Enter here your license key to activate this Contrexx© installation.';
+$_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Enter here your license key to activate this Cloudrexx© installation.';
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Enter the letters below.";
 $_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Remember me";

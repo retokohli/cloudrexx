@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media Directory Inputfield File Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
@@ -13,9 +38,9 @@ namespace Cx\Modules\MediaDir\Model\Entity;
 /**
  * Media Directory Inputfield File Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 class MediaDirectoryInputfieldFile extends \Cx\Modules\MediaDir\Controller\MediaDirectoryLibrary implements Inputfield
@@ -165,16 +190,6 @@ INPUT;
 
         $mode = $cx->getMode();
         if ($mode == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
-            $mediaBrowseBtn = $this->getMediaBrowserButton(
-                $_ARRAYLANG['TXT_BROWSE'],
-                array(
-                    'data-cx-mb-views' => 'filebrowser',
-                    'data-cx-mb-startmediatype' => $this->moduleNameLC,
-                    'type' => 'button',
-                    'data-input-id' => $this->moduleNameLC . 'Inputfield_'. $id .'_'. $langId
-                ),
-                'mediaBrowserCallback'
-            );
             $strInputfield = <<<INPUT
             $strFilePreview
             <input type="text" name="{$this->moduleNameLC}Inputfield[$id][file][$langId]"
@@ -186,7 +201,13 @@ INPUT;
                 autocomplete="off"
                 onfocus="this.select();" />
             &nbsp;
-            $mediaBrowseBtn
+            <input type="button" 
+                onClick="getMediaBrowser(\$J(this));"
+                data-input-id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
+                data-views="filebrowser"
+                data-startmediatype="{$this->moduleNameLC}"
+                value="{$_ARRAYLANG['TXT_BROWSE']}"
+            />
             <br />
             <input type="text" name="{$this->moduleNameLC}Inputfield[{$id}][name][$langId]" 
                 value="$displayName" 
@@ -217,12 +238,21 @@ INPUT;
             }
             $strInputfield = <<<INPUT
             $strFilePreview
-            <input type="file" name="fileUpload_{$id}[$langId]"                
+            <input type="text" name="{$this->moduleNameLC}InputfieldSource[$id][$langId]"
+                value="$value" 
+                data-id="$id"
+                class="$inputDefaultClass"
                 id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
-                class="{$this->moduleNameLC}InputfieldFile $strInfoClass"                        
-                value="{$filePath}"
-                $strInfoValue
+                style="$inputStyle"
+                autocomplete="off"
                 onfocus="this.select();" />
+            &nbsp;
+            <input type="button"
+                onClick="getUploader(\$J(this));"
+                data-input-id="{$this->moduleNameLC}Inputfield_{$id}_$langId"
+                value="{$_ARRAYLANG['TXT_BROWSE']}"
+            />
+            <br />
             <input id="{$this->moduleNameLC}Inputfield_{$id}_{$langId}_hidden"
                 name="{$this->moduleNameLC}Inputfield[$id][file][$langId]"
                 value="{$strValueHidden}" type="hidden" />
@@ -258,21 +288,28 @@ INPUT;
                 $strValue = null;
             }
         } else {
-            $inputFiles  = !empty($_FILES['fileUpload_'.$intInputfieldId]) ? $_FILES['fileUpload_'.$intInputfieldId] : array();
+            $inputFiles  = !empty($_POST['mediadirInputfieldSource'][$intInputfieldId]) ? $_POST['mediadirInputfieldSource'][$intInputfieldId] : array();
             
             if ($deleteMedia && $_POST["deleteMedia"][$intInputfieldId][$langId] == 1) {
                 //delete file
                 $this->deleteFile($strValue);
                 $strValue = null;
-            } elseif (!empty($inputFiles) && !empty($inputFiles['name'][$langId])) {                
-                //delete file
-                $this->deleteFile($strValue);
-                $strValue = $this->uploadMedia($intInputfieldId, $langId);                
+            } elseif (!empty($inputFiles) && !empty($inputFiles[$langId])) {
+                $uploaderId = !empty($_POST['uploaderId']) ? $_POST['uploaderId'] : '';
+                $filePath   = $this->getUploadedFilePath($uploaderId, $inputFiles[$langId]);
+
+                if ($filePath) {
+                    //delete file
+                    $this->deleteFile($strValue);
+                    $strValue = $this->uploadMedia($filePath);
+                } else {
+                    $strValue = null;
+                }
             } else {
                 if (!$strNewDefault && !empty($langId)) {
                     $strNewDefault = $this->saveInputfield($intInputfieldId, '');
                 }
-                $strValue = $strNewDefault;                
+                $strValue = $strNewDefault;
             }
         }
         
@@ -295,46 +332,43 @@ INPUT;
         }
     }
 
-
-    function uploadMedia($intInputfieldId, $langId)
+    /**
+     * Copy the Upload the image to the path
+     * Note: validation should be done before calling this function
+     * 
+     * @param string $filePath Temp path of the uploaded media
+     * 
+     * @return boolean|string relative path of the uploaded file, false otherwise
+     */
+    function uploadMedia($filePath)
     {
-        global $objDatabase;
+        if ($filePath == '' || !\FWValidator::is_file_ending_harmless($filePath)) {
+            return false;
+        }
 
-        if (isset($_FILES)) {            
-            $tmpFile   = $_FILES['fileUpload_'.$intInputfieldId]['tmp_name'][$langId];
-            $fileName  = $_FILES['fileUpload_'.$intInputfieldId]['name'][$langId];
-            $fileType  = $_FILES['fileUpload_'.$intInputfieldId]['type'][$langId];
-            $fileSize  = $_FILES['fileUpload_'.$intInputfieldId]['size'][$langId];
+        $fileName      = basename($filePath);
+        //get extension
+        $arrFileInfo   = pathinfo($fileName);
+        $fileExtension = !empty($arrFileInfo['extension']) ? '.'.$arrFileInfo['extension'] : '';
+        $fileBasename  = $arrFileInfo['filename'];
+        $randomSum     = rand(10, 99);
 
-            if ($fileName != "") {
-                //get extension
-                $arrFileInfo   = pathinfo($fileName);
-                $fileExtension = !empty($arrFileInfo['extension']) ? '.'.$arrFileInfo['extension'] : '';
-                $fileBasename  = $arrFileInfo['filename'];
-                $randomSum      = rand(10, 99);
+        //encode filename
+        if ($this->arrSettings['settingsEncryptFilenames'] == 1) {
+            $fileName = md5($randomSum.$fileBasename).$fileExtension;
+        }
 
-                //encode filename
-                if ($this->arrSettings['settingsEncryptFilenames'] == 1) {
-                    $fileName = md5($randomSum.$fileBasename).$fileExtension;
-                }
+        //check filename
+        if (file_exists($this->imagePath.'uploads/'.$fileName)) {
+            $fileName = $fileBasename.'_'.time().$fileExtension;
+        }
 
-                //check filename
-                if (file_exists($this->imagePath.'uploads/'.$fileName)) {
-                    $fileName = $fileBasename.'_'.time().$fileExtension;
-                }
+        //upload file
+        if (\Cx\Lib\FileSystem\FileSystem::copy_file($filePath, $this->imagePath . 'uploads/' . $fileName) !== false) {
+            $objFile = new \File();
+            $objFile->setChmod($this->imagePath, $this->imageWebPath, 'uploads/'. $fileName);
 
-                //upload file
-                if (move_uploaded_file($tmpFile, $this->imagePath.'uploads/'.$fileName)) {
-                    $objFile = new \File();
-                    $objFile->setChmod($this->imagePath, $this->imageWebPath, 'uploads/'.$fileName);
-
-                    return $this->imageWebPath.'uploads/'.$fileName;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
+            return $this->imageWebPath.'uploads/'.$fileName;
         } else {
             return false;
         }

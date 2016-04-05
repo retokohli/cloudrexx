@@ -1,13 +1,38 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * FWSystem
  * This class provides system related methods.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -16,10 +41,10 @@
  * FWSystem
  * This class provides system related methods.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -105,25 +130,6 @@ class FWSystem
             return 0;
         }
     }
-
-    /**
-     * Returns the relative URL $absolute_local_path as absolute URL
-     * @param string The relative URL that shall be made absolute.
-     * @param boolean Wether the absolute URL shall be prefixed by the requested protocol and the domain name.
-     */
-    static public function mkurl($absolute_local_path, $withProtocolAndDomain = false)
-    {
-        global $_CONFIG;
-
-        $url = '';
-        if ($withProtocolAndDomain) {
-            $url .= ASCMS_PROTOCOL."://".$_CONFIG['domainUrl']
-                .($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT']));
-        }
-
-        return $url.ASCMS_PATH_OFFSET.stripslashes($absolute_local_path);
-    }
-
 
     /**
      * Checks if the given string contains utf8 characters

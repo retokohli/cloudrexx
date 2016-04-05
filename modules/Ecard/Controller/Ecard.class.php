@@ -1,14 +1,39 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * E-Card
  *
  * Send electronic postcards to your friends
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     2.1.0
  * @since       2.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_ecard
  * @todo        Edit PHP DocBlocks!
  */
@@ -23,11 +48,11 @@ namespace Cx\Modules\Ecard\Controller;
  * E-Card
  *
  * Send electronic postcards to your friends
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     2.1.0
  * @since       2.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_ecard
  * @todo        Edit PHP DocBlocks!
  */
@@ -235,10 +260,14 @@ class Ecard
 
         // Initialize variables
         $code = substr(md5(rand()), 1, 10);
-        $url = ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].
-            ($_SERVER['SERVER_PORT'] == 80 ? null : ':'.intval($_SERVER['SERVER_PORT'])).
-            CONTREXX_SCRIPT_PATH.
-            '?section=Ecard&cmd=show&code='.$code;
+        $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Ecard',
+            'show',
+            '',
+            array(
+                'code' => $code,
+            )
+        )->toString();
 
         // Initialize POST variables
         $id = intval($_POST['selectedEcard']);
@@ -336,9 +365,7 @@ class Ecard
 
                 // Send notification mail to ecard-recipient
                 $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = $senderEmail;
-                $objMail->FromName = $senderName;
-                $objMail->AddReplyTo($senderEmail);
+                $objMail->SetFrom($senderEmail, $senderName);
                 $objMail->Subject = $subject;
                 $objMail->IsHTML(false);
                 $objMail->Body = $body;

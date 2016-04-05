@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * PageRepository
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 
@@ -20,9 +45,9 @@ use Doctrine\ORM\EntityRepository,
 /**
  * PageRepositoryException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 class PageRepositoryException extends \Exception {};
@@ -30,9 +55,9 @@ class PageRepositoryException extends \Exception {};
 /**
  * TranslateException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 class TranslateException extends \Exception {};
@@ -40,9 +65,9 @@ class TranslateException extends \Exception {};
 /**
  * PageRepository
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 class PageRepository extends EntityRepository {
@@ -845,10 +870,15 @@ class PageRepository extends EntityRepository {
             $page = $this->findOneByModuleCmdLang($module, $langId, FRONTEND_LANG_ID);
         }
         if (!$page) {
-            $page = $this->findOneBy(array(
-                'nodeIdShadowed' => $nodeId,
-                'lang'           => $langId,
-            ));
+            $nodeRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+            $node = $nodeRepository->find($nodeId);
+            if(!$node) {
+                throw new PageRepositoryException('No target page found!');
+            }
+            $page = $node->getPage($langId);
+        }
+        if(!$page) {
+            throw new PageRepositoryException('No page with the target language found!');
         }
         
         return $page;
@@ -868,7 +898,7 @@ class PageRepository extends EntityRepository {
      *     'Link' => string
      * )
      */
-    public function searchResultsForSearchModule($string, $license) {
+    public function searchResultsForSearchModule($string, $license, $rootPage = null) {
         if ($string == '') {
             return array();
         }
@@ -907,6 +937,9 @@ class PageRepository extends EntityRepository {
                 $hasPageAccess = \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true);
             }
             if (!$page->isActive() || $isNotVisible || !$hasPageAccess) {
+                continue;
+            }
+            if ($rootPage && strpos($page->getPath(), $rootPage->getPath()) !== 0) {
                 continue;
             }
 // TODO: Add proper score with MATCH () AGAINST () or similar

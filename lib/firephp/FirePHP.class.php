@@ -1252,7 +1252,7 @@ class FirePHP {
      */
     protected function encodeObject($Object, $ObjectDepth = 1, $ArrayDepth = 1, $MaxDepth = 1)
     {
-        // START: Contrexx customizing
+        // START: Cloudrexx customizing
         // do no dump large objects or objects containing sensitive data
         if (is_object($Object)) {
             $class = get_class($Object);
@@ -1269,7 +1269,7 @@ class FirePHP {
                     break;
             }
         }
-        // END: Contrexx customizing
+        // END: Cloudrexx customizing
 
         if ($MaxDepth > $this->options['maxDepth']) {
             return '** Max Depth ('.$this->options['maxDepth'].') **';

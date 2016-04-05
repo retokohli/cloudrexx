@@ -1,6 +1,32 @@
 <?php
+
 /**
- * Contrexx CMS
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * Cloudrexx CMS
  * generated date Tue, 30 Aug 2005 14:11:18 +0200
  **/
 
@@ -329,7 +355,7 @@ $_ARRAYLANG['TXT_CRM_ADD_NEW_CUSTOMER'] = "Add new company";
 $_ARRAYLANG['TXT_CRM_ADD_NEW_CONTACT']  = "Add new person";
 $_ARRAYLANG['TXT_CRM_GENERAL_INFORMATION'] = "General Information";
 $_ARRAYLANG['TXT_CRM_PROFILE_INFORMATION'] = "Profile Information";
-$_ARRAYLANG['TXT_CRM_CUSTOMER_SEARCH_HINT'] = "Use the ? and * symbols to perform a single/multiple-character search. For example, to search for all the words beginning with O, use the O* or O? query. To search for the terms similar in spelling use the ~ symbol at the end of a word.";
+$_ARRAYLANG['TXT_CRM_CUSTOMER_SEARCH_HINT'] = "Use the ? and * symbols to perform a single/multiple-character search. For example, to search for all the words beginning with O, use the O* or O? query. To search for the terms similar in spelling use the ~ symbol at the end of a word.<br /><br /><b>Attention:</b><br />The search term must have a minimum length of 4 characters!";
 $_ARRAYLANG['TXT_CRM_ALL_PERSONS'] = "All persons";
 $_ARRAYLANG['TXT_CRM_SAVE_AND_ADD_NEW_COMPANY'] = "Save and Create New Company";
 $_ARRAYLANG['TXT_CRM_SAVE_AND_ADD_NEW_PERSON']  = "Save and Create New Person";
@@ -589,3 +615,6 @@ $_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_INDUSTRY_TYPE']  = 'Profile attribute for 
 $_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_COMPANY_SIZE']  = 'Profile attribute for company size';
 $_ARRAYLANG['TXT_CRM_PROFILE_ATTRIBUT_CUSTOMER_TYPE']  = 'Profile attribute for customer type';
 $_ARRAYLANG['TXT_CRM_EMAIL_DELIVERY'] = 'Email delivery';
+$_ARRAYLANG['TXT_CRM_FILTER_STATUS'] = 'Filter status';
+$_ARRAYLANG['TXT_CRM_TASK_STATUS_OPEN'] = 'Open';
+$_ARRAYLANG['TXT_CRM_TASK_STATUS_COMPLETED'] = 'Completed';

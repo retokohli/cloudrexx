@@ -1,19 +1,44 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Downloads
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_downloads
  * @version     1.0.0
  */
 namespace Cx\Modules\Downloads\Controller;
 /**
 * Downloads
-* @copyright    CONTREXX CMS - COMVATION AG
-* @author       COMVATION Development Team <info@comvation.com>
-* @package      contrexx
+* @copyright    CLOUDREXX CMS - CLOUDREXX AG
+* @author       CLOUDREXX Development Team <info@cloudrexx.com>
+* @package      cloudrexx
 * @subpackage   module_downloads
 * @version      1.0.0
 */
@@ -356,11 +381,24 @@ class Downloads extends DownloadsLibrary
         $this->parseGlobalStuff($objCategory);
     }
 
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos) {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
-
-        $originalNames = $fileInfos['originalFileNames'];
-
+    /**
+     * Upload Finished callback
+     * 
+     * This is called as soon as uploads have finished.
+     * takes care of moving them to the right folder
+     * 
+     * @param string $tempPath    Path to the temporary directory containing the files at this moment 
+     * @param string $tempWebPath Points to the same folder as tempPath, but relative to the webroot
+     * @param array  $data        Data given to setData() when creating the uploader  
+     * @param string $uploadId    unique session id for the current upload
+     * @param array  $fileInfos   uploaded file informations  
+     * @param array  $response    uploaded status
+     * 
+     * @return array path and webpath
+     */
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response) 
+    {
+        
         $path = $data['path'];
         $webPath = $data['webPath'];
         $objCategory = Category::getCategory($data['category_id']);
@@ -371,77 +409,104 @@ class Downloads extends DownloadsLibrary
         //we remember the names of the uploaded files here. they are stored in the session afterwards,
         //so we can later display them highlighted.
         $arrFiles = array();
-
+        $uploadFiles = array();
         //rename files, delete unwanted
         $arrFilesToRename = array(); //used to remember the files we need to rename
         $h = opendir($tempPath);
+        
+        if (!$h) {
+            return array($path, $webPath);
+        }
+        
         while (false !== ($file = readdir($h))) {
             //skip . and ..
             if ($file == '.' || $file == '..') { continue; }
 
-            //delete potentially malicious files
-            if (!\FWValidator::is_file_ending_harmless($file)) {
-                @unlink($tempPath.'/'.$file);
-                continue;
-            }
+            try {
+                //delete potentially malicious files
+                $objTempFile = new \Cx\Lib\FileSystem\File($tempPath . '/' . $file);
+                if (!\FWValidator::is_file_ending_harmless($file)) {
+                    $objTempFile->delete();                  
+                    continue;
+                }
 
-            $info = pathinfo($file);
+                $cleanFile = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($file);
+                if ($cleanFile != $file) {
+                    $objTempFile->rename($tempPath . '/' . $cleanFile, false);
+                    $file = $cleanFile;
+                }
+                
+                $info = pathinfo($file);
+                //check if file needs to be renamed
+                $newName = '';
+                $suffix = '';
 
-            $cleanFile = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($file);
-            if ($cleanFile != $file) {
-                rename($tempPath.'/'.$file, $tempPath.'/'.$cleanFile);
-                $file = $cleanFile;
-            }
-
-            //check if file needs to be renamed
-            $newName = '';
-            $suffix = '';
-
-            if (file_exists($path.'/'.$file)) {
-                if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
-                    $suffix = '_'.time();
-                    $newName = $info['filename'].$suffix.'.'.$info['extension'];
+                if (file_exists($path . '/' . $file)) {
+                    $suffix = '_' . time();
+                    $newName = $info['filename'] . $suffix . '.' . $info['extension'];
                     $arrFilesToRename[$file] = $newName;
                     array_push($arrFiles, $newName);
                 }
-            }
+                
+                if (!isset($arrFilesToRename[$file])) {
+                    array_push($uploadFiles, $file);
+                }
 
-            if(!isset($arrFilesToRename[$file])) { //file will keep this name - create thumb
-                \ImageManager::_createThumb($tempPath.'/', $tempWebPath.'/', $file);
+                //rename files where needed
+                foreach ($arrFilesToRename as $oldName => $newName) {
+                    $objTempFile = new \Cx\Lib\FileSystem\File($tempPath . '/' . $oldName);
+                    $objTempFile->rename($tempPath . '/' . $newName, false);
+                    array_push($uploadFiles, $newName);
+                }
+                
+                //move file from temp path into target folder
+                $objImage = new \ImageManager();
+                foreach ($uploadFiles as $fileName) {
+                    $objFile = new \Cx\Lib\FileSystem\File(
+                        $tempPath . '/' . $fileName
+                    );
+                    $objFile->move($path . '/' . $fileName, false);
+                    \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getMediaSourceManager()->getThumbnailGenerator()
+                        ->createThumbnailFromPath($path . '/' . $fileName);
+                }
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
             }
 
             $objDownloads = new downloads('');
-            $objDownloads->addDownloadFromUpload($info['filename'], $info['extension'], $suffix, $objCategory, $objDownloads, $originalNames[$file]);
+            $objDownloads->addDownloadFromUpload($info['filename'], $info['extension'], $suffix, $objCategory, $objDownloads, $fileInfos['name']);
         }
-
-        //rename files where needed
-        foreach($arrFilesToRename as $oldName => $newName){
-            rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);
-            //file will keep this name - create thumb
-            \ImageManager::_createThumb($tempPath.'/', $tempWebPath.'/', $newName);
-        }
-
-        //remeber the uploaded files
-        $_SESSION['media_upload_files_'.$uploadId] = $arrFiles;
-
-        /* unwanted files have been deleted, unallowed filenames corrected.
-           we can now simply return the desired target path, as only valid
-           files are present in $tempPath */
-
+        
         return array($path, $webPath);
     }
-
+    
+    /**
+     * Save upload file details to database for download
+     * 
+     * @param string $fileName      filename it is modified name or original name
+     *                              ie) what name will be mentioned for upload file in target folder
+     * @param string $fileExtension file extension
+     * @param mixed  $suffix        if choosen file is already exist, suffix will be created as string
+     *                              otherwise empty          
+     * @param object $objCategory   upload file category
+     * @param object $objDownloads  downdload file object from the upload informations
+     * @param object $sourceName    original file name
+     * 
+     * @return boolean true | false
+     */
     public static function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory, $objDownloads, $sourceName)
     {
         $objDownload = new Download();
 
         // parse name and description attributres
         $arrLanguageIds = array_keys(\FWLanguage::getLanguageArray());
-
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         foreach ($arrLanguageIds as $langId) {
             $arrNames[$langId] = $sourceName;
+            $arrMetakeys[$langId] = '';
             $arrDescriptions[$langId] = '';
-            $arrSourcePaths[$langId] = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/'.$fileName.$suffix.'.'.$fileExtension;
+            $arrSourcePaths[$langId] = \Cx\Core\Core\Controller\Cx::FOLDER_NAME_IMAGES . '/Downloads/'.$fileName.$suffix.'.'.$fileExtension;
             $arrSourceNames[$langId] = $sourceName;
         }
 
@@ -457,20 +522,27 @@ class Downloads extends DownloadsLibrary
         }
 
         $objDownload->setNames($arrNames);
+        $objDownload->setMetakeys($arrMetakeys);
         $objDownload->setDescriptions($arrDescriptions);
         $objDownload->setType('file');
         $objDownload->setSources($arrSourcePaths, $arrSourceNames);
         $objDownload->setActiveStatus(true);
         $objDownload->setMimeType($fileMimeType);
         if ($objDownload->getMimeType() == 'image') {
-            $objDownload->setImage(ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/'.$fileName.$suffix.'.'.$fileExtension);
+            $objDownload->setImage(
+                substr(
+                    $cx->getWebsiteImagesDownloadsWebPath(),
+                    strlen($cx->getCodeBaseOffsetPath()) + 1
+                ) . '/' . $fileName . $suffix . '.' . $fileExtension
+            );
         }
-        $objDownloads->arrConfig['use_attr_size'] ? $objDownload->setSize(filesize(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$fileName.$suffix.'.'.$fileExtension)) : null;
+        $objDownloads->arrConfig['use_attr_size'] ? $objDownload->setSize(filesize($cx->getWebsiteImagesDownloadsPath().'/'.$fileName.$suffix.'.'.$fileExtension)) : null;
         $objDownload->setVisibility(true);
         $objDownload->setProtection(false);
         $objDownload->setGroups(array());
         $objDownload->setCategories(array($objCategory->getId()));
         $objDownload->setDownloads(array());
+        
 
         if (!$objDownload->store($objCategory)) {
             $objDownloads->arrStatusMsg['error'] = array_merge($objDownloads->arrStatusMsg['error'], $objDownload->getErrorMsg());
@@ -577,22 +649,24 @@ class Downloads extends DownloadsLibrary
             $objFWSystem = new \FWSystem();
 
             //Uploader button handling
-            \JS::activate('cx');
-            \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Upload/Controller/UploadFactory.class.php');
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
             //paths we want to remember for handling the uploaded files
             $data = array(
-                'path' => ASCMS_DOWNLOADS_IMAGES_PATH,
-                'webPath' => ASCMS_DOWNLOADS_IMAGES_WEB_PATH,
-                'category_id' => $objCategory->getId(),
+                'path'          => $cx->getWebsiteImagesDownloadsPath(), //target folder
+                'webPath'       => $cx->getWebsiteImagesDownloadsWebPath(),
+                'category_id'   => $objCategory->getId()
             );
-            $comboUp = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
-            $comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Downloads/Controller/Downloads.class.php', '\Cx\Modules\Downloads\Controller\Downloads', 'uploadFinished'));
-            $comboUp->setData($data);
-            //set instance name to combo_uploader so we are able to catch the instance with js
-            $comboUp->setJsInstanceName('exposed_combo_uploader');
+            $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+            $uploader->setFinishedCallback(array(
+                $cx->getCodeBaseModulePath().'/Downloads/Controller/Downloads.class.php',
+                '\Cx\Modules\Downloads\Controller\Downloads',
+                'uploadFinished'
+            ));
+            $uploader->setCallback('uploadFinishedCallbackJs');
+            $uploader->setData($data);
             $this->objTemplate->setVariable(array(
-                'COMBO_UPLOADER_CODE'           => $comboUp->getXHtml(true),
-                'DOWNLOADS_UPLOAD_REDIRECT_URL' => \Env::get('Resolver')->getURL()->toString(),
+                'UPLOADER_CODE'                 => $uploader->getXHtml($_ARRAYLANG['TXT_DOWNLOADS_UPLOAD_FILE']),
+                'DOWNLOADS_UPLOAD_REDIRECT_URL' => \Env::get('Resolver')->getURL(),
                 'TXT_DOWNLOADS_BROWSE'          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
                 'TXT_DOWNLOADS_UPLOAD_FILE'     => $_ARRAYLANG['TXT_DOWNLOADS_UPLOAD_FILE'],
                 'TXT_DOWNLOADS_MAX_FILE_SIZE'   => $_ARRAYLANG['TXT_DOWNLOADS_MAX_FILE_SIZE'],
@@ -1088,9 +1162,9 @@ JS_CODE;
         }
 
         $imageSrc = $objDownload->getImage();
-        if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$imageSrc)) {
+        if (!empty($imageSrc) && file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$imageSrc)) {
             $thumb_name = \ImageManager::getThumbnailFilename($imageSrc);
-            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().$thumb_name)) {
+            if (file_exists(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteDocumentRootPath().'/'.$thumb_name)) {
                 $thumbnailSrc = $thumb_name;
             } else {
                 $thumbnailSrc = \ImageManager::getThumbnailFilename(
@@ -1157,6 +1231,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_SIZE'                => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
                 'DOWNLOADS_FILE_SIZE'               => $this->getFormatedFileSize($objDownload->getSize())
             ));
+            $this->objTemplate->touchBlock('download_size_information');
+            $this->objTemplate->touchBlock('download_size_list');
+        } else {
+            $this->objTemplate->hideBlock('download_size_information');
+            $this->objTemplate->hideBlock('download_size_list');
         }
 
         // parse license
@@ -1165,6 +1244,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_LICENSE'             => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
                 'DOWNLOADS_FILE_LICENSE'            => htmlentities($objDownload->getLicense(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            $this->objTemplate->touchBlock('download_license_information');
+            $this->objTemplate->touchBlock('download_license_list');
+        } else {
+            $this->objTemplate->hideBlock('download_license_information');
+            $this->objTemplate->hideBlock('download_license_list');
         }
 
         // parse version
@@ -1173,6 +1257,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_VERSION'             => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
                 'DOWNLOADS_FILE_VERSION'            => htmlentities($objDownload->getVersion(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            $this->objTemplate->touchBlock('download_version_information');
+            $this->objTemplate->touchBlock('download_version_list');
+        } else {
+            $this->objTemplate->hideBlock('download_version_information');
+            $this->objTemplate->hideBlock('download_version_list');
         }
 
         // parse author
@@ -1181,6 +1270,11 @@ JS_CODE;
                 'TXT_DOWNLOADS_AUTHOR'              => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
                 'DOWNLOADS_FILE_AUTHOR'             => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            $this->objTemplate->touchBlock('download_author_information');
+            $this->objTemplate->touchBlock('download_author_list');
+        } else {
+            $this->objTemplate->hideBlock('download_author_information');
+            $this->objTemplate->hideBlock('download_author_list');
         }
 
         // parse website
@@ -1190,6 +1284,11 @@ JS_CODE;
                 'DOWNLOADS_FILE_WEBSITE'            => $this->getHtmlLinkTag(htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET)),
                 'DOWNLOADS_FILE_WEBSITE_SRC'        => htmlentities($objDownload->getWebsite(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
+            $this->objTemplate->touchBlock('download_website_information');
+            $this->objTemplate->touchBlock('download_website_list');
+        } else {
+            $this->objTemplate->hideBlock('download_website_information');
+            $this->objTemplate->hideBlock('download_website_list');
         }
     }
 

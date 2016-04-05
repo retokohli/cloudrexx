@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Blog library
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version     $Id: index.inc.php,v 1.01 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_blog
  */
 
@@ -17,10 +43,10 @@ namespace Cx\Modules\Blog\Controller;
 
 /**
  * Blog library
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_blog
  */
 class BlogLibrary {
@@ -989,24 +1015,25 @@ class BlogLibrary {
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
                 $arrEntries = $this->createEntryArray($intLanguageId, 0, intval($this->_arrSettings['blog_rss_messages']) );
-                $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($intLanguageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=Blog&amp;cmd=details&amp;id=';
 
                 if (count($arrEntries) > 0) {
                     $objRSSWriter = new \RSSWriter();
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
-                    $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($intLanguageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=Blog';
+                    $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', '', $intLanguageId)->toString();
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
                     //Function doesn't exist
                     //$objRSSWriter->channelLanguage = \FWLanguage::getLanguageParameter($intLanguageId, 'lang');
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
+                    $entryUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', 'details', $intLanguageId);
                     foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+                        $entryUrl->setParam('id', $intEntryId);
                         $objRSSWriter->addItem(
                             html_entity_decode($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
-                            $strItemLink.$intEntryId,
+                            contrexx_raw2xhtml($entryUrl->toString()),
                             htmlspecialchars($arrEntryValues['translation'][$intLanguageId]['content'], ENT_QUOTES, CONTREXX_CHARSET),
                             htmlspecialchars($arrEntryValues['user_name'], ENT_QUOTES, CONTREXX_CHARSET),
                             '',
@@ -1045,8 +1072,6 @@ class BlogLibrary {
             $objFWUser = \FWUser::getFWUserObject();
 
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
-                $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($intLanguageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=Blog&amp;cmd=details&amp;id={ID}#comments';
-
                 $objResult = $objDatabase->Execute('SELECT      message_id,
                                                                 time_created,
                                                                 user_id,
@@ -1065,19 +1090,31 @@ class BlogLibrary {
 
                     $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                     $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_COMMENTS_TITLE'];
-                    $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($intLanguageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=Blog';
+                    $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Blog',
+                        '',
+                        $intLanguageId
+                    )->toString();
                     $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_COMMENTS_TITLE'];
                     $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                     //Function doesn't exist
                     //$objRSSWriter->channelLanguage = \FWLanguage::getLanguageParameter($intLanguageId, 'lang');
                     $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
+                    $strItemLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Blog',
+                        'details',
+                        $intLanguageId,
+                        array(
+                            'id' => '{ID}#comments',
+                        )
+                    )->toString();
                     while (!$objResult->EOF) {
                         $strUserName = (intval($objResult->fields['user_id']) > 0 && ($objUser = $objFWUser->objUser->getUser($objResult->fields['user_id'])) !== false) ? htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET) : $objResult->fields['user_name'];
 
                         $objRSSWriter->addItem(
                             htmlspecialchars($objResult->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET),
-                            str_replace('{ID}',$objResult->fields['message_id'],$strItemLink),
+                            contrexx_raw2xhtml(str_replace('{ID}',$objResult->fields['message_id'],$strItemLink)),
                             htmlspecialchars($objResult->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET),
                             htmlspecialchars($strUserName, ENT_QUOTES, CONTREXX_CHARSET),
                             '',
@@ -1118,8 +1155,6 @@ class BlogLibrary {
 
             //Iterate over all languages
             foreach ($this->_arrLanguages as $intLanguageId => $arrLanguageValues) {
-                $strItemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($intLanguageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=Blog&amp;cmd=details&amp;id=';
-
                 $arrEntries = $this->createEntryArray($intLanguageId);
 
                 //If there exist entries in this language go on, otherwise skip
@@ -1136,7 +1171,11 @@ class BlogLibrary {
                             $objRSSWriter = new \RSSWriter();
                             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                             $objRSSWriter->channelTitle = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'];
-                            $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageParameter($intLanguageId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=Blog';
+                            $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'Blog',
+                                '',
+                                $intLanguageId
+                            )->toString();
                             $objRSSWriter->channelDescription = $_CONFIG['coreGlobalPageTitle'].' - '.$_ARRAYLANG['TXT_BLOG_LIB_RSS_MESSAGES_TITLE'].' ('.$arrCategoryTranslation[$intLanguageId]['name'].')';
                             $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
                             //Function doesn't exist
@@ -1144,12 +1183,14 @@ class BlogLibrary {
                             $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
                             //Find assigned messages
+                            $entryUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('Blog', 'details', $intLanguageId);
                             foreach ($arrEntries as $intEntryId => $arrEntryValues) {
                                 if ($this->categoryMatches($intCategoryId, $arrEntryValues['categories'][$intLanguageId])) {
                                     //Message is in category, add to feed
+                                    $entryUrl->setParam('id', $intEntryId);
                                     $objRSSWriter->addItem(
                                         html_entity_decode($arrEntryValues['subject'], ENT_QUOTES, CONTREXX_CHARSET),
-                                        $strItemLink.$intEntryId,
+                                        contrexx_raw2xhtml($entryUrl->toString()),
                                         htmlspecialchars($arrEntryValues['translation'][$intLanguageId]['content'], ENT_QUOTES, CONTREXX_CHARSET),
                                         htmlspecialchars($arrEntryValues['user_name'], ENT_QUOTES, CONTREXX_CHARSET),
                                         '',

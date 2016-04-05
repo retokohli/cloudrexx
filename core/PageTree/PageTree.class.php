@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * PageTree
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_pagetree
  */
 
@@ -14,9 +39,9 @@ namespace Cx\Core\PageTree;
 /**
  * Base class for all kinds of trees such as Sitemaps and Navigation.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_pagetree
  */
 abstract class PageTree {
@@ -33,6 +58,7 @@ abstract class PageTree {
     protected $pageRepo = null;
     protected $skipInvisible = true;
     protected $considerLogin = true;
+    protected $skipInactive;
 
     /**
      * @param $entityManager the doctrine em
@@ -44,7 +70,7 @@ abstract class PageTree {
      * @param bool $skipInvisible value to skip invisible pages
      * @param bool $considerLogin value to consider whether the user is logged in or not
      */
-    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null, $skipInvisible = true, $considerLogin = true) {
+    public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null, $skipInvisible = true, $considerLogin = true, $skipInactive = true) {
         $this->lang = $lang;
         $this->depth = $maxDepth;
         $this->em = $entityManager;
@@ -53,6 +79,7 @@ abstract class PageTree {
         $this->currentPage = $currentPage;
         $this->skipInvisible = $skipInvisible;
         $this->considerLogin = $considerLogin;
+        $this->skipInactive = $skipInactive;
         $pageI = $currentPage;
         while ($pageI) {
             $this->pageIdsAtCurrentPath[] = $pageI->getId();
@@ -148,7 +175,7 @@ abstract class PageTree {
                     }
                 }
             } else {
-                if (!$page || $page->isActive()) {
+                if (!$page || (!$this->skipInactive || $page->isActive())) {
                     foreach ($children as $child) {
                         $childPage = $child->getPage($this->lang);
                         if ($childPage && $childPage->isActive()) {
@@ -188,8 +215,12 @@ abstract class PageTree {
                     return $pageTree->preRenderLevel($level, $lang, $node);
                 });
             }
-
-            if (!$page || !$page->isActive() || !$page->isVisible()) {
+            
+            if (
+                !$page || 
+                ($this->skipInvisible && !$page->isVisible()) ||
+                ($this->skipInactive && !$page->isActive())
+            ) {
                 continue;
             }
             
@@ -197,7 +228,10 @@ abstract class PageTree {
                 $parentPage = $page->getParent();
                 // if parent is invisible or unpublished and parent node is not start node
                 if ($parentPage &&
-                    (!$parentPage->isVisible() || !$parentPage->isActive()) &&
+                    (
+                        ($this->skipInvisible && !$parentPage->isVisible()) ||
+                        ($this->skipInactive && !$parentPage->isActive())
+                    ) &&
                     $page->getNode()->getParent()->getId() != $this->rootNode->getId()
                 ) {
                     continue;
@@ -205,6 +239,8 @@ abstract class PageTree {
             } catch (\Cx\Core\ContentManager\Model\Entity\PageException $e) {
                 // if parent page does not exist, parent is root
             }
+
+            
             // if page is protected, user has not sufficent permissions and protected pages are hidden
             if ($page->isFrontendProtected() && $_CONFIG['coreListProtectedPages'] != 'on' &&
                 !(
