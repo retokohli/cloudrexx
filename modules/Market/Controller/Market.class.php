@@ -999,7 +999,8 @@ class Market extends MarketLibrary
             'MARKET_UPLOADER_CODE'                  =>  $uploader->getXHtml(),
             'MARKET_UPLOADER_ID'                    =>  $uploader->getId(),
             'TXT_MARKET_TERMS' => $_ARRAYLANG['TXT_MARKET_TERMS'],
-            'TXT_MARKET_CONFIRM_TERMS_LABEL' => $_ARRAYLANG['TXT_MARKET_CONFIRM_TERMS_LABEL'],
+            'TXT_MARKET_CONFIRM_TERMS' => $_ARRAYLANG['TXT_MARKET_CONFIRM_TERMS'],
+            'MARKET_FORCE_TERMS'    => $this->settings['useTerms'],
         ));
 
         if ($this->settings['maxdayStatus'] != 1) {
@@ -1062,7 +1063,7 @@ class Market extends MarketLibrary
             // check if entries shall be confirmed through the frontend
             if (!$this->settings['confirmFrontend']) {
                 // move to overview
-                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=market');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Market');
             }
 
             if (isset($_POST['submit'])) {

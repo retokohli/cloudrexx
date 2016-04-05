@@ -120,5 +120,5 @@ $_ARRAYLANG['TXT_MARKET_COLOR'] = "Farbe";
 $_ARRAYLANG['TXT_SAVE'] = "Speichern";
 $_ARRAYLANG['TXT_MARKET_CHOOSE_FILE'] = 'Datei wählen';
 $_ARRAYLANG['TXT_MARKET_SET_CONFIRM_IN_FRONTEND'] = 'Einträge im Frontend bestätigen';
-$_ARRAYLANG['TXT_MARKET_SET_USE_TERMS'] = 'AGBs erzwingen';
+$_ARRAYLANG['TXT_MARKET_SET_USE_TERMS'] = 'AGBs verlangen';
 ?>

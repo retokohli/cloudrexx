@@ -230,7 +230,7 @@ class MarketLibrary
 
             if($objResult !== false){
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'];
-                if($backend == 0){
+                if($backend == 0 && $settings['confirmFrontend']){
                     $this->sendCodeMail($objDatabase->Insert_ID());
                 }
             }else{
@@ -391,7 +391,7 @@ class MarketLibrary
         if($mailOn == 1){
             $array = explode('; ',$mailCC);
             $url    = $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET;
-            $link    = "http://".$url."/index.php?section=Market&amp;cmd=detail&amp;id=".$entryId;
+            $link    = "http://".$url."/index.php?section=Market&cmd=detail&id=".$entryId;
             $now     = date(ASCMS_DATE_FORMAT);
 
             //replase placeholder
