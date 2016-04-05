@@ -1,12 +1,38 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * This is the english language file for backend mode.
- * This file is included by Contrexx and all entries are set as placeholder
+ * This file is included by Cloudrexx and all entries are set as placeholder
  * values for backend ACT template by SystemComponentBackendController
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  modules_skeleton
  */
 
@@ -14,7 +40,7 @@
 global $_ARRAYLANG;
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER'] = "MediaBrowser";
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_DESCRIPTION']
-                                                              = "A filebrowser for all contrexx applications.";
+                                                              = "A filebrowser for all cloudrexx applications.";
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_DEFAULT']       = "Modal Tests";
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_BROWSER']       = "MediaBrowser";
 $_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_DEFAULT']       = "Uploader";
@@ -96,7 +122,12 @@ $_ARRAYLANG['TXT_FILEBROWSER_FILE_ACTIONS']            = "Actions";
 $_ARRAYLANG['TXT_FILEBROWSER_WYSIWYG']                 = "Wysiwyg";
 $_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER']        = "Drag file here";
 $_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_OR']     = "or";
-$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK']  = "Choose picture from your pc";
+$_ARRAYLANG['TXT_FILEBROWSER_DRAG_TO_UPLOADER_CLICK']  = "Choose file from your pc";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_BUTTON']           = "Upload";
 $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_WATING']           = "Your data is being uploaded...";
-$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FINISHED']         = "All your data has uploaded.";
+$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FINISHED']         = "All your files have been uploaded.";
+$_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FINISHED_HINT']   = "The uploaded files are now available in the filebrowser.";
+$_ARRAYLANG['TXT_FILEBROWSER_LOGGED_OUT']              = "You are logged out. Please reload the page to login again.";
+$_ARRAYLANG['TXT_FILEBROWSER_ERROR_HAS_HAPPEND']       = "There has been an error.";
+$_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_UP']      = "Back";
+$_ARRAYLANG['TXT_FILEBROWSER_NO_FILES_IN_DIRECTORY']      = "There are no files in this directory.";

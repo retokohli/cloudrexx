@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_access
  */
 $_ARRAYLANG['TXT_SETTINGS'] = "Einstellungen";
@@ -286,8 +312,8 @@ $_ARRAYLANG['TXT_ACCESS_PASSWORD_INVALID'] = "Ungültig";
 $_ARRAYLANG['TXT_ACCESS_USE_USERNAMES'] = "Benutzernamen verwenden";
 $_ARRAYLANG['TXT_ACCESS_USE_USERNAMES_TOOLTIP'] = "Anstelle der Benutzernamen werden die E-Mail Adressen verwendet.";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_INFORMATION_TITLE'] = "Informationen";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_DESCRIPTION'] = "Aktivieren Sie diese Funktion um Ihren Benutzern die Möglichkeit zu geben sich mit Hilfe eines sozialen Netzwerks in Contrexx anzumelden.";
-$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'] = "Eine Anleitung, wie Sie das Login einrichten können, finden Sie hier: <a href='%s' target='_blank'>Contrexx Wiki</a>";
+$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_DESCRIPTION'] = "Aktivieren Sie diese Funktion um Ihren Benutzern die Möglichkeit zu geben sich mit Hilfe eines sozialen Netzwerks in Cloudrexx anzumelden.";
+$_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_MANUAL'] = "Eine Anleitung, wie Sie das Login einrichten können, finden Sie hier: <a href='%s' target='_blank'>Cloudrexx Wiki</a>";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN'] = "Login mit sozialen Netzwerken";
 $_ARRAYLANG['TXT_ACCESS_ENABLE_SOCIALLOGIN'] = "Login sozialer Netzwerke aktivieren";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PROVIDERS'] = "OAuth Anbieter";

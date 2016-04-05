@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Contact
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  */
 
@@ -14,10 +39,10 @@ namespace Cx\Core_Modules\Contact\Controller;
 /**
  * ContactException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
  * @version     1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  * @todo        Edit PHP DocBlocks!
  */
@@ -30,10 +55,10 @@ class ContactException extends \Exception {}
  * It sends the contact email(s) and uploads data (optional)
  * Ex. <FORM name="form1" action="index.php?section=Contact&cmd=thanks" method="post">
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_contact
  */
 class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
@@ -74,7 +99,7 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
     /**
      * we're in legacy mode if true.
      * this means file uploads are coming directly from inputs, rather than being
-     * handled by the contrexx upload core-module.
+     * handled by the cloudrexx upload core-module.
      * Q: What is the legacyMode for?
      * A: With legacyMode we support the old submission forms that hadn't
      *    been migrated to the new fileUploader structure.
@@ -244,10 +269,9 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
                 $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
 
                 $this->objTemplate->setVariable(array(
-                    $formId.'_FORM_NAME'    => wordwrap($this->arrForms[$formId]['lang'][$_LANGID]['name'], 90, "<br/>\n", true),
+                    $formId.'_FORM_NAME'    => contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$_LANGID]['name']),
                     $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
-// TODO: why do we wordwrap here?
-                    $fieldId.'_LABEL'       => ($arrField['lang'][$_LANGID]['name'] != "") ? wordwrap($arrField['lang'][$_LANGID]['name'], 90, "<br/>\n", true) : "&nbsp;"
+                    $fieldId.'_LABEL'       => ($arrField['lang'][$_LANGID]['name'] != "") ? $arrField['lang'][$_LANGID]['name'] : "&nbsp;"
                 ));
 
                 /*
@@ -513,70 +537,59 @@ class Contact extends \Cx\Core_Modules\Contact\Controller\ContactLib
      * Inits the uploader when displaying a contact form.
      */
     protected function initUploader($fieldId, $restrictUpload2SingleFile = true) {
+        global $sessionObj;
+        
         try {
-            //init the uploader
-            \JS::activate('cx'); //the uploader needs the framework
-            $f = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance();
+            if (!isset($sessionObj)) {
+                $sessionObj = \cmsSession::getInstance();
+            }
             
-            /**
-            * Name of the upload instance
-            */
-            $uploaderInstanceName = 'exposed_combo_uploader_'.$fieldId;
-
-            /**
-            * jQuery selector of the HTML-element where the upload folder-widget shall be put in
-            */
-            $uploaderFolderWidgetContainer = '#contactFormField_uploadWidget_'.$fieldId;
-            $uploaderWidgetName = 'uploadWidget'.$fieldId;
-
-            $uploader = $f->newUploader('exposedCombo', 0, $restrictUpload2SingleFile);
-            $uploadId = $uploader->getUploadId();
-
+            $uploader   = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
             //set instance name so we are able to catch the instance with js
-            $uploader->setJsInstanceName($uploaderInstanceName);
+            $uploader->setCallback('contactFormUploader_'.$fieldId);
+            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
             // specifies the function to call when upload is finished. must be a static function
-            $uploader->setFinishedCallback(array(\Env::get('cx')->getCodeBaseCoreModulePath().'/Contact/Controller/Contact.class.php','\Cx\Core_Modules\Contact\Controller\Contact','uploadFinished'));
-            $uploader->setData(array('submissionId' => $this->submissionId, 'fieldId' => $fieldId, 'singlefile' => $restrictUpload2SingleFile));
+            $uploader->setFinishedCallback(array(
+                $cx->getCodeBaseCoreModulePath().'/Contact/Controller/Contact.class.php',
+                '\Cx\Core_Modules\Contact\Controller\Contact',
+                'uploadFinished'
+            ));
 
-
-            //retrieve temporary location for uploaded files
-            $tup = self::getTemporaryUploadPath($this->submissionId, $fieldId);
-
-            //create the folder
-            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tup[1].'/'.$tup[2])) {
-                throw new \Cx\Core_Modules\Contact\Controller\ContactException("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+            if ($restrictUpload2SingleFile) {
+                $uploader->setData(array(
+                    'singleFile'   => $restrictUpload2SingleFile
+                ));
+                $uploader->setUploadLimit(1);
             }
-
-            if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
-                //some hosters have problems with ftp and file system sync.
-                //this is a workaround that seems to somehow show php that
-                //the directory was created. clearstatcache() sadly doesn't
-                //work in those cases.
-                @closedir(@opendir($tup[0]));
-
-                if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
-                    throw new \Cx\Core_Modules\Contact\Controller\ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
-                }
-            }
+            $uploaderId = $uploader->getId();
+            $uploader->setOptions(array(
+                'id'     => 'contactUploader_'.$uploaderId,
+                'style'  => 'display: none'
+            ));
 
             //initialize the widget displaying the folder contents
-            $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2], $uploaderInstanceName);
+            $folderWidget = new \Cx\Core_Modules\MediaBrowser\Model\Entity\FolderWidget($_SESSION->getTempPath() . '/'. $uploaderId);
+            $this->objTemplate->setVariable(array(
+                'CONTACT_UPLOADER_FOLDER_WIDGET_'.$fieldId => $folderWidget->getXhtml(),
+                'CONTACT_UPLOADER_ID_'.$fieldId            => $uploaderId
+            ));
 
-            $strInputfield = $folderWidget->getXHtml($uploaderFolderWidgetContainer, $uploaderWidgetName);
-            $strInputfield .= $uploader->getXHtml();
-
-            \JS::registerJS('core_modules/Upload/js/uploaders/exposedCombo/extendedFileInput.js');
-
+            $folderWidgetId = $folderWidget->getId();
+            $strInputfield  = $uploader->getXHtml();
             $strInputfield .= <<<CODE
             <script type="text/javascript">
             cx.ready(function() {
-                    var ef = new ExtendedFileInput({
-                            field:  cx.jQuery('#contactFormFieldId_$fieldId'),
-                            instance: '$uploaderInstanceName',
-                            widget: '$uploaderWidgetName'
-                    });
+                    jQuery('#contactFormFieldId_$fieldId').bind('click', function() {
+                        jQuery('#contactUploader_$uploaderId').trigger('click');
+                        return false;
+                    }).removeAttr('disabled');
             });
+            
+            //uploader javascript callback function
+            function contactFormUploader_$fieldId(callback) {
+                    angular.element('#mediaBrowserfolderWidget_$folderWidgetId').scope().refreshBrowser();
+            }
             </script>
 CODE;
             return $strInputfield;
@@ -757,8 +770,8 @@ CODE;
                     continue;
                 }
 
-                $tup = self::getTemporaryUploadPath($this->submissionId, $fieldId);
-                $tmpUploadDir = $tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here
+                $tup = self::getTemporaryUploadPath($fieldId);
+                $tmpUploadDir = !empty($tup[2]) ? $tup[1].'/'.$tup[2].'/' : ''; //all the files uploaded are in here
 
                 $depositionTarget = ""; //target folder
 
@@ -804,8 +817,9 @@ CODE;
                 }
 
                 //move all files
-                if(!\Cx\Lib\FileSystem\FileSystem::exists($tmpUploadDir))
-                    throw new \Cx\Core_Modules\Contact\Controller\ContactException("could not find temporary upload directory '$tmpUploadDir'");
+                if (empty($tmpUploadDir) || !\Cx\Lib\FileSystem\FileSystem::exists($tmpUploadDir)) {
+                   continue;
+                }
                 
                 $h = opendir(\Env::get('cx')->getWebsitePath().$tmpUploadDir);
                 while(false !== ($f = readdir($h))) {
@@ -903,7 +917,7 @@ CODE;
                             if (\FWValidator::is_file_ending_harmless($fileName)) {
                                 if (@move_uploaded_file($fileTmpName, $documentRootPath.$filePath)) {
                                     $id = intval(substr($file, 17));
-                                    $arrFiles[$id] = array(
+                                    $arrFiles[$id][] = array(
                                         'path' => $filePath,
                                         'name' => $fileName
                                     );
@@ -1017,9 +1031,12 @@ CODE;
                     case 'multi_file':
                         if(!$this->legacyMode && $isRequired) {
                             //check if the user has uploaded any files
-                            $tup = self::getTemporaryUploadPath($this->submissionId, $fieldId);
-                            $path = $tup[0].'/'.$tup[2];
-                            if(count(@scandir($path)) == 2) { //only . and .. present, directory is empty
+                            $tup = self::getTemporaryUploadPath($fieldId);
+                            $path = !empty($tup[2]) ? $tup[0].'/'.$tup[2] : '';
+                            if (   empty($path)
+                               || !\Cx\Lib\FileSystem\FileSystem::exists($path)
+                               || count(@scandir($path)) == 2
+                            ) { //only . and .. present, directory is empty
                                 //no uploaded files in a mandatory field - no good.
                                 $error = true;
                             }
@@ -1148,14 +1165,7 @@ CODE;
                 if($key === 0)
                     throw new \Cx\Core_Modules\Contact\Controller\ContactException('could not find file field for form with id ' . $arrFormData['id']);
 
-                if ($this->legacyMode) { //store files according to their inputs name
-// TODO: check legacyMode
-                    $arrDBEntry = array();
-                    foreach ($arrFormData['uploadedFiles'] as $key => $file) {
-                        $arrDbEntry[] = base64_encode($key).",".base64_encode(contrexx_strip_tags($file));
-                    }
-                    $value = implode(';', $arrDbEntry);
-                } elseif (isset($arrFormData['uploadedFiles'][$key]) && count($arrFormData['uploadedFiles'][$key]) > 0) { //assign all files uploaded to the uploader fields name
+                if (isset($arrFormData['uploadedFiles'][$key]) && count($arrFormData['uploadedFiles'][$key]) > 0) { //assign all files uploaded to the uploader fields name
                     $arrTmp = array();
                     foreach ($arrFormData['uploadedFiles'][$key] as $file) {
                         $arrTmp[] = $file['path'];
@@ -1421,19 +1431,23 @@ CODE;
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $senderName;
             if (!empty($replyAddress)) {
                 $objMail->AddReplyTo($replyAddress);
 
                 if ($arrFormData['sendCopy'] == 1) {
                     $objMail->AddAddress($replyAddress);
                 }
-
-                if ($arrFormData['useEmailOfSender'] == 1) {
-                    $objMail->From = $replyAddress;
-                }
             }
+
+            if (!empty($replyAddress) && $arrFormData['useEmailOfSender'] == 1) {
+                $objMail->SetFrom(
+                    $replyAddress, 
+                    ($senderName !== $_CONFIG['coreGlobalPageTitle']) ? $senderName : ''
+                );
+            } else {
+                $objMail->SetFrom($_CONFIG['coreAdminEmail'], $senderName);
+            }
+
             $objMail->Subject = $arrFormData['subject'];
 
             if ($isHtml) {
@@ -1591,11 +1605,12 @@ CODE;
 
     /**
      * Gets the temporary upload location for files.
-     * @param integer $submissionId
+     * 
      * @return array('path','webpath', 'dirname')
      * @throws ContactException
      */
-    protected static function getTemporaryUploadPath($submissionId, $fieldId) {
+    protected static function getTemporaryUploadPath($fieldId)
+    {
         global $sessionObj;
         
         if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
@@ -1605,7 +1620,9 @@ CODE;
         if($tempPath === false || $tempWebPath === false)
             throw new \Cx\Core_Modules\Contact\Controller\ContactException('could not get temporary session folder');
 
-        $dirname = 'contact_files_'.$submissionId.'_'.$fieldId;
+        $dirname = isset($_POST['contactFormUploadId_'.$fieldId])
+                   ? contrexx_input2raw($_POST['contactFormUploadId_'.$fieldId])
+                   : '';
         $result = array(
             $tempPath,
             $tempWebPath,
@@ -1615,44 +1632,24 @@ CODE;
     }
 
     //Uploader callback
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos) {
-        $tup = self::getTemporaryUploadPath($data['submissionId'], $data['fieldId']);
-
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos) 
+    { 
         // in case uploader has been restricted to only allow one single file to be
         // uploaded, we'll have to clean up any previously uploaded files
-        if ($data['singlefile']) {
-            if (count($fileInfos['originalFileNames'])) {
+        if (isset($data['singleFile'])) {
+            if (count($fileInfos['name'])) {
                 // new files have been uploaded -> remove existing files
-                $contactUploadDestinationPath = $tup[0] . '/' . $tup[2];
-
-                if ($dh = opendir($contactUploadDestinationPath)) {
-                    while (($uploadedFile = readdir($dh)) !== false) {
-                        if ($uploadedFile == '..' || $uploadedFile == '.') {
+                if (\Cx\Lib\FileSystem\FileSystem::exists($tempPath)) {
+                    foreach (glob($tempPath.'/*') as $file) {
+                        if (basename($file) == $fileInfos['name']) {
                             continue;
                         }
-
-                        \Cx\Lib\FileSystem\FileSystem::delete_file($contactUploadDestinationPath.'/'.$uploadedFile);
+                        \Cx\Lib\FileSystem\FileSystem::delete_file($file);
                     }
-                    closedir($dh);
-                }
-            }
-
-            // remove additional files, in case more than one file has been uploaded
-            if (count($fileInfos['originalFileNames']) > 1) {
-                $firstUploadedFile = array_shift($fileInfos['originalFileNames']);
-                if ($dh = opendir($tempPath)) {
-                    while (($uploadedFile = readdir($dh)) !== false) {
-                        if ($uploadedFile == '..' || $uploadedFile == '.' || $uploadedFile == $firstUploadedFile) {
-                            continue;
-                        }
-
-                        \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$uploadedFile);
-                    }
-                    closedir($dh);
                 }
             }
         }
 
-        return array($tup[0].'/'.$tup[2],$tup[1].'/'.$tup[2]);
+        return array($tempPath, $tempWebPath);
     }
 }

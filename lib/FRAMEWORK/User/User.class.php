@@ -1,21 +1,46 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * User Object
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.1.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 
 /**
  * UserException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class UserException extends Exception {}
@@ -25,10 +50,10 @@ class UserException extends Exception {}
  * User Object
  *
  * The User object is used for all user related operations.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @version     2.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class User extends User_Profile
@@ -366,6 +391,11 @@ class User extends User_Profile
     public function checkLoginData($username, $password, $captchaCheckResult = false)
     {
         global $objDatabase;
+
+        // If the last login has failed and the captcha is wrong the login must be invalid.
+        if ($_SESSION['auth']['loginLastAuthFailed'] && !$captchaCheckResult) {
+            return false;
+        }
 
         $loginByEmail = false;
 
@@ -1757,9 +1787,7 @@ class User extends User_Profile
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $objUserMail->getSenderMail();
-            $objMail->FromName = $objUserMail->getSenderName();
-            $objMail->AddReplyTo($objUserMail->getSenderMail());
+            $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
             $objMail->Subject = $objUserMail->getSubject();
 
             $placeholders = array(
@@ -2794,7 +2822,18 @@ class User extends User_Profile
         }
         return $result->fields['id'];
     }
-
+    
+    /**
+     * Returns this user's timezone
+     * @todo Implement a way to detect the real timezone
+     * @todo Implement DateTime postResolve() to set $this->userTimezone again once the sign-in user has been loaded
+     * @return \DateTimeZone User's timezone
+     */
+    public function getTimezone() {
+        global $_CONFIG;
+        
+        return new \DateTimeZone($_CONFIG['timezone']);
+    }
 
     /**
      * Tries to form a valid and unique username from the words given

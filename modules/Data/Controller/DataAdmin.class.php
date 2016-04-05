@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Data
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_data
  *
  * THIS FILE HAS TO BE OPENED WITH UTF-8 ENCODING
@@ -16,10 +41,10 @@ namespace Cx\Modules\Data\Controller;
 $_ARRAYLANG['TXT_DIV_THUMBNAIL_TYPE'] = "Thumbnail des Bildes verwenden";
 /**
  * DataAdmin
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_data
  */
 class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
@@ -1331,6 +1356,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
         global $objDatabase;
 
         $intMessageId = intval($intMessageId);
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
 
         //Collect data for every language
         $arrValues = array();
@@ -1414,10 +1440,22 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
                 if (!isset($objImage)) {
                     $objImage = new \ImageManager();
                 }
-                $strPath = dirname(ASCMS_DOCUMENT_ROOT.$arrEntryValues['image']).'/';
-                $strWebPath = substr($strPath, strlen(ASCMS_PATH_OFFSET));
+                $strPath = dirname($cx->getWebsitePath().$arrEntryValues['image']).'/';
+                $strWebPath = substr($strPath, strlen($cx->getWebsiteOffsetPath()));
                 $file = basename($arrEntryValues['image']);
-                $objImage->_createThumbWhq($strPath, $strWebPath, $file, $arrEntryValues['thumbnail_width'], $arrEntryValues['thumbnail_height'], 90, '', ASCMS_DATA_IMAGES_PATH.'/', ASCMS_DATA_IMAGES_WEB_PATH.'/', $intMessageId.'_'.$intLanguageId.'_'.$file);
+
+                $objImage->_createThumbWhq(
+                        $strPath,
+                        $strWebPath,
+                        $file,
+                        $arrEntryValues['thumbnail_width'],
+                        $arrEntryValues['thumbnail_height'],
+                        90,
+                        '.thumb',
+                        $cx->getWebsiteImagesDataPath() . '/',
+                        $cx->getWebsiteImagesDataWebPath() . '/',
+                        $intMessageId.'_'.$intLanguageId.'_'.$file
+                );
             }
         }
     }
@@ -1739,7 +1777,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
         global $_ARRAYLANG, $objDatabase;
 
         $intEntryId = intval($intEntryId);
-
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if ($intEntryId > 0) {
 
 
@@ -1780,8 +1818,8 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
                                       WHERE ref_id = ".$intEntryId);
 
             $objFile = new \File();
-            foreach (glob(ASCMS_DATA_IMAGES_PATH.'/'.$intEntryId.'_*') as $image) {
-                $objFile->delFile(ASCMS_DATA_IMAGES_PATH.'/', ASCMS_DATA_IMAGES_WEB_PATH.'/', basename($image));
+            foreach (glob($cx->getWebsiteImagesDataPath() . '/' . $intEntryId . '_*') as $image) {
+                $objFile->delFile($cx->getWebsiteImagesDataPath() . '/', $cx->getWebsiteImagesDataWebPath() . '/', basename($image));
             }
 
             $this->writeMessageRSS();

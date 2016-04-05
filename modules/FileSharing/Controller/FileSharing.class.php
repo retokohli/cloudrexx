@@ -1,20 +1,45 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * FileSharing
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_filesharing
  */
 namespace Cx\Modules\FileSharing\Controller;
 /**
  * FileSharingException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_filesharing
  */
 class FileSharingException extends \Exception
@@ -26,9 +51,9 @@ class FileSharingException extends \Exception
 /**
  * FileSharing
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_filesharing
  */
 class FileSharing extends FileSharingLib
@@ -437,50 +462,65 @@ class FileSharing extends FileSharingLib
     {
         global $objDatabase;
 
-        $files = array();
+        $cx          = \Cx\Core\Core\Controller\Cx::instanciate();
+        $fileSystem  = new \Cx\Lib\FileSystem\FileSystem();
+        $imageUrl    = clone \Env::get("Resolver")->getUrl(); // get the image url
+        $files       = array();
+        $directory   = \Env::get('Resolver')->getCmd();
 
-        $tup = FileSharingLib::getTemporaryFilePaths($uploadId);
-
-        // loop through the uploaded files
-        $objResult = $objDatabase->Execute("SELECT `id`, `file`, `source`, `hash`, `check` FROM " . DBPREFIX . "module_filesharing WHERE `upload_id` = " . intval($uploadId));
-        if ($objResult !== false && $objResult->RecordCount() > 0) {
-            $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-            while (!$objResult->EOF) {
-                $filePath = explode("/", $objResult->fields["source"]);
-                $fileNameSource = end($filePath);
-
-                $fileSystem = new \Cx\Lib\FileSystem\FileSystem();
-                $directory = \Env::get('Resolver')->getCmd();
-                if ($directory != 'Downloads') {
-                    $newPath = $cx->getWebsiteMediaFileSharingPath() . '/' . $directory . '/';
-                } else {
-                    $newPath = $cx->getWebsiteImagesDownloadsPath() . '/';
-                }
-                $fileSystem->copyFile($tup[0] . '/' . $tup[2] . '/', $fileNameSource, $newPath, $fileNameSource, false);
-
-                // get file name
-                $fileName = $objResult->fields["file"];
-
-                // get the image url
-                $imageUrl = clone \Env::get("Resolver")->getUrl();
-                $imageUrl->setParam("act", "image");
-                $imageUrl->setParam("hash", $objResult->fields["hash"]);
-
-                $info = pathinfo($cx->getWebsiteOffsetPath() . $objResult->fields["source"]);
-                // if the file is an image show a thumbnail of the image
-                if (!in_array(strtolower($info["extension"]), array("jpeg", "jpg", "png", "gif"))) {
-                    $imageUrl = false;
-                }
-
-                $files[] = array(
-                    "name" => $fileName,
-                    "image" => $imageUrl,
-                    "download" => parent::getDownloadLink($objResult->fields["id"]),
-                    "delete" => parent::getDeleteLink($objResult->fields["id"]),
-                );
-                $objResult->moveNext();
-            }
+        if ($directory != 'Downloads') {
+            $targetPath    = $cx->getWebsiteMediaFileSharingPath() . '/' .  (!empty($directory) ? $directory .'/' : '');
+            $targetPathWeb = $cx->getWebsiteMediaFileSharingWebPath() . '/' . (!empty($directory) ? $directory .'/' : '');
+        } else {
+            $targetPath    = $cx->getWebsiteImagesDownloadsPath() . '/';
+            $targetPathWeb = $cx->getWebsiteImagesDownloadsWebPath() . '/';
         }
+
+        $tup         = FileSharingLib::getTemporaryFilePaths($uploadId);
+        $dirTempPath = $tup[0] . '/' . $tup[2] . '/'; //get the tmp/$uploadId files
+        foreach (glob($dirTempPath . '/*') as $uploadedFile) {
+            $file = basename($uploadedFile);
+
+            $uploadedFileName = $fileSystem->copyFile($dirTempPath, $file, $targetPath, $file, false);
+            if ($uploadedFileName === 'error') {
+                continue;
+            }
+            \Cx\Lib\FileSystem\FileSystem::delete_file($dirTempPath.'/'.$file);
+            $uploadedFileSource = $targetPathWeb . $uploadedFileName;
+            $hash  = self::createHash();
+            $check = self::createCheck($hash);
+
+            $objResult = $objDatabase->Execute("INSERT INTO " . DBPREFIX . "module_filesharing (`file`, `source`, `cmd`, `hash`, `check`, `upload_id`)
+                                VALUES (
+                                    '" . contrexx_raw2db($uploadedFileName) . "',
+                                    '" . contrexx_raw2db($uploadedFileSource) . "',
+                                    '" . contrexx_raw2db($directory) . "',
+                                    '" . contrexx_raw2db($hash) . "',
+                                    '" . contrexx_raw2db($check) . "',
+                                    '" . contrexx_input2int($uploadId) . "'
+                                )");
+            if (!$objResult) {
+                continue;
+            }
+
+            $imageUrl->setParam("act", "image");
+            $imageUrl->setParam("hash", $hash);
+
+            $info = pathinfo($cx->getWebsiteOffsetPath() . $uploadedFileSource, PATHINFO_EXTENSION);
+            // if the file is an image show a thumbnail of the image
+            if (!in_array(strtoupper($info), array('JPEG', 'JPG', 'TIFF', 'GIF', 'BMP', 'PNG'))) {
+                $imageUrl = false;
+            }
+
+            $fieldId = $objDatabase->Insert_ID();
+            $files[] = array(
+                "name"     => $uploadedFileName,
+                "image"    => $imageUrl->toString(),
+                "download" => parent::getDownloadLink($fieldId),
+                "delete"   => parent::getDeleteLink($fieldId),
+            );
+        }
+
         return $files;
     }
 }

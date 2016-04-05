@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media Directory Inputfield Downloads Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
@@ -13,9 +38,9 @@ namespace Cx\Modules\MediaDir\Model\Entity;
 /**
  * Media Directory Inputfield Downloads Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 class MediaDirectoryInputfieldDownloads extends \Cx\Modules\MediaDir\Controller\MediaDirectoryLibrary
@@ -163,11 +188,12 @@ class MediaDirectoryInputfieldDownloads extends \Cx\Modules\MediaDir\Controller\
                 $strBlankElement .= '<textarea name="'.$this->moduleNameLC.'Inputfield['.$intId.'][0][ELEMENT-KEY][desc]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_ELEMENT-KEY_0_title" style="'.$strTextAreaStyle.'" onfocus="this.select();">'.$_CORELANG['TXT_CORE_SETTING_NAME'].'</textarea><br />';    
                 
                 if($objInit->mode == 'backend') {
-                    $strBlankElement .= '<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][0][ELEMENT-KEY][file]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_ELEMENT-KEY_0_file" style="width: 213px;" onfocus="this.select();" />&nbsp;<input type="button" value="' . $_ARRAYLANG['TXT_BROWSE'] . '" onClick="getFileBrowser(\\\''.$this->moduleNameLC.'Inputfield_'.$intId.'_ELEMENT-KEY_0_file\\\', \\\''.$this->moduleName.'\\\', \\\'/uploads\\\')" />';
+                    $browserButton    = '<input type="button" onClick="getMediaBrowser(\$J(this));" data-input-id="'. $this->moduleNameLC.'Inputfield_'.$intId.'_ELEMENT-KEY_0_file" data-views="filebrowser" data-startmediatype="'. $this->moduleNameLC .'" value="'. $_ARRAYLANG['TXT_BROWSE'] .'" />';
+                    $strBlankElement .= '<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][0][ELEMENT-KEY][file]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_ELEMENT-KEY_0_file" style="width: 213px;" onfocus="this.select();" />&nbsp;'. $browserButton;
                 } else {
-                    $strBlankElement .= '<input type="file" name="fileUpload_'.$intId.'[0][ELEMENT-KEY]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_0_ELEMENT-KEY"  onfocus="this.select();" />';
+                    $strBlankElement .= $this->getFrontendUploaderInputField($intId);
                 }
-                   
+
                 if($this->arrSettings['settingsFrontendUseMultilang'] == 1 || $objInit->mode == 'backend') {  
                     $strBlankElement .= '&nbsp;<a href="javascript:ExpandMinimizeMultiple('.$intId.', ELEMENT-KEY);">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a>';  
                     $strBlankElement .= '</div>';  
@@ -186,9 +212,10 @@ class MediaDirectoryInputfieldDownloads extends \Cx\Modules\MediaDir\Controller\
                         $strBlankElement .= '<textarea name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.'][ELEMENT-KEY][desc]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_ELEMENT-KEY_'.$intLangId.'_title" style="'.$strTextAreaFlagStyle.' background: #ffffff url('. \Env::get('cx')->getCodeBaseOffsetPath() . \Env::get('cx')->getCoreFolderName().'/Country/View/Media/Flag/flag_'.$arrLang['lang'].'.gif) no-repeat 3px 3px;" onfocus="this.select();" /></textarea><br />';
                         
                         if($objInit->mode == 'backend') {
-                            $strBlankElement .= '<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.'][ELEMENT-KEY][file]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_ELEMENT-KEY_'.$intLangId.'_file" style="width: 192px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('. \Env::get('cx')->getCodeBaseOffsetPath() . \Env::get('cx')->getCoreFolderName().'/Country/View/Media/Flag/flag_'.$arrLang['lang'].'.gif) no-repeat 3px 3px;" onfocus="this.select();" />&nbsp;<input type="button" value="' . $_ARRAYLANG['TXT_BROWSE'] . '" onClick="getFileBrowser(\\\''.$this->moduleNameLC.'Inputfield_'.$intId.'_ELEMENT-KEY_'.$intLangId.'_file\\\', \\\''.$this->moduleName.'\\\', \\\'/uploads\\\')" />'.$minimize.'<br /><br />';
+                            $browserButton    = '<input type="button" onClick="getMediaBrowser(\$J(this));" data-input-id="'. $this->moduleNameLC.'Inputfield_'.$intId.'_ELEMENT-KEY_'.$intLangId.'_file" data-views="filebrowser" data-startmediatype="'. $this->moduleNameLC .'" value="'. $_ARRAYLANG['TXT_BROWSE'] .'" />';
+                            $strBlankElement .= '<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.'][ELEMENT-KEY][file]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_ELEMENT-KEY_'.$intLangId.'_file" style="width: 192px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('. \Env::get('cx')->getCodeBaseOffsetPath() . \Env::get('cx')->getCoreFolderName().'/Country/View/Media/Flag/flag_'.$arrLang['lang'].'.gif) no-repeat 3px 3px;" onfocus="this.select();" />&nbsp;'. $browserButton .$minimize.'<br /><br />';
                         } else {
-                            $strBlankElement .= '<input type="file" name="fileUpload_'.$intId.'['.$intLangId.'][ELEMENT-KEY]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'_ELEMENT-KEY" onfocus="this.select();" />'.$minimize.'<br /><br />';  
+                            $strBlankElement .= $this->getFrontendUploaderInputField($intId, $intLangId) . $minimize.'<br /><br />';
                         }
                     }  
                     $strBlankElement .= '</div>';   
@@ -259,9 +286,10 @@ EOF;
                     $strInputfield .= '<textarea name="'.$this->moduleNameLC.'Inputfield['.$intId.'][0]['.$intKey.'][desc]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'_0_title" style="'.$strTextAreaStyle.'" onfocus="this.select();" />'.$arrValue[0][$intKey]['desc'].'</textarea><br />';
                     
                     if($objInit->mode == 'backend') {
-                        $strInputfield .= '<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][0]['.$intKey.'][file]" value="'.$arrValue[0][$intKey]['file'].'" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'_0_file" style="width: 213px;" onfocus="this.select();" />&nbsp;<input type="button" value="' . $_ARRAYLANG['TXT_BROWSE'] . '" onClick="getFileBrowser(\''.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'_0_file\', \''.$this->moduleName.'\', \'/uploads\')" />';
+                        $browserButton  = '<input type="button" onClick="getMediaBrowser(\$J(this));" data-input-id="'. $this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'_0_file" data-views="filebrowser" data-startmediatype="'. $this->moduleNameLC .'" value="'. $_ARRAYLANG['TXT_BROWSE'] .'" />';
+                        $strInputfield .= '<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][0]['.$intKey.'][file]" value="'.$arrValue[0][$intKey]['file'].'" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'_0_file" style="width: 213px;" onfocus="this.select();" />&nbsp;'. $browserButton;
                     } else {
-                        $strInputfield .= '<input type="file" name="fileUpload_'.$intId.'[0]['.$intKey.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_0_'.$intKey.'" onfocus="this.select();" />';
+                        $strInputfield .= $this->getFrontendUploaderInputField($intId, 0, $value, $intKey);
                         $strInputfield .= '<input id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_0_'.$intKey.'_hidden" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][0]['.$intKey.'][file]" value="'.$arrValue[0][$intKey]['hidden'].'" type="hidden">';
                     }
                     if($this->arrSettings['settingsFrontendUseMultilang'] == 0 && $objInit->mode == 'frontend') {  
@@ -287,9 +315,10 @@ EOF;
                             $strInputfield .= '<textarea name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']['.$intKey.'][desc]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'_'.$intLangId.'_title" style="'.$strTextAreaFlagStyle.' background: #ffffff url(\''. \Env::get('cx')->getCodeBaseOffsetPath() . \Env::get('cx')->getCoreFolderName().'/Country/View/Media/Flag/flag_'.$arrLang['lang'].'.gif\') no-repeat 3px 3px;" onfocus="this.select();" />'.$arrValue[$intLangId][$intKey]['desc'].'</textarea><br />';
                         
                             if($objInit->mode == 'backend') {
-                                $strInputfield .= '<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']['.$intKey.'][file]" value="'.$arrValue[$intLangId][$intKey]['file'].'" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'_'.$intLangId.'_file" style="width: 192px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('. \Env::get('cx')->getCodeBaseOffsetPath() . \Env::get('cx')->getCoreFolderName().'/Country/View/Media/Flag/flag_'.$arrLang['lang'].'.gif) no-repeat 3px 3px;" onfocus="this.select();" />&nbsp;<input type="button" value="' . $_ARRAYLANG['TXT_BROWSE'] . '" onClick="getFileBrowser(\''.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'_'.$intLangId.'_file\', \''.$this->moduleName.'\', \'/uploads\')" />'.$minimize.'<br />'.$arrValue[$intLangId][$intKey]['preview'].'<br />';
+                                $browserButton  = '<input type="button" onClick="getMediaBrowser(\$J(this));" data-input-id="'. $this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'_'.$intLangId.'_file" data-views="filebrowser" data-startmediatype="'. $this->moduleNameLC .'" value="'. $_ARRAYLANG['TXT_BROWSE'] .'" />';
+                                $strInputfield .= '<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']['.$intKey.'][file]" value="'.$arrValue[$intLangId][$intKey]['file'].'" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intKey.'_'.$intLangId.'_file" style="width: 192px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('. \Env::get('cx')->getCodeBaseOffsetPath() . \Env::get('cx')->getCoreFolderName().'/Country/View/Media/Flag/flag_'.$arrLang['lang'].'.gif) no-repeat 3px 3px;" onfocus="this.select();" />&nbsp;'. $browserButton . $minimize.'<br />'.$arrValue[$intLangId][$intKey]['preview'].'<br />';
                             } else {
-                                $strInputfield .= '<input type="file" name="fileUpload_'.$intId.'['.$intLangId.']['.$intKey.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'_'.$intKey.'" value="'.$strValue.'" onfocus="this.select();" />'.$minimize.'<br />'.$arrValue[$intLangId][$intKey]['preview'].'<br />';
+                                $strInputfield .= $this->getFrontendUploaderInputField($intId, $intLangId, $strValue, $intKey) .$minimize.'<br />'.$arrValue[$intLangId][$intKey]['preview'].'<br />';
                                 $strInputfield .= '<input id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'_'.$intKey.'_hidden" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']['.$intKey.'][file]" value="'.$arrValue[$intLangId][$intKey]['hidden'].'" type="hidden">';
                             }
                         }  
@@ -332,22 +361,29 @@ EOF;
             foreach($arrValue as $intKey => $arrValuesTmp) {
                 $arrValues[] = join("##", $arrValuesTmp);
             }
-        } else {     
-            foreach($arrValue as $intKey => $arrValuesTmp) { 
-                if ($_FILES['fileUpload_'.$intInputfieldId]['name'][0][$intKey] != ''  && $intLangId == $_LANGID) { 
-                    $this->deleteFile($arrValuesTmp['file']);                                                              
-                    $arrValuesTmp['file'] = $this->uploadMedia($intInputfieldId, $intKey, 0);  
-                }  
-                
-                if ($_FILES['fileUpload_'.$intInputfieldId]['name'][$intLangId][$intKey] != '') {
-                    $this->deleteFile($arrValuesTmp['file']);                                
-                    $arrValuesTmp['file'] = $this->uploadMedia($intInputfieldId, $intKey, $intLangId);
-                } else {       
-                    if($arrValuesTmp['file'] == '' || $arrValuesTmp['file'] == 'new_file') {       
-                        $arrValuesTmp['file'] = $this->imageWebPath.'uploads/'.$_FILES['fileUpload_'.$intInputfieldId]['name'][0][$intKey];     
+        } else {
+            $uploaderId = !empty($_POST['uploaderId']) ? $_POST['uploaderId'] : '';
+            foreach($arrValue as $intKey => $arrValuesTmp) {
+                if ($_POST['mediadirInputfieldSource'][$intInputfieldId][0][$intKey] != ''  && $intLangId == $_LANGID) {
+                    $this->deleteFile($arrValuesTmp['file']);
+                    $filePath   = $this->getUploadedFilePath($uploaderId, $_POST['mediadirInputfieldSource'][$intInputfieldId][0][$intKey]);
+                    if ($filePath) {
+                        $arrValuesTmp['file'] = $this->uploadMedia($filePath);
+                        // ugly way,try to get it from post
+                        $_POST['mediadirInputfieldSource'][$intInputfieldId][$intKey]['defaultFile'] = $arrValuesTmp['file'];
                     }
                 }
-                
+
+                if ($_POST['mediadirInputfieldSource'][$intInputfieldId][$intLangId][$intKey] != '') {
+                    $this->deleteFile($arrValuesTmp['file']);
+                    $filePath   = $this->getUploadedFilePath($uploaderId, $_POST['mediadirInputfieldSource'][$intInputfieldId][$intLangId][$intKey]);
+                    $arrValuesTmp['file'] = $this->uploadMedia($filePath);
+                } else {
+                    if($arrValuesTmp['file'] == '' || $arrValuesTmp['file'] == 'new_file') {
+                        $arrValuesTmp['file'] = $_POST['mediadirInputfieldSource'][$intInputfieldId][$intKey]['defaultFile'];
+                    }
+                }
+
                 $arrValues[] = join("##", $arrValuesTmp);          
             }    
         }           
@@ -355,48 +391,45 @@ EOF;
         $strValue = contrexx_input2raw(contrexx_strip_tags(join("||", $arrValues)));
         return $strValue;
     }
-    
-    
-    function uploadMedia($intInputfieldId, $intKey, $intLangId)
+
+    /**
+     * Copy the Upload the image to the path
+     * Note: validation should be done before calling this function
+     *
+     * @param string $filePath Temp path of the uploaded media
+     * 
+     * @return boolean|string relative path of the uploaded file, false otherwise
+     */
+    function uploadMedia($filePath)
     {
-        global $objDatabase;  
-                                                                                      
-        if (isset($_FILES)) {     
-            $tmpFile   = $_FILES['fileUpload_'.$intInputfieldId]['tmp_name'][$intLangId][$intKey];
-            $fileName  = $_FILES['fileUpload_'.$intInputfieldId]['name'][$intLangId][$intKey];
-            //$fileType  = $_FILES['fileUpload_'.$intInputfieldId]['type'][$intLangId][$intKey];
-            //$fileSize  = $_FILES['fileUpload_'.$intInputfieldId]['size'][$intLangId][$intKey];   
-            
-            if ($fileName != "") {      
-                //get extension
-                $arrFileInfo   = pathinfo($fileName);
-                $fileExtension = !empty($arrFileInfo['extension']) ? '.'.$arrFileInfo['extension'] : '';
-                $fileBasename  = $arrFileInfo['filename'];
-                $randomSum      = rand(10, 99);
+        if ($filePath == '' || !\FWValidator::is_file_ending_harmless($filePath)) {
+            return false;
+        }
 
-                //encode filename
-                if ($this->arrSettings['settingsEncryptFilenames'] == 1) {
-                    $fileName = md5($randomSum.$fileBasename).$fileExtension;
-                }
+        $fileName      = basename($filePath);
+        //get extension
+        $arrFileInfo   = pathinfo($fileName);
+        $fileExtension = !empty($arrFileInfo['extension']) ? '.'.$arrFileInfo['extension'] : '';
+        $fileBasename  = $arrFileInfo['filename'];
+        $randomSum     = rand(10, 99);
 
-                //check filename
-                if (file_exists($this->imagePath.'uploads/'.$fileName)) {            
-                    $fileName = $fileBasename.'_'.time().$randomSum.$fileExtension;
-                }                                 
+        //encode filename
+        if ($this->arrSettings['settingsEncryptFilenames'] == 1) {
+            $fileName = md5($randomSum.$fileBasename).$fileExtension;
+        }
 
-                //upload file
-                if (move_uploaded_file($tmpFile, $this->imagePath.'uploads/'.$fileName)) {     
-                    $objFile = new \File();
-                    $objFile->setChmod($this->imagePath, $this->imageWebPath, 'uploads/'.$fileName);
+        //check filename
+        if (file_exists($this->imagePath.'uploads/'.$fileName)) {
+            $fileName = $fileBasename.'_'.time().$fileExtension;
+        }
 
-                    return $this->imageWebPath.'uploads/'.$fileName;
-                } else {
-                    return false;
-                }
-            } else {      
-                return false;
-            }  
-        } else {              
+        //upload file
+        if (\Cx\Lib\FileSystem\FileSystem::copy_file($filePath, $this->imagePath . 'uploads/' . $fileName) !== false) {
+            $objFile = new \File();
+            $objFile->setChmod($this->imagePath, $this->imageWebPath, 'uploads/'. $fileName);
+
+            return $this->imageWebPath.'uploads/'.$fileName;
+        } else {
             return false;
         }
     }
@@ -525,5 +558,24 @@ EOF;
     function getFormOnSubmit($intInputfieldId)
     {
         return null;
+    }
+
+    /**
+     * Get Uploader input for frontend
+     *
+     * @param integer $intId     Input field id
+     * @param integer $langId    Language id
+     * @param string  $value     Value for the uploader input
+     * @param string  $elementId Element key
+     *
+     * @return string Uploader input
+     */
+    public function getFrontendUploaderInputField($intId, $langId = 0, $value = '', $elementId = 'ELEMENT-KEY')
+    {
+        global $_ARRAYLANG;
+
+        return <<<ELM
+<input type="text" name="{$this->moduleNameLC}InputfieldSource[$intId][$langId][$elementId]" value="$value" id="{$this->moduleNameLC}Inputfield_{$intId}_{$langId}_{$elementId}" autocomplete="off" onfocus="this.select();" /> &nbsp;<input type="button" onClick="getUploader(\$J(this));" data-input-id="{$this->moduleNameLC}Inputfield_{$intId}_{$langId}_$elementId" value="{$_ARRAYLANG['TXT_BROWSE']}" />
+ELM;
     }
 }

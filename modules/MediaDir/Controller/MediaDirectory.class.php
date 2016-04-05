@@ -1,10 +1,35 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media  Directory
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
@@ -13,9 +38,9 @@ namespace Cx\Modules\MediaDir\Controller;
 /**
  * Media Directory
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 class MediaDirectory extends MediaDirectoryLibrary
@@ -692,23 +717,6 @@ class MediaDirectory extends MediaDirectoryLibrary
             } else {
                 //save entry data
                 if(isset($_POST['submitEntryModfyForm'])) {
-                	if(isset($_FILES)) {
-                		$bolFileSizesStatus = true;
-                		$intFilsize = intval($this->arrSettings['settingsImageFilesize']*1024);
-                        foreach ($_FILES as $strInputfieldName => $arrFile) {
-                        	if ($arrFile['type'] == "image/gif" || $arrFile['type'] == "image/jpeg" || $arrFile['type'] == "image/jpg" || $arrFile['type'] == "image/png") {
-                                if($arrFile['size'] > $intFilsize) {
-                                    $bolFileSizesStatus = false;
-                                }
-                        	} else {
-                        		//other File
-                        	}
-                        }
-
-                	} else {
-                		$bolFileSizesStatus = true;
-                	}
-                	
                     $objEntry = new MediaDirectoryEntry($this->moduleName);     
                     $strStatus = $objEntry->saveEntry($_POST, intval($_POST['entryId']));  
                 	
@@ -844,8 +852,9 @@ class MediaDirectory extends MediaDirectoryLibrary
                 }
             }
 
-            if(!$bolFileSizesStatus) {
+            if (!empty($_SESSION[$this->moduleNameLC]) && empty($_SESSION[$this->moduleNameLC]['bolFileSizesStatus'])) {
                 $strFileMessage = '<div class="'.$this->moduleNameLC.'FileErrorMessage">'.$_ARRAYLANG['TXT_MEDIADIR_IMAGE_ERROR_MESSAGE'].'</div>';
+                unset($_SESSION[$this->moduleNameLC]['bolFileSizesStatus']);
             } else {
             	$strFileMessage = '';
             }

@@ -1,10 +1,35 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * CSV Import
- * @author Comvation Development Team <info@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
@@ -13,9 +38,9 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * CSV Import
- * @author Comvation Development Team <info@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
@@ -113,11 +138,17 @@ class CsvImport
         return $content;
     }
 
-
-    function getFilefieldMenuOptions()
+    /**
+     * Get the file field menu options
+     *
+     * @param string $file file name with path
+     *
+     * @return string
+     */
+    function getFilefieldMenuOptions($file)
     {
         $csv_source = new CsvBv(
-            $_FILES['CSVfile']['tmp_name'],
+            $file,
             CsvImport::$separator, CsvImport::$delimiter, CsvImport::$escapor
         );
         $csv_source->SkipEmptyRows(true);
@@ -151,11 +182,17 @@ class CsvImport
         return $strOptions;
     }
 
-
-    function GetFileContent()
+    /**
+     * Get the file content from the csv file
+     *
+     * @param string $file file name with path
+     *
+     * @return array
+     */
+    function GetFileContent($file)
     {
         $csv_source = new CsvBv(
-            $_FILES['importfile']['tmp_name'],
+            $file,
             CsvImport::$separator, CsvImport::$delimiter, CsvImport::$escapor
         );
         $csv_source->SkipEmptyRows(true);
@@ -199,7 +236,7 @@ class CsvImport
      *                                  or null to ignore it (default)
      * @return  integer                 The ID of the ShopCategory,
      *                                  or 0 on failure.
-     * @author  Unknown <info@comvation.com> (Original author)
+     * @author  Unknown <info@cloudrexx.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
     static function getCategoryId($catName, $catParent=null)
@@ -219,7 +256,7 @@ class CsvImport
      * is inserted and its ID returned instead.
      * @static
      * @return  integer     The ShopCategory, or 0 on failure
-     * @author  Unknown <info@comvation.com> (Original author)
+     * @author  Unknown <info@cloudrexx.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Added creation of default ShopCategory, made static)
      */
     static function GetFirstCat()
@@ -238,7 +275,7 @@ class CsvImport
      * @param   integer     $catParent  The parent ShopCategory ID
      * @return  integer                 The ID of the new ShopCategory,
      *                                  or 0 on failure.
-     * @author  Unknown <info@comvation.com> (Original author)
+     * @author  Unknown <info@cloudrexx.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
     static function InsertNewCat($catName, $catParent)

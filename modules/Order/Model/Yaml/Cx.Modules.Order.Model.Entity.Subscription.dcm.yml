@@ -59,6 +59,7 @@ Cx\Modules\Order\Model\Entity\Subscription:
       inversedBy: subscriptions
       joinColumn:
         name: order_id
+        nullable: false
         referencedColumnName: id
         cascade: [remove]
     product:

@@ -1,12 +1,38 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Manages settings stored in the database or file system
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @author      Manish Thakur <manishthakur@cdnsol.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
  */
@@ -18,11 +44,11 @@ namespace Cx\Core\Setting\Controller;
  *
  * Before trying to access a modules' settings, *DON'T* forget to call
  * {@see Setting::init()} before calling getValue() for the first time!
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @author      Manish Thakur <manishthakur@cdnsol.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
  */
@@ -34,11 +60,11 @@ class SettingException extends \Exception {}
  *
  * Before trying to access a modules' settings, *DON'T* forget to call
  * {@see Setting::init()} before calling getValue() for the first time!
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @author      Manish Thakur <manishthakur@cdnsol.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
  */
@@ -55,6 +81,7 @@ class Setting{
      * See {@see show()} for examples on how to extend these.
      */
     const TYPE_DROPDOWN = 'dropdown';
+    const TYPE_DROPDOWN_MULTISELECT = 'dropdown_multiselect';
     const TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE = 'dropdown_user_custom_attribute';
     const TYPE_DROPDOWN_USERGROUP = 'dropdown_usergroup';
     const TYPE_WYSIWYG = 'wysiwyg';
@@ -567,25 +594,33 @@ class Setting{
             }
 
 //DBG::log("Value: $value -> align $value_align");
+            $isMultiSelect = false;
             switch ($type) {
-              // Dropdown menu
+              //Multiselect dropdown/Dropdown menu
+              case self::TYPE_DROPDOWN_MULTISELECT:
+                  $isMultiSelect = true;
               case self::TYPE_DROPDOWN:
-                $matches = null;
+                $matches   = null;
+                $arrValues = $arrSetting['values'];
                 if (preg_match('/^\{src:([a-z0-9_\\\:]+)\(\)\}$/i', $arrSetting['values'], $matches)) {
-                    $arrValues = self::splitValues(call_user_func($matches[1]));
-                } else {
-                    $arrValues = self::splitValues($arrSetting['values']);
+                    $arrValues = call_user_func($matches[1]);
                 }
-//DBG::log("Values: ".var_export($arrValues, true));
-                $element = \Html::getSelect(
-                    $name, $arrValues, $value,
-                    '', '',
-                    'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;'.
-                    (   isset ($arrValues[$value])
-                     && is_numeric($arrValues[$value])
-                        ? 'text-align: right;' : '').
-                    '"'.
-                    ($readOnly ? \Html::ATTRIBUTE_DISABLED : ''));
+                if (is_string($arrValues)) {
+                    $arrValues = self::splitValues($arrValues);
+                }
+                $elementName   = $isMultiSelect ? $name.'[]' : $name;
+                $value         = $isMultiSelect ? self::splitValues($value) : $value;
+                $elementValue  = is_array($value) ? array_flip($value) : $value;
+                $elementAttr   = $isMultiSelect ? ' multiple class="chzn-select"' : '';
+                $element       = \Html::getSelect(
+                                    $elementName, $arrValues, $elementValue,
+                                    '', '',
+                                    'style="width: ' . self::DEFAULT_INPUT_WIDTH . 'px;' .
+                                    (   !$isMultiSelect
+                                     && isset ($arrValues[$value])
+                                     && is_numeric($arrValues[$value])
+                                        ? 'text-align: right;' : '') . '"' .
+                                    ($readOnly ? \Html::ATTRIBUTE_DISABLED : '') . $elementAttr);
                 break;
               case self::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE:
                 $element = \Html::getSelect(
@@ -902,6 +937,8 @@ class Setting{
                     break;
                   case self::TYPE_CHECKBOX:
                       break;
+                  case self::TYPE_DROPDOWN_MULTISELECT:
+                      $value = array_flip($value);
                   case self::TYPE_CHECKBOXGROUP:
                     $value = (is_array($value)
                         ? join(',', array_keys($value))

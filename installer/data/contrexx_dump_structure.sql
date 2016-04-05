@@ -1027,8 +1027,9 @@ CREATE TABLE `contrexx_module_crm_company_size` (
   `company_size` varchar(100) NOT NULL,
   `sorting` int(11) NOT NULL,
   `status` tinyint(4) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB ;
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `company_size` (`company_size`)
+) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_crm_contacts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` varchar(256) DEFAULT NULL,
@@ -1328,8 +1329,8 @@ CREATE TABLE `contrexx_module_data_messages_lang` (
   `image` varchar(250) NOT NULL DEFAULT '',
   `thumbnail` varchar(250) NOT NULL,
   `thumbnail_type` enum('original','thumbnail') NOT NULL DEFAULT 'original',
-  `thumbnail_width` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `thumbnail_height` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `thumbnail_width` int(11) unsigned NOT NULL DEFAULT '0',
+  `thumbnail_height` int(11) unsigned NOT NULL DEFAULT '0',
   `attachment` varchar(255) NOT NULL DEFAULT '',
   `attachment_description` varchar(255) NOT NULL DEFAULT '',
   `mode` set('normal','forward') NOT NULL DEFAULT 'normal',
@@ -2415,7 +2416,7 @@ CREATE TABLE `contrexx_module_mediadir_forms` (
   `use_level` int(1) NOT NULL,
   `use_category` int(1) NOT NULL,
   `use_ready_to_confirm` int(1) NOT NULL,
-  `entries_per_page` int(7) NOT NULL,
+  `entries_per_page` int(7) NOT NULL DEFAULT '0',
   `cmd` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
@@ -3524,13 +3525,6 @@ CREATE TABLE `contrexx_sessions` (
   PRIMARY KEY (`sessionid`),
   KEY `LastUpdated` (`lastupdated`)
 ) ENGINE=InnoDB;
-CREATE TABLE `contrexx_settings` (
-  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `setname` varchar(250) NOT NULL DEFAULT '',
-  `setvalue` text NOT NULL,
-  `setmodule` tinyint(2) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`setid`)
-) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_settings_image` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,

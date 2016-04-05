@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Data
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_data
  */
 namespace Cx\Modules\Data\Controller;
@@ -14,10 +39,10 @@ $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT'] = "Anhang herunterladen";
 
 /**
  * DataAdmin
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_data
  */
 class Data extends \Cx\Modules\Data\Controller\DataLibrary
@@ -82,7 +107,7 @@ class Data extends \Cx\Modules\Data\Controller\DataLibrary
     function showSearch($keyword)
     {
         global $objDatabase, $_LANGID, $_ARRAYLANG;
-
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if (   !empty($keyword)
             && ($objResult = $objDatabase->Execute("
                 SELECT tblM.message_id, tblL.subject, tblL.content,
@@ -112,8 +137,8 @@ class Data extends \Cx\Modules\Data\Controller\DataLibrary
                         } else {
                             $image = "<img src=\"".$objResult->fields['thumbnail']."\" alt=\"\" border=\"1\" style=\"float: left; width: 80px;\" />";
                         }
-                    } elseif (file_exists(ASCMS_DATA_IMAGES_PATH.'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image']))) {
-                        $image = "<img src=\"".ASCMS_DATA_IMAGES_WEB_PATH.'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image'])."\" alt=\"\" border=\"1\" style=\"float: left; width:100px;\"/>";
+                    } elseif (file_exists($cx->getWebsiteImagesDataPath() . '/' . $objResult->fields['message_id'] . '_' . $_LANGID . '_' . basename($objResult->fields['image']))) {
+                        $image = "<img src=\"".$cx->getWebsiteImagesDataWebPath().'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image'])."\" alt=\"\" border=\"1\" style=\"float: left; width:100px;\"/>";
                     } elseif (file_exists(
                         ASCMS_PATH.
                         \ImageManager::getThumbnailFilename(
