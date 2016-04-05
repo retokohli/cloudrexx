@@ -851,16 +851,7 @@ class MarketManager extends MarketLibrary
         ));
 
         if (isset($_REQUEST['id'])) {
-            $specFields = '';
-            $specFieldCount = $objDatabase->Execute("SELECT COUNT(*) AS `count` FROM `" . DBPREFIX . "module_market_spez_fields`");
-            $specFieldCount = $specFieldCount->fields['count'];
-            for ($i = 1; $i <= $specFieldCount; ++$i) {
-                if ($i == $specFieldCount) {
-                    $specFields .= 'spez_field_' . $i;
-                    continue;
-                }
-                $specFields .= 'spez_field_' . $i . ', ';
-            }
+            $specFields = $this->getSpecFieldsQueryPart($objDatabase);
             $entryId = $_REQUEST['id'];
             $objResult = $objDatabase->Execute('SELECT type, title, color, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, ' . $specFields . ' FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
             if ($objResult !== false) {
@@ -1037,7 +1028,7 @@ class MarketManager extends MarketLibrary
                                       userid='".contrexx_addslashes($_POST['userid'])."',
                                       name='".contrexx_addslashes($_POST['name'])."',
                                       email='".contrexx_addslashes($_POST['email'])."',
-                                      " . $specFields . "
+                                      " . $specFields . ",
                                       userdetails='".contrexx_addslashes($_POST['userdetails'])."'
                                       WHERE id='".intval($_POST['id'])."'");
 

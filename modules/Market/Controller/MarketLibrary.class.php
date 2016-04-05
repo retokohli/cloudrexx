@@ -48,6 +48,11 @@ namespace Cx\Modules\Market\Controller;
  */
 class MarketLibrary
 {
+    /**
+     * @var array specialFields
+     * @access protected
+     */
+    protected $specialFields = array();
 
     function getCategories()
     {
@@ -213,7 +218,7 @@ class MarketLibrary
                                   name='".contrexx_addslashes($_POST['name'])."',
                                   email='".contrexx_addslashes($_POST['email'])."',
                                   userdetails='".contrexx_addslashes($_POST['userdetails'])."', ".
-                                  $specFields."
+                                  $specFields.",
                                   regkey='".$key."',
                                   status='".$status."'");
 
@@ -588,21 +593,107 @@ class MarketLibrary
     }
 
     /**
-     * Get the string to insert or update special fields
-     * @param $dbCon    \ADOConnection  The database connection
-     * @param $data     array           The POST data
+     * Get the string to select, insert, update or compare special fields
+     * without a leading or trailing decimal point
+     *
+     * In case of comparison the chaining operator will be added in front of
+     * every special field
+     * @param \ADOConnection    $dbCon              The database connection
+     * @param array             $data               The data to insert or
+     *                                              update the entry
+     * @param string            $comparator         Relational operator
+     *                                              i.e. LIKE
+     * @param string            $compareValue       Value to use with relational
+     *                                              operator
+     * @param string            $chainingOperator   Operator to chain
+     *                                              comparisons i.e. OR
      * @return string
      */
-    protected function getSpecFieldsQueryPart($dbCon, $data)
+    protected function getSpecFieldsQueryPart($dbCon, $data = null, $comparator = '', $compareValue = '', $chainingOperator = '')
     {
-        $specFields = '';
-        $specFieldCount = $dbCon->Execute("SELECT COUNT(*) AS `count` FROM `" . DBPREFIX . "module_market_spez_fields`");
-        $specFieldCount = $specFieldCount->fields['count'];
-        for ($i = 1; $i <= $specFieldCount; ++$i) {
-            $specFields .= 'spez_field_' . $i . '=\'' . contrexx_addslashes($data['spez_' . $i]) . '\', ';
+        $specialFields = '';
+        // get amount of special fields
+        $specialFieldCount = count($this->specialFields);
+        if (empty($specialFieldCount)) {
+            $specialFieldCount = $dbCon->Execute("SELECT COUNT(*) AS `count` FROM `" . DBPREFIX . "module_market_spez_fields` WHERE `lang_id` = 1");
+            $specialFieldCount = $specialFieldCount->fields['count'];
+        }
+        for ($i = 1; $i <= $specialFieldCount; ++$i) {
+            $value = '';
+            // Data needs to  be updated or inserted
+            if (!empty($data)) {
+                $value = '=\'' . contrexx_addslashes($data['spez_' . $i]) . '\'';
+            }
+            // Special fields are used in WHERE or similar comparison statements
+            if (
+                 empty($data) &&
+                !empty($comparator) &&
+                !empty($compareValue) &&
+                !empty($chainingOperator)
+            ) {
+                $value = ' ' . $comparator . ' ' . $compareValue;
+            }
+            // Check if it's the last iteration
+            if ($i == $specialFieldCount) {
+                $specialFields .= $chainingOperator . 'spez_field_' . $i . $value;
+                continue;
+            }
+            $specialFields .= $chainingOperator . 'spez_field_' . $i . $value . ', ';
         }
 
-        return $specFields;
+        return $specialFields;
+    }
+
+    /**
+     * Get an array with placeholders and their respective values for parsing
+     * the special fields
+     *
+     * Array structure:
+     * array() {
+     *      'TXT_MARKET_SPEZ_FIELD_[SPEZ_FIELD_ID] => name stored in db,
+     *      'MARKET_SPEZ_FIELD_[SPEZ_FIELD_ID] => value stored in entry,
+     *      [...]
+     * }
+     * @param $dbCon    \ADOConnection  Database connection
+     * @param $entries  array           entry|entries which have special field
+     *                                  values
+     * @param $id       int             id of entry which special values shall
+     *                                  be parsed
+     * @param string    $type           Which placeholders shall be returned
+     *                                  either txt, val or both defaults to both
+     * @return array
+     */
+    protected function getSpecFields($dbCon, $entries, $id = 0, $type = 'both') {
+        // get the spez fields
+        if (empty($this->specialFields)) {
+            $objResult = $dbCon->Execute("SELECT id, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1'");
+            if ($objResult !== false) {
+                while(!$objResult->EOF) {
+                    $this->specialFields[$objResult->fields['id']] = $objResult->fields['value'];
+                    $objResult->MoveNext();
+                }
+            }
+        }
+
+        $specialVariables = array();
+        if (isset($this->specialFields)) {
+            foreach ($this->specialFields as $specialFieldId => $value) {
+                if ($type == 'both' || $type = 'txt') {
+                    $txtKey = 'TXT_MARKET_SPEZ_FIELD_' . $specialFieldId;
+                    $specialVariables[$txtKey] = $value;
+                }
+                if ($type == 'both' || $type == 'val') {
+                    $valueKey = 'MARKET_SPEZ_FIELD_' . $specialFieldId;
+                    $entryKey = 'spez_field_' . $specialFieldId;
+                    if (count($entries) > 1 || !empty($id)) {
+                        $specialVariables[$valueKey] = $entries[$id][$entryKey];
+                    } else {
+                        $specialVariables[$valueKey] = $entries[$entryKey];
+                    }
+                }
+            }
+        }
+        return $specialVariables;
     }
 
 }
