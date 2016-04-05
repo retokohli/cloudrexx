@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Data
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Stefan Heinemann <sh@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_data
  */
 
@@ -15,10 +40,10 @@ namespace Cx\Modules\Data\Controller;
  *
  * This class parses the Placeholder for Data in the content and layout
  * pages.
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Stefan Heinemann <sh@comvation.com>
  * @version        $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_data
  *
  */
@@ -189,29 +214,7 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
             if ($this->categoryMatches($id, $entry['categories'][$_LANGID])) {
 
                 $translation = $entry['translation'][$_LANGID];
-                $image = '';
-                if (!empty($translation['thumbnail'])) {
-                    if ($translation['thumbnail_type'] == 'original') {
-                        $image = $translation['thumbnail'];
-                    } else {
-                        $image = \ImageManager::getThumbnailFilename(
-                            $translation['thumbnail']
-                        );
-                    }
-                } else {
-                    $path = \ImageManager::getThumbnailFilename(
-                        $translation['image']
-                    );
-                    if (file_exists(ASCMS_PATH.$path)) {
-                        $image = $path;
-                    }
-                }
-
-                if (!empty($image)) {
-                    $image = '<img src='.$image.' alt=\"\" style=\"float: left\" />';
-                } else {
-                    $image = '';
-                }
+                $image = $this->getThumbnailImage($entryId, $translation['image'], $translation['thumbnail'], $translation['thumbnail_type']);
                 
                 if ($entry['mode'] == "normal") {
                     $href = $url."&amp;id=".$entryId;
@@ -272,30 +275,7 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         $this->_objTpl->setTemplate($this->adjustTemplatePlaceholders($this->_arrSettings['data_template_entry']));
 
         $translation = $entry['translation'][$_LANGID];
-        $image = '';
-        if (!empty($translation['thumbnail'])) {
-            if ($translation['thumbnail_type'] == 'original') {
-                $image = $translation['thumbnail'];
-            } else {
-                $image = \ImageManager::getThumbnailFilename(
-                    $translation['thumbnail']
-                );
-            }
-        } else {
-            $path = \ImageManager::getThumbnailFilename(
-                $translation['image']
-            );
-            if (file_exists(ASCMS_PATH.$path)) {
-                $image = $path;
-            }
-        }
-
-        if (!empty($image)) {
-            $image = '<img src='.$image.' alt=\"\" style=\"float: left\" />';
-        } else {
-            $image = '';
-        }
-
+        $image = $this->getThumbnailImage($id, $translation['image'], $translation['thumbnail'], $translation['thumbnail_type']);
         $lang = $_LANGID;
         $width = $this->_arrSettings['data_shadowbox_width'];
         $height = $this->_arrSettings['data_shadowbox_height'];
@@ -334,6 +314,59 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
     function adjustTemplatePlaceholders($str)
     {
         return preg_replace('/\[\[([A-Z_]+)\]\]/', '{$1}', $str);
+    }
+
+    /**
+     * Get the thumbnail image
+     *
+     * @param integer $id             entry id
+     * @param string  $titleImage     title image
+     * @param string  $thumbnailImage thumbnail image
+     * @param string  $thumbType      thumbnail type
+     *
+     * @return string
+     */
+    function getThumbnailImage($id, $titleImage, $thumbnailImage, $thumbType)
+    {
+        global $_LANGID;
+
+        $image = '';
+
+        if (empty($id)) {
+            return $image;
+        }
+
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $websitePath = $cx->getWebsitePath();
+
+        if (!empty($thumbnailImage)) {
+            $thumbnailImagePath = \ImageManager::getThumbnailFilename(
+                $thumbnailImage
+            );
+
+            if ($thumbType == 'original') {
+                $image = $thumbnailImage;
+            } elseif (file_exists($websitePath . $thumbnailImagePath)){
+                $image = $thumbnailImagePath;
+            } else {
+                $image = $thumbnailImage;
+            }
+        } else {
+            $path = \ImageManager::getThumbnailFilename(
+                    $cx->getWebsiteImagesDataWebPath() . '/' . $id . '_' . $_LANGID . '_' . basename($titleImage)
+            );
+            if (file_exists($websitePath . '/' . $path)) {
+                $image = $path;
+            } elseif (file_exists($websitePath . \ImageManager::getThumbnailFilename($titleImage))) {
+                $image = \ImageManager::getThumbnailFilename($titleImage);
+            } else {
+                $image = $titleImage;
+            }
+        }
+
+        return !empty($image) && file_exists($websitePath. '/' . $image)
+                ? '<img src="'.$image.'" alt= "" />'
+                : '';
     }
 
 }

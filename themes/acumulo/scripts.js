@@ -1,5 +1,5 @@
 /* START CUSTOM JQUERY =================================================================== */
-jQuery(document).ready(function(){
+$jq(document).ready(function(){
 /*----------------------------------*/
 /*		    Navigation
 /*----------------------------------*/
@@ -13,80 +13,80 @@ jQuery(document).ready(function(){
 		disableHI: true,
 		animation: {opacity:'show', height:'show'}
 	});
-	var $responsive_nav = jQuery("<select />");	
-	jQuery("<option />", {"selected": "selected", "value": "", "text": "Select a page"}).appendTo($responsive_nav);
+	var $responsive_nav = $jq("<select />");	
+	$jq("<option />", {"selected": "selected", "value": "", "text": "Select a page"}).appendTo($responsive_nav);
 	$responsive_nav.appendTo(".navigation-wrapper");
-	jQuery(".navigation-wrapper ul li a").each(function(){
-		var nav_url = jQuery(this).attr("href");
-		var nav_text = jQuery(this).text();
-		if (jQuery(this).parents("li").length == 2) { nav_text = '- ' + nav_text; }
-		if (jQuery(this).parents("li").length == 3) { nav_text = "-- " + nav_text; }
-		if (jQuery(this).parents("li").length > 3) { nav_text = "--- " + nav_text; }
-		jQuery("<option />", {"value": nav_url, "text": nav_text}).appendTo($responsive_nav)
+	$jq(".navigation-wrapper ul li a").each(function(){
+		var nav_url = $jq(this).attr("href");
+		var nav_text = $jq(this).text();
+		if ($jq(this).parents("li").length == 2) { nav_text = '- ' + nav_text; }
+		if ($jq(this).parents("li").length == 3) { nav_text = "-- " + nav_text; }
+		if ($jq(this).parents("li").length > 3) { nav_text = "--- " + nav_text; }
+		$jq("<option />", {"value": nav_url, "text": nav_text}).appendTo($responsive_nav)
 	})
 	field_id = ".navigation-wrapper select";
-	jQuery(field_id).change(function()
+	$jq(field_id).change(function()
 	{
-	   value = jQuery(this).attr('value');
+	   value = $jq(this).attr('value');
 	   window.location = value;
 	});
 /*----------------------------------*/
 /*		   Image overlays
 /*----------------------------------*/
-	jQuery(".lightbox-photo .icon").css({ opacity: 0 });
-	jQuery(".lightbox-photo .icon").css({ top: -100 });
-	jQuery('.lightbox-photo a').bind('mouseenter',function(){
-		var $ele = jQuery(this);
+	$jq(".lightbox-photo .icon").css({ opacity: 0 });
+	$jq(".lightbox-photo .icon").css({ top: -100 });
+	$jq('.lightbox-photo a').bind('mouseenter',function(){
+		var $ele = $jq(this);
 			// portfolio icon
 		$ele.find('.icon').stop(true).animate({ 'opacity': 1, 'top':'50%' }, 300).andSelf()
 			.find('img').stop(true).animate({ 'opacity': 0 }, 300).andSelf()
 	}).bind('mouseleave',function(){
-		var $ele = jQuery(this);
+		var $ele = $jq(this);
 			// portfolio icon	
 		$ele.find('.icon').stop(true).animate({ 'opacity': 0, 'top':'-100px' }, 200).andSelf()
 			.find('img').stop(true).animate({ 'opacity': 1 }, 300).andSelf()
 	});
-	jQuery('.lightbox-content-photo a').bind('mouseenter',function(){
-		var $ele = jQuery(this);
+	$jq('.lightbox-content-photo a').bind('mouseenter',function(){
+		var $ele = $jq(this);
 			// portfolio icon
 		$ele.find('img').stop(true).animate({ 'opacity': 0.5 }, 300).andSelf()
 	}).bind('mouseleave',function(){
-		var $ele = jQuery(this);
+		var $ele = $jq(this);
 			// portfolio icon	
 		$ele.find('img').stop(true).animate({ 'opacity': 1 }, 300).andSelf()
 	});
 // For latest section and portfolio items
-	jQuery(".item-hover .hlp-description, .item-hover .portfolio-item-description").css({ opacity: 0 });
-	jQuery(".item-hover .hlp-description, .item-hover .portfolio-item-description").css({ top: -100 });
-	jQuery('.item-hover').bind('mouseenter',function(){
-		var $ele = jQuery(this);
+	$jq(".item-hover .hlp-description, .item-hover .portfolio-item-description").css({ opacity: 0 });
+	$jq(".item-hover .hlp-description, .item-hover .portfolio-item-description").css({ top: -100 });
+	$jq('.item-hover').bind('mouseenter',function(){
+		var $ele = $jq(this);
 			// portfolio description
 		$ele.find('.hlp-description, .portfolio-item-description').stop(true).animate({ 'opacity': 1, 'top':'0px' }, 300).andSelf()
 	}).bind('mouseleave',function(){
-		var $ele = jQuery(this);
+		var $ele = $jq(this);
 			// portfolio description	
 		$ele.find('.hlp-description, .portfolio-item-description').stop(true).animate({ 'opacity': 0, 'top':'-100px' }, 200).andSelf()
 	});
 /*----------------------------------*/
 /*	     jQuery UI Tools
 /*----------------------------------*/
-//	jQuery(".accordion").accordion ({
+//	$jq(".accordion").accordion ({
 //		header: "h3"
 //	});
-	jQuery(".toggle div").hide(); // hide div on default
-	jQuery(".toggle h3").click(function(){ // set the trigger
-		jQuery(this).toggleClass("active").next().slideToggle(300); // add class active and toggle speed
+	$jq(".toggle div").hide(); // hide div on default
+	$jq(".toggle h3").click(function(){ // set the trigger
+		$jq(this).toggleClass("active").next().slideToggle(300); // add class active and toggle speed
 		return false;
 	});
 	$jq(".tabs").tabs({ fx: { opacity: 'show' } });
 /*----------------------------------*/
 /*		  FitVids plugin
 /*----------------------------------*/
-	jQuery(".container").fitVids();
+	$jq(".container").fitVids();
 /*----------------------------------*/
 /*		  Content Slider
 /*----------------------------------*/
-	jQuery('.content-slider').carousel({
+	$jq('.content-slider').carousel({
 		nextSlide : '.next',
 		prevSlide : '.prev',
 		addNav : false
@@ -94,23 +94,23 @@ jQuery(document).ready(function(){
 /*----------------------------------*/
 /*		     Tooltip
 /*----------------------------------*/
-	jQuery('.socials ul li').mouseenter(function(){
-		jQuery(this).find('.tooltip').stop().fadeIn();
+	$jq('.socials ul li').mouseenter(function(){
+		$jq(this).find('.tooltip').stop().fadeIn();
 	});
-	jQuery('.socials ul li').mouseleave(function(){
-		jQuery(this).find('.tooltip').stop().fadeOut();
+	$jq('.socials ul li').mouseleave(function(){
+		$jq(this).find('.tooltip').stop().fadeOut();
 	});
 /*----------------------------------*/
 /*		    Scroll To Top
 /*----------------------------------*/
-	jQuery('.scrollup').click(function(){
-        jQuery("html, body").animate({ scrollTop: 0 }, 600);
+	$jq('.scrollup').click(function(){
+        $jq("html, body").animate({ scrollTop: 0 }, 600);
         return false;
     });
 /*----------------------------------*/
 /*		    Flickr Feed
 /*----------------------------------*/
-	jQuery('#flickr_badges ul').jflickrfeed({
+	$jq('#flickr_badges ul').jflickrfeed({
 		limit: 6,
 		qstrings: {
 			id: '67664457@N06'
@@ -122,40 +122,40 @@ jQuery(document).ready(function(){
 			'</a>' +
 		'</li>'
 	}, function(data) {
-		jQuery("a[data-rel^='prettyPhoto']").prettyPhoto({
+		$jq("a[data-rel^='prettyPhoto']").prettyPhoto({
 			overlay_gallery: false
 		});
 	});
 /*----------------------------------*/
 /*		    First Word Wrap
 /*----------------------------------*/
-	jQuery('h6').each(function(index) {
-		var firstWord = jQuery(this).text().split(' ')[0];	
+	$jq('h6').each(function(index) {
+		var firstWord = $jq(this).text().split(' ')[0];	
 		var replaceWord = "<span class='first-word'>" + firstWord + "</span>";	
-		var newString = jQuery(this).html().replace(firstWord, replaceWord);
-		jQuery(this).html(newString);
+		var newString = $jq(this).html().replace(firstWord, replaceWord);
+		$jq(this).html(newString);
 	});
 /*----------------------------------*/
 /*		   Responsive table
 /*----------------------------------*/
 	var switched = false;
 	var updateTables = function() {
-	if ((jQuery(window).width() < 959) && !switched ){
+	if (($jq(window).width() < 959) && !switched ){
 		switched = true;
-		jQuery("table.responsive-table").each(function(i, element) {
+		$jq("table.responsive-table").each(function(i, element) {
 			splitTable($(element));
 		});
 		return true;
 	}
-	else if (switched && (jQuery(window).width() > 959)) {
+	else if (switched && ($jq(window).width() > 959)) {
 		switched = false;
-		jQuery("table.responsive-table").each(function(i, element) {
+		$jq("table.responsive-table").each(function(i, element) {
 			unsplitTable($(element));
 		});
 	}
 	};
-	jQuery(window).load(updateTables);
-	jQuery(window).bind("resize", updateTables);
+	$jq(window).load(updateTables);
+	$jq(window).bind("resize", updateTables);
 	function splitTable(original)
 	{
 		original.wrap("<div class='table-wrapper' />");
@@ -176,21 +176,21 @@ jQuery(document).ready(function(){
 /*----------------------------------*/
 	// BEGIN isotope filtering
 	// filter items when filter link is clicked
-	jQuery('#portfolio-filters li').click(function(){
-	jQuery('#portfolio-filters li').removeClass('current');
-		jQuery(this).addClass('current');
-			var selector = jQuery(this).find('a').attr('data-filter');
+	$jq('#portfolio-filters li').click(function(){
+	$jq('#portfolio-filters li').removeClass('current');
+		$jq(this).addClass('current');
+			var selector = $jq(this).find('a').attr('data-filter');
 			$container.isotope({ filter: selector });
 		return false;
 	});
-	jQuery(".item-hover .portfolio-item-description").css({ opacity: 0 });
-	jQuery(".item-hover .portfolio-item-description").css({ top: -100 });
-	jQuery('.item-hover').bind('mouseenter',function(){
-		var $ele = jQuery(this);
+	$jq(".item-hover .portfolio-item-description").css({ opacity: 0 });
+	$jq(".item-hover .portfolio-item-description").css({ top: -100 });
+	$jq('.item-hover').bind('mouseenter',function(){
+		var $ele = $jq(this);
 			// portfolio icon
 		$ele.find('.portfolio-item-description').stop(true).animate({ 'opacity': 1, 'top':'0px' }, 300).andSelf()
 	}).bind('mouseleave',function(){
-		var $ele = jQuery(this);
+		var $ele = $jq(this);
 			// portfolio icon	
 		$ele.find('.portfolio-item-description').stop(true).animate({ 'opacity': 0, 'top':'-100px' }, 200).andSelf()
 	});

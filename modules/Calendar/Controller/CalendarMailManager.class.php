@@ -1,23 +1,49 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Calendar Class Mail Manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx <info@cloudrexx.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_calendar
  */
 
 namespace Cx\Modules\Calendar\Controller;
 /**
  * CalendarMailManager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx <info@cloudrexx.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_calendar
  */
-class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary {
+class CalendarMailManager extends CalendarLibrary {
     /**
      * Mail list array
      * 
@@ -51,7 +77,7 @@ class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
      */
     function __construct()
     {
-        parent::getFrontendLanguages();
+        $this->getFrontendLanguages();
     }
     
     /**
@@ -230,13 +256,15 @@ class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
                 $regReplace    = array(      $regType,                 $regSalutation,                $regFirstname,                $regLastname,                $regMail);
             }
                                                                                                   
-            $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";            
-            $date       = date(parent::getDateFormat()." - H:i:s");       
-            
-            $eventTitle = $objEvent->title; 
-            $eventStart = $objEvent->all_day ? date(parent::getDateFormat(), $objEvent->startDate) : date(parent::getDateFormat()." (H:i:s)", $objEvent->startDate); 
-            $eventEnd   = $objEvent->all_day ? date(parent::getDateFormat(), $objEvent->endDate) : date(parent::getDateFormat()." (H:i:s)", $objEvent->endDate);
-            
+            $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";
+            $date       = $this->format2userDateTime(new \DateTime());
+            $startDate  = $objEvent->startDate;
+            $endDate    = $objEvent->endDate;
+
+            $eventTitle = $objEvent->title;
+            $eventStart = $objEvent->all_day ? $this->format2userDate($startDate) : $this->formatDateTime2user($startDate, $this->getDateFormat() . ' (H:i:s)');
+            $eventEnd   = $objEvent->all_day ? $this->format2userDate($endDate) : $this->formatDateTime2user($endDate, $this->getDateFormat() . ' (H:i:s)');
+
             $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
             
             $recipients = $this->getSendMailRecipients($actionId, $objEvent, $regId, $objRegistration);
@@ -256,9 +284,7 @@ class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
-            $objMail->AddReplyTo($_CONFIG['coreAdminEmail']); 
+            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
 
             foreach ($recipients as $mailAdress => $langId) {
                 if (!empty($mailAdress)) {
@@ -290,9 +316,9 @@ class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
                     if ($actionId == self::MAIL_NOTFY_NEW_APP && $objEvent->arrSettings['confirmFrontendEvents'] == 1) {
                         $eventLink = $domain."/cadmin/index.php?cmd={$this->moduleName}&act=modify_event&id={$objEvent->id}&confirm=1";
                     } else {
-                        $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate))->toString();
+                        $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate->getTimestamp()))->toString();
                     }            
-                    $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate))->toString();
+                    $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate->getTimestamp()))->toString();
 
                     $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $userNick, $userFirstname, $userLastname, $domain, $date);
 

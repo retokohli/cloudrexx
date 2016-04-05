@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Javascript
  *
  * @author      Stefan Heinemann <sh@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -14,8 +39,8 @@
  * Javascript
  *
  * @author      Stefan Heinemann <sh@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -54,7 +79,7 @@ class JS
     /**
      * Available JS libs
      * These JS files are per default available
-     * in every Contrexx CMS.
+     * in every Cloudrexx CMS.
      * The format is the following:
      * array(
      *      scriptname : array (
@@ -279,7 +304,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'jquery-tools', // depends on jquery
             ),
             'lazyDependencies' => array('jqueryui'),
-            //we insert the specialCode for the Contrexx-API later in getCode()
+            //we insert the specialCode for the Cloudrexx-API later in getCode()
         ),
         'jstree' => array(
             'jsfiles' => array(
@@ -410,23 +435,34 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         ),
         'mediabrowser' => array(
             'jsfiles' => array(
-                'lib/javascript/jquery/1.9.1/js/jquery.min.js',
-                'lib/plupload/js/moxie.min.js',
-                'lib/plupload/js/plupload.full.min.js',
-                'lib/javascript/angularjs/angular.js',
-                'lib/javascript/angularjs/angular-route.js',
-                'lib/javascript/angularjs/angular-animate.js',
+                'lib/javascript/jquery/2.0.3/js/jquery.min.js',
+                'lib/plupload/js/moxie.min.js?v=2',
+                'lib/plupload/js/plupload.full.min.js?v=2',
+                'lib/javascript/angularjs/angular.js?v=2',
+                'lib/javascript/angularjs/angular-route.js?v=2',
+                'lib/javascript/angularjs/angular-animate.js?v=2',
                 'lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js',
                 'lib/javascript/angularjs/ui-bootstrap-tpls-0.11.2.min.js',
                 'lib/javascript/bootbox.min.js'
             ),
             'cssfiles' => array(
-                'core_modules/MediaBrowser/View/Style/mediabrowser.css'
+                'core_modules/MediaBrowser/View/Style/MediaBrowser.css?v=2',
+                'core_modules/MediaBrowser/View/Style/Frontend.css?v=2'
             ),
-            'dependencies' => array('twitter-bootstrap' => '3.2.0', 'cx'),
+            'dependencies' => array(
+                'cx',
+                // Note: loading jQuery as a dependency does not work as it would
+                //       interfere with jQuery plugins
+                //'jquery'    => '^([^1]\..*|1\.[^0-8]*\..*)$', // jquery needs to be version 1.9.0 or higher
+            ),
             'specialcode' => 'if (typeof cx.variables.get(\'jquery\', \'mediabrowser\') == \'undefined\'){
     cx.variables.set({"jquery": jQuery.noConflict(true)},\'mediabrowser\');
 }'
+        ),
+        'intro.js' => array(
+            'jsfiles' => array(
+                'lib/javascript/intro/intro.min.js',
+            )
         ),
     );
 
@@ -492,16 +528,17 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 
     /**
      * Array holding certain scripts we do not want the user to include - we provide
-     * the version supplied with Contrexx instead.
+     * the version supplied with Cloudrexx instead.
      *
      * This was introduced to prevent the user from overriding the jQuery plugins included
-     * by the Contrexx javascript framework.
+     * by the Cloudrexx javascript framework.
      *
      * @see registerFromRegex()
      * @var array associative array ( '/regexstring/' => 'componentToIncludeInstead' )
      */
     protected static $alternatives = array(
-        '/^jquery([-_]\d\.\d(\.\d)?)?(\.custom)?(\.m(in|ax))?\.js$/i' => 'jquery'
+        '/^jquery([-_]\d\.\d(\.\d)?)?(\.custom)?(\.m(in|ax))?\.js$/i' => 'jquery',
+        '/^contrexxJs\.js$/i' => 'cx',
     );
 
     /**
@@ -563,8 +600,14 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         }
         self::$active[] = $name;
         if (!empty($data['dependencies']) && $dependencies) {
-            foreach ($data['dependencies'] as $dep) {
-                self::activate($dep);
+            foreach ($data['dependencies'] as $dep => $depVersion) {
+                if (is_string($dep)) {
+                    self::activateByVersion($dep, $depVersion, $name);
+                } else {
+                    // dependency does not specify a particular version of the library to load
+                    // -> $depVersion contains the library name
+                    self::activate($depVersion);
+                }
             }
         }
         if (isset($data['loadcallback']) && isset($options)) {
@@ -573,6 +616,80 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         return true;
     }
 
+    /**
+     * Activate a specific version of an available js file
+     *
+     * @static
+     * @param  string  $name Name of the library to load
+     * @param  string  $version Specific version of the library to load.
+     *                 Specified as 'x.z.y'. Also accepts PCRE wildchars.
+     * @param  string  $dependencyOf is the optional name of the library
+     *                 that triggered the loaded of the specific library version.
+     * @return bool     TRUE if specific version of the library has been loaded. FALSE on failure
+     */
+    public static function activateByVersion($name, $version, $dependencyOf = null) {
+        // abort in case the library is unknown
+        if (!isset(self::$available[$name])) {
+            return false;
+        }
+
+        // fetch the library meta data
+        $library = self::$available[$name];
+
+        // check if a matching library has already been loaded
+        $activatedLibraries = preg_grep('/^'.$name.'-version-/', self::$active);
+        // check if any of the already loaded libraries can be used as an alternativ
+        foreach ($activatedLibraries as $activatedLibrary) {
+            $activatedLibraryVersion = str_replace($name.'-version-', '', $activatedLibrary);
+            if (!preg_match('/'.$version.'/', $activatedLibraryVersion)) {
+                continue;
+            }
+
+            if ($name != 'jquery' || !$dependencyOf) {
+                return true;
+            }
+
+            $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
+            $customAvailableLibrary = $name.'-version-'.$activatedLibraryVersion;
+            self::$available[$customAvailableLibrary]['specialcode'] .= $libraryVersionData;
+
+            // trigger the activate again to push the library up in the dependency chain
+            self::activate($customAvailableLibrary);
+            return true;
+        }
+
+        // abort in case the library does not specify particular versions
+        if (!isset($library['versions'])) {
+            return false;
+        }
+
+        // try to load a matching version of the library
+        foreach ($library['versions'] as $libraryVersion => $libraryVersionData) {
+            if (!preg_match('/'.$version.'/', $libraryVersion)) {
+                continue;
+            }
+
+            // register specific version of the library
+            $customAvailableLibrary = $name.'-version-'.$libraryVersion;
+            if ($name == 'jquery') {
+                if ($dependencyOf) {
+                    $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$dependencyOf': jQuery.noConflict()}};";
+                } else {
+                    $libraryVersionData['specialcode'] = "cx.libs={{$name}:{'$libraryVersion': jQuery.noConflict()}};";
+                }
+                // we have to load cx again as we are using cx.libs in the specialcode
+                $libraryVersionData['dependencies'] = array('cx');
+            }
+            self::$available[$customAvailableLibrary] = $libraryVersionData;
+
+            // activate the specific version of the library
+            self::activate($customAvailableLibrary);
+            return true;
+        }
+
+        // no library by the specified version found
+        return false;
+    }
 
     /**
      * Deactivate a previously activated js file
@@ -755,7 +872,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 if (isset($data['makecallback'])) {
                     self::$data['makecallback']();
                 }
-                // Special case contrexx-API: fetch specialcode if activated
+                // Special case cloudrexx-API: fetch specialcode if activated
                 if ($name == 'cx') {
                     $jsScripts[] = self::makeSpecialCode(
                         array(ContrexxJavascript::getInstance()->initJs()));
@@ -767,7 +884,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         
         // if jquery is activated, do a noConflict
         if (array_search('jquery', self::$active) !== false) {
-        $jsScripts[] = self::makeSpecialCode('$J = cx.jQuery = jQuery.noConflict();');
+            $jsScripts[] = self::makeSpecialCode('if (typeof jQuery != "undefined") { jQuery.noConflict(); }');
         }
         $jsScripts[] = self::makeJSFiles(self::$templateJS);
         

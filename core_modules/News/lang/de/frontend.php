@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 $_ARRAYLANG['TXT_DATE'] = "Datum";
@@ -53,6 +79,7 @@ $_ARRAYLANG['TXT_NEWS_NAME'] = "Name";
 $_ARRAYLANG['TXT_NEWS_TITLE'] = "Titel";
 $_ARRAYLANG['TXT_NEWS_COMMENT'] = "Kommentar";
 $_ARRAYLANG['TXT_NEWS_ADD_COMMENT'] = "Kommentar hinzufügen";
+$_ARRAYLANG['TXT_NEWS_WRITE_COMMENT'] = "Kommentar schreiben";
 $_ARRAYLANG['TXT_NEWS_ADD'] = "Hinzufügen";
 $_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_SUBJECT'] = "Neuer Kommentar zur News Meldung \"%s\"";
 $_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_BODY'] = "Auf %1\$s wurde ein neuer Kommentar erfasst.\n\nNews Meldung: %2\$s\n\nErfasser: %3\$s\nTitel: %4\$s\nKommentar: %5\$s\n\n%6\$s-- \nDies ist eine automatisch generierte Nachricht";

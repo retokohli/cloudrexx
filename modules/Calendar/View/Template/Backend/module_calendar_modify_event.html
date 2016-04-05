@@ -286,7 +286,7 @@
         var exDates = {};
 
         $J.ajax({
-           url      : "index.php?cmd=JsonData&object=calendar&act=getExeceptionDates&recursive=true",
+           url      : cx.variables.get('cadminPath', 'contrexx') + "index.php?cmd=JsonData&object=calendar&act=getExeceptionDates&recursive=true",
            type     : "post",
            data     : "startDate="+$J( "#startDate" ).val()+"&endDate="+$J( "#endDate" ).val()+"&"+$J( "div#series input, div#series select" ).serialize(),
            dataType : "json",

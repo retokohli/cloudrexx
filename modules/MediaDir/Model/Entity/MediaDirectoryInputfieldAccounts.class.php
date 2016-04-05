@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media  Directory Inputfield Accounts Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
@@ -13,9 +38,9 @@ namespace Cx\Modules\MediaDir\Model\Entity;
 /**
  * Media  Directory Inputfield Accounts Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
@@ -23,7 +48,7 @@ class MediaDirectoryInputfieldAccounts extends \Cx\Modules\MediaDir\Controller\M
 {
     public $arrPlaceholders = array(
         'TXT_MEDIADIR_INPUTFIELD_NAME',
-        'MARKETPLACE_INPUTFIELD_VALUE'
+        'MEDIADIR_INPUTFIELD_VALUE'
     );
 
 
@@ -123,7 +148,7 @@ class MediaDirectoryInputfieldAccounts extends \Cx\Modules\MediaDir\Controller\M
                     //$strRefreshNewButton = '';
                     //$strStyle = 'style="overflow: auto; border: 1px solid #0A50A1; background-color: #ffffff; width: 298px; height: 200px; float: left; list-style: none; padding: 0px; margin: 0px 5px 0px 0px;"';
                 } else {
-                    $strAddNewButton = '<a rel="shadowbox['.$intId.'];height=500;width=650;options={onClose:new Function(\'refreshSelector_'.$intId.'(\\\''.$intId.'\\\', \\\''.$this->moduleNameLC.'Inputfield_deselected_'.$intId.'\\\', \\\''.$this->moduleNameLC.'Inputfield_'.$intId.'\\\',  \\\''.$_GET['section'].'\\\', \\\''.$_GET['cmd'].'\\\', \\\''.$intEntryId.'\\\')\')}" href="index.php?section=marketplace&amp;cmd=adduser"><img src="../core/Core/View/Media/icons/icon-user-add.png" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>';
+                    $strAddNewButton = '<a rel="shadowbox['.$intId.'];height=500;width=650;options={onClose:new Function(\'refreshSelector_'.$intId.'(\\\''.$intId.'\\\', \\\''.$this->moduleNameLC.'Inputfield_deselected_'.$intId.'\\\', \\\''.$this->moduleNameLC.'Inputfield_'.$intId.'\\\',  \\\''.$_GET['section'].'\\\', \\\''.$_GET['cmd'].'\\\', \\\''.$intEntryId.'\\\')\')}" href="index.php?section=mediadir&amp;cmd=adduser"><img src="../core/Core/View/Media/icons/icon-user-add.png" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>';
                     //$strRefreshNewButton = '<br /><a href="javascript:refreshSelector_'.$intId.'(\''.$intId.'\', \''.$this->moduleNameLC.'Inputfield_deselected_'.$intId.'\', \''.$this->moduleNameLC.'Inputfield_'.$intId.'\', \''.$_GET['section'].'\', \''.$_GET['cmd'].'\', \''.$intEntryId.'\');"><img src="../core/Core/View/Media/icons/refresh.gif" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_REFRESH'].'</a>';
                     //$strStyle = 'style="overflow: auto; float: left; list-style: none; padding: 0px; margin: 0px 5px 0px 0px;"';
                 }
@@ -424,7 +449,7 @@ EOF;
             }
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValueOutput;
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_CUSTOM'] = $strValueOutputCustom;
-            $arrContent[$this->moduleLangVar.'_INPUTFIELD_ADD_CLIENT'] = '<a rel="shadowbox;height=760;width=920"  href="index.php?section=marketplace&cmd=adduser">Add New User</a>';
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_ADD_CLIENT'] = '<a rel="shadowbox;height=760;width=920"  href="index.php?section=mediadir&cmd=adduser">Add New User</a>';
 
 
         } else {

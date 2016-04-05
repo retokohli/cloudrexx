@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_alias
  */
 $_ARRAYLANG['TXT_ALIAS_ALIASES'] = "SEO URL Aliases";
@@ -41,7 +67,7 @@ $_ARRAYLANG['TXT_ALIAS_NO_ALIASES_MSG'] = "\¡No hay alias definidos!";
 $_ARRAYLANG['TXT_ALIAS_REQUIREMENTS_DESC'] = "Usando alias, puede dar a una URL compleja como <b> www.yourdomain.com/index.php?page=84472 </ b> un aspecto m&aacute;s amigable. Con un alis, dicha URL aparecer&iacute;a como <b> www.yourdomain.com / servicios </ b>. Esto no s&oacute;lo hace que sea m&aacute;s legible, sino que adem&aacute; mejora el posicionamiento en buscadores. <br/> <br/> Nota: la administraci&oacute;n de Alias s&oacute;lo trabaja en un servidor <strong> Apache </ strong> con la extensi&oacute;n <strong> mod_rewrite </ strong> habilitada. <br /> Adem&aacute;s, el uso de archivos < strong>. htaccess </ strong> debe estar permitido.";
 $_ARRAYLANG['TXT_ALIAS_USE_ALIAS_ADMINISTRATION'] = "Utilice alias de administraci&oacute;n";
 $_ARRAYLANG['TXT_ALIAS_APACHE_MISSING'] = "Usted est&aacute; utilizando otro servidor web que no es Apache. La gesti&oacute;n de alias s&oacute;lo funciona con Apache, por lo que no puede usar alias en este servidor.";
-$_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Contrexx no pudo determinar si la opci&oacute;n <strong> mod_rewrite </ strong> est&aacute; activada. Por lo tanto, el alias de gesti&oacute;n no puede ser activado, ya que har&iacute;a que el sitio quedase inaccesible. <br/> <br/> Si est&aacute; seguro de que la opci&oacute;n <strong> mod_rewrite < / strong> est&aacute; disponible, puede activar el alias de gesti&oacute;n de forma manual. Para ello, cree un nuevo archivo llamado <strong>. .htaccess </ strong> en el directorio raiz de la p&aacute;gina web con el siguiente contenido: <br/> <div style=\"margin: 10px;\"> <code> RewriteEngine On </ code> </ div> La pr&oacute;xima vez que acceda a la gesti&oacute;n de alias, se activar&aacute; autom&aacute;ticamente.";
+$_ARRAYLANG['TXT_ALIAS_MOD_REWRITE_MISSING'] = "Cloudrexx no pudo determinar si la opci&oacute;n <strong> mod_rewrite </ strong> est&aacute; activada. Por lo tanto, el alias de gesti&oacute;n no puede ser activado, ya que har&iacute;a que el sitio quedase inaccesible. <br/> <br/> Si est&aacute; seguro de que la opci&oacute;n <strong> mod_rewrite < / strong> est&aacute; disponible, puede activar el alias de gesti&oacute;n de forma manual. Para ello, cree un nuevo archivo llamado <strong>. .htaccess </ strong> en el directorio raiz de la p&aacute;gina web con el siguiente contenido: <br/> <div style=\"margin: 10px;\"> <code> RewriteEngine On </ code> </ div> La pr&oacute;xima vez que acceda a la gesti&oacute;n de alias, se activar&aacute; autom&aacute;ticamente.";
 $_ARRAYLANG['TXT_ALIAS_HTACCESS_HINT'] = "Por favor, aseg&uacute;rese de que el servidor soporta archivos .htaccess";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_SUCCESSFULLY_APPLYED'] = "La configuraci&oacute;n ha sido cambiada con &eacute;xito. ";
 $_ARRAYLANG['TXT_ALIAS_CONFIG_FAILED_APPLY'] = "\¡Se ha producido un error al guardar la configuraci&oacute;n!";

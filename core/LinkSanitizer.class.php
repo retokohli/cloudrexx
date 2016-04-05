@@ -1,21 +1,46 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * LinkSanitizer
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  */
 
 /**
- * This class replaces any links from Contrexx < 3.0 on the fly.
+ * This class replaces any links from Cloudrexx < 3.0 on the fly.
  * Handles the [[NODE_<ID>_<LANGID>]] placeholders.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  */
 class LinkSanitizer {
@@ -70,6 +95,7 @@ class LinkSanitizer {
             $content = preg_replace_callback("/
                 (\<(?:a|form)[^>]*?\s+(?:href|action)\s*=\s*)
                 (['\"])
+                (?!\#)
                 ((?![a-zA-Z]+?:|\\\\).+?)
                 \\2
                 ([^>]*\>)
@@ -104,7 +130,18 @@ class LinkSanitizer {
                     $split = explode('=', $arg, 2);
                     $params[$split[0]] = $split[1];
                 }
-                if (isset($params['cmd'])) {
+                // frontend case
+                if (isset($params['section'])) {
+                    $cmd = '';
+                    if (isset($params['cmd'])) {
+                        $cmd = $params['cmd'];
+                        unset($params['cmd']);
+                    }
+                    $ret = \Cx\Core\Routing\Url::fromModuleAndCmd($params['section'], $cmd);
+                    unset($params['section']);
+                
+                // backend case
+                } else if (isset($params['cmd'])) {
                     $ret .= $params['cmd'];
                     unset($params['cmd']);
                     if (isset($params['act'])) {
@@ -185,6 +222,9 @@ class LinkSanitizer {
 
         if (!empty($_GET['preview']) && !isset($query['preview'])) {
             $query['preview'] = $_GET['preview'];
+        }
+        if (!empty($_GET['templateEditor']) && !isset($query['templateEditor'])) {
+            $query['templateEditor'] = $_GET['templateEditor'];
         }
         if ((isset($_GET['appview']) && ($_GET['appview'] == 1)) && !isset($query['appview'])) {
             $query['appview'] = $_GET['appview'];

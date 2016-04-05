@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lang
  */
 $_ARRAYLANG['TXT_CORE_SUBMIT'] = "Submit";
@@ -188,6 +214,7 @@ $_ARRAYLANG['TXT_ACCESS_USERNAME_ALREADY_USED'] = "The chosen username is alread
 $_ARRAYLANG['TXT_ACCESS_VISIT_WEBSITE'] = "visit website";
 $_ARRAYLANG['TXT_ACCESS_WEBSITE'] = "Website";
 $_ARRAYLANG['TXT_ACCESS_ZIP'] = "ZIP";
+$_ARRAYLANG['TXT_ACCESS_USER_CHOOSE_FILE'] = 'Choose file';
 $_ARRAYLANG['TXT_PARTNERS_MODULE'] = "Partners";
 $_ARRAYLANG['TXT_U2U_MODULE'] = "U2U messaging";
 $_ARRAYLANG['TXT_ACCESS_ADD_NEW_ENTRY'] = "Add new entry";
@@ -200,7 +227,7 @@ $_ARRAYLANG['TXT_AUCTION_TITLE'] = "Auctions";
 $_ARRAYLANG['TXT_MARKET_LATEST'] = "Latest Ads";
 $_ARRAYLANG['TXT_CORE_LAST_MODIFIED_PAGE'] = "Last modified";
 $_ARRAYLANG['TXT_ACCESS_PRIMARY_GROUP'] = "Primary User Group";
-$_ARRAYLANG['TXT_CSRF_TITLE'] = "Contrexx security information";
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Cloudrexx security information";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = 'You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <a href="%1$s">save changes</a></li><li>after clicking a link inside an e-mail message or outside the administration interface, click <a href="%2$s">discard changes</a></li></ul>';
 $_ARRAYLANG['TXT_CSRF_ABORT'] = "discard changes";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "save changes";
@@ -286,3 +313,4 @@ $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "The file extension is not allow
 $_ARRAYLANG['TXT_ACCESS_UNKNOWN'] = "unknown";
 
 $_ARRAYLANG['TXT_LOGIN_WELCOME_PAGE'] = 'Forward to the <a href="%s" title="Website">Website</a>';
+$_ARRAYLANG['TXT_BROWSE'] = 'Browse';

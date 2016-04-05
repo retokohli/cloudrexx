@@ -1,16 +1,42 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * Page
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 
 namespace Cx\Core\ContentManager\Model\Entity;
 
+use Cx\Core\ContentManager\Model\Repository\PageRepositoryException;
 use Doctrine\ORM\EntityManager;
 
 define('FRONTEND_PROTECTION', 1 << 0);
@@ -19,9 +45,9 @@ define('BACKEND_PROTECTION',  1 << 1);
 /**
  * PageException
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 class PageException extends \Exception {
@@ -40,9 +66,9 @@ class PageException extends \Exception {
 /**
  * Page
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_contentmanager
  */
 class Page extends \Cx\Model\Base\EntityBase implements \Serializable
@@ -50,6 +76,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     const TYPE_CONTENT = 'content';
     const TYPE_APPLICATION = 'application';
     const TYPE_REDIRECT = 'redirect';
+    const TYPE_SYMLINK = 'symlink';
     const TYPE_FALLBACK = 'fallback';
     const TYPE_ALIAS = 'alias';
 
@@ -796,11 +823,25 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
             } else if ($this->isTargetInternal()) {
                 // this should not be done here!
                 $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-                $targetPage = $pageRepo->getTargetPage($this);
-                if (!$targetPage ||
-                        !$targetPage->isActive()) {
+                try {
+                    $targetPage = $pageRepo->getTargetPage($this);
+                    if (!$targetPage->isActive()){
+                        throw new PageRepositoryException("Page is not active");
+                    }
+                } catch (PageRepositoryException $e){
                     $status .= 'broken ';
                 }
+            }
+        } else if ($this->getType() == self::TYPE_SYMLINK) {
+            $status .= 'symlink ';
+            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            try {
+                $targetPage = $pageRepo->getTargetPage($this);
+                if (!$targetPage->isActive()){
+                    throw new PageRepositoryException("Page is not active");
+                }
+            } catch (PageRepositoryException $e){
+                $status .= 'broken ';
             }
         }
         
@@ -1871,6 +1912,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @throws PageException If parent page can not be found
      */
     public function getParent() {
+        // virtual pages may not have a node. Throw an exception instead of dying.
+        if (!$this->getNode() && $this->isVirtual()) {
+            throw new PageException('Virtual page has no node');
+        }
         $parentNode = $this->getNode()->getParent();
         if (!$parentNode) {
             throw new PageException('Parent node not found (my page id is ' . $this->getId() . ')');

@@ -601,7 +601,7 @@ class ADORecordSet_pdo extends ADORecordSet {
 		if (!$this->_queryID) return false;
 		
 		/**
-		 * THIS IS A BUGFIX BY COMVATION AG
+		 * THIS IS A BUGFIX BY CLOUDRXX AG
 		 * ONE CAN NOT CALL fetch() FOR UPDATE AND DELETE QUERIES
 		 * (added try catch)
 		 */

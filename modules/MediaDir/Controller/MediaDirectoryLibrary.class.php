@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media  Directory Library
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
@@ -14,9 +39,9 @@ namespace Cx\Modules\MediaDir\Controller;
  * Media directory access id constants.
  * This class is used as fake enum.
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 class MediaDirectoryAccessIDs { 
@@ -32,9 +57,9 @@ class MediaDirectoryAccessIDs {
 /**
  * Media Directory Library
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 class MediaDirectoryLibrary
@@ -649,6 +674,9 @@ var activeLang = [$arrActiveLang];
             \$J.each(activeLang, function(i, v) {
                 if (\$J('#'+ relatedFieldPrefix + '_' + id +'_'+ v).val() == that.data('lastDefaultValue')) {
                     \$J('#'+ relatedFieldPrefix + '_' + id +'_'+ v).val(that.val());
+                    if (that.data('isImage') && \$J('#'+ relatedFieldPrefix + '_' + id +'_'+ v +'_preview')) {
+                        changeImagePreview(\$J('#'+ relatedFieldPrefix + '_' + id +'_'+ v +'_preview'), that.val());
+                    }
                 }
             });
             \$J(this).data('lastDefaultValue', \$J(this).val());
@@ -658,6 +686,9 @@ var activeLang = [$arrActiveLang];
             var id = \$J(this).data('id');
             var relatedFieldPrefix = \$J(this).data('relatedFieldPrefix') ? \$J(this).data('relatedFieldPrefix') : 'mediadirInputfield';            
             \$J('#'+ relatedFieldPrefix + '_' + id +'_0').val(\$J(this).val());
+            if (\$J(this).data('isImage') && \$J('#'+ relatedFieldPrefix + '_' + id +'_0_preview')) {
+                changeImagePreview(\$J('#'+ relatedFieldPrefix + '_' + id +'_0_preview'), \$J(this).val());
+            }
             \$J('#'+ relatedFieldPrefix + '_' + id +'_0').data('lastDefaultValue', \$J(this).val());
         });
     });
@@ -684,6 +715,18 @@ var activeLang = [$arrActiveLang];
         });
     });                
 });
+
+function changeImagePreview(elm, src) {
+    elm.after('<span class="loading">Loading ...</span>');
+    elm.fadeOut(300, function(){
+        \$J(this).attr('src',src).bind('onreadystatechange load', function() {
+            if (this.complete) {
+                \$J(this).fadeIn(300);
+                \$J(this).next('span.loading').remove();
+            }
+      });
+   });
+}
 
 function rememberWysiwygFields(ev) {
     fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
@@ -836,5 +879,59 @@ EOF;
         }
         
         return $mediaBrowser->getXHtml($buttonValue);        
+    }
+    
+    /**
+     * Get the Thumbnail image path from given file
+     * Thumbnail will be created it is not exists
+     * 
+     * @param string $path Relative path to the file
+     * 
+     * @return string Thumbnail path
+     */
+    public function getThumbImage($path)
+    {
+        if (empty($path)) {
+            return '';
+        }
+        $thumbnails = \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getMediaSourceManager()
+                        ->getThumbnailGenerator()
+                        ->getThumbnailsFromFile(dirname($path), $path, true);
+        
+        return current($thumbnails);
+    }
+
+    /**
+    * Get uploaded file path by using uploader id and file name
+    * 
+    * @param string $uploaderId Uploader id
+    * @param string $fileName   File name
+    * 
+    * @return boolean|string File path when File exists, false otherwise
+    */
+    public function getUploadedFilePath($uploaderId, $fileName)
+    {
+        global $sessionObj;
+
+        if (empty($uploaderId) || empty($fileName)) {
+            return false;
+        }
+
+        if (empty($sessionObj)) {
+            $sessionObj = \cmsSession::getInstance();
+        }
+
+        $uploaderFolder = $sessionObj->getTempPath() . '/' . $uploaderId;
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($uploaderFolder)) {
+            return false;
+        }
+
+        $filePath = $uploaderFolder .'/'. $fileName;
+        if (!\Cx\Lib\FileSystem\FileSystem::exists($filePath)) {
+            return false;
+        }
+        
+        return $filePath;
     }
 }

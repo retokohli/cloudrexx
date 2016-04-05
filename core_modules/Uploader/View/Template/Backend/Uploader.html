@@ -3,14 +3,14 @@
         <div>
             <i class="icon-dropzone"></i>
 
-            <div class="dropzoneText1">{{ 'TXT_CORE_MODULE_UPLOADER_DRAG_TO_UPLOADER' | translate }}</div>
-            <div class="dropzoneText2">- {{ 'TXT_CORE_MODULE_UPLOADER_DRAG_TO_UPLOADER_OR' | translate }}
+            <div class="dropzoneText1">{{:: 'TXT_CORE_MODULE_UPLOADER_DRAG_TO_UPLOADER' | translate }}</div>
+            <div class="dropzoneText2">- {{:: 'TXT_CORE_MODULE_UPLOADER_DRAG_TO_UPLOADER_OR' | translate }}
                 -
             </div>
             <div class="upload-limit-tooltip file_choose">
                 <button type="submit" class="btn btn-default"
-                        style="position: relative; z-index: 1;" disabled>
-                    {{ 'TXT_CORE_MODULE_UPLOADER_DRAG_TO_UPLOADER_CLICK' | translate }}
+                         disabled>
+                    {{:: 'TXT_CORE_MODULE_UPLOADER_DRAG_TO_UPLOADER_CLICK' | translate }}
                 </button>
             </div>
         </div>
@@ -25,10 +25,10 @@
 
                     </th>
                     <th>
-                        {{ 'TXT_CORE_MODULE_UPLOADER_NAME' | translate }}
+                        {{:: 'TXT_CORE_MODULE_UPLOADER_NAME' | translate }}
                     </th>
                     <th class="text-right">
-                        {{ 'TXT_CORE_MODULE_UPLOADER_SIZE' | translate }}
+                        {{:: 'TXT_CORE_MODULE_UPLOADER_SIZE' | translate }}
                     </th>
                 </tr>
             </table>
@@ -36,7 +36,7 @@
         </div>
         <div class="text-right">
             <button class="btn btn-success not-finished close-upload-modal">
-                {{ 'TXT_CORE_MODULE_UPLOADER_CLOSE_WINDOW' | translate }}
+                {{:: 'TXT_CORE_MODULE_UPLOADER_CLOSE_WINDOW' | translate }}
             </button>
             <div class="upload-limit-tooltip file_upload">
                 <button class="btn btn-primary start-upload-button"> {{ 'TXT_CORE_MODULE_UPLOADER_UPLOAD_BUTTON'

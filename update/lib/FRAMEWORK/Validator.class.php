@@ -1,12 +1,37 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Framework Validator
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -24,7 +49,7 @@ define('VALIDATOR_REGEX_EMAIL',
 
 /**
  * Regular Expression in javascript for e-mail addresses
- * @author  Michael Räss <info@comvation.com>
+ * @author  Michael Räss <info@cloudrexx.com>
  * @since  2.2.6
  */
 define('VALIDATOR_REGEX_EMAIL_JS',
@@ -55,7 +80,7 @@ define('VALIDATOR_REGEX_URI',
 
 /**
  * Regular Expression in javascript for URIs
- * @author  Michael Räss <info@comvation.com>
+ * @author  Michael Räss <info@cloudrexx.com>
  * @since   2.2.6
  */
 define('VALIDATOR_REGEX_URI_JS',
@@ -65,11 +90,11 @@ define('VALIDATOR_REGEX_URI_JS',
 /**
  * Framework Validator
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @version     1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
- * @author      Comvation Development Team <info@comvation.com>
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @todo        Edit PHP DocBlocks!
  * @todo        Most, if not all, should be static
@@ -237,9 +262,9 @@ class FWValidator
 /**
  * An abstract base for ZendValidator-Style instantiable Validators
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 abstract class CxValidate {
@@ -264,9 +289,9 @@ abstract class CxValidate {
 /**
  * Validates Strings to a set of constraints
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class CxValidateString extends CxValidate {
@@ -298,9 +323,9 @@ class CxValidateString extends CxValidate {
 /**
  * CxValidateRegexp
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class CxValidateRegexp extends CxValidate {
@@ -327,9 +352,9 @@ class CxValidateRegexp extends CxValidate {
 /**
  * CxValidateInteger
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class CxValidateInteger extends CxValidate {
