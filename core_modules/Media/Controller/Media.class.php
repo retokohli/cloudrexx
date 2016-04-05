@@ -211,7 +211,7 @@ class Media extends MediaLibrary
         $this->getDirectoryTree($this->path, $searchTerm, $dirTree, !empty($searchTerm));
         $dirTree = $this->_sortDirTree($dirTree);
 
-        $deleteUrl  = \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
+        $deleteUrl  = clone \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
         $deleteUrl->setParam('act', null);
 
         $previewUrl = clone $deleteUrl;
