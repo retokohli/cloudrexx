@@ -50,5 +50,4 @@ $_ARRAYLANG['TXT_PREVIEW_FRONTEND'] = "Preview";
 $_ARRAYLANG['TXT_FEMALE_FRONTEND'] = "Female";
 $_ARRAYLANG['TXT_MALE_FRONTEND'] = "Male";
 $_ARRAYLANG['TXT_INTRODUCTION'] = "Vil du anbefale denne side skal du blot udfylde følgende formular og klikke på \"send\". Modtageren bliver gjort opmærksom på siden ved en emailbesked";
-$_ARRAYLANG['TXT_RECOMMEND_CAPTCHA'] = "Sikkerhedskode";
 ?>

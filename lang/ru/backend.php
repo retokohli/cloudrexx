@@ -873,7 +873,6 @@ $_ARRAYLANG['TXT_CALENDAR_ADD_ENTRIES'] = "Veranstaltungen hinzufügen";
 $_ARRAYLANG['TXT_CALENDAR_MANAGE_ENTRIES'] = "Einträge verwalten";
 $_ARRAYLANG['TXT_CALENDAR_MANAGE_KATEGORIES'] = "Kategorien verwalten";
 $_ARRAYLANG['TXT_CALENDAR_SETTINGS'] = "Einstellungen";
-$_ARRAYLANG['TXT_CAPTCHA'] = "Sicherheitscode";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_BACKEND_PERMISSION'] = "Wollen Sie die Backend Berechtigunen wirklich für alle Seiten (%s) setzen?";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_CACHINGSTATUS'] = "Wollen Sie den Cachingstatus wirklich für alle Seiten (%s) setzen?";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_CSSNAME'] = "Wollen Sie den CSS Name %s wirklich für alle Seiten (%s) übernehmen?";
@@ -1150,7 +1149,7 @@ $_ARRAYLANG['TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'] = "Verwenden Sie diese Opt
 $_ARRAYLANG['UPLOAD'] = "Hochladen";
 $_ARRAYLANG['UPLOAD_EXPOSED_DIALOG_TITLE'] = "Dateien hochladen";
 $_ARRAYLANG['UPLOAD_FORM_ADD'] = "Weitere Dateien hinzufügen";
-$_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Security code";
+$_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Защитный код";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Enter the letters below.";
 $_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Remember me";
 

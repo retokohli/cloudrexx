@@ -874,7 +874,6 @@ $_ARRAYLANG['TXT_CALENDAR_ADD_ENTRIES'] = "Veranstaltungen hinzufügen";
 $_ARRAYLANG['TXT_CALENDAR_MANAGE_ENTRIES'] = "Einträge verwalten";
 $_ARRAYLANG['TXT_CALENDAR_MANAGE_KATEGORIES'] = "Kategorien verwalten";
 $_ARRAYLANG['TXT_CALENDAR_SETTINGS'] = "Einstellungen";
-$_ARRAYLANG['TXT_CAPTCHA'] = "Sicherheitscode";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_BACKEND_PERMISSION'] = "Wollen Sie die Backend Berechtigunen wirklich für alle Seiten (%s) setzen?";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_CACHINGSTATUS'] = "Wollen Sie den Cachingstatus wirklich für alle Seiten (%s) setzen?";
 $_ARRAYLANG['TXT_CONFIRM_SET_GLOBAL_CSSNAME'] = "Wollen Sie den CSS Name %s wirklich für alle Seiten (%s) übernehmen?";
