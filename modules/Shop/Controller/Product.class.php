@@ -377,12 +377,21 @@ class Product
      */
     function active($active=null)
     {
-        // set active to false, when product stock <= 0
-        if ($this->stock_visible && $this->stock <= 0) {
-            $active = false;
-        }
         if (isset($active)) {
             $this->active = (boolean)$active;
+        }
+        return $this->active;
+    }
+
+    /**
+     * Return product status based on the product stock and active settings
+     *
+     * @return boolean True when product is active, false otherwise
+     */
+    public function getStatus()
+    {
+        if ($this->stock_visible && $this->stock <= 0) {
+            return false;
         }
         return $this->active;
     }
