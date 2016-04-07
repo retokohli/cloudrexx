@@ -400,6 +400,7 @@ CREATE TABLE `contrexx_core_module_multisite_mail_service_server` (
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_multisite_website` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `server_website_id` INT unsigned DEFAULT NULL,
   `name` varchar(200) NOT NULL,
   `creationDate` timestamp NULL DEFAULT NULL,
   `codeBase` varchar(50) NOT NULL,
@@ -408,6 +409,7 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `websiteServiceServerId` int(11) DEFAULT NULL,
   `secretKey` varchar(255) NOT NULL,
   `ipAddress` varchar(45) NOT NULL,
+  `mode` enum('standalone','server','client') NOT NULL DEFAULT 'standalone',
   `ownerId` int(5) unsigned NOT NULL,
   `themeId` int(11) DEFAULT NULL,
   `installationId` varchar(40) NOT NULL,
@@ -420,9 +422,11 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   KEY `websiteCollectionId` (`websiteCollectionId`),
   KEY `ownerId` (`ownerId`),
   KEY `mailServiceServerId` (`mailServiceServerId`),
+  KEY `server_website_id` (`server_website_id`),
   CONSTRAINT `contrexx_core_module_multisite_website_ibfk_mailServiceServerId` FOREIGN KEY (`mailServiceServerId`) REFERENCES `contrexx_core_module_multisite_mail_service_server` (`id`),
   CONSTRAINT `contrexx_core_module_multisite_website_ibfk_ownerId` FOREIGN KEY (`ownerId`) REFERENCES `contrexx_access_users` (`id`),
-  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_websiteCollectionId` FOREIGN KEY (`websiteCollectionId`) REFERENCES `contrexx_core_module_multisite_website_collection` (`id`)
+  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_websiteCollectionId` FOREIGN KEY (`websiteCollectionId`) REFERENCES `contrexx_core_module_multisite_website_collection` (`id`),
+  CONSTRAINT `contrexx_core_module_multisite_website_ibfk_server_website_id` FOREIGN KEY (`server_website_id`) REFERENCES `contrexx_core_module_multisite_website` (`id`)
 ) ENGINE=InnoDB;
 CREATE TABLE `contrexx_core_module_multisite_website_collection` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

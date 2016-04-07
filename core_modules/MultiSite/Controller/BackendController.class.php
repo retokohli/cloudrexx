@@ -1400,65 +1400,29 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     }
                 } elseif ($mode == ComponentController::MODE_WEBSITE && isset($_GET['active_tab']) && $_GET['active_tab'] == 1) {
                     //get post values
-                    $savePostData      = true;
+                    $savePostDataError = false;
                     $postWebsiteMode   = isset($_POST['website_mode']) ? contrexx_input2raw($_POST['website_mode']) : '';
                     $postWebsiteServer = isset($_POST['website_server']) ? contrexx_input2raw($_POST['website_server']) : '';
                     //get settings value
                     $websiteMode       = \Cx\Core\Setting\Controller\Setting::getValue('website_mode','MultiSite');
                     $websiteServer     = \Cx\Core\Setting\Controller\Setting::getValue('website_server','MultiSite');
                     $websiteName       = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
-
-                    $changeRequest = '';
-                    $isPostWebsiteModeCli = ($postWebsiteMode == ComponentController::WEBSITE_MODE_CLIENT);
-                    $isWebsiteModeServer  = ($websiteMode == ComponentController::WEBSITE_MODE_SERVER);
-                    $isWebsiteModeClient  = ($websiteMode == ComponentController::WEBSITE_MODE_CLIENT);
-                    switch (true) {
-                        case ($isPostWebsiteModeCli && !$isWebsiteModeServer && !$isWebsiteModeClient):
-                            $changeRequest = 'add';
-                            break;
-                        case (!$isPostWebsiteModeCli && $isWebsiteModeClient):
-                            $changeRequest = 'remove';
-                            break;
-                        case ($isWebsiteModeClient && $isPostWebsiteModeCli && ($websiteServer != $postWebsiteServer)):
-                            $changeRequest = 'removeThenAdd';
-                            break;
-                        case ($isWebsiteModeServer && ($websiteMode != $postWebsiteMode)):
-                            $response = JsonMultiSiteController::executeCommandOnMyServiceServer(
-                                'getServerWebsiteByMode',
-                                array(
-                                    'websiteName' => $websiteName,
-                                    'websiteMode' => ComponentController::WEBSITE_MODE_CLIENT
-                                )
-                            );
-                            if (    $response
-                                &&  $response->status = 'success'
-                                &&  in_array($response->data->requestedServerId,
-                                             $response->data->serverWebsites)
-                            ) {
-                                $counts = array_count_values($response->data->serverWebsites);
-                                \Message::warning(
-                                    sprintf(
-                                        $_ARRAYLANG['TXT_MULTISITE_SETTINGS_UPDATE_WEBSITE_SERVER_ERROR_MSG'],
-                                        $postWebsiteMode,
-                                        $counts[$response->data->requestedServerId]
-                                    )
-                                );
-                                $savePostData = false;
-                                break;
-                            }
-                            $changeRequest = $isPostWebsiteModeCli ? 'add' : '';
-                            break;
-                    }
-                    if (!empty($changeRequest)) {
+                    if (    $postWebsiteMode != $websiteMode
+                        ||  $postWebsiteServer != $websiteServer
+                    ) {
                         $params = array(
-                            'websiteName'      => $websiteName,
-                            'serverWebsite'    => $postWebsiteServer,
-                            'oldServerWebsite' => $websiteServer,
-                            'changeRequest'    => $changeRequest
+                            'websiteName'     => $websiteName,
+                            'mode'            => $postWebsiteMode,
+                            'serverWebsiteId' => $postWebsiteServer
                         );
-                        JsonMultiSiteController::executeCommandOnMyServiceServer('updateWebsiteDomainThemeMap', $params);
+                        $response = JsonMultiSiteController::executeCommandOnMyServiceServer('updateWebsiteDetails', $params);
+                        if (!$response || $response->status == 'error' || $response->data->status == 'error') {
+                            $savePostDataError = true;
+                        }
                     }
-                    if ($savePostData) {
+                    if ($savePostDataError) {
+                        \Message::warning($_ARRAYLANG['TXT_MULTISITE_SETTINGS_UPDATE_WEBSITE_SERVER_AND_MODE_ERROR_MSG']);
+                    } else {
                         \Cx\Core\Setting\Controller\Setting::storeFromPost();
                     }
                 } else {

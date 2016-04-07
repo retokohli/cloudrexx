@@ -42,7 +42,12 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
       length: 200
     mailAccountId:
       type: integer
-      
+    mode:
+      type: string
+      columnDefinition: ENUM('standalone', 'server', 'client')
+      options:
+        default: 'standalone'
+
   manyToMany:
     # unidirectional association
     domains:
@@ -82,4 +87,10 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
       joinColumn:
         name: websiteCollectionId
         referencedColumnName: id
+    serverWebsite:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website
+      joinColumn:
+        name: server_website_id
+        referencedColumnName: id
+        nullable: true
         

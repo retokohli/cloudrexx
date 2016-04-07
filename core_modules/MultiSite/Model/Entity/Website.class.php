@@ -146,7 +146,17 @@ class Website extends \Cx\Model\Base\EntityBase {
      * @var Cx\Core_Modules\MultiSite\Model\Entity\WebsiteCollection $websiteCollection
      */
     protected $websiteCollection;
-    
+
+    /**
+     * @var string $mode
+     */
+    protected $mode;
+
+    /**
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\Website $serverWebsite
+     */
+    protected $serverWebsite;
+
     /*
      * Constructor
      * */
@@ -2053,5 +2063,41 @@ throw new WebsiteException('implement secret-key algorithm first!');
     public function removeDomain(Domain $domain)
     {
         $this->domains->removeElement($domain);
+    }
+
+    /**
+     * Set the website mode
+     *
+     * @param string $mode
+     */
+    public function setMode($mode) {
+        $this->mode = $mode;
+    }
+
+    /**
+     * Get the website mode
+     *
+     * @return string $mode
+     */
+    public function getMode() {
+        return $this->mode;
+    }
+
+    /**
+     * set the server website
+     *
+     * @param \Cx\Core_Modules\MultiSite\Model\Entity\Website|null $serverWebsite
+     */
+    public function setServerWebsite($serverWebsite) {
+        $this->serverWebsite = $serverWebsite;
+    }
+
+    /**
+     * get the server website
+     *
+     * @return \Cx\Core_Modules\MultiSite\Model\Entity\Website $serverWebsite
+     */
+    public function getServerWebsite() {
+        return $this->serverWebsite;
     }
 }
