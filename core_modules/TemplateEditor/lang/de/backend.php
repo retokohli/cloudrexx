@@ -68,6 +68,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_TEXT_WRONG_FORMAT'] = "Text \"%s\" p
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'] = "Datei \"%s\" nicht gefunden.";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_EMPTY'] = "Darf nicht leer sein.";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ACTION_UNKNOWN'] = "Diese Aktion ist nicht bekannt.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_IS_NO_OPTION'] = "Diese Option ist nicht bekannt.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_WITHOUT_ID'] = "Das Ändern eines Eintrages benötigt eine ID";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NO_OPTIONS_HELP'] = "Für dieses Template sind keine Platzhalter vorgegeben. Um zu lernen wie sie Optionen zu Ihrem Template hinzufügen können, besuchen sie bitte unser Wiki.";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NO_OPTIONS_LINKNAME'] = "Wiki: How to add options to your template.";
 

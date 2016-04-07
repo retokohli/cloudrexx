@@ -70,6 +70,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_TEXT_WRONG_FORMAT'] = "String \"%s\"
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'] = "File \"%s\" not found.";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_EMPTY'] = "Can't be empty.";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ACTION_UNKNOWN'] = "This action is unknown.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_IS_NO_OPTION'] = "This option is unknown.";
+$_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_WITHOUT_ID'] = "Changing an option needs an id to work";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NO_OPTIONS_HELP'] = "This template has no options. To learn how to add options to your template visit the wiki page.";
 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_NO_OPTIONS_LINKNAME'] = "Wiki: How to add options to your template.";
 

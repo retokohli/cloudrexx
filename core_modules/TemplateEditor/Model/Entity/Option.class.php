@@ -99,7 +99,7 @@ abstract class Option extends \Cx\Model\Base\EntityBase
      * @param array  $translations Array with translations for option.
      * @param array  $data
      * @param String $type         the type of the option
-     * @param bool   $series       handel the elements as series if true
+     * @param bool   $series       handle the elements as series if true
      */
     public function __construct(
         $name,
@@ -237,11 +237,11 @@ abstract class Option extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Get the series of the option.
+     * Return true if element is in a series
      *
      * @return boolean
      */
-    public function getSeries() {
+    public function isSeries() {
         return $this->series;
     }
 

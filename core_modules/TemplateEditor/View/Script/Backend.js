@@ -16,20 +16,22 @@
 function updateOption(optionName, optionData, callback){
     jQuery('#saveOptionsButton').attr("disabled", "disabled");
     jQuery.post( "index.php?cmd=JsonData&object=TemplateEditor&act=updateOption&tid="+cx.variables.get('themeid','TemplateEditor'), { optionName: optionName, optionData:optionData }, function (response) {
-        if (response.status != 'error'){
-            var previewIframe = jQuery("#preview-template-editor");
-            try {
-                var iframeLocation = previewIframe.get(0).contentDocument.location;
-                if (iframeLocation.host == window.location.host){
-                    previewIframe.attr('src', iframeLocation.href);
-                }
-                else {
-                    previewIframe.attr('src', cx.variables.get('iframeUrl','TemplateEditor'));
-                }
+        if (response.status == 'error'){
+            callback(response);
+            return;
+        }
+        var previewIframe = jQuery("#preview-template-editor");
+        try {
+            var iframeLocation = previewIframe.get(0).contentDocument.location;
+            if (iframeLocation.host == window.location.host){
+                previewIframe.attr('src', iframeLocation.href);
             }
-            catch (e){
+            else {
                 previewIframe.attr('src', cx.variables.get('iframeUrl','TemplateEditor'));
             }
+        }
+        catch (e){
+            previewIframe.attr('src', cx.variables.get('iframeUrl','TemplateEditor'));
         }
         if(callback(response)) {
             jQuery('#saveOptionsButton').removeAttr("disabled");

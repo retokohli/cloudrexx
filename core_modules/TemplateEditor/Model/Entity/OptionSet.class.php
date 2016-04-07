@@ -346,33 +346,38 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                 $optionType =
                     'Cx\Core_Modules\TemplateEditor\Model\Entity\SeriesOption';
             }
-            $optionReflection = new \ReflectionClass($optionType);
-            if ($optionReflection->isSubclassOf('Cx\Core_Modules\TemplateEditor\Model\Entity\Option')
+            if (
+                !is_a(
+                    $optionType,
+                    'Cx\Core_Modules\TemplateEditor\Model\Entity\Option',
+                    true
+                )
             ) {
-                if ($this->cx->getMode() == Cx::MODE_BACKEND
-                    || (($this->cx->getUser()->getFWUserObject(
-                        )->objUser->login())
-                        && isset($_GET['templateEditor']))
-                ) {
-                    if (isset($_SESSION['TemplateEditor'][$this->theme->getId(
-                        )][$option['name']])) {
-                        $option['specific'] = array_merge(
-                            $option['specific'],
-                            $_SESSION['TemplateEditor']
-                            [$this->theme->getId()]
-                            [$option['name']]->toArray()
-                        );
-                    }
-                }
-                $this->options[$option['name']]
-                    = $optionReflection->newInstance(
-                    $option['name'],
-                    $option['translation'],
-                    $option['specific'],
-                    $option['type'],
-                    $option['series']
-                );
+                return;
             }
+            if ($this->cx->getMode() == Cx::MODE_BACKEND
+                || (($this->cx->getUser()->getFWUserObject(
+                    )->objUser->login())
+                    && isset($_GET['templateEditor']))
+            ) {
+                if (isset($_SESSION['TemplateEditor'][$this->theme->getId(
+                    )][$option['name']])) {
+                    $option['specific'] = array_merge(
+                        $option['specific'],
+                        $_SESSION['TemplateEditor']
+                        [$this->theme->getId()]
+                        [$option['name']]->toArray()
+                    );
+                }
+            }
+            $this->options[$option['name']]
+                = new $optionType(
+                $option['name'],
+                $option['translation'],
+                $option['specific'],
+                $option['type'],
+                $option['series']
+            );
         }
     }
 

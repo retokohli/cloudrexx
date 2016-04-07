@@ -55,7 +55,7 @@ class SeriesOption extends Option
      * @param array  $translations Array with translations for option.
      * @param array  $data
      * @param String $type          the type of the option
-     * @param bool   $series        handel the elements as series if true
+     * @param bool   $series        handle the elements as series if true
      */
     public function __construct(
         $name,
@@ -109,19 +109,15 @@ class SeriesOption extends Option
     public function renderTheme($template)
     {
         $blockName = strtolower('TEMPLATE_EDITOR_' . $this->name);
-        if ($template->blockExists($blockName)) {
-            foreach ($this->elements as $id => $elm) {
-                // even though we have only one element in the array, we need to
-                // build a foreach, so we can read the value without knowing
-                // the array index
-                foreach($elm as $val){
-                    $template->setVariable(
-                        strtoupper('TEMPLATE_EDITOR_' . $this->name),
-                        contrexx_raw2xhtml($val)
-                    );
-                    $template->parse($blockName);
-                }
-            }
+        if (!$template->blockExists($blockName)) {
+            return;
+        }
+        foreach ($this->elements as $id => $element) {
+            $template->setVariable(
+                strtoupper('TEMPLATE_EDITOR_' . $this->name),
+                contrexx_raw2xhtml(current($element))
+            );
+            $template->parse($blockName);
         }
     }
 
@@ -142,61 +138,66 @@ class SeriesOption extends Option
     public function handleChange($data)
     {
         global $_ARRAYLANG;
+
+        if (
+            !is_a(
+                $this->type,
+                'Cx\Core_Modules\TemplateEditor\Model\Entity\Option',
+                true
+            )
+        ) {
+            throw new OptionValueNotValidException(
+                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_NO_OPTION']
+            );
+        }
         if (empty($data['id']) && $data['id'] != 0) {
-            throw new OptionValueNotValidException("Needs a id to work");
+            throw new OptionValueNotValidException(
+                $_ARRAYLANG["TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_WITHOUT_ID"]
+            );
+        }
+        if ($data['value']['elm'] === '' && !isset($data['value']['action'])) {
+            throw new OptionValueNotValidException(
+                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_EMPTY']
+            );
         }
         if ($data['value']['elm'] === '') {
-            if (isset($data['value']['action'])) {
-                switch ($data['value']['action']) {
-                    case 'remove':
-                        unset($this->elements[intval($data['id'])]);
-                        break;
-                    case 'add':
-                        end($this->elements);
-                        $key = key($this->elements);
-                        $this->elements[] =
-                            array_fill_keys(
-                                array_keys($this->elements[$key]),
-                                ""
-                            );
-                        return
-                            array(
-                                'elements' => $this->elements,
-                                'html' => $this->getElementHtmlTemplate(
-                                        $key + 1,
-                                        array()
-                                    ),
-                            );
-                        break;
-                    default:
-                        throw new OptionValueNotValidException(
-                            sprintf(
-                                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ACTION_UNKNOWN']
-                            )
+            switch ($data['value']['action']) {
+                case 'remove':
+                    unset($this->elements[intval($data['id'])]);
+                    break;
+                case 'add':
+                    end($this->elements);
+                    $key = key($this->elements);
+                    $this->elements[] =
+                        array_fill_keys(
+                            array_keys($this->elements[$key]),
+                            ""
                         );
-                }
-            } else {
-                throw new OptionValueNotValidException(
-                    sprintf(
-                        $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_EMPTY']
-                    )
-                );
+                    return
+                        array(
+                            'elements' => $this->elements,
+                            'html' => $this->getElementHtmlTemplate(
+                                    $key + 1,
+                                    array()
+                                ),
+                        );
+                    break;
+                default:
+                    throw new OptionValueNotValidException(
+                        $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ACTION_UNKNOWN']
+                    );
             }
         } else {
-            // create new instance for this single element, so the option rendering
-            // can be done directly over the type of the field and we do not need to
-            // implement rendering for all types in the series itself
-            $optionReflection = new \ReflectionClass($this->type);
-            if ($optionReflection->isSubclassOf('Cx\Core_Modules\TemplateEditor\Model\Entity\Option')
-            ) {
-                $seriesElement
-                    = $optionReflection->newInstance(
-                    '',
-                    array(),
-                    array(),
-                    $this->type
-                );
-            }
+            $optionClass = $this->type;
+            // create an new instance for this single element, so the option
+            // rendering can be done directly over the type of the field and we
+            // don't need to implement it for all types in the series itself
+            $seriesElement = new $optionClass(
+                '',
+                array(),
+                array(),
+                $this->type
+            );
             $this->elements[$data['id']] =
                 $seriesElement->handleChange($data['value']);
         }
