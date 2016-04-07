@@ -1398,6 +1398,33 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             throw new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException('Problem in service servers update setup process'.$errMsg);    
                         }
                     }
+                } elseif ($mode == ComponentController::MODE_WEBSITE && isset($_GET['active_tab']) && $_GET['active_tab'] == 1) {
+                    //get post values
+                    $savePostDataError = false;
+                    $postWebsiteMode   = isset($_POST['website_mode']) ? contrexx_input2raw($_POST['website_mode']) : '';
+                    $postWebsiteServer = isset($_POST['website_server']) ? contrexx_input2raw($_POST['website_server']) : '';
+                    //get settings value
+                    $websiteMode       = \Cx\Core\Setting\Controller\Setting::getValue('website_mode','MultiSite');
+                    $websiteServer     = \Cx\Core\Setting\Controller\Setting::getValue('website_server','MultiSite');
+                    $websiteName       = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
+                    if (    $postWebsiteMode != $websiteMode
+                        ||  $postWebsiteServer != $websiteServer
+                    ) {
+                        $params = array(
+                            'websiteName'     => $websiteName,
+                            'mode'            => $postWebsiteMode,
+                            'serverWebsiteId' => $postWebsiteServer
+                        );
+                        $response = JsonMultiSiteController::executeCommandOnMyServiceServer('updateWebsiteDetails', $params);
+                        if (!$response || $response->status == 'error' || $response->data->status == 'error') {
+                            $savePostDataError = true;
+                        }
+                    }
+                    if ($savePostDataError) {
+                        \Message::warning($_ARRAYLANG['TXT_MULTISITE_SETTINGS_UPDATE_WEBSITE_SERVER_AND_MODE_ERROR_MSG']);
+                    } else {
+                        \Cx\Core\Setting\Controller\Setting::storeFromPost();
+                    }
                 } else {
                     \Cx\Core\Setting\Controller\Setting::storeFromPost();
                 }
@@ -1524,6 +1551,11 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'],
                     'Website Service',
                     'TXT_CORE_MODULE_MULTISITE_'
+                );
+                \ContrexxJavascript::getInstance()->setVariable(
+                    'websiteMode',
+                    ComponentController::WEBSITE_MODE_CLIENT,
+                    'multisite/website'
                 );
             }
         } catch (\Exception $e) {

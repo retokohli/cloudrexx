@@ -529,6 +529,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITES_SUCCESS_MSG'] = 'Websites ar
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_ERROR_MSG'] = 'Failed to update the website';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_STATUS_ERROR_MSG'] = 'Failed to send the update notification email';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_CODEBASE_ERROR_MSG'] = 'Failed to update the website codebase';
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR'] = 'Failed to set the website details';
+$_ARRAYLANG['TXT_MULTISITE_SETTINGS_UPDATE_WEBSITE_SERVER_AND_MODE_ERROR_MSG'] = 'Could not update the website repository and website mode.';
 
 //set owner user
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHANGE_OWNER_USER_ERROR'] = 'Error while switching the owner user';
