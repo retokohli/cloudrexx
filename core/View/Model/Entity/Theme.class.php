@@ -363,4 +363,43 @@ class Theme extends \Cx\Model\Base\EntityBase
     public function addDefault($type) {
         $this->defaults[] = $type;
     }
+
+    /**
+     * Get the themes file path
+     *
+     * @param type $filePath
+     * @return string
+     */
+    public function getFilePath($filePath)
+    {
+        if (empty($filePath)) {
+            return '';
+        }
+
+        //Check the website's data repository
+        if (file_exists($this->cx->getWebsiteThemesPath() . '/' . $filePath)) {
+            return $this->cx->getWebsiteThemesPath() . '/' . $filePath;
+        }
+
+        //Check the codebase repository
+        if (file_exists($this->cx->getCodeBaseThemesPath() . '/'. $filePath)) {
+            return $this->cx->getCodeBaseThemesPath() . '/'. $filePath;
+        }
+
+        return '';
+    }
+
+    /**
+     * Preview image source web path
+     *
+     * @return string the preview image source web path
+     */
+    public function getPreviewImage()
+    {
+        $filePath = $this->getFilePath($this->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE);
+        if ($filePath && file_exists($filePath)) {
+            return $this->cx->getWebsiteThemesWebPath() . '/' . $this->getFoldername() . \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE;
+        }
+        return $this->cx->getCodeBaseOffsetPath(). \Cx\Core\View\Model\Entity\Theme::THEME_DEFAULT_PREVIEW_FILE;
+    }
 }

@@ -621,8 +621,8 @@ class InitCMS
         $filePath = $themesPath.'/'.$file;
         $content = '';
 
-        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
-        $contentPath     = $themeRepository->getThemesFilePath($filePath);
+        $theme       = new \Cx\Core\View\Model\Entity\Theme();
+        $contentPath = $theme->getFilePath($filePath);
         if ($contentPath) {
             $content = file_get_contents($contentPath);
         }

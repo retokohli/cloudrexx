@@ -369,7 +369,7 @@ class ViewManager
 
         $objTemplate->setVariable(
             array(
-                'THEME_PREVIEW' => $this->themeRepository->getPreviewImage($theme),
+                'THEME_PREVIEW' => $theme->getPreviewImage(),
                 'THEME_ID' => $theme->getId(),
                 'THEME_ACTION' => $supportForTemplateEditor
                     ? 'cmd=TemplateEditor&tid=' . $theme->getId()
@@ -930,18 +930,17 @@ CODE;
                 \Message::add(contrexx_raw2xhtml($themeName).' ('.$themeDirectory.') '.$_ARRAYLANG['TXT_THEME_SUCCESSFULLY_IMPORTED']);
                 break;
             case 'filesystem':
-                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-                $themeName = null;        
+                $theme                     = new \Cx\Core\View\Model\Entity\Theme();
+                $themeName                 = null;
                 $existingThemeInFilesystem = !empty($_POST['existingdirName']) ? contrexx_input2raw($_POST['existingdirName']) : null;
 
-                $themePath = $this->themeRepository->getThemesFilePath($existingThemeInFilesystem);
-        
+                $themePath = $theme->getFilePath($existingThemeInFilesystem);
                 if (!file_exists($themePath)) {
                     \Message::add($_ARRAYLANG['TXT_THEME_OPERATION_FAILED_FOR_EMPTY_PARAMS'], \Message::CLASS_ERROR);
                     return false;
                 }
-                
-                $yamlFile = $this->themeRepository->getThemesFilePath($existingThemeInFilesystem . '/component.yml');
+
+                $yamlFile = $theme->getFilePath($existingThemeInFilesystem . '/component.yml');
                 if ($yamlFile) {
                     $objFile = new \Cx\Lib\FileSystem\File($yamlFile);
                     $yaml = new \Symfony\Component\Yaml\Yaml();
@@ -957,8 +956,7 @@ CODE;
                 }
                 
                 $this->validateThemeName($themeName);
-                
-                $theme = new \Cx\Core\View\Model\Entity\Theme();
+
                 $theme->setThemesname($themeName);
                 $theme->setFoldername($existingThemeInFilesystem);
                 
