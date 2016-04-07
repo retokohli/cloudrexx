@@ -1,10 +1,8 @@
-<div class="element">
-    <label for="{TEMPLATEEDITOR_OPTION_NAME}">
-        <input type="checkbox" name="{TEMPLATEEDITOR_OPTION_NAME}" id="{TEMPLATEEDITOR_OPTION_NAME}"
-               {TEMPLATEEDITOR_OPTION_VALUE}/>
-        {TEMPLATEEDITOR_OPTION_HUMAN_NAME}
-    </label>
-</div>
+<label for="{TEMPLATEEDITOR_OPTION_NAME}">
+    <input type="checkbox" name="{TEMPLATEEDITOR_OPTION_NAME}" id="{TEMPLATEEDITOR_OPTION_NAME}"
+           {TEMPLATEEDITOR_OPTION_VALUE}/>
+    {TEMPLATEEDITOR_OPTION_HUMAN_NAME}
+</label>
 <script type="text/javascript">
     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').change(function () {
         var parent =  jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().parent();

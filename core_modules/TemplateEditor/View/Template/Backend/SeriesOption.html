@@ -3,7 +3,11 @@
 </label>
 <div id="{TEMPLATEEDITOR_OPTION_NAME}" class="series-list">
     <div class="elements">
-        {TEMPLATEEDITOR_SERIE_CONTENT}
+        <!-- BEGIN elements -->
+        <div class="element">
+            {SERIES_ELEMENT}
+        </div>
+        <!-- END elements -->
     </div>
     <button class="button add-element">
         {TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_ELEMENT}
@@ -11,10 +15,11 @@
 </div>
 <script type="text/javascript">
     var removeTemplate =
-            '<input type="button" class="remove-element button" ' +
+            '<img src="/core/Core/View/Media/icons/delete.gif" ' +
+            'class="remove-element" ' +
             'onclick="removeElement(this)" ' +
-            'value="x"' +
-            'title="{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_ELEMENT}" />';
+            'title="{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_ELEMENT}" ' +
+            'alt="{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_ELEMENT}" />';
 
     // add the remove button to the template. It is not delivered from
     // the template of the element (because it is not only used in series),
@@ -36,7 +41,8 @@
                     action:'add'
                 },
                 function(response) {
-                    var newElement = jQuery(response.data.html);
+                    var template = '<div class="element">'+response.data.html+'</div>';
+                    var newElement = jQuery(template);
                     // add the remove button to this element, this is not included
                     // in the template we get from the call to server (newElement)
                     jQuery(newElement).append(removeTemplate);

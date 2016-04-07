@@ -1,10 +1,8 @@
-<div class="element">
-    <label for="{TEMPLATEEDITOR_OPTION_NAME}">
-        {TEMPLATEEDITOR_OPTION_HUMAN_NAME}
-    </label>
-    <textarea rows="3" id="{TEMPLATEEDITOR_OPTION_NAME}"/>{TEMPLATEEDITOR_OPTION_VALUE}</textarea>
-    <div class="error-box"></div>
-</div>
+<label for="{TEMPLATEEDITOR_OPTION_NAME}">
+    {TEMPLATEEDITOR_OPTION_HUMAN_NAME}
+</label>
+<textarea rows="3" id="{TEMPLATEEDITOR_OPTION_NAME}"/>{TEMPLATEEDITOR_OPTION_VALUE}</textarea>
+<div class="error-box"></div>
 <script type="text/javascript">
     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').focusout(function () {
         jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saving');

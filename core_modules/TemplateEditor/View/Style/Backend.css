@@ -313,16 +313,8 @@ body {
     position: absolute;
     top: 5px;
     right: 1px;
-    background: #c0392b;
-    color: white;
-    border: 0px;
-    text-shadow: none;
     margin: 0;
-    height: 21px;
-}
-
-#content .option .element .remove-element:hover {
-    background: #a23029;
+    padding: 2px 1px 0 0;
     cursor: pointer;
 }
 

@@ -80,24 +80,21 @@ class SeriesOption extends Option
     public function renderOptionField()
     {
         global $_ARRAYLANG;
-
-        $images = array();
-        $entryHtml = "";
+        $elements = array();
         // load the rendered template form the option foreach element in the
         // series, so there is only one template needed per option and we do not
         // need to write a {Option}SeriesOption.html foreach option
         foreach ($this->elements as $id => $elm) {
-            $entryHtml .= $this->getElementHtmlTemplate($id, $elm);
+            $elements['elements'][$id]['SERIES_ELEMENT'] =
+                $this->getElementHtmlTemplate($id, $elm)->get();
         }
-
         return parent::renderOptionField(
             array(
-                'TEMPLATEEDITOR_SERIE_CONTENT' => $entryHtml,
                 'TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_ELEMENT' =>
                     $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_ELEMENT'],
             ),
             $_ARRAYLANG,
-            $images
+            $elements
         );
     }
 
@@ -179,7 +176,7 @@ class SeriesOption extends Option
                             'html' => $this->getElementHtmlTemplate(
                                     $key + 1,
                                     array()
-                                ),
+                                )->get(),
                         );
                     break;
                 default:
@@ -235,23 +232,36 @@ class SeriesOption extends Option
     }
 
     /**
-     * Get the rendered html template for an element
+     * Get the sigma template for an element
      *
-     * @param   int     $id         the seriesId of the element
-     * @param   array   $specific   the specific values of the element
-     * @return  String              the rendered html template
+     * @param   int     $id                   the seriesId of the element
+     * @param   array   $specific             the specific values of the element
+     * @return  Sigma                         the html template
+     * @throws  OptionValueNotValidException  If the data which the option should
+     *                                        handle is invalid this exception
+     *                                        will be thrown..
      */
     protected function getElementHtmlTemplate ($id, $specific) {
-        $optionReflection = new \ReflectionClass($this->type);
-        if ($optionReflection->isSubclassOf('Cx\Core_Modules\TemplateEditor\Model\Entity\Option')
+        global $_ARRAYLANG;
+        if (
+            !is_a(
+                $this->type,
+                'Cx\Core_Modules\TemplateEditor\Model\Entity\Option',
+                true
+            )
         ) {
-            $instance = $optionReflection->newInstance(
-                $this->name.'_seriesId'.$id,
-                "",
-                $specific,
-                $this->type
+            throw new OptionValueNotValidException(
+                $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_NO_OPTION']
             );
-            return $instance->renderOptionField()->get();
         }
+        $optionClass = $this->type;
+        $instance = new $optionClass(
+            $this->name.'_seriesId'.$id,
+            "",
+            $specific,
+            $this->type
+        );
+        return $instance->renderOptionField();
+
     }
 }
