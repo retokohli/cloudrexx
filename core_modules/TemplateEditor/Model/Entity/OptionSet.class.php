@@ -106,11 +106,34 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
      */
     public function __construct($theme, $data)
     {
-        $this->name             = $theme->getFoldername();
-        $this->data             = $data;
-        $this->theme            = $theme;
-        $presetStorage
-                                = new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
+        $this->name = $theme->getFoldername();
+        $this->data = $data;
+        // try to initialize the options, so we do not need to load the from
+        // $this->data every time
+        if (isset($data['DlcInfo']) && isset($data['DlcInfo']['options'])) {
+            foreach ($data['DlcInfo']['options'] as $optionArray) {
+                if (
+                    isset($optionArray['type'])
+                    && isset($optionArray['name'])
+                    && isset($optionArray['specific'])
+                ) {
+                    $type = $optionArray['type'];
+                    $option = new $type(
+                        $optionArray['name'],
+                        ($optionArray['translations']) ?
+                            $optionArray['translations'] : array(),
+                        $optionArray['specific'],
+                        $optionArray['type'],
+                        ($optionArray['series']) ?
+                            $optionArray['series'] : false
+                    );
+                    $this->setOption($optionArray['name'], $option);
+                }
+            }
+        }
+        $this->theme = $theme;
+        $presetStorage =
+            new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
             $this->cx->getWebsiteThemesPath() . '/' . $theme->getFoldername()
         );
         $this->presetRepository = new PresetRepository($presetStorage);

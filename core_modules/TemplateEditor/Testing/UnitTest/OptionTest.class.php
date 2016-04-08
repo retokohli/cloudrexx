@@ -63,7 +63,8 @@ class OptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
             $caught = false;
             $textOption->handleChange($invalidValue);
         } catch (
-            \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionValueNotValidException $e) {
+            \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionValueNotValidException $e
+        ) {
             $caught = true;
             $this->assertTrue((strpos($e->getMessage(), $invalidValue) !== false));
         }
@@ -94,7 +95,8 @@ class OptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
             $caught = false;
             $textareaOption->handleChange($invalidValue);
         } catch (
-        \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionValueNotValidException $e) {
+            \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionValueNotValidException $e
+        ) {
             $caught = true;
             $this->assertTrue((strpos($e->getMessage(), $invalidValue) !== false));
         }
