@@ -95,7 +95,8 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('website')
                 ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'website')
-                ->leftJoin('website.owner', 'user');
+                ->leftJoin('website.owner', 'user')
+                ->leftJoin('website.serverWebsite', 'serverWebsite');
         
         $i = 1;
         foreach ($criteria as $fieldType => $value) {
