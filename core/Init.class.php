@@ -703,9 +703,6 @@ class InitCMS
         if (file_exists($cx->getCodeBaseThemesPath().'/'.$folder)) {
             $templateFiles = scandir($cx->getCodeBaseThemesPath().'/'.$folder);
         }
-        if (!empty($cx->getServerWebsitePath()) && file_exists($cx->getServerWebsiteThemesPath().'/'.$folder)) {
-            $templateFiles = array_unique(array_merge($templateFiles, scandir($cx->getServerWebsiteThemesPath().'/'.$folder)));
-        }
         if (file_exists($cx->getWebsiteThemesPath().'/'.$folder)) {
             $templateFiles = array_unique(array_merge($templateFiles, scandir($cx->getWebsiteThemesPath().'/'.$folder)));
         }

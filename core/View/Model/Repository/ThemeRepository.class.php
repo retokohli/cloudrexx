@@ -366,7 +366,7 @@ class ThemeRepository
             }
         }
         
-        $themePath = $this->getThemesFilePath($foldername);
+        $themePath = $theme->getFilePath($foldername);
         if (!file_exists($themePath)) {
             \DBG::log($foldername. ' :Theme folder not Exists');
             return $theme;

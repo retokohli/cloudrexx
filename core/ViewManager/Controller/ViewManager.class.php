@@ -131,8 +131,6 @@ class ViewManager
     public $websiteThemesPath;                // website themes path
     public $codeBaseThemesFilePath;           // default codebase current themes path
     public $websiteThemesFilePath;            // website current themes path
-    public $serverWebsitePath;                // server website path
-    public $serverWebsiteThemesPath;          // server website themes path
     public $serverWebsiteThemesFilePath;      // server website current themes path
     public $tableExists;                      // Table exists
     public $oldTable;                         // old Theme-Table name
@@ -154,8 +152,6 @@ class ViewManager
         $this->codeBaseThemesPath = $cx->getCodeBaseThemesPath() . '/';
         $this->websitePath  = $cx->getWebsiteDocumentRootPath() . '/';
         $this->websiteThemesPath  = $cx->getWebsiteThemesPath() . '/';
-        $this->serverWebsitePath  = $cx->getServerWebsiteDocumentRootPath() . '/';
-        $this->serverWebsiteThemesPath = $cx->getServerWebsiteThemesPath() . '/';
         $this->themeZipPath = '/themezips/';
         $this->_archiveTempWebPath = $cx->getWebsiteTempWebPath() . $this->themeZipPath;
         $this->_archiveTempPath = $cx->getWebsiteTempPath() . $this->themeZipPath;
@@ -484,7 +480,6 @@ class ViewManager
         
         $this->codeBaseThemesFilePath = $this->codeBaseThemesPath . $theme->getFoldername();
         $this->websiteThemesFilePath  = $this->websiteThemesPath . $theme->getFoldername();
-        $this->serverWebsiteThemesFilePath = $this->serverWebsiteThemesPath . $theme->getFoldername();
         
         $filePath = '';
         $relativeFilePath = '';
@@ -494,7 +489,7 @@ class ViewManager
         
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if (!is_file($filePath)) {
-            $filePath = $this->themeRepository->getThemesFilePath($theme->getFoldername() . '/index.html');
+            $filePath = $theme->getFilePath($theme->getFoldername() . '/index.html');
             $relativeFilePath = '/index.html';
             $themesPage = '/index.html';
         }
@@ -1159,13 +1154,6 @@ CODE;
             $websiteIterator = new \DirectoryIterator($this->websiteThemesFilePath);
             $websiteThemesFiles = $this->directoryIteratorToArray($websiteIterator);
         }
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if ($cx->getServerWebsitePath() && file_exists($this->serverWebsiteThemesFilePath)) {
-            $serverWebsiteIterator    = new \DirectoryIterator($this->serverWebsiteThemesFilePath);
-            $serverWebsiteThemesFiles = $this->directoryIteratorToArray($serverWebsiteIterator);
-            $this->array_merge_recursive_distinct($serverWebsiteThemesFiles, $websiteThemesFiles);
-            $websiteThemesFiles = $serverWebsiteThemesFiles;
-        }
 
         $this->array_merge_recursive_distinct($codeBaseFiles, $websiteThemesFiles);
         $this->sortFilesFolders($codeBaseFiles);
@@ -1522,11 +1510,7 @@ CODE;
         }
         
        $mergeFolders = array_unique(array_merge($codeBaseDir, $websiteDir));
-        $cx           = \Cx\Core\Core\Controller\Cx::instanciate();
-        if (!empty($cx->getServerWebsitePath()) && file_exists($this->serverWebsiteThemesPath)) {
-            $serverWebsiteDir = $this->readFiles($this->serverWebsiteThemesPath);
-            $mergeFolders = array_unique(array_merge($mergeFolders, $serverWebsiteDir));
-        }
+
        sort($mergeFolders);
        $result = '';
        foreach($mergeFolders as $folder) {
@@ -1683,12 +1667,10 @@ CODE;
         
         $websitePath  = $this->websiteThemesFilePath;
         $codebasePath = $this->codeBaseThemesFilePath;
-        $serverWebsitePath = $this->serverWebsiteThemesFilePath;
         
         if ($fileTypeComponent && $isComponentFile) { // selected from create overrides
             $websitePath  = $this->websitePath;
             $codebasePath = $this->codeBasePath;
-            $serverWebsitePath = $this->serverWebsitePath;
         }
         
         $relativeFilePath = $filePath;
@@ -1698,15 +1680,11 @@ CODE;
         
         $websiteFilePath  = $websitePath . $relativeFilePath;
         $codeBaseFilePath = $codebasePath . $relativeFilePath;
-        $serverWebsiteFilePath = $serverWebsitePath . $relativeFilePath;
         
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         if (file_exists($websiteFilePath)) {
             $filePath = $websiteFilePath;
             $relativeFilePath = preg_replace('#' . $cx->getWebsitePath() . '#', '', $websiteFilePath);
-        } elseif (!empty($cx->getServerWebsitePath()) && file_exists($serverWebsiteFilePath)) {
-            $filePath = $serverWebsiteFilePath;
-            $relativeFilePath = preg_replace('#' . $cx->getServerWebsitePath() . '#', '', $serverWebsiteFilePath);
         } elseif (file_exists($codeBaseFilePath)) {
             $filePath = $codeBaseFilePath;
             $relativeFilePath = preg_replace('#' . $cx->getCodeBasePath() . '#', '', $codeBaseFilePath);
