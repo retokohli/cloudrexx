@@ -25,13 +25,7 @@
  * our trademarks remain entirely with us.
  */
 
-
-
 namespace Cx\Core_Modules\TemplateEditor\Testing\UnitTest;
-
-use Cx\Core\Html\Sigma;
-use Cx\Core\Test\Model\Entity\ContrexxTestCase;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\SeriesOption;
 
 /**
  * Class SeriesOptionTest
@@ -41,38 +35,66 @@ use Cx\Core_Modules\TemplateEditor\Model\Entity\SeriesOption;
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class SeriesOptionTest extends ContrexxTestCase
+class SeriesOptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
 {
 
-    protected $template = '<!-- BEGIN option -->
-        <div class="option {TEMPLATEEDITOR_OPTION_TYPE}">
-            {TEMPLATEEDITOR_OPTION}
-        </div>
-        <!-- END option -->';
-
     protected function setUp() {
-        global $_LANGID;
-        $_LANGID = 1;
         \Env::get('init')->loadLanguageData('TemplateEditor');
     }
 
-    public function testSeriesOption() {
+    public function testImageSeriesOption() {
+        $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption';
         $elements = array(
             1 => array('url' => 'https://placekitten.com/1500/300'),
-            2 => array('url' => 'https://placekitten.com/1000/500')
+            2 => array('url' => 'https://placekitten.com/1000/500'),
         );
-        $imageOption = new SeriesOption(
+        $this->renderSeriesOption($type, $elements);
+    }
+
+    public function testTextSeriesOption() {
+        $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption';
+        $elements = array(
+            1 => array('textvalue' => 'testTextSeriesOption'),
+            2 => array('textvalue' => 'testTextSeriesOption'),
+        );
+        $this->renderSeriesOption($type, $elements);
+    }
+    public function testTextareaSeriesOption() {
+        $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\TextareaOption';
+        $elements = array(
+            1 => array('textvalue' => 'testTextareaSeriesOption'),
+            2 => array('textvalue' => 'testTextareaSeriesOption'),
+        );
+        $this->renderSeriesOption($type, $elements);
+    }
+
+    public function testColorSeriesOption() {
+        $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption';
+        $elements = array(
+            1 => array('color' => '#8b45a3'),
+            2 => array('color' => '#1f556a'),
+        );
+        $this->renderSeriesOption($type, $elements);
+    }
+
+    /**
+     * Render the template for series option and try to find the elements
+     *
+     * @param string    $type       the type of the option
+     * @param array     $elements   the elements to render
+     */
+    private function renderSeriesOption($type, $elements){
+        $option = new \Cx\Core_Modules\TemplateEditor\Model\Entity\SeriesOption(
             'test',
             array(1 => 'Unit-Test'),
-            array('elements' => $elements)
+            array('elements' => $elements),
+            $type
         );
-        $backendTemplate = new Sigma();
-        $backendTemplate->setTemplate($this->template);
-        $imageOption->renderOptionField($backendTemplate);
+        $backendTemplate = $option->renderOptionField();
         $renderedTemplate = $backendTemplate->get();
-        foreach ($elements['elements'] as $element) {
+        foreach ($elements as $element) {
             foreach($element as $value) {
-                $this->assertTrue((strpos($renderedTemplate, $value) !== 0));
+                $this->assertTrue((strpos($renderedTemplate, $value) !== false));
             }
         }
     }

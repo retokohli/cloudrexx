@@ -24,19 +24,8 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
-
 
 namespace Cx\Core_Modules\TemplateEditor\Testing\UnitTest;
-
-use Cx\Core\Html\Sigma;
-use Cx\Core\Test\Model\Entity\ContrexxTestCase;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\AreaOption;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\SeriesOption;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\OptionValueNotValidException;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption;
 
 /**
  * Class OptionTest
@@ -46,15 +35,8 @@ use Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption;
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class OptionTest extends ContrexxTestCase
+class OptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
 {
-
-    protected $template = '<!-- BEGIN option -->
-        <div class="option {TEMPLATEEDITOR_OPTION_TYPE}">
-            {TEMPLATEEDITOR_OPTION}
-        </div>
-        <!-- END option -->';
-
     protected function setUp() {
         global $_LANGID;
         $_LANGID = 1;
@@ -62,83 +44,120 @@ class OptionTest extends ContrexxTestCase
     }
 
     public function testTextOption() {
-        $testValue       = 'TestString';
-        $textOption      = new TextOption(
-            'test', array(1 => 'Unit-Test'),
-            array('textvalue' => $testValue, 'regex' => '/^[a-z]+$/i', 'regexError' => array(1 => 'Darf nur Buchstaben enthalten: %s'))
+        $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption';
+        $testValue = 'TestString';
+        $textOption = new $type(
+                'test',
+                array(1 => 'Unit-Test'),
+                array(
+                    'textvalue' => $testValue,
+                    'regex' => '/^[a-z]+$/i',
+                    'regexError' => array(
+                        1 => 'Darf nur Buchstaben enthalten: %s',
+                    ),
+                ),
+                $type
         );
-        $backendTemplate = new Sigma();
-        $backendTemplate->setTemplate($this->template);
-
         $invalidValue = 'hello1';
         try {
+            $caught = false;
             $textOption->handleChange($invalidValue);
-        } catch (OptionValueNotValidException $e) {
-            $this->assertTrue((strpos($e->getMessage(), $invalidValue) !== 0));
+        } catch (
+            \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionValueNotValidException $e) {
+            $caught = true;
+            $this->assertTrue((strpos($e->getMessage(), $invalidValue) !== false));
         }
-        $textOption->renderOptionField($backendTemplate);
-        $renderedTemplate = $backendTemplate->get();
-        $this->assertTrue((strpos($renderedTemplate, $testValue) !== 0));
+        if (!$caught) {
+            $this->assertTrue(false);
+        }
+        $this->renderOption($textOption, $testValue);
+    }
+
+    public function testTextareaOption() {
+        $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\TextareaOption';
+        $testValue = 'TestString \n TestString2';
+        $textareaOption = new $type(
+            'test',
+            array(1 => 'Unit-Test'),
+            array(
+                'textvalue' => $testValue,
+                'regex' => '/^[A-Za-z0-9 \\\]+$/i',
+                'regexError' => array(
+                    1 => 'Darf Buchstaben, Zahlen, Zeilenumbrüche und '.
+                        'Leerzeichen enthalten: %s',
+                ),
+            ),
+            $type
+        );
+        $invalidValue = 'invalid$';
+        try {
+            $caught = false;
+            $textareaOption->handleChange($invalidValue);
+        } catch (
+        \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionValueNotValidException $e) {
+            $caught = true;
+            $this->assertTrue((strpos($e->getMessage(), $invalidValue) !== false));
+        }
+        if (!$caught) {
+            $this->assertTrue(false);
+        }
+        $this->renderOption($textareaOption, $testValue);
     }
 
     public function testAreaOption() {
-        $areaOption      = new AreaOption(
-            'test', array(1 => 'Unit-Test'),
-            array('active' => true)
+        $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\AreaOption';
+        $areaOption = new $type(
+            'test',
+            array(1 => 'Unit-Test'),
+            array('active' => true),
+            $type
         );
-        $backendTemplate = new Sigma();
-        $backendTemplate->setTemplate($this->template);
-        $areaOption->renderOptionField($backendTemplate);
-        $renderedTemplate = $backendTemplate->get();
-        $this->assertTrue((strpos($renderedTemplate, 'checked') !== 0));
+        $this->renderOption($areaOption, 'checked');
     }
 
     public function testColorOption() {
-        $color            = '#efefef';
-        $choice            = array('#ededed', '#fefefe');
-        $colorOption      = new ColorOption(
-            'test', array(1 => 'Unit-Test'),
+        $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption';
+        $color = '#efefef';
+        $choice = array('#ededed', '#fefefe');
+        $colorOption = new $type(
+            'test',
+            array(1 => 'Unit-Test'),
             array(
                 'color' => $color,
-                'choice' => $choice
-            )
+                'choice' => $choice,
+            ),
+            $type
         );
-        $backendTemplate = new Sigma();
-        $backendTemplate->setTemplate($this->template);
-        $colorOption->renderOptionField($backendTemplate);
+        $backendTemplate = $colorOption->renderOptionField();
         $renderedTemplate = $backendTemplate->get();
         foreach ($choice as $colorChoice) {
-            $this->assertTrue((strpos($renderedTemplate, $colorChoice) !== 0));
+            $this->assertTrue((strpos($renderedTemplate, $colorChoice) !== false));
         }
-        $this->assertTrue((strpos($renderedTemplate, $color) !== 0));
+        $this->assertTrue((strpos($renderedTemplate, $color) !== false));
     }
 
     public function testImageOption() {
+        $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption';
         $url = 'https://placekitten.com/1500/300';
-        $imageOption = new ImageOption( 'test', array(1 => 'Unit-Test'),
-            array(
-                'url' => $url
-            ));
-        $backendTemplate = new Sigma();
-        $backendTemplate->setTemplate($this->template);
-        $imageOption->renderOptionField($backendTemplate);
-        $renderedTemplate = $backendTemplate->get();
-        $this->assertTrue((strpos($renderedTemplate, $url) !== 0));
+        $imageOption = new $type(
+            'test',
+            array(1 => 'Unit-Test'),
+            array('url' => $url),
+            $type
+        );
+        $this->renderOption($imageOption, $url);
     }
 
-    public function testImageSeriesOption() {
-        $elements = array('https://placekitten.com/1500/300');
-        $imageOption = new SeriesOption( 'test', array(1 => 'Unit-Test'),
-            array(
-                'elements' => $elements
-            ));
-        $backendTemplate = new Sigma();
-        $backendTemplate->setTemplate($this->template);
-        $imageOption->renderOptionField($backendTemplate);
-        $renderedTemplate = $backendTemplate->get();
-        foreach ($elements as $element) {
-            $this->assertTrue((strpos($renderedTemplate, $element) !== 0));
-        }
-    }
+    /**
+     * Render the option and try to find the searchValue
+     *
+     * @param object    $option         the option to render
+     * @param string    $searchValue    the value which should be find
+     */
+    public function renderOption($option, $searchValue){
 
+        $backendTemplate = $option->renderOptionField();
+        $renderedTemplate = $backendTemplate->get();
+        $this->assertTrue((strpos($renderedTemplate, $searchValue) !== false));
+    }
 }
