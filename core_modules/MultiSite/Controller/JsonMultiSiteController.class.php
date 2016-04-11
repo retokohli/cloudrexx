@@ -1794,13 +1794,13 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             $em      = $this->cx->getDb()->getEntityManager();
             $webRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
             //find the websites by ID/NAME
-            $websiteName     = contrexx_input2db($params['post']['websiteName']);
-            $websiteId       = contrexx_input2db($params['post']['websiteId']);
-            $params = array('website.id' => $websiteId);
+            $websiteName = contrexx_input2db($params['post']['websiteName']);
+            $websiteId   = contrexx_input2db($params['post']['websiteId']);
+            $arguments   = array('website.id' => $websiteId);
             if (!isset($params['post']['websiteId'])) {
-                $params = array('website.name' => $websiteName);
+                $arguments = array('website.name' => $websiteName);
             }
-            $websites = $webRepo->findWebsitesByCriteria($params);
+            $websites = $webRepo->findWebsitesByCriteria($arguments);
             $website  = current($websites);
             if (!$website) {
                 \DBG::log('JsonMultiSiteController::setWebsiteDetails() failed: Website by ID/NAME not found.');

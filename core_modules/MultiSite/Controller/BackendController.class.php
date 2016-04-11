@@ -1410,10 +1410,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     if (    $postWebsiteMode != $websiteMode
                         ||  $postWebsiteServer != $websiteServer
                     ) {
-                        if (    ($websiteMode == ComponentController::WEBSITE_MODE_SERVER)
-                            &&  $response = JsonMultiSiteController::executeCommandOnMyServiceServer('checkServerWebsiteAccessedByClient', array('websiteName' => $websiteName))
-                            &&  ($response->status == 'error' || $response->data->isServerAccessByclient)
-                        ) {
+                        $response = ($websiteMode == ComponentController::WEBSITE_MODE_SERVER)
+                                    ? JsonMultiSiteController::executeCommandOnMyServiceServer('checkServerWebsiteAccessedByClient', array('websiteName' => $websiteName))
+                                    : null;
+                        if ($response && ($response->status == 'error' || $response->data->isServerAccessByclient)) {
                             $savePostDataError = true;
                         } else {
                             $params = array(
