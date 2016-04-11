@@ -95,22 +95,31 @@ class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('website')
                 ->from('\Cx\Core_Modules\MultiSite\Model\Entity\Website', 'website')
-                ->leftJoin('website.owner', 'user')
-                ->leftJoin('website.serverWebsite', 'serverWebsite');
+                ->leftJoin('website.owner', 'user');
         
         $i = 1;
+        $isServerWebsiteInCriteria = false;
         foreach ($criteria as $fieldType => $value) {
             if (method_exists($qb->expr(), $fieldType) && is_array($value)) {
                 foreach ($value as $condition) {
+                    if (preg_match('#^serverWebsite#', $condition[0])) {
+                        $isServerWebsiteInCriteria = true;
+                    }
                     $condition[1] = isset($condition[1]) && !is_array($condition[1]) ? $qb->expr()->literal($condition[1]) : $condition[1];
                     $qb->andWhere(call_user_func(array($qb->expr(), $fieldType), $condition[0], $condition[1]));
                 }
             } else {
+                if (preg_match('#^serverWebsite#', $fieldType)) {
+                    $isServerWebsiteInCriteria = true;
+                }
                 $qb->andWhere($fieldType . ' = ?' . $i)->setParameter($i, $value);
             }
             $i++;
         }
-        
+
+        if ($isServerWebsiteInCriteria) {
+            $qb->leftJoin('website.serverWebsite', 'serverWebsite');
+        }
         return $qb->getQuery()->getResult();
     }
     

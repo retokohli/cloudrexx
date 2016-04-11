@@ -1793,25 +1793,11 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         try {
             $em      = $this->cx->getDb()->getEntityManager();
             $webRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            //get the post values
+            //find the websites by ID/NAME
             $websiteName     = contrexx_input2db($params['post']['websiteName']);
             $websiteId       = contrexx_input2db($params['post']['websiteId']);
-            $websiteMode     = isset($params['post']['mode'])
-                                ? contrexx_input2db($params['post']['mode']) : '';
-            $serverWebsiteId = isset($params['post']['serverWebsiteId'])
-                                ? contrexx_input2db($params['post']['serverWebsiteId']) : 0;
-            $websiteStatus   = isset($params['post']['status'])
-                                ? contrexx_input2db($params['post']['status']) : '';
-            $websiteCodeBase = isset($params['post']['codeBase'])
-                                ? contrexx_input2db($params['post']['codeBase']) : '';
-            $websiteOwnerId  = isset($params['post']['userId'])
-                                ? contrexx_input2db($params['post']['userId']) : 0;
-            $websiteEmail    = isset($params['post']['email'])
-                                ? contrexx_input2db($params['post']['email']) : '';
-
-            //find the websites by ID/NAME
             $params = array('website.id' => $websiteId);
-            if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
+            if (!isset($params['post']['websiteId'])) {
                 $params = array('website.name' => $websiteName);
             }
             $websites = $webRepo->findWebsitesByCriteria($params);
@@ -1822,16 +1808,16 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             }
 
             //Set the website status
-            if (!empty($websiteStatus)) {
-                $website->setStatus($websiteStatus);
+            if (isset($params['post']['status'])) {
+                $website->setStatus(contrexx_input2db($params['post']['status']));
             }
             //Set the website codebase
-            if (!empty($websiteCodeBase)) {
-                $website->setCodeBase($websiteCodeBase);
+            if (isset($params['post']['codeBase'])) {
+                $website->setCodeBase(contrexx_input2db($params['post']['codeBase']));
             }
             //Set the website owner
-            if (!empty($websiteOwnerId) && !empty($websiteEmail)) {
-                $owner = $em->getRepository('Cx\Core\User\Model\Entity\User')->findOneById($websiteOwnerId);
+            if (isset($params['post']['userId']) && isset($params['post']['email'])) {
+                $owner = $em->getRepository('Cx\Core\User\Model\Entity\User')->findOneById(contrexx_input2db($params['post']['userId']));
                 if (!$owner) {
                     $userDetails = $this->createUser($params);
                     $owner = $em->getRepository('Cx\Core\User\Model\Entity\User')->findOneById($userDetails['userId']);
@@ -1840,15 +1826,17 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             }
             //Set the website mode and server website
             $serverWebsite = null;
-            if ($websiteMode == ComponentController::WEBSITE_MODE_CLIENT) {
-                $serverWebsite = $webRepo->findOneById($serverWebsiteId);
+            if (    isset($params['post']['mode'])
+                &&  $params['post']['mode'] == ComponentController::WEBSITE_MODE_CLIENT
+            ) {
+                $serverWebsite = $webRepo->findOneById(contrexx_input2db($params['post']['serverWebsiteId']));
                 if (!$serverWebsite) {
-                    \DBG::log('JsonMultiSiteController::setWebsiteDetails() failed: server Website by ID ' . $serverWebsiteId . ' not found.');
+                    \DBG::log('JsonMultiSiteController::setWebsiteDetails() failed: server Website by ID ' . $params['post']['serverWebsiteId'] . ' not found.');
                     throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']);
                 }
             }
-            if (!empty($websiteMode)) {
-                $website->setMode($websiteMode);
+            if (isset($params['post']['mode'])) {
+                $website->setMode(contrexx_input2db($params['post']['mode']));
             }
             $website->setServerWebsite($serverWebsite);
             $em->flush();
