@@ -1826,7 +1826,8 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                 $website->setOwner($owner);
             }
             //Set the website mode and server website
-            $serverWebsite = null;
+            $oldServerWebsite = $website->getServerWebsite();
+            $serverWebsite    = null;
             if (    isset($params['post']['mode'])
                 &&  $params['post']['mode'] == ComponentController::WEBSITE_MODE_CLIENT
             ) {
@@ -1841,6 +1842,10 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             }
             $website->setServerWebsite($serverWebsite);
             $em->flush();
+            if ($oldServerWebsite != $serverWebsite) {
+                $domainRepository = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+                $domainRepository->exportDomainAndWebsite();
+            }
             return true;
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
