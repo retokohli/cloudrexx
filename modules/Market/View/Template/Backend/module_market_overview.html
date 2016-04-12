@@ -3,7 +3,7 @@
 // <![CDATA[
 function deleteCategory(catId){
     if(confirm('{TXT_DELETE_CATEGORY}'))
-        window.location.replace("index.php?cmd=Market&amp;{CSRF_PARAM}&amp;act=deleteCategorie&amp;id="+catId);
+        window.location.replace("index.php?cmd=Market&{CSRF_PARAM}&act=deleteCategorie&id="+catId);
 }
 
 function selectMultiAction()
@@ -11,16 +11,16 @@ function selectMultiAction()
 	with (document.frmShowCategories) {
 		switch (frmShowCategories_MultiAction.value) {
 			case 'activate':
-				action='index.php?cmd=Market&amp;act=statusCategorie';
+				action='index.php?cmd=Market&act=statusCategorie';
 				submit();
 			break;
 			case 'deactivate':
-				action='index.php?cmd=Market&amp;act=statusCategorie';
+				action='index.php?cmd=Market&act=statusCategorie';
 				submit();
 			break;
 			case 'delete':
 				if (confirm('{TXT_DELETE_CATEGORY}')) {
-					action='index.php?cmd=Market&amp;act=deleteCategorie';
+					action='index.php?cmd=Market&act=deleteCategorie';
 					submit();
 				}
 			break;
