@@ -199,7 +199,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
         foreach ($arrays as $array) {
             reset($base); //important
             while (list($key, $value) = each($array)) {
-                if (is_array($value) && is_array($base[$key])) {
+                if (is_array($value) && isset($base[$key]) && is_array($base[$key])) {
                     $base[$key] = $this->array_merge_recursive($base[$key], $value);
                 } else {
                     $base[$key] = $value;
@@ -464,4 +464,15 @@ class LocalFileSystem extends EntityBase implements FileSystem
             );
         }
     }
+    function getRootPath()
+    {
+        return $this->rootPath;
+    }
+
+    function setRootPath($rootPath)
+    {
+        $this->rootPath = $rootPath;
+    }
+
+
 }

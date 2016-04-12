@@ -120,6 +120,16 @@ class ViewManager
     
     private $themeRepository;
 
+    /**
+     * @var \Cx\Core\Core\Controller\Cx
+     */
+    protected $cx;
+
+    /**
+     * @var \Cx\Core\ViewManager\Model\Entity\ViewManagerFileSystem
+     */
+    protected $fileSystem;
+
     public $arrWebPaths;                      // array web paths
     public $getAct;                           // $_GET['act']
     public $getPath;                          // $_GET['path']
@@ -140,25 +150,28 @@ class ViewManager
     
     function __construct()
     {
-        global  $_ARRAYLANG, $objTemplate, $objDatabase;
+        global  $_ARRAYLANG, $objDatabase;
 
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->cx         = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->fileSystem = $this->cx->getMediaSourceManager()->getMediaType('themes')->getFileSystem();
+
         //add preview.gif to required files
         $this->filenames[] = \Cx\Core\View\Model\Entity\Theme::THEME_PREVIEW_FILE;
+
         //get path variables
-        $this->path = $cx->getWebsiteThemesPath() . '/';
-        $this->arrWebPaths  = array($cx->getWebsiteThemesWebPath() . '/');
-        $this->codeBasePath = $cx->getCodeBaseDocumentRootPath() . '/';
-        $this->codeBaseThemesPath = $cx->getCodeBaseThemesPath() . '/';
-        $this->websitePath  = $cx->getWebsiteDocumentRootPath() . '/';
-        $this->websiteThemesPath  = $cx->getWebsiteThemesPath() . '/';
-        $this->themeZipPath = '/themezips/';
-        $this->_archiveTempWebPath = $cx->getWebsiteTempWebPath() . $this->themeZipPath;
-        $this->_archiveTempPath = $cx->getWebsiteTempPath() . $this->themeZipPath;
+        $this->path                 = $this->cx->getWebsiteThemesPath() . '/';
+        $this->arrWebPaths          = array($this->cx->getWebsiteThemesWebPath() . '/');
+        $this->codeBasePath         = $this->cx->getCodeBaseDocumentRootPath() . '/';
+        $this->codeBaseThemesPath   = $this->cx->getCodeBaseThemesPath() . '/';
+        $this->websitePath          = $this->cx->getWebsiteDocumentRootPath() . '/';
+        $this->websiteThemesPath    = $this->cx->getWebsiteThemesPath() . '/';
+        $this->themeZipPath         = '/themezips/';
+        $this->_archiveTempWebPath  = $this->cx->getWebsiteTempWebPath() . $this->themeZipPath;
+        $this->_archiveTempPath     = $this->cx->getWebsiteTempPath() . $this->themeZipPath;
         //create /tmp/zip path if it doesnt exists
-        if (!file_exists($this->_archiveTempPath)){
-            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($cx->getWebsiteTempPath() . $this->themeZipPath)){
-                $this->strErrMessage = $cx->getWebsiteTempPath() . $this->themeZipPath .":".$_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'];
+        if (!file_exists($this->_archiveTempPath)) {
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($this->cx->getWebsiteTempPath() . $this->themeZipPath)) {
+                $this->strErrMessage = $this->cx->getWebsiteTempPath() . $this->themeZipPath . ":" . $_ARRAYLANG['TXT_THEME_UNABLE_TO_CREATE'];
             }
         }
         $this->webPath = $this->arrWebPaths[0];
@@ -352,14 +365,8 @@ class ViewManager
         ));
 
         $supportForTemplateEditor = false;
-        if (file_exists(
-                $cx->getClassLoader()->getFilePath(
-                    $cx->getWebsiteThemesPath() . '/'
-                    . $theme->getFoldername()
-                    . '/options/options.yml'
-                )
-            )
-        ) {
+        $optionsFile = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($theme->getFoldername(). '/options/options.yml');
+        if ($this->fileSystem->fileExists($optionsFile)) {
             $supportForTemplateEditor = true;
         }
 
@@ -477,29 +484,24 @@ class ViewManager
             $objTemplate->hideBlock('theme_libraries');
             $this->strErrMessage = sprintf($_ARRAYLANG['TXT_THEME_NOT_COMPONENT'], contrexx_raw2xhtml($theme->getThemesname()));
         }
-        
-        $this->codeBaseThemesFilePath = $this->codeBaseThemesPath . $theme->getFoldername();
-        $this->websiteThemesFilePath  = $this->websiteThemesPath . $theme->getFoldername();
-        
-        $filePath = '';
-        $relativeFilePath = '';
+
+        $selectedFile = null;
         if (!empty($themesPage)) {
-            list($filePath, $relativeFilePath) = $this->getFileFullPath($themesPage, $isComponentFile);
+            $selectedFile = $this->getFileFromPath($theme, $themesPage, $isComponentFile);
         }
-        
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if (!is_file($filePath)) {
-            $filePath = $theme->getFilePath($theme->getFoldername() . '/index.html');
-            $relativeFilePath = '/index.html';
-            $themesPage = '/index.html';
+
+        if ($selectedFile == null) {
+            $selectedFile     = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($theme->getFoldername() . '/index.html');
+            $themesPage       = '/index.html';
+            $isComponentFile  = false;
         }
-        
+
         // Get the left side file's menu
         $this->getFilesDropdown($theme, $themesPage, $isComponentFile);
         // Load the content
-        $this->getFilesContent($filePath, $relativeFilePath);
-        
-        $objTemplate->setVariable(array(            
+        $this->getFilesContent($selectedFile);
+
+        $objTemplate->setVariable(array(
             'THEME_ID'                  => $theme->getId(),
             'THEME_SELECTED_THEME'      => $theme->getFoldername(),
             'THEMES_SELECTED_PAGENAME'  => contrexx_raw2xhtml($themesPage),
@@ -507,7 +509,7 @@ class ViewManager
             'THEME_IS_APPLICATION'      => $isComponentFile ? 1 : 0,
             'THEME_EDIT_PATH'           => (!$isComponentFile ? '/'.$theme->getFoldername() : '') . $themesPage,
             'THEMES_MENU'               => $this->getThemesDropdown($theme),
-            'CONTREXX_BASE_URL'         => $cx->getWebsiteOffsetPath() . '/',
+            'CONTREXX_BASE_URL'         => $this->cx->getWebsiteOffsetPath() . '/',
         ));
         
         
@@ -1082,84 +1084,109 @@ CODE;
     function getExportFilePath(\Cx\Core\View\Model\Entity\Theme $theme)
     {
         global $_ARRAYLANG;
-        
+
         //clean up tmp folder
         $this->_cleantmp();
 
         $themeFolder = $theme->getFoldername();
-        
-        $this->codeBaseThemesFilePath = $this->codeBaseThemesPath . $themeFolder;
-        $this->websiteThemesFilePath  = $this->websiteThemesPath . $themeFolder;
-        if (is_dir($this->codeBaseThemesFilePath) || is_dir($this->websiteThemesFilePath)) {
-            $archive    = new \PclZip($this->_archiveTempPath . $themeFolder . '.zip');
-            $themeFiles = $this->getThemesFiles();
-            
-            \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
-            $this->createZipFolder($themeFiles, '', $archive);
-            \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath . $themeFolder . '.zip');
-            return $this->_archiveTempPath . $themeFolder . '.zip';     
+
+        if (!$this->fileSystem->fileExists($themeFolder)) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
+            return false;
         }
-        
-        $this->strErrMessage = $_ARRAYLANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
-        return false;
+
+        $archive    = new \PclZip($this->_archiveTempPath . $themeFolder . '.zip');
+        $themeFiles = $this->getThemesFiles($theme);
+
+        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
+        $this->createZipFolder($archive, $themeFiles, '');
+        \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath . $themeFolder . '.zip');
+        return $this->_archiveTempPath . $themeFolder . '.zip';
     }
-    
+
     /**
-     * create the archive file to tmp folder
+     * Create the archive file to tmp folder
      *
-     * @param array  $themeFilesArray  themes files in array
-     * @param string $folder           folder name
-     * @param object $archive          contains the PclZip archive object
-     *     
+     * @param object $archive           Contains the PclZip archive object
+     * @param array  $themeFilesArray   Themes files in array
+     * @param string $folder            Folder name
      */
-    function createZipFolder($themeFilesArray, $folder = '/', $archive) {
+    function createZipFolder($archive, $themeFilesArray, $folder = '/')
+    {
         global $_ARRAYLANG;
         foreach ($themeFilesArray as $folderName => $fileName) {
             if (is_array($fileName)) {
                 $this->createZipFolder($fileName, $folder . '/' . $folderName, $archive);
-            } else {
-                $relativePath    = $folder . '/' . $fileName;
-                if (self::isFileTypeComponent($relativePath)) {
-                    $relativePath = self::getComponentFilePath($relativePath, false);
-                }
-                if (file_exists($this->websiteThemesFilePath . $folder . '/' . $fileName)) {
-                    $themesFilePath = $this->websiteThemesFilePath;
-                    $removePath     = $this->websiteThemesPath;
-                } else {
-                    $themesFilePath = $this->codeBaseThemesFilePath;
-                    $removePath     = $this->codeBaseThemesPath;
-                }
-                if ($archive->add($themesFilePath . $relativePath, PCLZIP_OPT_REMOVE_PATH, $removePath) == 0) {
-                    \DBG::log($_ARRAYLANG['TXT_THEME_ARCHIVE_ERROR'] .' ' . $archive->errorInfo(true));
-                }
+                continue;
+            }
+            $relativePath = $folder . '/' . $fileName;
+            if (self::isFileTypeComponent($relativePath)) {
+                $relativePath = self::getComponentFilePath($relativePath, false);
+            }
+            $localFile  = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($relativePath);
+            $filePath   = $this->fileSystem->getFullPath($localFile);
+            $removePath = preg_replace('/'. $relativePath .'$/', '', $filePath);
+
+            if ($archive->add($filePath, PCLZIP_OPT_REMOVE_PATH, $removePath) == 0) {
+                \DBG::log($_ARRAYLANG['TXT_THEME_ARCHIVE_ERROR'] .' ' . $archive->errorInfo(true));
             }
         }
     }
 
     /**
-     * get the themes files from codeBaseThemesFilePath and websiteThemesFilePath
+     * Get the themes files using viewmanager filesystem
      *
      * @return  array
      */
-    function getThemesFiles() {
-        
-        $codeBaseFiles = array();
-        $websiteThemesFiles = array();
-        $serverWebsiteThemesFiles = array();
-        if (file_exists($this->codeBaseThemesFilePath)) {
-            $codeBaseIterator = new \DirectoryIterator($this->codeBaseThemesFilePath);
-            $codeBaseFiles = $this->directoryIteratorToArray($codeBaseIterator);
-        }
-        if (file_exists($this->websiteThemesFilePath)) {
-            $websiteIterator = new \DirectoryIterator($this->websiteThemesFilePath);
-            $websiteThemesFiles = $this->directoryIteratorToArray($websiteIterator);
+    function getThemesFiles(\Cx\Core\View\Model\Entity\Theme $theme) {
+        $filesList     = $this->fileSystem->getFileList($theme->getFoldername());
+        $formatedFiles = $this->formatFileList($filesList);
+        $this->sortFilesFolders($formatedFiles);
+
+        return $formatedFiles;
+    }
+
+    /**
+     * Format the Filesystem files and folders to viewManger format
+     *
+     * @param array $filesList
+     *
+     * @return array
+     */
+    function formatFileList($filesList)
+    {
+        $result = array();
+
+        foreach ($filesList as $fileInfo) {
+            $info = $fileInfo['datainfo'];
+            if ($info['type'] == 'file') {
+                $result[] = $info['name'];
+            } elseif ($info['type'] == 'dir') {
+                $subFiles = $fileInfo;
+                unset($subFiles['datainfo']);
+
+                $name = $info['name'];
+                switch (true) {
+                    case $name == ltrim($this->cx->getCoreModuleFolderName() , '/'):
+                        $name = 'core_module';
+                        break;
+                    case $name == ltrim($this->cx->getModuleFolderName(), '/'):
+                        $name = 'module';
+                        break;
+                    case $name == ltrim($this->cx->getCoreFolderName(), '/'):
+                        $name = 'core';
+                        break;
+                    default:
+                        break;
+                }
+
+                $result[$name] = $this->formatFileList($subFiles);
+            }
         }
 
-        $this->array_merge_recursive_distinct($codeBaseFiles, $websiteThemesFiles);
-        $this->sortFilesFolders($codeBaseFiles);
-        return $codeBaseFiles;
+        return $result;
     }
-    
+
     /**
      * Gets the themes assigning page
      * @access   private
@@ -1647,55 +1674,32 @@ CODE;
     }
 
     /**
-     * Get the file's full path
-     * 
-     * @param string  $filePath        Relative path of file
-     * @param boolean $isComponentFile load from component directory or not
-     * 
-     * @return array full and relative path of a file
+     * Get the file from the given path
+     *
+     * @param \Cx\Core\View\Model\Entity\Theme  $theme
+     * @param string                            $filePath
+     * @param boolean                           $isComponentFile
+     *
+     * @return mixed ViewManagerFile instance or null
      */
-    function getFileFullPath($filePath, $isComponentFile)
+    function getFileFromPath(\Cx\Core\View\Model\Entity\Theme $theme, $filePath, $isComponentFile)
     {
         if (empty($filePath)) {
-            return array('', '');
+            return null;
         }
-        
-        $fileTypeComponent = false;
-        if (!empty($filePath)) {
-            $fileTypeComponent = self::isFileTypeComponent($filePath);
-        }
-        
-        $websitePath  = $this->websiteThemesFilePath;
-        $codebasePath = $this->codeBaseThemesFilePath;
-        
-        if ($fileTypeComponent && $isComponentFile) { // selected from create overrides
-            $websitePath  = $this->websitePath;
-            $codebasePath = $this->codeBasePath;
-        }
-        
         $relativeFilePath = $filePath;
-        if ($fileTypeComponent) {
+        if (self::isFileTypeComponent($filePath)) {
             $relativeFilePath = self::getComponentFilePath($filePath, $isComponentFile);
         }
-        
-        $websiteFilePath  = $websitePath . $relativeFilePath;
-        $codeBaseFilePath = $codebasePath . $relativeFilePath;
-        
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if (file_exists($websiteFilePath)) {
-            $filePath = $websiteFilePath;
-            $relativeFilePath = preg_replace('#' . $cx->getWebsitePath() . '#', '', $websiteFilePath);
-        } elseif (file_exists($codeBaseFilePath)) {
-            $filePath = $codeBaseFilePath;
-            $relativeFilePath = preg_replace('#' . $cx->getCodeBasePath() . '#', '', $codeBaseFilePath);
-        } else {
-            $filePath = $relativeFilePath = '';
+        if (!$isComponentFile) {
+            $relativeFilePath = '/' .$theme->getFoldername() . $relativeFilePath;
         }
-        
-        return array($filePath, $relativeFilePath);
-        
+        $localFile = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($relativeFilePath);
+        $localFile->setApplicationTemplateFile($isComponentFile);
+
+        return $this->fileSystem->isFile($localFile) ? $localFile : null;
     }
-    
+
     /**
      * Save the library settings which have been done on the overview page
      * @param \Cx\Core\View\Model\Entity\Theme $theme the template object
@@ -1957,26 +1961,21 @@ CODE;
             }
         }
         $this->sortFilesFolders($componentFiles);
-        
-        $themeFolder = $theme->getFoldername();
-        if ($themeFolder != "") {
-            $mergedFiles = $this->getThemesFiles();
-            
-            $objTemplate->setVariable(array(
-                    'THEME_FILES_TAB'                            => $this->getUlLi($mergedFiles, '', 'theme', !$isComponentFile ? $themesPage : ''),
-                    'THEME_OVERRIDE_TAB'                         => $this->getUlLi($componentFiles, '', 'applicationTheme', $isComponentFile ? $themesPage : ''),
-                    'TXT_DESIGN_LAYOUT'                          => $_ARRAYLANG['TXT_DESIGN_LAYOUT'],
-                    'TXT_DESIGN_APPLICATION_TEMPLATE'            => $_ARRAYLANG['TXT_DESIGN_APPLICATION_TEMPLATE'],
-                    'TXT_DESIGN_CONTENT_TEMPLATE'                => $_ARRAYLANG['TXT_DESIGN_CONTENT_TEMPLATE'],
-                    'TXT_DESIGN_HOME_TEMPLATE'                   => $_ARRAYLANG['TXT_DESIGN_HOME_TEMPLATE'],
-                    'TXT_THEME_NEW_WITHIN'                       => $_ARRAYLANG['TXT_THEME_NEW_WITHIN'],
-                    'TXT_THEME_COPY'                             => $_ARRAYLANG['TXT_THEME_COPY'],
-                    'TXT_THEME_RENAME'                           => $_ARRAYLANG['TXT_THEME_RENAME'],
-                    'TXT_THEME_DELETE'                           => $_ARRAYLANG['TXT_THEME_DELETE'],
-                    'TXT_THEME_ACTIONS'                          => $_ARRAYLANG['TXT_THEME_ACTIONS'],
-                ));
-        }
-        
+
+        $mergedFiles = $this->getThemesFiles($theme);
+        $objTemplate->setVariable(array(
+            'THEME_FILES_TAB'                            => $this->getUlLi($mergedFiles, '', 'theme', !$isComponentFile ? $themesPage : '', $theme),
+            'THEME_OVERRIDE_TAB'                         => $this->getUlLi($componentFiles, '', 'applicationTheme', $isComponentFile ? $themesPage : ''),
+            'TXT_DESIGN_LAYOUT'                          => $_ARRAYLANG['TXT_DESIGN_LAYOUT'],
+            'TXT_DESIGN_APPLICATION_TEMPLATE'            => $_ARRAYLANG['TXT_DESIGN_APPLICATION_TEMPLATE'],
+            'TXT_DESIGN_CONTENT_TEMPLATE'                => $_ARRAYLANG['TXT_DESIGN_CONTENT_TEMPLATE'],
+            'TXT_DESIGN_HOME_TEMPLATE'                   => $_ARRAYLANG['TXT_DESIGN_HOME_TEMPLATE'],
+            'TXT_THEME_NEW_WITHIN'                       => $_ARRAYLANG['TXT_THEME_NEW_WITHIN'],
+            'TXT_THEME_COPY'                             => $_ARRAYLANG['TXT_THEME_COPY'],
+            'TXT_THEME_RENAME'                           => $_ARRAYLANG['TXT_THEME_RENAME'],
+            'TXT_THEME_DELETE'                           => $_ARRAYLANG['TXT_THEME_DELETE'],
+            'TXT_THEME_ACTIONS'                          => $_ARRAYLANG['TXT_THEME_ACTIONS'],
+        ));
     }
     
     /**
@@ -2010,22 +2009,21 @@ CODE;
     
     /**
      * Getting the files and folders in a ul li format for the js tree
-     * 
+     *
      * @param array  $folder     array of files and folders
      * @param string $path       current path of the $folder array
      * @param string $block      type of the folder array (theme or applicationTheme)
      * @param string $themesPage selected file in the ul li
-     * 
+     * @param mixed  $theme      Currently selected theme
+     *
      * @return string formatted ul and li for the js tree
      */
-    function getUlLi($folder, $path, $block, $themesPage) {
+    function getUlLi($folder, $path, $block, $themesPage, $theme = null) {
         $result  = '<ul>';
         $virtualFolder = array('View', 'Template', 'Frontend');
         foreach ($folder as $folderName => $fileName) {
-            $permissionClass = 'protected';
-            $resetClass      = '';
-            $relativePath    = $path . '/' . (is_array($fileName) ? $folderName : $fileName);
-            
+            $relativePath = $path . '/' . (is_array($fileName) ? $folderName .'/' : $fileName);
+
             $isComponentFile = false;
             if (self::isFileTypeComponent($relativePath)) {
                 $componentFilePath = self::getComponentFilePath($relativePath, ($block == 'applicationTheme'));
@@ -2034,23 +2032,18 @@ CODE;
                 }
                 $isComponentFile   = true;
             }
-            
-            $filePath = $this->websiteThemesFilePath . ($isComponentFile ? $componentFilePath : $relativePath);            
-            if (file_exists($filePath)) {
-                $permissionClass = '';
-                if (
-                       ($this->websiteThemesFilePath != $this->codeBaseThemesFilePath)
-                    && file_exists($this->codeBaseThemesFilePath . ($isComponentFile ? $componentFilePath : $relativePath))
-                ) {
-                    $permissionClass = 'protected';
-                    $resetClass      = 'reset';
-                }
-            } else {
-                $filePath = $this->codeBaseThemesFilePath . ($isComponentFile ? $componentFilePath : $relativePath);
+
+            $filePath  = $isComponentFile ? $componentFilePath : $relativePath;
+            if ($block == 'theme') {
+                $filePath = $theme->getFolderName() . $filePath;
             }
-                        
+            $localFile = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($filePath);
+            $localFile->setApplicationTemplateFile(($block == 'applicationTheme'));
+
+            $permissionClass = $this->fileSystem->isReadOnly($localFile) ? 'protected' : '';
+            $resetClass      = $this->fileSystem->isResettable($localFile) ? 'reset' : '';
+
             if (is_array($fileName)) {
-                
                 if (   $block == 'applicationTheme'
                     || (
                            $block == 'theme'
@@ -2062,19 +2055,18 @@ CODE;
 
                     $result .= '<li><a  href="javascript:void(0);"' .$activeFolder. ' data-rel="'. $relativePath .'" class="folder naming '. $permissionClass .' '. $resetClass .'">' . $icon . $folderName . '</a>';
                 }
-                $result .= $this->getUlLi($fileName, $path .(!in_array($folderName, $virtualFolder) ? '/'. $folderName : ''), $block, $themesPage);
+                $result .= $this->getUlLi($fileName, $path .(!in_array($folderName, $virtualFolder) ? '/'. $folderName : ''), $block, $themesPage, $theme);
                 $result .= '</li>';
             } else {
-                
                 if (in_array($fileName, $this->filenames)) {
                     $iconSrc = '../core/ViewManager/View/Media/Config.png';
                 } else {
-                    $iconSrc = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($filePath) . '.png';
+                    $iconSrc = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIconWebPath() . \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($this->fileSystem->getFullPath($localFile)) . '.png';
                 }
-                
+
                 $icon    = "<img height='16' width='16' alt='icon' src='" . $iconSrc . "' class='icon'>";
                 $activeFile = ($themesPage == $relativePath) ? "id = 'activeFile'" : '';
-                
+
                 $result .= "<li><a  href= 'javascript:void(0);' class='loadThemesPage naming $permissionClass $resetClass' $activeFile data-rel='" . $relativePath . "'>" . $icon . $fileName . "</a></li>";
             }
         }
@@ -2082,128 +2074,54 @@ CODE;
         
         return $result;
     }
-    
-    /**
-     * Converting the files and folders in array format recursively
-     * 
-     * @param \DirectoryIterator $it - DirectoryIterator class object for the array
-     * 
-     * @return array $result 
-     */
-    function directoryIteratorToArray(\DirectoryIterator $it) {
-        $result = array();
-        $virtualFolder = array('View', 'Template', 'Frontend');
-        
-        foreach ($it as $child) {
-            if ($child->isDot()) {
-                continue;
-            }
-            $name = $child->getBasename();
-            if ($child->isDir()) {
-                switch (true) {
-                    case $name == preg_replace('#^/#', '', \Env::get('cx')->getCoreModuleFolderName()):
-                        $name = 'core_module';
-                        break;
-                    case $name == preg_replace('#^/#', '', \Env::get('cx')->getModuleFolderName()):
-                        $name = 'module';
-                        break;
-                    case $name == preg_replace('#^/#', '', \Env::get('cx')->getCoreFolderName()):
-                        $name = 'core';
-                        break;
-                    default:
-                        break;
-                }
-                $subit = new \DirectoryIterator($child->getPathname());
-                if (in_array($name, $virtualFolder)) {
-                    return $this->directoryIteratorToArray($subit);
-                }
-                $result[$name] = $this->directoryIteratorToArray($subit);
-            } else {
-                $result[] = $name;
-            }
-        }
-        return $result;
-    }
-    
-    /**
-     * merging the array recursively without any duplicates
-     * 
-     * @param array $array1 
-     * @param array $array2 
-     * 
-     * @return array $merged
-     */
-    function array_merge_recursive_distinct(array &$array1, &$array2 = null)
-    {
-        foreach ($array2 as $key => $value) {
-            if (is_array($value)) {
-                if (array_key_exists($key, $array1)) {
-                    $this->array_merge_recursive_distinct($array1[$key], $value);
-                } else {
-                    $array1[$key] = $value;
-                }
-            } else {
-                if (!in_array($value, $array1)) {
-                    $array1[] = $value;
-                }
-            }
-        }
-    }
-    
+
     /**
      * Gets the themes pages file content
-     * @access   public
-     * @param    string   $filePath
-     * @param    string   $relativeFilePath
-     * 
-     * @return   string   $fileContent
+     *
+     * @param \Cx\Core\ViewManager\Model\Entity\ViewManagerFile $file
+     * @return null
      */
-    function getFilesContent($filePath, $relativeFilePath)
+    function getFilesContent(\Cx\Core\ViewManager\Model\Entity\ViewManagerFile $file)
     {
         global $objTemplate, $_ARRAYLANG;
-        
-        if (file_exists($filePath)) {
-            $objImageManager = new \ImageManager;
-            $fileIsImage = $objImageManager->_isImage($filePath);
-            $contenthtml = '';
-            if (!$fileIsImage) {
-                $contenthtml = file_get_contents($filePath);
-                $contenthtml = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $contenthtml);
-                $contenthtml = htmlspecialchars($contenthtml);
+
+        if (!$this->fileSystem->fileExists($file)) {
+            return;
+        }
+
+        if ($this->fileSystem->isImageFile($file)) {
+            $objTemplate->setVariable(array(
+                'THEMES_CONTENT_IMAGE_PATH' => $this->cx->getThemesFolderName() . $file->__toString(),
+            ));
+            $objTemplate->touchBlock('template_image');
+            $objTemplate->hideBlock('template_content');
+            $objTemplate->hideBlock('file_actions_bottom');
+            $objTemplate->hideBlock('file_editor_fullscreen');
+        } else {
+            \JS::activate('ace');
+
+            $contenthtml = htmlspecialchars(
+                preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $this->fileSystem->readFile($file))
+            );
+            $objTemplate->setVariable('CONTENT_HTML', $contenthtml);
+            $pathInfo =  pathinfo($this->fileSystem->getFullPath($file), PATHINFO_EXTENSION);
+            $mode = 'html';
+
+            switch($pathInfo) {
+                case 'html':
+                case 'css':
+                    $mode = $pathInfo;
+                break;
+                case 'js':
+                    $mode = 'javascript';
+                break;
+                case 'yml':
+                case 'yaml':
+                    $mode = 'yaml';
+                break;
             }
 
-            $objTemplate->setVariable(array(
-                'CONTENT_HTML'             => $contenthtml,                
-            ));
-            if ($fileIsImage) {                
-                $objTemplate->setVariable(array(
-                    'THEMES_CONTENT_IMAGE_PATH' => $relativeFilePath,
-                ));
-                $objTemplate->touchBlock('template_image');
-                $objTemplate->hideBlock('template_content');
-                $objTemplate->hideBlock('file_actions_bottom');
-                $objTemplate->hideBlock('file_editor_fullscreen');
-            } else {
-                \JS::activate('ace');
-
-                $pathInfo =  pathinfo($filePath, PATHINFO_EXTENSION);
-                $mode = 'html';
-
-                switch($pathInfo) {
-                    case 'html':
-                    case 'css':                                                    
-                        $mode = $pathInfo;
-                    break;
-                    case 'js':
-                        $mode = 'javascript';
-                    break;
-                    case 'yml':
-                    case 'yaml':
-                        $mode = 'yaml';
-                    break;
-                }
-                
-                $jsCode = <<<CODE
+            $jsCode = <<<CODE
 var editor;                        
 \$J(function(){         
 if (\$J("#editor").length) {
@@ -2256,17 +2174,13 @@ if (\$J("#editor").length) {
 });
 CODE;
 
-                \JS::registerCode($jsCode);
-                
-                $objTemplate->touchBlock('file_editor_fullscreen');
-                $objTemplate->touchBlock('file_actions_bottom');
-                $objTemplate->touchBlock('template_content');
-                $objTemplate->hideBlock('template_image');
-            }            
-        } else {
-            //TO-DO : 
+            \JS::registerCode($jsCode);
+
+            $objTemplate->touchBlock('file_editor_fullscreen');
+            $objTemplate->touchBlock('file_actions_bottom');
+            $objTemplate->touchBlock('template_content');
+            $objTemplate->hideBlock('template_image');
         }
-        
     }
 
     /**

@@ -375,18 +375,13 @@ class Theme extends \Cx\Model\Base\EntityBase
         if (empty($filePath)) {
             return '';
         }
+        $file = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($filePath);
 
-        //Check the website's data repository
-        if (file_exists($this->cx->getWebsiteThemesPath() . '/' . $filePath)) {
-            return $this->cx->getWebsiteThemesPath() . '/' . $filePath;
-        }
-
-        //Check the codebase repository
-        if (file_exists($this->cx->getCodeBaseThemesPath() . '/'. $filePath)) {
-            return $this->cx->getCodeBaseThemesPath() . '/'. $filePath;
-        }
-
-        return '';
+        return \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getMediaSourceManager()
+                    ->getMediaType('themes')
+                    ->getFileSystem()
+                    ->getFullPath($file);
     }
 
     /**
