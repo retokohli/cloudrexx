@@ -303,16 +303,20 @@ function _calendarUpdate()
                         'place_zip'                          => array('type' => 'VARCHAR(10)', 'notnull' => false, 'after' => 'place_street'),
                         'place_city'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_zip'),
                         'place_country'                      => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_city'),
-                        'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_country'),
-                        'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_link'),
+                        'place_website'                      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'place_country'),
+                        'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_website'),
+                        'place_phone'                        => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'place_link'),
+                        'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_phone'),
                         'host_type'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'place_map'),
                         'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'host_type'),
                         'org_street'                         => array('type' => 'VARCHAR(255)', 'after' => 'org_name'),
                         'org_zip'                            => array('type' => 'VARCHAR(10)', 'after' => 'org_street'),
                         'org_city'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_zip'),
                         'org_country'                        => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
-                        'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_country'),
-                        'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_link'),
+                        'org_website'                        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'org_country'),
+                        'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_website'),
+                        'org_phone'                          => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'org_link'),
+                        'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_phone'),
                         'host_mediadir_id'                   => array('type' => 'INT(11)', 'after' => 'org_email')
                     ),
                     array(
@@ -438,20 +442,41 @@ function _calendarUpdate()
                     'place_zip'                          => array('type' => 'VARCHAR(10)', 'notnull' => false, 'after' => 'place_street'),
                     'place_city'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_zip'),
                     'place_country'                      => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_city'),
-                    'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_country'),
-                    'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_link'),
+                    'place_website'                      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'place_country'),
+                    'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_website'),
+                    'place_phone'                        => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'place_link'),
+                    'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_phone'),
                     'host_type'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'place_map'),
                     'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'host_type'),
                     'org_street'                         => array('type' => 'VARCHAR(255)', 'after' => 'org_name'),
                     'org_zip'                            => array('type' => 'VARCHAR(10)', 'after' => 'org_street'),
                     'org_city'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_zip'),
                     'org_country'                        => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
-                    'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_country'),
-                    'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_link'),
+                    'org_website'                        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'org_country'),
+                    'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_website'),
+                    'org_phone'                          => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'org_link'),
+                    'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_phone'),
                     'host_mediadir_id'                   => array('type' => 'INT(11)', 'after' => 'org_email')
                 ),
                 array(
                     'fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1' => array('fields' => array('catid'))
+                )
+            );
+
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_calendar_event_field',
+                array(
+                    'event_id' => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
+                    'lang_id' => array('type' => 'VARCHAR(225)', 'notnull' => false, 'after' => 'event_id'),
+                    'title' => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'lang_id'),
+                    'teaser' => array('type' => 'text', 'notnull' => false, 'after' => 'title'),
+                    'description' => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'teaser'),
+                    'redirect' => array('type' => 'VARCHAR(255)', 'after' => 'description')
+                ),
+                array(
+                    'lang_field' => array('fields' => array('title')),
+                    'fk_contrexx_module_calendar_note_field_contrexx_module_calend1' => array('fields' => array('event_id')),
+                    'eventIndex' => array('fields' => array('title', 'teaser', 'description'), 'type' => 'FULLTEXT')
                 )
             );
 
@@ -864,7 +889,7 @@ class CalendarUpdate
                         'registration_form'                  => array('type' => 'INT(11)', 'after' => 'registration'),
                         'registration_num'                   => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'registration_form'),
                         'registration_notification'          => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'registration_num'),
-                        'email_template'                     => array('type' => 'INT(11)', 'after' => 'registration_notification'),
+                        'email_template'                     => array('type' => 'VARCHAR(255)', 'after' => 'registration_notification'),
                         'ticket_sales'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email_template'),
                         'num_seating'                        => array('type' => 'text', 'after' => 'ticket_sales'),
                         'series_status'                      => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'num_seating'),
@@ -877,27 +902,35 @@ class CalendarUpdate
                         'series_pattern_type'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_month'),
                         'series_pattern_dourance_type'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_type'),
                         'series_pattern_end'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_dourance_type'),
-                        'series_pattern_begin'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end'),
+                        'series_pattern_end_date'            => array('type' => 'timestamp', 'notnull' => true, 'default' => '0000-00-00 00:00:00', 'after' => 'series_pattern_end'),
+                        'series_pattern_begin'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end_date'),
                         'series_pattern_exceptions'          => array('type' => 'longtext', 'after' => 'series_pattern_begin'),
                         'status'                             => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'series_pattern_exceptions'),
                         'confirmed'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'status'),
                         'show_detail_view'                   => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'confirmed'),
                         'author'                             => array('type' => 'VARCHAR(255)', 'after' => 'show_detail_view'),
                         'all_day'                            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'author'),
-                        'place'                              => array('type' => 'VARCHAR(255)', 'after' => 'all_day'),
+                        'location_type'                      => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'all_day'),
+                        'place'                              => array('type' => 'VARCHAR(255)', 'after' => 'location_type'),
                         'place_id'                           => array('type' => 'INT(11)', 'after' => 'place'),
                         'place_street'                       => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_id'),
                         'place_zip'                          => array('type' => 'VARCHAR(10)', 'notnull' => false, 'after' => 'place_street'),
                         'place_city'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_zip'),
                         'place_country'                      => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_city'),
-                        'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_country'),
-                        'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_link'),
-                        'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'place_map'),
+                        'place_website'                      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'place_country'),
+                        'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_website'),
+                        'place_phone'                        => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'place_link'),
+                        'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_phone'),
+                        'host_type'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'place_map'),
+                        'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'host_type'),
                         'org_street'                         => array('type' => 'VARCHAR(255)', 'after' => 'org_name'),
                         'org_zip'                            => array('type' => 'VARCHAR(10)', 'after' => 'org_street'),
                         'org_city'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_zip'),
-                        'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
-                        'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_link'),
+                        'org_country'                        => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
+                        'org_website'                        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'org_country'),
+                        'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_website'),
+                        'org_phone'                          => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'org_link'),
+                        'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_phone'),
                         'host_mediadir_id'                   => array('type' => 'INT(11)', 'after' => 'org_email')
                     ),
                     array(
@@ -925,7 +958,7 @@ class CalendarUpdate
                     array(
                         'lang_field' => array('fields' => array('title')),
                         'fk_contrexx_module_calendar_note_field_contrexx_module_calend1' => array('fields' => array('event_id')),
-                        'eventIndex' => array('fields' => array('title', 'description'), 'type' => 'FULLTEXT')
+                        'eventIndex' => array('fields' => array('title', 'teaser', 'description'), 'type' => 'FULLTEXT')
                     )
                 );
             }
