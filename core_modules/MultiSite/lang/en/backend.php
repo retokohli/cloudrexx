@@ -551,3 +551,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_WEBSITE_DOMAIN_THEME_ERROR']= 'Fai
 
 //get servre website list by mode
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_BY_MODE_CLIENT_ERROR_MSG']= 'Failed to get the server website list.';
+
+//set the website details
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']= 'Failed to set the website details.';
+

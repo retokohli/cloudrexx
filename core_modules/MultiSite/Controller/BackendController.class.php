@@ -1410,21 +1410,26 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     if (    $postWebsiteMode != $websiteMode
                         ||  $postWebsiteServer != $websiteServer
                     ) {
-                        $params = array(
-                            'websiteName'     => $websiteName,
-                            'mode'            => $postWebsiteMode,
-                            'serverWebsiteId' => $postWebsiteServer
-                        );
-                        $response = JsonMultiSiteController::executeCommandOnMyServiceServer('updateWebsiteDetails', $params);
-                        if (!$response || $response->status == 'error' || $response->data->status == 'error') {
+                        $response = ($websiteMode == ComponentController::WEBSITE_MODE_SERVER)
+                                    ? JsonMultiSiteController::executeCommandOnMyServiceServer('checkServerWebsiteAccessedByClient', array('websiteName' => $websiteName))
+                                    : null;
+                        if ($response && ($response->status == 'error' || $response->data->isServerAccessByclient)) {
                             $savePostDataError = true;
+                        } else {
+                            $params = array(
+                                'websiteName'     => $websiteName,
+                                'mode'            => $postWebsiteMode,
+                                'serverWebsiteId' => $postWebsiteServer
+                            );
+                            $response = JsonMultiSiteController::executeCommandOnManager('setWebsiteDetails', $params);
+                            if (!$response || $response->status == 'error' || $response->data->status == 'error') {
+                                $savePostDataError = true;
+                            }
                         }
                     }
-                    if ($savePostDataError) {
-                        \Message::warning($_ARRAYLANG['TXT_MULTISITE_SETTINGS_UPDATE_WEBSITE_SERVER_AND_MODE_ERROR_MSG']);
-                    } else {
-                        \Cx\Core\Setting\Controller\Setting::storeFromPost();
-                    }
+                    $savePostDataError
+                        ? \Message::warning($_ARRAYLANG['TXT_MULTISITE_SETTINGS_UPDATE_WEBSITE_SERVER_AND_MODE_ERROR_MSG'])
+                        : \Cx\Core\Setting\Controller\Setting::storeFromPost();
                 } else {
                     \Cx\Core\Setting\Controller\Setting::storeFromPost();
                 }
