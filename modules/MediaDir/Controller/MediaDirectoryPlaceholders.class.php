@@ -80,7 +80,9 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
     {
         $this->strPlaceholder = null;
         
-        $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']); 
+        $intLimitEnd = ($this->arrSettings['showLatestEntriesInOverview'] == 1)
+                        ? intval($this->arrSettings['settingsLatestNumOverview'])
+                        : null;
         
         $objEntries = new MediaDirectoryEntry($this->moduleName); 
         $objEntries->getEntries(null,null,null,null,true,null,1,null,$intLimitEnd);  
