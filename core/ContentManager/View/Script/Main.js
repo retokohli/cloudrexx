@@ -176,19 +176,19 @@ cx.ready(function() {
         }
         var lang = cx.variables.get('language', 'contrexx');
         cx.jQuery('#page_target_wrapper').hide();
-        cx.jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + lang + '/' + path).attr('href', function() {return cx.jQuery(this).text()});
-        cx.jQuery('#page_target_text_wrapper').show();
+        cx.jQuery('.page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + lang + '/' + path).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('.page_target_text_wrapper').show();
         cx.jQuery('#page_target_protocol > option').removeAttr('selected');
         cx.jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
-        cx.jQuery('#page_target, #page_target_backup').val(url);
+        cx.jQuery('#page_target, .page_target_backup').val(url);
       }
       else if (data.type == "file") {
         cx.jQuery('#page_target_wrapper').hide();
-        cx.jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + data.data[0].datainfo.filepath.substr(1)).attr('href', function() {return cx.jQuery(this).text()});
-        cx.jQuery('#page_target_text_wrapper').show();
+        cx.jQuery('.page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + data.data[0].datainfo.filepath.substr(1)).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('.page_target_text_wrapper').show();
         cx.jQuery('#page_target_protocol > option').removeAttr('selected');
         cx.jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
-        cx.jQuery('#page_target, #page_target_backup').val(data.data[0].datainfo.filepath);
+        cx.jQuery('#page_target, .page_target_backup').val(data.data[0].datainfo.filepath);
       }
     }
     
@@ -197,7 +197,7 @@ cx.ready(function() {
         if (cx.jQuery(this).val() != targetValue) {
             cx.jQuery(this).val(targetValue);
         }
-        var targetValueBackup = cx.jQuery('#page_target_backup').val();
+        var targetValueBackup = cx.jQuery('.page_target_backup').val();
         var matchesPageTarget = regExpUriProtocol.exec(targetValueBackup);
         if (matchesPageTarget) {
             targetValueBackup = targetValueBackup.replace(matchesPageTarget[0], '');
@@ -209,7 +209,7 @@ cx.ready(function() {
         cx.jQuery('#page_target_check').toggle(showOrHide);
     });
     cx.jQuery('#page_target_protocol').change(function() {
-        var targetValueBackup    = cx.jQuery('#page_target_backup').val();
+        var targetValueBackup    = cx.jQuery('.page_target_backup').val();
         var matchesPageTarget    = regExpUriProtocol.exec(targetValueBackup);
         var targetProtocolBackup = '';
         if (matchesPageTarget) {
@@ -223,19 +223,19 @@ cx.ready(function() {
     });
     cx.jQuery('#page_target_edit').click(function() {
         cx.jQuery('#page_target_cancel').show();
-        cx.jQuery('#page_target_text_wrapper').hide().prev().show();
+        cx.jQuery('.page_target_text_wrapper').hide().prev().show();
     });
     cx.jQuery('#page_target_cancel').click(function() {
-        cx.cm.setPageTarget(cx.jQuery("#page_target_backup").val(), cx.jQuery("#page_target_text").text());
+        cx.cm.setPageTarget(cx.jQuery(".page_target_backup").val(), cx.jQuery(".page_target_text").text());
     });
     cx.jQuery('#page_target_check').click(function() {
         cx.jQuery(this).hide();
-        cx.jQuery('#page_target_text').text('');
-        cx.jQuery('#page_target_backup').val(cx.jQuery('#page_target_protocol').val() + cx.jQuery('#page_target').val());
+        cx.jQuery('.page_target_text').text('');
+        cx.jQuery('.page_target_backup').val(cx.jQuery('#page_target_protocol').val() + cx.jQuery('#page_target').val());
         cx.jQuery.getJSON('index.php?cmd=JsonData&object=page&act=getPathByTarget', {
-            target: cx.jQuery('#page_target_backup').val()
+            target: cx.jQuery('.page_target_backup').val()
         }, function(data) {
-            cx.jQuery('#page_target_text').text(data.data).attr('href', function() {return cx.jQuery(this).text()});
+            cx.jQuery('.page_target_text').text(data.data).attr('href', function() {return cx.jQuery(this).text()});
         });
         cx.jQuery('#page_target_wrapper').hide().next().show();
     });
@@ -655,6 +655,10 @@ cx.cm = function(target) {
                         page.visibility.type = "redirection";
                         page.visibility.fallback = false;
                         break;
+                    case "symlink":
+                        page.visibility.type = "symlink";
+                        page.visibility.fallback = false;
+                        break;
                     case "application": 
                         var module = cx.jQuery("[name=\"page[application]\"").val();
                         if (module != "Home") {
@@ -733,6 +737,10 @@ cx.cm = function(target) {
                         break;
                     case "redirect":
                         page.visibility.type = "redirection";
+                        page.visibility.fallback = false;
+                        break;
+                    case "symlink":
+                        page.visibility.type = "symlink";
                         page.visibility.fallback = false;
                         break;
                     case "application":
@@ -1535,14 +1543,12 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 cx.jQuery(element).contents().filter(function() {
                     return this.nodeType == 3;
                 }).each(function(index, el) {
-                    var content = el.textContent;
                     // It would be nicer if we could select all page <a>
                     // elements directly using a class and just remove all text
                     // nodes or not to add the text nodes in the first place.
                     // ATTENTION: The space " " is necessary otherwise drag&drop
                     // stops working.
-                    content = content.replace(pageName.replace("&", "&amp;"), " ");
-                    el.textContent = content;
+                    el.textContent = " ";
                 });
                 cx.jQuery(element).append("<div class=\"name\">" + pageName + "</div>");
             }
@@ -1629,7 +1635,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                         arrStatuses.push(cx.variables.get('TXT_CORE_CM_PAGE_STATUS_PROTECTED', 'contentmanager/lang/tooltip'));
                     }
 
-                    if (!objTrigger.hasClass('home') && !objTrigger.hasClass('application') && !objTrigger.hasClass('redirection')) {
+                    if (!objTrigger.hasClass('home') && !objTrigger.hasClass('application') && !objTrigger.hasClass('redirection') && !objTrigger.hasClass('symlink')) {
                         arrTypes.push(cx.variables.get('TXT_CORE_CM_PAGE_TYPE_CONTENT_SITE', 'contentmanager/lang/tooltip'));
                     }
                     if (objTrigger.hasClass('application')) {
@@ -1637,6 +1643,9 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     }
                     if (objTrigger.hasClass('redirection')) {
                         arrTypes.push(cx.variables.get('TXT_CORE_CM_PAGE_TYPE_REDIRECTION', 'contentmanager/lang/tooltip'));
+                    }
+                    if (objTrigger.hasClass('symlink')) {
+                        arrTypes.push(cx.variables.get('TXT_CORE_CM_PAGE_TYPE_SYMLINK', 'contentmanager/lang/tooltip'));
                     }
                     if (objTrigger.hasClass('home')) {
                         arrTypes.push(cx.variables.get('TXT_CORE_CM_PAGE_TYPE_HOME', 'contentmanager/lang/tooltip'));
@@ -2129,7 +2138,7 @@ cx.cm.updateTreeEntry = function(newStatus) {
         // Illegal fallback state
         return false;
     }
-    if (cx.jQuery.inArray(newStatus.visibility.type, ["standard", "application", "home", "redirection"]) < 0) {
+    if (cx.jQuery.inArray(newStatus.visibility.type, ["standard", "application", "home", "redirection", "symlink"]) < 0) {
         // Illegal type
         return false;
     }
@@ -2178,6 +2187,7 @@ cx.cm.updateTreeEntry = function(newStatus) {
         case "application":
         case "home":
         case "redirection":
+        case "symlink":
             visibility.addClass(newStatus.visibility.type);
         default:
             break;
@@ -2279,6 +2289,8 @@ cx.cm.getPageStatus = function(nodeId, lang) {
         type = "home";
     } else if (visibility.hasClass("redirection")) {
         type = "redirection";
+    } else if (visibility.hasClass("symlink")) {
+        type = "symlink";
     }
 
     var name = "";
@@ -2864,7 +2876,7 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
         cx.jQuery('#page input#refuse').hide();
     }
     
-    if (page.type == 'redirect') {
+    if (page.type == 'redirect' || page.type == 'symlink') {
         cx.jQuery('#preview').hide();
     }
     cx.jQuery('#page #preview').attr('href', cx.variables.get('basePath', 'contrexx') + page.lang + '/' + page.parentPath + page.slug + '?pagePreview=1');
@@ -2920,7 +2932,7 @@ cx.cm.setPageTarget = function(pageTarget, pageTargetPath) {
     if (pageTarget == null) {
         pageTarget = "";
     }
-    cx.jQuery('#page_target_backup').val(pageTarget);
+    cx.jQuery('.page_target_backup').val(pageTarget);
     cx.jQuery('#page_target_protocol > option').removeAttr("selected");
 
     var matchesPageTarget = regExpUriProtocol.exec(pageTarget);
@@ -2935,7 +2947,7 @@ cx.cm.setPageTarget = function(pageTarget, pageTargetPath) {
         cx.jQuery('#page_target_protocol > option[value="' + pageTargetOptionValue + '"]').attr("selected", "selected");
     }
     if (pageTarget != "") {
-        cx.jQuery('#page_target_text').text(pageTargetPath).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('.page_target_text').text(pageTargetPath).attr('href', function() {return cx.jQuery(this).text()});
         cx.jQuery('#page_target_wrapper').hide().next().show();
     }
     cx.jQuery('#page_target').val(pageTarget);

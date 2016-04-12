@@ -45,7 +45,7 @@ namespace Cx\Modules\Calendar\Controller;
  * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */    
-class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
+class CalendarEvent extends CalendarLibrary
 {
     /**
      * Event id
@@ -621,7 +621,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $this->uploadImgPath    = \Env::get('cx')->getWebsiteImagesPath().'/'.$this->moduleName.'/';
         $this->uploadImgWebPath = \Env::get('cx')->getWebsiteImagesWebPath().'/'.$this->moduleName.'/';
         
-        parent::getSettings();
+        $this->getSettings();
     }
         
     /**
@@ -636,7 +636,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
     function get($eventId, $eventStartDate=null, $langId=null) {
         global $objDatabase, $_ARRAYLANG, $_LANGID, $objInit;
         
-        parent::getSettings();
+        $this->getSettings();
         
         if($objInit->mode == 'backend' || $langId == null) {
             $lang_where = "AND field.lang_id = '".intval($_LANGID)."' ";
@@ -758,8 +758,8 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                 $this->pic = htmlentities($objResult->fields['pic'], ENT_QUOTES, CONTREXX_CHARSET);
                 $this->attach = htmlentities($objResult->fields['attach'], ENT_QUOTES, CONTREXX_CHARSET);
                 $this->author = htmlentities($objResult->fields['author'], ENT_QUOTES, CONTREXX_CHARSET);
-                $this->startDate = strtotime($objResult->fields['startdate']);
-                $this->endDate = strtotime($objResult->fields['enddate']);
+                $this->startDate = $this->getInternDateTimeFromDb($objResult->fields['startdate']);
+                $this->endDate   = $this->getInternDateTimeFromDb($objResult->fields['enddate']);
                 $this->useCustomDateDisplay = intval($objResult->fields['useCustomDateDisplay']);
                 $this->showStartDateList = intval($objResult->fields['showStartDateList']);
                 $this->showEndDateList = intval($objResult->fields['showEndDateList']);
@@ -819,11 +819,12 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     $this->seriesData['seriesPatternType'] = intval($objResult->fields['series_pattern_type']); 
                     $this->seriesData['seriesPatternDouranceType'] = intval($objResult->fields['series_pattern_dourance_type']); 
                     $this->seriesData['seriesPatternEnd'] = intval($objResult->fields['series_pattern_end']); 
-                    $this->seriesData['seriesPatternEndDate'] = strtotime($objResult->fields['series_pattern_end_date']); 
+                    $this->seriesData['seriesPatternEndDate'] = $this->getInternDateTimeFromDb($objResult->fields['series_pattern_end_date']);
                     $this->seriesData['seriesPatternBegin'] = intval($objResult->fields['series_pattern_begin']); 
-                    $this->seriesData['seriesPatternExceptions'] = array_map('strtotime', (array) explode(",", $objResult->fields['series_pattern_exceptions']));
+                    $this->seriesData['seriesPatternExceptions'] = array_map(array($this, 'getInternDateTimeFromDb'), (array) explode(",", $objResult->fields['series_pattern_exceptions']));
                 }    
                   
+                
                 $this->invitedGroups = explode(',', $objResult->fields['invited_groups']);     
                 $this->invitedMails =  htmlentities($objResult->fields['invited_mails'], ENT_QUOTES, CONTREXX_CHARSET);  
                 $this->registration = intval($objResult->fields['registration']);  
@@ -952,7 +953,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
     function save($data){
         global $objDatabase, $_LANGID, $_CONFIG, $objInit;
         
-        parent::getSettings();
+        $this->getSettings();
 
         if(empty($data['startDate']) || empty($data['endDate']) || empty($data['category']) || ($data['seriesStatus'] == 1 && $data['seriesType'] == 2 && empty($data['seriesWeeklyDays']))) {
             return false;
@@ -978,8 +979,10 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         //event data
         $id            = isset($data['copy']) && !empty($data['copy']) ? 0 : (isset($data['id']) ? intval($data['id']) : 0);
         $type          = isset($data['type']) ? intval($data['type']) : 0;
-        $startDate     = date("Y-m-d H:i:s", parent::getDateTimestamp($startDate, intval($startHour), intval($startMin)));
-        $endDate       = date("Y-m-d H:i:s", parent::getDateTimestamp($endDate, intval($endHour), intval($endMin)));
+
+        $startDate = $this->getDbDateTimeFromIntern($this->getDateTime($startDate, intval($startHour), intval($startMin)))->format('Y-m-d H:i:s');
+        $endDate   = $this->getDbDateTimeFromIntern($this->getDateTime($endDate, intval($endHour), intval($endMin)))->format('Y-m-d H:i:s');
+
         $google        = isset($data['map'][$_LANGID]) ? intval($data['map'][$_LANGID]) : 0;
         $allDay        = isset($data['all_day']) ? 1 : 0;
         $convertBBCode = ($objInit->mode == 'frontend' && empty($id));
@@ -1174,14 +1177,14 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $seriesPatternDouranceType      = 0;
         $seriesPatternEnd               = 0;
         $seriesExeptions                = '';
-        $seriesPatternEndDate           = 0;
+        $seriesPatternEndDate           = '0000-00-00 00:00:00';
         
         if($seriesStatus == 1) {
             if(!empty($data['seriesExeptions'])) {
                 $exeptions = array();
                                 
                 foreach($data['seriesExeptions'] as $key => $exeptionDate)  {
-                    $exeptions[] = date("Y-m-d", parent::getDateTimestamp($exeptionDate, 23, 59));  
+                    $exeptions[] = $this->getDbDateTimeFromIntern($this->getDateTime($exeptionDate, 23, 59))->format('Y-m-d');
                 }  
                 
                 sort($exeptions);
@@ -1259,7 +1262,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     $seriesPatternEnd   = isset($data['seriesDouranceEvents']) ? intval($data['seriesDouranceEvents']) : 0;
                 break;
                 case 3:
-                    $seriesPatternEndDate = date("Y-m-d H:i:s", parent::getDateTimestamp($data['seriesDouranceDate'], 23, 59));    
+                    $seriesPatternEndDate = $this->getDbDateTimeFromIntern($this->getDateTime($data['seriesDouranceDate'], 23, 59))->format('Y-m-d H:i:s');
                 break;
             }
         }
@@ -1439,15 +1442,11 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         
         list($endDate, $strEndTime)     = explode(' ', $data['endDate']);
         list($endHour, $endMin)         = explode(':', $strEndTime);
-        
-        list($startHour, $startMin) = array(0, 0);
-        list($endHour, $endMin)     = array(0, 0);
-        
-        
+
         //event data        
-        $startDate     = parent::getDateTimestamp($startDate, intval($startHour), intval($startMin));
-        $endDate       = parent::getDateTimestamp($endDate, intval($endHour), intval($endMin));
-        
+        $startDate     = $this->getDateTime($startDate, intval($startHour), intval($startMin));
+        $endDate       = $this->getDateTime($endDate, intval($endHour), intval($endMin));
+
         $this->startDate = $startDate;
         $this->endDate   = $endDate;
         
@@ -1531,7 +1530,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             }
                 
             $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;            
-            $seriesPatternEndDate = '';
+            $seriesPatternEndDate = new \DateTime();
             switch($seriesPatternDouranceType) {
                 case 1:
                     $seriesPatternEnd   = 0;
@@ -1540,7 +1539,7 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     $seriesPatternEnd   = isset($data['seriesDouranceEvents']) ? intval($data['seriesDouranceEvents']) : 0;
                 break;
                 case 3:
-                    $seriesPatternEndDate = parent::getDateTimestamp($data['seriesDouranceDate'], 0, 0) ;    
+                    $seriesPatternEndDate = $this->getDateTime($data['seriesDouranceDate'], 0, 0);
                 break;
             }
         }
@@ -1555,9 +1554,9 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         $this->seriesData['seriesPatternType'] = intval($seriesPatternType); 
         $this->seriesData['seriesPatternDouranceType'] = intval($seriesPatternDouranceType); 
         $this->seriesData['seriesPatternEnd'] = intval($seriesPatternEnd); 
-        $this->seriesData['seriesPatternEndDate'] = intval($seriesPatternEndDate); 
+        $this->seriesData['seriesPatternEndDate'] = $seriesPatternEndDate; 
         $this->seriesData['seriesPatternBegin'] = 0; 
-        $this->seriesData['seriesPatternExceptions'] = '';
+        $this->seriesData['seriesPatternExceptions'] = array();
         
     }
     
@@ -1618,23 +1617,33 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         // create an event calendar component                                                                     
         $objVEvent = new \vevent(); 
         
-        // start  
-        $startYear = date("Y", $this->startDate);
-        $startMonth = date("m", $this->startDate); 
-        $startDay = date("d", $this->startDate);
-        $startHour = date("H", $this->startDate);
-        $startMinute = date("i", $this->startDate);
-        
-        $objVEvent->setProperty( 'dtstart', array( 'year'=>$startYear, 'month'=>$startMonth, 'day'=>$startDay, 'hour'=>$startHour, 'min'=>$startMinute, 'sec'=>0 ));
-         
-        // end  
-        $endYear = date("Y", $this->endDate);
-        $endMonth = date("m", $this->endDate); 
-        $endDay = date("d", $this->endDate);
-        $endHour = date("H", $this->endDate);
-        $endMinute = date("i", $this->endDate);
-          
-        $objVEvent->setProperty( 'dtend', array( 'year'=>$endYear, 'month'=>$endMonth, 'day'=>$endDay, 'hour'=>$endHour, 'min'=>$endMinute, 'sec'=>0 )); 
+        // start
+        $startDate   = $this->getUserDateTimeFromIntern($this->startDate);
+        $objVEvent->setProperty(
+            'dtstart',
+            array(
+                'year'  => $startDate->format('Y'),
+                'month' => $startDate->format('m'),
+                'day'   => $startDate->format('d'),
+                'hour'  => $startDate->format('H'),
+                'min'   => $startDate->format('i'),
+                'sec'   => 0
+            )
+        );
+
+        // end
+        $endDate   = $this->getUserDateTimeFromIntern($this->endDate);
+        $objVEvent->setProperty(
+            'dtend',
+            array(
+                'year'  => $endDate->format('Y'),
+                'month' => $endDate->format('m'),
+                'day'   => $endDate->format('d'),
+                'hour'  => $endDate->format('H'),
+                'min'   => $endDate->format('i'),
+                'sec'   => 0
+            )
+        );
         
         // place   
         if(!empty($this->place)) {  
@@ -1667,26 +1676,6 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
          
         $objVCalendar->returnCalendar();     
         exit;          
-    }
-    
-    /**
-     * set the event start date
-     * 
-     * @param integer $value start date
-     */
-    function setStartDate($value){
-        $this->startDate = intval($value);
-    }
-    
-    /**
-     * set the event end date
-     * 
-     * @param integer $value End date
-     * 
-     * @return null
-     */
-    function setEndDate($value){
-        $this->endDate = intval($value);
     }
     
     /**
@@ -1969,5 +1958,14 @@ class CalendarEvent extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         }
         
         return array($placeUrl, $placeUrlSource);
+    }
+
+    /**
+     * PHP clone, clone the start and end dates on clone
+     */
+    public function __clone()
+    {
+        $this->startDate = clone $this->startDate;
+        $this->endDate   = clone $this->endDate;
     }
 }

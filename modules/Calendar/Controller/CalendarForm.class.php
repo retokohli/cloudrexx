@@ -45,7 +45,7 @@ namespace Cx\Modules\Calendar\Controller;
  * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
-class CalendarForm extends \Cx\Modules\Calendar\Controller\CalendarLibrary
+class CalendarForm extends CalendarLibrary
 {
     /**
      * Form id
@@ -103,7 +103,7 @@ class CalendarForm extends \Cx\Modules\Calendar\Controller\CalendarLibrary
     function get($formId) {
         global $objDatabase, $_LANGID;  
         
-        parent::getFrontendLanguages();
+        $this->getFrontendLanguages();
         
         $this->id = intval($formId);
         
@@ -313,7 +313,7 @@ class CalendarForm extends \Cx\Modules\Calendar\Controller\CalendarLibrary
     function saveInputfields($data) {
         global $objDatabase, $_LANGID;    
                 
-        parent::getFrontendLanguages();
+        $this->getFrontendLanguages();
         
         $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form_field_name WHERE form_id = '".$this->id."'");
         if($objResult !== false) {
