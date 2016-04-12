@@ -622,7 +622,7 @@ class MarketLibrary
             $value = '';
             // Data needs to  be updated or inserted
             if (!empty($data)) {
-                $value = '=\'' . contrexx_addslashes($data['spez_' . $i]) . '\'';
+                $value = '=\'' . contrexx_input2db($data['spez_' . $i]) . '\'';
             }
             // Special fields are used in WHERE or similar comparison statements
             if (
