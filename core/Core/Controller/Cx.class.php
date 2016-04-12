@@ -902,7 +902,7 @@ namespace Cx\Core\Core\Controller {
             @ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
 
             // Set timezone
-            @ini_set('date.timezone', (empty($_CONFIG['timezone'])?$_DBCONFIG['timezone']:$_CONFIG['timezone']));
+            @ini_set('date.timezone', $_CONFIG['timezone']);
         }
 
         /**
@@ -1312,7 +1312,7 @@ namespace Cx\Core\Core\Controller {
             $objDb->setDbType($_DBCONFIG['dbType']);
             $objDb->setCharset($_DBCONFIG['charset']);
             $objDb->setCollation($_DBCONFIG['collation']);
-            $objDb->setTimezone((empty($_CONFIG['timezone'])?$_DBCONFIG['timezone']:$_CONFIG['timezone']));
+            $objDb->setTimezone($_DBCONFIG['timezone']);
 
             // Set database user details
             $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
