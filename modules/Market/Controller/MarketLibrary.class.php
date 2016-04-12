@@ -202,7 +202,7 @@ class MarketLibrary
             }
 
             $objFWUser = \FWUser::getFWUserObject();
-            $specFields = $this->getSpecFieldsQueryPart($objDatabase, $_POST);
+            $specFields = $this->getSpecialFieldsQueryPart($objDatabase, $_POST);
             $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_market SET
                                 type='".contrexx_addslashes($_POST['type'])."',
                                   title='".contrexx_addslashes($_POST['title'])."',
@@ -609,9 +609,9 @@ class MarketLibrary
      *                                              comparisons i.e. OR
      * @return string
      */
-    protected function getSpecFieldsQueryPart($dbCon, $data = null, $comparator = '', $compareValue = '', $chainingOperator = '')
+    protected function getSpecialFieldsQueryPart($dbCon, $data = null, $comparator = '', $compareValue = '', $chainingOperator = '')
     {
-        $specialFields = '';
+        $specialFields = array();
         // get amount of special fields
         $specialFieldCount = count($this->specialFields);
         if (empty($specialFieldCount)) {
@@ -633,14 +633,9 @@ class MarketLibrary
             ) {
                 $value = ' ' . $comparator . ' ' . $compareValue;
             }
-            // Check if it's the last iteration
-            if ($i == $specialFieldCount) {
-                $specialFields .= $chainingOperator . 'spez_field_' . $i . $value;
-                continue;
-            }
-            $specialFields .= $chainingOperator . 'spez_field_' . $i . $value . ', ';
+            $specialFields[] = $chainingOperator . 'spez_field_' . $i . $value;
         }
-
+        $specialFields = join(', ', $specialFields);
         return $specialFields;
     }
 
@@ -654,16 +649,18 @@ class MarketLibrary
      *      'MARKET_SPEZ_FIELD_[SPEZ_FIELD_ID] => value stored in entry,
      *      [...]
      * }
-     * @param $dbCon    \ADOConnection  Database connection
-     * @param $entries  array           entry|entries which have special field
-     *                                  values
-     * @param $id       int             id of entry which special values shall
-     *                                  be parsed
-     * @param string    $type           Which placeholders shall be returned
-     *                                  either txt, val or both defaults to both
+     * @param $dbCon    \ADOConnection          Database connection
+     * @param $template \HTML_Template_Sigma    The template
+     * @param $entries  array                   entry|entries which have special
+     *                                          field values
+     * @param $id       int                     id of entry which special values
+     *                                          shall be parsed
+     * @param string    $type                   Which placeholders shall be
+     *                                          returned either txt, val or both
+     *                                          defaults to both
      * @return array
      */
-    protected function getSpecFields($dbCon, $entries, $id = 0, $type = 'both') {
+    protected function parseSpecialFields($dbCon, $template, $entries, $id = 0, $type = 'both') {
         // get the spez fields
         if (empty($this->specialFields)) {
             $objResult = $dbCon->Execute("SELECT id, value FROM ".DBPREFIX."module_market_spez_fields WHERE lang_id = '1'");
@@ -693,7 +690,7 @@ class MarketLibrary
                 }
             }
         }
-        return $specialVariables;
+        $template->setVariable($specialVariables);
     }
 
 }

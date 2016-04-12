@@ -851,7 +851,7 @@ class MarketManager extends MarketLibrary
         ));
 
         if (isset($_REQUEST['id'])) {
-            $specFields = $this->getSpecFieldsQueryPart($objDatabase);
+            $specFields = $this->getSpecialFieldsQueryPart($objDatabase);
             $entryId = $_REQUEST['id'];
             $objResult = $objDatabase->Execute('SELECT type, title, color, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, ' . $specFields . ' FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
             if ($objResult !== false) {
@@ -985,7 +985,7 @@ class MarketManager extends MarketLibrary
 
         if (isset($_POST['submitEntry'])) {
             if ($copy) {
-                $this->insertEntry(1);
+                return $this->insertEntry(1);
             }
             if ($_POST['uploadImage'] != "") {
                 $picture = $this->uploadPicture();
@@ -1014,7 +1014,7 @@ class MarketManager extends MarketLibrary
                 $tempYear     = date("Y");
                 $enddate  = mktime(0, 0, 0, $tempMonth, $tempDays+$_POST['days'],  $tempYear);
 
-                $specFields = $this->getSpecFieldsQueryPart($objDatabase, $_POST);
+                $specFields = $this->getSpecialFieldsQueryPart($objDatabase, $_POST);
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market SET
                                     type='".contrexx_addslashes($_POST['type'])."',
                                       title='".contrexx_addslashes($_POST['title'])."',

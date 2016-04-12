@@ -270,8 +270,9 @@ class Market extends MarketLibrary
         }
 
         //spez fields
-        $specialTextVariables = $this->getSpecFields(
+        $this->parseSpecialFields(
             $objDatabase,
+            $this->_objTpl,
             array(),
             0,
             'txt'
@@ -292,9 +293,6 @@ class Market extends MarketLibrary
             'TXT_MARKET_CITY'                => $_ARRAYLANG['TXT_MARKET_CITY'],
             'MARKET_TYPE_SECECTION'            => $selector,
         ));
-
-        $this->_objTpl->setVariable($specialTextVariables);
-
     }
 
 
@@ -377,7 +375,7 @@ class Market extends MarketLibrary
         $pos= intval($_GET['pos']);
 
         if ($sort == 'price') {
-            $specialFieldsQuery = $this->getSpecFieldsQueryPart($objDatabase);
+            $specialFieldsQuery = $this->getSpecialFieldsQueryPart($objDatabase);
             $query='SELECT `id`,`name`,`email`,`type`,`title`,`description`,`premium`,`picture`,`catid`, CAST(`price` AS UNSIGNED) as `price`,`regdate`,`enddate`,`userid`,`userdetails`,`status`,`regkey`,`paypal`, ' . $specialFieldsQuery . ' FROM '.DBPREFIX.'module_market WHERE catid = "'.contrexx_addslashes($catId).'" AND status="1" '.$where.' '.$type.' ORDER BY '.$sort.' '.$way;
         }else{
             $query='SELECT * FROM '.DBPREFIX.'module_market WHERE catid = "'.contrexx_addslashes($catId).'" AND status="1" '.$where.' '.$type.' ORDER BY '.$sort.' '.$way;
@@ -473,13 +471,13 @@ class Market extends MarketLibrary
                     'MARKET_CITY'                => $city,
                 ));
 
-                $specialFields = $this->getSpecFields(
+                $this->parseSpecialFields(
                     $objDatabase,
+                    $this->_objTpl,
                     $objResult->fields,
                     0,
                     'val'
                 );
-                $this->_objTpl->setVariable($specialFields);
                 $this->_objTpl->parse('showEntries');
 
                 $i++;
@@ -755,11 +753,6 @@ class Market extends MarketLibrary
                 $place         = '';
             }
 
-            $specialVariables = $this->getSpecFields(
-                $objDatabase,
-                $this->entries,
-                $id
-            );
             //price
             if ($this->entries[$id]['price'] == 'forfree') {
                    $price = $_ARRAYLANG['TXT_MARKET_FREE'];
@@ -804,7 +797,12 @@ class Market extends MarketLibrary
                 'TXT_MARKET_NEW_PRICE'             => $_ARRAYLANG['TXT_PRICE_EXPECTATION'],
             ));
 
-            $this->_objTpl->setVariable($specialVariables);
+            $this->parseSpecialFields(
+                $objDatabase,
+                $this->_objTpl,
+                $this->entries,
+                $id
+            );
 
             if ($this->_objTpl->blockExists('market_picture')) {
                 if (!empty($this->entries[$id]['picture'])) {
@@ -1146,13 +1144,13 @@ class Market extends MarketLibrary
             'TXT_MARKET_CITY'                => $_ARRAYLANG['TXT_MARKET_CITY'],
         ));
 
-        $specialTextVariables = $this->getSpecFields(
+        $this->parseSpecialFields(
             $objDatabase,
+            $this->_objTpl,
             array(),
             0,
             'txt'
         );
-        $this->_objTpl->setVariable($specialTextVariables);
 
         $today                 = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
         $searchTermOrg         = contrexx_addslashes($_GET['term']);
@@ -1219,8 +1217,8 @@ class Market extends MarketLibrary
         ));
 
         if ($_GET['term'] != '') {
-            $specialFieldsQuery = $this->getSpecFieldsQueryPart($objDatabase);
-            $specialFieldsComparision = $this->getSpecFieldsQueryPart(
+            $specialFieldsQuery = $this->getSpecialFieldsQueryPart($objDatabase);
+            $specialFieldsComparision = $this->getSpecialFieldsQueryPart(
                 $objDatabase,
                 null,
                 'LIKE',
@@ -1339,13 +1337,13 @@ class Market extends MarketLibrary
                         'MARKET_CITY'                    => $city,
                     ));
 
-                    $specialFieldVariables = $this->getSpecFields(
+                    $this->parseSpecialFields(
                         $objDatabase,
+                        $this->_objTpl,
                         $objResult->fields,
                         0,
                         'val'
                     );
-                    $this->_objTpl->setVariable($specialFieldVariables);
 
                     $this->_objTpl->parse('showEntries');
                     $objResult->MoveNext();
@@ -1444,7 +1442,7 @@ class Market extends MarketLibrary
 
         if (isset($_GET['id'])) {
             $entryId = contrexx_addslashes($_GET['id']);
-            $specFieldsQuery = $this->getSpecFieldsQueryPart($objDatabase);
+            $specFieldsQuery = $this->getSpecialFieldsQueryPart($objDatabase);
             $objResult = $objDatabase->Execute('SELECT type, title, description, premium, picture, catid, price, regdate, enddate, userid, name, email, userdetails, ' . $specFieldsQuery . ' FROM '.DBPREFIX.'module_market WHERE id = '.$entryId.' LIMIT 1');
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
@@ -1579,7 +1577,7 @@ class Market extends MarketLibrary
                         $price = contrexx_addslashes($_POST['price']);
                     }
 
-                    $specialFieldsQuery = $this->getSpecFieldsQueryPart(
+                    $specialFieldsQuery = $this->getSpecialFieldsQueryPart(
                         $objDatabase,
                         $_POST
                     );
