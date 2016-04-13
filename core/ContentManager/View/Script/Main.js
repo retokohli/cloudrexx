@@ -866,7 +866,12 @@ cx.cm = function(target) {
 
                 //check whether the application type contains the placeholder [[APPLICATION_DATA]] in ckeditor
                 if (!pattern.test(content)) {
-                    CKEDITOR.instances['cm_ckeditor'].setData(content + '[[APPLICATION_DATA]]');
+                    // This is bit of a hacky solution but CKEDITOR seems to have
+                    // problems with setData() sometimes (without throwing an exception)
+                    // and this seems to do the trick.
+                    CKEDITOR.instances['cm_ckeditor'].setData(content, function() {
+                        CKEDITOR.instances['cm_ckeditor'].setData(content + '[[APPLICATION_DATA]]');
+                    });
                 }
             }
             cx.jQuery('#page #application_toggle label').text(cx.jQuery(this).next().text());
