@@ -46,22 +46,24 @@ namespace Cx\Core\ViewManager\Model\Entity;
 class ViewManagerFile extends \Cx\Core\MediaSource\Model\Entity\LocalFile
 {
     /**
+     * Set true when file type is application template
+     *
      * @var boolean
      */
     protected $applicationTemplateFile = false;
 
     /**
-     * Getter for $applicationTemplateFile
+     * Check whether the file is application template
      *
      * @return boolean
      */
-    function getApplicationTemplateFile()
+    function isApplicationTemplateFile()
     {
         return $this->applicationTemplateFile;
     }
 
     /**
-     * Setter for $applicationTemplateFile
+     * Set true when file type is application template
      */
     function setApplicationTemplateFile($applicationTemplateFile)
     {

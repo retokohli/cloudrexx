@@ -464,15 +464,25 @@ class LocalFileSystem extends EntityBase implements FileSystem
             );
         }
     }
-    function getRootPath()
+
+    /**
+     * Get Root path of the filesystem
+     *
+     * @return string
+     */
+    public function getRootPath()
     {
         return $this->rootPath;
     }
 
-    function setRootPath($rootPath)
+    /**
+     * Set root path of the filesystem
+     *
+     * @param string $rootPath
+     */
+    public function setRootPath($rootPath)
     {
         $this->rootPath = $rootPath;
     }
-
 
 }
