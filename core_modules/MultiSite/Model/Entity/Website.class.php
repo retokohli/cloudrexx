@@ -175,6 +175,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->language = \FWLanguage::getDefaultLangId();
         }
         $this->status = self::STATE_INIT;
+        $this->mode   = \Cx\Core_Modules\MultiSite\Controller\ComponentController::WEBSITE_MODE_STANDALONE;
         $this->websiteServiceServerId = 0;
         $this->installationId = $this->generateInstalationId();
         $this->themeId = $themeId;
