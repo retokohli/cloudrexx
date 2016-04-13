@@ -26,25 +26,30 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository {
      * 
      */
     public function exportDomainAndWebsite() {
-        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if (!in_array($cx->getMode(), array(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID, \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE))) {
+
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
+
+        if (!in_array($mode, array(\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID, \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE))) {
             return;
         }
 
+        $cx         = \Cx\Core\Core\Controller\Cx::instanciate();
         $filePath   = $cx->getWebsiteDocumentRootPath() . '/core_modules/MultiSite/Data';
         $objDomains = $this->findAll();
-        $websiteDomainContent = $codeBaseRepositoryContent = $websiteDomainServerMapContent = array();
-        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
-        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite');
-        $websiteOffsetPath = substr($websitePath, strlen($cx->getWebsiteDocumentRootPath()));
-        $codeBaseRepositoryPath = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository','MultiSite');
+
+        $websiteDomainContent         = $codeBaseRepositoryContent = $websiteDomainServerMapContent = array();
+        $websitePath                  = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite');
+        $websiteOffsetPath            = substr($websitePath, strlen($cx->getWebsiteDocumentRootPath()));
+        $codeBaseRepositoryPath       = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository','MultiSite');
         $codeBaseRepositoryOffsetPath = substr($codeBaseRepositoryPath, strlen($cx->getCodeBaseDocumentRootPath()));
+
         foreach ($objDomains As $objDomain) {
             if ($objDomain->getWebsite() instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
                 $domainName                     = $objDomain->getName();
                 $websiteName                    = $objDomain->getWebsite()->getName();
                 $codeBaseName                   = $objDomain->getWebsite()->getCodeBase();
-                $websiteMode                    = $objDomain->getWebsite()->getWebsiteMode();
+                $websiteMode                    = $objDomain->getWebsite()->getMode();
                 $websiteDomainContent[]         = "$domainName\t$websiteOffsetPath/$websiteName";
                 if (!empty($codeBaseName)) {
                     $codeBaseRepositoryContent[] = "$domainName\t$codeBaseRepositoryOffsetPath/".$codeBaseName;
