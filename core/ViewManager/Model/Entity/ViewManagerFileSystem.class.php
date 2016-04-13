@@ -171,6 +171,7 @@ class ViewManagerFileSystem extends LocalFileSystem
      */
     public function getFullPath(File $file)
     {
+        $basePath = $this->getRootPath();
         if ($file->getApplicationTemplateFile()) {
             if (file_exists($this->cx->getWebsiteDocumentRootPath() . $file->__toString())) {
                 $basePath = $this->cx->getWebsiteDocumentRootPath();
@@ -179,6 +180,8 @@ class ViewManagerFileSystem extends LocalFileSystem
             }
         } elseif (file_exists($this->getRootPath() . '/' . $file->__toString())) {
             $basePath = $this->getRootPath();
+        } elseif ($this->serverWebsiteFileSystem && file_exists($this->serverWebsiteFileSystem->getRootPath() . '/' . $file->__toString())) {
+            $basePath = $this->serverWebsiteFileSystem->getRootPath();
         } elseif ($this->codeBaseFileSystem && file_exists($this->codeBaseFileSystem->getRootPath() . '/' . $file->__toString())) {
             $basePath = $this->codeBaseFileSystem->getRootPath();
         }
@@ -198,12 +201,10 @@ class ViewManagerFileSystem extends LocalFileSystem
             if (file_exists($this->cx->getWebsiteDocumentRootPath() . $file->__toString())) {
                 return false;
             }
-            return true;
         } elseif ($this->fileExists($file)) {
             return false;
-        } elseif ($this->codeBaseFileSystem && file_exists($this->codeBaseFileSystem->getRootPath() . '/' . $file->__toString())) {
-            return true;
         }
+        return true;
     }
 
     /**
@@ -219,6 +220,12 @@ class ViewManagerFileSystem extends LocalFileSystem
             && $this->codeBaseFileSystem
             && $this->fileExists($file)
             && file_exists($this->codeBaseFileSystem->getRootPath() . '/' . $file->__toString())
+        ) {
+            return true;
+        }
+        if (   $this->serverWebsiteFileSystem
+            && $this->fileExists($file)
+            && file_exists($this->serverWebsiteFileSystem->getRootPath() . '/' . $file->__toString())
         ) {
             return true;
         }

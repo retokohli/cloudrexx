@@ -623,7 +623,7 @@ class InitCMS
 
         $theme       = new \Cx\Core\View\Model\Entity\Theme();
         $contentPath = $theme->getFilePath($filePath);
-        if ($contentPath) {
+        if (file_exists($contentPath)) {
             $content = file_get_contents($contentPath);
         }
 
