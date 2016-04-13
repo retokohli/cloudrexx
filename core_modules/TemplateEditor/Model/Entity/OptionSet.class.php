@@ -190,9 +190,11 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                     explode('\\', $option->getType()) // get array for class namespace
                 )
             );
+            $seriesClass = ($option->isSeries()) ? 'series' : '';
             $template->setVariable(array(
                 'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
                 'TEMPLATEEDITOR_OPTION_TYPE' => strtolower($optionName),
+                'TEMPLATEEDITOR_OPTION_SERIES_CLASS' => $seriesClass,
             ));
             $template->parse('option');
         }

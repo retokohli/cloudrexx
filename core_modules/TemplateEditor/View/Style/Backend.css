@@ -42,7 +42,7 @@ body {
     width: calc(50% - 20px);
 }
 
-.option-list .option.color {
+.option-list .option.color.series {
     width: calc(100% - 20px);
 }
 
