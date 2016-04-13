@@ -204,7 +204,7 @@ class Login
 
         $this->_objTpl->setVariable(array(
             'LOGIN_STATUS_MESSAGE'	=> $statusMessage,
-            'LOGIN_USERNAME'		=> htmlentities($email, ENT_QUOTES, CONTREXX_CHARSET),
+            'LOGIN_EMAIL'		    => htmlentities($email, ENT_QUOTES, CONTREXX_CHARSET),
             'LOGIN_RESTORE_KEY'		=> htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET)
         ));
 
