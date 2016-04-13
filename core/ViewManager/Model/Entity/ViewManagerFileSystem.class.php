@@ -217,11 +217,7 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
      */
     public function isReadOnly(\Cx\Core\MediaSource\Model\Entity\File $file)
     {
-        if ($file->isApplicationTemplateFile()) {
-            if (file_exists($this->cx->getWebsiteDocumentRootPath() . $file->__toString())) {
-                return false;
-            }
-        } elseif ($this->fileExists($file)) {
+        if (file_exists($this->getRootPath() . '/' . $file->__toString())) {
             return false;
         }
         return true;
@@ -236,15 +232,16 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
      */
     public function isResettable(\Cx\Core\MediaSource\Model\Entity\File $file)
     {
+        $isFileExistsInWebsite = file_exists($this->getRootPath() . '/' . $file->__toString());
         if (   $this->serverWebsiteFileSystem
-            && $this->fileExists($file)
+            && $isFileExistsInWebsite
             && file_exists($this->serverWebsiteFileSystem->getRootPath() . '/' . $file->__toString())
         ) {
             return true;
         }
         if (   $this->cx->getWebsiteThemesPath() != $this->cx->getCodeBaseThemesPath()
             && $this->codeBaseFileSystem
-            && $this->fileExists($file)
+            && $isFileExistsInWebsite
             && file_exists($this->codeBaseFileSystem->getRootPath() . '/' . $file->__toString())
         ) {
             return true;

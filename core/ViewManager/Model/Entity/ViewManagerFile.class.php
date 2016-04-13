@@ -47,6 +47,7 @@ class ViewManagerFile extends \Cx\Core\MediaSource\Model\Entity\LocalFile
 {
     /**
      * Set true when file type is application template
+     * (When file has to load from website/codebase component directory)
      *
      * @var boolean
      */

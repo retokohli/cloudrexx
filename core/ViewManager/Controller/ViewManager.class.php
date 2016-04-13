@@ -2019,14 +2019,16 @@ CODE;
      * @return string formatted ul and li for the js tree
      */
     function getUlLi($folder, $path, $block, $themesPage, $theme = null) {
-        $result  = '<ul>';
-        $virtualFolder = array('View', 'Template', 'Frontend');
+        $result           = '<ul>';
+        $virtualFolder    = array('View', 'Template', 'Frontend');
+        $isApplicationTab = $block == 'applicationTheme';
         foreach ($folder as $folderName => $fileName) {
+            $resetClass   = '';
             $relativePath = $path . '/' . (is_array($fileName) ? $folderName .'/' : $fileName);
 
             $isComponentFile = false;
             if (self::isFileTypeComponent($relativePath)) {
-                $componentFilePath = self::getComponentFilePath($relativePath, ($block == 'applicationTheme'));
+                $componentFilePath = self::getComponentFilePath($relativePath, $isApplicationTab);
                 if (!$componentFilePath) { // may be a folder
                     $componentFilePath = self::replaceComponentFolderByItsType($relativePath);
                 }
@@ -2038,10 +2040,13 @@ CODE;
                 $filePath = $theme->getFolderName() . $filePath;
             }
             $localFile = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($filePath);
-            $localFile->setApplicationTemplateFile(($block == 'applicationTheme'));
+            $localFile->setApplicationTemplateFile($isApplicationTab);
 
-            $permissionClass = $this->fileSystem->isReadOnly($localFile) ? 'protected' : '';
-            $resetClass      = $this->fileSystem->isResettable($localFile) ? 'reset' : '';
+            $permissionClass = $isComponentFile || $this->fileSystem->isReadOnly($localFile) ? 'protected' : '';
+            if ($this->fileSystem->isResettable($localFile)) {
+                $permissionClass = 'protected';
+                $resetClass      = 'reset';
+            }
 
             if (is_array($fileName)) {
                 if (   $block == 'applicationTheme'
