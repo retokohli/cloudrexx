@@ -202,7 +202,7 @@ body {
     -o-transition: opacity 0.6s;
     transition: opacity 0.6s;
     position: absolute;
-    bottom: 3px;
+    bottom: 12px;
     right: 16px;
     background: #00C755;
     height: 16px;
@@ -238,6 +238,13 @@ body {
     right: 13px;
 }
 
+#content .option .element:after {
+    bottom: 3px;
+}
+
+#content .option.image:after {
+    bottom: 40px;
+}
 
 #content .option.select:after {
     bottom:15px;
@@ -250,6 +257,10 @@ body {
     opacity: 1;
     content: '';
     background: #FFFFFF url(../../../lib/javascript/jquery/jstree/themes/default/throbber.gif);
+}
+
+#content .option .element img.remove-element {
+    border: none;
 }
 
 #content .option.saved:after,
