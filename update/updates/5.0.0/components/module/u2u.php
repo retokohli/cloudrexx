@@ -144,6 +144,16 @@ function _u2uUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    // migrate path to images and media
+    $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+    foreach ($pathsToMigrate as $oldPath => $newPath) {
+        \Cx\Lib\UpdateUtil::migratePath(
+            '`' . DBPREFIX . 'module_u2u_settings`',
+            '`value`',
+            $oldPath,
+            $newPath
+        );
+    }
 
     return true;
 }

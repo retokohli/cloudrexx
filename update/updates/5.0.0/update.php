@@ -1009,6 +1009,28 @@ function executeContrexxUpdate() {
     /*******************************************************************************/
     /*******************************************************************************/
     /*******************************************************************************/
+    /******************** STAGE 20 - MIGRATE MEDIA PATHS ***************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
+    if (!in_array('mediaPaths', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        \DBG::msg('update: migrate media paths for content and blocks');
+        $mediaPathContentDone = _migrateMediaPaths('page');
+        $mediaPathBlockDone = _migrateMediaPaths('block');
+        if ($mediaPathContentDone === false || $mediaPathBlockDone === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(
+                    sprintf($_CORELANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'], ''), 'title');
+            }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'pageLogs';
+        }
+    }
+
+    /*******************************************************************************/
+    /*******************************************************************************/
+    /*******************************************************************************/
     /******************** STAGE 20 - INSTALL CONTENT APPLICATION TEMPLATES *********/
     /*******************************************************************************/
     /*******************************************************************************/
@@ -2731,22 +2753,64 @@ function getNewComponentNames() {
  */
 function _migratePageLogs() {
     $componentNames = getNewComponentNames();
-    try {
-        foreach ($componentNames as $componentName) {
+    foreach ($componentNames as $componentName) {
+        try {
             $nameLength = strlen($componentName);
             $nameLower = strtolower($componentName);
 
-            $result = \Cx\lib\UpdateUtil::sql(
+            \Cx\lib\UpdateUtil::sql(
                 'UPDATE `' . DBPREFIX . 'log_entry`
                  SET `data` = REPLACE(`data`, \'"module";s:'. $nameLength . ':"' . $nameLower . '"\', \'"module";s:'. $nameLength . ':"' . $componentName . '"\')
-                 WHERE `data` LIKE \'%"module";s' . $nameLength . ':' . $nameLower . '"%\''
+                 WHERE `data` LIKE \'%"module";s:' . $nameLength . ':' . $nameLower . '"%\''
             );
+        } catch (\Cx\Lib\UpdateException $e) {
+            \DBG::log('Update::_migratePageLogs(): Failed to Migrate logs for component ' . $componentName);
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-    } catch (\Cx\Lib\UpdateException $e) {
-        \DBG::log('Update::_migratePageLogs(): Failed to Migrate logs for component ' . $componentName);
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    return true;
+}
+
+/**
+ * Migrate old media and image paths in content and log entries
+ * @param string    $where  Either 'page' or 'block' specify in which tables
+ *                          the media paths shall be replaced default is 'page'
+ * @return bool             true on success false on failure
+ */
+function _migrateMediaPaths($where = 'page') {
+    $mediaPaths = \Cx\Lib\UpdateUtil::getMigrationPaths();
+    foreach($mediaPaths as $oldPath => $newPath) {
+        try {
+            if ($where == 'block') {
+                \Cx\Lib\UpdateUtil::migratePath(
+                    '`' . DBPREFIX . 'module_block_rel_lang_content`',
+                    '`content`',
+                    $oldPath,
+                    $newPath
+                );
+            } else {
+                $logEntries = \Cx\Lib\UpdateUtil::sql(
+                    'SELECT `id`, `data` FROM `' . DBPREIX . 'log_entry`
+                     WHERE `data` REGEXP \'"content";s:[0-9]{1,}:"[a-zA-Z0-9 \_\$\^\'\"\<\>\{\}\|\s\/\&\:\;\.\,\-\=\\]{1,}"\''
+                );
+                while (!$logEntries->EOF) {
+                    $data = unserialize($logEntries->fields['data']);
+                    str_replace($oldPath, $newPath, $data['content']);
+                    $serializedData = serialize($data);
+                    \Cx\Lib\UpdateUtil::sql(
+                        'UPDATE `' . DBPREFIX . 'log_entry`
+                     SET `data` = ' . $data . '
+                     WHERE `id` = ' . $logEntries->fields['id']
+                    );
+                    $logEntries->MoveNext();
+                }
+            }
+        } catch (\Cx\Lib\UpdateException $e) {
+            \DBG::log('Update::_migrateMediaPaths(): Failed to migrate to new path ' . $newPath);
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
     return true;
 }
 

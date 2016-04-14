@@ -623,6 +623,33 @@ Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] ge
             ));
             return false;
         }
+        // migrate path to images and media
+        $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+        $attributes = array(
+            'module_mediadir_rel_entry_inputfields' => 'value',
+            'module_mediadir_categories'            => 'picture',
+            'module_mediadir_levels'                => 'picture',
+            'module_mediadir_mails'                 => 'content',
+        );
+        try {
+            foreach ($attributes as $table => $attribute) {
+                foreach ($pathsToMigrate as $oldPath => $newPath) {
+                    \Cx\Lib\UpdateUtil::migratePath(
+                        '`' . DBPREFIX . $table . '`',
+                        '`' . $attribute . '`',
+                        $oldPath,
+                        $newPath
+                    );
+                }
+            }
+        } catch (\Cx\Lib\Update_DatabaseException $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'],
+                'Medienverzeichnis (MediaDir)'
+            ));
+            return false;
+        }
     }
     return true;
 }

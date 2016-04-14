@@ -993,6 +993,28 @@ function _accessUpdate()
             ));
             return false;
         }
+        // migrate path to images and media
+        $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+        try {
+            foreach ($pathsToMigrate as $oldPath => $newPath) {
+                $success = \Cx\Lib\UpdateUtil::migratePath(
+                    '`' . DBPREFIX . 'contrexx_access_user_profile`',
+                    '`picture`',
+                    $oldPath,
+                    $newPath
+                );
+                if (!$success) {
+
+                }
+            }
+        } catch (\Cx\Lib\Update_DatabaseException $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'],
+                'Benutzerverwaltung (Access)'
+            ));
+            return false;
+        }
     }
 
     return true;

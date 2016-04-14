@@ -499,6 +499,31 @@ function _newsletterUpdate()
         }
     }
 
+    // migrate path to images and media
+    $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+    $attributes = array(
+        'module_newsletter'                 => 'content',
+        'module_newsletter_attachement'     => 'file_name',
+        'module_newsletter_settings'        => 'setvalue',
+        'module_newsletter_template'        => 'html',
+        'module_newsletter_confirm_mail'    => 'content',
+    );
+    try {
+        foreach ($attributes as $table => $attribute) {
+            foreach ($pathsToMigrate as $oldPath => $newPath) {
+                \Cx\Lib\UpdateUtil::migratePath(
+                    '`' . DBPREFIX . $table . '`',
+                    '`' . $attribute . '`',
+                    $oldPath,
+                    $newPath
+                );
+            }
+        }
+    } catch (\Cx\Lib\Update_DatabaseException $e) {
+        \DBG::log($e->getMessage());
+        return false;
+    }
+
     return true;
 }
 

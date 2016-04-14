@@ -511,6 +511,36 @@ function _calendarUpdate()
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+
+        // migrate path to images and media
+        $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+        $attributes = array(
+            'attach'        => 'module_calendar_event',
+            'pic'           => 'module_calendar_event',
+            'place_map'     => 'module_calendar_event',
+            'description'   => 'module_calendar_event_field',
+            'content_html'  => 'module_calendar_mail',
+            'content_text'  => 'module_calendar_mail',
+        );
+        try {
+            foreach ($attributes as $attribute => $table) {
+                foreach ($pathsToMigrate as $oldPath => $newPath) {
+                    \Cx\Lib\UpdateUtil::migratePath(
+                        '`' . DBPREFIX . $table . '`',
+                        '`' . $attribute . '`',
+                        $oldPath,
+                        $newPath
+                    );
+                }
+            }
+        } catch (\Cx\Lib\Update_DatabaseException $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'],
+                'Veranstaltungskalender (Calendar)'
+            ));
+            return false;
+        }
     }
 
     return true;

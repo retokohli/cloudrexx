@@ -1465,6 +1465,32 @@ HTML;
             ));
             return false;
         }
+
+        // migrate path to images and media
+        $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+        $attributes = array(
+            'module_shop_categories'            => 'picture',
+            'module_shop_payment_processors'    => 'picture',
+        );
+        try {
+            foreach ($attributes as $table => $attribute) {
+                foreach ($pathsToMigrate as $oldPath => $newPath) {
+                    \Cx\Lib\UpdateUtil::migratePath(
+                        '`' . DBPREFIX . $table .'`',
+                        '`' . $attribute . '`',
+                        $oldPath,
+                        $newPath
+                    );
+                }
+            }
+        } catch (\Cx\Lib\Update_DatabaseException $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'],
+                'Shop (Shop)'
+            ));
+            return false;
+        }
     }
 
     return true;

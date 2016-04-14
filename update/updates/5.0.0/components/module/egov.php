@@ -227,6 +227,30 @@ function _egovUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    // migrate path to images and media
+    $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+    $attributes = array(
+        'product_desc'          => 'module_egov_products',
+        'product_message'       => 'module_egov_products',
+        'product_target_url'    => 'module_egov_products',
+        'product_target_body'   => 'module_egov_products',
+        'set_state_email'       => 'module_egov_settings',
+    );
+    try {
+        foreach ($attributes as $attribute => $table) {
+            foreach ($pathsToMigrate as $oldPath => $newPath) {
+                \Cx\Lib\UpdateUtil::migratePath(
+                    '`' . DBPREFIX . $table . '`',
+                    '`' . $attribute . '`',
+                    $oldPath,
+                    $newPath
+                );
+            }
+        }
+    } catch (\Cx\Lib\Update_DatabaseException $e) {
+        \DBG::log($e->getMessage());
+        return false;
+    }
 
     return true;
 }

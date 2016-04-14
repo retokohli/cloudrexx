@@ -356,6 +356,39 @@ function _crmUpdate() {
         }
     }
 
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        // migrate path to images and media
+        $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+        $attributes = array(
+            'module_crm_contacts'           => 'profile_picture',
+            'module_crm_customer_comment'   => 'comment',
+            'module_crm_customer_documents' => 'document_name',
+            'module_crm_deals'              => 'description',
+            'module_crm_notes'              => 'icon',
+            'module_crm_task'               => 'description',
+            'module_crm_task_types'         => 'icon',
+        );
+        try {
+            foreach ($attributes as $table => $attribute) {
+                foreach ($pathsToMigrate as $oldPath => $newPath) {
+                    \Cx\Lib\UpdateUtil::migratePath(
+                        '`' . DBPREFIX . $table . '`',
+                        '`' . $attribute . '`',
+                        $oldPath,
+                        $newPath
+                    );
+                }
+            }
+        } catch (\Cx\Lib\Update_DatabaseException $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'],
+                'CRM (Crm)'
+            ));
+            return false;
+        }
+    }
+
     return true;
 }
 
