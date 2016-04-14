@@ -290,6 +290,12 @@ namespace Cx\Core\Core\Controller {
         const FOLDER_NAME_THEMES = '/themes';
 
         /**
+         * The folder name used for the application feeds (/feed).
+         * @var string
+         */
+        const FOLDER_NAME_FEED = '/feed';
+
+        /**
          * @var string
          */
         const FOLDER_NAME_PUBLIC_TEMP = '/public';
@@ -896,7 +902,7 @@ namespace Cx\Core\Core\Controller {
             @ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
 
             // Set timezone
-            @ini_set('date.timezone', (empty($_CONFIG['timezone'])?$_DBCONFIG['timezone']:$_CONFIG['timezone']));
+            @ini_set('date.timezone', $_CONFIG['timezone']);
         }
 
         /**
@@ -1306,7 +1312,7 @@ namespace Cx\Core\Core\Controller {
             $objDb->setDbType($_DBCONFIG['dbType']);
             $objDb->setCharset($_DBCONFIG['charset']);
             $objDb->setCollation($_DBCONFIG['collation']);
-            $objDb->setTimezone((empty($_CONFIG['timezone'])?$_DBCONFIG['timezone']:$_CONFIG['timezone']));
+            $objDb->setTimezone($_DBCONFIG['timezone']);
 
             // Set database user details
             $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
@@ -2560,7 +2566,8 @@ namespace Cx\Core\Core\Controller {
             $this->websiteTempWebPath           = $this->websiteOffsetPath       . self::FOLDER_NAME_TEMP;
             $this->websiteThemesPath            = $this->websiteDocumentRootPath . self::FOLDER_NAME_THEMES;
             $this->websiteThemesWebPath         = $this->websiteOffsetPath       . self::FOLDER_NAME_THEMES;
-            $this->websiteFeedPath              = $this->websiteDocumentRootPath . '/feed';
+            $this->websiteFeedPath              = $this->websiteDocumentRootPath . self::FOLDER_NAME_FEED;
+            $this->websiteFeedWebPath           = $this->websiteOffsetPath       . self::FOLDER_NAME_FEED;
 
             $this->websiteImagesPath            = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES;
             $this->websiteImagesWebPath         = $this->websiteOffsetPath       . self::FOLDER_NAME_IMAGES;
@@ -2729,6 +2736,16 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteFeedPath() {
             return $this->websiteFeedPath;
+        }
+
+         /**
+         * Return the offset path to the feed storage location (/feed)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_FEED_WEB_PATH
+         * @return string
+         */
+        public function getWebsiteFeedWebPath() {
+            return $this->websiteFeedWebPath;
         }
 
         /**
