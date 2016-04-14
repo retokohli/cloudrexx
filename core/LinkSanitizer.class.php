@@ -130,7 +130,18 @@ class LinkSanitizer {
                     $split = explode('=', $arg, 2);
                     $params[$split[0]] = $split[1];
                 }
-                if (isset($params['cmd'])) {
+                // frontend case
+                if (isset($params['section'])) {
+                    $cmd = '';
+                    if (isset($params['cmd'])) {
+                        $cmd = $params['cmd'];
+                        unset($params['cmd']);
+                    }
+                    $ret = \Cx\Core\Routing\Url::fromModuleAndCmd($params['section'], $cmd);
+                    unset($params['section']);
+                
+                // backend case
+                } else if (isset($params['cmd'])) {
                     $ret .= $params['cmd'];
                     unset($params['cmd']);
                     if (isset($params['act'])) {

@@ -232,12 +232,20 @@ namespace Cx\Core\Model {
         }
 
         /**
-         * Returns the AdoDB connection
+         * Sets the AdoDB connection
          * @param \ADONewConnection $adoDb Initialized AdoDB connection to be
          *                                 used for legacy database queries.
          */
         public function setAdoDb($adoDb) {
             $this->adodb = $adoDb;
+        }
+
+        /**
+         * Returns the database info object
+         * @return \Cx\Core\Model\Model\Entity\Db Database info object
+         */
+        public function getDb() {
+            return $this->db;
         }
         
         /**
