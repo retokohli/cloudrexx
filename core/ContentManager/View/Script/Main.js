@@ -875,7 +875,7 @@ cx.cm = function(target) {
                 cx.cm.isAdjusting = false;
             }, "contentmanager");
             if (cx.cm.isAdjusting != undefined && !cx.cm.isAdjusting) {
-                cx.cm.setEditorData(CKEDITOR.instances.cm_ckeditor.getData());
+                cx.cm.setEditorData(cx.cm.getEditorData());
             }
             cx.jQuery('#page #application_toggle label').text(cx.jQuery(this).next().text());
         }
@@ -2601,6 +2601,14 @@ cx.cm.setEditorData = function(pageContent) {
         }
     });
 };
+
+cx.cm.getEditorData = function() {
+    if (!cx.jQuery('#page_sourceMode').prop('checked') && cx.cm.editorInUse()) {
+        return CKEDITOR.instances.cm_ckeditor.getData();
+    } else {
+        return cx.jQuery('#page textarea[name="page[content]"]').val();
+    }
+}
 
 cx.cm.showEditModeWindow = function(cmdName, pageId) {
     var dialog = cx.variables.get("editmodedialog", 'contentmanager');
