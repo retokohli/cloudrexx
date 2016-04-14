@@ -158,6 +158,8 @@ cx.ready(function() {
     cx.cm.pageContentTemplate = '';
     // initialise the page custom application template
     cx.cm.pageApplicationTemplate = '';
+    // this is true between the events loadingStart and loadingEnd
+    cx.cm.isAdjusting = true;
 
     // Disable the option use for all channels by default
     cx.jQuery('input[name="page[useSkinForAllChannels]"], input[name="page[useCustomContentForAllChannels]"], input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('disabled', 'disabled');
@@ -556,6 +558,17 @@ cx.ready(function() {
                                       cx.jQuery('#page input[name="page[area]"]').val(), 
                                       cx.jQuery('#page select[name="page[skin]"]').val());
     });
+    
+    cx.bind("setEditorData", function(data) {
+        if (cx.jQuery('input[name="page[type]"]:checked').val() == 'application') {
+            var pattern = /\[\[APPLICATION_DATA\]\]/;
+
+            //check whether the application type contains the placeholder [[APPLICATION_DATA]] in textarea
+            if (!pattern.test(data.content)) {
+                data.content = data.content + '[[APPLICATION_DATA]]';
+            }
+        }
+    }, "contentmanager");
 
     // react to get ?loadpage=
     /*if (jQuery.getUrlVar('loadPage')) {
@@ -563,6 +576,8 @@ cx.ready(function() {
     }*/
     if (cx.jQuery.getUrlVar("page") || cx.jQuery.getUrlVar("node")) {
         cx.cm.loadPage(cx.jQuery.getUrlVar("page"), cx.jQuery.getUrlVar("node"), cx.jQuery.getUrlVar("version"), cx.jQuery.getUrlVar("tab"));
+    } else {
+        cx.cm.isAdjusting = false;
     }
 
     cx.cm();
@@ -853,21 +868,14 @@ cx.cm = function(target) {
         cx.jQuery('#page .type_'+cx.jQuery(event.target).val()).show();
         cx.jQuery('#page #type_toggle label').text(cx.jQuery(this).next().text());
         if (cx.jQuery(this).val() == 'application') {
-            var pattern = /\[\[APPLICATION_DATA\]\]/;
-            if (cx.jQuery('#page_sourceMode').prop('checked')) {
-                var content = cx.jQuery('#cm_ckeditor').val();
-
-                //check whether the application type contains the placeholder [[APPLICATION_DATA]] in textarea
-                if (!pattern.test(content)) {
-                    cx.jQuery("#cm_ckeditor").val(content + '[[APPLICATION_DATA]]');
-                }
-            } else if (CKEDITOR.instances.cm_ckeditor != null) {
-                var content = CKEDITOR.instances.cm_ckeditor.getData();
-
-                //check whether the application type contains the placeholder [[APPLICATION_DATA]] in ckeditor
-                if (!pattern.test(content)) {
-                    CKEDITOR.instances['cm_ckeditor'].setData(content + '[[APPLICATION_DATA]]');
-                }
+            cx.bind("loadingStart", function() {
+                cx.cm.isAdjusting = true;
+            }, "contentmanager");
+            cx.bind("loadingEnd", function() {
+                cx.cm.isAdjusting = false;
+            }, "contentmanager");
+            if (cx.cm.isAdjusting != undefined && !cx.cm.isAdjusting) {
+                cx.cm.setEditorData(CKEDITOR.instances.cm_ckeditor.getData());
             }
             cx.jQuery('#page #application_toggle label').text(cx.jQuery(this).next().text());
         }
@@ -1874,6 +1882,7 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             cx.jQuery('.tab.page_history').hide();
             cx.jQuery("#parent_node").val(nodeId);
             cx.cm.createEditor();
+            cx.cm.setEditorData("");
             return;
         case "copy":
             url = "index.php?cmd=JsonData&object=node&act=copy&id=" + nodeId;
@@ -2462,11 +2471,6 @@ cx.cm.resetEditView = function() {
         el.val("");
     });
 
-    // empty existing ckeditor
-    if (cx.cm.editorInUse()) {
-        CKEDITOR.instances.cm_ckeditor.setData('');
-    }
-
     // reset hidden fields
     cx.jQuery("input#pageId").val("new");
     cx.jQuery("input#pageLang").val(cx.jQuery('.chzn-select').val());
@@ -2582,6 +2586,9 @@ cx.cm.destroyEditor = function() {
 
 cx.cm.setEditorData = function(pageContent) {
     cx.jQuery(document).ready(function() {
+        var eventData = {content: pageContent};
+        cx.trigger("setEditorData", "contentmanager", eventData);
+        pageContent = eventData.content;
         if (!cx.jQuery('#page_sourceMode').prop('checked') && cx.cm.editorInUse()) {
             // This is bit of a hacky solution but CKEDITOR seems to have
             // problems with setData() sometimes (without throwing an exception)
