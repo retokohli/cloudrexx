@@ -2271,7 +2271,7 @@ CREATE TABLE `contrexx_module_mediadir_forms` (
   `use_level` int(1) NOT NULL,
   `use_category` int(1) NOT NULL,
   `use_ready_to_confirm` int(1) NOT NULL,
-  `entries_per_page` int(7) NOT NULL DEFAULT '0',
+  `entries_per_page` int(7) NOT NULL,
   `cmd` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
