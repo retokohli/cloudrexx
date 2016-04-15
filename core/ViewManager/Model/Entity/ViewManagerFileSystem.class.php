@@ -90,9 +90,9 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
             );
             $fileList = $this->mergeFileList($fileList, $serverWebsiteFileList);
         }
-        if (file_exists(rtrim($this->getRootPath() . '/' . $directory,'/'))) {
-            $websiteFileList = parent::getFileList($directory, $recursive);
-            $fileList        = $this->mergeFileList($fileList, $websiteFileList);
+        $websiteFileList = parent::getFileList($directory, $recursive);
+        if (!empty($websiteFileList)) {
+            $fileList = $this->mergeFileList($fileList, $websiteFileList);
         }
         return $fileList;
     }
@@ -119,7 +119,7 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
         $resultFileList = $a;
         foreach ($b as $name => $directory) {
             $filesList = $this->mergeFileList(
-                    isset($resultFileList[$name]) ? $resultFileList[$name] : '', $directory
+                isset($resultFileList[$name]) ? $resultFileList[$name] : '', $directory
             );
             $resultFileList[$name] = $filesList;
         }
@@ -259,5 +259,49 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
     public function isImageFile(\Cx\Core\MediaSource\Model\Entity\File $file)
     {
         return $this->isImage($file->getExtension());
+    }
+
+    /**
+     * Copies the folder from codebase, server website and current filesystem to the given new folder path
+     *
+     * @param \Cx\Core\ViewManager\Model\Entity\ViewManagerFile $fromFile
+     * @param \Cx\Core\ViewManager\Model\Entity\ViewManagerFile $toFile
+     */
+    public function copyFolder(ViewManagerFile $fromFile, ViewManagerFile $toFile)
+    {
+        if (
+               $this->codeBaseFileSystem
+            && file_exists($this->codeBaseFileSystem->getRootPath() . '/' . $fromFile->__toString())
+        ) {
+            if (!\Cx\Lib\FileSystem\FileSystem::copy_folder(
+                    $this->codeBaseFileSystem->getRootPath() . '/' . $fromFile->__toString(),
+                    $this->getRootPath() . '/' . $toFile->__toString(), true
+                )
+            ) {
+                return false;
+            }
+        }
+        if (
+               $this->serverWebsiteFileSystem
+            && file_exists($this->serverWebsiteFileSystem->getRootPath() . '/' . $fromFile->__toString())
+        ) {
+            if (!\Cx\Lib\FileSystem\FileSystem::copy_folder(
+                    $this->serverWebsiteFileSystem->getRootPath() . '/' . $fromFile->__toString(),
+                    $this->getRootPath() . '/' . $toFile->__toString(), true
+                )
+            ) {
+                return false;
+            }
+        }
+        if (file_exists($this->getRootPath() . '/' . $fromFile->__toString())) {
+            if (!\Cx\Lib\FileSystem\FileSystem::copy_folder(
+                    $this->getRootPath() . '/' . $fromFile->__toString(),
+                    $this->getRootPath() . '/' . $toFile->__toString(), true
+                )
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
 }

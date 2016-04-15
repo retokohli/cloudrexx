@@ -135,13 +135,8 @@ class ViewManager
     public $getPath;                          // $_GET['path']
     public $path;                             // current path
     public $webPath;                          // current web path
-    public $codeBasePath;                     // code base path
     public $websitePath;                      // website path
-    public $codeBaseThemesPath;               // code base themes path
     public $websiteThemesPath;                // website themes path
-    public $codeBaseThemesFilePath;           // default codebase current themes path
-    public $websiteThemesFilePath;            // website current themes path
-    public $serverWebsiteThemesFilePath;      // server website current themes path
     public $tableExists;                      // Table exists
     public $oldTable;                         // old Theme-Table name
 
@@ -161,8 +156,6 @@ class ViewManager
         //get path variables
         $this->path                 = $this->cx->getWebsiteThemesPath() . '/';
         $this->arrWebPaths          = array($this->cx->getWebsiteThemesWebPath() . '/');
-        $this->codeBasePath         = $this->cx->getCodeBaseDocumentRootPath() . '/';
-        $this->codeBaseThemesPath   = $this->cx->getCodeBaseThemesPath() . '/';
         $this->websitePath          = $this->cx->getWebsiteDocumentRootPath() . '/';
         $this->websiteThemesPath    = $this->cx->getWebsiteThemesPath() . '/';
         $this->themeZipPath         = '/themezips/';
@@ -538,7 +531,8 @@ CODE;
             'cancel'                => $_ARRAYLANG['TXT_THEME_CANCEL'],
             'create'                => $_ARRAYLANG['TXT_THEME_CREATE'],
             'save'                  => $_ARRAYLANG['TXT_SAVE'],
-            'rename'                => $_ARRAYLANG['TXT_THEME_RENAME']
+            'rename'                => $_ARRAYLANG['TXT_THEME_RENAME'],
+            'loading'               => $_ARRAYLANG['TXT_CORE_VIEWMANAGER_LOADING'],
         ), 'viewmanager/lang');
         
         $objTemplate->setVariable(array(
@@ -1403,25 +1397,14 @@ CODE;
                     }
                     break;
                 case (!empty($copyFromTheme) && empty($createFromDatabase)):
-                    //check Whether the folder exists in both codebase
-                    if (
-                           $this->codeBaseThemesPath != $this->websiteThemesPath
-                        && file_exists($this->codeBaseThemesPath . $copyFromTheme)
-                    ) {
-                        if (!\Cx\Lib\FileSystem\FileSystem::copy_folder($this->codeBaseThemesPath . $copyFromTheme, $this->websiteThemesPath . $dirName, true)) {    
-                            \Message::add($_ARRAYLANG['TXT_MSG_ERROR_NEW_DIR'], \Message::CLASS_ERROR);
-                            $this->newdir();
-                            return;
-                        }
+                    $fromThemeFolder = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile('/'. $copyFromTheme);
+                    $toThemeFolder   = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile('/'. $dirName);
+                    if (!$this->fileSystem->copyFolder($fromThemeFolder, $toThemeFolder)) {
+                        \Message::add($_ARRAYLANG['TXT_MSG_ERROR_NEW_DIR'], \Message::CLASS_ERROR);
+                        $this->newdir();
+                        return;
                     }
-                    //check Whether the folder exists in website data repository
-                    if (file_exists($this->websiteThemesPath . $copyFromTheme)) {
-                        if (!\Cx\Lib\FileSystem\FileSystem::copy_folder($this->websiteThemesPath . $copyFromTheme, $this->websiteThemesPath . $dirName, true)) {
-                            \Message::add($_ARRAYLANG['TXT_MSG_ERROR_NEW_DIR'], \Message::CLASS_ERROR);
-                            $this->newdir();
-                            return;
-                        }
-                    }
+
                     $this->replaceThemeName($copyFromTheme, $dirName, $this->websiteThemesPath . $dirName);
                     //convert theme to component
                     try {
@@ -1529,24 +1512,18 @@ CODE;
      */
     function getDropdownNotInDb()
     {
-        if (file_exists($this->codeBaseThemesPath)) {
-            $codeBaseDir = $this->readFiles($this->codeBaseThemesPath);
-        }
-        if (file_exists($this->websiteThemesPath)) {
-            $websiteDir = $this->readFiles($this->websiteThemesPath);
-        }
         
-       $mergeFolders = array_unique(array_merge($codeBaseDir, $websiteDir));
+        $filesList     = $this->fileSystem->getFileList('/');
 
-       sort($mergeFolders);
-       $result = '';
-       foreach($mergeFolders as $folder) {
-           if (!$this->themeRepository->findOneBy(array('foldername' => $folder))) {
-               $result .= "<option value='".$folder."'>".$folder."</option>\n";
-           }
-       }
-       
-       return $result;
+        ksort($filesList);
+        $result = '';
+        foreach ($filesList as $folderName => $files) {
+            if (!$this->themeRepository->findOneBy(array('foldername' => $folderName))) {
+                $result .= "<option value='" . $folderName . "'>" . $folderName . "</option>\n";
+            }
+        }
+
+        return $result;
     }
     /**
      * reading the directories of the file sytem with the specified path
