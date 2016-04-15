@@ -7246,7 +7246,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
     public function getServerWebsiteList($params) {
         global $_ARRAYLANG;
 
-        if (empty($params['post']) || empty($params['post']['ownerId']) || empty($params['post']['websiteName'])) {
+        if (empty($params['post']) || empty($params['post']['ownerEmail']) || empty($params['post']['websiteName'])) {
             \DBG::msg('JsonMultiSiteController::getWebsiteList() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']);
         }
@@ -7257,11 +7257,11 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
 
         try {
             $em = $this->cx->getDb()->getEntityManager();
-            $ownerId     = contrexx_input2db($params['post']['ownerId']);
+            $ownerEmail  = contrexx_input2db($params['post']['ownerEmail']);
             $websiteName = contrexx_input2db($params['post']['websiteName']);
             $websiteRepository = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
             $args = array(
-                'user.id'        => $ownerId,
+                'user.email'     => $ownerEmail,
                 'neq'            => array(array('website.name', $websiteName)),
                 'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE,
                 'website.mode'   => ComponentController::WEBSITE_MODE_SERVER

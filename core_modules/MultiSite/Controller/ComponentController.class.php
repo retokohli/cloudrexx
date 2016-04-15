@@ -3148,7 +3148,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return '';
         }
 
-        $ownerId = \FWUser::getFWUserObject()->objUser->getId();
+        $ownerId     = \FWUser::getFWUserObject()->objUser->getId();
+        $ownerEmail  = \FWUser::getFWUserObject()->objUser->getEmail();
         if ($ownerId != \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite')) {
             return '';
         }
@@ -3156,7 +3157,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
         $response    = JsonMultiSiteController::executeCommandOnMyServiceServer(
             'getServerWebsiteList',
-            array('ownerId' => $ownerId, 'websiteName' => $websiteName)
+            array('ownerEmail' => $ownerEmail, 'websiteName' => $websiteName)
         );
 
         if (!$response || $response->status === 'error' || empty($response->data->websiteList)) {
