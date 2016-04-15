@@ -1345,7 +1345,7 @@ namespace Cx\Core\Core\Controller {
 
             \DBG::set_adodb_debug_mode();
 
-            $this->eventManager = new \Cx\Core\Event\Controller\EventManager();
+            $this->eventManager = new \Cx\Core\Event\Controller\EventManager($this);
             new \Cx\Core\Event\Controller\ModelEventWrapper($this);
             $this->eventManager->addEvent('preComponent');
             $this->eventManager->addEvent('postComponent');
