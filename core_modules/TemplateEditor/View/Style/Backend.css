@@ -23,6 +23,10 @@ body {
     overflow: scroll;
 }
 
+#workbenchWarning ~ #content_wrapper .sidebar {
+    height: calc(100% - 100px);
+}
+
 .sidebar label {
     display: block;
     font-weight: bold;
