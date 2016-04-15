@@ -3430,7 +3430,7 @@ class NewsletterManager extends NewsletterLib
             if ($replaceUrl->isInternal()) {
                 $ReplaceWith = $replaceUrl->toString();
             } else {
-                $ReplaceWith = '"'.$URLforReplace.'"';
+                $ReplaceWith = $URLforReplace;
             }
             
             $content_text = str_replace('"'.$URLforReplace.'"', '"'.$ReplaceWith.'"', $content_text);
