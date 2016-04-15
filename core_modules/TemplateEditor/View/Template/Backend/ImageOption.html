@@ -44,8 +44,12 @@
                 var data = response.data.url;
             }
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',data);
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(data);
+            // add relative path config if not external domain
+            if(data && data.indexOf("http") < 0  && data.indexOf("//") < 0) {
+                data = '../' + data;
+            }
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src', data);
             parent.removeClass('saving');
             parent.addClass('saved');
             setTimeout(function(){

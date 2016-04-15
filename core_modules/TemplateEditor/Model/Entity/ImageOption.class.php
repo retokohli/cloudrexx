@@ -85,7 +85,7 @@ class ImageOption extends Option
         $mediaBrowser->setCallback('callback_' . $this->name);
         return parent::renderOptionField(
             array(
-                'TEMPLATEEDITOR_OPTION_VALUE' => $this->url,
+                'TEMPLATEEDITOR_OPTION_VALUE' => $this->getAbsoluteUrl(),
                 'MEDIABROWSER_BUTTON'         =>
                     $mediaBrowser->getXHtml(
                         $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CHANGE_PICTURE']
@@ -104,7 +104,7 @@ class ImageOption extends Option
     {
         $template->setVariable(
             'TEMPLATE_EDITOR_' . strtoupper($this->name),
-            contrexx_raw2xhtml($this->url)
+            contrexx_raw2xhtml($this->getAbsoluteUrl())
         );
     }
 
@@ -125,27 +125,31 @@ class ImageOption extends Option
     public function handleChange($data)
     {
         global $_ARRAYLANG;
-        $url = parse_url($data);
-        if (!isset($url['host'])) {
-            if (!file_exists(
-                $this->cx->getWebsitePath() . $url['path']
-            )
-            ) {
-                if (!file_exists(
-                    $this->cx->getCodeBasePath() . $url['path']
-                )
-                ) {
-                    throw new OptionValueNotValidException(
-                        sprintf(
-                            $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'],
-                            $url['path']
-                        )
-                    );
-                }
-            }
+        $url = \Cx\Core\Routing\Url::fromMagic($data);
+        if (!$url->isInternal()) {
+            return array('url' => $data);
         }
-        $this->url = $data;
-        return array('url' => $data);
+        // remove offsetPath and leading slash to ensure installation relocation
+        $urlPath = ltrim(
+            str_replace(
+                $this->cx->getCodeBaseOffsetPath(),
+                '',
+                $data
+            ),
+            '/'
+        );
+        if (
+            !file_exists($this->cx->getCodeBaseDocumentRootPath() . '/' . $urlPath)
+            && !file_exists($this->cx->getWebsitePath() . '/' . $urlPath)
+        ) {
+            throw new OptionValueNotValidException(
+                sprintf(
+                    $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'],
+                    $data
+                )
+            );
+        }
+        return array('url' =>  $urlPath);
     }
 
     /**
@@ -176,5 +180,20 @@ class ImageOption extends Option
     public function getValue()
     {
         return array('url' => $this->url);
+    }
+
+    /**
+     * Return the absoulte url or the absolute url path
+     * @return String
+     */
+    protected function getAbsoluteUrl() {
+        if(empty($this->url)) {
+            return $this->url;
+        }
+        $url = \Cx\Core\Routing\Url::fromMagic($this->url);
+        if ($url->isInternal()) {
+            return $this->cx->getCodeBaseOffsetPath() . '/' . $this->url;
+        }
+        return $this->url;
     }
 }
