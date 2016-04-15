@@ -217,3 +217,4 @@ $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_UNUSABLE'] = 'Code only';
 $_ARRAYLANG['TXT_THEME_TEMPLATEEDITOR_EDIT'] = 'Anpassen';
 $_ARRAYLANG['TXT_THEME_ERROR_IN_INSERT_THEME'] = 'Das Template konnte nicht in der Datenbank gespeichert werden.';
 $_ARRAYLANG['TXT_UNABLE_TO_CONVERT_THEME_TO_COMPONENT'] = 'Das Template konnte nicht korrekt eingelesen werden. Stellen Sie sicher das auf das Verzeichnis im Dateisystem Schreibzugriff besteht.';
+$_ARRAYLANG['TXT_CORE_VIEWMANAGER_LOADING'] = "Laden...";

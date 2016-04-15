@@ -60,11 +60,15 @@ class LocalFileSystem extends EntityBase implements FileSystem
     }
 
     public function getFileList($directory, $recursive = false, $readonly = false) {
+
+        $dirPath = rtrim($this->rootPath . '/' . $directory,'/');
+        if (!file_exists($dirPath)) {
+            return array();
+        }
+
         $recursiveIteratorIterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator(
-                    rtrim($this->rootPath . '/' . $directory,'/')
-                ),
+                new \RecursiveDirectoryIterator($dirPath),
                 \RecursiveIteratorIterator::SELF_FIRST
             ), '/^((?!thumb(_[a-z]+)?).)*$/'
         );
@@ -464,15 +468,25 @@ class LocalFileSystem extends EntityBase implements FileSystem
             );
         }
     }
-    function getRootPath()
+
+    /**
+     * Get Root path of the filesystem
+     *
+     * @return string
+     */
+    public function getRootPath()
     {
         return $this->rootPath;
     }
 
-    function setRootPath($rootPath)
+    /**
+     * Set root path of the filesystem
+     *
+     * @param string $rootPath
+     */
+    public function setRootPath($rootPath)
     {
         $this->rootPath = $rootPath;
     }
-
 
 }
