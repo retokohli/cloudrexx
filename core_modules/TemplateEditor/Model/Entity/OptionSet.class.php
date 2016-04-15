@@ -358,16 +358,16 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
         foreach ($data['options'] as $option) {
             $optionType = $option['type'];
             if ($option['series']) {
-                // series are not allowed for options area and selection and
-                // therefore will not be parsed as such
-                if ($optionType ===
-                    'Cx\Core_Modules\TemplateEditor\Model\Entity\AreaOption'
-                || $optionType ===
-                    'Cx\Core_Modules\TemplateEditor\Model\Entity\SelectOption'
-                ){
-                    \DBG::msg('area and select series are not available');
+                // these options are not allowed to be parsed as series
+                $optionsWithoutSeries = array(
+                    'Cx\Core_Modules\TemplateEditor\Model\Entity\AreaOption',
+                    'Cx\Core_Modules\TemplateEditor\Model\Entity\SelectOption',
+                );
+                if (in_array($optionType, $optionsWithoutSeries)) {
+                    \DBG::msg($optionType . ' can not be parsed as series');
                     continue;
                 }
+                // set type to series, so the fields are parsed as such
                 $optionType =
                     'Cx\Core_Modules\TemplateEditor\Model\Entity\SeriesOption';
             }
@@ -378,12 +378,13 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                     true
                 )
             ) {
-                return;
+                continue;
             }
             if ($this->cx->getMode() == Cx::MODE_BACKEND
-                || (($this->cx->getUser()->getFWUserObject(
-                    )->objUser->login())
-                    && isset($_GET['templateEditor']))
+                || (
+                    $this->cx->getUser()->getFWUserObject()->objUser->login()
+                    && isset($_GET['templateEditor'])
+                )
             ) {
                 if (isset($_SESSION['TemplateEditor'][$this->theme->getId(
                     )][$option['name']])) {

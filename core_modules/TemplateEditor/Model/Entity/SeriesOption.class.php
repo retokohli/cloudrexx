@@ -44,7 +44,7 @@ class SeriesOption extends Option
 {
 
     /**
-     * Array with values for serie
+     * Array with values for series
      *
      * @var array
      */
