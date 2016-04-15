@@ -187,8 +187,8 @@ class ImageOption extends Option
      * @return String
      */
     protected function getAbsoluteUrl() {
-        if(empty($this->url)) {
-            return $this->url;
+        if (empty($this->url)) {
+            return '';
         }
         $url = \Cx\Core\Routing\Url::fromMagic($this->url);
         if ($url->isInternal()) {
