@@ -78,7 +78,7 @@ class UpdateUtil
      * @var array $migrationPaths Array with the old and new path names
      * @access private
      */
-    private static $migrationPaths = array(
+    protected static $migrationPaths = array(
         'images/access'     =>  'images/Access',
         'images/blog'       =>  'images/Blog',
         'images/calendar'   =>  'images/Calendar',
