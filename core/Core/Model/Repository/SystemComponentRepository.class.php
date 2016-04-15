@@ -150,6 +150,9 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
         }
         
         if (!is_array($components)) {
+            if (isset($this->loadedComponents[$components->getId()])) {
+                return $this->loadedComponents[$components->getId()];
+            }
             $yamlDir = $this->cx->getClassLoader()->getFilePath($components->getDirectory(false).'/Model/Yaml');
             if (file_exists($yamlDir)) {
                 $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
@@ -220,7 +223,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      */
     protected function callHooks($hookName, $arguments) {
         foreach ($this->findActive() as $component) {
-            $this->eventManager->triggerEvent(
+            $this->cx->getEvents()->triggerEvent(
                 'preComponent',
                 array(
                     'componentName' => $component->getName(),
@@ -235,7 +238,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
                 ),
                 $arguments
             );
-            $this->eventManager->triggerEvent(
+            $this->cx->getEvents()->triggerEvent(
                 'postComponent',
                 array(
                     'componentName' => $component->getName(),
@@ -320,7 +323,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      */
     public function loadComponent($componentName) {
         $component = $this->findOneBy(array('name' => $componentName));
-        $this->eventManager->triggerEvent(
+        $this->cx->getEvents()->triggerEvent(
             'preComponent',
             array(
                 'componentName' => $component->getName(),
@@ -329,7 +332,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
             )
         );
         $component->load($this->cx->getPage());
-        $this->eventManager->triggerEvent(
+        $this->cx->getEvents()->triggerEvent(
             'postComponent',
             array(
                 'componentName' => $component->getName(),
