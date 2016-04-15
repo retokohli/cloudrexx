@@ -170,7 +170,7 @@ class Calendar extends CalendarLibrary
         global $_ARRAYLANG, $objTemplate;
 
         parent::__construct('.');
-        parent::getSettings();
+        $this->getSettings();
         
         $this->pageContent = $pageContent;
     }
@@ -182,7 +182,7 @@ class Calendar extends CalendarLibrary
      */
     function getCalendarPage()
     {
-        self::loadEventManager();
+        $this->loadEventManager();
         $id = !empty($_GET['id']) ? $_GET['id'] : 0 ;
 
         if(isset($_GET['export'])) {
@@ -219,15 +219,15 @@ class Calendar extends CalendarLibrary
                 self::showCategoryView();
                 break;
             case 'add':                
-                parent::checkAccess('add_event');
+                $this->checkAccess('add_event');
                 self::modifyEvent();
                 break;
             case 'edit':
-                parent::checkAccess('edit_event');
+                $this->checkAccess('edit_event');
                 self::modifyEvent(intval($id));
                 break;
             case 'my_events':
-                parent::checkAccess('my_events');
+                $this->checkAccess('my_events');
                 self::myEvents();
                 break;
             case 'success':
@@ -259,64 +259,71 @@ class Calendar extends CalendarLibrary
         
         // get startdate
         if (!empty($from)) {
-            $this->startDate = parent::getDateTimestamp($from);
+            $this->startDate = $this->getDateTime($from);
         } else if ($cmd == 'archive') {
             $this->startDate = null;
             $this->sortDirection = 'DESC';
         } else {
-            $startDay   = isset($_GET['day']) ? $_GET['day'] : date("d", time());
-            $startMonth = isset($_GET['month']) ? $_GET['month'] : date("m", time());
-            $startYear  = isset($_GET['year']) ? $_GET['year'] : date("Y", time());
+            $this->startDate = new \DateTime();
 
-            $this->startDate = mktime(0, 0, 0, $startMonth, $startDay, $startYear);
+            $startDay   = isset($_GET['day']) ? $_GET['day'] : $this->startDate->format('d');
+            $startMonth = isset($_GET['month']) ? $_GET['month'] : $this->startDate->format('m');
+            $startYear  = isset($_GET['year']) ? $_GET['year'] : $this->startDate->format('Y');
+
+            $this->startDate->setDate($startYear, $startMonth, $startDay);
+            $this->startDate->setTime(0, 0, 0);
         }
 
         // get enddate
         if (!empty($till)) {
-            $this->endDate = parent::getDateTimestamp($till);
+            $this->endDate = $this->getDateTime($till);
         } else if ($cmd == 'archive') {
-            $this->endDate = time();
+            $this->endDate = new \DateTime();
         } else {
-            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : date("d", time());
-            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : date("m", time());
-            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : date("Y", time());
+            $this->endDate = new \DateTime();
+
+            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : $this->endDate->format('d');
+            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : $this->endDate->format('m');
+            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : $this->endDate->format('Y');
 
             $endYear = empty($_GET['endYear']) && empty($_GET['endMonth']) ? $endYear+10: $endYear;
 
-            $this->endDate = mktime(23, 59, 59, $endMonth, $endDay, $endYear);
+            $this->endDate->setDate($endYear, $endMonth, $endDay);
+            $this->endDate->setTime(23, 59, 59);
         }
 
 
         // get datepicker-time
-         if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $cmd != 'boxes') {
-            $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : date('Y');
-            $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : date('m');
-            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : date('d');
-            
-            $dateObj = new \DateTime("{$year}-{$month}-{$day}");
-            
-            $dateObj->modify("first day of this month");
-            $dateObj->setTime(0, 0, 0);
-            $this->startDate = $dateObj->getTimestamp();
-            
+        if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $cmd != 'boxes') {
+
+            $this->startDate = new \DateTime();
+            $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : $this->startDate->format('Y');
+            $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : $this->startDate->format('m');
+            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : $this->startDate->format('d');
+
+            $this->startDate->setDate($year, $month, $day);
+            $this->startDate->modify("first day of this month");
+            $this->startDate->setTime(0, 0, 0);
+
+            $this->endDate = clone $this->startDate;
             // add months for the list view(month view)
             if ((empty($_GET['act']) || $_GET['act'] != 'list') && empty($_REQUEST['dayID'])) {
-                $dateObj->modify("+{$this->boxCount} months");
+                $this->endDate->modify("+{$this->boxCount} months");
             }
-            
-            $dateObj->modify("last day of this month");
-            $dateObj->setTime(23, 59, 59);
-            $this->endDate = $dateObj->getTimestamp();
-            
 
-         } elseif (isset ($_GET["yearID"]) && isset ($_GET["monthID"]) && isset ($_GET["dayID"])) {
+            $this->endDate->modify("last day of this month");
+            $this->endDate->setTime(23, 59, 59);
+        } elseif (isset ($_GET["yearID"]) && isset ($_GET["monthID"]) && isset ($_GET["dayID"])) {
+            $this->startDate = new \DateTime();
 
-            $year = isset($_REQUEST["yearID"]) ? intval($_REQUEST["yearID"]) : date('Y', time());
-            $month = isset($_REQUEST["monthID"]) ? intval($_REQUEST["monthID"]) : date('m', time());
-            $day = isset($_REQUEST["dayID"]) ? intval($_REQUEST["dayID"]) : date('d', time());
+            $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : $this->startDate->format('Y');
+            $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : $this->startDate->format('m');
+            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : $this->startDate->format('d');
 
-            $this->startDate = mktime(0, 0, 0, $month, $day, $year);
-            $this->endDate = mktime(23, 59, 59, $month, $day, $year);
+            $this->startDate->setDate($year, $month, $day);
+            $this->startDate->setTime(0, 0, 0);
+            $this->endDate   = clone $this->startDate;
+            $this->endDate->setTime(23, 59, 59);
         }
         
         // In case $_GET['cmd'] is an integer, then we shall treat it as the
@@ -363,6 +370,7 @@ class Calendar extends CalendarLibrary
             } else { */
                 $eventId = isset($_GET['id']) ? intval($_GET['id']) : 0;
                 $date    = isset($_GET['date']) ? intval($_GET['date']) : 0;
+
                 $this->objEventManager->getEvent($eventId, $date);
             /* } */
         }
@@ -379,9 +387,9 @@ class Calendar extends CalendarLibrary
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
        
-        parent::getSettings();
+        $this->getSettings();
         
-        $dateFormat = parent::getDateFormat(1);
+        $dateFormat = $this->getDateFormat(1);
         
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
@@ -483,8 +491,8 @@ EOF;
         
         \JS::registerJS('modules/Calendar/View/Script/Frontend.js');
          
-        parent::getFrontendLanguages();
-        parent::getSettings();
+        $this->getFrontendLanguages();
+        $this->getSettings();
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
         $showFrom = true;
@@ -515,7 +523,7 @@ EOF;
             $objEvent->getData();
         }
 
-        $dateFormat = parent::getDateFormat(1);
+        $dateFormat = $this->getDateFormat(1);
         
         $locationType = $this->arrSettings['placeData'] == 3 ? ($eventId != 0 ? $objEvent->locationType : 1) : $this->arrSettings['placeData'];
         $hostType     = $this->arrSettings['placeDataHost'] == 3 ? ($eventId != 0 ? $objEvent->hostType : 1) : $this->arrSettings['placeDataHost'];
@@ -565,7 +573,18 @@ UPLOADER;
 
         $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
-        
+
+        if ($eventId) {
+            $startDate = $objEvent->startDate;
+            $endDate   = $objEvent->endDate;
+        } else {
+            $startDate = new \DateTime();
+            $endDate   = new \DateTime();
+        }
+
+        $eventStartDate = $this->format2userDateTime($startDate);
+        $eventEndDate   = $this->format2userDateTime($endDate);
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DETAILS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAILS'],
@@ -605,8 +624,8 @@ UPLOADER;
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
-            $this->moduleLangVar.'_EVENT_START_DATE'                => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->startDate) : date(parent::getDateFormat()." H:i"),
-            $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->endDate) : date(parent::getDateFormat()." H:i"),
+            $this->moduleLangVar.'_EVENT_START_DATE'                => $eventStartDate,
+            $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventEndDate,
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
             $this->moduleLangVar.'_EVENT_PICTURE_THUMB'             => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
             $this->moduleLangVar.'_EVENT_ATTACHMENT'                => $objEvent->attach,
@@ -839,7 +858,15 @@ UPLOADER;
         
         $numRegistrations = (int) $objEvent->registrationCount;
         
-        $this->pageTitle = date("d.m.Y", (isset($_GET['date']) ? $_GET['date'] : $objEvent->startDate)).": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
+        if (isset($_GET['date'])) {
+            $dateFromGet = new \DateTime();
+            $dateFromGet->setTimestamp(intval($_GET['date']));
+            $dateForPageTitle = $dateFromGet;
+        } else {
+            $dateForPageTitle = $objEvent->startDate;
+        }
+        $this->pageTitle = $this->format2userDate($dateForPageTitle)
+                            . ": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
         if(time() <= intval($_REQUEST['date'])) {
             if($numRegistrations < $objEvent->numSubscriber) {
@@ -897,7 +924,7 @@ UPLOADER;
                             /* if($_POST["paymentMethod"] == 2) {
                                 $objRegistration->get($objRegistration->id);
                                 $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($objRegistration->eventId);                                
-                                parent::getSettings();
+                                $this->getSettings();
                                 $amount  = (int) $objEvent->price * 100;
                                 $status .= \Cx\Modules\Calendar\Controller\CalendarPayment::_yellowpay(array("orderID" => $objRegistration->id, "amount" => $amount, "currency" => $this->arrSettings["paymentCurrency"], "language" => "DE"));
                             } */
@@ -1014,7 +1041,7 @@ UPLOADER;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         if($_REQUEST["handler"] == "yellowpay") {
             $orderId = \Yellowpay::getOrderId();
-            parent::getSettings();
+            $this->getSettings();
             if (\Yellowpay::checkin($this->arrSettings["paymentYellowpayShaOut"])) {
                 switch(abs($_REQUEST["result"])) {
                     case 2:

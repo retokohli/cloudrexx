@@ -142,7 +142,7 @@ class JsonData {
         $controllerClass = end($nsParts);
         
         // legacy adapter
-        if (in_array($possibleComponentName, array('Json', 'Survey', 'Crm'))) {
+        if (in_array($possibleComponentName, array('Json', 'Crm'))) {
             $this->loadLegacyAdapter($adapter);
             return;
         }
