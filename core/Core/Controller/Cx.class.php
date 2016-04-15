@@ -1130,8 +1130,24 @@ namespace Cx\Core\Core\Controller {
                 $filename = $this->getWebsiteConfigPath() . '/postInitHooks.yml';
                 $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
                 foreach ($objDataSet as $componentDefinition) {
+                    $this->eventManager->triggerEvent(
+                        'preComponent',
+                        array(
+                            'componentName' => $componentDefinition['name'],
+                            'component' => null,
+                            'hook' => 'postInit',
+                        )
+                    );
                     $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
                     $componentController->postInit($this);
+                    $this->eventManager->triggerEvent(
+                        'postComponent',
+                        array(
+                            'componentName' => $componentDefinition['name'],
+                            'component' => null,
+                            'hook' => 'postInit',
+                        )
+                    );
                 }
             } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
                 throw new \Exception('Error in processing postInit-hooks: '.$e->getMessage());
@@ -1331,6 +1347,8 @@ namespace Cx\Core\Core\Controller {
 
             $this->eventManager = new \Cx\Core\Event\Controller\EventManager();
             new \Cx\Core\Event\Controller\ModelEventWrapper($this);
+            $this->eventManager->addEvent('preComponent');
+            $this->eventManager->addEvent('postComponent');
 
             // Initialize base system
             // TODO: Get rid of InitCMS class, merge it with this class instead
