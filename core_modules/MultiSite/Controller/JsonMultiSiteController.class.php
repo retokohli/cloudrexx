@@ -1825,7 +1825,8 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                 $website->setOwner($owner);
             }
             //Set the website mode and server website
-            $serverWebsite = null;
+            $oldServerWebsite = $website->getServerWebsite();
+            $serverWebsite    = null;
             if (    isset($params['post']['mode'])
                 &&  $params['post']['mode'] == ComponentController::WEBSITE_MODE_CLIENT
             ) {
@@ -1838,7 +1839,9 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             if (isset($params['post']['mode'])) {
                 $website->setMode(contrexx_input2db($params['post']['mode']));
             }
-            $website->setServerWebsite($serverWebsite);
+            if ($oldServerWebsite != $serverWebsite) {
+                $website->setServerWebsite($serverWebsite);
+            }
             $em->flush();
             return true;
         } catch (\Exception $e) {
