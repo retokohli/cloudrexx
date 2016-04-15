@@ -1017,6 +1017,7 @@ function executeContrexxUpdate() {
         \DBG::msg('update: migrate media paths for content and blocks');
         $mediaPathContentDone = _migrateMediaPaths('page');
         $mediaPathBlockDone = _migrateMediaPaths('block');
+        $mediaPathTemplateDone = _migrateTemplateMediaPaths();
         if ($mediaPathContentDone === false || $mediaPathBlockDone === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(
@@ -2806,6 +2807,52 @@ function _migrateMediaPaths($where = 'page') {
         }
     }
     return true;
+}
+
+function _migrateTemplateMediaPaths($themeRepository = null) {
+    // check if the themeRepository from theme Migration is still available
+    if (!isset($themeRepository)) {
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+    }
+    // get all available templates
+    $availableTemplates = $themeRepository->findAll();
+    $mediaPaths = \Cx\Lib\UpdateUtil::getMigrationPaths();
+    foreach ($availableTemplates as $template) {
+        // check if current template-folder exists
+        if (is_dir(ASCMS_THEMES_PATH . $template['foldername'])) {
+            // get all files inside of the current template
+            $files = getFolderStructure(ASCMS_THEMES_PATH . $template['foldername']);
+            foreach ($files as $file) {
+                // get file info of the current file
+                $fileInfo = pathinfo($file);
+                // check if it is either a .css-, .html- or .js-file
+                // we do not want to check any pictures, fonts or rather any
+                // other file type on that matter
+                if (in_array($fileInfo['extension'], array('css', 'html', 'js'))) {
+                    try {
+                        $file = new \Cx\Lib\FileSystem\File($file);
+                        $content = $file->getData();
+                        foreach($mediaPaths as $oldPath => $newPath) {
+                            $migratedContent = preg_replace(
+                                '#' . $oldPath . '#',
+                                $newPath,
+                                $content
+                            );
+                            // check if the content did in fact change
+                            if ($migratedContent != $content) {
+                                // write the new content into the file
+                                $file->write($migratedContent);
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        \DBG::log($e->getMessage());
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 function migratePageApplicationNames() {

@@ -112,5 +112,22 @@ function _checkoutUpdate()
         }
     }
 
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        $mediaPaths = \Cx\Lib\UpdateUtil::getMigrationPaths();
+        try {
+            foreach($mediaPaths as $oldPath => $newPath) {
+                \Cx\Lib\UpdateUtil::migratePath(
+                    '`' . DBPREFIX . 'module_checkout_settings_mails`',
+                    '`content`',
+                    $oldPath,
+                    $newPath
+                );
+            }
+        } catch (\Cx\Lib\Update_DatabaseException $e) {
+            \DBG::log($e->getMessage());
+            return false;
+        }
+    }
+
     return true;
 }

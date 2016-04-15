@@ -997,15 +997,12 @@ function _accessUpdate()
         $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
         try {
             foreach ($pathsToMigrate as $oldPath => $newPath) {
-                $success = \Cx\Lib\UpdateUtil::migratePath(
+                \Cx\Lib\UpdateUtil::migratePath(
                     '`' . DBPREFIX . 'contrexx_access_user_profile`',
                     '`picture`',
                     $oldPath,
                     $newPath
                 );
-                if (!$success) {
-
-                }
             }
         } catch (\Cx\Lib\Update_DatabaseException $e) {
             \DBG::log($e->getMessage());
