@@ -1056,8 +1056,7 @@ class Market extends MarketLibrary
         if (isset($_POST['submitEntry']) || isset($_POST['submit'])) {
 
             if (isset($_POST['submitEntry'])) {
-                $this->insertEntry('0');
-                $id = $objDatabase->Insert_ID();
+                $id = $this->insertEntry('0');
             }
 
             // check if entries shall be confirmed through the frontend

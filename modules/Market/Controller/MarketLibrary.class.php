@@ -231,7 +231,9 @@ class MarketLibrary
             if($objResult !== false){
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_ADD_SUCCESS'];
                 if($backend == 0 && $settings['confirmFrontend']){
-                    $this->sendCodeMail($objDatabase->Insert_ID());
+                    $entryId = $objDatabase->Insert_ID();
+                    $this->sendCodeMail($entryId);
+                    return $entryId;
                 }
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
