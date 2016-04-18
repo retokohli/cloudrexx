@@ -293,7 +293,14 @@ class ViewGenerator {
             if (isset($entityData[$name]) && $name != $primaryKeyName) {
                 $fieldDefinition = $entityClassMetadata->getFieldMapping($name);
                 if ($fieldDefinition['type'] == 'datetime') {
+                    // fetch DateTime component controller
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    $em = $cx->getDb()->getEntityManager();
+                    $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                    $dateTimeComponent = $componentRepo->findOneBy(array('name'=>'DateTime'));
+                    
                     $newValue = new \DateTime($entityData[$name]);
+                    $newValue = $dateTimeComponent->user2db($newValue);
                 } elseif ($fieldDefinition['type'] == 'array') {
                     $newValue = unserialize($entityData[$name]);
                     // verify that the value is actually an array -> prevent to store other php data

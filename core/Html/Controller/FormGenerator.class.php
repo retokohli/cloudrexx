@@ -395,6 +395,13 @@ class FormGenerator {
             case 'date':
                 // input field with type text and class datepicker
                 if ($value instanceof \DateTime) {
+                    // fetch DateTime component controller
+                    $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                    $em = $cx->getDb()->getEntityManager();
+                    $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                    $dateTimeComponent = $componentRepo->findOneBy(array('name'=>'DateTime'));
+                    
+                    $value = $dateTimeComponent->db2user($value);
                     $value = $value->format(ASCMS_DATE_FORMAT);
                 }
                 if (is_null($value)) {
@@ -778,6 +785,13 @@ CODE;
             case 'DateTime':
             case 'datetime':
             case 'date':
+                // fetch DateTime component controller
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                $em = $cx->getDb()->getEntityManager();
+                $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                $dateTimeComponent = $componentRepo->findOneBy(array('name'=>'DateTime'));
+                
+                $element = $dateTimeComponent->db2user($element);
                 $element = $element->format(ASCMS_DATE_FORMAT);
                 break;
             default:

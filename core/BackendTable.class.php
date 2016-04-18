@@ -177,6 +177,13 @@ class BackendTable extends HTML_Table {
                         }
                         $encode = false; // todo: this should be set by callback
                     } else if (is_object($data) && get_class($data) == 'DateTime') {
+                        // fetch DateTime component controller
+                        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+                        $em = $cx->getDb()->getEntityManager();
+                        $componentRepo = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                        $dateTimeComponent = $componentRepo->findOneBy(array('name'=>'DateTime'));
+                        
+                        $data = $dateTimeComponent->db2user($data);
                         $data = $data->format(ASCMS_DATE_FORMAT);
                     } else if (isset($options['fields'][$origHeader]) && isset($options['fields'][$origHeader]['type']) && $options['fields'][$origHeader]['type'] == '\Country') {
                         $data = \Cx\Core\Country\Controller\Country::getNameById($data);
