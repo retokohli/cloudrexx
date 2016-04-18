@@ -106,7 +106,7 @@ namespace Cx\Core\Model {
             if ($this->pdo) {
                 return $this->pdo;
             }
-            $objDateTimeZone = new \DateTimeZone($_CONFIG['timezone']);
+            $objDateTimeZone = new \DateTimeZone($_DBCONFIG['timezone']);
             $objDateTime = new \DateTime('now', $objDateTimeZone);
             $offset = $objDateTimeZone->getOffset($objDateTime);
             $offsetHours = floor(abs($offset)/3600); 

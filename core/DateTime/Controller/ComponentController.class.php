@@ -60,10 +60,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\Routing\Url $request Request URL
      */
     public function preResolve(\Cx\Core\Routing\Url $request) {
-        global $_CONFIG;
-
-        $this->internalTimezone = new \DateTimeZone($_CONFIG['timezone']);
-
+        global $_DBCONFIG;
+        
+        $internalTimezoneString = $_DBCONFIG['timezone'];
+        $this->internalTimezone = new \DateTimeZone($internalTimezoneString);
+        
         $this->userTimezone = \FWUser::getFWUserObject()->objUser->getTimezone();
     }
     
