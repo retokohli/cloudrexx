@@ -805,7 +805,42 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
     }
 
 
+    /**
+     * Get the Url of the section that is used to list the loaded entry
+     *
+     * If a form specific page exists (i.e. section=MediaDir&cmd=team), then
+     * the Url to that specific page is returned. Otherwise the Url to the mail
+     * application page is returned (section=MediaDir).
+     *
+     * @throws MediaDirectoryEntryException    In case no valid application page was found,
+     *                                         MediaDirectoryEntryException is thrown
+     * @return  \Cx\Core\Routing\Url    Url of the form specific section
+     */
+    public function getFormUrl() {
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $arrEntry = $this->arrEntries[$this->intEntryId];
 
+        // fetch the definition of the form the entry is based on
+        $formDefinition = $this->getFormDefinitionOfEntry($arrEntry['entryId']);
+
+        // fetch form specific page (i.e. section=MediaDir&cmd=team)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $formDefinition['formCmd'], FRONTEND_LANG_ID);
+
+        // fetch main application page (section=MediaDir)
+        if (!$page || !$page->isActive()) {
+            $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, '', FRONTEND_LANG_ID);
+        }
+
+        // abort in case the entry can't be linked to an existing page
+        if (!$page || !$page->isActive()) {
+            throw new MediaDirectoryEntryException();
+        }
+
+        // create url to the target page and add the entry's ID as argument
+        $url = \Cx\Core\Routing\Url::fromPage($page);
+
+        return $url;
+    }
 
     /**
      * Get the Url of the page on which the entry shall be displayed on

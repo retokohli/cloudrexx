@@ -245,7 +245,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         //get searchform
         if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
             $objSearch = new MediaDirectorySearch($this->moduleName);
-            $objSearch->getSearchform($this->_objTpl, 1);
+            $objSearch->getSearchform($this->_objTpl);
         }
 
         //get level / category details
@@ -377,7 +377,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         $searchTerm = null;
         if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
             $objSearch = new MediaDirectorySearch($this->moduleName);
-            $objSearch->getSearchform($this->_objTpl, 1);
+            $objSearch->getSearchform($this->_objTpl);
             $searchTerm = isset($_GET['term']) ? contrexx_input2raw($_GET['term']) : null;
         }
         
@@ -492,27 +492,39 @@ class MediaDirectory extends MediaDirectoryLibrary
             $this->getNavtree($intCategoryId, $intLevelId);
         }
 
-        if($intEntryId != 0 && $this->_objTpl->blockExists($this->moduleNameLC.'EntryList')) {
-            $objEntry = new MediaDirectoryEntry($this->moduleName);
-            $objEntry->getEntries($intEntryId,$intLevelId,$intCategoryId,null,null,null,1,null,1);
-            $objEntry->listEntries($this->_objTpl, 2);
-            $objEntry->updateHits($intEntryId);
-
-            //set meta title
-            $this->metaTitle .= " - ".$objEntry->arrEntries[$intEntryId]['entryFields'][0];
-            $this->pageTitle = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
-
-            if(empty($objEntry->arrEntries)) {
-                $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
-                $this->_objTpl->clearVariables();
-
-                header("Location: index.php?section=".$this->moduleName);
-                exit;
-            }
-        } else {
+        if(!$intEntryId || !$this->_objTpl->blockExists($this->moduleNameLC.'EntryList')) {
             header("Location: index.php?section=".$this->moduleName);
             exit;
         }
+
+        $objEntry = new MediaDirectoryEntry($this->moduleName);
+        $objEntry->getEntries($intEntryId,$intLevelId,$intCategoryId,null,null,null,1,null,1);
+
+        if (empty($objEntry->arrEntries)) {
+            $this->_objTpl->hideBlock($this->moduleNameLC.'EntryList');
+            $this->_objTpl->clearVariables();
+
+            header("Location: index.php?section=".$this->moduleName);
+            exit;
+        }
+
+        // parse search form
+        if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
+            $objSearch = new MediaDirectorySearch($this->moduleName);
+            try {
+                $objSearch->getSearchform($this->_objTpl, $objEntry->getFormUrl());
+            } catch (MediaDirectoryEntryException $e) {
+                \DBG::log('Unable to load search form: '.$e->getMessage());
+            }
+        }
+
+        // parse entry details
+        $objEntry->listEntries($this->_objTpl, 2);
+        $objEntry->updateHits($intEntryId);
+
+        //set meta title
+        $this->metaTitle .= ' - '.$objEntry->arrEntries[$intEntryId]['entryFields'][0];
+        $this->pageTitle = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
     }
 
 
@@ -539,7 +551,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         //get searchform
         if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
             $objSearch = new MediaDirectorySearch($this->moduleName);
-            $objSearch->getSearchform($this->_objTpl, 1);
+            $objSearch->getSearchform($this->_objTpl);
         }
 
         $objEntry = new MediaDirectoryEntry($this->moduleName);
@@ -562,7 +574,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         //get searchform
         if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
             $objSearch = new MediaDirectorySearch($this->moduleName);
-            $objSearch->getSearchform($this->_objTpl, 1);
+            $objSearch->getSearchform($this->_objTpl);
         }
 
         $objEntry = new MediaDirectoryEntry($this->moduleName);
@@ -654,7 +666,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         //get searchform
         if($this->_objTpl->blockExists($this->moduleNameLC.'Searchform')){
             $objSearch = new MediaDirectorySearch($this->moduleName);
-            $objSearch->getSearchform($this->_objTpl, 1);
+            $objSearch->getSearchform($this->_objTpl);
         }
 
         $objEntry = new MediaDirectoryEntry($this->moduleName);

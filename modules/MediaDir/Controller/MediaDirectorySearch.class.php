@@ -61,15 +61,16 @@ class MediaDirectorySearch extends MediaDirectoryLibrary
 
 
 
-    function getSearchform($objTpl)
+    /**
+     * Get HTML search form
+     *
+     * @param   \Cx\Core\Html\Sigma $objTpl Template object
+     * @param   \Cx\Core\Routing\Url    $actionUrl  Optional Url object to be used as value of action attribute of HTML form-tag
+     * @return  string  HTML search form
+     */
+    public function getSearchform($objTpl, $actionUrl = null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
-
-        if (isset($_GET['cmd'])) {
-            $strSearchFormCmd = '<input name="cmd" value="'.$_GET['cmd'].'" type="hidden" />';
-        } else {
-            $strSearchFormCmd = '';
-        }
 
         if (isset($_GET['term'])) {
             $strSearchFormTerm = $_GET['term'];
@@ -77,21 +78,21 @@ class MediaDirectorySearch extends MediaDirectoryLibrary
             $strSearchFormTerm = '';
         }
 
-        $strSearchFormAction = CONTREXX_SCRIPT_PATH;
+        if (empty($actionUrl)) {
+            $actionUrl = \Cx\Core\Routing\Url::fromPage(\Cx\Core\Core\Controller\Cx::instanciate()->getPage());
+        }
+
         $strTextSearch = $_CORELANG['TXT_SEARCH'];
         $strTextSearchterm = $_ARRAYLANG['TXT_MEDIADIR_SEARCH_TERM'];
         $strExpandedInputfields = $this->getExpandedInputfields();
         $strSearchFormId = $this->moduleNameLC."SearchForm";
-        $strSectionValue = $this->moduleName;
         $strInputfieldSearch = $this->moduleNameLC."InputfieldSearch";
         $strButtonSearch = $this->moduleNameLC."ButtonSearch";
 
         $strSearchNormalForm = <<<EOF
 <div class="$strSearchFormId">
-<form method="get" action="$strSearchFormAction">
-<input name="section" value="$strSectionValue" type="hidden" />
+<form method="get" action="$actionUrl">
 <input name="type" value="normal" type="hidden" />
-$strSearchFormCmd
 <input name="term" class="$strInputfieldSearch searchbox" value="$strSearchFormTerm" onfocus="this.select();" type="text" />
 <input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit">
 </form>
@@ -101,11 +102,9 @@ EOF;
         $strSearchExpandedForm = <<<EOF
 
 <div class="$strSearchFormId">
-<form method="get" action="$strSearchFormAction">
+<form method="get" action="$actionUrl">
 <div class="normal">
-<input name="section" value="$strSectionValue" type="hidden" />
 <input name="type" value="exp" type="hidden" />
-$strSearchFormCmd
 <p><label>$strTextSearchterm</label><input name="term" class="$strInputfieldSearch searchbox" value="$strSearchFormTerm" onfocus="this.select();" type="text" />
 <input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit">
 </p>
@@ -144,7 +143,20 @@ EOF;
 
             $arrIds = explode('-', $_GET['cmd']);  
 
-            if ($arrIds[0] != 'search' && $arrIds[0] != 'alphabetical'){
+            if ($arrIds[0] == 'detail' || substr($arrIds[0],0,6) == 'detail') {
+                $entryId = intval($_GET['eid']);
+                $objEntry = new MediaDirectoryEntry($this->moduleName);
+                $objEntry->getEntries($entryId);
+                $formDefinition = $objEntry->getFormDefinition();
+                $formId = $formDefinition['formId'];
+
+                if (($formDefinition['formUseLevel'] == 1) && ($this->arrSettings['levelSelectorExpSearch'][$formId] == 1)) {
+                    $bolShowLevelSelector = true;
+                }
+                if (($formDefinition['formUseCategory'] == 1) && ($this->arrSettings['categorySelectorExpSearch'][$formId] == 1)) {
+                    $bolShowCategorySelector = true;
+                }
+            } elseif ($arrIds[0] != 'search' && $arrIds[0] != 'alphabetical'){
                 $objForms = new MediaDirectoryForm(null, $this->moduleName);
                 foreach ($objForms->arrForms as $id => $arrForm) {
                     if (!empty($arrForm['formCmd']) && ($arrForm['formCmd'] == $_GET['cmd'])) {
