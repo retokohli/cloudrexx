@@ -1641,7 +1641,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
         //get the media directory entry by the search term
         $entries = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry($this->moduleName);
-        $entries->getEntries(null, null, null, $searchTerm);
+        $entries->getEntries(null, null, null, $searchTerm, null, null, true);
 
         //if no entries found then return empty result
         if (empty($entries->arrEntries)) {
