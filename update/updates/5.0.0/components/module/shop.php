@@ -1430,11 +1430,17 @@ HTML;
     }
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
-        //update module name for crm core settings
-        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_setting` SET `section` = 'Shop' WHERE `section` = 'shop'");
-        //update module name for email templates
-        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_mail_template` SET `section` = 'Shop' WHERE `section` = 'shop'");
-        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_text` SET `section` = 'Shop' WHERE `section` = 'shop'");
+        try {
+            //update module name for crm core settings
+            \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_setting` SET `section` = 'Shop' WHERE `section` = 'shop'");
+            //update module name for email templates
+            \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_mail_template` SET `section` = 'Shop' WHERE `section` = 'shop'");
+            \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."core_text` SET `section` = 'Shop' WHERE `section` = 'shop'");
+
+            \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_shop_payment_processors` SET `picture` = 'logo_postfinance.png' WHERE `picture` = 'logo_postfinance.gif'");
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
 
         //Update script for moving the folder
         $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
