@@ -79,9 +79,11 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
     function getLatestPlacholder()
     {
         $this->strPlaceholder = null;
-        
-        $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']); 
-        
+
+        $intLimitEnd = ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 1)
+                        ? intval($this->arrSettings['settingsLatestNumHeadlines'])
+                        : null;
+
         $objEntries = new MediaDirectoryEntry($this->moduleName); 
         $objEntries->getEntries(null,null,null,null,true,null,1,null,$intLimitEnd);  
         
