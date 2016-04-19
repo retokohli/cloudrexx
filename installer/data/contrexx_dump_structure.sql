@@ -745,6 +745,7 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `series_pattern_exceptions` longtext NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `confirmed` tinyint(1) NOT NULL DEFAULT '1',
+  `show_detail_view` tinyint(1) NOT NULL DEFAULT '1',
   `author` varchar(255) NOT NULL,
   `all_day` tinyint(1) NOT NULL DEFAULT '0',
   `location_type` tinyint(1) NOT NULL DEFAULT '1',
@@ -772,6 +773,7 @@ CREATE TABLE `contrexx_module_calendar_event_field` (
   `event_id` int(11) NOT NULL DEFAULT '0',
   `lang_id` varchar(225) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
+  `teaser` text,
   `description` mediumtext,
   `redirect` varchar(255) NOT NULL,
   KEY `lang_field` (`title`),
@@ -2457,7 +2459,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `required` int(10) NOT NULL,
   `order` int(10) NOT NULL,
   `show_in` int(10) NOT NULL,
-  `context_type` enum('none','title','address','zip','city','country') NOT NULL,
+  `context_type` enum('none','title','content','address','zip','city','country') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_level_names` (
