@@ -1526,7 +1526,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
     }
     
     
-    function getCategoriesLevels($intType, $intEntryId=null, $cmdName=null)
+    function getCategoriesLevels($intType, $intEntryId=null, $cmdName='')
     {
         if ($intType == 1) {//categories
             $objEntryCategoriesLevels = $this->getCategories($intEntryId);
