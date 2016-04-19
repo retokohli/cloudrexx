@@ -86,14 +86,11 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
         $objEntries->getEntries(null,null,null,null,true,null,1,null,$intLimitEnd);  
         
         foreach($objEntries->arrEntries as $intEntryId => $arrEntry) {
-            if($objEntries->checkPageCmd('detail'.intval($arrEntry['entryFormId']))) {
-                $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
-            } else {
-                $strDetailCmd = 'detail';
-            }                                                                            
-            
-            $strDetailUrl = 'index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.'&amp;eid='.$arrEntry['entryId'];
-        
+            try {
+                $strDetailUrl = $objEntries->getDetailUrlOfEntry($arrEntry, true);
+            } catch (MediaDirectoryEntryException $e) {
+                $strDetailUrl = '#';
+            }
             $this->strPlaceholder .= '<li><a href="'.$strDetailUrl.'">'.$arrEntry['entryFields'][0].'</a></li>';    
         } 
         

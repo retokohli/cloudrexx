@@ -608,11 +608,10 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         if(!empty($objEntry->arrEntries)){
             foreach ($objEntry->arrEntries as $key => $arrEntry) {
-
-                if($objEntry->checkPageCmd('detail'.intval($arrEntry['entryFormId']))) {
-                    $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
-                } else {
-                    $strDetailCmd = 'detail';
+                try {
+                    $strDetailUrl = $objEntry->getDetailUrlOfEntry($arrEntry, true);
+                } catch (MediaDirectoryEntryException $e) {
+                    $strDetailUrl = '#';
                 }
 
                 $objTemplate->setVariable(array(
@@ -621,7 +620,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                     $this->moduleLangVar.'_LATEST_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
                     $this->moduleLangVar.'_LATEST_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
                     $this->moduleLangVar.'_LATEST_ENTRY_HITS' =>  $arrEntry['entryHits'],
-                    $this->moduleLangVar.'_ENTRY_DETAIL_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.'&amp;eid='.$arrEntry['entryId'],
+                    $this->moduleLangVar.'_ENTRY_DETAIL_URL' =>  $strDetailUrl,
                     'TXT_'.$this->moduleLangVar.'_ENTRY_DETAIL' =>  $_CORELANG['TXT_MEDIADIR_DETAIL'],
                 ));
 

@@ -35,6 +35,17 @@
  * @todo        Edit PHP DocBlocks!
  */
 namespace Cx\Modules\MediaDir\Controller;
+
+/**
+ * Media Directory Entry Exception
+ *
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  module_mediadir
+ */
+class MediaDirectoryEntryException extends \Exception {};
+
 /**
  * Media Directory Entry Class
  *
@@ -471,20 +482,21 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 	                            $strAddedBy = "unknown";
 	                        }
 
-	                        $strCategoryLink = $this->intCatId != 0 ? '&amp;cid='.$this->intCatId : null;
-	                        $strLevelLink = $this->intLevelId != 0 ? '&amp;lid='.$this->intLevelId : null;
-
-	                        if($this->checkPageCmd('detail'.intval($arrEntry['entryFormId']))) {
-	                            $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
-	                        } else {
-	                            $strDetailCmd = 'detail';
-	                        }
-
-	                        if($arrEntry['entryReadyToConfirm'] == 1 || $arrEntry['entryConfirmed'] == 1) {
-                                $strDetailUrl = 'index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.$strLevelLink.$strCategoryLink.'&amp;eid='.$arrEntry['entryId'];
-                            } else {
-                                $strDetailUrl = '#';
-                            }
+                            $strDetailUrl = '#';
+                            try {
+                                $detailUrl = $this->getDetailUrlOfEntry($arrEntry);
+                                if ($arrEntry['entryReadyToConfirm'] == 1 || $arrEntry['entryConfirmed'] == 1) {
+                                    $params = array();
+                                    if ($this->intLevelId) {
+                                        $params['lid'] = $this->intLevelId;
+                                    }
+                                    if ($this->intCatId) {
+                                        $params['cid'] = $this->intCatId;
+                                    }
+                                    $detailUrl->setParams($params);
+                                }
+                                $strDetailUrl = $detailUrl;
+                            } catch (MediaDirectoryEntryException $e) {}
 
 	                        $objTpl->setVariable(array(
                                     $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
@@ -630,20 +642,21 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                     $strAddedBy = "unknown";
                                 }
 
-                                $strCategoryLink = $this->intCatId != 0 ? '&amp;cid='.$this->intCatId : null;
-                                $strLevelLink = $this->intLevelId != 0 ? '&amp;lid='.$this->intLevelId : null;
-
-                                if($this->checkPageCmd('detail'.intval($arrEntry['entryFormId']))) {
-                                    $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
-                                } else {
-                                    $strDetailCmd = 'detail';
-                                }
-
-                                if($arrEntry['entryReadyToConfirm'] == 1 || $arrEntry['entryConfirmed'] == 1) {
-                                    $strDetailUrl = 'index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.$strLevelLink.$strCategoryLink.'&amp;eid='.$arrEntry['entryId'];
-                                } else {
-                                    $strDetailUrl = '#';
-                                }
+                                $strDetailUrl = '#';
+                                try {
+                                    $detailUrl = $this->getDetailUrlOfEntry($arrEntry);
+                                    if ($arrEntry['entryReadyToConfirm'] == 1 || $arrEntry['entryConfirmed'] == 1) {
+                                        $params = array();
+                                        if ($this->intLevelId) {
+                                            $params['lid'] = $this->intLevelId;
+                                        }
+                                        if ($this->intCatId) {
+                                            $params['cid'] = $this->intCatId;
+                                        }
+                                        $detailUrl->setParams($params);
+                                    }
+                                    $strDetailUrl = $detailUrl;
+                                } catch (MediaDirectoryEntryException $e) {}
 
                                 $objTpl->setVariable(array(
                                     $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
@@ -737,13 +750,13 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 	if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
 	                    $arrValues = array();
 
-	                    if($this->checkPageCmd('detail'.intval($arrEntry['entryFormId']))) {
-	                        $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
-	                    } else {
-	                        $strDetailCmd = 'detail';
-	                    }
+                        $strDetailUrl = '#';
+                        try {
+                            $strDetailUrl = $this->getDetailUrlOfEntry($arrEntry, true);
+                        } catch (MediaDirectoryEntryException $e) {}
 
-	                    $strEntryLink = '<a href="index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.'&amp;eid='.$arrEntry['entryId'].'">'.$_ARRAYLANG['TXT_MEDIADIR_DETAIL'].'</a>';
+	                    $strEntryLink = '<a href="'.$strDetailUrl.'">'.$_ARRAYLANG['TXT_MEDIADIR_DETAIL'].'</a>';
+
 	                    $strEntryTitle = '<b>'.contrexx_raw2xhtml($arrEntry['entryFields']['0']).'</b>';
 	                    $intEntryId = intval($arrEntry['entryId']);
 	                    $intEntryFormId = intval($arrEntry['entryFormId']);
@@ -793,18 +806,115 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
 
 
 
-    function checkPageCmd($strPageCmd)
-    {
-        global $_LANGID;
 
-        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        $pages = $pageRepo->findBy(array(
-            'cmd' => contrexx_addslashes($strPageCmd),
-            'lang' => $_LANGID,
-            'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-            'module' => $this->moduleName,
-        ));
-        return count($pages) > 0;
+    /**
+     * Get the Url of the page on which the entry shall be displayed on
+     *
+     * Alias for getDetailUrlOfEntry() where the current loaded entry will
+     * be passed to getDetailUrlOfEntry() as first argument $arrEntry.
+     *
+     * @param   boolean $fallbackToOverview If set to TRUE, method will try to
+     *          match an overview page in case no appropriate detail page exists
+     *          (step 3 & 4 of above listing). Defaults to FALSE.
+     * @throws MediaDirectoryEntryException    In case no valid application page was found,
+     *                                         MediaDirectoryEntryException is thrown
+     * @return  \Cx\Core\Routing\Url    Url the entry will be displayed on
+     */
+    public function getDetailUrl($fallbackToOverview = false) {
+        return $this->getDetailUrlOfEntry($this->arrEntries[$this->intEntryId], $fallbackToOverview);
+    }
+
+    /**
+     * Get the Url of the page on which the entry shall be displayed on
+     *
+     * If will try to look of the available application pages in the following order:
+     * 1. Form specific detail page (i.e. section=MediaDir&cmd=detail3)
+     * 2. Regular detail page (i.e. section=MediaDir&cmd=detail)
+     * 3. (optional) Form specific overview page (i.e. section=MediaDir&cmd=team)
+     * 4. (optional) Mail application page (i.e. section=MediaDir)
+     *
+     * @param   array   $arrEntry   Data regarding an entry object
+     * @param   boolean $fallbackToOverview If set to TRUE, method will try to
+     *          match an overview page in case no appropriate detail page exists
+     *          (step 3 & 4 of above listing). Defaults to FALSE.
+     * @throws MediaDirectoryEntryException    In case no valid application page was found,
+     *                                         MediaDirectoryEntryException is thrown
+     * @return  \Cx\Core\Routing\Url    Url the entry will be displayed on
+     */
+    public function getDetailUrlOfEntry($arrEntry, $fallbackToOverview = false) {
+        static $arrIdsOfFormSpecificEntries = array();
+
+        $detailCmd = 'detail';
+        $formId = $arrEntry['entryFormId'];
+        $formSpecificDetailCmd = $detailCmd . $formId;
+        $url = null;
+        $pagingPos = 0;
+        $pageRepo = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        // fetch form specific detail page (i.e. section=MediaDir&cmd=detail3)
+        $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $formSpecificDetailCmd, FRONTEND_LANG_ID);
+
+        // check if form specific detail page exists
+        if (!$page || !$page->isActive()) {
+            // fetch regular detail page (section=MediaDir&cmd=detail)
+            $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $detailCmd, FRONTEND_LANG_ID);
+        }
+
+        // check if the entry shall be linked to an overview page in case no detail page exists
+        if ((!$page || !$page->isActive()) && $fallbackToOverview) {
+            // fetch the definition of the form the entry is based on
+            $formDefinition = $this->getFormDefinitionOfEntry($arrEntry['entryId']);
+
+            // fetch entry paging limit
+            $entriesPerPage = intval($this->arrSettings['settingsPagingNumEntries']);
+
+            // fetch form specific page, if no regular detail page exists (i.e. section=MediaDir&cmd=team)
+            $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $formDefinition['formCmd'], FRONTEND_LANG_ID);
+            if ($page && $page->isActive()) {
+                if (!isset($arrIdsOfFormSpecificEntries[$formDefinition['formCmd']])) {
+                    $objEntry = new MediaDirectoryEntry($this->moduleName);
+                    $objEntry->getEntries(null, null, null, null, null, null, true, null, 'n', null, null, $formDefinition['formId']);
+                    $arrIdsOfFormSpecificEntries[$formDefinition['formCmd']] = array_keys($objEntry->arrEntries);
+                }
+
+                // use form's paging limit for paging
+                if (!empty($formDefinition['formEntriesPerPage'])) {
+                    $entriesPerPage = $formDefinition['formEntriesPerPage'];
+                }
+            }
+
+            // fetch main application page (section=MediaDir)
+            if (!$page || !$page->isActive()) {
+                $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, '', FRONTEND_LANG_ID);
+                if (!isset($arrIdsOfFormSpecificEntries[$formDefinition['formCmd']])) {
+                    $objEntry = new MediaDirectoryEntry($this->moduleName);
+                    $objEntry->getEntries(null, null, null, null, null, null, true);
+                    $arrIdsOfFormSpecificEntries[$formDefinition['formCmd']] = array_keys($objEntry->arrEntries);
+                }
+            }
+
+            // find position of entry in whole entry list
+            $entryPos  = array_search($arrEntry['entryId'], $arrIdsOfFormSpecificEntries[$formDefinition['formCmd']]);
+
+            // determine paging position of entry
+            $pagingPos = floor($entryPos / $entriesPerPage) * $entriesPerPage;
+        }
+
+        // abort in case the entry can't be linked to an existing page
+        if (!$page || !$page->isActive()) {
+            throw new MediaDirectoryEntryException();
+        }
+
+        // create url to the target page and add the entry's ID as argument
+        $url = \Cx\Core\Routing\Url::fromPage($page);
+        $url->setParam('eid', $arrEntry['entryId']);
+
+        // set optional paging position
+        if ($pagingPos) {
+            $url->setParam('pos', $pagingPos);
+        }
+
+        return $url;
     }
 
     /**
@@ -1543,53 +1653,15 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $defaultEntries     = null;
         $numOfEntries       = intval($entries->arrSettings['settingsPagingNumEntries']);
         foreach ($entries->arrEntries as $entry) {
-            $pageUrlResult = null;
             $entryForm     = $this->getFormDefinitionOfEntry($entry['entryId']);
-            //Get the entry's link url
-            //check the entry's form detail view exists if not, 
-            //check the entry's form overview exists if not,
-            //check the default overview exists if not, dont show the corresponding entry in entry
-            switch (true) {
-                case $entries->checkPageCmd('detail' . $entry['entryFormId']):
-                    $pageUrlResult = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                                        $entries->moduleName, 
-                                        'detail' . $entry['entryFormId'], 
-                                        FRONTEND_LANG_ID, 
-                                        array('eid' => $entry['entryId']));
-                    break;
-                case $pageCmdExists = $entries->checkPageCmd($entryForm['formCmd']):
-                case $entries->checkPageCmd(''):
-                    if ($pageCmdExists && !isset($formEntries[$entryForm['formCmd']])) {
-                        $formEntries[$entryForm['formCmd']] = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry($entries->moduleName);
-                        $formEntries[$entryForm['formCmd']]->getEntries(null, null, null, null, null, null, 1, null, 'n', null, null, $entryForm['formId']);
-                    }
-                    if (!$pageCmdExists && !isset($defaultEntries)) {
-                        $defaultEntries = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry($entries->moduleName);
-                        $defaultEntries->getEntries();
-                    }
-                    //get entry's form overview / default page paging position
-                    $entriesPerPage = $numOfEntries;
-                    if ($pageCmdExists) {
-                        $entriesPerPage = !empty($entryForm['formEntriesPerPage']) ? $entryForm['formEntriesPerPage'] : $numOfEntries;
-                    }
-                    $pageCmd   = $pageCmdExists ? $entryForm['formCmd'] : '';
-                    $entryKeys = $pageCmdExists ? array_keys($formEntries[$entryForm['formCmd']]->arrEntries) : array_keys($defaultEntries->arrEntries);
-                    $entryPos  = array_search($entry['entryId'], $entryKeys);
-                    $position  = floor($entryPos / $entriesPerPage);
-                    $pageUrlResult = \Cx\Core\Routing\Url::fromModuleAndCmd(
-                                        $entries->moduleName, 
-                                        $pageCmd, 
-                                        FRONTEND_LANG_ID,
-                                        array('pos' => $position * $entriesPerPage));
-                    break;
-                default:
-                    break;
-            }
 
-            //If page url is empty then dont show it in the result
-            if (!$pageUrlResult) {
+            try {
+                $pageUrlResult = $this->getDetailUrlOfEntry($entry, true);
+            } catch (MediaDirectoryEntryException $e) {
+                // if entry has no page to be listed on, then dont show it in the result
                 continue;
             }
+
             //Get the search results title and content from the form context field 'title' and 'content'
             $title          = current($entry['entryFields']);
             $content        = '';
