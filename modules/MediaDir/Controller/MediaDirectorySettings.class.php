@@ -623,12 +623,13 @@ EOF;
             'TXT_'.$this->moduleLangVar.'_LATEST_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_LATEST_ENTRIES'],
             'TXT_'.$this->moduleLangVar.'_POPULAR_HITS' => $_ARRAYLANG['TXT_MEDIADIR_POPULAR_HITS'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_LATEST_NUM_XML' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_XML'],
-            'TXT_'.$this->moduleLangVar.'_SETTINGS_LATEST_NUM_OVERVIEW' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_OVERVIEW'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_LIST_LATEST_ENTRIES_IN_WEBDESIGN_TEMPLATE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LIST_LATEST_ENTRIES_IN_WEBDESIGN_TEMPLATE'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_LIST_LATEST_ENTRIES_IN_OVERVIEW_SECTION' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LIST_LATEST_ENTRIES_IN_OVERVIEW_SECTION'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_LATEST_NUM_BACKEND' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_BACKEND'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_LATEST_NUM_FRONTEND' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_FRONTEND'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_POPULAR_NUM_FRONTEND' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_POPULAR_NUM_FRONTEND'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_POPULAR_NUM_RESTORE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_POPULAR_NUM_RESTORE'],
-            'TXT_'.$this->moduleLangVar.'_SETTINGS_LATEST_NUM_HEADLINES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_HEADLINES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NUM_ENTRIES_TO_LIST' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_TO_LIST'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_INFO'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_PAGING_NUM_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES'],
@@ -652,6 +653,8 @@ EOF;
             'TXT_'.$this->moduleLangVar.'_SETTINGS_MULTILANG_FRONTEND' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_MULTILANG_FRONTEND'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_MULTILANG_FRONTEND_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_MULTILANG_FRONTEND_INFO'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_ENTRIEY_INDIVIDUAL_ORDER' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ENTRIEY_INDIVIDUAL_ORDER'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_FRONTEND' => $_ARRAYLANG['TXT_FRONTEND'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_BACKEND' => $_ARRAYLANG['TXT_LANGUAGE_BACKEND'],
         ));
 
         if($this->arrSettings['settingsConfirmNewEntries'] == 1) {
@@ -789,7 +792,14 @@ EOF;
             $strDisplaydurationNotificationValue = intval($this->arrSettings['settingsEntryDisplaydurationNotification']);
             $strDisplaydurationNotificationShowDaybefore = 'inline';
         }
-
+        $listEntriesOverviewOn  = ($this->arrSettings['showLatestEntriesInOverview'] == 1)
+                                    ? 'checked="checked"' : '';
+        $listEntriesOverviewOff = ($this->arrSettings['showLatestEntriesInOverview'] == 0)
+                                    ? 'checked="checked"' : '';
+        $listEntriesWebdesignTplOn  = ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 1)
+                                    ? 'checked="checked"' : '';
+        $listEntriesWebdesignTplOff = ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 0)
+                                    ? 'checked="checked"' : '';
         $objTpl->setVariable(array(
             $this->moduleLangVar.'_SETTINGS_CONFIRM_NEW_ENTRIES_ON' => $strConfirmEntriesOn,
             $this->moduleLangVar.'_SETTINGS_CONFIRM_NEW_ENTRIES_OFF' => $strConfirmEntriesOff,
@@ -834,6 +844,10 @@ EOF;
             $this->moduleLangVar.'_SETTINGS_MULTILANG_FRONTEND_OFF' => $strMultilangFrontendOff,
             $this->moduleLangVar.'_SETTINGS_ENTRIEY_INDIVIDUAL_ORDER_ON' => $strIndividualOrderOn,
             $this->moduleLangVar.'_SETTINGS_ENTRIEY_INDIVIDUAL_ORDER_OFF' => $strIndividualOrderOff,
+            $this->moduleLangVar.'_SETTINGS_LIST_ENTRIES_OVERVIEW_ON' => $listEntriesOverviewOn,
+            $this->moduleLangVar.'_SETTINGS_LIST_ENTRIES_OVERVIEW_OFF' => $listEntriesOverviewOff,
+            $this->moduleLangVar.'_SETTINGS_LIST_ENTRIES_WEBDESIGN_TEMPLATE_ON' => $listEntriesWebdesignTplOn,
+            $this->moduleLangVar.'_SETTINGS_LIST_ENTRIES_WEBDESIGN_TEMPLATE_OFF' => $listEntriesWebdesignTplOff,
         ));
 
         if(empty($this->arrCommunityGroups)) {

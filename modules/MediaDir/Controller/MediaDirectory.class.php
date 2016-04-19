@@ -321,7 +321,9 @@ class MediaDirectory extends MediaDirectoryLibrary
             //check category / level                   
             if(($intCategoryId == 0 && $bolFormUseCategory) || ($intLevelId == 0  && $bolFormUseLevel)) {
                 $bolLatest = true;
-                $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']);
+                $intLimitEnd = ($this->arrSettings['showLatestEntriesInOverview'] == 1)
+                                ? intval($this->arrSettings['settingsLatestNumOverview'])
+                                : null;
             } else {
                 $bolLatest   = false;
                 $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
@@ -595,8 +597,10 @@ class MediaDirectory extends MediaDirectoryLibrary
     {
         global $objTemplate;
         
-        $objEntry = new MediaDirectoryEntry($this->moduleName);
-        $objEntry->getEntries(null, null, null, null, true, null, true, null, $this->arrSettings['settingsLatestNumHeadlines'], null, null, $formId);
+        $objEntry     = new MediaDirectoryEntry($this->moduleName);
+        $entriesLimit = ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 1)
+                        ? $this->arrSettings['settingsLatestNumHeadlines'] : null;
+        $objEntry->getEntries(null, null, null, null, true, null, true, null, $entriesLimit, null, null, $formId);
         if($blockName==null){        
             $objEntry->setStrBlockName($this->moduleNameLC.'Latest');
         } else {
@@ -611,8 +615,10 @@ class MediaDirectory extends MediaDirectoryLibrary
     {
         global $_ARRAYLANG, $_CORELANG, $objTemplate;
 
-        $objEntry = new MediaDirectoryEntry($this->moduleName);
-        $objEntry->getEntries(null, null, null, null, null, null, true, null, $this->arrSettings['settingsLatestNumHeadlines']);
+        $objEntry     = new MediaDirectoryEntry($this->moduleName);
+        $entriesLimit = ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 1)
+                        ? $this->arrSettings['settingsLatestNumHeadlines'] : null;
+        $objEntry->getEntries(null, null, null, null, null, null, true, null, $entriesLimit);
 
         $i=0;
         $r=0;
