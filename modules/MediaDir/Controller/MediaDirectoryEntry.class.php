@@ -69,6 +69,12 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
     public $recordCount = 0;
 
     /**
+     * Local instance of MediaDirectoryForm
+     * @var MediaDirectoryForm
+     */
+    protected $objForm = null;
+
+    /**
      * Constructor
      */
     function __construct($name)
@@ -372,8 +378,6 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 		    $intStatus = 1;
                 		}
 
-                		$objForm = new MediaDirectoryForm($arrEntry['entryFormId'], $this->moduleName);
-
                         //get votes
                         if($this->arrSettings['settingsAllowVotes']) {
                             $objVoting = new MediaDirectoryVoting($this->moduleName);
@@ -409,7 +413,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                             $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
                             $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
                             $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
-                            $this->moduleLangVar.'_ENTRY_FORM' => $objForm->arrForms[$arrEntry['entryFormId']]['formName'][0],
+                            $this->moduleLangVar.'_ENTRY_FORM' => $this->getFormDefinitionOfEntry($arrEntry['entryId'])['formName'][0],
                         ));
 
                         foreach ($arrEntry['entryFields'] as $key => $strFieldValue) {
@@ -482,16 +486,14 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $strDetailUrl = '#';
                             }
 
-                            $objForm = new MediaDirectoryForm($arrEntry['entryFormId'], $this->moduleName);
-
 	                        $objTpl->setVariable(array(
                                     $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
 	                            $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
 	                            $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
 	                            $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
 	                            $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
-	                            $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
-                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
+	                            $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId'], $this->getFormDefinitionOfEntry($arrEntry['entryId'])['formCmd']),
+                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $this->getFormDefinitionOfEntry($arrEntry['entryId'])['formCmd']),
                                     $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
 	                            $this->moduleLangVar.'_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
 	                            $this->moduleLangVar.'_ENTRY_DETAIL_URL' => $strDetailUrl,
@@ -643,8 +645,6 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                     $strDetailUrl = '#';
                                 }
 
-                                $objForm = new MediaDirectoryForm($arrEntry['entryFormId'], $this->moduleName);
-
                                 $objTpl->setVariable(array(
                                     $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
                                     $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
@@ -652,8 +652,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                     $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
                                     $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
                                     $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
-                                    $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
-                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $objForm->arrForms[$arrEntry['entryFormId']]['formCmd']),
+                                    $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId'], $this->getFormDefinitionOfEntry($arrEntry['entryId'])['formCmd']),
+                                    $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId'], $this->getFormDefinitionOfEntry($arrEntry['entryId'])['formCmd']),
                                     $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
                                     $this->moduleLangVar.'_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
                                     $this->moduleLangVar.'_ENTRY_DETAIL_URL' => $strDetailUrl,
@@ -1541,11 +1541,10 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         $results            = array();
         $formEntries        = array();
         $defaultEntries     = null;
-        $objForm            = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, $this->moduleName);
         $numOfEntries       = intval($entries->arrSettings['settingsPagingNumEntries']);
         foreach ($entries->arrEntries as $entry) {
             $pageUrlResult = null;
-            $entryForm     = $objForm->arrForms[$entry['entryFormId']];
+            $entryForm     = $this->getFormDefinitionOfEntry($entry['entryId']);
             //Get the entry's link url
             //check the entry's form detail view exists if not, 
             //check the entry's form overview exists if not,
@@ -1639,5 +1638,29 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             );
         }
         return $results;
+    }
+
+    /**
+     * Get the data of entry's associated MediaDirectoryForm object
+     *
+     * @return  array   Data of entry's associated MediaDirectoryForm object
+     */
+    public function getFormDefinition() {
+        return $this->getFormDefinitionOfEntry($this->intEntryId);
+    }
+
+    /**
+     * Get the data of a MediaDirectoryForm object an entry is based on
+     *
+     * @param   integer ID of entry to return the associated MediaDirectoryForm object data from
+     * @return  array   Data of entry's associated MediaDirectoryForm object
+     */
+    public function getFormDefinitionOfEntry($entryId) {
+        if (!isset($this->objForm)) {
+            $this->objForm = new MediaDirectoryForm(null, $this->moduleName);
+        }
+
+        $formId = $this->arrEntries[$entryId]['entryFormId'];
+        return $this->objForm->arrForms[$formId];
     }
 }
