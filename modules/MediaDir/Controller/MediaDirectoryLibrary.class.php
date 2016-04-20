@@ -83,11 +83,19 @@ class MediaDirectoryLibrary
     public $moduleLangVar = "MEDIADIR";
     public $moduleConstVar = "MEDIADIR";
 
+    /*
+     * @var \Cx\Core\Core\Controller\Cx
+     */
+    protected $cx;
+
     /**
      * Constructor
      */
     function __construct($tplPath, $name)
     {
+// TODO: assignment will be obsolete once this component has been migrated to extend form SystemComponentController
+        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
+
     	$this->_objTpl = new \Cx\Core\Html\Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         

@@ -83,12 +83,14 @@ class MediaDirectory extends MediaDirectoryLibrary
         \JS::activate('shadowbox');
         \JS::activate('jquery');
 
+        $entryId = intval($this->cx->getRequest()->getUrl()->getParamArray()['eid']);
+
         if($this->arrSettings['settingsAllowVotes']) {
             $objVoting = new MediaDirectoryVoting($this->moduleName);
             $this->setJavascript($objVoting->getVoteJavascript());
 
-            if(isset($_GET['vote']) && intval($_GET['eid']) != 0) {
-                $objVoting->saveVote(intval($_GET['eid']), intval($_GET['vote']));
+            if(isset($_GET['vote']) && $entryId != 0) {
+                $objVoting->saveVote($entryId, intval($_GET['vote']));
             }
         }
 
@@ -96,12 +98,12 @@ class MediaDirectory extends MediaDirectoryLibrary
             $objComment = new MediaDirectoryComment($this->moduleName);
             $this->setJavascript($objComment->getCommentJavascript());
             $comment = isset($_GET['comment']) ? $_GET['comment'] : '';
-            if($comment == 'add' && intval($_GET['eid']) != 0) {
-                $objComment->saveComment(intval($_GET['eid']), $_POST);
+            if($comment == 'add' && $entryId != 0) {
+                $objComment->saveComment($entryId, $_POST);
             }
 
-            if($comment == 'refresh' && intval($_GET['eid']) != 0) {
-                $objComment->refreshComments(intval($_GET['eid']), $_GET['pageSection'], $_GET['pageCmd']);
+            if($comment == 'refresh' && $entryId != 0) {
+                $objComment->refreshComments($entryId, $_GET['pageSection'], $_GET['pageCmd']);
             }
         }
 
@@ -474,7 +476,7 @@ class MediaDirectory extends MediaDirectoryLibrary
         //get ids
         $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : 0;
         $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : 0;
-        $intEntryId = isset($_GET['eid']) ? intval($_GET['eid']) : 0;
+        $intEntryId = intval($this->cx->getRequest()->getUrl()->getParamArray()['eid']);
         
         // load source code if cmd value is integer
         if ($this->_objTpl->placeholderExists('APPLICATION_DATA')) {
