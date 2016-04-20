@@ -159,7 +159,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 AND 
                     rel_inputfield.`form_id` = `entry`.`form_id`
                 AND 
-                    rel_inputfield.`field_id` = (".$this->getQueryToFindFirstInputFieldId().")
+                    rel_inputfield.`field_id` = (".$this->getQueryToFindPrimaryInputFieldId().")
                 AND
                     (rel_inputfield.`lang_id` = '".$_LANGID."')
                 AND 

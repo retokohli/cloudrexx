@@ -207,7 +207,7 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
         }
 
         if(empty($this->strSearchTerm)) {
-            $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$this->getQueryToFindFirstInputFieldId().")) AND (rel_inputfield.`lang_id` = '".$_LANGID."')";
+            $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$this->getQueryToFindPrimaryInputFieldId().")) AND (rel_inputfield.`lang_id` = '".$_LANGID."')";
         } else {
             $strWhereTerm = "AND ((rel_inputfield.`value` LIKE '%".$this->strSearchTerm."%') OR (entry.`id` = '".$this->strSearchTerm."')) ";
             $strWhereFirstInputfield = '';

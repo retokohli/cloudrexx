@@ -730,7 +730,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                                                 AND 
                                                     (rel_inputfield.`form_id` = entry.`form_id`)
                                                 AND 
-                                                    (rel_inputfield.`field_id` = (".$this->getQueryToFindFirstInputFieldId()."))
+                                                    (rel_inputfield.`field_id` = (".$this->getQueryToFindPrimaryInputFieldId()."))
                                                 AND
                                                     (rel_inputfield.`lang_id` = '".$_LANGID."')
                                                 AND ((`entry`.`duration_type`=2 AND `entry`.`duration_start` <= ".time()." AND `entry`.`duration_end` >= ".time().") OR (`entry`.`duration_type`=1))

@@ -499,11 +499,13 @@ class MediaDirectoryLibrary
     }
     
     /**
-     * getQueryToFindFirstInputFieldId
-     * 
+     * Get SQL statement to fetch the ID of the primary field of a form.
+     * The SQL statement can be used as a sub-query in a query where contrexx_module_mediadir_entry
+     * is used and has been aliased as 'entry'
+     *
      * @return string
      */
-    public function getQueryToFindFirstInputFieldId() 
+    public function getQueryToFindPrimaryInputFieldId() 
     {
         $query = "SELECT
                         first_rel_inputfield.`field_id` AS `id`
@@ -520,6 +522,7 @@ class MediaDirectoryLibrary
                     AND 
                         (first_rel_inputfield.`form_id` = entry.`form_id`)
                     ORDER BY
+                        FIELD(inputfield.context_type, 'title') DESC,
                         inputfield.`order` ASC
                     LIMIT 1";
         return $query;
