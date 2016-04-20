@@ -188,6 +188,19 @@ class MediaDirectory extends MediaDirectoryLibrary
         $bolFormUseCategory = false;
         $bolFormUseLevel = false;
 
+        // load Default.html application template as fallback
+        if ($this->_objTpl->placeholderExists('APPLICATION_DATA')) {
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('MediaDir');
+            //$page->setCmd('detail');
+            // load source code
+            $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+            \LinkGenerator::parseTemplate($applicationTemplate);
+            $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
+        }
+
         //search existing category&level blocks
         $arrExistingBlocks = array();
 
