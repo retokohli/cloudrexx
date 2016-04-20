@@ -320,10 +320,8 @@ class MediaDirectory extends MediaDirectoryLibrary
 
             //check category / level                   
             if(($intCategoryId == 0 && $bolFormUseCategory) || ($intLevelId == 0  && $bolFormUseLevel)) {
-                $bolLatest = true;
-                $intLimitEnd = ($this->arrSettings['showLatestEntriesInOverview'] == 1)
-                                ? intval($this->arrSettings['settingsLatestNumOverview'])
-                                : null;
+                $bolLatest   = true;
+                $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']);
             } else {
                 $bolLatest   = false;
                 $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
@@ -335,7 +333,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             }
 
             //check show entries
-            if((isset($objLevel) && $objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1) || (isset($objCategory) && $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1) || $bolLatest == true || (!$bolFormUseCategory && !$bolFormUseLevel)) {
+            if((isset($objLevel) && $objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1) || (isset($objCategory) && $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1) || ($bolLatest == true && $this->arrSettings['showLatestEntriesInOverview'] == 1) || (!$bolFormUseCategory && !$bolFormUseLevel)) {
                 $objEntries = new MediaDirectoryEntry($this->moduleName);
                 
                 $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd, null, null, $intCmdFormId);
@@ -584,18 +582,21 @@ class MediaDirectory extends MediaDirectoryLibrary
     function getLatestEntries($formId = null, $blockName = null)
     {
         global $objTemplate;
-        
-        $objEntry     = new MediaDirectoryEntry($this->moduleName);
-        $entriesLimit = ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 1)
-                        ? $this->arrSettings['settingsLatestNumHeadlines'] : null;
-        $objEntry->getEntries(null, null, null, null, true, null, true, null, $entriesLimit, null, null, $formId);
+
+        //If the settings option 'List latest entries in webdesign template' is deactivated
+        //then do not parse the latest entries
+        if ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 0) {
+            return;
+        }
+
+        $objEntry = new MediaDirectoryEntry($this->moduleName);
+        $objEntry->getEntries(null, null, null, null, true, null, true, null, $this->arrSettings['settingsLatestNumHeadlines'], null, null, $formId);
         if($blockName==null){        
             $objEntry->setStrBlockName($this->moduleNameLC.'Latest');
         } else {
             $objEntry->setStrBlockName($blockName);
         }
 
-        
         $objEntry->listEntries($objTemplate, 2);
     }
     
@@ -603,10 +604,14 @@ class MediaDirectory extends MediaDirectoryLibrary
     {
         global $_ARRAYLANG, $_CORELANG, $objTemplate;
 
+        //If the settings option 'List latest entries in webdesign template' is deactivated
+        //then do not parse the latest entries
+        if ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 0) {
+            return;
+        }
+
         $objEntry     = new MediaDirectoryEntry($this->moduleName);
-        $entriesLimit = ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 1)
-                        ? $this->arrSettings['settingsLatestNumHeadlines'] : null;
-        $objEntry->getEntries(null, null, null, null, null, null, true, null, $entriesLimit);
+        $objEntry->getEntries(null, null, null, null, null, null, true, null, $this->arrSettings['settingsLatestNumHeadlines']);
 
         $i=0;
         $r=0;
