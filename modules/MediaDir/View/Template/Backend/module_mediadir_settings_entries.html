@@ -24,6 +24,28 @@ function toggleDisplayDourationNotification(){
     }
 }
 
+function toggleLatestEntriesInOverview() {
+    var toggleStatus = $J('input[name="showLatestEntriesInOverview"]:checked').val();
+
+    $J('tr.overviewEntriesCnt').hide();
+    if (toggleStatus == 1) {
+        $J('tr.overviewEntriesCnt').show();
+    }
+}
+
+function toggleLatestEntriesInWebdesignTpl() {
+    var toggleStatus = $J('input[name="showLatestEntriesInWebdesignTmpl"]:checked').val();
+
+    $J('tr.webdesignEntriesCnt').hide();
+    if (toggleStatus == 1) {
+        $J('tr.webdesignEntriesCnt').show();
+    }
+}
+
+$J(document).ready(function(){
+    toggleLatestEntriesInOverview();
+    toggleLatestEntriesInWebdesignTpl();
+});
 </script>
 
 
@@ -183,16 +205,37 @@ function toggleDisplayDourationNotification(){
             <input name="settingsLatestNumXML" type="text" style="width: 35px" value="{MEDIADIR_SETTINGS_LATEST_NUM_XML}" />
         </td>
     </tr> -->
+    <tr class="row3">
+        <td colspan="2">{TXT_MEDIADIR_SETTINGS_FRONTEND}</td>
+    </tr>
     <tr class="row2">
-        <td width="280">{TXT_MEDIADIR_SETTINGS_LATEST_NUM_OVERVIEW}</td>
+        <td width="280">{TXT_MEDIADIR_SETTINGS_LIST_LATEST_ENTRIES_IN_OVERVIEW_SECTION}</td>
+        <td>
+            <input id="listEntriesOverviewOn" name="showLatestEntriesInOverview" type="radio" {MEDIADIR_SETTINGS_LIST_ENTRIES_OVERVIEW_ON} value="1" onclick="toggleLatestEntriesInOverview();" />
+            <label for="listEntriesOverviewOn">Activate</label>
+            <input id="listEntriesOverviewOff" name="showLatestEntriesInOverview" type="radio" {MEDIADIR_SETTINGS_LIST_ENTRIES_OVERVIEW_OFF} value="0" onclick="toggleLatestEntriesInOverview();" />
+            <label for="listEntriesOverviewOff">deactivate</label>
+        </td>
+    </tr>
+    <tr class="row1 overviewEntriesCnt">
+        <td width="280">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_TO_LIST}</td>
         <td>
             <input name="settingsLatestNumOverview" type="text" style="width: 35px" value="{MEDIADIR_SETTINGS_LATEST_NUM_OVERVIEW}" />
         </td>
     </tr>
-    <tr class="row1">
-        <td width="280">{TXT_MEDIADIR_SETTINGS_LATEST_NUM_BACKEND}</td>
+    <tr class="row2">
+        <td width="280">{TXT_MEDIADIR_SETTINGS_LIST_LATEST_ENTRIES_IN_WEBDESIGN_TEMPLATE}</td>
         <td>
-            <input name="settingsLatestNumBackend" type="text" style="width: 35px" value="{MEDIADIR_SETTINGS_LATEST_NUM_BACKEND}" />
+            <input id="lstEntriesWebdesignTmplOn" name="showLatestEntriesInWebdesignTmpl" type="radio" {MEDIADIR_SETTINGS_LIST_ENTRIES_WEBDESIGN_TEMPLATE_ON} value="1" onclick="toggleLatestEntriesInWebdesignTpl();" />
+            <label for="lstEntriesWebdesignTmplOn">Activate</label>
+            <input id="lstEntriesWebdesignTmplOff" name="showLatestEntriesInWebdesignTmpl" type="radio" {MEDIADIR_SETTINGS_LIST_ENTRIES_WEBDESIGN_TEMPLATE_OFF} value="0" onclick="toggleLatestEntriesInWebdesignTpl();" />
+            <label for="lstEntriesWebdesignTmplOff">deactivate</label>
+        </td>
+    </tr>
+    <tr class="row1 webdesignEntriesCnt">
+        <td width="280">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_TO_LIST}</td>
+        <td>
+            <input name="settingsLatestNumHeadlines" type="text" style="width: 35px" value="{MEDIADIR_SETTINGS_LATEST_NUM_HEADLINES}" />
         </td>
     </tr>
     <tr class="row2">
@@ -201,10 +244,14 @@ function toggleDisplayDourationNotification(){
             <input name="settingsLatestNumFrontend" type="text" style="width: 35px" value="{MEDIADIR_SETTINGS_LATEST_NUM_FRONTEND}" />
         </td>
     </tr>
+    <tr class="row1"><td colspan="2">&nbsp;</td></tr>
+    <tr class="row3">
+        <td colspan="2">{TXT_MEDIADIR_SETTINGS_BACKEND}</td>
+    </tr>
     <tr class="row1">
-        <td width="280">{TXT_MEDIADIR_SETTINGS_LATEST_NUM_HEADLINES}</td>
+        <td width="280">{TXT_MEDIADIR_SETTINGS_LATEST_NUM_BACKEND}</td>
         <td>
-            <input name="settingsLatestNumHeadlines" type="text" style="width: 35px" value="{MEDIADIR_SETTINGS_LATEST_NUM_HEADLINES}" />
+            <input name="settingsLatestNumBackend" type="text" style="width: 35px" value="{MEDIADIR_SETTINGS_LATEST_NUM_BACKEND}" />
         </td>
     </tr>
 </table>

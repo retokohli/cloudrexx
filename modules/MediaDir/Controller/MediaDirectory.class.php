@@ -321,7 +321,9 @@ class MediaDirectory extends MediaDirectoryLibrary
             //check category / level                   
             if(($intCategoryId == 0 && $bolFormUseCategory) || ($intLevelId == 0  && $bolFormUseLevel)) {
                 $bolLatest = true;
-                $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']);
+                $intLimitEnd = ($this->arrSettings['showLatestEntriesInOverview'] == 1)
+                                ? intval($this->arrSettings['settingsLatestNumOverview'])
+                                : null;
             } else {
                 $bolLatest   = false;
                 $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
@@ -583,8 +585,10 @@ class MediaDirectory extends MediaDirectoryLibrary
     {
         global $objTemplate;
         
-        $objEntry = new MediaDirectoryEntry($this->moduleName);
-        $objEntry->getEntries(null, null, null, null, true, null, true, null, $this->arrSettings['settingsLatestNumHeadlines'], null, null, $formId);
+        $objEntry     = new MediaDirectoryEntry($this->moduleName);
+        $entriesLimit = ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 1)
+                        ? $this->arrSettings['settingsLatestNumHeadlines'] : null;
+        $objEntry->getEntries(null, null, null, null, true, null, true, null, $entriesLimit, null, null, $formId);
         if($blockName==null){        
             $objEntry->setStrBlockName($this->moduleNameLC.'Latest');
         } else {
@@ -599,8 +603,10 @@ class MediaDirectory extends MediaDirectoryLibrary
     {
         global $_ARRAYLANG, $_CORELANG, $objTemplate;
 
-        $objEntry = new MediaDirectoryEntry($this->moduleName);
-        $objEntry->getEntries(null, null, null, null, null, null, true, null, $this->arrSettings['settingsLatestNumHeadlines']);
+        $objEntry     = new MediaDirectoryEntry($this->moduleName);
+        $entriesLimit = ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 1)
+                        ? $this->arrSettings['settingsLatestNumHeadlines'] : null;
+        $objEntry->getEntries(null, null, null, null, null, null, true, null, $entriesLimit);
 
         $i=0;
         $r=0;
@@ -608,11 +614,10 @@ class MediaDirectory extends MediaDirectoryLibrary
 
         if(!empty($objEntry->arrEntries)){
             foreach ($objEntry->arrEntries as $key => $arrEntry) {
-
-                if($objEntry->checkPageCmd('detail'.intval($arrEntry['entryFormId']))) {
-                    $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
-                } else {
-                    $strDetailCmd = 'detail';
+                try {
+                    $strDetailUrl = $objEntry->getDetailUrlOfEntry($arrEntry, true);
+                } catch (MediaDirectoryEntryException $e) {
+                    $strDetailUrl = '#';
                 }
 
                 $objTemplate->setVariable(array(
@@ -621,7 +626,7 @@ class MediaDirectory extends MediaDirectoryLibrary
                     $this->moduleLangVar.'_LATEST_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
                     $this->moduleLangVar.'_LATEST_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
                     $this->moduleLangVar.'_LATEST_ENTRY_HITS' =>  $arrEntry['entryHits'],
-                    $this->moduleLangVar.'_ENTRY_DETAIL_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.'&amp;eid='.$arrEntry['entryId'],
+                    $this->moduleLangVar.'_ENTRY_DETAIL_URL' =>  $strDetailUrl,
                     'TXT_'.$this->moduleLangVar.'_ENTRY_DETAIL' =>  $_CORELANG['TXT_MEDIADIR_DETAIL'],
                 ));
 

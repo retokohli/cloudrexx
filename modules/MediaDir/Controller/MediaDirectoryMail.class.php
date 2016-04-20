@@ -177,19 +177,19 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
         }
         
         $objEntry = new MediaDirectoryEntry($this->moduleName);
-        if($objEntry->checkPageCmd('detail'.intval($intEntryFormId))) {
-            $strDetailCmd = 'detail'.intval($intEntryFormId);
-        } else {
-            $strDetailCmd = 'detail';
-        }
+        $objEntry->getEntries($this->intEntryId);
+
+        $strDetailUrl = '';
+        try {
+            $strDetailUrl = $objEntry->getDetailUrl(true)->toString();
+        } catch (MediaDirectoryEntryException $e) {}
 
         $strProtocol = ASCMS_PROTOCOL;
         $strDomain = $_CONFIG['domainUrl'].\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath();
         $strDate = date(ASCMS_DATE_FORMAT);
-        $strEntryLink = urldecode($strProtocol."://".$strDomain.'/index.php?section='.$this->moduleName.'&cmd='.$strDetailCmd.'&eid='.$this->intEntryId);
         
         $arrPlaceholder = array('[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[TITLE]]', '[[LINK]]', '[[URL]]', '[[DATE]]');
-        $arrReplaceContent = array($strUserNick, $strUserFirstname, $strUserLastname, $strEntryTitle, $strEntryLink, $strDomain, $strDate);
+        $arrReplaceContent = array($strUserNick, $strUserFirstname, $strUserLastname, $strEntryTitle, $strDetailUrl, $strDomain, $strDate);
 
         for ($x = 0; $x < 7; $x++) {
             $this->strTitle = str_replace($arrPlaceholder[$x], $arrReplaceContent[$x], $this->strTitle);
