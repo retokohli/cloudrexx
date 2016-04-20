@@ -118,8 +118,8 @@ class BackendController extends SystemComponentBackendController
         if (!$_SESSION['TemplateEditor']) {
             $_SESSION['TemplateEditor'] = array();
         }
-        if (!$_SESSION['TemplateEditor'][$this->theme->getId()]) {
-            $_SESSION['TemplateEditor'][$this->theme->getId()] = array();
+        if (!$_SESSION['TemplateEditor'][$themeID]) {
+            $_SESSION['TemplateEditor'][$themeID] = array();
         }
         if (isset($_GET['preset'])
             && Preset::isValidPresetName(
@@ -130,9 +130,9 @@ class BackendController extends SystemComponentBackendController
                 )]['activePreset'] != $_GET['preset']
             ) {
                 // If the preset has changed remove all saved options
-                $_SESSION['TemplateEditor'][$this->theme->getId()] = array();
+                $_SESSION['TemplateEditor'][$themeID] = array();
             }
-            $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset']
+            $_SESSION['TemplateEditor'][$themeID]['activePreset']
                 = isset($_GET['preset']) ? $_GET['preset'] : 'Default';
         }
 
@@ -149,24 +149,24 @@ class BackendController extends SystemComponentBackendController
             );
             // If user opens editor use active preset as active preset.
             if (
-                !isset($_SESSION['TemplateEditor'][$this->theme->getId()]
+                !isset($_SESSION['TemplateEditor'][$themeID]
                     ['activePreset']) 
                 || !isset($_GET['preset'])) {
-                $_SESSION['TemplateEditor'][$this->theme->getId()]['activePreset'] 
+                $_SESSION['TemplateEditor'][$themeID]['activePreset']
                     = $this->themeOptions->getActivePreset()->getName();
             }
             try {
                 $this->themeOptions->applyPreset(
                     $this->presetRepository->getByName(
                         $_SESSION['TemplateEditor']
-                        [$this->theme->getId()]
+                        [$themeID]
                         ['activePreset']
                     )
                 );
             } catch (PresetRepositoryException $e) {
                 // If something fails fallback to the default preset.
                 $_SESSION['TemplateEditor']
-                    [$this->theme->getId()]['activePreset'] = 'Default';
+                    [$themeID]['activePreset'] = 'Default';
                 $this->themeOptions->applyPreset(
                     $this->presetRepository->getByName(
                         'Default'

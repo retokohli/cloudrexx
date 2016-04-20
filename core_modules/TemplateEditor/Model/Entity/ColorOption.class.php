@@ -181,6 +181,26 @@ class ColorOption extends Option
     }
 
     /**
+     * Get the choice
+     *
+     * @return array
+     */
+    public function getChoice()
+    {
+        return $this->choice;
+    }
+
+    /**
+     * Set the choice
+     *
+     * @param mixed $choice
+     */
+    public function setChoice($choice)
+    {
+        $this->choice = $choice;
+    }
+
+    /**
      * Gets the current value of the option.
      *
      * @return array
@@ -198,7 +218,7 @@ class ColorOption extends Option
      *
      * @return string
      */
-    function adjustBrightness($hex, $steps)
+    public function adjustBrightness($hex, $steps)
     {
         // Steps should be between -255 and 255. Negative = darker, positive = lighter
         $steps = max(-255, min(255, $steps));

@@ -34,7 +34,7 @@ use Symfony\Component\Yaml\ParserException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class FileStorage
+ * Class OptionSetFileStorage
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Robin Glauser <robin.glauser@cloudrexx.com>

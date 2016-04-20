@@ -215,6 +215,26 @@ class TextOption extends Option
     }
 
     /**
+     * Get the regexError
+     *
+     * @return String
+     */
+    public function getRegexError()
+    {
+        return $this->regexError;
+    }
+
+    /**
+     * Set the regex
+     *
+     * @param String $regexError
+     */
+    public function setRegexError($regexError)
+    {
+        $this->regexError = $regexError;
+    }
+
+    /**
      * Return if is html
      *
      * @return boolean
