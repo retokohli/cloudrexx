@@ -82,7 +82,7 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
 
         //If the settings option 'List latest entries in webdesign template' is deactivated
         //then do not parse the latest entries
-        if ($this->arrSettings['showLatestEntriesInWebdesignTmpl'] == 0) {
+        if (!$this->arrSettings['showLatestEntriesInWebdesignTmpl']) {
             return;
         }
         $intLimitEnd = intval($this->arrSettings['settingsLatestNumHeadlines']);
