@@ -67,11 +67,10 @@ $theme          = $themeRepo->getDefaultTheme();
 $themesFilePath = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($theme->getFoldername() . '/Wysiwyg.yml');
 $fileSystem     = $cx->getMediaSourceManager()->getMediaType('themes')->getFileSystem();
 if ($fileSystem->fileExists($themesFilePath)) {
-    $objYaml   = new \Symfony\Component\Yaml\Yaml();
-    $themeInfo = $objYaml->load($fileSystem->readFile($themesFilePath));
+    $webdesignTmpl = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($fileSystem->getFullPath($themesFilePath));
     //If the Wysiwyg template exists in default themes
     //then merge those templates with the active templates present in the Wysiwyg page
-    $templates = !empty($themeInfo['Templates']) ? array_merge($templates, $themeInfo['Templates']) : $templates;
+    $templates = $webdesignTmpl->entryExists('Templates') ? array_merge($templates, $webdesignTmpl->getEntry('Templates')) : $templates;
 }
 ?>
 //if the wysiwyg css not defined in the session, then load the css variables and put it into the session
