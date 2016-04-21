@@ -1163,11 +1163,12 @@ class MediaManager extends MediaLibrary
         $this->_arrSettings = $this->createSettingsArray();
         for ($i = 0; $i <=4; $i++)
         {
-            $settingFrontendSearch = !empty($_POST['mediaSettings_Media'. $i .'FrontendSearch'])
-                                      ? contrexx_input2raw($_POST['mediaSettings_Media'. $i .'FrontendSearch'])
-                                      : 'off';
+            $frontendSearchkey     = 'mediaSettings_Media'. $i .'FrontendSearch';
+            $settingFrontendSearch = !empty($_POST[$frontendSearchkey]) && $_POST[$frontendSearchkey] == 'on'
+                                      ? 'on' : 'off';
+
             $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_media_settings
-                                            SET `value` = "' . contrexx_raw2db($settingFrontendSearch) . '"
+                                            SET `value` = "' . $settingFrontendSearch . '"
                                             WHERE `name` = "media' . $i . '_frontend_search"
                                         ');
             $oldMediaSetting = $this->_arrSettings['media' . $i . '_frontend_changable'];

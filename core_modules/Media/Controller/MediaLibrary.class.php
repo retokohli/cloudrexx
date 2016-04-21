@@ -1305,7 +1305,7 @@ END;
             if (!\FWSystem::detectUtf8($mediaName)) {
                 $mediaName = utf8_encode($mediaName);
             }
-            if (!empty($searchTerm) && !preg_match('/'. $searchTerm .'/i', $mediaName)) {
+            if (!empty($searchTerm) && !preg_match('/'. preg_quote($searchTerm) .'/i', $mediaName)) {
                 continue;
             }
             $mediaType = is_dir($media) ? 'dir' : 'file';

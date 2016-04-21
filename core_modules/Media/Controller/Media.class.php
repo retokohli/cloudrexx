@@ -347,12 +347,14 @@ class Media extends MediaLibrary
             'MEDIA_ARCHIVE_NAME'    => $this->archive,
             'MEDIA_ARCHIVE_PATH'    => rawurlencode($this->webPath),
             'MEDIA_JAVASCRIPT'      => $this->_getJavaScriptCodePreview(),
-            'MEDIA_SEARCH_TERM'     => contrexx_raw2xhtml($searchTerm),
+            'MEDIA_SEARCH_TERM'     => contrexx_raw2xhtml(rawurldecode($searchTerm)),
             'TXT_MEDIA_SEARCH'      => $_CORELANG['TXT_SEARCH'],
             'TXT_MEDIA_SEARCH_TERM' => $_ARRAYLANG['TXT_MEDIA_SEARCH_TERM'],
         ));
 
-        if (!$this->isSearchActivated()) {
+        if (   $this->_objTpl->blockExists('media_archive_search_form')
+            && !$this->isSearchActivated()
+        ) {
             $this->_objTpl->hideBlock('media_archive_search_form');
         }
 
@@ -484,9 +486,9 @@ CODE;
     }
 
     /**
-     * Check the whether the search setting activated
+     * Check whether the search setting activated
      *
-     * @return boolean
+     * @return boolean  True when frontend search setting active, false otherwise
      */
     public function isSearchActivated()
     {
