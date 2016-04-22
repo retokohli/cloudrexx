@@ -1826,7 +1826,8 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                 $website->setOwner($owner);
             }
             //Set the website mode and server website
-            $serverWebsite = null;
+            $oldServerWebsite = $website->getServerWebsite();
+            $serverWebsite    = null;
             if (    isset($params['post']['serverWebsiteId'])
                 &&  isset($params['post']['mode'])
                 &&  $params['post']['mode'] == ComponentController::WEBSITE_MODE_CLIENT
