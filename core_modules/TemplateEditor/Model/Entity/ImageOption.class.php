@@ -132,7 +132,7 @@ class ImageOption extends Option
         // remove offsetPath and leading slash to ensure installation relocation
         $urlPath = ltrim(
             str_replace(
-                $this->cx->getCodeBaseOffsetPath(),
+                $this->cx->getWebsiteOffsetPath(),
                 '',
                 $data
             ),
@@ -192,7 +192,7 @@ class ImageOption extends Option
         }
         $url = \Cx\Core\Routing\Url::fromMagic($this->url);
         if ($url->isInternal()) {
-            return $this->cx->getCodeBaseOffsetPath() . '/' . $this->url;
+            return $this->cx->getWebsiteOffsetPath() . '/' . $this->url;
         }
         return $this->url;
     }
