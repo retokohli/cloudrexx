@@ -681,22 +681,6 @@ CODE;
     }
 
     /**
-     * Redirect to the page by requested redirect url
-     *
-     * @return boolean
-     */
-    public function handleRedirect()
-    {
-        $redirect = '';
-        if (!empty($_GET['redirect'])) {
-            $redirect = \FWUser::getRedirectUrl(urlencode(base64_decode(urldecode($_REQUEST['redirect']))));
-            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$redirect);
-            exit;
-        }
-        return false;
-    }
-
-    /**
      * Delete files
      *
      * @global     array    $_ARRAYLANG

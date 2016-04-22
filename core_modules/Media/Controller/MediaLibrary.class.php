@@ -63,7 +63,7 @@ class MediaLibrary
         $dirName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($dirName);
         $status = \Cx\Lib\FileSystem\FileSystem::make_folder($this->path.$dirName);
         if ($status) {
-            $this->highlightName[] = $this->dirLog;
+            $this->highlightName[] = $dirName;
             $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_NEW_DIR']);
         } else {
             $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_NEW_DIR']);
@@ -311,14 +311,13 @@ class MediaLibrary
     // deletes a file or an directory
     function _deleteMedia()
     {
-        global $objTemplate;
-
         if (!empty($this->getFile)) {
-            $objTemplate->setVariable('CONTENT_OK_MESSAGE', $this->_deleteMedia2($this->getFile));
+            \Message::ok($this->_deleteMedia2($this->getFile));
         } elseif (!empty($_POST['formSelected'])) {
             foreach ($_POST['formSelected'] as $file) {
-                $objTemplate->setVariable('CONTENT_OK_MESSAGE', $this->_deleteMedia2($file));
+                $status = $this->_deleteMedia2($file);
             }
+            \Message::ok($status);
         }
     }
 
@@ -361,71 +360,52 @@ class MediaLibrary
      */
     function renMedia()
     {
-        global $_ARRAYLANG, $objTemplate;
+        global $_ARRAYLANG;
 
-        $obj_file = new \File();
+        $objFile = new \File();
         // file or dir
         $fileName = !empty($_POST['renName']) ? $_POST['renName'] : 'empty';
-        if (empty($_POST['oldExt'])) {
-            $oldName  = $_POST['oldName'];
-        } else {
-            $oldName  = $_POST['oldName'].'.'.$_POST['oldExt'];
-        }
+        $oldName  =   empty($_POST['oldExt'])
+                    ? contrexx_input2raw($_POST['oldName'])
+                    : contrexx_input2raw($_POST['oldName'] . '.' . $_POST['oldExt']);
 
         if (!is_dir($this->path . $oldName)) {
-            $ext      =
-                (   !empty($_POST['renExt'])
-                && \FWValidator::is_file_ending_harmless(
-                   $_POST['renName'].'.'.$_POST['renExt'])
-                   ? $_POST['renExt'] : 'txt');
-            $fileName = $fileName.'.'.$ext;
+            $ext      =   !empty($_POST['renExt']) && \FWValidator::is_file_ending_harmless($_POST['renName'] . '.' . $_POST['renExt'])
+                        ? $_POST['renExt'] : 'txt';
+            $fileName = $fileName . '.' . $ext;
         }
 
         \Cx\Lib\FileSystem\FileSystem::clean_path($fileName);
 
-        if (!isset($_POST['mediaInputAsCopy']) || $_POST['mediaInputAsCopy'] != 1) {
+        $makeCopy = (isset($_POST['mediaInputAsCopy']) && $_POST['mediaInputAsCopy'] == 1);
+
+        if (!$makeCopy) {
             // rename old to new
-            if (is_dir($this->path.$oldName)) {
-                $this->dirLog=$obj_file->renameDir($this->path, $this->webPath, $oldName, $fileName);
-                if ($this->dirLog == "error") {
-                    $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
-                } else {
-                    $this->highlightName[] = $this->dirLog;
-                    $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
-                }
+            if (is_dir($this->path . $oldName)) {
+                $result = $objFile->renameDir($this->path, $this->webPath, $oldName, $fileName);
             } else {
-                $this->dirLog=$obj_file->renameFile($this->path, $this->webPath, $oldName, $fileName);
-                if ($this->dirLog == "error") {
-                    $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
-                } else {
-                    $this->highlightName[] = $this->dirLog;
-                    $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
-                }
+                $result = $objFile->renameFile($this->path, $this->webPath, $oldName, $fileName);
             }
-        } elseif (isset($_POST['mediaInputAsCopy']) && $_POST['mediaInputAsCopy'] == 1) {
+        } else {
             // copy old to new
-            if (is_dir($this->path.$oldName)) {
-                $this->dirLog=$obj_file->copyDir($this->path, $this->webPath, $oldName, $this->path, $this->webPath, $fileName);
-                if ($this->dirLog == "error") {
-                    $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
-                } else {
-                    $this->highlightName[] = $this->dirLog;
-                     $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
-                }
+            if (is_dir($this->path . $oldName)) {
+                $result = $objFile->copyDir($this->path, $this->webPath, $oldName, $this->path, $this->webPath, $fileName);
             } else {
-                $this->dirLog=$obj_file->copyFile($this->path, $oldName, $this->path, $fileName);
-                if ($this->dirLog == "error") {
-                    $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
-                } else {
-                    $this->highlightName[] = $this->dirLog;
-                    $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
-                }
+                $result = $objFile->copyFile($this->path, $oldName, $this->path, $fileName);
             }
         }
 
+        if ($result == 'error') {
+            \Message::error($_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
+            return;
+        } else {
+            $_SESSION['media_highlight_name'] = array($result);
+            \Message::ok($_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
+        }
+
         // save image
-        $this->_objImage->loadImage($this->path.$this->dirLog);
-        $this->_objImage->saveNewImage($this->path.$this->dirLog, true);
+        $this->_objImage->loadImage($this->path . $result);
+        $this->_objImage->saveNewImage($this->path . $result, true);
     }
     
     /**
@@ -1010,11 +990,10 @@ class MediaLibrary
 
                         function mediaConfirmDelete(file)
                         {
-                            if(confirm('$delete_msg')) {
-                                \$J(document.fileList.deleteMedia).attr('value', '1');
-                                \$J(document.fileList.file).attr('value', file);
-                                document.fileList.action = 'index.php?cmd=Media&archive=$this->archive&path=$this->webPath&csrf=$csrfCode';
-                                document.fileList.submit();
+                            if (confirm('$delete_msg')) {
+                                return true;
+                            } else {
+                                return false;
                             }
                         }
         
@@ -1355,5 +1334,21 @@ END;
             return false;
         }
         return true;
+    }
+
+    /**
+     * Redirect to the page by requested redirect url
+     *
+     * @return boolean
+     */
+    public function handleRedirect()
+    {
+        $redirect = '';
+        if (!empty($_REQUEST['redirect'])) {
+            $redirect = \FWUser::getRedirectUrl(urlencode(base64_decode(urldecode($_REQUEST['redirect']))));
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$redirect);
+            exit;
+        }
+        return false;
     }
 }
