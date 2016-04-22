@@ -53,19 +53,26 @@ class ImageOption extends Option
      * @param String $name Name of the option
      * @param array  $translations Array with translations for option.
      * @param array  $data
+     * @param String $type         the type of the option
+     * @param bool   $series       handle the elements as series if true
      */
-    public function __construct($name, $translations, $data)
-    {
-        parent::__construct($name, $translations, $data);
+    public function __construct(
+        $name,
+        $translations,
+        $data,
+        $type,
+        $series = false
+    ) {
+        parent::__construct($name, $translations, $data, $type, $series);
         $this->url = $data['url'];
     }
 
     /**
      * Render the option field in the backend.
      *
-     * @param Sigma $template
+     * @return Sigma    the template
      */
-    public function renderOptionField($template)
+    public function renderOptionField()
     {
         global $_ARRAYLANG;
         $mediaBrowser = new MediaBrowser();
@@ -76,13 +83,12 @@ class ImageOption extends Option
             )
         );
         $mediaBrowser->setCallback('callback_' . $this->name);
-        parent::renderOptionField(
-            $template,
+        return parent::renderOptionField(
             array(
-                'TEMPLATEEDITOR_OPTION_VALUE' => $this->url,
+                'TEMPLATEEDITOR_OPTION_VALUE' => $this->getAbsoluteUrl(),
                 'MEDIABROWSER_BUTTON'         =>
                     $mediaBrowser->getXHtml(
-                        $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CHOOSE_PICTURE']
+                        $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_CHANGE_PICTURE']
                     ),
             ),
             $_ARRAYLANG
@@ -98,7 +104,7 @@ class ImageOption extends Option
     {
         $template->setVariable(
             'TEMPLATE_EDITOR_' . strtoupper($this->name),
-            contrexx_raw2xhtml($this->url)
+            contrexx_raw2xhtml($this->getAbsoluteUrl())
         );
     }
 
@@ -119,27 +125,31 @@ class ImageOption extends Option
     public function handleChange($data)
     {
         global $_ARRAYLANG;
-        $url = parse_url($data);
-        if (!isset($url['host'])) {
-            if (!file_exists(
-                $this->cx->getWebsitePath() . $url['path']
-            )
-            ) {
-                if (!file_exists(
-                    $this->cx->getCodeBasePath() . $url['path']
-                )
-                ) {
-                    throw new OptionValueNotValidException(
-                        sprintf(
-                            $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'],
-                            $url['path']
-                        )
-                    );
-                }
-            }
+        $url = \Cx\Core\Routing\Url::fromMagic($data);
+        if (!$url->isInternal()) {
+            return array('url' => $data);
         }
-        $this->url = $data;
-        return array('url' => $data);
+        // remove offsetPath and leading slash to ensure installation relocation
+        $urlPath = ltrim(
+            str_replace(
+                $this->cx->getWebsiteOffsetPath(),
+                '',
+                $data
+            ),
+            '/'
+        );
+        if (
+            !file_exists($this->cx->getCodeBaseDocumentRootPath() . '/' . $urlPath)
+            && !file_exists($this->cx->getWebsitePath() . '/' . $urlPath)
+        ) {
+            throw new OptionValueNotValidException(
+                sprintf(
+                    $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_IMAGE_FILE_NOT_FOUND'],
+                    $data
+                )
+            );
+        }
+        return array('url' =>  $urlPath);
     }
 
     /**
@@ -170,5 +180,20 @@ class ImageOption extends Option
     public function getValue()
     {
         return array('url' => $this->url);
+    }
+
+    /**
+     * Return the absoulte url or the absolute url path
+     * @return String
+     */
+    protected function getAbsoluteUrl() {
+        if (empty($this->url)) {
+            return '';
+        }
+        $url = \Cx\Core\Routing\Url::fromMagic($this->url);
+        if ($url->isInternal()) {
+            return $this->cx->getWebsiteOffsetPath() . '/' . $this->url;
+        }
+        return $this->url;
     }
 }

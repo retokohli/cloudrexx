@@ -58,10 +58,17 @@ class ColorOption extends Option
      * @param String $name Name of the option
      * @param array  $translations Array with translations for option.
      * @param array  $data
+     * @param String $type         the type of the option
+     * @param bool   $series       handle the elements as series if true
      */
-    public function __construct($name, $translations, $data)
-    {
-        parent::__construct($name, $translations, $data);
+    public function __construct(
+        $name,
+        $translations,
+        $data,
+        $type,
+        $series = false
+    ) {
+        parent::__construct($name, $translations, $data, $type, $series);
         $this->color = $data['color'];
         if (isset($data['choice'])) {
             $this->choice = $data['choice'];
@@ -71,9 +78,9 @@ class ColorOption extends Option
     /**
      * Render the option field in the backend.
      *
-     * @param Sigma $template
+     * @return Sigma    the template
      */
-    public function renderOptionField($template)
+    public function renderOptionField()
     {
         global $_ARRAYLANG;
         \ContrexxJavascript::getInstance()->setVariable(
@@ -90,7 +97,7 @@ class ColorOption extends Option
                 json_encode($this->choice);
         }
         $subTemplateVariables['TEMPLATEEDITOR_OPTION_VALUE'] = $this->color;
-        parent::renderOptionField($template, $subTemplateVariables);
+        return parent::renderOptionField($subTemplateVariables);
     }
 
     /**
@@ -174,6 +181,26 @@ class ColorOption extends Option
     }
 
     /**
+     * Get the choice
+     *
+     * @return array
+     */
+    public function getChoice()
+    {
+        return $this->choice;
+    }
+
+    /**
+     * Set the choice
+     *
+     * @param mixed $choice
+     */
+    public function setChoice($choice)
+    {
+        $this->choice = $choice;
+    }
+
+    /**
      * Gets the current value of the option.
      *
      * @return array
@@ -191,7 +218,7 @@ class ColorOption extends Option
      *
      * @return string
      */
-    function adjustBrightness($hex, $steps)
+    public function adjustBrightness($hex, $steps)
     {
         // Steps should be between -255 and 255. Negative = darker, positive = lighter
         $steps = max(-255, min(255, $steps));

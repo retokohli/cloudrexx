@@ -343,7 +343,8 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                   WHERE 
                     `sessionid` = '{$_SESSION->sessionid}' 
                   AND 
-                    `parent_id` = '$varId'";
+                    `parent_id` = '$varId'
+                    ORDER BY `key`+0, `key`";
 
         /** @var $objResult ADORecordSet */
         $objResult = \Env::get('db')->Execute($query);

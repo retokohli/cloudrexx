@@ -1,19 +1,28 @@
 <label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
-<img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"/>
-<input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}" value="{TEMPLATEEDITOR_OPTION_VALUE}"/>
-<div class="error-box">
-
+    <img src="{TEMPLATEEDITOR_OPTION_VALUE}" alt="{TEMPLATEEDITOR_OPTION_NAME}"
+         id="{TEMPLATEEDITOR_OPTION_NAME}_img" />
+    <input type="text" id="{TEMPLATEEDITOR_OPTION_NAME}"
+           value="{TEMPLATEEDITOR_OPTION_VALUE}"
+           class="{TEMPLATEEDITOR_OPTION_NAME}"
+           data-id="{TEMPLATEEDITOR_OPTION_ID}"
+    />
+    <div class="error-box">
 </div>
 {MEDIABROWSER_BUTTON}
-<script>
+
+<script type="text/javascript">
     function callback_{TEMPLATEEDITOR_OPTION_NAME}(callback){
         if (callback.type == 'file'){
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(callback.data[0].datainfo.filepath);
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',callback.data[0].datainfo.filepath);
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}_img').attr('src',callback.data[0].datainfo.filepath);
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').trigger('change');
         }
     }
-
+    // we need to trigger the change event also on focus out, because otherwise
+    // it would be possible to add empty elements to a series
+    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').focusout(function () {
+        jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').trigger('change');
+    });
     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').change(function () {
         var parent =  jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent();
         parent.addClass('saving');
@@ -21,18 +30,32 @@
             if (response.status == 'error'){
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').text(response.message).slideDown();
+                return false;
             }
-            else {
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src',response.data.url);
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(response.data.url);
-                parent.removeClass('saving');
-                parent.addClass('saved');
-                setTimeout(function(){
-                    parent.removeClass('saved');
-                }, 2000);
+            var splitedText = '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_seriesId');
+            if (splitedText[1]
+                    !== undefined) {
+                var data = getSeriesElementValueById(
+                        'url',
+                        splitedText[1],
+                        response.data['elements']
+                );
+            } else {
+                var data = response.data.url;
             }
-
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(data);
+            // add relative path config if not external domain
+            if(data && data.indexOf("http") < 0  && data.indexOf("//") < 0) {
+                data = '../' + data;
+            }
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src', data);
+            parent.removeClass('saving');
+            parent.addClass('saved');
+            setTimeout(function(){
+                parent.removeClass('saved');
+            }, 2000);
+            return true;
         })
     });
 </script>

@@ -34,7 +34,7 @@ use Symfony\Component\Yaml\ParserException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class FileStorage
+ * Class OptionSetFileStorage
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Robin Glauser <robin.glauser@cloudrexx.com>
@@ -103,7 +103,7 @@ class OptionSetFileStorage implements Storable
         return file_put_contents(
             $this->path
             . '/' . $name . '/options/options.yml',
-            Yaml::dump($data->yamlSerialize(), 5)
+            Yaml::dump($data->yamlSerialize(), 6)
         );
     }
 

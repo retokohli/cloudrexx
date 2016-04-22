@@ -1,0 +1,68 @@
+<label for="{TEMPLATEEDITOR_OPTION_NAME}">
+    {TEMPLATEEDITOR_OPTION_HUMAN_NAME}
+</label>
+<div id="{TEMPLATEEDITOR_OPTION_NAME}" class="series-list">
+    <div class="elements">
+        <!-- BEGIN elements -->
+        <div class="element">
+            {SERIES_ELEMENT}
+        </div>
+        <!-- END elements -->
+    </div>
+    <button class="button add-element">
+        {TXT_CORE_MODULE_TEMPLATEEDITOR_ADD_ELEMENT}
+    </button>
+</div>
+<script type="text/javascript">
+    var removeTemplate =
+            '<img src="../core/Core/View/Media/icons/delete.gif" ' +
+            'class="remove-element" ' +
+            'onclick="removeElement(this)" ' +
+            'title="{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_ELEMENT}" ' +
+            'alt="{TXT_CORE_MODULE_TEMPLATEEDITOR_REMOVE_ELEMENT}" />';
+
+    // add the remove button to the template. It is not delivered from
+    // the template of the element (because it is not only used in series),
+    // so we need to do it here
+    jQuery('.elements .element').each(function(){
+        if(!jQuery(this).children().last().hasClass('remove-element')){
+            jQuery(this).append(removeTemplate);
+        }
+    });
+
+    // The add button is used to add a new element to a series
+    // The template will be loaded over a call to the server
+    jQuery('#{TEMPLATEEDITOR_OPTION_NAME} .add-element').bind( "click",
+        function () {
+            updateOption(
+                '{TEMPLATEEDITOR_OPTION_NAME}_seriesId',
+                {
+                    elm: '',
+                    action:'add'
+                },
+                function(response) {
+                    var template = '<div class="element">'+response.data.html+'</div>';
+                    var newElement = jQuery(template);
+                    // add the remove button to this element, this is not included
+                    // in the template we get from the call to server (newElement)
+                    jQuery(newElement).append(removeTemplate);
+                    // if we have a media browser button
+                    // (case: series of images), we need to initialize the
+                    // button, otherwise click will not open anything
+                    var mediaButton =
+                            jQuery(newElement).children('.mediabrowser-button');
+                    if (mediaButton !== undefined) {
+                        initializeMediaButton.call(mediaButton);
+                        mediaButton.trigger('click');
+                    }
+                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}')
+                            .children('.elements').append(newElement);
+                    // set focus to new created element for better ux
+                    jQuery(newElement).children('input, textarea')
+                            .first().focus();
+                    return true;
+                }
+            );
+        }
+    );
+</script>

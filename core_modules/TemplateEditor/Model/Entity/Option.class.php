@@ -79,23 +79,56 @@ abstract class Option extends \Cx\Model\Base\EntityBase
     protected $humanName;
 
     /**
+     * Defines if this type should be handled as series or a single field.
+     * Standard is false and will be rendered as single field
+     *
+     * @var boolean
+     */
+    protected $series;
+
+    /**
+     * The type of the option. This must always be a subclass from options.
+     * Should contain the whole namespace to the class.
+     *
+     * @var string
+     */
+    protected $type;
+
+    /**
+     * The name of the html template of the option
+     * Normally the class name is used
+     *
+     * @var string
+     */
+    protected $optionTemplate;
+
+    /**
      * @param String $name Name of the option
      * @param array  $translations Array with translations for option.
      * @param array  $data
+     * @param String $type         the type of the option
+     * @param bool   $series       handle the elements as series if true
      */
-    public function __construct($name, $translations, $data) {
+    public function __construct(
+        $name,
+        $translations,
+        $data,
+        $type,
+        $series = false
+    ) {
         global $_LANGID;
         $this->name         = $name;
         $this->humanName    = isset($translations[$_LANGID])
             ? $translations[$_LANGID]
             : (isset($translations[2]) ? $translations[2] : $name);
         $this->translations = $translations;
+        $this->type = $type;
+        $this->series = $series;
     }
 
     /**
      * Render the option field in the backend.
      *
-     * @param Sigma $template          The template of the backend view.
      * @param array $optionProperties  Values to parse into subTemplate
      * @param array $globalVariables   Variables which should be global
      * @param array $subTemplateBlocks subBlocks to parse. Example:
@@ -109,26 +142,24 @@ abstract class Option extends \Cx\Model\Base\EntityBase
      *      }
      *      ["subBlockName2"] => array(...)
      *   }
+     * @return Sigma
      */
     public function renderOptionField(
-        $template,
         $optionProperties = array(),
         $globalVariables = array(),
         $subTemplateBlocks = array()
     ) {
         $subTemplate = new Sigma();
-        // load subTemplate file for the given option.
+        // load subTemplate file for the given option if not customized
         // pattern for html file is: {optionName}Option.html
-        $optionName = str_replace( // replace 'Option' so we get the net name
-            'Option',
-            '',
-            end( // last value of the array is the class name
+        if (!isset($this->optionTemplate)) {
+            $this->optionTemplate = end( // last value of array is the className
                 explode('\\', get_class($this)) // get array for class namespace
-            )
-        );
+            );
+        }
         $subTemplate->loadTemplateFile(
             $this->getDirectory() . '/View/Template/Backend/'
-            .  $optionName . 'Option.html'
+            .  $this->optionTemplate . '.html'
         );
 
         // get all placeholders to replace in subTemplate into one array
@@ -153,12 +184,7 @@ abstract class Option extends \Cx\Model\Base\EntityBase
         if (!empty($globalVariables)) {
             $subTemplate->setGlobalVariable($globalVariables);
         }
-
-        $template->setVariable(array(
-            'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
-            'TEMPLATEEDITOR_OPTION_TYPE' => strtolower($optionName),
-        ));
-        $template->parse('option');
+        return $subTemplate;
     }
 
     /**
@@ -203,6 +229,60 @@ abstract class Option extends \Cx\Model\Base\EntityBase
     }
 
     /**
+     * Get the type of the option.
+     *
+     * @return string
+     */
+    public function getType() {
+        return $this->type;
+    }
+
+    /**
+     * Set the type of the option.
+     *
+     * @param void $type
+     */
+    public function setType($type) {
+        $this->name = $type;
+    }
+
+    /**
+     * Return true if element is in a series
+     *
+     * @return boolean
+     */
+    public function isSeries() {
+        return $this->series;
+    }
+
+    /**
+     * Set the series of the option.
+     *
+     * @param void $series
+     */
+    public function setSeries($series) {
+        $this->name = $series;
+    }
+
+    /**
+     * Return true if element is in a optionTemplate
+     *
+     * @return boolean
+     */
+    public function getOptionTemplate() {
+        return $this->optionTemplate;
+    }
+
+    /**
+     * Set the optionTemplate of the option.
+     *
+     * @param void $optionTemplate
+     */
+    public function setOptionTemplate($optionTemplate) {
+        $this->optionTemplate = $optionTemplate;
+    }
+
+    /**
      * Get the translated name of the option
      *
      * @return string
@@ -230,7 +310,8 @@ abstract class Option extends \Cx\Model\Base\EntityBase
             'name' => $this->name,
             'specific' => array(),
             'type' => get_called_class(),
-            'translation' => $this->translations
+            'translation' => $this->translations,
+            'series' => $this->series
         );
     }
 

@@ -1,30 +1,28 @@
 <label for="{TEMPLATEEDITOR_OPTION_NAME}">{TEMPLATEEDITOR_OPTION_HUMAN_NAME}</label>
 <select name="{TEMPLATEEDITOR_OPTION_NAME}" id="{TEMPLATEEDITOR_OPTION_NAME}">
     <!-- BEGIN choices -->
-    <option value="{CHOICE_VALUE}" {CHOICE_ACTIVE}>{CHOICE_NAME}</option>  
+    <option value="{CHOICE_VALUE}" {CHOICE_ACTIVE}>{CHOICE_NAME}</option>
     <!-- END choices -->
 </select>
-<div class="error-box">
-
-</div>
-<script>
+<div class="error-box"></div>
+<script type="text/javascript">
     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').change(function () {
         jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saving');
-        updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val(), function(reponse) {
-            if (reponse.status == 'error'){
+        updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val(), function(response) {
+            if (response.status == 'error'){
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').text(reponse.message).slideDown();
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').text(response.message).slideDown();
+                return false;
             }
-            else {
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideUp();
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('error');
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(reponse.data.activeChoice);
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saved');
-                setTimeout(function(){
-                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saved');
-                }, 2000);
-            }
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideUp();
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('error');
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(response.data.activeChoice);
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saved');
+            setTimeout(function(){
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saved');
+            }, 2000);
+            return true;
         })
     });
 </script>

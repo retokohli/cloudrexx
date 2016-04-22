@@ -106,11 +106,34 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
      */
     public function __construct($theme, $data)
     {
-        $this->name             = $theme->getFoldername();
-        $this->data             = $data;
-        $this->theme            = $theme;
-        $presetStorage
-                                = new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
+        $this->name = $theme->getFoldername();
+        $this->data = $data;
+        // try to initialize the options, so we do not need to load the from
+        // $this->data every time
+        if (isset($data['DlcInfo']) && isset($data['DlcInfo']['options'])) {
+            foreach ($data['DlcInfo']['options'] as $optionArray) {
+                if (
+                    isset($optionArray['type'])
+                    && isset($optionArray['name'])
+                    && isset($optionArray['specific'])
+                ) {
+                    $type = $optionArray['type'];
+                    $option = new $type(
+                        $optionArray['name'],
+                        ($optionArray['translations']) ?
+                            $optionArray['translations'] : array(),
+                        $optionArray['specific'],
+                        $optionArray['type'],
+                        ($optionArray['series']) ?
+                            $optionArray['series'] : false
+                    );
+                    $this->setOption($optionArray['name'], $option);
+                }
+            }
+        }
+        $this->theme = $theme;
+        $presetStorage =
+            new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
             $this->cx->getWebsiteThemesPath() . '/' . $theme->getFoldername()
         );
         $this->presetRepository = new PresetRepository($presetStorage);
@@ -159,7 +182,21 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     public function renderOptions($template)
     {
         foreach ($this->options as $option) {
-            $option->renderOptionField($template);
+            $subTemplate = $option->renderOptionField();
+            $optionName = str_replace( // replace 'Option' so we get the net name
+                'Option',
+                '',
+                end( // last value of the array is the class name
+                    explode('\\', $option->getType()) // get array for class namespace
+                )
+            );
+            $seriesClass = ($option->isSeries()) ? 'series' : '';
+            $template->setVariable(array(
+                'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
+                'TEMPLATEEDITOR_OPTION_TYPE' => strtolower($optionName),
+                'TEMPLATEEDITOR_OPTION_SERIES_CLASS' => $seriesClass,
+            ));
+            $template->parse('option');
         }
     }
 
@@ -319,29 +356,54 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
 
 //        $this->options = array();
         foreach ($data['options'] as $option) {
-            $optionReflection = new \ReflectionClass($option['type']);
-            if ($optionReflection->isSubclassOf('Cx\Core_Modules\TemplateEditor\Model\Entity\Option')
-            ) {
-                if ($this->cx->getMode() == Cx::MODE_BACKEND
-                    || (($this->cx->getUser()->getFWUserObject(
-                        )->objUser->login())
-                        && isset($_GET['templateEditor']))
-                ) {
-                    if (isset($_SESSION['TemplateEditor'][$this->theme->getId(
-                        )][$option['name']])) {
-                        $option['specific'] = array_merge(
-                            $option['specific'],
-                            $_SESSION['TemplateEditor']
-                            [$this->theme->getId()]
-                            [$option['name']]->toArray()
-                        );
-                    }
-                }
-                $this->options[$option['name']]
-                    = $optionReflection->newInstance(
-                    $option['name'], $option['translation'], $option['specific']
+            $optionType = $option['type'];
+            if ($option['series']) {
+                // these options are not allowed to be parsed as series
+                $optionsWithoutSeries = array(
+                    'Cx\Core_Modules\TemplateEditor\Model\Entity\AreaOption',
+                    'Cx\Core_Modules\TemplateEditor\Model\Entity\SelectOption',
                 );
+                if (in_array($optionType, $optionsWithoutSeries)) {
+                    \DBG::msg($optionType . ' can not be parsed as series');
+                    continue;
+                }
+                // set type to series, so the fields are parsed as such
+                $optionType =
+                    'Cx\Core_Modules\TemplateEditor\Model\Entity\SeriesOption';
             }
+            if (
+                !is_a(
+                    $optionType,
+                    'Cx\Core_Modules\TemplateEditor\Model\Entity\Option',
+                    true
+                )
+            ) {
+                continue;
+            }
+            if ($this->cx->getMode() == Cx::MODE_BACKEND
+                || (
+                    $this->cx->getUser()->getFWUserObject()->objUser->login()
+                    && isset($_GET['templateEditor'])
+                )
+            ) {
+                if (isset($_SESSION['TemplateEditor'][$this->theme->getId(
+                    )][$option['name']])) {
+                    $option['specific'] = array_merge(
+                        $option['specific'],
+                        $_SESSION['TemplateEditor']
+                        [$this->theme->getId()]
+                        [$option['name']]->toArray()
+                    );
+                }
+            }
+            $this->options[$option['name']]
+                = new $optionType(
+                $option['name'],
+                $option['translation'],
+                $option['specific'],
+                $option['type'],
+                $option['series']
+            );
         }
     }
 

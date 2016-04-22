@@ -960,121 +960,122 @@
 
     jQuery(function () {
 
-        jQuery('button.mediabrowser-button').each(function () {
+        jQuery('button.mediabrowser-button').each(initializeMediaButton);
+    });
+    window.initializeMediaButton = function() {
 
-            angular.bootstrap(jQuery(this).next('.mediaBrowserScope')[0], ['MediaBrowser']);
-            var scope = angular.element(jQuery(this).next()[0]).injector();
-            if (!scope){
-                console.warn('.mediaBrowserScope Element is missing, please generate the button only with the mediabrowser class and not by yourself!');
+        angular.bootstrap(jQuery(this).next('.mediaBrowserScope')[0], ['MediaBrowser']);
+        var scope = angular.element(jQuery(this).next()[0]).injector();
+        if (!scope){
+            console.warn('.mediaBrowserScope Element is missing, please generate the button only with the mediabrowser class and not by yourself!');
+            return;
+        }
+
+        jQuery(this).on('click', function (event, config) {
+            var mediabrowserConfig = scope.get('mediabrowserConfig');
+            if (mediabrowserConfig.get('isOpen')){
                 return;
             }
+            var $modal = scope.get('$modal');
 
-            jQuery(this).on('click', function (event, config) {
-                var mediabrowserConfig = scope.get('mediabrowserConfig');
-                if (mediabrowserConfig.get('isOpen')){
-                    return;
+            var attrs = jQuery(this).data();
+
+            for (var i in config) {
+                attrs[i] = config[i];
+            }
+
+            /**
+             * Set all options and default values
+             */
+            mediabrowserConfig.set('startView', 'MediaBrowserListCtrl');
+            if (attrs.cxMbStartview) {
+                mediabrowserConfig.set('startView', attrs.cxMbStartview.charAt(0).toUpperCase() + attrs.cxMbStartview.slice(1) + "Ctrl");
+            }
+
+            mediabrowserConfig.set('views', 'all');
+            if (attrs.cxMbViews) {
+                mediabrowserConfig.set('views', attrs.cxMbViews.trim().split(","));
+            }
+
+            mediabrowserConfig.set('startMedia', 'files');
+            if (attrs.cxMbStartmediatype) {
+                mediabrowserConfig.set('startMedia', attrs.cxMbStartmediatype);
+            }
+
+            mediabrowserConfig.set('mediatypes', 'all');
+            if (attrs.cxMbMediatypes) {
+                mediabrowserConfig.set('mediatypes', attrs.cxMbMediatypes.split(/[\s,]+/));
+            }
+
+            mediabrowserConfig.set('multipleSelect', false);
+            if (attrs.cxMbMultipleselect) {
+                mediabrowserConfig.set('multipleSelect', attrs.cxMbMultipleselect);
+            }
+
+            mediabrowserConfig.set('modalOpened', false);
+            if (attrs.cxMbCbJsModalopened) {
+                mediabrowserConfig.set('modalOpened', attrs.cxMbCbJsModalopened);
+            }
+
+            if (attrs.startPath) {
+                mediabrowserConfig.set('lastPath', attrs.startPath);
+            }
+
+            if (typeof(config) !== 'undefined' && typeof(config.callback) !== 'undefined') {
+                mediabrowserConfig.set('modalClosed', config.callback);
+            }
+            else {
+                mediabrowserConfig.set('modalClosed', false);
+                if (attrs.cxMbCbJsModalclosed) {
+                    mediabrowserConfig.set('modalClosed', attrs.cxMbCbJsModalclosed);
                 }
-                var $modal = scope.get('$modal');
+            }
 
-                var attrs = jQuery(this).data();
-
-                for (var i in config) {
-                    attrs[i] = config[i];
-                }
-
-                /**
-                 * Set all options and default values
-                 */
-                mediabrowserConfig.set('startView', 'MediaBrowserListCtrl');
-                if (attrs.cxMbStartview) {
-                    mediabrowserConfig.set('startView', attrs.cxMbStartview.charAt(0).toUpperCase() + attrs.cxMbStartview.slice(1) + "Ctrl");
-                }
-
-                mediabrowserConfig.set('views', 'all');
-                if (attrs.cxMbViews) {
-                    mediabrowserConfig.set('views', attrs.cxMbViews.trim().split(","));
-                }
-
-                mediabrowserConfig.set('startMedia', 'files');
-                if (attrs.cxMbStartmediatype) {
-                    mediabrowserConfig.set('startMedia', attrs.cxMbStartmediatype);
-                }
-
-                mediabrowserConfig.set('mediatypes', 'all');
-                if (attrs.cxMbMediatypes) {
-                    mediabrowserConfig.set('mediatypes', attrs.cxMbMediatypes.split(/[\s,]+/));
-                }
-
-                mediabrowserConfig.set('multipleSelect', false);
-                if (attrs.cxMbMultipleselect) {
-                    mediabrowserConfig.set('multipleSelect', attrs.cxMbMultipleselect);
-                }
-
-                mediabrowserConfig.set('modalOpened', false);
-                if (attrs.cxMbCbJsModalopened) {
-                    mediabrowserConfig.set('modalOpened', attrs.cxMbCbJsModalopened);
-                }
-
-                if (attrs.startPath) {
-                    mediabrowserConfig.set('lastPath', attrs.startPath);
-                }
-
-                if (typeof(config) !== 'undefined' && typeof(config.callback) !== 'undefined') {
-                    mediabrowserConfig.set('modalClosed', config.callback);
-                }
-                else {
-                    mediabrowserConfig.set('modalClosed', false);
-                    if (attrs.cxMbCbJsModalclosed) {
-                        mediabrowserConfig.set('modalClosed', attrs.cxMbCbJsModalclosed);
-                    }
-                }
-
-                mediabrowserConfig.set('isOpen',true);
-                $modal.open({
-                    templateUrl: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/MediaBrowserModal.html',
-                    controller: 'MainCtrl',
-                    dialogClass: 'media-browser-modal',
-                    size: 'lg',
-                    backdrop: 'static',
-                    backdropClass: 'media-browser-modal-backdrop',
-                    windowClass: 'media-browser-modal-window'
-                }).result.finally(function(){
-                        mediabrowserConfig.set('isOpen',false);
-                    });
-
-                /**
-                 * Configuring Callbacks
-                 */
-                if (mediabrowserConfig.get('modalOpened') !== false) {
-                    var fn = window[mediabrowserConfig.get('modalOpened')];
-                    var data = {type: 'modalopened', data: []};
-                    if (typeof fn === 'function') {
-                        fn(data);
-                    }
-                }
-
-                mediabrowserConfig.set('callbackWrapper', function (e) {
-                    scope.tabs = scope.dataTabs;
-                    if (mediabrowserConfig.get('modalClosed') !== false) {
-                        if (typeof mediabrowserConfig.get('modalClosed') === 'function') {
-                            mediabrowserConfig.get('modalClosed')(e);
-                        }
-                        else {
-                            var windowScope = window;
-                            var scopeSplit = mediabrowserConfig.get('modalClosed').split('.');
-                            for (var i = 0; i < scopeSplit.length - 1; i++) {
-                                windowScope = windowScope[scopeSplit[i]];
-                                if (scope == undefined) return;
-                            }
-                            var fn = windowScope[scopeSplit[scopeSplit.length - 1]];
-                            if (typeof fn === 'function') {
-                                fn(e);
-                            }
-                        }
-                    }
-                });
+            mediabrowserConfig.set('isOpen',true);
+            $modal.open({
+                templateUrl: cx.variables.get('basePath','contrexx')+'core_modules/MediaBrowser/View/Template/MediaBrowserModal.html',
+                controller: 'MainCtrl',
+                dialogClass: 'media-browser-modal',
+                size: 'lg',
+                backdrop: 'static',
+                backdropClass: 'media-browser-modal-backdrop',
+                windowClass: 'media-browser-modal-window'
+            }).result.finally(function(){
+                mediabrowserConfig.set('isOpen',false);
             });
-            jQuery(this).removeAttr('disabled');
+
+            /**
+             * Configuring Callbacks
+             */
+            if (mediabrowserConfig.get('modalOpened') !== false) {
+                var fn = window[mediabrowserConfig.get('modalOpened')];
+                var data = {type: 'modalopened', data: []};
+                if (typeof fn === 'function') {
+                    fn(data);
+                }
+            }
+
+            mediabrowserConfig.set('callbackWrapper', function (e) {
+                scope.tabs = scope.dataTabs;
+                if (mediabrowserConfig.get('modalClosed') !== false) {
+                    if (typeof mediabrowserConfig.get('modalClosed') === 'function') {
+                        mediabrowserConfig.get('modalClosed')(e);
+                    }
+                    else {
+                        var windowScope = window;
+                        var scopeSplit = mediabrowserConfig.get('modalClosed').split('.');
+                        for (var i = 0; i < scopeSplit.length - 1; i++) {
+                            windowScope = windowScope[scopeSplit[i]];
+                            if (scope == undefined) return;
+                        }
+                        var fn = windowScope[scopeSplit[scopeSplit.length - 1]];
+                        if (typeof fn === 'function') {
+                            fn(e);
+                        }
+                    }
+                }
+            });
         });
-    });
+        jQuery(this).removeAttr('disabled');
+    }
 }(cx.variables.get('jquery', 'mediabrowser'));

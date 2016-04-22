@@ -56,10 +56,17 @@ class SelectOption extends Option
      * @param String $name Name of the option
      * @param array  $translations Array with translations for option.
      * @param array  $data
+     * @param String $type         the type of the option
+     * @param bool   $series       handle the elements as series if true
      */
-    public function __construct($name, $translations, $data)
-    {
-        parent::__construct($name, $translations, $data);
+    public function __construct(
+        $name,
+        $translations,
+        $data,
+        $type,
+        $series = false
+    ) {
+        parent::__construct($name, $translations, $data, $type, $series);
         $this->activeChoice = isset($data['activeChoice'])
             ? $data['activeChoice'] : '';
         $this->choice       = isset($data['choice']) ? $data['choice'] : '';
@@ -68,9 +75,9 @@ class SelectOption extends Option
     /**
      * Render the option field in the backend.
      *
-     * @param Sigma $template
+     * @return Sigma    the template
      */
-    public function renderOptionField($template)
+    public function renderOptionField()
     {
         global $_LANGID;
         $choices = array();
@@ -87,8 +94,7 @@ class SelectOption extends Option
                 $choices['choices'][$value]['CHOICE_ACTIVE'] = 'selected';
             }
         }
-        parent::renderOptionField(
-            $template,
+        return parent::renderOptionField(
             array('TEMPLATEEDITOR_OPTION_VALUE' => $this->activeChoice),
             null,
             $choices

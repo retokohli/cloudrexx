@@ -113,9 +113,19 @@ class Preset implements YamlSerializable
     }
 
     /**
+     * Get optionvalues.
+     *
+     * @return array $optionValues
+     */
+    public function getOptionValues()
+    {
+        return $this->optionValues;
+    }
+
+    /**
      * Set optionvalues.
      *
-     * @param mixed $optionValues
+     * @param array $optionValues
      */
     public function setOptionValues($optionValues)
     {

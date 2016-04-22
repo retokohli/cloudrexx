@@ -3,7 +3,7 @@
            {TEMPLATEEDITOR_OPTION_VALUE}/>
     {TEMPLATEEDITOR_OPTION_HUMAN_NAME}
 </label>
-<script>
+<script type="text/javascript">
     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').change(function () {
         var parent =  jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().parent();
         parent.addClass('saving');
@@ -17,6 +17,7 @@
             setTimeout(function(){
                 parent.removeClass('saved');
             }, 2000);
+            return true;
         })
     });
 </script>

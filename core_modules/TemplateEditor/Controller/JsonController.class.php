@@ -164,24 +164,38 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
                 $_SESSION['TemplateEditor'][$themeID]['activePreset']
             )
         );
-        if (empty($params['post']['optionName'])
+        $name = $params['post']['optionName'];
+        $data = $params['post']['optionData'];
+        if (empty($name)
             && !preg_match(
-                '/^[a-z_]+$/i', $params['post']['optionName']
+                '/^[a-z_]+$/i', $name
             )
         ) {
             throw new \LogicException(
                 'This method needs a valid name to work.'
             );
         }
-        if (empty($params['post']['optionData'])) {
+        if (empty($data)) {
             throw new \LogicException(
                 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_EMPTY']
             );
         }
+        // if the element is part of an series, we need to load the seriesId
+        // of the element, so we know which element we want to change. We do
+        // this over the name of the series
+        $seriesSuffix = '_seriesId';
+        $seriesPosition = strpos($name, $seriesSuffix);
+        if ($seriesPosition !== false) {
+            $data = array(
+                'id' => substr($name, $seriesPosition + strlen($seriesSuffix)),
+                'value' => $data
+            );
+            $name = substr($name, 0, $seriesPosition);
+        }
         $data = $themeOptions->handleChanges(
-            $params['post']['optionName'], $params['post']['optionData']
+            $name, $data
         );
-        $_SESSION['TemplateEditor'][$themeID][$params['post']['optionName']]
+        $_SESSION['TemplateEditor'][$themeID][$name]
               = $data;
         return $data;
     }
