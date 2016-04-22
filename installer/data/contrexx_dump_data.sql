@@ -4482,6 +4482,7 @@ INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (49,'settingsIndividualEntryOrder','0');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (50,'showLatestEntriesInOverview','1');
 INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (51,'showLatestEntriesInWebdesignTmpl','1');
+INSERT INTO `contrexx_module_mediadir_settings` (`id`, `name`, `value`) VALUES (52,'legacyMode','0');
 INSERT INTO `contrexx_module_mediadir_settings_num_categories` (`group_id`, `num_categories`) VALUES (3,'n');
 INSERT INTO `contrexx_module_mediadir_settings_num_categories` (`group_id`, `num_categories`) VALUES (4,'n');
 INSERT INTO `contrexx_module_mediadir_settings_num_categories` (`group_id`, `num_categories`) VALUES (5,'n');
