@@ -1826,9 +1826,9 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                 $website->setOwner($owner);
             }
             //Set the website mode and server website
-            $oldServerWebsite = $website->getServerWebsite();
-            $serverWebsite    = null;
-            if (    isset($params['post']['mode'])
+            $serverWebsite = null;
+            if (    isset($params['post']['serverWebsiteId'])
+                &&  isset($params['post']['mode'])
                 &&  $params['post']['mode'] == ComponentController::WEBSITE_MODE_CLIENT
             ) {
                 $serverWebsite = $webRepo->findOneById(contrexx_input2db($params['post']['serverWebsiteId']));
@@ -1840,7 +1840,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             if (isset($params['post']['mode'])) {
                 $website->setMode(contrexx_input2db($params['post']['mode']));
             }
-            if ($oldServerWebsite != $serverWebsite) {
+            if (isset($params['post']['serverWebsiteId'])) {
                 $website->setServerWebsite($serverWebsite);
             }
             $em->flush();
@@ -7251,7 +7251,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
     public function getServerWebsiteList($params) {
         global $_ARRAYLANG;
 
-        if (empty($params['post']) || empty($params['post']['ownerEmail']) || empty($params['post']['websiteName'])) {
+        if (empty($params['post']) || empty($params['post']['websiteName'])) {
             \DBG::msg('JsonMultiSiteController::getWebsiteList() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']);
         }
@@ -7260,13 +7260,29 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']);
         }
 
+        $authenticationValue = json_decode($params['post']['auth'], true);
+        if (empty($authenticationValue) || !is_array($authenticationValue)) {
+            throw new MultiSiteJsonException(__METHOD__ . ' failed: Insufficient mapping information supplied.');
+        }
+
         try {
+            $domainRepo       = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+            $objWebsiteDomain = $domainRepo->findOneBy(array('name' => contrexx_input2db($authenticationValue['sender'])));
+            if (!$objWebsiteDomain) {
+                throw new MultiSiteJsonException(__METHOD__ . ' failed: Unknown Domain: ' . $authenticationValue['sender']);
+            }
+
+            $website = $objWebsiteDomain->getWebsite();
+            if (!$website) {
+                throw new MultiSiteJsonException(__METHOD__ . ' failed: Unknown Website: ' . $authenticationValue['sender']);
+            }
+
             $em = $this->cx->getDb()->getEntityManager();
-            $ownerEmail  = contrexx_input2db($params['post']['ownerEmail']);
+            $ownerId     = $website->getOwner()->getId();
             $websiteName = contrexx_input2db($params['post']['websiteName']);
             $websiteRepository = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
             $args = array(
-                'user.email'     => $ownerEmail,
+                'user.id'        => $ownerId,
                 'neq'            => array(array('website.name', $websiteName)),
                 'website.status' => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE,
                 'website.mode'   => ComponentController::WEBSITE_MODE_SERVER
