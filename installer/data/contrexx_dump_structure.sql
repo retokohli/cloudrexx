@@ -251,6 +251,45 @@ CREATE TABLE `contrexx_core_mail_template` (
   `protected` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`key`(32),`section`(32))
 ) ENGINE=MyISAM;
+CREATE TABLE `contrexx_core_modules_access_permission` (
+  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `allowed_protocols` longtext NOT NULL,
+  `allowed_methods` longtext NOT NULL,
+  `requires_login` tinyint(1) DEFAULT NULL,
+  `valid_user_groups` longtext DEFAULT NULL,
+  `valid_access_ids` longtext DEFAULT NULL,
+  PRIMARY KEY(`id`)
+) ENGINE = InnoDB;
+CREATE TABLE `contrexx_core_dataaccess_data_access` (
+  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `read_permission` int(11) DEFAULT NULL,
+  `name` varchar(45) NOT NULL,
+  `data_source` varchar(45) NOT NULL,
+  `field_list` longtext NOT NULL,
+  `access_condition` longtext NOT NULL,
+  `type` enum('doctrine', 'legacy'),
+  PRIMARY KEY(`id`),
+  UNIQUE KEY `name` (`name`),
+  KEY `read_permission` (`read_permission`),
+  CONSTRAINT `contrexx_core_dataaccess_data_access_ibfk_read_permission` FOREIGN KEY (`read_permission`) REFERENCES `contrexx_core_modules_access_permission` (`id`)
+) ENGINE = InnoDB;
+CREATE TABLE `contrexx_core_dataaccess_apikey` (
+  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `api_key` varchar(45) NOT NULL,
+  PRIMARY KEY(`id`),
+  UNIQUE KEY `api_key` (`api_key`)
+) ENGINE = InnoDB;
+CREATE TABLE `contrexx_core_dataaccess_data_access_apikey` (
+  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `api_key_id` int(11) DEFAULT NULL,
+  `data_access_id` int(11) DEFAULT NULL,
+  `read_only` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY(id),
+  KEY `api_key_id` (`api_key_id`),
+  KEY `data_access_id` (`data_access_id`),
+  CONSTRAINT `contrexx_core_dataaccess_data_access_apikey_ibfk_api_key_id` FOREIGN KEY (`api_key_id`) REFERENCES `contrexx_core_dataaccess_apikey` (`id`),
+  CONSTRAINT `contrexx_core_dataaccess_data_access_apikey_ibfk_data_access_id` FOREIGN KEY (`data_access_id`) REFERENCES `contrexx_core_dataaccess_data_access` (`id`)
+) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_cron_job` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `active` tinyint(1) NOT NULL,

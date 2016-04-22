@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Permission 
  * 
@@ -37,6 +37,17 @@
 namespace Cx\Core_Modules\Access\Model\Entity;
 
 /**
+ * PermissionException
+ * 
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core_access
+ */
+
+class PermissionException extends \Exception {}
+
+/**
  * Permission
  * 
  * @copyright   Cloudrexx AG
@@ -46,6 +57,13 @@ namespace Cx\Core_Modules\Access\Model\Entity;
  */
 
 class Permission extends \Cx\Model\Base\EntityBase {
+    /**
+     * Id
+     *
+     * @var integer
+     */
+    protected $id;
+
     /**
      * Allowed protocols
      * 
@@ -82,22 +100,21 @@ class Permission extends \Cx\Model\Base\EntityBase {
     protected $validAccessIds   = array();
     
     /**
-     * Allowed group users
-     * 
-     * @var array 
+     * @var Cx\Core\DataAccess\Model\Entity\DataAccess
      */
-    protected $allowedGroups    = array();
+    protected $dataAccesses;
     
     /**
      * Callback function name
      * 
      * @var string
      */
-    public $callback            = null;
+    protected $callback = null;
     
     /**
      * Constructor
-     * 
+     * Calback may only be used for virtual instances
+     *
      * @param Array   $allowedProtocols
      * @param Array   $allowedMethods
      * @param Boolean $requiresLogin
@@ -117,9 +134,186 @@ class Permission extends \Cx\Model\Base\EntityBase {
         if (count($this->validUserGroups) || count($this->validAccessIds)) {
             $this->requiresLogin = true;
         }
-        $this->callback         = $callback;
+        $this->setCallback($callback);
+        $this->dataAccesses     = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
+    /**
+     * Get the id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set the allowed protocols
+     *
+     * @param array $allowedProtocols
+     */
+    public function setAllowedProtocols($allowedProtocols)
+    {
+        $this->allowedProtocols = $allowedProtocols;
+    }
+
+    /**
+     * Get the allowed protocols
+     *
+     * @return array
+     */
+    public function getAllowedProtocols()
+    {
+        return $this->allowedProtocols;
+    }
+
+    /**
+     * Set the allowed methods
+     *
+     * @param array $allowedMethods
+     */
+    public function setAllowedMethods($allowedMethods)
+    {
+        $this->allowedMethods = $allowedMethods;
+    }
+
+    /**
+     * Get the allowed methods
+     *
+     * @return array
+     */
+    public function getAllowedMethods()
+    {
+        return $this->allowedMethods;
+    }
+
+    /**
+     * Set the requires login
+     *
+     * @param boolean $requiresLogin
+     */
+    public function setRequiresLogin($requiresLogin)
+    {
+        $this->requiresLogin = $requiresLogin;
+    }
+
+    /**
+     * Get the requires login
+     *
+     * @return boolean
+     */
+    public function getRequiresLogin()
+    {
+        return $this->requiresLogin;
+    }
+
+    /**
+     * Set the valid user groups
+     *
+     * @param array $validUserGroups
+     */
+    public function setValidUserGroups($validUserGroups)
+    {
+        $this->validUserGroups = $validUserGroups;
+    }
+
+    /**
+     * Get the valid user groups
+     *
+     * @return array
+     */
+    public function getValidUserGroups()
+    {
+        return $this->validUserGroups;
+    }
+
+    /**
+     * Set the valid user groups
+     *
+     * @param array $validAccessIds
+     */
+    public function setValidAccessIds($validAccessIds)
+    {
+        $this->validAccessIds = $validAccessIds;
+    }
+
+    /**
+     * Get the valid access ids
+     *
+     * @return array
+     */
+    public function getvalidAccessIds()
+    {
+        return $this->validAccessIds;
+    }
+
+    /**
+     * Set the data access
+     *
+     * @param \Cx\Core\DataAccess\Model\Entity\DataAccess $dataAccesses
+     */
+    public function setDataAccesses(\Cx\Core\DataAccess\Model\Entity\DataAccess $dataAccesses)
+    {
+        $this->dataAccesses[] = $dataAccesses;
+    }
+
+    /**
+     * Get the data access
+     *
+     * @return type
+     */
+    public function getDataAccesses()
+    {
+        return $this->dataAccesses;
+    }
+
+    /**
+     * Set the callback
+     * Callback may only be used for virtual instances
+     *
+     * @param mixed array|string $callback
+     */
+    public function setCallback($callback)
+    {
+        global $_ARRAYLANG;
+
+        //Use callback only for virtual instances otherwise throw exception
+        if (!$this->isVirtual() && $callback) {
+            \DBG::msg('Permission::setCallback() failed: Could not set callback for non-virtual instance.');
+            throw new PermissionException($_ARRAYLANG['TXT_CORE_MODULE_ACCESS_PERMISSION_SET_CALLBACK_ERROR_MSG']);
+        }
+        $this->callback = $callback;
+    }
+
+    /**
+     * Get the callback
+     *
+     * @return mixed array|string
+     */
+    public function getCallback()
+    {
+        return $this->callback;
+    }
+
+    /**
+     * Set virtual
+     * Callback may only be used for virtual instances
+     *
+     * @param boolean $virtual
+     */
+    public function setVirtual($virtual)
+    {
+        global $_ARRAYLANG;
+
+        //While setting instance as non-virtual, check the instance have callback if so throw exception
+        if ($this->callback && !$virtual) {
+            \DBG::msg('Permission::setVirtual() failed: Could not set instance as non-virtual since instance contains callback.');
+            throw new PermissionException($_ARRAYLANG['TXT_CORE_MODULE_ACCESS_PERMISSION_SET_VIRTUAL_ERROR_MSG']);
+        }
+        parent::setVirtual($virtual);
+    }
+
     /**
      * Check the permissions(Is allowed protocol, Is allowed method, user's group access, user's login status)
      * 

@@ -1,0 +1,46 @@
+Cx\Core\DataAccess\Model\Entity\DataAccess:
+    type: entity
+    table: core_dataaccess_data_access
+    repositoryClass: Cx\Core\DataAccess\Model\Repository\DataAccessRepository
+    indexes:
+        fk_DataAccess_Permission1_idx:
+            columns: [ read_permission ]
+    id:
+        id:
+            type: integer
+            generator:
+              strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 45
+        dataSource:
+            type: string
+            length: 45
+            column: data_source
+        fieldList:
+            type: array
+            column: field_list
+        accessCondition:
+            type: array
+            column: access_condition
+        type:
+            type: string
+            columnDefinition: ENUM('doctrine', 'legacy')
+    uniqueConstraints:
+        name_UNIQUE:
+            columns: [ name ]
+    oneToMany:
+        dataAccessApiKeys:
+            targetEntity: Cx\Core\DataAccess\Model\Entity\DataAccessApiKey
+            mappedBy: dataAccess
+            joinColumn:
+                name: id
+                referencedColumnName: data_access_id
+    manyToOne:
+        permission:
+            targetEntity: Cx\Core_Modules\Access\Model\Entity\Permission
+            inversedBy: dataAccesses
+            joinColumn:
+                name: read_permission
+                referencedColumnName: id
