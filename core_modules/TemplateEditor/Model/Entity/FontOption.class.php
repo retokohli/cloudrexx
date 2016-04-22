@@ -391,6 +391,7 @@ class FontOption extends SelectOption
         $series = false
     )
     {
+        $this->optionTemplate = 'SelectOption';
         parent::__construct($name, $translations, $data, $type, $series);
         $this->activeChoice = isset($data['activeChoice'])
             ? $data['activeChoice'] : '';

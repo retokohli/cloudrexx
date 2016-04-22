@@ -95,6 +95,14 @@ abstract class Option extends \Cx\Model\Base\EntityBase
     protected $type;
 
     /**
+     * The name of the html template of the option
+     * Normally the class name is used
+     *
+     * @var string
+     */
+    protected $optionTemplate;
+
+    /**
      * @param String $name Name of the option
      * @param array  $translations Array with translations for option.
      * @param array  $data
@@ -142,14 +150,16 @@ abstract class Option extends \Cx\Model\Base\EntityBase
         $subTemplateBlocks = array()
     ) {
         $subTemplate = new Sigma();
-        // load subTemplate file for the given option.
+        // load subTemplate file for the given option if not customized
         // pattern for html file is: {optionName}Option.html
-        $optionName = end( // last value of the array is the class name
-            explode('\\', get_class($this)) // get array for class namespace
-        );
+        if (!isset($this->optionTemplate)) {
+            $this->optionTemplate = end( // last value of array is the className
+                explode('\\', get_class($this)) // get array for class namespace
+            );
+        }
         $subTemplate->loadTemplateFile(
             $this->getDirectory() . '/View/Template/Backend/'
-            .  $optionName . '.html'
+            .  $this->optionTemplate . '.html'
         );
 
         // get all placeholders to replace in subTemplate into one array
@@ -252,6 +262,24 @@ abstract class Option extends \Cx\Model\Base\EntityBase
      */
     public function setSeries($series) {
         $this->name = $series;
+    }
+
+    /**
+     * Return true if element is in a optionTemplate
+     *
+     * @return boolean
+     */
+    public function getOptionTemplate() {
+        return $this->optionTemplate;
+    }
+
+    /**
+     * Set the optionTemplate of the option.
+     *
+     * @param void $optionTemplate
+     */
+    public function setOptionTemplate($optionTemplate) {
+        $this->optionTemplate = $optionTemplate;
     }
 
     /**
