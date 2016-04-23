@@ -549,8 +549,8 @@ class CalendarEventManager extends CalendarLibrary
         if($objEvent->seriesStatus == 1 && $objInit->mode == 'frontend') {
             self::_setNextSeriesElement($objEvent); 
         }
-        foreach ($this->eventList as $tmpKey => $tmpObjEvent) {  
-            if ($tmpObjEvent->startDate->getTimestamp() != $eventStartDate) {
+        foreach ($this->eventList as $tmpKey => $tmpObjEvent) {
+            if (!$tmpObjEvent->startDate || $tmpObjEvent->startDate->getTimestamp() != $eventStartDate) {
                 unset($this->eventList[$tmpKey]);
             }
         }
@@ -648,9 +648,9 @@ class CalendarEventManager extends CalendarLibrary
 
             $picThumb = file_exists(\Env::get('cx')->getWebsitePath().$objEvent->pic.".thumb") ? $objEvent->pic.".thumb" : $objEvent->pic;
                         
-            $numRegistrations  = (int) $objEvent->registrationCount;                         
-            $numDeregistration = (int) $objEvent->cancellationCount;
-            
+            $numRegistrations  = (int) $objEvent->getRegistrationCount();
+            $numDeregistration = (int) $objEvent->getCancellationCount();
+
             $objEscortManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($objEvent->id, true, false);         
    
             $startDate = $objEvent->startDate;
@@ -679,7 +679,7 @@ class CalendarEventManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_EXPORT_LINK'       => $hostUri.'index.php?section='.$this->moduleName.'&amp;export='.$objEvent->id,
                 $this->moduleLangVar.'_EVENT_EXPORT_ICON'       => '<a href="'.$hostUri.'index.php?section='.$this->moduleName.'&amp;export='.$objEvent->id.'"><img src="modules/Calendar/View/Media/ical_export.gif" border="0" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" /></a>',
                 $this->moduleLangVar.'_EVENT_PRICE'             => $this->arrSettings['paymentCurrency'].' '.$objEvent->price,
-                $this->moduleLangVar.'_EVENT_FREE_PLACES'       => $objEvent->freePlaces == 0 ? $objEvent->freePlaces.' ('.$_ARRAYLANG['TXT_CALENDAR_SAVE_IN_WAITLIST'].')' : $objEvent->freePlaces,
+                $this->moduleLangVar.'_EVENT_FREE_PLACES'       => \FWValidator::isEmpty($objEvent->getFreePlaces()) ? $objEvent->getFreePlaces() .' ('.$_ARRAYLANG['TXT_CALENDAR_SAVE_IN_WAITLIST'].')' : $objEvent->getFreePlaces(),
                 $this->moduleLangVar.'_EVENT_ACCESS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
                 $this->moduleLangVar.'_EVENT_COUNT_REG'         => $numRegistrations,
                 $this->moduleLangVar.'_EVENT_COUNT_SIGNOFF'     => $numDeregistration,
@@ -985,7 +985,7 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_EDIT_LINK'      => $editLink,                    
                     $this->moduleLangVar.'_EVENT_COPY_LINK'      => $copyLink,                    
                     $this->moduleLangVar.'_EVENT_SERIES'         => $objEvent->seriesStatus == 1 ? '<img src="'.ASCMS_MODULE_WEB_PATH.'/'.$this->moduleName.'/View/Media/Repeat.png" border="0"/>' : '<i>'.$_ARRAYLANG['TXT_CALENDAR_NO_SERIES'].'</i>',
-                    $this->moduleLangVar.'_EVENT_FREE_PLACES'    => $objEvent->freePlaces,
+                    $this->moduleLangVar.'_EVENT_FREE_PLACES'    => $objEvent->getFreePlaces(),
                     $this->moduleLangVar.'_EVENT_ACCESS'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
                 ));
           
@@ -1046,9 +1046,9 @@ class CalendarEventManager extends CalendarLibrary
                 
                 if($objInit->mode == 'backend') {
                     $objTpl->setVariable(array(
-                        $this->moduleLangVar.'_EVENT_COUNT_REG'      => $objEvent->registrationCount,
-                        $this->moduleLangVar.'_EVENT_COUNT_DEREG'    => $objEvent->cancellationCount,
-                        $this->moduleLangVar.'_EVENT_COUNT_WAITLIST' => $objEvent->waitlistCount,                                                
+                        $this->moduleLangVar.'_EVENT_COUNT_REG'      => $objEvent->getRegistrationCount(),
+                        $this->moduleLangVar.'_EVENT_COUNT_DEREG'    => $objEvent->getCancellationCount(),
+                        $this->moduleLangVar.'_EVENT_COUNT_WAITLIST' => $objEvent->getWaitlistCount(),
                     ));    
                 }
                 

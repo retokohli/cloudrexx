@@ -304,7 +304,14 @@ class CalendarEvent extends CalendarLibrary
      * @var integer 
      */
     public $seriesStatus;
-    
+
+    /**
+     * True when event is independent series
+     *
+     * @var boolean
+     */
+    public $independentSeries;
+
     /**
      * Event series data
      *
@@ -430,7 +437,7 @@ class CalendarEvent extends CalendarLibrary
      * @access public
      * @var integer
      */
-    public $freePlaces;
+    private $freePlaces;
     
     /**
      * Event related websites
@@ -485,21 +492,21 @@ class CalendarEvent extends CalendarLibrary
      * 
      * @var integer
      */
-    public $registrationCount = 0;
+    private $registrationCount = 0;
     
     /**
      * Waitlist members count for the event
      * 
      * @var integer
      */
-    public $waitlistCount = 0;
+    private $waitlistCount = 0;
     
     /**
      * Cancellation members count for the event
      * 
      * @var integer
      */
-    public $cancellationCount = 0;
+    private $cancellationCount = 0;
     
     /**
      * Event street
@@ -686,6 +693,7 @@ class CalendarEvent extends CalendarLibrary
                          event.ticket_sales AS ticket_sales,
                          event.num_seating AS num_seating,
                          event.series_status AS series_status,
+                         event.independent_series,
                          event.series_type AS series_type,
                          event.series_pattern_count AS series_pattern_count,
                          event.series_pattern_weekday AS series_pattern_weekday,
@@ -806,7 +814,8 @@ class CalendarEvent extends CalendarLibrary
                 $this->showDetailView = intval($objResult->fields['show_detail_view']);
                 $this->catId = intval($objResult->fields['catid']);
                 $this->map = intval($objResult->fields['google']);
-                $this->seriesStatus = intval($objResult->fields['series_status']);   
+                $this->seriesStatus = intval($objResult->fields['series_status']);
+                $this->independentSeries = intval($objResult->fields['independent_series']);
                      
                 if($this->seriesStatus == 1) {
                     $this->seriesData['seriesPatternCount'] = intval($objResult->fields['series_pattern_count']); 
@@ -835,58 +844,6 @@ class CalendarEvent extends CalendarLibrary
                 $this->ticketSales = intval($objResult->fields['ticket_sales']);
                 $this->arrNumSeating = json_decode($objResult->fields['num_seating']);
                 $this->numSeating = !empty($this->arrNumSeating) ? implode(',', $this->arrNumSeating) : '';
-                
-                $queryCountRegistration = "SELECT 
-                                                COUNT(1) AS numSubscriber, 
-                                                `type` 
-                                            FROM 
-                                                `".DBPREFIX."module_".$this->moduleTablePrefix."_registration`
-                                            WHERE  
-                                                `event_id` = ". (int) $eventId ." 
-                                            GROUP BY 
-                                                `type`";
-                $objCountRegistration = $objDatabase->Execute($queryCountRegistration);
-                
-                if ($objCountRegistration) {
-                    while (!$objCountRegistration->EOF) {
-                        switch ($objCountRegistration->fields['type']) {
-                            case 1:
-                                $this->registrationCount = (int) $objCountRegistration->fields['numSubscriber'];
-                                break;
-                            case 2:
-                                $this->waitlistCount = (int) $objCountRegistration->fields['numSubscriber'];
-                                break;
-                            case 0:
-                                $this->cancellationCount = (int) $objCountRegistration->fields['numSubscriber'];
-                                break;
-                        }
-                        $objCountRegistration->MoveNext();
-                    }
-                }
-                                
-                $queryRegistrations = '
-                    SELECT `v`.`value` AS `reserved_seating`
-                    FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value` AS `v`
-                    INNER JOIN `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration` AS `r`
-                    ON `v`.`reg_id` = `r`.`id`
-                    INNER JOIN `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field` AS `f`
-                    ON `v`.`field_id` = `f`.`id`
-                    WHERE `r`.`event_id` = '.intval($eventId).'
-                    AND `r`.`type` = 1
-                    AND `f`.`type` = "seating"
-                ';
-                $objResultRegistrations = $objDatabase->Execute($queryRegistrations);
-                
-                $reservedSeating = 0;
-                if ($objResultRegistrations !== false) {
-                    while (!$objResultRegistrations->EOF) {
-                        $reservedSeating += intval($objResultRegistrations->fields['reserved_seating']);
-                        $objResultRegistrations->MoveNext();
-                    }
-                }
-                
-                $freePlaces = intval($this->numSubscriber - $reservedSeating);
-                $this->freePlaces = $freePlaces < 0 ? 0 : $freePlaces;
                 
                 $queryHosts = '
                     SELECT host_id                            
@@ -1160,14 +1117,12 @@ class CalendarEvent extends CalendarLibrary
                 $objImage->_createThumb(dirname(\Env::get('cx')->getWebsitePath()."$pic")."/", '', basename($pic), 180);
             }
         }
-        
-        $seriesStatus = isset($data['seriesStatus']) ? intval($data['seriesStatus']) : 0; 
-        
-        
+
         //series pattern
-        $seriesStatus = isset($data['seriesStatus']) ? intval($data['seriesStatus']) : 0;
-        $seriesType   = isset($data['seriesType']) ? intval($data['seriesType']) : 0;
-        
+        $seriesStatus      = isset($data['seriesStatus']) ? intval($data['seriesStatus']) : 0;
+        $seriesType        = isset($data['seriesType']) ? intval($data['seriesType']) : 0;
+        $seriesIndependent = !empty($data['seriesIndependent']) ? 1 : 0;
+
         $seriesPatternCount             = 0;
         $seriesPatternWeekday           = 0;
         $seriesPatternDay               = 0;
@@ -1316,6 +1271,7 @@ class CalendarEvent extends CalendarLibrary
             'series_pattern_end'            => $seriesPatternEnd,
             'series_pattern_end_date'       => $seriesPatternEndDate,
             'series_pattern_exceptions'     => $seriesExeptions,
+            'independent_series'            => $seriesIndependent,
             'all_day'                       => $allDay,
             'location_type'                 => $locationType,
             'host_type'                     => $hostType,
@@ -1958,6 +1914,136 @@ class CalendarEvent extends CalendarLibrary
         }
         
         return array($placeUrl, $placeUrlSource);
+    }
+
+    /**
+     * Returns the number of free place of the event
+     * This will include the seating field of the registration form
+     *
+     * @return integer
+     */
+    public function getFreePlaces()
+    {
+        $this->calculateRegistrationCount();
+        return $this->freePlaces;
+    }
+
+    /**
+     * Returns the registration count of the event
+     *
+     * @return integer
+     */
+    public function getRegistrationCount()
+    {
+        $this->calculateRegistrationCount();
+        return $this->registrationCount;
+    }
+
+    /**
+     * Returns the waitlist registration count of the event
+     *
+     * @return integer
+     */
+    public function getWaitlistCount()
+    {
+        $this->calculateRegistrationCount();
+        return $this->waitlistCount;
+    }
+
+    /**
+     * Returns the cancelled registration count of the event
+     *
+     * @return integer
+     */
+    public function getCancellationCount()
+    {
+        $this->calculateRegistrationCount();
+        return $this->cancellationCount;
+    }
+
+    /**
+     * Calculate the registration count (register, deregister, waitlist) of the event
+     *
+     * @staticvar boolean $calculated   Flag to check whether the registration is already
+     *                                  calculated or not.
+     * @return null
+     */
+    private function calculateRegistrationCount()
+    {
+        global $objDatabase, $objInit;
+
+        static $calculated = false;
+
+        if ($calculated) {
+            return;
+        }
+
+        $isIndependentSeries = $this->seriesStatus && $this->independentSeries;
+
+        $filterEventTime = '';
+        if ($objInit->mode != 'backend' && $isIndependentSeries) {
+            $filterEventTime = ' AND `date` = '. $this->startDate->getTimestamp();
+        }
+
+        $queryCountRegistration = 'SELECT
+                                        COUNT(1) AS numSubscriber,
+                                        `type`
+                                    FROM
+                                        `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
+                                    WHERE
+                                        `event_id` = '. contrexx_input2int($this->id) .'
+                                        '. $filterEventTime .'
+                                    GROUP BY
+                                        `type`';
+        $objCountRegistration = $objDatabase->Execute($queryCountRegistration);
+
+        if ($objCountRegistration) {
+            while (!$objCountRegistration->EOF) {
+                switch ($objCountRegistration->fields['type']) {
+                    case 1:
+                        $this->registrationCount = (int) $objCountRegistration->fields['numSubscriber'];
+                        break;
+                    case 2:
+                        $this->waitlistCount = (int) $objCountRegistration->fields['numSubscriber'];
+                        break;
+                    case 0:
+                        $this->cancellationCount = (int) $objCountRegistration->fields['numSubscriber'];
+                        break;
+                }
+                $objCountRegistration->MoveNext();
+            }
+        }
+
+        $filterEventTime = '';
+        if ($objInit->mode != 'backend' && $isIndependentSeries) {
+            $filterEventTime = ' AND r.`date` = '. $this->startDate->getTimestamp();
+        }
+        $queryRegistrations = '
+            SELECT `v`.`value` AS `reserved_seating`
+            FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value` AS `v`
+            INNER JOIN `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration` AS `r`
+            ON `v`.`reg_id` = `r`.`id`
+            INNER JOIN `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field` AS `f`
+            ON `v`.`field_id` = `f`.`id`
+            WHERE `r`.`event_id` = '. contrexx_input2int($this->id) .'
+                '. $filterEventTime .'
+            AND `r`.`type` = 1
+            AND `f`.`type` = "seating"
+        ';
+        $objResultRegistrations = $objDatabase->Execute($queryRegistrations);
+
+        $reservedSeating = 0;
+        if ($objResultRegistrations !== false) {
+            while (!$objResultRegistrations->EOF) {
+                $reservedSeating += contrexx_input2int($objResultRegistrations->fields['reserved_seating']);
+                $objResultRegistrations->MoveNext();
+            }
+        }
+
+        $freePlaces = intval($this->numSubscriber - $reservedSeating);
+        $this->freePlaces = $freePlaces < 0 ? 0 : $freePlaces;
+
+        $calculated = true;
     }
 
     /**
