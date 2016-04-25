@@ -86,7 +86,7 @@ class EventManager {
                     $eventName != 'preComponent' &&
                     $eventName != 'postComponent'
                 ) {
-                    $this->eventManager->triggerEvent(
+                    $this->triggerEvent(
                         'preComponent',
                         array(
                             'componentName' => $component->getName(),
@@ -101,7 +101,7 @@ class EventManager {
                     $eventName != 'preComponent' &&
                     $eventName != 'postComponent'
                 ) {
-                    $this->eventManager->triggerEvent(
+                    $this->triggerEvent(
                         'postComponent',
                         array(
                             'componentName' => $component->getName(),
