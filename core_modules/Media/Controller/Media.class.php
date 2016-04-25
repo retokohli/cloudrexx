@@ -629,7 +629,10 @@ CODE;
         }
 
         if (!empty($errorMsg)) {
-            \Message::error(implode('<br>', $errorMsg));
+            $msgs = explode('<br>', $errorMsg);
+            foreach ($msgs as $msg) {
+                \Message::error($msg);
+            }
             return false;
         }
 

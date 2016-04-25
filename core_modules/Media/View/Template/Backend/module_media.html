@@ -114,7 +114,8 @@ function openWindow(theURL,winName,features)
 {CONTENT_SUBNAVIGATION}
 
 <!-- BEGIN media_archive_search_form -->
-<form method="get" action="index.php?cmd=Media">
+<form method="get" action="index.php">
+    <input type="hidden" name="cmd" value="Media" />
     <input type="hidden" name="archive" value="{MEDIA_ARCHIVE_NAME}" />
     <input type="hidden" name="path" value="{MEDIA_ARCHIVE_PATH}" />
     <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
