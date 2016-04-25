@@ -384,9 +384,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
     public function callPostFinalizeHooks() {
         $this->callHooks(
             'postFinalize',
-            array(
-                $this->cx->getPage(),
-            )
+            array()
         );
     }
 }

@@ -45,7 +45,6 @@ namespace Cx\Core\LanguageManager\Controller;
  * @subpackage  core_languagemanager
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener {
-    protected $langBackup = array();
     
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
@@ -55,7 +54,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     
     public function registerEventListeners() {
         $this->cx->getEvents()->addEventListener('preComponent', $this);
-        $this->cx->getEvents()->addEventListener('postComponent', $this);
     }
     
     /**
@@ -75,7 +73,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objInit = \Env::get('init');
         switch ($eventName) {
             case 'preComponent':
-                $this->langBackup = $_ARRAYLANG;
                 $_ARRAYLANG = array_merge(
                     $_ARRAYLANG,
                     $objInit->getComponentSpecificLanguageData(
@@ -83,11 +80,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $frontend
                     )
                 );
-                break;
-            case 'postComponent':
-                if (count($this->langBackup)) {
-                    $_ARRAYLANG = $this->langBackup;
-                }
                 break;
         }
     }
