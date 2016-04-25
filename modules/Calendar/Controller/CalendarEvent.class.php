@@ -437,7 +437,7 @@ class CalendarEvent extends CalendarLibrary
      * @access public
      * @var integer
      */
-    private $freePlaces;
+    protected $freePlaces;
     
     /**
      * Event related websites
@@ -492,21 +492,21 @@ class CalendarEvent extends CalendarLibrary
      * 
      * @var integer
      */
-    private $registrationCount = 0;
+    protected $registrationCount = 0;
     
     /**
      * Waitlist members count for the event
      * 
      * @var integer
      */
-    private $waitlistCount = 0;
+    protected $waitlistCount = 0;
     
     /**
      * Cancellation members count for the event
      * 
      * @var integer
      */
-    private $cancellationCount = 0;
+    protected $cancellationCount = 0;
     
     /**
      * Event street
@@ -1968,7 +1968,7 @@ class CalendarEvent extends CalendarLibrary
      *                                  calculated or not.
      * @return null
      */
-    private function calculateRegistrationCount()
+    protected function calculateRegistrationCount()
     {
         global $objDatabase, $objInit;
 
@@ -1982,19 +1982,19 @@ class CalendarEvent extends CalendarLibrary
 
         $filterEventTime = '';
         if ($objInit->mode != 'backend' && $isIndependentSeries) {
-            $filterEventTime = ' AND `date` = '. $this->startDate->getTimestamp();
+            $filterEventTime = ' AND r.`date` = '. $this->startDate->getTimestamp();
         }
 
         $queryCountRegistration = 'SELECT
                                         COUNT(1) AS numSubscriber,
-                                        `type`
+                                        r.`type`
                                     FROM
-                                        `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
+                                        `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration` AS `r`
                                     WHERE
-                                        `event_id` = '. contrexx_input2int($this->id) .'
+                                        r.`event_id` = '. contrexx_input2int($this->id) .'
                                         '. $filterEventTime .'
                                     GROUP BY
-                                        `type`';
+                                        r.`type`';
         $objCountRegistration = $objDatabase->Execute($queryCountRegistration);
 
         if ($objCountRegistration) {
@@ -2014,10 +2014,6 @@ class CalendarEvent extends CalendarLibrary
             }
         }
 
-        $filterEventTime = '';
-        if ($objInit->mode != 'backend' && $isIndependentSeries) {
-            $filterEventTime = ' AND r.`date` = '. $this->startDate->getTimestamp();
-        }
         $queryRegistrations = '
             SELECT `v`.`value` AS `reserved_seating`
             FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value` AS `v`
