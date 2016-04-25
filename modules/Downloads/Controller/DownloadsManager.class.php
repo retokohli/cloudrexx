@@ -2694,7 +2694,7 @@ class DownloadsManager extends DownloadsLibrary
         $this->parseSettingsDropDown($this->objTemplate, $this->categoriesSortingOption, $this->arrConfig['categories_sorting_order'], 'categories');
         
         $this->objTemplate->setVariable(array(
-            'TXT_DOWNLOADS_SETTINGS'                        => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'],
+            'TXT_DOWNLOADS_SETTINGS_LISTING'                => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_LISTING'],
             'TXT_DOWNLOADS_OVERVIEW_PAGE'                   => $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW_PAGE'],
             'TXT_DOWNLOADS_COL_COUNT'                       => $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT'],
             'TXT_DOWNLOADS_COL_COUNT_DESC'                  => $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT_DESC'],
@@ -2711,13 +2711,13 @@ class DownloadsManager extends DownloadsLibrary
             'TXT_DOWNLOADS_NEWEST_FILE_COUNT_DESC'          => $_ARRAYLANG['TXT_DOWNLOADS_NEWEST_FILE_COUNT_DESC'],
             'TXT_DOWNLOADS_UPDATE_FILE_COUNT'               => $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FILE_COUNT'],
             'TXT_DOWNLOADS_UPDATE_FILE_COUNT_DESC'          => $_ARRAYLANG['TXT_DOWNLOADS_UPDATE_FILE_COUNT_DESC'],
-            'TXT_DOWNLOADS_MISCELLANEOUS'                   => $_ARRAYLANG['TXT_DOWNLOADS_MISCELLANEOUS'],
+            'TXT_DOWNLOADS_SETTINGS_STATISTICS'             => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_STATISTICS'],
             'TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT'             => $_ARRAYLANG['TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT'],
             'TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT_DESC'        => $_ARRAYLANG['TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT_DESC'],
             'TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT'         => $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT'],
             'TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT_DESC'    => $_ARRAYLANG['TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT_DESC'],
             'TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES'           => $_ARRAYLANG['TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES'],
-            'TXT_DOWNLOADS_ATTRIBUTES'                      => $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES'],
+            'TXT_DOWNLOADS_SETTINGS_ATTRIBUTES'             => $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES'],
             'TXT_DOWNLOADS_ATTRIBUTES_DESC'                 => $_ARRAYLANG['TXT_DOWNLOADS_ATTRIBUTES_DESC'],
             'TXT_DOWNLOADS_METAKEYS'                        => $_ARRAYLANG['TXT_DOWNLOADS_METAKEYS'],
             'TXT_DOWNLOADS_SIZE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SIZE'],
