@@ -613,6 +613,13 @@ class CalendarEvent extends CalendarLibrary
     public $org_email;
     
     /**
+     * Flag to check whether the registration is already calculated or not.
+     *
+     * @var boolean
+     */
+    protected $registrationCalculated = false;
+
+    /**
      * Constructor
      * 
      * Loads the event object of given id
@@ -1972,9 +1979,7 @@ class CalendarEvent extends CalendarLibrary
     {
         global $objDatabase, $objInit;
 
-        static $calculated = false;
-
-        if ($calculated) {
+        if ($this->registrationCalculated) {
             return;
         }
 
@@ -2029,17 +2034,30 @@ class CalendarEvent extends CalendarLibrary
         $objResultRegistrations = $objDatabase->Execute($queryRegistrations);
 
         $reservedSeating = 0;
-        if ($objResultRegistrations !== false) {
+        if ($objResultRegistrations !== false && $objResultRegistrations->RecordCount()) {
             while (!$objResultRegistrations->EOF) {
                 $reservedSeating += contrexx_input2int($objResultRegistrations->fields['reserved_seating']);
                 $objResultRegistrations->MoveNext();
             }
+        } else {
+            $reservedSeating = $this->registrationCount;
         }
 
         $freePlaces = intval($this->numSubscriber - $reservedSeating);
         $this->freePlaces = $freePlaces < 0 ? 0 : $freePlaces;
 
-        $calculated = true;
+        $this->registrationCalculated = true;
+    }
+
+    /**
+     * Reset the registration count values.
+     */
+    public function resetRegistrationCount()
+    {
+        $this->registrationCount = 0;
+        $this->waitlistCount     = 0;
+        $this->cancellationCount = 0;
+        $this->freePlaces        = 0;
     }
 
     /**
@@ -2049,5 +2067,9 @@ class CalendarEvent extends CalendarLibrary
     {
         $this->startDate = clone $this->startDate;
         $this->endDate   = clone $this->endDate;
+        if ($this->seriesStatus && $this->independentSeries) {
+            $this->registrationCalculated = false;
+            $this->resetRegistrationCount();
+        }
     }
 }
