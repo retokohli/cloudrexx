@@ -48,22 +48,22 @@ class DataAccessApiKey extends \Cx\Model\Base\EntityBase {
     /**
      * @var integer id
      */
-    private $id;
+    protected $id;
 
     /**
      * @var boolean $readOnly
      */
-    private $readOnly;
+    protected $readOnly;
 
     /**
      * @var Cx\Core\DataAccess\Model\Entity\ApiKey
      */
-    private $apiKey;
+    protected $apiKey;
 
     /**
      * @var Cx\Core\DataAccess\Model\Entity\DataAccess
      */
-    private $dataAccess;
+    protected $dataAccess;
 
 
     /**

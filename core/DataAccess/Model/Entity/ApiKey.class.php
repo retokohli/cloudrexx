@@ -49,17 +49,17 @@ class ApiKey extends \Cx\Model\Base\EntityBase {
     /**
      * @var integer $id
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $apiKey
      */
-    private $apiKey;
+    protected $apiKey;
 
     /**
      * @var Cx\Core\DataAccess\Model\Entity\DataAccessApiKey
      */
-    private $dataAccessApiKeys;
+    protected $dataAccessApiKeys;
 
     public function __construct()
     {

@@ -276,12 +276,9 @@ class Permission extends \Cx\Model\Base\EntityBase {
      */
     public function setCallback($callback)
     {
-        global $_ARRAYLANG;
-
         //Use callback only for virtual instances otherwise throw exception
         if (!$this->isVirtual() && $callback) {
-            \DBG::msg('Permission::setCallback() failed: Could not set callback for non-virtual instance.');
-            throw new PermissionException($_ARRAYLANG['TXT_CORE_MODULE_ACCESS_PERMISSION_SET_CALLBACK_ERROR_MSG']);
+            throw new PermissionException('Permission::setCallback() failed: Could not set callback for non-virtual instance.');
         }
         $this->callback = $callback;
     }
@@ -304,12 +301,9 @@ class Permission extends \Cx\Model\Base\EntityBase {
      */
     public function setVirtual($virtual)
     {
-        global $_ARRAYLANG;
-
         //While setting instance as non-virtual, check the instance have callback if so throw exception
         if ($this->callback && !$virtual) {
-            \DBG::msg('Permission::setVirtual() failed: Could not set instance as non-virtual since instance contains callback.');
-            throw new PermissionException($_ARRAYLANG['TXT_CORE_MODULE_ACCESS_PERMISSION_SET_VIRTUAL_ERROR_MSG']);
+            throw new PermissionException('Permission::setVirtual() failed: Could not set instance as non-virtual since instance contains callback.');
         }
         parent::setVirtual($virtual);
     }

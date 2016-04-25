@@ -49,42 +49,42 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     /**
      * @var integer $id
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $name
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string $dataSource
      */
-    private $dataSource;
+    protected $dataSource;
 
     /**
      * @var array $fieldList
      */
-    private $fieldList;
+    protected $fieldList;
 
     /**
      * @var array $accessCondition
      */
-    private $accessCondition;
+    protected $accessCondition;
 
     /**
      * @var string $type
      */
-    private $type;
+    protected $type;
 
     /**
      * @var Cx\Core\DataAccess\Model\Entity\DataAccessApiKey
      */
-    private $dataAccessApiKeys;
+    protected $dataAccessApiKeys;
 
     /**
      * @var Cx\Core_Modules\Access\Model\Entity\Permission
      */
-    private $permission;
+    protected $permission;
 
     public function __construct()
     {

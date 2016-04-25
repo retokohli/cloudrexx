@@ -735,7 +735,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (108,'Html','core
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (109,'MediaSource','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (110,'TemplateEditor','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (111,'GeoIp','core_module');
-INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (112,'DataAccess','core');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (113,'DataAccess','core');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (3,34,11,12,2);
