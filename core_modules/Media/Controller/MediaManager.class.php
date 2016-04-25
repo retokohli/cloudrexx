@@ -495,14 +495,9 @@ class MediaManager extends MediaLibrary
                 break;
         }
 
-        $searchTerm = '';
-        if (!in_array($this->archive, array('archive1', 'archive2', 'archive2', 'archive3'))) {
-            $this->_objTpl->hideBlock('media_archive_search_form');
-        } else {
-            $searchTerm =  !empty($_GET['term'])
-                          ? \FWValidator::getCleanFileName(contrexx_input2raw($_GET['term']))
-                          : '';
-        }
+        $searchTerm =  !empty($_GET['term'])
+                      ? \FWValidator::getCleanFileName(contrexx_input2raw($_GET['term']))
+                      : '';
 
         // cut, copy and paste session
         if (isset($_SESSION['mediaCutFile'])) {
