@@ -854,10 +854,86 @@ class CalendarEventManager extends CalendarLibrary
                 $objTpl->parse('calendarEventRegistration');
             } else {   
                 $objTpl->hideBlock('calendarEventRegistration');
-            } 
+            }
+            if ($objTpl->placeholderExists('CALENDAR_EVENT_MONTH_BOX')) {
+                $objTpl->setVariable(
+                    'CALENDAR_EVENT_MONTH_BOX',
+                    $this->getDetailMonthBox($objEvent)
+                );
+            }
         }
     }
-    
+
+    /**
+     * Get Calendar month box for event detail view
+     *
+     * @param \Cx\Modules\Calendar\Controller\CalendarEvent $event
+     */
+    public function getDetailMonthBox(CalendarEvent $event)
+    {
+        global $_ARRAYLANG;
+
+        $eventList = array($event);
+        // If event series is enabled refresh the eventlist
+        if ($event->seriesStatus == 1) {
+            $startDate = new \DateTime();
+            $startDate->setTime(0, 0, 0);
+            $endDate = new \DateTime();
+            $endDate->modify('+10 years');
+            $endDate->setTime(23, 59, 59);
+
+            $eventManager = new static($startDate, $endDate);
+            $objEvent     = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($event->id));
+            if ($eventManager->_addToEventList($objEvent)) {
+                $eventManager->eventList[] = $objEvent;
+            }
+            $eventManager->_setNextSeriesElement($objEvent);
+            $eventList = $eventManager->eventList;
+        }
+
+        $monthnames = explode(",", $_ARRAYLANG['TXT_CALENDAR_MONTH_ARRAY']);
+        $daynames   = explode(',', $_ARRAYLANG['TXT_CALENDAR_DAY_ARRAY']);
+
+        $year  = !empty($_GET['yearID']) ? contrexx_input2int($_GET['yearID']) : 0;
+        $month = !empty($_GET['monthID']) ? contrexx_input2int($_GET['monthID']) : 0;
+
+        if (empty($year) && empty($month)) {
+            $startdate = $this->getUserDateTimeFromIntern($event->startDate);
+            $year      = $startdate->format('Y');
+            $month     = $startdate->format('m');
+        }
+
+        $url = \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
+        $cal = new \activeCalendar($year, $month);
+        $cal->setMonthNames($monthnames);
+        $cal->setDayNames($daynames);
+        $cal->enableMonthNav($url->toString(false));
+
+        foreach ($eventList as $objEvent) {
+            $eventDate  = $this->getUserDateTimeFromIntern($objEvent->startDate);
+            $eventYear  = $eventDate->format('Y');
+            $eventMonth = $eventDate->format('m');
+            if ($eventYear != $year && $eventMonth != $month) {
+                continue;
+            }
+
+            $eventDay   = $eventDate->format('d');
+            $freePlaces = $objEvent->getFreePlaces() ? (string) $objEvent->getFreePlaces() : '&nbsp;';
+            $eventClass = 'event_full';
+            $eventurl   = false;
+            if (   !$objEvent->registration
+                || $objEvent->getRegistrationCount() < $objEvent->numSubscriber
+                || $objEvent->external == 1
+            ) {
+                $eventClass = 'event_open';
+                $eventurl   = $this->_getDetailLink($objEvent);
+            }
+            $cal->setEvent($eventYear, $eventMonth, $eventDay, $eventClass, $eventurl);
+            $cal->setEventContent($eventYear, $eventMonth, $eventDay, $freePlaces, $eventurl, 'free_places');
+        }
+        return $cal->showMonth(false, true);
+    }
+
     /**
      * Sets the placeholders used for the event list view
      * 

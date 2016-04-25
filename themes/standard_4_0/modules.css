@@ -567,6 +567,25 @@ form[name="registrationForm"] .row {
 .calendar-headlines .monthnavigation{
     display: none;
 }
+.month_box table tr td {
+    text-align: center;
+}
+.month_box table tr td.event_open, .month_box table tr td.event_full {
+    border: 1px solid #FFFFFF;
+}
+.month_box table td table td {
+    padding: 0;
+}
+.month_box table td.event_open {
+    background-color: #2082CB;
+}
+.month_box table td.event_open a, .month_box table td.event_open a:hover {
+    color: #FFFFFF;
+}
+.month_box table td.event_full {
+    background-color: #FF0000;
+    color: #FFFFFF;
+}
 /***************************************************/
 /* CSS DEFINITIONS FOR ACCESS MODULE               */
 /***************************************************/
