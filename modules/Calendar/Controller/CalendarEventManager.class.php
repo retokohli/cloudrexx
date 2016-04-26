@@ -918,7 +918,8 @@ class CalendarEventManager extends CalendarLibrary
             }
 
             $eventDay   = $eventDate->format('d');
-            $freePlaces = $objEvent->getFreePlaces() ? (string) $objEvent->getFreePlaces() : '&nbsp;';
+            $freePlaces =   $objEvent->getFreePlaces()
+                          ? $objEvent->getFreePlaces() . ' ' . $_ARRAYLANG['TXT_CALENDAR_EVENT_FREE'] : '&nbsp;';
             $eventClass = 'event_full';
             $eventurl   = false;
             if (   !$objEvent->registration
