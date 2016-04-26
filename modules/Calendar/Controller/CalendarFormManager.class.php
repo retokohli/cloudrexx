@@ -45,7 +45,7 @@ namespace Cx\Modules\Calendar\Controller;
  * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
-class CalendarFormManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary 
+class CalendarFormManager extends CalendarLibrary
 {
     /**
      * Form list
@@ -193,14 +193,14 @@ class CalendarFormManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
     function getFormDorpdown($selectedId=null) {
         global $_ARRAYLANG;
         
-        parent::getSettings();
+        $this->getSettings();
         $arrOptions = array();
         
         foreach ($this->formList as $key => $objForm) {       
             $arrOptions[$objForm->id] = $objForm->title;
         }      
         
-        $options .= parent::buildDropdownmenu($arrOptions, $selectedId);
+        $options .= $this->buildDropdownmenu($arrOptions, $selectedId);
         
         return $options;
     }
@@ -225,7 +225,7 @@ class CalendarFormManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
         
         switch($intView) {
                 case 1:
-                    parent::getFrontendLanguages();
+                    $this->getFrontendLanguages();
 
                     $objTpl->setGlobalVariable(array(
                         $this->moduleLangVar.'_FORM_ID'    => !empty($formId) ? $objForm->id : '',
