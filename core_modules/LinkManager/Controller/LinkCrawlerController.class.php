@@ -61,7 +61,8 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
     const RUN_STATUS_INCOMPLETE = 'incomplete';
     const RUN_STATUS_COMPLETED = 'completed';
     const RUN_STATUS_RUNNING = 'running';
-    
+    const NAVIGATION_QUERY = '//*[contains(@id,\'navigation\') or contains(@class, \'navigation\')]';
+
     /**
      * constant MiB2 2megabytes
      */
@@ -305,7 +306,7 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
         $htmlXpath = new \DOMXPath($htmlDom);
 
         //remove the navigation menu
-        $navHtml = $htmlXpath->query(ASCMS_LINKMANAGER_NAVIGATION_QUERY);
+        $navHtml = $htmlXpath->query(self::NAVIGATION_QUERY);
         if ($navHtml instanceof \DOMNodeList && $navHtml->length) {
             foreach ($navHtml as $navNodes) {
                 $navNodes->parentNode->removeChild($navNodes);

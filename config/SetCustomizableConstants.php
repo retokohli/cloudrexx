@@ -203,6 +203,3 @@ define('ASCMS_CURRENCY_SEPARATOR_THOUSANDS', '\'');
 define('ASCMS_CURRENCY_SEPARATOR_DECIMALS', '.');
 define('ASCMS_NUMBER_SEPARATOR_THOUSANDS', '\'');
 define('ASCMS_NUMBER_SEPARATOR_DECIMALS', '.');
-
-// LinkManager constants
-define('ASCMS_LINKMANAGER_NAVIGATION_QUERY','//*[contains(@id,\'navigation\') or contains(@class, \'navigation\')]');
