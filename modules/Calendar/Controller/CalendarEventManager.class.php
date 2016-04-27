@@ -873,24 +873,6 @@ class CalendarEventManager extends CalendarLibrary
     {
         global $_ARRAYLANG;
 
-        $eventList = array($event);
-        // If event series is enabled refresh the eventlist
-        if ($event->seriesStatus == 1) {
-            $startDate = new \DateTime();
-            $startDate->setTime(0, 0, 0);
-            $endDate = new \DateTime();
-            $endDate->modify('+10 years');
-            $endDate->setTime(23, 59, 59);
-
-            $eventManager = new static($startDate, $endDate);
-            $objEvent     = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($event->id));
-            if ($eventManager->_addToEventList($objEvent)) {
-                $eventManager->eventList[] = $objEvent;
-            }
-            $eventManager->_setNextSeriesElement($objEvent);
-            $eventList = $eventManager->eventList;
-        }
-
         $monthnames = explode(",", $_ARRAYLANG['TXT_CALENDAR_MONTH_ARRAY']);
         $daynames   = explode(',', $_ARRAYLANG['TXT_CALENDAR_DAY_ARRAY']);
 
@@ -903,12 +885,28 @@ class CalendarEventManager extends CalendarLibrary
             $month     = $startdate->format('m');
         }
 
+        $eventList = array($event);
+        // If event series is enabled refresh the eventlist
+        if ($event->seriesStatus == 1) {
+            $endDate = new \DateTime('1-'.$month.'-'.$year);
+            $endDate->modify('+1 month');
+
+            $eventManager = new static(null, $endDate);
+            $objEvent     = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($event->id));
+            if ($eventManager->_addToEventList($objEvent)) {
+                $eventManager->eventList[] = $objEvent;
+            }
+            $eventManager->_setNextSeriesElement($objEvent);
+            $eventList = $eventManager->eventList;
+        }
+
         $url = \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
         $cal = new \activeCalendar($year, $month);
         $cal->setMonthNames($monthnames);
         $cal->setDayNames($daynames);
         $cal->enableMonthNav($url->toString(false));
 
+        $currentTime = time();
         foreach ($eventList as $objEvent) {
             $eventDate  = $this->getUserDateTimeFromIntern($objEvent->startDate);
             $eventYear  = $eventDate->format('Y');
@@ -917,20 +915,23 @@ class CalendarEventManager extends CalendarLibrary
                 continue;
             }
 
-            $eventDay   = $eventDate->format('d');
-            $freePlaces =   $objEvent->getFreePlaces()
-                          ? $objEvent->getFreePlaces() . ' ' . $_ARRAYLANG['TXT_CALENDAR_EVENT_FREE'] : '&nbsp;';
-            $eventClass = 'event_full';
-            $eventurl   = false;
-            if (   !$objEvent->registration
-                || $objEvent->getRegistrationCount() < $objEvent->numSubscriber
-                || $objEvent->external == 1
+            $eventDay       = $eventDate->format('d');
+            $isEventStarted = $currentTime >= $objEvent->startDate->getTimestamp();
+            $freePlaces     = $isEventStarted ? 0 : $objEvent->getFreePlaces();
+            $eventClass     = 'event_full';
+            $eventurl       = false;
+            if (   !$isEventStarted
+                && (   !$objEvent->registration
+                    || $objEvent->getRegistrationCount() < $objEvent->numSubscriber
+                    || $objEvent->external == 1)
             ) {
                 $eventClass = 'event_open';
                 $eventurl   = $this->_getDetailLink($objEvent);
             }
+
+            $seatsLeft = $freePlaces . ' ' . $_ARRAYLANG['TXT_CALENDAR_EVENT_FREE'];
             $cal->setEvent($eventYear, $eventMonth, $eventDay, $eventClass, $eventurl);
-            $cal->setEventContent($eventYear, $eventMonth, $eventDay, $freePlaces, $eventurl, 'free_places');
+            $cal->setEventContent($eventYear, $eventMonth, $eventDay, $seatsLeft, $eventurl, 'free_places');
         }
         return $cal->showMonth(false, true);
     }
