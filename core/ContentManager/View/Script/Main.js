@@ -867,6 +867,11 @@ cx.cm = function(target) {
         cx.jQuery('#page .type_hidable').hide();
         cx.jQuery('#page .type_'+cx.jQuery(event.target).val()).show();
         cx.jQuery('#page #type_toggle label').text(cx.jQuery(this).next().text());
+
+        // if we change type from fallback to content or application, we want to
+        // load content from fallback page:
+        var content = cx.cm.getEditorData();
+
         if (cx.jQuery(this).val() == 'application') {
             cx.bind("loadingStart", function() {
                 cx.cm.isAdjusting = true;
@@ -874,8 +879,11 @@ cx.cm = function(target) {
             cx.bind("loadingEnd", function() {
                 cx.cm.isAdjusting = false;
             }, "contentmanager");
-            if (cx.cm.isAdjusting != undefined && !cx.cm.isAdjusting) {
-                cx.cm.setEditorData(cx.cm.getEditorData());
+            if (    event.originalEvent !== undefined
+                &&  cx.cm.isAdjusting != undefined
+                &&  !cx.cm.isAdjusting
+            ) {
+                cx.cm.setEditorData(content);
             }
             cx.jQuery('#page #application_toggle label').text(cx.jQuery(this).next().text());
         }
@@ -890,15 +898,7 @@ cx.cm = function(target) {
             cx.jQuery("#type_toggle").show();
         }
         cx.cm.resizeEditorHeight();
-        
-        // if we change type from fallback to content or application, we want to
-        // load content from fallback page:
-        var content = cx.jQuery('#cm_ckeditor').val();
-        var isCkEditor = false;
-        if (CKEDITOR.instances.cm_ckeditor != null) {
-            content = CKEDITOR.instances.cm_ckeditor.getData();
-            isCkEditor = true;
-        }
+
         if (cx.cm.lastPageType == "fallback" && (cx.jQuery(this).val() == "content" || cx.jQuery(this).val() == "application") && content == "") {
             var fallbackLanguage = cx.cm.getCurrentLang();
             while (true) {
@@ -918,7 +918,7 @@ cx.cm = function(target) {
                         return;
                     }
                     var fallbackPageContent = response.data.content;
-                    if (isCkEditor) {
+                    if (cx.cm.editorInUse()) {
                         CKEDITOR.instances.cm_ckeditor.setData(fallbackPageContent);
                     } else {
                         cx.jQuery("#cm_ckeditor").val(fallbackPageContent);
