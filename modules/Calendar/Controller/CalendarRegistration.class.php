@@ -47,7 +47,7 @@ namespace Cx\Modules\Calendar\Controller;
  * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */ 
-class CalendarRegistration extends \Cx\Modules\Calendar\Controller\CalendarLibrary
+class CalendarRegistration extends CalendarLibrary
 {
     /**
      * Registration id
@@ -314,7 +314,7 @@ class CalendarRegistration extends \Cx\Modules\Calendar\Controller\CalendarLibra
         $paid = intval($data['paid']);
         $hostName = 0;
         $ipAddress = 0;
-        $key = parent::generateKey();
+        $key = $this->generateKey();
         
         if ($regId == 0) {
             $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration
@@ -478,7 +478,7 @@ class CalendarRegistration extends \Cx\Modules\Calendar\Controller\CalendarLibra
     function tagExport() { 
         global $objDatabase, $_LANGID;
         
-        $now = mktime();
+        $now = time();
         
         if(intval($this->id) != 0) {
             $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration SET `export` = '".intval($now)."' WHERE `id` = '".intval($this->id)."'";              
