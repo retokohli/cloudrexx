@@ -63,7 +63,7 @@ abstract class PageTree {
     /**
      * Consider seo enabled pages alone
      *
-     * Boolean
+     * @var Boolean
      */
     protected $considerSeoEnabledOnly;
 
