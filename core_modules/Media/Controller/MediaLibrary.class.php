@@ -1338,17 +1338,14 @@ END;
 
     /**
      * Redirect to the page by requested redirect url
-     *
-     * @return boolean
      */
     public function handleRedirect()
     {
-        $redirect = '';
-        if (!empty($_REQUEST['redirect'])) {
-            $redirect = \FWUser::getRedirectUrl(urlencode(base64_decode(urldecode($_REQUEST['redirect']))));
-            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$redirect);
-            exit;
+        if (empty($_REQUEST['redirect'])) {
+            return;
         }
-        return false;
+        $redirect = \FWUser::getRedirectUrl(urlencode(base64_decode(urldecode($_REQUEST['redirect']))));
+        \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$redirect);
+        exit;
     }
 }

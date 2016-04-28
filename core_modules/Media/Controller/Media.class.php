@@ -265,7 +265,7 @@ class Media extends MediaLibrary
                     $mediaPath    = $dirTree[$key]['path'][$x] .'/';
                     $mediaWebPath = $mediaPath;
                     \Cx\Lib\FileSystem\FileSystem::path_relative_to_root($mediaWebPath);
-                    $mediaWebPath = '/'. $mediaWebPath; // Filesysystem removes the begining slash(/)
+                    $mediaWebPath = '/'. $mediaWebPath; // Filesysystem removes the beginning slash(/)
                 }
 
                 $file = rawurlencode($fileName);

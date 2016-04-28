@@ -664,7 +664,7 @@ class MediaManager extends MediaLibrary
                     $mediaPath    = $dirTree[$key]['path'][$x] .'/';
                     $mediaWebPath = $mediaPath;
                     \Cx\Lib\FileSystem\FileSystem::path_relative_to_root($mediaWebPath);
-                    $mediaWebPath = '/'. $mediaWebPath; // Filesystem removes the begining slash(/)
+                    $mediaWebPath = '/'. $mediaWebPath; // Filesystem removes the beginning slash(/)
                 }
                 $file = rawurlencode($fileName);
                 if ($key == 'dir') {
@@ -1216,10 +1216,14 @@ class MediaManager extends MediaLibrary
             $settingFrontendSearch = !empty($_POST[$frontendSearchkey]) && $_POST[$frontendSearchkey] == 'on'
                                       ? 'on' : 'off';
 
-            $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_media_settings
-                                            SET `value` = "' . $settingFrontendSearch . '"
-                                            WHERE `name` = "media' . $i . '_frontend_search"
-                                        ');
+            $objDatabase->Execute('
+                UPDATE
+                    '.DBPREFIX.'module_media_settings
+                SET
+                    `value` = "' . $settingFrontendSearch . '"
+                WHERE
+                    `name` = "media' . $i . '_frontend_search"
+            ');
             $oldMediaSetting = $this->_arrSettings['media' . $i . '_frontend_changable'];
             $newMediaSetting = '';
             if (isset($_POST['mediaSettings_Media' . $i . 'FrontendChangable'])) {
