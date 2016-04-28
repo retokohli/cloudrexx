@@ -65,7 +65,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $cachedRoot = $this->cx->getTemplate()->getRoot();
         $this->cx->getTemplate()->setRoot($this->getDirectory() . '/View/Template/Backend');
 
-        \Permission::checkAccess(21, 'static');
         $objViewManager = new \Cx\Core\ContentWorkflow\Controller\ContentWorkflow($act, $objTemplate, $objDatabase, $objInit);
         $objViewManager->getPage();
 

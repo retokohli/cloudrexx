@@ -74,7 +74,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : '';
-                $objSearch = new \Cx\Core_Modules\Search\Controller\Search();
+                $objSearch = new \Cx\Core_Modules\Search\Controller\Search($page);
                 \Env::get('cx')->getPage()->setContent($objSearch->getPage($pos, \Env::get('cx')->getPage()->getContent()));
                 break;
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
