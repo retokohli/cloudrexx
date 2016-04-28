@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Feed
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_feed
  * @todo        Edit PHP DocBlocks!
  */
@@ -21,10 +46,10 @@ namespace Cx\Modules\Feed\Controller;
  * Feed
  *
  * News Syndication Class to manage XML feeds
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_feed
  */
 class Feed extends FeedLibrary
@@ -276,7 +301,7 @@ class Feed extends FeedLibrary
             $filename = $this->feedpath.$objResult->fields['filename'];
 
             //rss class
-            $rss = new \XML_RSS($filename);
+            $rss = new \Cx\Modules\Feed\Model\Entity\RSSFeedParser($filename);
             $rss->parse();
             //channel info
             $out_title = strip_tags($rss->channel['title']);
@@ -300,11 +325,14 @@ class Feed extends FeedLibrary
             //items
             $x = 0;
             foreach ($rss->getItems() as $value){
-                if($x < $objResult->fields['articles']){
+                if ($x < $objResult->fields['articles']) {
+                    $feedLink = !empty($value['guid'])
+                                  ? $value['guid']
+                                  : (!empty($value['link']) ? $value['link'] : '');
                     $this->_objTpl->setVariable(array(
                         'FEED_ROWCLASS' => $x % 2 ? 'row2' : 'row1',
                         'FEED_DATE'     => date('d.m.Y', strtotime($value['pubdate'])),
-                        'FEED_LINK'     => $value['link'],
+                        'FEED_LINK'     => $feedLink,
                         'FEED_NAME'     => $value['title'],
                     ));
                     $this->_objTpl->parse('feed_output_news');

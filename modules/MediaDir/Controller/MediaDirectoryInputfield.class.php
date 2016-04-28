@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media  Directory Inputfield Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
@@ -29,9 +54,9 @@ function safeNew($strClassName, $name) {
 /**
  * Media Directory Inputfield Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 class MediaDirectoryInputfield extends MediaDirectoryLibrary
@@ -336,9 +361,9 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                 break;
             case 2:
                 //modify (add/edit) View
-                $objAddStep = new MediaDirectoryAddStep($this->moduleName);
-				$i = 0;
-
+                $objAddStep       = new MediaDirectoryAddStep($this->moduleName);
+		$i                = 0;
+                $isFileInputFound = false;
                 foreach ($this->arrInputfields as $key => $arrInputfield) {
                     $strInputfield = null;
 
@@ -349,6 +374,11 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                     }
 
                     if(!empty($arrInputfield['type'])) {
+                        if (   !$isFileInputFound
+                            && in_array($arrInputfield['type_name'], array('image', 'file', 'downloads'))
+                        ) {
+                            $isFileInputFound = true;
+                        }
                         $strType = $arrInputfield['type_name'];
                         $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield".ucfirst($strType);
 
@@ -424,7 +454,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 	                        $strInputfield .= '<br />';
 	                        $strInputfield .= '<input class="btn btn-default" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.entryModfyForm.elements[\''.$strSelectedOptionsName.'\'],document.entryModfyForm.elements[\''.$strNotSelectedOptionsName.'\'],removeElement,addElement);" type="button">';
 	                        $strInputfield .= '</div>';
-	                        $strInputfield .= '<div class="col-md-4 col-sm-12 col-xs-12"><div class="row"><select id="'.$strSelectedOptionsName.'" name="'.$strSelectedOptionsName.'[]" size="12" multiple="multiple">';
+	                        $strInputfield .= '<div class="col-md-4 col-sm-12 col-xs-12 mediadirSelectorRight"><div class="row"><select id="'.$strSelectedOptionsName.'" name="'.$strSelectedOptionsName.'[]" size="12" multiple="multiple">';
 	                        $strInputfield .= $arrSelectorOptions['selected'];
 	                        $strInputfield .= '</select></div></div>';
 	                        $strInputfield .= '</div></div></div>';
@@ -468,6 +498,21 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                     }
                 }
 
+                if ($isFileInputFound && $objInit->mode != 'backend' ) {
+                    // init uploader to upload images
+                    $uploader = new \Cx\Core_Modules\Uploader\Model\Entity\Uploader();
+                    $uploader->setCallback($this->moduleNameLC .'UploaderCallback');
+                    $uploader->setOptions(array(
+                        'id'                 => $this->moduleNameLC . 'ImageUploader',
+                        'style'              => 'display:none',
+                        'data-upload-limit'  => 1,
+                    ));
+                    $objTpl->setVariable(array(
+                        $this->moduleLangVar.'_UPLOADER_ID'   => $uploader->getId(),
+                        $this->moduleLangVar.'_UPLOADER_CODE' => $uploader->getXHtml(),
+                    ));
+                }
+
                 if(!empty($objAddStep->arrSteps) && $objInit->mode != 'backend') {
                     $objAddStep->getStepNavigation($objTpl);
                     $objTpl->parse($this->moduleNameLC.'EntryAddStepNavigation');
@@ -498,6 +543,10 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
                                 }
 
                                 if(!empty($arrInputfieldContent)) {
+                                    if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND && \Cx\Core\Setting\Controller\Setting::getValue('blockStatus', 'Config')) {
+                                        $arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = preg_replace('/\\[\\[([A-Z][A-Z0-9_-]+)\\]\\]/', '{\\1}', $arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE']);
+                                        \Cx\Modules\Block\Controller\Block::setBlocks($arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'], \Cx\Core\Core\Controller\Cx::instanciate()->getPage());
+                                    }
                                     foreach ($arrInputfieldContent as $strPlaceHolder => $strContent) {
                                         $objTpl->setVariable(array(
                                             strtoupper($strPlaceHolder) => $strContent
@@ -1045,6 +1094,22 @@ EOF;
 
         $strstrInputfieldJavascript = <<<EOF
 
+var inputId, isImageField, uploaderInputBox;
+function getUploader(e) { // e => jQuery element
+    inputId = e.data('inputId');
+    isImageField = e.data('isImage');
+    uploaderInputBox = \$J('#' + inputId);
+    \$J('#mediadirImageUploader').trigger('click');
+}
+function mediadirUploaderCallback(data) {
+    if (typeof data[0] !== 'undefined') {
+        var data       = data[0].split('/'),
+            fileName   = data.pop();
+
+        uploaderInputBox.val(fileName);
+        uploaderInputBox.trigger('keyup');
+    }
+}
 function selectAddStep(stepName){
     if(document.getElementById(stepName).style.display != "block")
     {
@@ -1173,6 +1238,7 @@ EOF;
         $arrContexts = array(
           'none'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_NONE"],
           'title'   => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_TITLE"],
+          'content' => $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_CONTEXT_CONTENT'],
           'address' => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ADDRESS"],
           'zip'     => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_ZIP"],
           'city'    => $_ARRAYLANG["TXT_MEDIADIR_INPUTFIELD_CONTEXT_CITY"],

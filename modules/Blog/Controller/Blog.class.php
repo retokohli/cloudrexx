@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Blog
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version     $Id: index.inc.php,v 1.01 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_blog
  */
 
@@ -12,10 +38,10 @@ namespace Cx\Modules\Blog\Controller;
 
 /**
  * BlogAdmin
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Thomas Kaelin <thomas.kaelin@comvation.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_blog
  */
 class Blog extends \Cx\Modules\Blog\Controller\BlogLibrary  {
@@ -201,7 +227,16 @@ class Blog extends \Cx\Modules\Blog\Controller\BlogLibrary  {
         $arrNetworks = $this->createNetworkArray();
 
         if (count($arrNetworks) > 0) {
-            $strPageUrl = urlencode('http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).CONTREXX_SCRIPT_PATH.'?section=Blog&cmd=details&id='.$intMessageId);
+            $strPageUrl = urlencode(
+                \Cx\Core\Routing\Url::fromModuleAndCmd(
+                    'Blog',
+                    'details',
+                    '',
+                    array(
+                        'id' => $intMessageId,
+                    )
+                )->toString()
+            );
 
             foreach ($arrNetworks as $arrNetworkValues) {
                 if (key_exists($this->_intLanguageId, $arrNetworkValues['status'])) {
@@ -557,8 +592,7 @@ class Blog extends \Cx\Modules\Blog\Controller\BlogLibrary  {
                     $strMailBody    = str_replace('[COMMENT]', $strComment, $strMailBody);
 
                     $objMail->CharSet = CONTREXX_CHARSET;
-                    $objMail->From = $_CONFIG['coreAdminEmail'];
-                    $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
+                    $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
                     $objMail->AddAddress($_CONFIG['coreAdminEmail']);
                     $objMail->Subject   = $strMailSubject;
                     $objMail->IsHTML(false);

@@ -1,10 +1,35 @@
 <?php
 
 /**
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  *              Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_uploader
  */
 
@@ -16,8 +41,8 @@ use Cx\Lib\FileSystem\FileSystem;
 /**
  * UploaderExceptions thrown by uploader
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
  */
 class UploaderException extends \Exception {
 
@@ -34,7 +59,7 @@ define('PLUPLOAD_SECURITY_ERR', 105);
 /**
  * Class UploaderController
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  *              Robin Glauser <robin.glauser@comvation.com>
  */
@@ -60,13 +85,13 @@ class UploaderController {
      * @var array
      */
     protected static $_errors = array(
-        PLUPLOAD_MOVE_ERR => "Failed to move uploaded file.",
-        PLUPLOAD_INPUT_ERR => "Failed to open input stream.",
-        PLUPLOAD_OUTPUT_ERR => "Failed to open output stream.",
-        PLUPLOAD_TMPDIR_ERR => "Failed to open temp directory.",
-        PLUPLOAD_TYPE_ERR => "File type not allowed.",
-        PLUPLOAD_UNKNOWN_ERR => "Failed due to unknown error.",
-        PLUPLOAD_SECURITY_ERR => "File didn't pass security check."
+        PLUPLOAD_MOVE_ERR => 'Failed to move uploaded file.',
+        PLUPLOAD_INPUT_ERR => 'Failed to open input stream.',
+        PLUPLOAD_OUTPUT_ERR => 'Failed to open output stream.',
+        PLUPLOAD_TMPDIR_ERR => 'Failed to open temp directory.',
+        PLUPLOAD_TYPE_ERR => 'File type not allowed.',
+        PLUPLOAD_UNKNOWN_ERR => 'Failed due to unknown error.',
+        PLUPLOAD_SECURITY_ERR => 'File didn\'t pass security check.'
     );
 
     /**
@@ -154,8 +179,17 @@ class UploaderController {
                 $fileName = $conf['fileName'];
             }
 
+            if ($conf['allow_extensions']) {
+                if (is_string($conf['allow_extensions'])) {
+                    $conf['allow_extensions'] = explode(',', $conf['allow_extensions']);
+                }
+                if (!in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), $conf['allow_extensions'])) {
+                    throw new UploaderException('', PLUPLOAD_TYPE_ERR);
+                }
+            }
+
             $file_path = rtrim($conf['tmp_dir'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $fileName;
-            $tmp_path = $file_path . ".part";
+            $tmp_path = $file_path . '.part';
 
             // Write file or chunk to appropriate temp location
             if ($conf['chunks']) {
@@ -244,17 +278,17 @@ class UploaderController {
         }
 
         if (!empty($_FILES) && isset($_FILES[$file_data_name])) {
-            if ($_FILES[$file_data_name]["error"] || !is_uploaded_file($_FILES[$file_data_name]["tmp_name"])) {
+            if ($_FILES[$file_data_name]['error'] || !is_uploaded_file($_FILES[$file_data_name]['tmp_name'])) {
                 throw new UploaderException('', PLUPLOAD_MOVE_ERR);
             }
-            move_uploaded_file($_FILES[$file_data_name]["tmp_name"], $file_path);
+            move_uploaded_file($_FILES[$file_data_name]['tmp_name'], $file_path);
         } else {
             // Handle binary streams
-            if (!$in = @fopen("php://input", "rb")) {
+            if (!$in = @fopen('php://input', 'rb')) {
                 throw new UploaderException('', PLUPLOAD_INPUT_ERR);
             }
 
-            if (!$out = @fopen($file_path, "wb")) {
+            if (!$out = @fopen($file_path, 'wb')) {
                 throw new UploaderException('', PLUPLOAD_OUTPUT_ERR);
             }
 
@@ -276,7 +310,7 @@ class UploaderController {
      * @param string $file_path The file to write the chunks to
      */
     static function writeChunksToFile($chunk_dir, $file_path) {
-        if (!$out = @fopen($file_path, "wb")) {
+        if (!$out = @fopen($file_path, 'wb')) {
             throw new UploaderException('', PLUPLOAD_OUTPUT_ERR);
         }
 
@@ -286,7 +320,7 @@ class UploaderController {
                 throw new UploaderException('', PLUPLOAD_MOVE_ERR);
             }
 
-            if (!$in = @fopen($chunk_path, "rb")) {
+            if (!$in = @fopen($chunk_path, 'rb')) {
                 throw new UploaderException('', PLUPLOAD_INPUT_ERR);
             }
 
@@ -309,11 +343,11 @@ class UploaderController {
      */
     static function noCacheHeaders() {
         // Make sure this file is not cached (as it might happen on iOS devices, for example)
-        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-        header("Cache-Control: no-store, no-cache, must-revalidate");
-        header("Cache-Control: post-check=0, pre-check=0", false);
-        header("Pragma: no-cache");
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('Cache-Control: post-check=0, pre-check=0', false);
+        header('Pragma: no-cache');
     }
 
     /**
@@ -348,7 +382,7 @@ class UploaderController {
      * Cleanup method
      */
     protected static function cleanup() {
-        // Remove old temp files	
+        // Remove old temp files
         if (file_exists(self::$conf['tmp_dir'])) {
             foreach (glob(self::$conf['tmp_dir'] . '/*.part') as $tmpFile) {
                 if (time() - filemtime($tmpFile) < self::$conf['max_file_age']

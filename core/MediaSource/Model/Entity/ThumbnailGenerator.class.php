@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Class ThumbnailGenerator
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_mediabrowser
  */
 
@@ -17,7 +42,7 @@ use Cx\Model\Base\EntityBase;
 /**
  * Class ThumbnailGenerator
  *
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Robin Glauser <robin.glauser@comvation.com>
  */
 class ThumbnailGenerator extends EntityBase
@@ -159,5 +184,77 @@ class ThumbnailGenerator extends EntityBase
         return $this->thumbnails;
     }
 
+    
+    /**
+     * Get the Thumbnails name, create new thumbnails if not exists
+     * 
+     * @param string  $path     Directory path to the file
+     * @param string  $filename Name of the file
+     * @param boolean $create   TRUE|FALSE when True it creates thumbnail if thumbnail not exists
+     * 
+     * @return array thumbnail name array
+     */
+    public function getThumbnailsFromFile($path, $filename, $create = false)
+    {
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $filename  = pathinfo($filename, PATHINFO_FILENAME);
+
+        $this->getThumbnails();
+        $websitepath   = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath();
+        $thumbnails    = array();
+        foreach ($this->thumbnails as $thumbnail) {
+            $thumbnails[$thumbnail['size']] = preg_replace(
+                '/\.' . lcfirst($extension) . '$/', $thumbnail['value']
+                . '.' . lcfirst($extension),
+                \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getWebsiteOffsetPath()
+                . str_replace(
+                    $websitepath, '',
+                    rtrim($path, '/') . '/' . $filename . '.' . $extension
+                )
+            );
+        }
+        if ($create && file_exists($websitepath . str_replace($websitepath, '', rtrim($path, '/')) . '/' . $filename . '.' . $extension)) {
+            $this->createThumbnailFromPath(rtrim($path, '/') . '/' . $filename . '.' . $extension);
+        }
+        return $thumbnails;
+    }
+
+    /**
+     * Returns the smallest thumbnail for a file.
+     *
+     * @param $filename
+     *
+     * @return string Thumbnail Name
+     */
+    public function getThumbnailFilename($filename) {
+        // legacy fallback for older calls.
+        if (preg_match('/\.thumb$/', $filename)) return $filename;
+        if (!file_exists($filename) && !file_exists($this->cx->getWebsitePath().'/'.ltrim($filename,'/')) ) {
+            return $filename.'.thumb';
+        }
+        $webpath  = pathinfo($filename, PATHINFO_DIRNAME);
+        if (!file_exists($filename)){
+            $filename = $this->cx->getWebsitePath().$filename;
+        }
+        if (file_exists($filename)
+            && MediaSourceManager::isSubdirectory(
+                $this->cx->getWebsitePath(),
+                $filename
+            )
+        ) {
+            $this->createThumbnailFromPath($filename);
+        }
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $filename  = pathinfo($filename, PATHINFO_FILENAME);
+        $this->getThumbnails();
+        $thumbnailType = $this->thumbnails[0];
+        $thumbnail = preg_replace(
+            '/\.' . lcfirst($extension) . '$/',
+            $thumbnailType['value'] . '.' . lcfirst($extension),
+           $webpath .'/'. $filename . '.' . $extension
+        );
+        return $thumbnail;
+    }
 
 } 

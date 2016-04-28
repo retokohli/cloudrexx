@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Calendar Class Catagory Manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx <info@cloudrexx.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_calendar
  */
 namespace Cx\Modules\Calendar\Controller;
@@ -12,13 +38,13 @@ namespace Cx\Modules\Calendar\Controller;
 
 /**
  * CalendarCategoryManager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx <info@cloudrexx.com>
  * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_calendar
  */
-class CalendarCategoryManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
+class CalendarCategoryManager extends CalendarLibrary
 {
     /**
      * Category List
@@ -144,7 +170,7 @@ class CalendarCategoryManager extends \Cx\Modules\Calendar\Controller\CalendarLi
     function getCategoryDropdown($selectedId=null, $type) {
     	global $_ARRAYLANG;
     	
-        parent::getSettings();
+        $this->getSettings();
     	$arrOptions = array();
     	
     	foreach ($this->categoryList as $key => $objCategory) {
@@ -169,7 +195,7 @@ class CalendarCategoryManager extends \Cx\Modules\Calendar\Controller\CalendarLi
                 break;
     	}
     	
-    	$options .= parent::buildDropdownmenu($arrOptions, $selectedId);
+    	$options .= $this->buildDropdownmenu($arrOptions, $selectedId);
         
     	return $options;
     }

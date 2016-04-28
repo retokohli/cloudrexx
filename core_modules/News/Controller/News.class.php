@@ -1,12 +1,38 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * News
  *
  * This module will get all the news pages
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  * @todo        Edit PHP DocBlocks!
  */
@@ -18,11 +44,11 @@ namespace Cx\Core_Modules\News\Controller;
  *
  * This module will get all the news pages
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
@@ -564,6 +590,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_TITLE'        => $_ARRAYLANG['TXT_NEWS_TITLE'],
             'TXT_NEWS_COMMENT'      => $_ARRAYLANG['TXT_NEWS_COMMENT'],
             'TXT_NEWS_ADD'          => $_ARRAYLANG['TXT_NEWS_ADD'],
+            'TXT_NEWS_WRITE_COMMENT'=> $_ARRAYLANG['TXT_NEWS_WRITE_COMMENT']
         ));
 
         $this->_objTpl->parse('news_add_comment');
@@ -1372,13 +1399,24 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 $line = $words[$idx];
             }
         }
+        
+        $newsEditLink = \Cx\Core\Routing\Url::fromDocumentRoot(array(
+            'cmd' => 'News',
+            'act' => 'edit',
+            'newsId' => $news_id,
+            'validate' => 'true',
+        ));
+        $newsEditLink->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName(),
+                1
+            ) .                 
+            '/index.php'
+        );
+        $newsEditLink->setMode('backend');
+        
         $msg .= "$line\n";
-        $msg .= ' '
-                .ASCMS_PROTOCOL.'://'
-                .$_CONFIG['domainUrl']
-                .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
-                .ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=News'
-            . "&act=edit&newsId=$news_id&validate=true";
+        $msg .= ' ' . $newsEditLink->toString();
         $msg .= "\n\n";
         $msg .= $_CONFIG['coreAdminName'];
 
@@ -1397,8 +1435,7 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $_CONFIG['coreAdminName'];
+            $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreAdminName']);
             $objMail->Subject = $_ARRAYLANG['TXT_NOTIFY_SUBJECT'];
             $objMail->IsHTML(false);
             $objMail->Body = $msg;
@@ -1853,10 +1890,16 @@ EOF;
     {
         global $_ARRAYLANG, $_LANGID;
 
-        $serverPort = $_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT']);
-        $rssFeedUrl = 'http://'.$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET.'/feed/news_headlines_'.\FWLanguage::getLanguageParameter($_LANGID, 'lang').'.xml';
-        $jsFeedUrl = 'http://'.$_SERVER['SERVER_NAME'].$serverPort.ASCMS_PATH_OFFSET.'/feed/news_'.\FWLanguage::getLanguageParameter($_LANGID, 'lang').'.js';
-        $hostname = addslashes(htmlspecialchars($_SERVER['SERVER_NAME'], ENT_QUOTES, CONTREXX_CHARSET));
+        $documentRoot = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $documentRoot->setMode('backend');
+        
+        $documentRoot->setPath('feed/news_headlines_' . \FWLanguage::getLanguageParameter($_LANGID, 'lang') . '.xml');
+        $rssFeedUrl = $documentRoot->toString();
+        
+        $documentRoot->setPath('feed/news_' . \FWLanguage::getLanguageParameter($_LANGID, 'lang') . '.js');
+        $jsFeedUrl = $documentRoot->toString();
+        
+        $hostname = addslashes(htmlspecialchars(\Env::get('config')['domainUrl'], ENT_QUOTES, CONTREXX_CHARSET));
 
         $rss2jsCode = <<<RSS2JSCODE
 &lt;script language="JavaScript" type="text/javascript"&gt;
@@ -2023,7 +2066,7 @@ RSS2JSCODE;
 
         /* Prevent comment flooding from same user:
            Either user is authenticated or had to validate a CAPTCHA.
-           In either way, a Contrexx session had been initialized,
+           In either way, a Cloudrexx session had been initialized,
            therefore we are able to use the $_SESSION to log this comment */
         $_SESSION['news']['comments'][$newsMessageId] = $date;
 
@@ -2053,14 +2096,25 @@ RSS2JSCODE;
         }
 
         $objMail->CharSet   = CONTREXX_CHARSET;
-        $objMail->From      = $_CONFIG['coreAdminEmail'];
-        $objMail->FromName  = $_CONFIG['coreGlobalPageTitle'];
+        $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
         $objMail->IsHTML(false);
         $objMail->Subject   = sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_SUBJECT'], $newsMessageTitle);
-        $manageCommentsUrl  = ASCMS_PROTOCOL.'://'
-                              .$_CONFIG['domainUrl']
-                              .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
-                              .ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=News&act=comments&newsId='.$newsMessageId;
+        
+        $manageCommentsUrl = \Cx\Core\Routing\Url::fromDocumentRoot(array(
+            'cmd' => 'News',
+            'act' => 'comments',
+            'newsId' => $newsMessageId,
+        ));
+        $manageCommentsUrl->setPath(
+            substr(
+                \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName(),
+                1
+            ) .                 
+            '/index.php'
+        );
+        $manageCommentsUrl->setMode('backend');
+        $manageCommentsUrl = $manageCommentsUrl->toString();
+        
         $activateCommentTxt = $this->arrSettings['news_comments_autoactivate']
                               ? ''
                               : sprintf($_ARRAYLANG['TXT_NEWS_COMMENT_NOTIFICATION_MAIL_LINK'], $manageCommentsUrl);

@@ -1,12 +1,37 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Newsletter Modul
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
  * @version 1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
@@ -18,11 +43,11 @@ namespace Cx\Modules\Newsletter\Controller;
  *
  * frontend newsletter class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @access public
  * @version 1.1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  */
@@ -180,9 +205,8 @@ class Newsletter extends NewsletterLib
                     }
 
                     $mail->CharSet = CONTREXX_CHARSET;
-                    $mail->From             = $value_sender_emailDEF;
-                    $mail->FromName         = $value_sender_nameDEF;
                     $mail->AddReplyTo($value_reply_mailDEF);
+                    $mail->SetFrom($value_sender_emailDEF, $value_sender_nameDEF);
                     $mail->Subject             = $mailTitle;
                     $mail->Priority         = 3;
                     $mail->IsHTML(false);
@@ -438,27 +462,36 @@ class Newsletter extends NewsletterLib
                             $showForm = false;
                         } else {
                             if ($this->_validateRecipientAttributes($recipientAttributeStatus, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientBirthday)) {
-                                if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {                    
-                                    if ($recipientId > 0) {
-                                        if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, 1, $arrAssociatedLists, $recipientLanguage)) {
-                                            array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED']);
-                                            $showForm = false;
-                                        } else {
-                                            array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA']);
-                                        }
-                                    } else {
-                                        if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
-                                            if ($this->_sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
-                                                array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
+                                if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
+                                    if (!empty($arrAssociatedInactiveLists) || !empty($arrAssociatedLists) && ($objList = $objDatabase->SelectLimit('SELECT id FROM '.DBPREFIX.'module_newsletter_category WHERE status=1 AND (id='.implode(' OR id=', $arrAssociatedLists).')' , 1)) && $objList->RecordCount() > 0) {
+                                        if ($recipientId > 0) {
+                                            if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, 1, $arrAssociatedLists, $recipientLanguage)) {
+                                                array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED']);
                                                 $showForm = false;
-                                        } else {
-                                                $objDatabase->Execute("DELETE tblU, tblR FROM ".DBPREFIX."module_newsletter_user AS tblU, ".DBPREFIX."module_newsletter_rel_user_cat AS tblR WHERE tblU.email='".contrexx_addslashes($recipientEmail)."' AND tblR.user = tblU.id");
-                                                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL']);
+                                            } else {
+                                                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA']);
                                             }
                                         } else {
-                                            array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU']);
+                                            if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
+                                                if ($this->_sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
+                                                    array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
+                                                    $showForm = false;
+                                            } else {
+                                                    $objDatabase->Execute("DELETE tblU, tblR FROM ".DBPREFIX."module_newsletter_user AS tblU, ".DBPREFIX."module_newsletter_rel_user_cat AS tblR WHERE tblU.email='".contrexx_addslashes($recipientEmail)."' AND tblR.user = tblU.id");
+                                                    array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL']);
+                                                }
+                                            } else {
+                                                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU']);
+                                            }
                                         }
-                                    }
+                                    } else {
+                                        $unsub = $_ARRAYLANG['TXT_UNSUBSCRIBE'];
+                                        if(isset($_REQUEST['code']) && isset($_REQUEST['mail'])) {
+                                            $nm = new \Cx\Modules\Newsletter\Controller\NewsletterManager();
+                                            $unsub = $nm->GetUnsubscribeURL($_REQUEST['code'], $_REQUEST['mail']);
+                                        }
+                                        array_push($arrStatusMessage['error'], sprintf($_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_IF_ONLY_ONE_LIST_ACTIVE'], $unsub));
+                                    }                       
                                 } elseif (empty($recipientId)) {
                                     // We must send a new confirmation e-mail here
                                     // otherwise someone could reactivate someone else's e-mail address
@@ -757,9 +790,8 @@ class Newsletter extends NewsletterLib
         }
 
         $objMail->CharSet = CONTREXX_CHARSET;
-        $objMail->From = $arrSettings['sender_mail']['setvalue'];
-        $objMail->FromName = $arrSettings['sender_name']['setvalue'];
         $objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);
+        $objMail->SetFrom($arrSettings['sender_mail']['setvalue'], $arrSettings['sender_name']['setvalue']);
         $objMail->Subject = $arrParsedTxts[0];
         $objMail->Priority = 3;
         $objMail->IsHTML(false);
@@ -851,9 +883,8 @@ class Newsletter extends NewsletterLib
             }
 
             $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $arrSettings['sender_mail']['setvalue'];
-            $objMail->FromName = $arrSettings['sender_name']['setvalue'];
             $objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);
+            $objMail->SetFrom($arrSettings['sender_mail']['setvalue'], $arrSettings['sender_name']['setvalue']);
             $objMail->Subject = $arrParsedTxts[0];
             $objMail->Priority = 3;
             $objMail->IsHTML(false);
@@ -928,7 +959,7 @@ class Newsletter extends NewsletterLib
         
         // Get newsletter content and template.
         $query = '
-                SELECT `n`.`content`, `t`.`html`, `n`.`date_sent`
+                SELECT `n`.`content`, `n`.`subject`, `t`.`html`, `n`.`date_sent`
                   FROM `'.DBPREFIX.'module_newsletter` as `n`
             INNER JOIN `'.DBPREFIX.'module_newsletter_template` as `t`
                     ON `n`.`template` = `t`.`id`
@@ -939,7 +970,9 @@ class Newsletter extends NewsletterLib
         if ($objResult->RecordCount()) {
             $html    = $objResult->fields['html'];
             $content = $objResult->fields['content'];
-            $date    = date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date_sent']);
+            $subject = contrexx_raw2xhtml($objResult->fields['subject']);
+            $dateSent= $objResult->fields['date_sent'] ? $objResult->fields['date_sent'] : time();
+            $date    = date(ASCMS_DATE_FORMAT_DATE, $dateSent);
         } else {
             // newsletter not found > redirect to homepage
             \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromDocumentRoot());
@@ -1032,6 +1065,7 @@ class Newsletter extends NewsletterLib
             '[[email]]',
             '[[date]]',
             '[[display_in_browser_url]]',
+            '[[subject]]',
 
             // subscription
             // unsubscribe and profile links have been removed from browser-view - 12/20/12 TD
@@ -1064,6 +1098,7 @@ class Newsletter extends NewsletterLib
             $email,
             $date,
             ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/index.php?section=Newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$email.'&id='.$id,
+            $subject,
 
             // subscription
             // unsubscribe and profile links have been removed from browser-view - 12/20/12 TD

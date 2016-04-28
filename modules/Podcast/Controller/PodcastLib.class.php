@@ -1,14 +1,40 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Class Podcast Library
  *
  * Podcast Library class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_podcast
  * @todo        Edit PHP DocBlocks!
  */
@@ -18,11 +44,11 @@ namespace Cx\Modules\Podcast\Controller;
 /**
  * Podcast Library class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_podcast
  */
 class PodcastLib
@@ -110,10 +136,10 @@ class PodcastLib
     function __construct()
     {
         $this->_arrSettings = $this->_getSettings();
-        $this->_youTubeIdRegex = '#.*[\?&/]v[=/]('.$this->_youTubeAllowedCharacters.'{'.$this->_youTubeIdLength.'}).*#';
+        $this->_youTubeIdRegex = '#.*[\?&/](?:v|embed)[=/]('.$this->_youTubeAllowedCharacters.'{'.$this->_youTubeIdLength.'}).*#';
         //youtubeIdCharacters and youtubeIdLength are JS variables.
-        $this->_youTubeIdRegexJS = '.*[\\?&/]v[=/]("+youtubeIdCharacters+"{"+youtubeIdLength+"}).*';
-        $this->_noThumbnail = ASCMS_PATH_OFFSET . '/images/Podcast/no_picture.gif';
+        $this->_youTubeIdRegexJS = '.*[\\?&/](?:v|embed)[=/]("+youtubeIdCharacters+"{"+youtubeIdLength+"}).*';
+        $this->_noThumbnail = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath() . '/images/Podcast/no_picture.gif';
     }
 
     function _getMedia($ofCategory = false, $isActive = false, $limit = 0, $pos = 0)
@@ -156,9 +182,9 @@ class PodcastLib
         if ($objMedium != false) {
             while (!$objMedium->EOF) {
                 if(!empty($objMedium->fields['youtube_id'])){
-                    $mediumSource = 'http://youtube.com/v/'.$objMedium->fields['youtube_id'];
+                    $mediumSource = '//youtube.com/embed/'.$objMedium->fields['youtube_id'];
                 }else{
-                    $mediumSource = str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']);
+                    $mediumSource = str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()), $objMedium->fields['source']);
                 }
                 $arrMedia[$objMedium->fields['id']] = array(
                     'title'         => $objMedium->fields['title'],
@@ -207,9 +233,9 @@ class PodcastLib
             ($isActive ? " AND status=1" : ""), 1);
         if ($objMedium !== false && $objMedium->RecordCount() == 1) {
             if(!empty($objMedium->fields['youtube_id'])){
-                $mediumSource = 'http://youtube.com/v/'.$objMedium->fields['youtube_id'];
+                $mediumSource = '//youtube.com/embed/'.$objMedium->fields['youtube_id'];
             }else{
-                $mediumSource = str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']);
+                $mediumSource = str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()), $objMedium->fields['source']);
             }
             $arrMedium = array(
                 'title'         => $objMedium->fields['title'],
@@ -479,8 +505,10 @@ class PodcastLib
                   WHERE `id` = ".$id;
         if(($objRS = $objDatabase->SelectLimit($query, 1)) !== false){
             $thumbNail = $objRS->fields['thumbnail'];
-            $objFile = new \File();
-            $objFile->delFile(ASCMS_DOCUMENT_ROOT, ASCMS_PATH_OFFSET, $thumbNail);
+            if (strpos($thumbNail, '/') !== 0) {
+                $thumbNail = '/'. $thumbNail;
+            }
+            \Cx\Lib\FileSystem\FileSystem::delete_file(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $thumbNail);
         }
 
         if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_podcast_rel_medium_category WHERE medium_id=".$id) !== false) {
@@ -745,7 +773,7 @@ class PodcastLib
 
         return str_replace(
             array('[[MEDIUM_WIDTH]]', '[[MEDIUM_HEIGHT]]', '[[MEDIUM_URL]]', '[[MEDIUM_THUMBNAIL]]', '[[ASCMS_PATH_OFFSET]]'),
-            array($arrMedium['width'], $arrMedium['height'], $arrMedium['source'], $arrMedium['thumbnail'] == $this->_noThumbnail ? '' : $arrMedium['thumbnail'], ASCMS_PATH_OFFSET),
+            array($arrMedium['width'], $arrMedium['height'], $arrMedium['source'], $arrMedium['thumbnail'] == $this->_noThumbnail ? '' : $arrMedium['thumbnail'], \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()),
             $template);
     }
 
@@ -953,7 +981,7 @@ EOF;
             'PODCAST_SELECT_YOUTUBE_MEDIUM'     => $sourceType == 'youtube' ? 'checked="checked"' : '',
             'PODCAST_SELECT_YOUTUBE_MEDIUM_BOX' => $sourceType == 'youtube' ? 'block' : 'none',
             'PODCAST_LOCAL_SOURCE'              => $sourceType == 'local' ? $source : '',
-            'PODCAST_REMOTE_SOURCE'             => $sourceType == 'remote' ? $source : 'http://',
+            'PODCAST_REMOTE_SOURCE'             => $sourceType == 'remote' ? $source : 'https://',
             'PODCAST_YOUTUBE_SOURCE'            => $sourceType == 'youtube' ? $source : '',
             'PODCAST_YOUTUBE_ID_CHARACTERS'     => $this->_youTubeAllowedCharacters,
             'PODCAST_YOUTUBE_ID_LENGTH'         => $this->_youTubeIdLength,
@@ -1163,15 +1191,15 @@ EOF;
             if (isset($_POST['podcast_medium_source_type']) && in_array($_POST['podcast_medium_source_type'], array('local', 'remote', 'youtube'))) {
                 if ($_POST['podcast_medium_source_type'] == 'local') {
                     if (isset($_POST['podcast_medium_local_source'])) {
-                        if (strpos($_POST['podcast_medium_local_source'], ASCMS_PATH_OFFSET) === 0) {
-                            $mediumSource =  ASCMS_PROTOCOL.'://%domain%%offset%'.substr($_POST['podcast_medium_local_source'], strlen(ASCMS_PATH_OFFSET));
+                        if (strpos($_POST['podcast_medium_local_source'], \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()) === 0) {
+                            $mediumSource =  '//%domain%%offset%'.substr($_POST['podcast_medium_local_source'], strlen(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()));
                         } else {
-                            $mediumSource =  ASCMS_PROTOCOL.'://%domain%%offset%'.$_POST['podcast_medium_local_source'];
+                            $mediumSource =  '//%domain%%offset%'.$_POST['podcast_medium_local_source'];
                         }
                     }
                 } elseif ($_POST['podcast_medium_source_type'] == 'youtube') {
                     $mediumYoutubeID = contrexx_addslashes(trim($_POST['youtubeID']));
-                    $mediumSource = 'http://youtube.com/v/'.$mediumYoutubeID;
+                    $mediumSource = '//youtube.com/embed/'.$mediumYoutubeID;
                 } elseif (isset($_POST['podcast_medium_remote_source'])) {
                     $mediumSource = $_POST['podcast_medium_remote_source'];
                 }
@@ -1183,7 +1211,7 @@ EOF;
 
             if(!empty($mediumYoutubeID)){
                 $mediumTitle = $this->_getYoutubeTitle($mediumYoutubeID);
-                $mediumThumbnail = ASCMS_PATH_OFFSET.$this->_saveYoutubeThumbnail($mediumYoutubeID);
+                $mediumThumbnail = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath().$this->_saveYoutubeThumbnail($mediumYoutubeID);
                 $mediumTemplate = &$this->_getYoutubeTemplate();
                 $mediumDescription = &$this->_getYoutubeDescription($mediumYoutubeID);
                 $mediumWidth = $this->_youTubeDefaultWidth;
@@ -1192,7 +1220,7 @@ EOF;
             }else{
                 $mediumTitle = ($lastSlash = strrpos($mediumSource, '/')) !== false ? substr($mediumSource, $lastSlash+1) : $mediumSource;
                 $mediumTemplate = &$this->_getSuitableTemplate($mediumSource);
-                $dimensions = isset($_POST['podcast_medium_local_source']) && \Cx\Core_Modules\Media\Controller\MediaLibrary::_isImage(ASCMS_PATH.$_POST['podcast_medium_local_source']) ? @getimagesize(ASCMS_PATH.$_POST['podcast_medium_local_source']) : false;
+                $dimensions = isset($_POST['podcast_medium_local_source']) && \Cx\Core_Modules\Media\Controller\MediaLibrary::_isImage(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath().$_POST['podcast_medium_local_source']) ? @getimagesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath().$_POST['podcast_medium_local_source']) : false;
                 if ($dimensions) {
                     $mediumWidth = $dimensions[0];
                     $mediumHeight = $dimensions[1];
@@ -1200,8 +1228,8 @@ EOF;
                     $mediumWidth = $this->_arrSettings['default_width'];
                     $mediumHeight = $this->_arrSettings['default_height'];
                 }
-                $mediumSize = isset($_POST['podcast_medium_local_source']) ? filesize(ASCMS_PATH.$_POST['podcast_medium_local_source']) : 0;
-                $mediumSource = htmlentities(str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $mediumSource), ENT_QUOTES, CONTREXX_CHARSET);
+                $mediumSize = isset($_POST['podcast_medium_local_source']) ? filesize(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath().$_POST['podcast_medium_local_source']) : 0;
+                $mediumSource = htmlentities(str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()), $mediumSource), ENT_QUOTES, CONTREXX_CHARSET);
             }
         }
 
@@ -1211,7 +1239,7 @@ EOF;
             'PODCAST_MEDIUM_TITLE'              => htmlentities($mediumTitle, ENT_QUOTES, CONTREXX_CHARSET),
             'PODCAST_MEDIUM_AUTHOR'             => htmlentities($mediumAuthor, ENT_QUOTES, CONTREXX_CHARSET),
             'PODCAST_MEDIUM_DESCRIPTION'        => htmlentities($mediumDescription, ENT_QUOTES, CONTREXX_CHARSET),
-            'PODCAST_MEDIUM_SOURCE'             => $mediumSource,
+            'PODCAST_MEDIUM_SOURCE'             => preg_replace('#^//#', '', $mediumSource), // replace double slash since user's don't know protocol independent URLs
             'PODCAST_MEDIUM_SOURCE_URL'         => htmlentities($mediumSource, ENT_QUOTES, CONTREXX_CHARSET),
             'PODCAST_MEDIUM_TEMPLATE_MENU'      => $this->_getTemplateMenu($mediumTemplate, 'name="podcast_medium_template" style="width:450px;"'),
             'PODCAST_MEDIUM_WIDTH'              => $mediumWidth,
@@ -1301,7 +1329,7 @@ EOF;
             @fclose($s);
             $response = substr($response, -$contentLength);
             $mediumThumbnail = '/images/Podcast/youtube_thumbnails/youtube_'.$youTubeID.'.jpg';
-            $hImg = fopen(ASCMS_DOCUMENT_ROOT.$mediumThumbnail, 'w');
+            $hImg = fopen(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath().$mediumThumbnail, 'w');
             fwrite($hImg, $response, $contentLength);
             fclose($hImg);
         }
@@ -1410,7 +1438,7 @@ EOF;
                         'title'         => $objMedium->fields['title'],
                         'author'        => $objMedium->fields['author'],
                         'description'   => $objMedium->fields['description'],
-                        'source'        => str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], ASCMS_PATH_OFFSET), $objMedium->fields['source']),
+                        'source'        => str_replace(array('%domain%', '%offset%'), array($_CONFIG['domainUrl'], \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()), $objMedium->fields['source']),
                         'size'          => $objMedium->fields['size'],
                         'date_added'    => $objMedium->fields['date_added'],
                         'categories'    => array()
@@ -1424,39 +1452,68 @@ EOF;
             }
         }
 
-
         $objRSSWriter = new \RSSWriter();
-
+        
         $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
         $objRSSWriter->channelTitle = $this->_arrSettings['feed_title'];
-        $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/index.php?section=Podcast';
+        $objRSSWriter->channelLink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Podcast'
+        )->toString();
         $objRSSWriter->channelDescription = $this->_arrSettings['feed_description'];
         $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
 
         if (!empty($this->_arrSettings['feed_image'])) {
-            $objRSSWriter->channelImageUrl = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).$this->_arrSettings['feed_image'];
+            $channelImageUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+            $channelImageUrl->setMode('backend');
+            $channelImageUrl->setPath(substr(
+                $this->_arrSettings['feed_image'],
+                strlen(
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath()
+                ) + 1
+            ));
+            $objRSSWriter->channelImageUrl = $channelImageUrl;
             $objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
             $objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
         }
         $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
-
-        $itemLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=Podcast&amp;id=";
-        $categoryLink = "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET."/index.php?section=Podcast&amp;cid=";
 
         // create podcast feed
         $objRSSWriter->xmlDocumentPath = \Env::get('cx')->getWebsiteFeedPath().'/podcast.xml';
         foreach ($arrMedia as $mediumId => $arrMedium) {
             $arrCategories = array();
             foreach ($arrMedium['categories'] as $categoryId => $categoryTitle) {
-                array_push($arrCategories, array(
-                    'domain'    => htmlspecialchars($categoryLink.$categoryId, ENT_QUOTES, CONTREXX_CHARSET),
-                    'title'     => htmlspecialchars($categoryTitle, ENT_QUOTES, CONTREXX_CHARSET)
-                ));
+                array_push(
+                    $arrCategories,
+                    array(
+                        'domain' => htmlspecialchars(
+                            \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                'Podcast',
+                                '',
+                                '',
+                                array(
+                                    'cid' => $categoryId,
+                                )
+                            )->toString(),
+                            ENT_QUOTES,
+                            CONTREXX_CHARSET
+                        ),
+                        'title' => htmlspecialchars($categoryTitle, ENT_QUOTES, CONTREXX_CHARSET),
+                    )
+                );
             }
 
             $objRSSWriter->addItem(
                 htmlspecialchars($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
-                $itemLink.$mediumId,
+                contrexx_raw2xhtml(
+                    \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'Podcast',
+                        '',
+                        '',
+                        array(
+                            'id' => $mediumId,
+                        )
+                    )->toString()
+                ),
                 htmlspecialchars($arrMedium['description'], ENT_QUOTES, CONTREXX_CHARSET),
                 htmlspecialchars($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET),
                 $arrCategories,
@@ -1490,7 +1547,7 @@ EOF;
     {
         // Mediabrowser
         $mediaBrowser = new \Cx\Core_Modules\MediaBrowser\Model\Entity\MediaBrowser();
-        $mediaBrowser->setOptions($options);
+        $mediaBrowser->setOptions($options+array( 'startmediatype' => 'podcast'));
         if ($callback) {
             $mediaBrowser->setCallback($callback);
         }

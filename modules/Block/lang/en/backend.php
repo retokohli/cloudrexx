@@ -1,9 +1,35 @@
 <?php
+
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_block
  */
 $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'] = "Modify Content Pane %s";
@@ -98,7 +124,7 @@ $_ARRAYLANG['TXT_BLOCK_DIRECT_PLACEHOLDERS'] = "Inhaltscontainer im direkten Pla
 $_ARRAYLANG['TXT_BLOCK_DIRECT_PLACEHOLDERS_INFO'] = "Hier können Sie die Seiten auswählen, auf welchen der direkte Platzhalter [[BLOCK_XY]] angezeigt werden soll.";
 $_ARRAYLANG['TXT_BLOCK_CATEGORY_PLACEHOLDERS'] = "Inhaltscontainer im Rubrik Platzhalter anzeigen";
 $_ARRAYLANG['TXT_BLOCK_CATEGORY_PLACEHOLDERS_INFO'] = "Hier können Sie die Seiten auswählen, auf welchen der Inhaltscontainer im Rubrik Platzhalter [[BLOCK_CAT_XY]] angezeigt werden soll.";
-$_ARRAYLANG['TXT_BLOCK_CATEGORY_SEPERATOR'] = "Trennzeichen für Rubrik Platzhalter";
+$_ARRAYLANG['TXT_BLOCK_CATEGORY_SEPERATOR'] = "Separator for category placeholder";
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME'] = "Anzeigedauer";
 $_ARRAYLANG['TXT_BLOCK_CONTENT'] = "Content";
 $_ARRAYLANG['TXT_BLOCK_ORDER']   = "Order";

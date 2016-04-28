@@ -1,7 +1,7 @@
 /*
-   Base Style Sheet for the CONTREXX CMS backend console.
+   Base Style Sheet for the CLOUDREXX CMS backend console.
 
-   Copyright 2005 COMVATION AG.
+   Copyright 2005 CLOUDREXX AG.
    All Rights Reserved.
 
 */
@@ -1361,6 +1361,42 @@ table.adminlist td.nowrap {
 /* jquery ui dialog */
 .ui-dialog {
     position: fixed !important;
+}
+
+.ui-dialog.cxDialog {
+    position: absolute;
+    top: 0 !important;
+    border-top: 0;
+    border-right: 1px solid #0a85c8;
+    border-bottom: 1px solid #0a85c8;
+    border-left: 1px solid #0a85c8;
+    border-radius: 0;
+    text-align: center;
+}
+
+.ui-dialog.noTitle .ui-dialog-titlebar {
+    display: none;
+}
+
+.ui-dialog.cxDialog .error {
+    color: #ff0000;
+}
+
+.ui-dialog.cxDialog #loading {
+    float: none;
+    margin: 0 auto;
+    width: 95px;
+    height: 16px;
+}
+
+.ui-dialog.cxDialog #loading img {
+    float: left;
+}
+
+.ui-dialog.cxDialog #loading span {
+    float: left;
+    margin: 0 0 0 5px;
+    line-height: 16px;
 }
 
 /* Style of info, ok, warning, alert, upgrade and news boxes */

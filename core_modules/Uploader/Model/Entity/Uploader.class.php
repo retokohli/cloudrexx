@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Class Uploader
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_uploader
  */
 
@@ -20,9 +45,9 @@ use Cx\Model\Base\EntityBase;
 /**
  * Class Uploader
  *
- * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @copyright   CLOUDREXX CMS - Cloudrexx AG Thun
  * @author      Robin Glauser <robin.glauser@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_uploader
  */
 class Uploader extends EntityBase
@@ -58,20 +83,13 @@ class Uploader extends EntityBase
         if (!isset($_SESSION['uploader']['handlers'])) {
             $_SESSION['uploader']['handlers'] = array();
         }
-
         $i       = self::generateId();
-//
-//        $lastKey = count($_SESSION['uploader']['handlers']);
-//        $i       = $lastKey++;
-
         $_SESSION['uploader']['handlers'][$i] = array('active' => true);
-
         $this->id = $i;
-
         $this->options = array(
             'data-pl-upload',
             'data-uploader-id' => $this->id,
-            'class' => "uploader-button button",
+            'class' => 'uploader-button button',
             'uploader-type' => self::UPLOADER_TYPE_MODAL
         );
     }
@@ -141,7 +159,7 @@ class Uploader extends EntityBase
      */
     function getOptionsString()
     {
-        $optionsString = "";
+        $optionsString = '';
         foreach ($this->options as $key => $value) {
             if (is_int($key)) {
                 $optionsString .= $value . ' ';
@@ -154,7 +172,7 @@ class Uploader extends EntityBase
                 if (is_array($value)) {
                     $value = json_encode($value);
                 }
-                $optionsString .= $key . "='" . $value . "' ";
+                $optionsString .= $key . "='" . $value . "'";
             }
         }
         return $optionsString;
@@ -165,8 +183,18 @@ class Uploader extends EntityBase
      *
      * @return string
      */
-    function getXHtml($buttonName = "Upload")
+    function getXHtml($buttonName = 'Upload')
     {
+        $inline = '';
+        if ($this->options['uploader-type'] == self::UPLOADER_TYPE_INLINE){
+            $this->addClass('uploader-button-hidden');
+            $inline = $this->getContainer();
+        }
+        return '<button ' . $this->getOptionsString() . ' disabled>' . $buttonName . '</button>' .$inline;
+    }
+
+
+    function getContainer(){
         $path = $this->cx->getCodeBaseCoreModulePath() . '/Uploader/View/Template/Backend/Uploader'.$this->options['uploader-type'].'.html';
         $template = new Sigma();
         $template->loadTemplateFile($path);
@@ -178,10 +206,7 @@ class Uploader extends EntityBase
                         . '/Uploader/View/Template/Backend/Uploader.html')
             )
         );
-        if ($this->options['uploader-type'] == self::UPLOADER_TYPE_INLINE){
-            $this->addClass('uploader-button-hidden');
-        }
-        return '<button ' . $this->getOptionsString() . ' disabled>' . $buttonName . '</button>' . $template->get();
+        return $template->get();
     }
 
     /**
@@ -227,7 +252,10 @@ class Uploader extends EntityBase
 
     /**
      * Add additional data for the uploader
+     *
      * @param $data
+     *
+     * @return $this
      */
     public function setData($data)
     {
@@ -277,4 +305,13 @@ class Uploader extends EntityBase
         return $randstring;
     }
 
+    /**
+     * Return's the uploader id
+     * 
+     * @return string Uploader id
+     */    
+    public function getId()
+    {
+        return $this->id;
+    }
 } 

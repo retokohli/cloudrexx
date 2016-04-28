@@ -2,10 +2,10 @@
 2>/dev/null
 
 ###############################
-# Contrexx Workbench install  #
+# Cloudrexx Workbench install  #
 # and wrapper script Unix/Win #
 #                             #
-# (c) 2013 by Comvation AG    #
+# (c) 2013 by Cloudrexx AG    #
 ###############################
 
 

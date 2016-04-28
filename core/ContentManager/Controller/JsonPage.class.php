@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * JSON Adapter for Cx\Core\ContentManager\Model\Entity\Page
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -14,10 +39,10 @@ use \Cx\Core\Json\JsonAdapter;
 
 /**
  * JSON Adapter for Cx\Core\ContentManager\Model\Entity\Page
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class JsonPage implements JsonAdapter {
@@ -1205,7 +1230,13 @@ class JsonPage implements JsonAdapter {
         }
 
         if (isset($arguments['get']['pageRedirectPlaceholder'])) {
+            $filePath = \Env::get('cx')->getClassLoader()->getFilePath($arguments['get']['pageRedirectPlaceholder']);
+            //do not break the page, if the redirection shows to a valid file
+            if (is_file($filePath)) {
+                return false;
+            }
             try {
+                //break the page, when the file or the placeholder does not exist
                 if (!\Cx\Core\Routing\NodePlaceholder::fromPlaceholder($arguments['get']['pageRedirectPlaceholder'])->getPage()) {
                     return true;
                 }

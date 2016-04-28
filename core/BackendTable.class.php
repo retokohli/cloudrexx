@@ -1,27 +1,52 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
  * BackendTable
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  */
 
 /**
  * BackendTable
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core
  */
 class BackendTable extends HTML_Table {
 
     public function __construct($attrs = array(), $options = array()) {
         global $_ARRAYLANG;
-        
+
         if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $hasMasterTableHeader = !empty($options['header']);
             // add master table-header-row
@@ -30,6 +55,29 @@ class BackendTable extends HTML_Table {
             }
             $first = true;
             $row = 1 + $hasMasterTableHeader;
+            $sortBy     = (    isset($options['functions']['sortBy'])
+                            && is_array($options['functions']['sortBy'])
+                          )
+                          ? $options['functions']['sortBy']
+                          : array();
+            $sortingKey = !empty($sortBy) && isset($sortBy['sortingKey'])
+                          ? $sortBy['sortingKey']
+                          : '';
+            $sortField  = !empty($sortingKey) && isset($sortBy['field'])
+                          ? key($sortBy['field'])
+                          : '';
+            $component  = !empty($sortBy) && isset($sortBy['component'])
+                          ? $sortBy['component']
+                          : '';
+            $entity     = !empty($sortBy) && isset($sortBy['entity'])
+                          ? $sortBy['entity']
+                          : '';
+            $sortOrder  = !empty($sortBy) && isset($sortBy['sortOrder'])
+                          ? $sortBy['sortOrder']
+                          : '';
+            $pagingPos  = !empty($sortBy) && isset($sortBy['pagingPosition'])
+                          ? $sortBy['pagingPosition']
+                          : '';
             foreach ($attrs as $rowname=>$rows) {
                 $col = 0;
                 $virtual = $rows['virtual'];
@@ -39,6 +87,10 @@ class BackendTable extends HTML_Table {
                     $col++;
                 }
                 foreach ($rows as $header=>$data) {
+                    if (!empty($sortingKey) && $header === $sortingKey) {
+                        //Add the additional attribute id, for getting the updated sort order after the row sorting
+                        $this->updateRowAttributes($row, array('id' => 'sorting' . $entity . '_' . $data), true);
+                    }
                     $encode = true;
                     if (
                         isset($options['fields']) &&
@@ -49,6 +101,10 @@ class BackendTable extends HTML_Table {
                         continue;
                     }
                     
+                    if (!empty($sortField) && $header === $sortField) {
+                        //Add the additional attribute class, to display the updated sort order after the row sorting
+                        $this->updateColAttributes($col, array('class' => 'sortBy' . $sortField));
+                    }
                     $origHeader = $header;
                     if(isset($options['fields'][$header]['sorting'])) {
                         $sorting = $options['fields'][$header]['sorting'];
@@ -70,8 +126,9 @@ class BackendTable extends HTML_Table {
                         ) {
                             $order = '';
                             $img = '&uarr;&darr;';
-                            if (isset($_GET['order'])) {
-                                $supOrder = explode('/', $_GET['order']);
+                            $sortParamName = !empty($sortBy) ? $entity . 'Order' : 'order';
+                            if (isset($_GET[$sortParamName])) {
+                                $supOrder = explode('/', $_GET[$sortParamName]);
                                 if (current($supOrder) == $origHeader) {
                                     $order = '/DESC';
                                     $img = '&darr;';
@@ -81,7 +138,7 @@ class BackendTable extends HTML_Table {
                                     }
                                 }
                             }
-                            $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&order=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
+                            $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&' . $sortParamName . '=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
                         }
                         if ($hasMasterTableHeader) {
                             $this->setCellContents(1, $col, $header, 'td', 0);
@@ -89,15 +146,35 @@ class BackendTable extends HTML_Table {
                             $this->setCellContents(0, $col, $header, 'th', 0);
                         }
                     }
+                    /* We use json to do parse the field function. The 'else if' is for backwards compatibility so you can declare
+                    * the function directly without using json. This is not recommended and not working over session */
                     if (
                         isset($options['fields']) &&
                         isset($options['fields'][$origHeader]) &&
                         isset($options['fields'][$origHeader]['table']) &&
-                        isset($options['fields'][$origHeader]['table']['parse']) &&
-                        is_callable($options['fields'][$origHeader]['table']['parse'])
+                        isset($options['fields'][$origHeader]['table']['parse'])
                     ) {
                         $callback = $options['fields'][$origHeader]['table']['parse'];
-                        $data = $callback($data, $rows);
+                        if (
+                            is_array($callback) &&
+                            isset($callback['adapter']) &&
+                            isset($callback['method'])
+                        ) {
+                            $json = new \Cx\Core\Json\JsonData();
+                            $jsonResult = $json->data(
+                                $callback['adapter'],
+                                $callback['method'],
+                                array(
+                                    'data' => $data,
+                                    'rows' => $rows,
+                                )
+                            );
+                            if ($jsonResult['status'] == 'success') {
+                                $data = $jsonResult["data"];
+                            }
+                        } else if(is_callable($callback)){
+                            $data = $callback($data, $rows);
+                        }
                         $encode = false; // todo: this should be set by callback
                     } else if (is_object($data) && get_class($data) == 'DateTime') {
                         $data = $data->format(ASCMS_DATE_FORMAT);
@@ -198,7 +275,37 @@ class BackendTable extends HTML_Table {
             }
             $attrs = array();
         }
-        parent::__construct(array_merge($attrs, array('class' => 'adminlist', 'width' => '100%')));
+        //add the sorting parameters as table attribute 
+        //if the row sorting functionality is enabled
+        $className = 'adminlist';
+        if (!empty($sortField)) {
+            $className = '\'adminlist sortable\'';
+            if (!empty($component)) {
+                $attrs['data-component'] = $component;
+            }
+            if (!empty($entity)) {
+                $attrs['data-entity'] = $entity;
+            }
+            if (!empty($sortOrder)) {
+                $attrs['data-order'] = $sortOrder;
+            }
+            if (!empty($sortField)) {
+                $attrs['data-field'] = $sortField;
+            }
+            if (isset($pagingPos)) {
+                $attrs['data-pos'] = $pagingPos;
+            }
+            $attrs['data-object'] = 'Html';
+            $attrs['data-act'] = 'updateOrder';
+            if (    isset($sortBy['jsonadapter']) 
+                &&  !empty($sortBy['jsonadapter']['object'])
+                &&  !empty($sortBy['jsonadapter']['act'])
+            ) {
+                $attrs['data-object'] = $sortBy['jsonadapter']['object'];
+                $attrs['data-act']    = $sortBy['jsonadapter']['act'];
+            }
+        }
+        parent::__construct(array_merge($attrs, array('class' => $className, 'width' => '100%')));
     }
 
     /**
@@ -246,7 +353,7 @@ class BackendTable extends HTML_Table {
         if ($virtual) {
             return false;
         }
-        if (isset($functions['actions']) && is_callable($functions['actions'])) {
+        if (isset($functions['actions'])) {
             return true;
         }
         if (isset($functions['edit']) && $functions['edit']) {
@@ -272,12 +379,38 @@ class BackendTable extends HTML_Table {
             }
             $editId .= '{' . $functions['vg_increment_number'] . ',' . $rowname . '}';
 
-            if (isset($functions['actions']) && is_callable($functions['actions'])) {
+            /* We use json to do the action callback. So all callbacks are functions in the json controller of the
+            * corresponding component. The 'else if' is for backwards compatibility so you can declare the function
+            * directly without using json. This is not recommended and not working over session */
+            if (
+                isset($functions['actions']) &&
+                is_array($functions['actions']) &&
+                isset($functions['actions']['adapter']) &&
+                isset($functions['actions']['method'])
+            ){
+                $json = new \Cx\Core\Json\JsonData();
+                $jsonResult = $json->data(
+                    $functions['actions']['adapter'],
+                    $functions['actions']['method'],
+                    array(
+                        'rowData' => $rowData,
+                        'editId' => $editId,
+                    )
+                );
+                if ($jsonResult['status'] == 'success') {
+                    $code .= $jsonResult["data"];
+                }
+            } else if (isset($functions['actions']) && is_callable($functions['actions'])) {
                 $code .= $functions['actions']($rowData, $editId);
             }
             
             if (isset($functions['edit']) && $functions['edit']) {
                 $editUrl->setParam('editid', $editId);
+                //remove the parameter 'vg_increment_number' from editUrl 
+                //if the baseUrl contains the parameter 'vg_increment_number'
+                if (isset($params['vg_increment_number'])) {
+                    \Html::stripUriParam($editUrl, 'vg_increment_number');
+                }
                 $code .= '<a href="' . $editUrl . '" class="edit" title="'.$_ARRAYLANG['TXT_CORE_RECORD_EDIT_TITLE'].'"></a>';
             }
             if (isset($functions['delete']) && $functions['delete']) {
@@ -384,7 +517,7 @@ class BackendTable extends HTML_Table {
      */
     function toHtml()
     {
-        $this->altRowAttributes(2, array('class' => 'row1'), array('class' => 'row2'), true);
+        $this->altRowAttributes(1, array('class' => 'row1'), array('class' => 'row2'), true);
         $strHtml = '';
         $tabs = $this->_getTabs();
         $tab = $this->_getTab();

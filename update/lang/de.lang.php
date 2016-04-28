@@ -1,7 +1,33 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 $_CORELANG = array(
-    'TXT_UPDATE_CONTREXX_UPDATE_SYSTEM'          => 'Contrexx® Update System',
-    'TXT_UPDATE_INTRO_MSG'                       => '<h1>Willkommen zum Contrexx® Update System</h1>Damit Sie das Update System verwenden können, müssen Sie sich zuerst mit einem Administratorkonto anmelden.',
+    'TXT_UPDATE_CONTREXX_UPDATE_SYSTEM'          => 'Cloudrexx® Update System',
+    'TXT_UPDATE_INTRO_MSG'                       => '<h1>Willkommen zum Cloudrexx® Update System</h1>Damit Sie das Update System verwenden können, müssen Sie sich zuerst mit einem Administratorkonto anmelden.',
     'TXT_UPDATE_USERNAME'                        => 'Login',
     'TXT_UPDATE_PASSWORD'                        => 'Kennwort',
     'TXT_UPDATE_LOGIN'                           => 'Anmelden',
@@ -13,7 +39,7 @@ $_CORELANG = array(
     'TXT_UPDATE_RECHECK'                         => 'Erneut überprüfen',
     'TXT_UPDATE_UNABLE_TO_LOAD_UPDATE_LANG'      => 'Die Sprachdatei <i>%s</i> konnte nicht geladen werden.',
     'TXT_UPDATE_DB_ERROR'                        => 'Datenbank Fehler bei folgendem SQL Ausdruck:<br />%s<br /><br />Detailierte Informationen:<br />%s<br />',
-    'TXT_UPDATE_DB_ERROR_HELP_MSG'               => 'Versuchen Sie das Update erneut auszuführen.<br /><br />Sollte derselbe Fehler wieder erscheinen, suchen Sie im <a href="%s" title="Contrexx OpenSource Forum" target="_blank">Contrexx OpenSource Forum</a> nach weiteren Hilfestellungen zu diesem Fehler.<br />Falls diesbezüglich nichts bekannt ist, melden Sie dort den Fehler mit den folgenden Angaben:<br /><br /><strong>Installierte Version:</strong> %s<br /><strong>Update Version: </strong>%s<br /><strong>Info:</strong> [[SQL_INFO_TITLE]]<br /><strong>Fehlermeldung:</strong><br />%s',
+    'TXT_UPDATE_DB_ERROR_HELP_MSG'               => 'Versuchen Sie das Update erneut auszuführen.<br /><br />Sollte derselbe Fehler wieder erscheinen, suchen Sie im <a href="%s" title="Cloudrexx OpenSource Forum" target="_blank">Cloudrexx OpenSource Forum</a> nach weiteren Hilfestellungen zu diesem Fehler.<br />Falls diesbezüglich nichts bekannt ist, melden Sie dort den Fehler mit den folgenden Angaben:<br /><br /><strong>Installierte Version:</strong> %s<br /><strong>Update Version: </strong>%s<br /><strong>Info:</strong> [[SQL_INFO_TITLE]]<br /><strong>Fehlermeldung:</strong><br />%s',
     'TXT_UPDATE_IS_READY'                        => 'Das ausgewählte Update ist nun vorbereitet und kann installiert werden.<br />Betätigen Sie nun die Schaltfläche "Update starten...", um das Update durchzuführen.',
     'TXT_UPDATE_START_UPDATE'                    => 'Update starten',
     'TXT_UPDATE_BACK'                            => 'Zurück',
@@ -72,7 +98,7 @@ $_CORELANG = array(
     'TXT_UPDATE_SERVER_REQUIREMENTS'             => 'Folgende Erweiterungen/Module müssen auf dem Server installiert werden:',
     'TXT_UPDATE_NOTICES'                         => 'Hinweise',
     'TXT_UPDATE_APC'                             => 'APC (Alternativer PHP Cache)',
-    'TXT_UPDATE_APC_TOOLTIP'                     => 'APC (Alternativer PHP Cache) ist ein Zusatzmodul für PHP, das eine beschleunigte Ausführung von PHP ermöglicht.<br />Dieses Zusatzmodul ist für den Betrieb von Contrexx von Vorteil, jedoch nicht notwendig.',
+    'TXT_UPDATE_APC_TOOLTIP'                     => 'APC (Alternativer PHP Cache) ist ein Zusatzmodul für PHP, das eine beschleunigte Ausführung von PHP ermöglicht.<br />Dieses Zusatzmodul ist für den Betrieb von Cloudrexx von Vorteil, jedoch nicht notwendig.',
     'TXT_UPDATE_VERSIONS'                        => 'Versionen',
     'TXT_UPDATE_PHP_EXTENSIONS'                  => 'PHP Erweiterungen / Server Module',
     'TXT_UPDATE_PHP_CONFIGURATIONS'              => 'PHP Konfigurationen',
@@ -88,7 +114,7 @@ $_CORELANG = array(
     'TXT_CONFLICTED_MODULES_DESCRIPTION'         => 'Folgende neue Module können nicht installiert werden, da die entsprechenden Datenbank-Tabellen bereits existieren:',
     'TXT_UPDATE_ERROR'                           => 'Update Fehler',
     'TXT_UPDATE_LICENSE_CONDITIONS'              => 'Lizenzbedingungen',
-    'TXT_UPDATE_ACCEPT_LICENSE'                  => 'Ich akzeptiere die Contrexx Lizenz',
+    'TXT_UPDATE_ACCEPT_LICENSE'                  => 'Ich akzeptiere die Cloudrexx Lizenz',
     'TXT_UPDATE_LICENSE_MODEL'                   => 'Neues Lizenzmodell',
     'TXT_UPDATE_ACCEPT_LICENSE_CHANGE'           => 'Ich habe die vorliegenden Informationen verstanden und bin damit einverstanden.',
     'TXT_UPDATE_CHECK_FAILED'                    => 'Überprüfung fehlgeschlagen',

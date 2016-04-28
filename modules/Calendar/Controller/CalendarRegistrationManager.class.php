@@ -1,11 +1,37 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Calendar 
  * 
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_calendar
- * @author     Comvation <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
 
@@ -13,13 +39,13 @@ namespace Cx\Modules\Calendar\Controller;
 /**
  * Calendar Class Registration manager
  * 
- * @package    contrexx
+ * @package    cloudrexx
  * @subpackage module_calendar
- * @author     Comvation <info@comvation.com>
- * @copyright  CONTREXX CMS - COMVATION AG
+ * @author     Cloudrexx <info@cloudrexx.com>
+ * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */
-class CalendarRegistrationManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary 
+class CalendarRegistrationManager extends CalendarLibrary 
 {
     /**
      * Event id
@@ -144,17 +170,36 @@ class CalendarRegistrationManager extends \Cx\Modules\Calendar\Controller\Calend
     {
         global $objDatabase, $_LANGID, $_ARRAYLANG;
         
-        $objResult = $objDatabase->Execute('SELECT count(`field_id`) AS `count_form_fields` FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` WHERE `form_id` = '.$this->formId.' AND `lang_id` = '.$_LANGID);
+        $objResult = $objDatabase->Execute('SELECT count(DISTINCT `field_id`) AS `count_form_fields` FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` WHERE `form_id` = '.$this->formId);
         $objTpl->setVariable($this->moduleLangVar.'_COUNT_FORM_FIELDS', $objResult->fields['count_form_fields'] + 3);
         
         $query = '
-            SELECT `n`.`field_id`, `n`.`name`, `f`.`type`
-            FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` AS `n`
-            INNER JOIN `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field` AS `f`
-            ON `n`.`field_id` = `f`.`id`
-            WHERE `n`.`form_id` = '.$this->formId.'
-            AND `n`.`lang_id` = '.$_LANGID.'
-            ORDER BY `f`.`order`
+            SELECT
+                `formField`.`id`,
+                (
+                    SELECT `fieldName`.`name`
+                    FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` AS `fieldName`
+                    WHERE `fieldName`.`field_id` = `formField`.`id` AND `fieldName`.`form_id` = `formField`.`form`
+                    ORDER BY CASE `fieldName`.`lang_id`
+                                WHEN '.$_LANGID.' THEN 1
+                                ELSE 2
+                                END
+                    LIMIT 1
+                ) AS `name`,
+                (
+                    SELECT `fieldDefault`.`default`
+                    FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` AS `fieldDefault`
+                    WHERE `fieldDefault`.`field_id` = `formField`.`id` AND `fieldDefault`.`form_id` = `formField`.`form`
+                    ORDER BY CASE `fieldDefault`.`lang_id`
+                                WHEN '.$_LANGID.' THEN 1
+                                ELSE 2
+                                END
+                    LIMIT 1
+                ) AS `default`,
+                `formField`.`type`
+            FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field` AS `formField`
+            WHERE `formField`.`form` = '.$this->formId.'
+            ORDER BY `formField`.`order`
         ';
         $objResult = $objDatabase->Execute($query);
         
@@ -166,9 +211,11 @@ class CalendarRegistrationManager extends \Cx\Modules\Calendar\Controller\Calend
             $objTpl->parse('eventRegistrationName');
             
             $arrFieldColumns = array();
+            $arrDefaults = array();
             while (!$objResult->EOF) {
                 if (!in_array($objResult->fields['type'], array('agb', 'fieldset'))) {
-                    $arrFieldColumns[] = $objResult->fields['field_id'];
+                    $arrFieldColumns[] = $objResult->fields['id'];
+                    $arrDefaults[$objResult->fields['id']] = !empty($objResult->fields['default']) ? explode(',', $objResult->fields['default']) : array();
                     $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', contrexx_raw2xhtml($objResult->fields['name']));                    
                     $objTpl->parse('eventRegistrationName');
                 }
@@ -184,13 +231,11 @@ class CalendarRegistrationManager extends \Cx\Modules\Calendar\Controller\Calend
         }
         
         $query = '
-            SELECT `v`.`reg_id`, `v`.`field_id`, `v`.`value`, `n`.`default`, `f`.`type`
-            FROM (`'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value` AS `v`
-            INNER JOIN `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` AS `n`
-            ON `v`.`field_id` = `n`.`field_id`)
+            SELECT `v`.`reg_id`, `v`.`field_id`, `v`.`value`, `f`.`type`
+            FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value` AS `v`
             INNER JOIN `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field` AS `f`
             ON `v`.`field_id` = `f`.`id`
-            WHERE `n`.`lang_id` = '.$_LANGID.'
+            WHERE `f`.`form` = '.$this->formId.'
             ORDER BY `f`.`order`
         ';
         $objResult = $objDatabase->Execute($query);
@@ -199,7 +244,7 @@ class CalendarRegistrationManager extends \Cx\Modules\Calendar\Controller\Calend
         if ($objResult !== false) {
             while (!$objResult->EOF) {                    
                 if (!in_array($objResult->fields['type'], array('agb', 'fieldset'))) {
-                    $options = !empty($objResult->fields['default']) ? explode(',', $objResult->fields['default']) : array();
+                    $options = $arrDefaults[$objResult->fields['field_id']];
                     $value   = '';
                     
                     switch ($objResult->fields['type']) {

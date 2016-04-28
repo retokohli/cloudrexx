@@ -1,6 +1,5 @@
-{UPLOAD_WIDGET_CODE}
 {UPLOADER_CODE}
-{EXTENDED_FILE_INPUT_CODE}
+{FILE_INPUT_CODE}
 <script type="text/javascript">
     $J(document).ready(function() {
         $J('input[name=accept_terms]').click(function() {
@@ -66,7 +65,7 @@
             <label>{TXT_FILESHARING_FILES}</label>
             <input disabled="disabled" id="file_upload" type="file" />
         </p>
-        <div id="uploadFormField_uploadWidget" class="formUploadedFiles"></div>
+        {FOLDER_WIDGET_CODE}
         <p>
             <label for="FILESHARING_FORM_EMAIL">{FILESHARING_EMAIL}</label> 
             <input id="FILESHARING_FORM_EMAIL" name="email" placeholder="{FILESHARING_EMAIL_INFO}" type="text" />

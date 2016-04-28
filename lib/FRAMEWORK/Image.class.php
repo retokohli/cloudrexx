@@ -1,12 +1,37 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Image manager
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @version     1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
@@ -15,11 +40,11 @@ use Cx\Core\Core\Controller\Cx;
 /**
  * Image manager
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Paulo M. Santos <pmsantos@astalavista.net>
  * @version     1.0
  * @access      public
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_framework
  */
 class ImageManager
@@ -474,7 +499,7 @@ class ImageManager
                 \DBG::msg($e->getMessage());
             }
         }
-// TODO: Unfortunately, the functions imagegif(), imagejpeg() and imagepng() can't use the Contrexx FileSystem wrapper,
+// TODO: Unfortunately, the functions imagegif(), imagejpeg() and imagepng() can't use the Cloudrexx FileSystem wrapper,
 //       therefore we need to set the global write access image files.
 //       This issue might be solved by using the output-buffer and write the image manually afterwards.
 //
@@ -803,18 +828,11 @@ class ImageManager
      */
     static function getThumbnailFilename($file_name)
     {
-        $thumbs = Cx::instanciate()
+        $thumbnail = Cx::instanciate()
             ->getMediaSourceManager()
             ->getThumbnailGenerator()
-            ->createThumbnailFromPath($file_name);
-        if (preg_match('/\.thumb$/', $file_name)) return $file_name;
-        // Compatibility with versions up to 2.2 that create thumbnails
-        // in JPG format
-        $thumb_name = preg_replace('/\.png$/', '.jpg', $file_name);
-        if (file_exists($thumb_name.'.thumb')) {
-            return $thumb_name.'.thumb';
-        }
-        return $thumbs[0];
+            ->getThumbnailFilename($file_name);
+        return $thumbnail;
     }
 
 

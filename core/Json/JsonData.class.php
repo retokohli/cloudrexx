@@ -1,10 +1,36 @@
 <?php
+
 /**
- * JSON Interface to Contrexx
- * @copyright   Comvation AG
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
+/**
+ * JSON Interface to Cloudrexx
+ * @copyright   Cloudrexx AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 
@@ -14,13 +40,13 @@ use \Cx\Core\Json\Adapter\JsonPage;
 use \Cx\Core\Json\Adapter\JsonContentManager;
 
 /**
- * JSON Interface to Contrexx Doctrine Database
+ * JSON Interface to Cloudrexx Doctrine Database
  *
  * @api
- * @copyright   Comvation AG
+ * @copyright   Cloudrexx AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  core_json
  */
 class JsonData {
@@ -38,9 +64,6 @@ class JsonData {
         ),
         '\\Cx\\Core\\Json\\Adapter\\Calendar' => array(
             'JsonCalendar',
-        ),
-        '\\Cx\\modules\\Survey\\Controller' => array(
-            'JsonSurvey',
         ),
         '\\Cx\\Modules\\Crm\\Controller' => array(
             'JsonCrm',
@@ -63,7 +86,7 @@ class JsonData {
      * @author Michael Ritter <michael.ritter@comvation.com>
      */
     public function __construct() {
-            foreach (self::$adapter_classes as $ns=>$adapters) {
+        foreach (self::$adapter_classes as $ns=>$adapters) {
             foreach ($adapters as $adapter) {
                 $this->loadAdapter($adapter, $ns);
             }
@@ -119,7 +142,7 @@ class JsonData {
         $controllerClass = end($nsParts);
         
         // legacy adapter
-        if (in_array($possibleComponentName, array('Json', 'Survey', 'Crm'))) {
+        if (in_array($possibleComponentName, array('Json', 'Crm'))) {
             $this->loadLegacyAdapter($adapter);
             return;
         }
@@ -151,6 +174,7 @@ class JsonData {
         } else {
             $object = new $adapter();
         }
+        \Env::get('init')->loadLanguageData($object->getName());
         $this->adapters[$object->getName()] = $object;
     }
 
@@ -194,7 +218,7 @@ class JsonData {
 
     /**
      * Passes JSON data to the particular adapter and returns the result
-     * Called from jsondata() or any part of Contrexx
+     * Called from jsondata() or any part of Cloudrexx
      * @author Michael Ritter <michael.ritter@comvation.com>
      * @param String $adapter Adapter name
      * @param String $method Method name

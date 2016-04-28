@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ * 
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+ 
 /**
  * Main controller for Language Manager
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_languagemanager
  */
 
@@ -13,16 +39,49 @@ namespace Cx\Core\LanguageManager\Controller;
 /**
  * Main controller for Language Manager
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  core_languagemanager
  */
-class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener {
+    
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
         return array();
+    }
+    
+    public function registerEventListeners() {
+        $this->cx->getEvents()->addEventListener('preComponent', $this);
+    }
+    
+    /**
+     * Event handler to load component language
+     * @param string $eventName Name of triggered event, should always be static::EVENT_NAME
+     * @param array $eventArgs Supplied arguments, should be an array (see DBG message below)
+     */
+    public function onEvent($eventName, array $eventArgs) {
+        global $_ARRAYLANG;
+        
+        // we might be in a hook where lang is not yet initialized (before resolve)
+        if (!count($_ARRAYLANG)) {
+            return;
+        }
+        
+        $frontend = $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
+        $objInit = \Env::get('init');
+        switch ($eventName) {
+            case 'preComponent':
+                $_ARRAYLANG = array_merge(
+                    $_ARRAYLANG,
+                    $objInit->getComponentSpecificLanguageData(
+                        $eventArgs['componentName'],
+                        $frontend
+                    )
+                );
+                break;
+        }
     }
 
      /**

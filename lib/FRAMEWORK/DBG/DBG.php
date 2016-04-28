@@ -1,12 +1,38 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Debugging
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      David Vogt <david.vogt@comvation.com>
  * @version     3.0.0
  * @since       2.1.3
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  lib_dbg
  */
 
@@ -46,11 +72,11 @@ DBG::deactivate();
 /**
  * Debugging
  *
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      David Vogt <david.vogt@comvation.com>
  * @version     3.0.0
  * @since       2.1.3
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage	lib_dbg
  */
 class DBG
@@ -72,6 +98,7 @@ class DBG
     private static $mode         = 0;
     private static $sql_query_cache = null;
     private static $memory_logs = array();
+    protected static $logPrefix = '';
 
 
     public function __construct()
@@ -760,6 +787,10 @@ class DBG
     {
         if (!self::isLogWorthy($text)) return;
 
+        if (self::$logPrefix !== '') {
+            $text = '(' . self::$logPrefix . ') ' . $text;
+        }
+
         if (self::$log_firephp
             && method_exists(self::$firephp, $firephp_action)) {
             self::$firephp->$firephp_action($additional_args, $text);
@@ -884,6 +915,22 @@ class DBG
         if (!$forceOutput && self::$mode & DBG_DB_TRACE) {
             self::stack();
         }
+    }
+
+    /**
+     * Set a text that will be put in front of all log messages
+     *
+     * @param   string  $prefix The text that shall be put in front of log messages
+     */
+    public static function setLogPrefix($prefix = '') {
+        self::$logPrefix = $prefix;
+    }
+
+    /**
+     * Reset the text that is being put in front of log messags
+     */
+    public static function resetLogPrefix() {
+        self::$setLogPrefix();
     }
 }
 

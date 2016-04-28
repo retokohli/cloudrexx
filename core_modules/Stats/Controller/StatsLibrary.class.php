@@ -1,20 +1,46 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Stats Library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @version 1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_stats
  * @todo        Edit PHP DocBlocks!
  */
 namespace Cx\Core_Modules\Stats\Controller;
 /**
  * Stats Library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author Cloudrexx Development Team <info@cloudrexx.com>
  * @version 1.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_stats
  */
 class StatsLibrary
@@ -56,7 +82,7 @@ class StatsLibrary
     public $currentTime = 0;
     
     /**
-     * Instance of contrexx
+     * Instance of cloudrexx
      * 
      * @var object \Cx\Core\Core\Controller\Cx
      */
@@ -683,8 +709,26 @@ class StatsLibrary
 
         return $this->md5Id;
     }
-    
-    
+
+    /**
+     * Get the HTTP client's IP address
+     *
+     * In case the client is connecting through a proxy,
+     * this method will try the fetch the client's original
+     * IP address and will return that one instead of the
+     * proxy's IP address.
+     *
+     * @return  string  IP address of client
+     */
+    public function getClientIp()
+    {
+        if (!isset($this->arrClient['ip'])) {
+            $this->_getClientInfos();
+        }
+
+        return $this->arrClient['ip'];
+    }
+
     /**
     * Get client informations
     *

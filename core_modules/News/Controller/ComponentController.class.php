@@ -1,10 +1,36 @@
 <?php
+
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
 /**
  * Main controller for News
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 
@@ -13,9 +39,9 @@ namespace Cx\Core_Modules\News\Controller;
 /**
  * Main controller for News
  * 
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_news
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
@@ -32,7 +58,47 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array('JsonNews');
     }
     
-     /**
+    /**
+     * Returns a list of command mode commands provided by this component
+     * 
+     * @return array List of command names
+     */
+    public function getCommandsForCommandMode() {
+        return array('News');
+    }
+
+    /**
+     * Execute api command
+     * 
+     * @param string $command Name of command to execute
+     * @param array  $arguments List of arguments for the command
+     */
+    public function executeCommand($command, $arguments) {
+        $subcommand = null;
+        if (!empty($arguments[0])) {
+            $subcommand = $arguments[0];
+        }
+
+        // define frontend language
+        if (!defined('FRONTEND_LANG_ID')) {
+            define('FRONTEND_LANG_ID', 1);
+        }
+        
+        switch ($command) {
+            case 'News':
+                switch ($subcommand) {
+                    case 'Cron':
+                        $objNews = new NewsManager();
+                        $objNews->createRSS();
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
      * Load your component.
      * 
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page

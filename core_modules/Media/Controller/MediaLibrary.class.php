@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media Library
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @version       1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_media
  * @todo        Edit PHP DocBlocks!
  */
@@ -14,11 +39,11 @@ namespace Cx\Core_Modules\Media\Controller;
  * Media Library
  *
  * LibClass to manage cms media manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author        Cloudrexx Development Team <info@cloudrexx.com>
  * @access        public
  * @version       1.0.1
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  coremodule_media
  */
 class MediaLibrary
@@ -315,7 +340,7 @@ class MediaLibrary
             }
          } else {
             if ($this->_isImage($this->path.$file)) {
-                $thumb_name = \ImageManager::getThumbnailFilename($file);
+                $thumb_name = basename(\ImageManager::getThumbnailFilename($this->path . $file));
                 if (file_exists($this->path.$thumb_name)) {
                     $this->dirLog=$obj_file->delFile($this->path, $this->webPath, $thumb_name);
                 }
@@ -346,13 +371,16 @@ class MediaLibrary
         } else {
             $oldName  = $_POST['oldName'].'.'.$_POST['oldExt'];
         }
-        $ext      =
-            (   !empty($_POST['renExt'])
-            && \FWValidator::is_file_ending_harmless(
-                $_POST['renName'].'.'.$_POST['renExt'])
-                ? $_POST['renExt'] : 'txt');
-        $fileName = $fileName.'.'.$ext;
-        
+
+        if (!is_dir($this->path . $oldName)) {
+            $ext      =
+                (   !empty($_POST['renExt'])
+                && \FWValidator::is_file_ending_harmless(
+                   $_POST['renName'].'.'.$_POST['renExt'])
+                   ? $_POST['renExt'] : 'txt');
+            $fileName = $fileName.'.'.$ext;
+        }
+
         \Cx\Lib\FileSystem\FileSystem::clean_path($fileName);
 
         if (!isset($_POST['mediaInputAsCopy']) || $_POST['mediaInputAsCopy'] != 1) {
@@ -1181,75 +1209,87 @@ END;
      * 
      * @return string the directory to move to
      */
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response){
-        $path = $data['path'];
+    public static function uploadFinished(
+        $tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response
+    ) {
+        $path    = $data['path'];
         $webPath = $data['webPath'];
 
         //we remember the names of the uploaded files here. they are stored in the session afterwards,
         //so we can later display them highlighted.
-        $arrFiles = array(); 
-        
+        $arrFiles = array();
+
         //rename files, delete unwanted
         $arrFilesToRename = array(); //used to remember the files we need to rename
-        $h = opendir($tempPath);
+        $h                = opendir($tempPath);
         if ($h) {
-            while(false !== ($file = readdir($h))) {
+            while (false !== ($file = readdir($h))) {
                 //delete potentially malicious files
 // TODO: this is probably an overhead, because the uploader might already to this. doesn't it?
-                if(!\FWValidator::is_file_ending_harmless($file)) {
+                if (!\FWValidator::is_file_ending_harmless($file)) {
                     @unlink($file);
                     continue;
                 }
-                
+
                 if (self::isIllegalFileName($file)) {
                     $response->addMessage(
                         \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
                         "You are not able to create the requested file."
                     );
-                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
+                    \Cx\Lib\FileSystem\FileSystem::delete_file(
+                        $tempPath . '/' . $file
+                    );
                     continue;
                 }
-                
-                //skip . and ..           
-                if($file == '.' || $file == '..')
+
+                //skip . and ..
+                if ($file == '.' || $file == '..') {
                     continue;
+                }
 
                 //clean file name
                 $newName = $file;
                 \Cx\Lib\FileSystem\FileSystem::clean_path($newName);
 
                 //check if file needs to be renamed
-                if (file_exists($path.$newName)) {
-                    $info     = pathinfo($newName);
-                    $exte     = $info['extension'];
-                    $exte     = (!empty($exte)) ? '.'.$exte : '';
-                    $part1    = $info['filename'];
-                    if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
-                        $newName = $part1.'_'.time().$exte;
+                if (file_exists($path . $newName)) {
+                    $info  = pathinfo($newName);
+                    $exte  = $info['extension'];
+                    $exte  = (!empty($exte)) ? '.' . $exte : '';
+                    $part1 = $info['filename'];
+                    if (empty($_REQUEST['uploadForceOverwrite'])
+                        || !intval(
+                            $_REQUEST['uploadForceOverwrite'] > 0
+                        )
+                    ) {
+                        $newName = $part1 . '_' . time() . $exte;
                     }
                 }
-     
+
                 //if the name has changed, the file needs to be renamed afterwards
-                if($newName != $file)
+                if ($newName != $file) {
                     $arrFilesToRename[$file] = $newName;
+                }
 
                 array_push($arrFiles, $newName);
             }
         }
 
         //rename files where needed
-        foreach($arrFilesToRename as $oldName => $newName){
-            rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);
+        foreach ($arrFilesToRename as $oldName => $newName) {
+            rename($tempPath . '/' . $oldName, $tempPath . '/' . $newName);
         }
 
         //remeber the uploaded files
-        $files = $_SESSION["media_upload_files_$uploadId"];
-        $_SESSION["media_upload_files_$uploadId"] = array_merge($arrFiles, ($files ? $files->toArray() : []));
+        $files                                    = $_SESSION["media_upload_files_$uploadId"];
+        $_SESSION["media_upload_files_$uploadId"] = array_merge(
+            $arrFiles, ($files ? $files->toArray() : [])
+        );
         /* unwanted files have been deleted, unallowed filenames corrected.
            we can now simply return the desired target path, as only valid
            files are present in $tempPath                                   */
-	 
-        return array($data['path'],$data['webPath']);
+
+        return array($data['path'], $data['webPath']);
     }
     
     /**

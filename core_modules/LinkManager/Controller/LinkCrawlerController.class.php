@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * LinkCrawlerController
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
 
@@ -14,9 +39,9 @@ namespace Cx\Core_Modules\LinkManager\Controller;
 /**
  * LinkCrawlerControllerException
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
 class LinkCrawlerControllerException extends \Exception {}
@@ -24,9 +49,9 @@ class LinkCrawlerControllerException extends \Exception {}
 /**
  * Using the class LinkCrawlerController to find all the links and its status in the site.
  *
- * @copyright   Comvation AG
- * @author      Project Team SS4U <info@comvation.com>
- * @package     contrexx
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  coremodule_linkmanager
  */
 
@@ -331,7 +356,7 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
         try {
             $request->setUrl($url);
             // ignore ssl issues
-            // otherwise, contrexx does not activate 'https' when the server doesn't have an ssl certificate installed
+            // otherwise, cloudrexx does not activate 'https' when the server doesn't have an ssl certificate installed
             $request->setConfig(array(
                 'ssl_verify_peer'  => false,
                 'ssl_verify_host'  => false,
@@ -392,7 +417,7 @@ class LinkCrawlerController extends \Cx\Core\Core\Model\Entity\Controller {
         try {
             $request->setUrl($requestedUrl);
             // ignore ssl issues
-            // otherwise, contrexx does not activate 'https' when the server doesn't have an ssl certificate installed
+            // otherwise, cloudrexx does not activate 'https' when the server doesn't have an ssl certificate installed
             $request->setConfig(array(
                 'ssl_verify_peer'  => false,
                 'ssl_verify_host'  => false, 

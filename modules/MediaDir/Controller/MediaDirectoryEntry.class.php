@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Media  Directory Entry Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  * @todo        Edit PHP DocBlocks!
  */
@@ -13,9 +38,9 @@ namespace Cx\Modules\MediaDir\Controller;
 /**
  * Media Directory Entry Class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      CLOUDREXX Development Team <info@cloudrexx.com>
+ * @package     cloudrexx
  * @subpackage  module_mediadir
  */
 class MediaDirectoryEntry extends MediaDirectoryInputfield
@@ -1460,6 +1485,159 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
             return time();
         }
     }
-}
+    
+    /**
+     * Searches the content and returns an array that is built as needed by the search module.
+     * 
+     * @param string $searchTerm
+     * 
+     * @return array
+     */
+    public function searchResultsForSearchModule($searchTerm) 
+    {
+        $em = \Env::get('cx')->getDb()->getEntityManager();
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
-?>
+        // only list results in case the associated page of the module is active
+        $page = $pageRepo->findOneBy(array(
+            'module' => 'MediaDir',
+            'lang'   => FRONTEND_LANG_ID,
+            'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,            
+        ));
+
+        //If page is not exists or page is inactive then return empty result
+        if (!$page || !$page->isActive()) {
+            return array();
+        }
+
+        //get the config site values
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'site','Yaml');
+        $coreListProtectedPages   = \Cx\Core\Setting\Controller\Setting::getValue('coreListProtectedPages','Config');
+        $searchVisibleContentOnly = \Cx\Core\Setting\Controller\Setting::getValue('searchVisibleContentOnly','Config');
+        //get the config otherConfigurations value
+        \Cx\Core\Setting\Controller\Setting::init('Config', 'otherConfigurations','Yaml');
+        $searchDescriptionLength  = \Cx\Core\Setting\Controller\Setting::getValue('searchDescriptionLength','Config');
+
+        $hasPageAccess = true;
+        $isNotVisible = ($searchVisibleContentOnly == 'on') && !$page->isVisible();
+        if ($coreListProtectedPages == 'off' && $page->isFrontendProtected()) {
+            $hasPageAccess = \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true);
+        }
+
+        //If the page is invisible and frontend access is denied then return empty result
+        if ($isNotVisible || !$hasPageAccess) {
+            return array();
+        }
+
+        //get the media directory entry by the search term
+        $entries = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry($this->moduleName);
+        $entries->getEntries(null, null, null, $searchTerm);
+
+        //if no entries found then return empty result
+        if (empty($entries->arrEntries)) {
+            return array();
+        }
+
+        $results            = array();
+        $formEntries        = array();
+        $defaultEntries     = null;
+        $objForm            = new \Cx\Modules\MediaDir\Controller\MediaDirectoryForm(null, $this->moduleName);
+        $numOfEntries       = intval($entries->arrSettings['settingsPagingNumEntries']);
+        foreach ($entries->arrEntries as $entry) {
+            $pageUrlResult = null;
+            $entryForm     = $objForm->arrForms[$entry['entryFormId']];
+            //Get the entry's link url
+            //check the entry's form detail view exists if not, 
+            //check the entry's form overview exists if not,
+            //check the default overview exists if not, dont show the corresponding entry in entry
+            switch (true) {
+                case $entries->checkPageCmd('detail' . $entry['entryFormId']):
+                    $pageUrlResult = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                        $entries->moduleName, 
+                                        'detail' . $entry['entryFormId'], 
+                                        FRONTEND_LANG_ID, 
+                                        array('eid' => $entry['entryId']));
+                    break;
+                case $pageCmdExists = $entries->checkPageCmd($entryForm['formCmd']):
+                case $entries->checkPageCmd(''):
+                    if ($pageCmdExists && !isset($formEntries[$entryForm['formCmd']])) {
+                        $formEntries[$entryForm['formCmd']] = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry($entries->moduleName);
+                        $formEntries[$entryForm['formCmd']]->getEntries(null, null, null, null, null, null, 1, null, 'n', null, null, $entryForm['formId']);
+                    }
+                    if (!$pageCmdExists && !isset($defaultEntries)) {
+                        $defaultEntries = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry($entries->moduleName);
+                        $defaultEntries->getEntries();
+                    }
+                    //get entry's form overview / default page paging position
+                    $entriesPerPage = $numOfEntries;
+                    if ($pageCmdExists) {
+                        $entriesPerPage = !empty($entryForm['formEntriesPerPage']) ? $entryForm['formEntriesPerPage'] : $numOfEntries;
+                    }
+                    $pageCmd   = $pageCmdExists ? $entryForm['formCmd'] : '';
+                    $entryKeys = $pageCmdExists ? array_keys($formEntries[$entryForm['formCmd']]->arrEntries) : array_keys($defaultEntries->arrEntries);
+                    $entryPos  = array_search($entry['entryId'], $entryKeys);
+                    $position  = floor($entryPos / $entriesPerPage);
+                    $pageUrlResult = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                                        $entries->moduleName, 
+                                        $pageCmd, 
+                                        FRONTEND_LANG_ID,
+                                        array('pos' => $position * $entriesPerPage));
+                    break;
+                default:
+                    break;
+            }
+
+            //If page url is empty then dont show it in the result
+            if (!$pageUrlResult) {
+                continue;
+            }
+            //Get the search results title and content from the form context field 'title' and 'content'
+            $title          = current($entry['entryFields']);
+            $content        = '';
+            $objInputfields = new MediaDirectoryInputfield($entry['entryFormId'], false, $entry['entryTranslationStatus'], $this->moduleName);
+            $inputFields    = $objInputfields->getInputfields();
+            foreach ($inputFields as $arrInputfield) {
+                $contextType = isset($arrInputfield['context_type']) ? $arrInputfield['context_type'] : '';
+                if (!in_array($contextType, array('title', 'content'))) {
+                    continue;
+                }
+                $strType = isset($arrInputfield['type_name']) ? $arrInputfield['type_name'] : '';
+                $strInputfieldClass = "\Cx\Modules\MediaDir\Model\Entity\MediaDirectoryInputfield" . ucfirst($strType);
+                try {
+                    $objInputfield        = safeNew($strInputfieldClass, $this->moduleName);
+                    $arrTranslationStatus = (contrexx_input2int($arrInputfield['type_multi_lang']) == 1)
+                                            ? $entry['entryTranslationStatus'] 
+                                            : null;
+                    $arrInputfieldContent = $objInputfield->getContent($entry['entryId'], $arrInputfield, $arrTranslationStatus);
+                    if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND && \Cx\Core\Setting\Controller\Setting::getValue('blockStatus', 'Config')) {
+                        $arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = preg_replace('/\\[\\[([A-Z][A-Z0-9_-]+)\\]\\]/', '{\\1}', $arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE']);
+                        \Cx\Modules\Block\Controller\Block::setBlocks($arrInputfieldContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'], \Cx\Core\Core\Controller\Cx::instanciate()->getPage());
+                    }
+                } catch (\Exception $e) {
+                    \DBG::log($e->getMessage());
+                    continue;
+                }
+                $inputFieldValue = $arrInputfieldContent[$this->moduleConstVar . '_INPUTFIELD_VALUE'];
+                if (empty($inputFieldValue)) {
+                    continue;
+                }
+                if ($contextType == 'title') {
+                    $title = $inputFieldValue;
+                } elseif ($contextType == 'content') {
+                    $content = \Cx\Core_Modules\Search\Controller\Search::shortenSearchContent(
+                                    $inputFieldValue,
+                                    $searchDescriptionLength
+                                );
+                }
+            }
+
+            $results[] = array(
+                'Score'   => 100,
+                'Title'   => html_entity_decode(contrexx_strip_tags($title), ENT_QUOTES, CONTREXX_CHARSET),
+                'Content' => $content,
+                'Link'    => $pageUrlResult->toString()
+            );
+        }
+        return $results;
+    }
+}

@@ -1,11 +1,36 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Cart
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Test!
  */
@@ -14,10 +39,10 @@ namespace Cx\Modules\Shop\Controller;
 
 /**
  * Shop Cart
- * @copyright   CONTREXX CMS - COMVATION AG
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_shop
  * @todo        Test!
  */
@@ -135,13 +160,10 @@ class Cart
             $cart_id = intval($keys[0]);
         }
         $arrOptions = array();
-        // Add names of uploaded files to options array, so they will be
-        // recognized and added to the product in the cart
-        if (!empty($_FILES['productOption']['name'])) {
-            $arrOptions = $_FILES['productOption']['name'];
-        }
+        //Add values of the product option to options array, so they will be
+        //recognized and added to the product in the cart
         if (!empty($_POST['productOption'])) {
-            $arrOptions = $arrOptions + $_POST['productOption'];
+            $arrOptions = contrexx_input2raw($_POST['productOption']);
         }
         $arrProduct = array(
             'id' => intval($_REQUEST['productId']),
@@ -306,7 +328,8 @@ class Cart
                 }
                 if (   $type == Attribute::TYPE_UPLOAD_OPTIONAL
                     || $type == Attribute::TYPE_UPLOAD_MANDATORY) {
-                    $option_id = Shop::uploadFile($attribute_id);
+                    $filename = $arrNewProduct['options'][$attribute_id];
+                    $option_id = Shop::uploadFile($filename);
                     if ($option_id == '') {
                         continue;
                     }

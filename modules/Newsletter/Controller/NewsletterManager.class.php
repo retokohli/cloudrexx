@@ -1,12 +1,37 @@
 <?php
 
 /**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
  * Newsletter
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  * @todo        Edit PHP DocBlocks!
  * @todo        make total mailrecipient count static in newsletter list (act=mails)
@@ -21,11 +46,11 @@ namespace Cx\Modules\Newsletter\Controller;
  *
  * Newsletter module class
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Cloudrexx Development Team <info@cloudrexx.com>
  * @access      public
  * @version     1.0.0
- * @package     contrexx
+ * @package     cloudrexx
  * @subpackage  module_newsletter
  */
 class NewsletterManager extends NewsletterLib
@@ -792,7 +817,7 @@ class NewsletterManager extends NewsletterLib
             if ($objAttachment !== false) {
                 $arrCurrentAttachments = array();
                 while (!$objAttachment->EOF) {
-                    array_push($arrCurrentAttachments, $cx->getWebsiteImagesAttachPath() . '/' . $objAttachment->fields['file_name']);
+                    array_push($arrCurrentAttachments, $cx->getWebsiteImagesAttachWebPath() . '/' . $objAttachment->fields['file_name']);
                     $objAttachment->MoveNext();
                 }
 
@@ -1016,6 +1041,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW'],
             'TXT_NEWSLETTER_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
             'TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK' => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK'],
+            'TXT_NEWSLETTER_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
             'TXT_NEWSLETTER_SAVE' => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
             'TXT_NEWSLETTER_BACK' => $_ARRAYLANG['TXT_NEWSLETTER_BACK'],
             'TXT_NEWSLETTER_CONFIRM_EMPTY_TEXT' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_EMPTY_TEXT']
@@ -2138,6 +2164,7 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_NOT_ON_BROWSER_VIEW'],
             'TXT_NEWSLETTER_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
             'TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK' => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK'],
+            'TXT_NEWSLETTER_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
 			'TXT_NEWSLETTER_NEWS_IMPORT' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_IMPORT'],
             'TXT_NEWSLETTER_NEWS_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_DATE'],
             'TXT_NEWSLETTER_NEWS_LONG_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_NEWS_LONG_DATE'],
@@ -3019,9 +3046,8 @@ class NewsletterManager extends NewsletterLib
             }
         }
         $mail->CharSet  = CONTREXX_CHARSET;
-        $mail->From     = $sender_email;
-        $mail->FromName = $sender_name;
         $mail->AddReplyTo($return_path);
+        $mail->SetFrom($sender_email, $sender_name);
         $mail->Subject  = $subject;
         $mail->Priority = $priority;
         $mail->Body     = $NewsletterBody_HTML;
@@ -3209,9 +3235,8 @@ class NewsletterManager extends NewsletterLib
             }
         }
         $mail->CharSet      = CONTREXX_CHARSET;
-        $mail->From         = $newsletterValues['sender_email'];
-        $mail->FromName     = $newsletterValues['sender_name'];
         $mail->AddReplyTo($newsletterValues['return_path']);
+        $mail->SetFrom($newsletterValues['sender_email'], $newsletterValues['sender_name']);
         $mail->Subject      = $newsletterValues['subject'];
         $mail->Priority     = $newsletterValues['priority'];
         $mail->Body         = $this->getInformMailBody($userID, $email, $type);
@@ -3264,7 +3289,7 @@ class NewsletterManager extends NewsletterLib
 
     /**
      * Parse the newsletter
-     * @author      Comvation AG
+     * @author      Cloudrexx AG
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       string $userType Which type the user has (newsletter or access)
      */
@@ -3375,13 +3400,15 @@ class NewsletterManager extends NewsletterLib
             '[[display_in_browser_url]]',
             '[[profile_setup]]',
             '[[unsubscribe]]',
-            '[[date]]'
+            '[[date]]',
+            '[[subject]]',
         );
         $replace = array(
             $browserViewUrl,
             $this->GetProfileURL($userData['code'], $TargetEmail, $userData['type']),
             $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $userData['type']),
-            date(ASCMS_DATE_FORMAT_DATE)
+            date(ASCMS_DATE_FORMAT_DATE),
+            $subject,
         );
 
         // Replace the links in the content
@@ -3394,23 +3421,102 @@ class NewsletterManager extends NewsletterLib
         $allImg = array();
         preg_match_all('/src="([^"]*)"/', $content_text, $allImg, PREG_PATTERN_ORDER);
         $size = sizeof($allImg[1]);
+        
         $i = 0;
-        $port = $_SERVER['SERVER_PORT'] != 80 ? ':'.intval($_SERVER['SERVER_PORT']) : '';
-
         while ($i < $size) {
             $URLforReplace = $allImg[1][$i];
-            if (substr($URLforReplace, 0, 7) != ASCMS_PROTOCOL.'://') {
-                $ReplaceWith = '"'.ASCMS_PROTOCOL.'://'.$_SERVER['SERVER_NAME'].$port.$URLforReplace.'"';
+            
+            $replaceUrl = new \Cx\Core\Routing\Url($URLforReplace, true);
+            if ($replaceUrl->isInternal()) {
+                $ReplaceWith = $replaceUrl->toString();
             } else {
                 $ReplaceWith = $URLforReplace;
             }
-            $content_text = str_replace('"'.$URLforReplace.'"', $ReplaceWith, $content_text);
+            
+            $content_text = str_replace('"'.$URLforReplace.'"', '"'.$ReplaceWith.'"', $content_text);
             $i++;
         }
+        
+        // Set HTML height and width attributes for img-tags
+        $allImgsWithHeightOrWidth = array();
+        preg_match_all('/<img[^>]*style=(["\'])[^\1]*(?:width|height):\s*[^;\1]+;?\s*[^\1]*\1[^>]*>/', $content_text, $allImgsWithHeightOrWidth);
+        foreach ($allImgsWithHeightOrWidth as $img) {
+            $htmlHeight = $this->getAttributeOfTag($img, 'img', 'height');
+            $htmlWidth = $this->getAttributeOfTag($img, 'img', 'width');
+            // no need to proceed if attributes are already set
+            if (!empty($htmlHeight) && !empty($htmlWidth)) {
+                continue;
+            }
+            
+            $cssHeight = $this->getCssAttributeOfTag($img, 'img', 'height');
+            $cssWidth = $this->getCssAttributeOfTag($img, 'img', 'width');
+            // no need to proceed if we have no values to set
+            if (empty($cssHeight) && empty($cssWidth)) {
+                continue;
+            }
+            
+            $imgOrig = $img;
+            // set height and width attributes (if not yet set)
+            if (empty($htmlHeight) && !empty($cssHeight)) {
+                $img = $this->setAttributeOfTag($img, 'img', 'height', $cssHeight);
+            }
+            if (empty($htmlWidth) && !empty($cssWidth)) {
+                $img = $this->setAttributeOfTag($img, 'img', 'width', $cssWidth);
+            }
+            $content_text = str_replace($imgOrig, $img, $content_text);
+        }
 
-        $NewsletterBody = str_replace("[[subject]]", $subject, $TemplateSource);
         $NewsletterBody = str_replace("[[content]]", $content_text, $TemplateSource);
         return $NewsletterBody;
+    }
+    
+    /**
+     * Returns the value of an attribute of the specified HTML tag name
+     * @param string $html HTML to perform search in
+     * @param string $tagName HTML tag to look for
+     * @param string $attributeName HTML attribute to look for
+     * @return string Attribute value or empty string if not set
+     */
+    protected function getAttributeOfTag($html, $tagName, $attributeName) {
+        $matches = array();
+        preg_match('/<' . preg_quote($tagName) . '[^>]*' . preg_quote($attributeName) . '=(["\'])([^\1]*)/', $html, $matches);
+        if (!isset($matches[1])) {
+            return '';
+        }
+        return $matches[1];
+    }
+    
+    /**
+     * Sets the HTML attribute of a tag to a specified value
+     * @param string $html HTML to perform search in
+     * @param string $tagName HTML tag to look for
+     * @param string $attributeName HTML attribute to look for
+     * @param string $attributeValue Value to set
+     * @return string altered HTML
+     */
+    protected function setAttributeOfTag($html, $tagName, $attributeName, $attributeValue) {
+        $count = 0;
+        $html = preg_replace('/(<' . preg_quote($tagName) . '[^>]*' . preg_quote($attributeName) . '=(["\']))[^\2]*/', '\1' . $attributeValue, $html, -1, $count);
+        if ($count == 0) {
+            $html = preg_replace('/(<' . preg_quote($tagName) . '[^>]*)(\/?>)/U', '\1 ' . $attributeName . '="' . $attributeValue . '"\s\2', $html);
+        }
+        return $html;
+    }
+    
+    /**
+     * Returns the value of an attribute of the style attribute of an HTML tag
+     * @param string $html HTML to perform search in
+     * @param string $tagName HTML tag to look for
+     * @param string $cssAttributeName CSS attribute to look for in style attribute
+     * @return string Attribute value or empty string if not set
+     */
+    protected function getCssAttributeOfTag($html, $tagName, $cssAttributeName) {
+        $matches = array();
+        preg_match('/<' . preg_quote($tagName) . '[^>]*style=(["\'])[^\1]*' . preg_quote($cssAttributeName) . '\s*:\s*([^;\1]*)/', $html, $matches);
+        if (!isset($matches[2])) {
+            return '';
+        }
+        return $matches[2];
     }
 
 
@@ -3548,7 +3654,7 @@ class NewsletterManager extends NewsletterLib
     /**
      * Get the URL to the page to unsubscribe
      */
-    function GetUnsubscribeURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
+    public function GetUnsubscribeURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
     {
         global $_ARRAYLANG, $_CONFIG;
 
@@ -3557,28 +3663,32 @@ class NewsletterManager extends NewsletterLib
             return '';
         }
 
+        $cmd = '';
         switch ($type) {
             case self::USER_TYPE_ACCESS:
-                $profileURI = '?section=Newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
+                $cmd = 'profile';
                 break;
 
             case self::USER_TYPE_NEWSLETTER:
             default:
-                $profileURI = '?section=Newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email);
+                $cmd = 'unsubscribe';
                 break;
         }
 
-        $uri =
-            ASCMS_PROTOCOL.'://'.
-            $_CONFIG['domainUrl'].
-            ($_SERVER['SERVER_PORT'] == 80
-              ? '' : ':'.intval($_SERVER['SERVER_PORT'])).
-            ASCMS_PATH_OFFSET.
-// TODO: use the recipient's language instead of the default language
-            '/'.\FWLanguage::getLanguageParameter(\FWLanguage::getDefaultLangId(), 'lang').
-            '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
+        $unsubscribeUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Newsletter',
+            $cmd,
+            $this->getUsersPreferredLanguageId(
+                $email,
+                $type
+            ),
+            array(
+                'code' => $code,
+                'mail' => urlencode($email),
+            )
+        );
 
-        return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
+        return '<a href="'.$unsubscribeUrl->toString().'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
     }
 
 
@@ -3587,24 +3697,26 @@ class NewsletterManager extends NewsletterLib
      */
     function GetProfileURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG;
 
         if ($type == self::USER_TYPE_CORE) {
             // recipients that will receive the newsletter through the selection of their user group don't have a profile
             return '';
         }
 
-        $profileURI = '?section=Newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
-        $uri =
-            ASCMS_PROTOCOL.'://'.
-            $_CONFIG['domainUrl'].
-            ($_SERVER['SERVER_PORT'] == 80
-              ? NULL : ':'.intval($_SERVER['SERVER_PORT'])).
-            ASCMS_PATH_OFFSET.
-// TODO: use the recipient's language instead of the default language
-            '/'.\FWLanguage::getLanguageParameter(\FWLanguage::getDefaultLangId(), 'lang').
-            '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
-        return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
+        $profileUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Newsletter',
+            'profile',
+            $this->getUsersPreferredLanguageId(
+                $email,
+                $type
+            ),
+            array(
+                'code' => $code,
+                'mail' => urlencode($email),
+            )
+        );
+        return '<a href="'.$profileUrl->toString().'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
     }
 
 
@@ -3667,7 +3779,7 @@ class NewsletterManager extends NewsletterLib
 
                 if (!empty($thumbnail)) {
                     $imageSrc = $thumbnail;
-                } elseif (!empty($image) && file_exists(ASCMS_PATH.\ImageManager::getThumbnailFilename($image))) {
+                } elseif (!empty($image) && file_exists(\ImageManager::getThumbnailFilename(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsitePath() . $image))) {
                     $imageSrc = \ImageManager::getThumbnailFilename($image);
                 } elseif (!empty($image)) {
                     $imageSrc = $image;
@@ -4332,8 +4444,7 @@ $WhereStatement = '';
                 $objTpl->parse("additional");
                 $this->_objTpl->setVariable('NEWSLETTER_USER_FILE', $objTpl->get());
             }
-        } elseif (   (   empty($_FILES['importfile'])
-                      || $_FILES['importfile']['size'] == 0)
+        } elseif (   empty($_POST['importfile'])
                   || (   isset($_POST['imported'])
                       && empty($_POST['newsletter_recipient_associated_list']))) {
             // Dateiauswahldialog. Siehe Fileselect
@@ -4442,6 +4553,10 @@ $WhereStatement = '';
                 'IMPORT_HIDDEN_VALUE' => (isset($_POST['sendEmail']) ? intval($_POST['sendEmail']) : 0),
             ));
             $objTpl->parse('hidden_fields');
+            $objTpl->setVariable(array(
+                'IMPORT_ACTION' => 'index.php?cmd=Newsletter&amp;act=users&amp;tpl=import',
+            ));
+            
             $this->_objTpl->setVariable(array(
                 'TXT_REMOVE_PAIR' => $_ARRAYLANG['TXT_REMOVE_PAIR'],
                 'NEWSLETTER_USER_FILE' => $objTpl->get(),
@@ -6294,9 +6409,9 @@ if (!class_exists('DBIterator', false)) {
     /**
      * Iterator wrapper for adodb result objects
      *
-     * @copyright   CONTREXX CMS - COMVATION AG
+     * @copyright   CLOUDREXX CMS - CLOUDREXX AG
      * @author      Stefan Heinemann <sh@adfinis.com>
-     * @package     contrexx
+     * @package     cloudrexx
      * @subpackage  module_newsletter
      */
     class DBIterator implements \Iterator {
