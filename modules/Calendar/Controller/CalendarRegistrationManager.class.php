@@ -94,7 +94,28 @@ class CalendarRegistrationManager extends CalendarLibrary
      * @var array
      */
     public $registrationList = array();
-    
+
+    /**
+     * Startdate filter
+     *
+     * @var integer
+     */
+    public $startDate;
+
+    /**
+     * Enddate filter
+     *
+     * @var integer
+     */
+    public $endDate;
+
+    /**
+     * Set true when registration manager is loaded to parse the current view
+     *
+     * @var boolean
+     */
+    public $defaultView;
+
     /**
      * Registration manager constructor
      * 
@@ -108,12 +129,31 @@ class CalendarRegistrationManager extends CalendarLibrary
      * @param boolean $getWaitlist        condition to check whether we need the
      *                                    waitlist
      */
-    function __construct($eventId, $getRegistrations=true, $getDeregistrations=false, $getWaitlist=false)
+    /**
+     * Registration manager constructor
+     *
+     * Loads the form object by loading the calendarEvent object
+     *
+     * @param integer $eventId              Event id
+     * @param boolean $getRegistrations     condition to check whether we need the
+     *                                      registrations
+     * @param boolean $getDeregistrations   condition to check whether we need the
+     *                                      deregistrations
+     * @param boolean $getWaitlist          condition to check whether we need the
+     *                                      waitlist
+     * @param integer $startDate            Startdate filter
+     * @param integer $endDate              Enddate filter
+     * @param boolean $isDefaultView        Is registration manager is loaded to parse the current view
+     */
+    function __construct($eventId, $getRegistrations = true, $getDeregistrations = false, $getWaitlist = false, $startDate = null, $endDate = null, $isDefaultView = false)
     {   
-        $this->eventId = intval($eventId);
-        $this->getRegistrations = $getRegistrations;
+        $this->eventId            = intval($eventId);
+        $this->getRegistrations   = $getRegistrations;
         $this->getDeregistrations = $getDeregistrations;
-        $this->getWaitlist = $getWaitlist;
+        $this->getWaitlist        = $getWaitlist;
+        $this->startDate          = $startDate;
+        $this->endDate            = $endDate;
+        $this->defaultView        = $isDefaultView;
         
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId); 
         $this->formId = $objEvent->registrationForm;                    
@@ -140,6 +180,14 @@ class CalendarRegistrationManager extends CalendarLibrary
         }
         $strWhere .= ')';
         
+        if ($this->startDate && $this->endDate) {
+            $strWhere .= ' AND (date >= '. contrexx_input2int($this->startDate) .' AND date <= '. contrexx_input2int($this->endDate) .')';
+        } elseif ($this->startDate) {
+            $strWhere .= ' AND (date >= '. contrexx_input2int($this->startDate) .')';
+        } elseif ($this->endDate) {
+            $strWhere .= ' AND (date <= '. contrexx_input2int($this->startDate) .')';
+        }
+
         $query = '
             SELECT `id`
             FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
@@ -188,7 +236,16 @@ class CalendarRegistrationManager extends CalendarLibrary
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', '#');
             $objTpl->parse('eventRegistrationName');
             
-            $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $_ARRAYLANG['TXT_CALENDAR_DATE']);
+            $dateFilterTpl = new \Cx\Core\Html\Sigma(
+                    \Cx\Core\Core\Controller\Cx::instanciate()->getCodeBaseModulePath() . '/' . $this->moduleName . '/View/Template/Backend'
+            );
+            $dateFilterTpl->loadTemplateFile('module_calendar_registration_date_filter.html');
+            $dateFilterTpl->setVariable('TXT_CALENDAR_DATE', $_ARRAYLANG['TXT_CALENDAR_DATE']);
+            $eventStats         = $this->getEventStats();
+            $selectedDateFilter = $this->defaultView && isset($_GET['date']) ? contrexx_input2raw($_GET['date']) : '';
+            $this->parseEventRegistrationStats($dateFilterTpl, $eventStats, $selectedDateFilter);
+
+            $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $dateFilterTpl->get());
             $objTpl->parse('eventRegistrationName');
             
             $arrFieldColumns = array();
@@ -321,7 +378,125 @@ class CalendarRegistrationManager extends CalendarLibrary
             $i++;
         }
     }
-    
+
+    /**
+     * Parse the Event registration stats dropdown to filter the registration
+     *
+     * @param \Cx\Core\Html\Sigma   $objTpl      Template instance
+     * @param array                 $eventStats  Array of event stats
+     * @param string                $selected    Selected option
+     * @param string                $parent      Parent level
+     * @param integer               $level       Current level of parsing,
+     *                                           It is used to identify the value of parsing
+     *                                           Level 1: Year value
+     *                                                 2: Month
+     *                                                 3: Day
+     * @param string                $blockName   Block name to parse
+     */
+    public function parseEventRegistrationStats(
+        \Cx\Core\Html\Sigma $objTpl,
+        $eventStats = array(),
+        $selected = '',
+        $parent = '',
+        $level = 1,
+        $blockName = 'calendar_registration_date'
+    ) {
+        global $_CORELANG;
+
+        $arrMonthTxts = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
+        foreach ($eventStats as $key => $value) {
+            $optionValue = empty($parent) ? str_pad($key, 2, '0', STR_PAD_LEFT) : $parent . '-' . str_pad($key, 2, '0', STR_PAD_LEFT);
+            $optionName  = '';
+            switch ($level) {
+                case 1: // year value
+                    $optionName = $key;
+                    break;
+                case 2: // month value
+                    $optionName = $arrMonthTxts[$key-1];
+                    break;
+                case 3: // day value
+                    $optionName = $key .' ('. $value .')';
+                default:
+                    break;
+            }
+
+            $objTpl->setVariable(array(
+                $this->moduleLangVar . '_REGISTRATION_FILTER_DATE_INTENT'   => str_repeat('&nbsp;', ($level - 1) * 2),
+                $this->moduleLangVar . '_REGISTRATION_FILTER_DATE_NAME'     => $optionName,
+                $this->moduleLangVar . '_REGISTRATION_FILTER_DATE_KEY'      => $optionValue,
+                $this->moduleLangVar . '_REGISTRATION_FILTER_DATE_SELECTED' => ($selected == $optionValue) ? 'selected="selected"' : '',
+            ));
+            $objTpl->parse($blockName);
+
+            if (is_array($value)) {
+                $this->parseEventRegistrationStats($objTpl, $value, $selected, $optionValue, $level + 1, $blockName);
+            }
+        }
+    }
+
+    /**
+     * Get the event registration count by given filter
+     * output array format
+     *  array(
+     *     year => array(
+     *      month => array(
+     *          day1 => registration_count
+     *          day2 => registration_count
+     *      )
+     *     )
+     *  )
+     *
+     * @return array
+     */
+    public function getEventStats()
+    {
+        global $objDatabase;
+
+        $blnFirst = true;
+        $arrWhere = array();
+        if ($this->getRegistrations)   { $arrWhere[] = 1; }
+        if ($this->getDeregistrations) { $arrWhere[] = 0; }
+        if ($this->getWaitlist)        { $arrWhere[] = 2; }
+        $strWhere = ' AND (';
+        foreach ($arrWhere as $value) {
+            $strWhere .=  $blnFirst ? '`type` = '.$value : ' OR `type` = '.$value;
+            $blnFirst  = false;
+        }
+        $strWhere .= ')';
+        $query = 'SELECT
+                    COUNT(1) AS `count`,
+                    `date` FROM
+                  `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
+                WHERE
+                    `event_id` = '. $this->eventId .'
+                    '. $strWhere .'
+                GROUP BY `date`';
+        $registration = $objDatabase->Execute($query);
+        if (!$registration) {
+            return array();
+        }
+
+        $stats = array();
+        while (!$registration->EOF) {
+            $dateTime = new \DateTime();
+            $dateTime->setTimestamp($registration->fields['date']);
+            $year  = $dateTime->format('Y');
+            $month = $dateTime->format('n');
+            $day   = $dateTime->format('d');
+            if (!isset($stats[$year])) {
+                $stats[$year] = array();
+            }
+            if (!isset($stats[$year][$month])) {
+                $stats[$year][$month] = array();
+            }
+            $stats[$year][$month][$day] = $registration->fields['count'];
+
+            $registration->MoveNext();
+        }
+
+        return $stats;
+    }
+
     /**
      * Set the registration fields placeholders to the template
      *      
