@@ -118,19 +118,6 @@ class CalendarRegistrationManager extends CalendarLibrary
 
     /**
      * Registration manager constructor
-     * 
-     * Loads the form object by loading the calendarEvent object
-     * 
-     * @param integer $eventId            Event id
-     * @param boolean $getRegistrations   condition to check whether we need the
-     *                                    registrations
-     * @param boolean $getDeregistrations condition to check whether we need the 
-     *                                    deregistrations
-     * @param boolean $getWaitlist        condition to check whether we need the
-     *                                    waitlist
-     */
-    /**
-     * Registration manager constructor
      *
      * Loads the form object by loading the calendarEvent object
      *
