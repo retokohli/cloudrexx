@@ -78,14 +78,42 @@ class DownloadsLibrary
      * 
      * @var array
      */
-    protected $downloadsSortingOption = array('custom', 'alphabetic', 'newestToOldest', 'oldestToNewest');
+    protected $downloadsSortingOptions = array(
+        'custom' => array(
+            'order' => 'ASC',
+            'name'  => 'ASC',
+            'id'    => 'ASC'
+        ),
+        'alphabetic' => array(
+            'name' => 'ASC',
+            'id'   => 'ASC'
+        ),
+        'newestToOldest' => array(
+            'ctime' => 'DESC',
+            'id'    => 'ASC'
+        ),
+        'oldestToNewest' => array(
+            'ctime' => 'ASC',
+            'id'    => 'ASC'
+        )
+    );
 
     /**
      * Categories setting option
      * 
      * @var array
      */
-    protected $categoriesSortingOption = array('custom', 'alphabetic');
+    protected $categoriesSortingOptions = array(
+        'custom' => array(
+            'order' => 'ASC',
+            'name'  => 'ASC',
+            'id'    => 'ASC'
+        ),
+        'alphabetic' => array(
+            'name' => 'ASC',
+            'id'   => 'ASC'
+        )
+    );
 
     public function __construct()
     {
@@ -152,7 +180,8 @@ class DownloadsLibrary
     {
         global $_LANGID;
 
-        $objCategory = Category::getCategories(null, null, $this->getCategoriesOrderBy());
+        $sortOrder   = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
+        $objCategory = Category::getCategories(null, null, $sortOrder);
         $arrCategories = array();
 
         switch ($accessType) {
@@ -235,7 +264,8 @@ class DownloadsLibrary
     {
         global $_LANGID;
 
-        $objCategory = Category::getCategories(null, null, $this->getCategoriesOrderBy());
+        $sortOrder   = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
+        $objCategory = Category::getCategories(null, null, $sortOrder);
         $arrCategories = array();
 
         while (!$objCategory->EOF) {
@@ -348,11 +378,11 @@ class DownloadsLibrary
     {
         global $_LANGID;
 
-        $objGroup = Group::getGroups(array('id' => $arrGroups));
-
+        $objGroup  = Group::getGroups(array('id' => $arrGroups));
+        $sortOrder = $this->categoriesSortingOptions[$this->arrConfig['categories_sorting_order']];
         while (!$objGroup->EOF) {
             $output = "<ul>\n";
-            $objCategory = Category::getCategories(array('id' => $objGroup->getAssociatedCategoryIds()), null, $this->getCategoriesOrderBy());
+            $objCategory = Category::getCategories(array('id' => $objGroup->getAssociatedCategoryIds()), null, $sortOrder);
             while (!$objCategory->EOF) {
                 $output .= '<li><a href="'.CONTREXX_SCRIPT_PATH.'?section=Downloads&amp;category='.$objCategory->getId().'" title="'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 $objCategory->next();
@@ -378,72 +408,22 @@ class DownloadsLibrary
         \Cx\Core\Html\Sigma $objTemplate, 
         $settingValues, 
         $selected,
-        $blockName)
-    {
+        $blockName
+    ) {
         global $_ARRAYLANG;
 
         if (empty($settingValues)) {
             return;
         }
 
-        foreach ($settingValues as $value) {
-            $selectedOption = ($selected == $value) ? 'selected="selected"' : '';
+        foreach ($settingValues as $key => $value) {
+            $selectedOption = ($selected == $key) ? 'selected="selected"' : '';
             $objTemplate->setVariable(array(
-                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE'    => $value,
-                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME'     => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_'.  strtoupper($value).'_LABEL'],
+                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE'    => $key,
+                'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME'     => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS_'.  strtoupper($key).'_LABEL'],
                 'DOWNLOADS_SETTINGS_DROPDOWN_SELECTED_OPTION' => $selectedOption,
             ));
             $objTemplate->parse('downloads_settings_sorting_dropdown_' . $blockName);
         }
-    }
-
-    /**
-     * Get the downloads orderby field with direction
-     * 
-     * @return array array of orderby fields with direction
-     */
-    public function getDownloadsOrderBy()
-    {
-        $orderBy = array();
-        switch ($this->arrConfig['downloads_sorting_order']) {
-            case 'custom':
-                $orderBy['order'] = 'ASC';
-                $orderBy['name'] = 'ASC';
-                break;
-            case 'alphabetic':
-                $orderBy['name'] = 'ASC';
-                break;
-            case 'newestToOldest':
-                $orderBy['ctime'] = 'DESC';
-                break;
-            case 'oldestToNewest':
-                $orderBy['ctime'] = 'ASC';
-                break;
-        }
-        $orderBy['id'] = 'ASC';
-
-        return $orderBy;
-    }
-
-    /**
-     * Get the categories orderby field with direction
-     * 
-     * @return array array of orderby fields with direction
-     */
-    public function getCategoriesOrderBy()
-    {
-        $orderBy = array();
-        switch ($this->arrConfig['categories_sorting_order']) {
-            case 'custom':
-                $orderBy['order'] = 'ASC';
-                $orderBy['name'] = 'ASC';
-                break;
-            case 'alphabetic':
-                $orderBy['name'] = 'ASC';
-                break;
-        }
-        $orderBy['id'] = 'ASC';
-
-        return $orderBy;
     }
 }
