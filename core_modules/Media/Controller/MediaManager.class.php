@@ -359,7 +359,11 @@ class MediaManager extends MediaLibrary
                 break;
             case 'delete':
                 $this->_deleteMedia();
-                $this->handleRedirect();
+                if (!empty($_REQUEST['redirect'])) {
+                    $this->handleRedirect();
+                } else {
+                    $this->_overviewMedia();
+                }
                 break;
             case 'rename':
                 $this->_renameMedia();
