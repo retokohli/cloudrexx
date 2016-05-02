@@ -552,12 +552,6 @@ cx.ready(function() {
     if (cx.jQuery.getUrlVar("page") || cx.jQuery.getUrlVar("node")) {
         cx.cm.loadPage(cx.jQuery.getUrlVar("page"), cx.jQuery.getUrlVar("node"), cx.jQuery.getUrlVar("version"), cx.jQuery.getUrlVar("tab"));
     }
-    
-    // we hide aliases and title if alias management is forbidden:
-    if (!aliasManagementAllowed) {
-        cx.jQuery("div.page_alias").hide();
-        cx.jQuery("label[for=page_alias]").parent().hide();
-    }
 
     cx.cm();
 });
@@ -2900,16 +2894,18 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
         myField.children("input").attr("id", "page_alias_" + index);
         myField.children("span.noedit").html(alias);
         field.before(myField);
-        // if alias management is forbidden, aliases are hidden. we want to show
-        // readonly aliases anyway:
-        if (!aliasManagementAllowed) {
-            myField.show();
-        }
     });
-    // if alias management is forbidden, alias title is hidden. If we show
-    // readonly aliases, we also want the title:
-    if (!aliasManagementAllowed && page.aliases.length) {
-        cx.jQuery("label[for=page_alias]").parent().show();
+    
+    // If alias management is forbidden
+    if (!aliasManagementAllowed) {
+        // never show the "new alias" field
+        jQuery("div.page_alias").show().last().hide();
+        
+        // show alias title if there are any aliases
+        jQuery("label[for=page_alias]").parent().toggle(!!page.aliases.length);
+        
+        // show if aliases
+        jQuery("#page_alias_container").toggle(!!page.aliases.length);
     }
     
     if (selectTab != undefined) {
