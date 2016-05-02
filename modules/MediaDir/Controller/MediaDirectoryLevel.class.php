@@ -489,9 +489,7 @@ TEMPLATE;
     {
         $addSql   = array();
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
-            $addSql['where'] = array(
-                'active' => 1
-            );
+            $addSql['where'] = 'active = 1';
         }
         $children = array();
         $childrenResult = $this->levelNestedSet->getChildren($level->getId(), true, true, false, $addSql);
