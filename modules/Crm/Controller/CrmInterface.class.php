@@ -832,10 +832,17 @@ class CrmInterface extends CrmLibrary
                             if (isset($customerGroups) && !empty($line[$customerGroups])) {
                                 $groupIds   = array();
                                 $groupNames = explode(', ', $line[$customerGroups]);
-                                $query = 'SELECT `membership`.`id` FROM `'.DBPREFIX.'module_'. $this->moduleNameLC . '_memberships` AS membership
-                                          LEFT JOIN `'.DBPREFIX.'module_' . $this->moduleNameLC . '_membership_local` AS memberLoc
-                                            ON membership.id = memberLoc.entry_id
-                                            WHERE `memberLoc`.`value` IN ("' . implode('" , "', $groupNames) . '")';
+                                $query = 'SELECT
+                                            `membership`.`id`
+                                          FROM
+                                            `'.DBPREFIX.'module_'. $this->moduleNameLC . '_memberships` AS membership
+                                          LEFT JOIN
+                                            `'.DBPREFIX.'module_' . $this->moduleNameLC . '_membership_local` AS memberLoc
+                                          ON
+                                            `membership`.`id` = `memberLoc`.`entry_id`
+                                          WHERE
+                                            `memberLoc`.`value` IN ("' . implode('" , "', contrexx_input2db($groupNames)) . '")
+                                        ';
                                 $objResult = $objDatabase->Execute($query);
                                 if ($objResult && $objResult->RecordCount() > 0) {
                                     while (!$objResult->EOF) {
