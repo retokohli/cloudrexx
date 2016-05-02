@@ -56,26 +56,31 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
         parent::__construct('.', $name);
         parent::getSettings();
     }
-    
+
+    /**
+     * Get the Navigation content
+     *
+     * @return string
+     */
     function getNavigationPlacholder()
     {
         $this->strPlaceholder = null;
-        
-        if($this->arrSettings['settingsShowLevels'] == 1) {
-        	$objLevels = new MediaDirectoryLevel(null, null, 0, $this->moduleName);
-	        $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : null;
-	        
-	        $this->strPlaceholder = $objLevels->listLevels($this->_objTpl, 6, $intLevelId);
+
+        if ($this->arrSettings['settingsShowLevels'] == 1) {
+            $objLevels  = new MediaDirectoryLevel($this->moduleName);
+            $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : null;
+
+            $this->strPlaceholder = $objLevels->listLevels($this->_objTpl, 6, $intLevelId);
         } else {
-        	$objCategories = new MediaDirectoryCategory(null, null, 0, $this->moduleName);
+            $objCategories = new MediaDirectoryCategory($this->moduleName);
             $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : null;
-        
-            $this->strPlaceholder = $objCategories->listCategories($this->_objTpl, 6, $intCategoryId, null, null, null, 1);
+
+            $this->strPlaceholder = $objCategories->listCategories($this->_objTpl, 6, $intCategoryId);
         }
-        
-        return '<ul id="'.$this->moduleNameLC.'NavigationPlacholder">'.$this->strPlaceholder.'</ul>';
+
+        return '<ul id="' . $this->moduleNameLC . 'NavigationPlacholder">' . $this->strPlaceholder . '</ul>';
     }
-    
+
     function getLatestPlacholder()
     {
         $this->strPlaceholder = null;
@@ -100,4 +105,3 @@ class MediaDirectoryPlaceholders extends MediaDirectoryLibrary
         return '<ul id="'.$this->moduleNameLC.'LatestPlacholder">'.$this->strPlaceholder.'</ul>'; 
     }
 }
-?>

@@ -176,7 +176,7 @@ EOF;
 
             $intLevelId = isset($_GET['lid']) ? intval($_GET['lid']) : $intLevelId;
 
-            $objLevels = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
+            $objLevels = new MediaDirectoryLevel($this->moduleName);
             $strLevelDropdown = $objLevels->listLevels($this->_objTpl, 3, $intLevelId);
             $strLevelName = $_ARRAYLANG['TXT_MEDIADIR_LEVEL'];
             $strInputfieldSearch = $this->moduleNameLC."InputfieldSearch";
@@ -207,7 +207,7 @@ EOF;
         $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : $intCategoryId;
 
         if ($bolShowCategorySelector) {
-        	$objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
+            $objCategories = new MediaDirectoryCategory($this->moduleName);
             $strCategoryDropdown = $objCategories->listCategories($this->_objTpl, 3, $intCategoryId);
             $strCategoryName = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY'];
 

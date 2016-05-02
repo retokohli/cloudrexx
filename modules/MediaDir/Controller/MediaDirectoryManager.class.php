@@ -150,7 +150,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $act = isset($_GET['act']) ? $_GET['act'] : '';
         switch ($act) {
             case 'delete_level':
-                $objLevel = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
+                $objLevel = new MediaDirectoryLevel($this->moduleName);
                 $strStatus = $objLevel->deleteLevel(intval($_GET['id']));
 
                 if($strStatus) {
@@ -160,7 +160,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 }
                 break;
             case 'order_level':
-                $objLevel = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
+                $objLevel = new MediaDirectoryLevel($this->moduleName);
                 $strStatus = $objLevel->saveOrder($_POST);
 
                 if($strStatus) {
@@ -170,7 +170,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 }
                 break;
             case 'delete_category':
-                $objCategory = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
+                $objCategory = new MediaDirectoryCategory($this->moduleName);
                 $strStatus = $objCategory->deleteCategory(intval($_GET['id']));
 
                 if($strStatus) {
@@ -180,7 +180,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
                 }
                 break;
             case 'order_category':
-                $objCategory = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
+                $objCategory = new MediaDirectoryCategory($this->moduleName);
                 $strStatus = $objCategory->saveOrder($_POST);
 
                 if($strStatus) {
@@ -195,10 +195,10 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         parent::getSettings();
 
         //get search dropdowns
-        $objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
+        $objCategories = new MediaDirectoryCategory($this->moduleName);
         $catDropdown = $objCategories->listCategories(null, 3);
 
-        $objLevels = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
+        $objLevels = new MediaDirectoryLevel($this->moduleName);
         $levelDropdown = $objLevels->listLevels(null, 3);
         
         $objForms = new MediaDirectoryForm(null, $this->moduleName);
@@ -287,7 +287,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
         //show levels (if activated)
         if($this->arrSettings['settingsShowLevels'] == 1) {
-            $objLevels = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
+            $objLevels = new MediaDirectoryLevel($this->moduleName);
             $objLevels->listLevels($this->_objTpl, 1, null);
 
 
@@ -331,8 +331,8 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
 
         //show categories
-        $objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
-        $objCategories->listCategories($this->_objTpl, 1, null);
+        $objCategories = new MediaDirectoryCategory($this->moduleName);
+        $objCategories->listCategories($this->_objTpl, 1);
 
         $this->_objTpl->setVariable(array(
             'TXT_CATEGORIES' => $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'],
@@ -648,109 +648,89 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         }
     }
 
-
-
-    function modifyCategory()
+    /**
+     * Parse Add/Edit view of category
+     */
+    public function modifyCategory()
     {
+        global $_ARRAYLANG, $_CORELANG, $_LANGID;
+
         \Permission::checkAccess(MediaDirectoryAccessIDs::ManageCategories, 'static');
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_modify_category.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'];
 
         //get category object
-        $objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
+        $objCategories = new MediaDirectoryCategory($this->moduleName);
+
+        $id       = isset($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
+        $category = $id ? $objCategories->getCategoryById(intval($_REQUEST['id'])) : false;
+        if (!$category) {
+            $category = new \Cx\Modules\MediaDir\Model\Entity\Category();
+        }
+        $categoryId = $category->getId();
 
         //save category data
         if(isset($_POST['submitCategoryModfyForm'])) {
-            $status = $objCategories->saveCategory($_POST, intval($_POST['categoryId']));
-            $objCategories->loadCategories();
+            $status = $objCategories->saveCategory($category, $_POST);
 
-            if(!empty($_POST['categoryId'])) {
-                if($status == true) {
-                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'];
+            if (!empty($_POST['id'])) {
+                if ($status == true) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY'] . " " . $_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'];
                 } else {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY'] . " " . $_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
                 }
             } else {
-                if($status == true) {
-                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'];
+                if ($status == true) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY'] . " " . $_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'];
                 } else {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'];
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY'] . " " . $_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'];
                 }
             }
         }
 
+        $showEntries        = empty($categoryId) ? true : $category->getShowEntries();
+        $showSubCategories  = empty($categoryId) ? true : $category->getShowSubcategories();
+        $active             = empty($categoryId) ? true : $category->getActive();
+        $categoryName       = $categoryDesc = $catImage = '';
+
         //load category data
-        if(isset($_GET['id']) && $_GET['id'] != 0) {
+        $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'];
+        if ($categoryId) {
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']. " ".$_ARRAYLANG['TXT_MEDIADIR_EDIT'];
-            $intCategoryId = intval($_GET['id']);
 
-            $objCategory = new MediaDirectoryCategory($intCategoryId, null, 0, $this->moduleName);
-
-            if($objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1) {
-                $showEntriesOn = 'checked="checked"';
-                $showEntriesOff = '';
-            } else {
-                $showEntriesOn = '';
-                $showEntriesOff = 'checked="checked"';
-            }
-
-            if($objCategory->arrCategories[$intCategoryId]['catShowSubcategories'] == 1) {
-                $showCategoriesOn = 'checked="checked"';
-                $showCategoriesOff = '';
-            } else {
-                $showCategoriesOn = '';
-                $showCategoriesOff = 'checked="checked"';
-            }
-
-            if($objCategory->arrCategories[$intCategoryId]['catActive'] == 1) {
-                $activeOn = 'checked="checked"';
-                $activeOff = '';
-            } else {
-                $activeOn = '';
-                $activeOff = 'checked="checked"';
-            }
-
-            $cx         = \Cx\Core\Core\Controller\Cx::instanciate();
-            $catPicture =  !empty($objCategory->arrCategories[$intCategoryId]['catPicture'])
-                         ? $objCategory->arrCategories[$intCategoryId]['catPicture']
-                         : '';
-            if(empty($catPicture) || !file_exists($cx->getWebsitePath().$catPicture)) {
-                $catImage = '<img src="'. $cx->getCodeBaseOffsetPath() .'images/MediaDir/no_picture.gif" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
+            $catPicture =  !\FWValidator::isEmpty($category->getPicture())
+                            ? $category->getPicture()
+                            : '';
+            if(empty($catPicture) || !file_exists($this->cx->getWebsitePath().$catPicture)) {
+                $catImage = '<img src="'. $this->cx->getCodeBaseOffsetPath() .'images/MediaDir/no_picture.gif" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
             } else {
                 $thumbnail = $this->getThumbImage($catPicture);
                 $catImage  = '<img src="'. $thumbnail .'" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
             }
 
-            //parse data variables
-            $this->_objTpl->setGlobalVariable(array(
-                $this->moduleLangVar.'_CATEGORY_ID' => $intCategoryId,
-                $this->moduleLangVar.'_CATEGORY_NAME_MASTER' => $objCategory->arrCategories[$intCategoryId]['catName'][0],
-                $this->moduleLangVar.'_CATEGORY_DESCRIPTION_MASTER' => $objCategory->arrCategories[$intCategoryId]['catDescription'][0],
-                $this->moduleLangVar.'_CATEGORY_PICTURE' => $objCategory->arrCategories[$intCategoryId]['catPicture'],
-                $this->moduleLangVar.'_CATEGORY_SHOW_ENTRIES_ON' => $showEntriesOn,
-                $this->moduleLangVar.'_CATEGORY_SHOW_ENTRIES_OFF' => $showEntriesOff,
-                $this->moduleLangVar.'_CATEGORY_ACTIVE_ON' => $activeOn,
-                $this->moduleLangVar.'_CATEGORY_ACTIVE_OFF' => $activeOff,
-                $this->moduleLangVar.'_CATEGORY_PICTURE_THUMB' => $catImage,
-                $this->moduleLangVar.'_CATEGORY_SHOW_SUBCATEGORIES_ON' => $showCategoriesOn,
-                $this->moduleLangVar.'_CATEGORY_SHOW_SUBCATEGORIES_OFF' => $showCategoriesOff,
-            ));
-        } else {
-            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'];
-            $intCategoryId = null;
-
-            //parse global variables
-	        $this->_objTpl->setGlobalVariable(array(
-	            $this->moduleLangVar.'_CATEGORY_SHOW_ENTRIES_ON' => 'checked="checked"',
-	            $this->moduleLangVar.'_CATEGORY_SHOW_SUBCATEGORIES_ON' => 'checked="checked"',
-	            $this->moduleLangVar.'_CATEGORY_ACTIVE_ON' => 'checked="checked"',
-	        ));
+            $locale       = $category->getLocaleByLang(FRONTEND_LANG_ID);
+            $categoryName = $locale ? $locale->getCategoryName() : '';
+            $categoryDesc = $locale ? $locale->getCategoryDescription() : '';
         }
 
         //get category dropdown
-        $catDropdown = $objCategories->listCategories($this->_objTpl, 3, $intCategoryId);
+        $catDropdown = $objCategories->listCategories($this->_objTpl, 3, ($category->getParent() ? $category->getParent() : null));
+
+        //parse data variables
+        $this->_objTpl->setGlobalVariable(array(
+            $this->moduleLangVar.'_CATEGORY_ID'                     => $categoryId,
+            $this->moduleLangVar.'_CATEGORY_NAME_MASTER'            => $categoryName,
+            $this->moduleLangVar.'_CATEGORY_DESCRIPTION_MASTER'     => $categoryDesc,
+            $this->moduleLangVar.'_CATEGORY_PICTURE_THUMB'          => $catImage,
+            $this->moduleLangVar.'_CATEGORY_PICTURE'                => $category->getPicture(),
+            $this->moduleLangVar.'_CATEGORY_SHOW_ENTRIES_ON'        => $showEntries ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_CATEGORY_SHOW_ENTRIES_OFF'       => !$showEntries ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_CATEGORY_ACTIVE_ON'              => $active ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_CATEGORY_ACTIVE_OFF'             => !$active ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_CATEGORY_SHOW_SUBCATEGORIES_ON'  => $showSubCategories ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_CATEGORY_SHOW_SUBCATEGORIES_OFF' => !$showSubCategories ? 'checked="checked"' : '',
+        ));
 
         //parse global variables
         $this->_objTpl->setGlobalVariable(array(
@@ -790,40 +770,35 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         //category name language block
         $first = true;
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-            if(isset($intCategoryId)){
-                $strCategoryName = empty($objCategory->arrCategories[$intCategoryId]['catName'][$arrLang['id']]) ? $objCategory->arrCategories[$intCategoryId]['catName'][0] : $objCategory->arrCategories[$intCategoryId]['catName'][$arrLang['id']];
-            } else {
-                $strCategoryName = '';
-            }
-            //category description language block
-            if(isset($intCategoryId)){
-                $strCategoryDescription = empty($objCategory->arrCategories[$intCategoryId]['catDescription'][$arrLang['id']]) ? $objCategory->arrCategories[$intCategoryId]['catDescription'][0] : $objCategory->arrCategories[$intCategoryId]['catDescription'][$arrLang['id']];
-            } else {
-                $strCategoryDescription = '';
+            $langId = $arrLang['id'];
+            $catName = $catDescription = '';
+
+            $locale = $category->getLocaleByLang($langId);
+            if ($locale) {
+                $catName        = $locale->getCategoryName();
+                $catDescription = $locale->getCategoryDescription();
             }
 
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_CATEGORY_LANG_ID' => $arrLang['id'],
-                $this->moduleLangVar.'_CATEGORY_NAME' => $strCategoryName,                
-                $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg("categoryDescription[{$arrLang['id']}]", $strCategoryDescription),
+                $this->moduleLangVar.'_CATEGORY_NAME' => $catName,
+                $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg("categoryDescription[{$arrLang['id']}]", $catDescription),
                 $this->moduleLangVar.'_CATEGORY_BLOCK_DISPLAY' => $first ? 'display:block;' : 'display:none;'
             ));
 
             $this->_objTpl->parse($this->moduleNameLC.'_category_name_and_description');
-            
+
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_CATEGORY_LANG_ID'   => $arrLang['id'],
                 $this->moduleLangVar.'_CATEGORY_LANG_NAME' => $arrLang['name'],
                 $this->moduleLangVar.'_CATEGORY_LANG_TAB_CLASS' => $first ? 'active' : 'inactive',                
             ));
             $this->_objTpl->parse($this->moduleNameLC.'CategoryLanguages');
-            
+
             $first = false;
         }
 
     }
-
-
 
     /**
      * Switch the state of an entry (active or inactive)
@@ -867,11 +842,9 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         die();
     }
 
-
-
-    function modifyLevel()
+    public function modifyLevel()
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $_LANGID;
 
         \Permission::checkAccess(MediaDirectoryAccessIDs::ManageLevels, 'static');
 
@@ -879,11 +852,18 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_LEVELS'];
 
         //get level object
-        $objLevels = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
+        $objLevels = new MediaDirectoryLevel($this->moduleName);
+
+        $id    = isset($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
+        $level = $id ? $objLevels->getLevelById($id) : false;
+        if (!$level) {
+            $level = new \Cx\Modules\MediaDir\Model\Entity\Level();
+        }
+        $levelId = $level->getId();
 
         //save level data
         if(isset($_POST['submitLevelModfyForm'])) {
-            $status = $objLevels->saveLevel($_POST, intval($_POST['levelId']));
+            $status = $objLevels->saveLevel($level, $_POST);
 
             if(!empty($_POST['levelId'])) {
                 if($status == true) {
@@ -900,107 +880,74 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             }
         }
 
+        $showEntries    = empty($levelId) ? false : $level->getShowEntries();
+        $showSublevels  = empty($levelId) ? true : $level->getShowSublevels();
+        $showCategories = empty($levelId) ? true : $level->getShowCategories();
+        $active         = empty($levelId) ? true : $level->getActive();
+        $levelName      = $levelDesc = $levelImage = '';
+
         //load level dat
-        if(isset($_GET['id']) && $_GET['id'] != 0) {
+        $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_LEVEL']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'];
+        if($levelId) {
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_LEVEL']. " ".$_ARRAYLANG['TXT_MEDIADIR_EDIT'];
-            $intLevelId = intval($_GET['id']);
 
-            $objLevel = new MediaDirectoryLevel($intLevelId, null, 0, $this->moduleName);
-
-            if($objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1) {
-                $showEntriesOn = 'checked="checked"';
-                $showEntriesOff = '';
-            } else {
-                $showEntriesOn = '';
-                $showEntriesOff = 'checked="checked"';
-            }
-
-            if($objLevel->arrLevels[$intLevelId]['levelShowSublevels'] == 1) {
-                $showSublevelsOn = 'checked="checked"';
-                $showSublevelsOff = '';
-            } else {
-                $showSublevelsOn = '';
-                $showSublevelsOff = 'checked="checked"';
-            }
-
-            if($objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1) {
-                $showCategoriesOn = 'checked="checked"';
-                $showCategoriesOff = '';
-            } else {
-                $showCategoriesOn = '';
-                $showCategoriesOff = 'checked="checked"';
-            }
-
-            if($objLevel->arrLevels[$intLevelId]['levelActive'] == 1) {
-                $activeOn = 'checked="checked"';
-                $activeOff = '';
-            } else {
-                $activeOn = '';
-                $activeOff = 'checked="checked"';
-            }
-
-            $cx           = \Cx\Core\Core\Controller\Cx::instanciate();
-            $levelPicture =  !empty($objLevel->arrLevels[$intLevelId]['levelPicture'])
-                           ? $objLevel->arrLevels[$intLevelId]['levelPicture']
-                           : '';
-            if(empty($levelPicture) || !file_exists($cx->getWebsitePath().$levelPicture)) {
-                $levelImage = '<img src="'. $cx->getCodeBaseOffsetPath() .'images/MediaDir/no_picture.gif" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
+            $levelPicture =  !\FWValidator::isEmpty($level->getPicture())
+                            ? $level->getPicture()
+                            : '';
+            if(empty($levelPicture) || !file_exists($this->cx->getWebsitePath().$levelPicture)) {
+                $levelImage = '<img src="'. $this->cx->getCodeBaseOffsetPath() .'images/MediaDir/no_picture.gif" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
             } else {
                 $thumbnail = $this->getThumbImage($levelPicture);
                 $levelImage = '<img src="'. $thumbnail .'" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
             }
-            
-            //parse data variables
-            $this->_objTpl->setGlobalVariable(array(
-                $this->moduleLangVar.'_LEVEL_ID' => $intLevelId,
-                $this->moduleLangVar.'_LEVEL_NAME_MASTER' => contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]),
-                $this->moduleLangVar.'_LEVEL_DESCRIPTION_MASTER' => contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelDescription'][0]),
-                $this->moduleLangVar.'_LEVEL_PICTURE' => $objLevel->arrLevels[$intLevelId]['levelPicture'],
-                $this->moduleLangVar.'_LEVEL_SHOW_ENTRIES_ON' => $showEntriesOn,
-                $this->moduleLangVar.'_LEVEL_SHOW_ENTRIES_OFF' => $showEntriesOff,
-                $this->moduleLangVar.'_LEVEL_ACTIVE_ON' => $activeOn,
-                $this->moduleLangVar.'_LEVEL_ACTIVE_OFF' => $activeOff,
-                $this->moduleLangVar.'_LEVEL_PICTURE_THUMB' => $levelImage,
-                $this->moduleLangVar.'_LEVEL_SHOW_SUBLEVELS_ON' => $showSublevelsOn,
-                $this->moduleLangVar.'_LEVEL_SHOW_SUBLEVELS_OFF' => $showSublevelsOff,
-                $this->moduleLangVar.'_LEVEL_SHOW_CATEGORIES_ON' => $showCategoriesOn,
-                $this->moduleLangVar.'_LEVEL_SHOW_CATEGORIES_OFF' => $showCategoriesOff,
-            ));
-        } else {
-            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_LEVEL']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'];
-            $intLevelId = null;
-
-            //parse data variables
-            $this->_objTpl->setGlobalVariable(array(
-	            $this->moduleLangVar.'_LEVEL_SHOW_ENTRIES_OFF' => 'checked="checked"',
-	            $this->moduleLangVar.'_LEVEL_SHOW_SUBLEVELS_ON' => 'checked="checked"',
-	            $this->moduleLangVar.'_LEVEL_SHOW_CATEGORIES_ON' => 'checked="checked"',
-	            $this->moduleLangVar.'_LEVEL_ACTIVE_ON' => 'checked="checked"',
-            ));
+            $locale    = $level->getLocaleByLang($_LANGID);
+            $levelName = $locale ? $locale->getLevelName() : '';
+            $levelDesc = $locale ? $locale->getLevelDescription() : '';
         }
+
+        //get level dropdown
+        $levelDropdown = $objLevels->listLevels($this->_objTpl, 3, ($level->getParent() ? $level->getParent() : null));
+
+        //parse data variables
+        $this->_objTpl->setGlobalVariable(array(
+            $this->moduleLangVar.'_LEVEL_ID'                  => intval($levelId),
+            $this->moduleLangVar.'_LEVEL_NAME_MASTER'         => contrexx_raw2xhtml($levelName),
+            $this->moduleLangVar.'_LEVEL_DESCRIPTION_MASTER'  => contrexx_raw2xhtml($levelDesc),
+            $this->moduleLangVar.'_LEVEL_PICTURE'             => $level->getPicture(),
+            $this->moduleLangVar.'_LEVEL_PICTURE_THUMB'       => $levelImage,
+            $this->moduleLangVar.'_LEVEL_SHOW_ENTRIES_ON'     => $showEntries ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_LEVEL_SHOW_ENTRIES_OFF'    => !$showEntries ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_LEVEL_ACTIVE_ON'           => $active ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_LEVEL_ACTIVE_OFF'          => !$active ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_LEVEL_SHOW_SUBLEVELS_ON'   => $showSublevels ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_LEVEL_SHOW_SUBLEVELS_OFF'  => !$showSublevels ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_LEVEL_SHOW_CATEGORIES_ON'  => $showCategories ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_LEVEL_SHOW_CATEGORIES_OFF' => !$showCategories ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_LEVELS_DROPDOWN_OPTIONS'   => $levelDropdown,
+        ));
 
         //parse global variables
         $this->_objTpl->setGlobalVariable(array(
-            'TXT_'.$this->moduleLangVar.'_ACTIVATE' =>  $_ARRAYLANG['TXT_MEDIADIR_ACTIVATE'],
-            'TXT_'.$this->moduleLangVar.'_DEACTIVATE' =>  $_ARRAYLANG['TXT_MEDIADIR_DEAVTIVATE'],
-            'TXT_'.$this->moduleLangVar.'_NAME' =>  $_CORELANG['TXT_NAME'],
-            'TXT_'.$this->moduleLangVar.'_DESCRIPTION' =>  $_CORELANG['TXT_DESCRIPTION'],
-            'TXT_'.$this->moduleLangVar.'_PICTURE' =>  $_CORELANG['TXT_IMAGE'],
-            'TXT_'.$this->moduleLangVar.'_SHOW_SUBLEVELS' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBLEVELS'],
-            'TXT_'.$this->moduleLangVar.'_SHOW_CATEGORIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_CATEGORIES'],
-            'TXT_'.$this->moduleLangVar.'_SHOW_ENTRIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_ENTRIES'],
-            'TXT_'.$this->moduleLangVar.'_VISIBLE' =>  $_CORELANG['TXT_VISIBLE'],
-            'TXT_'.$this->moduleLangVar.'_LEVEL' =>  $_ARRAYLANG['TXT_MEDIADIR_LEVEL'],
-            'TXT_'.$this->moduleLangVar.'_PAGE_TITLE' =>  $pageTitle,
-            'TXT_'.$this->moduleLangVar.'_BROWSE' =>  $_CORELANG['TXT_BROWSE'],
-            'TXT_'.$this->moduleLangVar.'_MORE' =>  $_ARRAYLANG['TXT_MEDIADIR_MORE'],
-            'TXT_'.$this->moduleLangVar.'_SUBMIT' =>  $_ARRAYLANG['TXT_'.$this->moduleLangVar.'_SUBMIT'],
-            'TXT_'.$this->moduleLangVar.'_NEW_LEVEL' =>  "--- ".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']." ---",
+            'TXT_'.$this->moduleLangVar.'_ACTIVATE'         =>  $_ARRAYLANG['TXT_MEDIADIR_ACTIVATE'],
+            'TXT_'.$this->moduleLangVar.'_DEACTIVATE'       =>  $_ARRAYLANG['TXT_MEDIADIR_DEAVTIVATE'],
+            'TXT_'.$this->moduleLangVar.'_NAME'             =>  $_CORELANG['TXT_NAME'],
+            'TXT_'.$this->moduleLangVar.'_DESCRIPTION'      =>  $_CORELANG['TXT_DESCRIPTION'],
+            'TXT_'.$this->moduleLangVar.'_PICTURE'          =>  $_CORELANG['TXT_IMAGE'],
+            'TXT_'.$this->moduleLangVar.'_SHOW_SUBLEVELS'   =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBLEVELS'],
+            'TXT_'.$this->moduleLangVar.'_SHOW_CATEGORIES'  =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_CATEGORIES'],
+            'TXT_'.$this->moduleLangVar.'_SHOW_ENTRIES'     =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_ENTRIES'],
+            'TXT_'.$this->moduleLangVar.'_VISIBLE'          =>  $_CORELANG['TXT_VISIBLE'],
+            'TXT_'.$this->moduleLangVar.'_LEVEL'            =>  $_ARRAYLANG['TXT_MEDIADIR_LEVEL'],
+            'TXT_'.$this->moduleLangVar.'_BROWSE'           =>  $_CORELANG['TXT_BROWSE'],
+            'TXT_'.$this->moduleLangVar.'_MORE'             =>  $_ARRAYLANG['TXT_MEDIADIR_MORE'],
+            'TXT_'.$this->moduleLangVar.'_SUBMIT'           =>  $_ARRAYLANG['TXT_'.$this->moduleLangVar.'_SUBMIT'],
+            'TXT_'.$this->moduleLangVar.'_NEW_LEVEL'        =>  "--- ".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']." ---",
             'TXT_'.$this->moduleLangVar.'_VISIBLE_LEVEL_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_VISIBLE_LEVEL_INFO'],
-            $this->moduleLangVar.'_LEVEL_DEFAULT_LANG_ID' => $_LANGID,
-            'TXT_'.$this->moduleLangVar.'_BASIC_DATA' => $_ARRAYLANG['TXT_MEDIADIR_BASIC_DATA'],
-            'TXT_'.$this->moduleLangVar.'_LEVEL_DETAILS' => $_ARRAYLANG['TXT_MEDIADIR_LEVEL_DETAILS'],
-            $this->moduleLangVar.'_LEVEL_IMAGE_BROWSE' => $this->getMediaBrowserButton(
+            'TXT_'.$this->moduleLangVar.'_BASIC_DATA'       => $_ARRAYLANG['TXT_MEDIADIR_BASIC_DATA'],
+            'TXT_'.$this->moduleLangVar.'_LEVEL_DETAILS'    => $_ARRAYLANG['TXT_MEDIADIR_LEVEL_DETAILS'],
+            'TXT_'.$this->moduleLangVar.'_PAGE_TITLE'       => $pageTitle,
+            $this->moduleLangVar.'_LEVEL_DEFAULT_LANG_ID'   => $_LANGID,
+            $this->moduleLangVar.'_LEVEL_IMAGE_BROWSE'      => $this->getMediaBrowserButton(
                 $_ARRAYLANG['TXT_BROWSE'],
                 array(
                     'data-cx-mb-views' => 'filebrowser',
@@ -1011,50 +958,39 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             ),
         ));
 
-        //get level dropdown
-        $levelDropdown = $objLevels->listLevels($this->_objTpl, 3, $intLevelId);
-
         if (count($this->arrFrontendLanguages) == 1) {
             $this->_objTpl->setVariable($this->moduleLangVar.'_HIDE_ON_SINGLE_LANG', "display:none;");
         }
         //level name language block
         $first = true;
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-            if(isset($intLevelId)){
-                $strLevelName = empty($objLevel->arrLevels[$intLevelId]['levelName'][$arrLang['id']]) ? $objLevel->arrLevels[$intLevelId]['levelName'][0] : $objLevel->arrLevels[$intLevelId]['levelName'][$arrLang['id']];
-            } else {
-                $strLevelName = '';
+            $langId    = $arrLang['id'];
+            $levelName = $levelDescription = '';
+
+            $locale = $level->getLocaleByLang($langId);
+            if ($locale) {
+                $levelName        = $locale->getLevelName();
+                $levelDescription = $locale->getLevelDescription();
             }
-            //level description language
-            if(isset($intLevelId)){
-                $strLevelDescription = empty($objLevel->arrLevels[$intLevelId]['levelDescription'][$arrLang['id']]) ? $objLevel->arrLevels[$intLevelId]['levelDescription'][0] : $objLevel->arrLevels[$intLevelId]['levelDescription'][$arrLang['id']];
-            } else {
-                $strLevelDescription = '';
-            }
-            
+
             $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_LEVEL_LANG_ID' => $arrLang['id'],
-                $this->moduleLangVar.'_LEVEL_NAME' => $strLevelName,
-                $this->moduleLangVar.'_LEVELS_DROPDOWN_OPTIONS' => $levelDropdown,
-                $this->moduleLangVar.'_LEVEL_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg("levelDescription[{$arrLang['id']}]", $strLevelDescription),
+                $this->moduleLangVar.'_LEVEL_LANG_ID'       => $arrLang['id'],
+                $this->moduleLangVar.'_LEVEL_NAME'          => $levelName,
+                $this->moduleLangVar.'_LEVEL_DESCRIPTION'   => new \Cx\Core\Wysiwyg\Wysiwyg("levelDescription[{$langId}]", $levelDescription),
                 $this->moduleLangVar.'_LEVEL_BLOCK_DISPLAY' => $first ? 'display:block;' : 'display:none;'
             ));
-
             $this->_objTpl->parse($this->moduleNameLC.'_level_name_and_description');
-            
+
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_LEVEL_LANG_ID'   => $arrLang['id'],
                 $this->moduleLangVar.'_LEVEL_LANG_NAME' => $arrLang['name'],
                 $this->moduleLangVar.'_LEVEL_LANG_TAB_CLASS' => $first ? 'active' : 'inactive',                
             ));
             $this->_objTpl->parse($this->moduleNameLC.'LevelLanguages');
-            
+
             $first = false;
         }
-        
     }
-
-
 
     /**
      * Switch the state of an entry (active or inactive)
@@ -1131,10 +1067,10 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
         $intFormId     = $_SESSION[$this->moduleName]['searchFilter']['form_id'];
         $strTerm       = $_SESSION[$this->moduleName]['searchFilter']['term'];
 
-        $objCategories = new MediaDirectoryCategory(null, null, 1, $this->moduleName);
+        $objCategories = new MediaDirectoryCategory($this->moduleName);
         $catDropdown = $objCategories->listCategories(null, 3, $intCategoryId);
 
-        $objLevels = new MediaDirectoryLevel(null, null, 1, $this->moduleName);
+        $objLevels = new MediaDirectoryLevel($this->moduleName);
         $levelDropdown = $objLevels->listLevels(null, 3, $intLevelId);
 
         $objForms = new MediaDirectoryForm(null, $this->moduleName);

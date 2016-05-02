@@ -64,7 +64,7 @@ class MediaDirectoryAccessIDs {
  */
 class MediaDirectoryLibrary
 {
-	public $_objTpl;
+    public $_objTpl;
     public $pageContent;
 
     public $arrFrontendLanguages = array();
@@ -83,6 +83,11 @@ class MediaDirectoryLibrary
     public $moduleLangVar = "MEDIADIR";
     public $moduleConstVar = "MEDIADIR";
 
+    /*
+     * @var \Cx\Core\Core\Controller\Cx
+     */
+    public $cx;
+
     /**
      * Constructor
      */
@@ -93,6 +98,7 @@ class MediaDirectoryLibrary
         
         $this->moduleName    = $name;
         $this->moduleNameLC  = strtolower($this->moduleName);
+        $this->cx            = \Cx\Core\Core\Controller\Cx::instanciate();
 
     	$this->_objTpl->setGlobalVariable(array(
             'MODULE_NAME' =>  $this->moduleName,

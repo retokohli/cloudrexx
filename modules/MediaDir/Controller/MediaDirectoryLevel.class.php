@@ -35,6 +35,7 @@
  * @todo        Edit PHP DocBlocks!
  */
 namespace Cx\Modules\MediaDir\Controller;
+
 /**
  * Media Directory Level Class
  *
@@ -45,315 +46,251 @@ namespace Cx\Modules\MediaDir\Controller;
  */
 class MediaDirectoryLevel extends MediaDirectoryLibrary
 {
-    private $intLevelId;
-    private $intParentId;
-    private $intNumEntries;
-    private $bolGetChildren;
-    private $intRowCount;
-    private $arrExpandedLevelIds = array();
-
-    private $arrSelectedLevels;
-    private $strNavigationPlaceholder;
-
-    public $arrLevels = array();
-
-    private $strNotSelectedOptions = '';
-    private $strSelectedOptions = '';
-    
     /**
-     * Constructor
+     * Count number of entries for each levels
+     *
+     * @var boolean
      */
-    function __construct($intLevelId=null, $intParentId=null, $bolGetChildren=1, $name)
+    protected $countEntries = false;
+
+    /**
+     * Instance of NestedSet
+     *
+     * @var \DB_NestedSet
+     */
+    public $levelNestedSet;
+
+    /**
+     * Parent level id(Root of all levels)
+     *
+     * @var integer
+     */
+    public $nestedSetRootId;
+
+    /**
+     * Default Constructor
+     */
+    function __construct($name)
     {
-        $this->intLevelId = intval($intLevelId);
-        $this->intParentId = intval($intParentId);
-        $this->bolGetChildren = intval($bolGetChildren);
+        global $objDatabase;
 
         parent::__construct('.', $name);
-        parent::getSettings();
-        parent::getFrontendLanguages();
+        $this->getSettings();
+        $this->getFrontendLanguages();
 
-        $this->arrLevels = self::getLevels($this->intLevelId, $this->intParentId);
+        if ($this->arrSettings['settingsCountEntries'] == 1 || $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            $this->countEntries = true;
+        }
+
+        //nestedSet setup
+        $arrTableStructure = array(
+            'id'                => 'id',
+            'parent_id'         => 'rootid',
+            'lft'               => 'l',
+            'rgt'               => 'r',
+            'level_order'       => 'norder',
+            'lvl'               => 'level',
+            'show_sublevels'    => 'show_sublevels',
+            'show_categories'   => 'show_categories',
+            'show_entries'      => 'show_entries',
+            'picture'           => 'picture',
+            'active'            => 'active',
+        );
+        $objNs = new \DB_NestedSet($arrTableStructure);
+        $this->levelNestedSet = $objNs->factory('ADODB', $objDatabase, $arrTableStructure);
+        $this->levelNestedSet->setAttr(array(
+            'node_table'    => DBPREFIX.'module_mediadir_levels',
+            'lock_table'    => DBPREFIX.'module_mediadir_levels_locks',
+        ));
+
+        if (count($rootNodes = $this->levelNestedSet->getRootNodes()) > 0) {
+            foreach ($rootNodes as $rootNode) {
+                $this->nestedSetRootId = $rootNode->id;
+                break;
+            }
+        } else {
+            // create first entry of sequence table for NestedSet
+            $objResult = $objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."module_mediadir_levels_id`", 1);
+            if ($objResult->RecordCount() == 0) {
+                $objDatabase->Execute("INSERT INTO `".DBPREFIX."module_mediadir_levels_id` VALUES (0)");
+            }
+            $this->nestedSetRootId = $this->levelNestedSet->createRootNode(array(), false, false);
+        }
     }
 
-    function getLevels($intLevelId=null, $intParentId=null)
-    {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
+    /**
+     * Parse the level details
+     *
+     * @param \Cx\Core\Html\Sigma   $objTpl          Instance of template object
+     * @param Level                 $level           Instance of level to parse
+     * @param string                $strLevelIcon    String level icon
+     * @param string                $strLevelClass   Class name for the level
+     * @param string                $blockName       Parse block name
+     */
+    public function parseLevelDetail(
+        \Cx\Core\Html\Sigma $objTpl,
+        \Cx\Modules\MediaDir\Model\Entity\Level $level,
+        $strLevelIcon = null,
+        $strLevelClass = 'inactive',
+        $blockName = 'LevelsList'
+    ) {
+        $intSpacerSize = ($level->getLvl() - 2) * 21;
+        $spacer        = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
 
-        $arrLevels = array();
+        $levelDesc = $this->getLevelDescription($level);
+        //parse variables
+        $objTpl->setVariable(array(
+            $this->moduleLangVar.'_LEVEL_ID'                   => $level->getId(),
+            $this->moduleLangVar.'_LEVEL_ORDER'                => $level->getOrder(),
+            $this->moduleLangVar.'_LEVEL_NAME'                 => contrexx_raw2xhtml($this->getLevelName($level)),
+            $this->moduleLangVar.'_LEVEL_DESCRIPTION'          => $levelDesc,
+            $this->moduleLangVar.'_LEVEL_DESCRIPTION_ESCAPED'  => strip_tags($levelDesc),
+            $this->moduleLangVar.'_LEVEL_PICTURE'              => $level->getPicture(),
+            $this->moduleLangVar.'_LEVEL_NUM_ENTRIES'          => $this->countEntries($level->getId()),
+            $this->moduleLangVar.'_LEVEL_ICON'                 => $spacer.$strLevelIcon,
+            $this->moduleLangVar.'_LEVEL_VISIBLE_STATE_ACTION' => $level->getActive() == 0 ? 1 : 0,
+            $this->moduleLangVar.'_LEVEL_VISIBLE_STATE_IMG'    => $level->getActive() == 0 ? 'off' : 'on',
+            $this->moduleLangVar.'_LEVEL_LEVEL_NUMBER'         => $level->getLvl() - 1,
+            $this->moduleLangVar.'_LEVEL_ACTIVE_STATUS'        => $strLevelClass,
+        ));
 
-        if(!empty($intLevelId)) {
-            $whereLevelId = "level.id='".$intLevelId."' AND";
-            $whereParentId = '';
-        } else {
-            if(!empty($intParentId)) {
-                $whereParentId = "AND (level.parent_id='".$intParentId."') ";
+        $objTpl->parse($this->moduleNameLC . $blockName);
+    }
+
+    /**
+     * Parse level tree
+     *
+     * @param \Cx\Core\Html\Sigma   $objTpl              Instance of template
+     * @param Level                 $level               Root level to parse
+     * @param array                 $expandedLevelIds    Expanded level array
+     * @param boolean               $expandAll           True to expand all levels
+     * @param boolean               $checkShowSubLevel   True to check the show sublevel option
+     */
+    public function parseLevelTree(
+        \Cx\Core\Html\Sigma $objTpl,
+        \Cx\Modules\MediaDir\Model\Entity\Level $level,
+        $expandedLevelIds = array(),
+        $expandAll = false,
+        $checkShowSubLevel = false
+    ) {
+        $subLevels = $this->getSubLevelsByLevel($level);
+        foreach ($subLevels as $sublevel) {
+            $hasChildren = !\FWValidator::isEmpty($this->getSubLevelsByLevel($sublevel));
+            $isExpanded  = (!$checkShowSubLevel || $sublevel->getShowSublevels())
+                           && ($expandAll || in_array($sublevel->getId(), $expandedLevelIds));
+
+            $strLevelClass = 'inactive';
+            if ($hasChildren) {
+                if ($isExpanded) {
+                    $expLvlId = $sublevel->getParent()->getId();
+                    $iconFile = 'minuslink.gif';
+                    $strLevelClass = 'active';
+                } else {
+                    $expLvlId = $sublevel->getId();
+                    $iconFile = 'pluslink.gif';
+                }
+                $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='. $expLvlId .'"><img src="../core/Core/View/Media/icons/'. $iconFile .'" border="0" /></a>';
             } else {
-                $whereParentId = "AND (level.parent_id='0') ";
+                $strLevelIcon = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="11" height="11" />';
             }
+            $this->parseLevelDetail($objTpl, $sublevel, $strLevelIcon, $strLevelClass);
 
-            $whereLevelId = null;
-        }
-
-        if($objInit->mode == 'frontend') {
-            $whereActive = "AND (level.active='1') ";
-        } else {
-			$whereActive = '';
-		}
-
-        switch($this->arrSettings['settingsLevelOrder']) {
-            case 0;
-                //custom order
-                $sortOrder = "level.`order` ASC";
-                break;
-            case 1;
-            case 2;
-                //abc order
-                $sortOrder = "level_names.`level_name`";
-                break;
-        }
-
-        $objLevels = $objDatabase->Execute("
-            SELECT
-                level.`id` AS `id`,
-                level.`parent_id` AS `parent_id`,
-                level.`order` AS `order`,
-                level.`show_sublevels` AS `show_sublevels`,
-                level.`show_categories` AS `show_categories`,
-                level.`show_entries` AS `show_entries`,
-                level.`picture` AS `picture`,
-                level.`active` AS `active`,
-                level_names.`level_name` AS `name`,
-                level_names.`level_description` AS `description`
-            FROM
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_levels AS level,
-                ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names AS level_names
-            WHERE
-                ($whereLevelId level_names.level_id=level.id)
-                $whereParentId
-                $whereActive
-                AND (level_names.lang_id='".$_LANGID."')
-            ORDER BY
-                ".$sortOrder."
-        ");
-        
-        //fetch entry counts if needed
-        $weAreCountingEntries = ($this->arrSettings['settingsCountEntries'] == 1 || $objInit->mode == 'backend');
-        $arrEntryCounts = array();
-        if($weAreCountingEntries) {
-            $query = "
-                SELECT 
-                    `rel_levels`.`level_id`, count(*) AS `c`
-                FROM 
-                    `" . DBPREFIX . "module_".$this->moduleTablePrefix."_entries` AS `entry`
-                INNER JOIN 
-                    `" . DBPREFIX . "module_".$this->moduleTablePrefix."_rel_entry_levels` AS `rel_levels`
-                ON 
-                    `rel_levels`.`entry_id` = `entry`.`id`
-                LEFT JOIN 
-                    `".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields` AS rel_inputfield
-                ON  
-                    rel_inputfield.`entry_id` = `entry`.`id`
-                WHERE 
-                    `entry`.`active` = 1
-                AND 
-                    rel_inputfield.`form_id` = `entry`.`form_id`
-                AND 
-                    rel_inputfield.`field_id` = (".$this->getQueryToFindFirstInputFieldId().")
-                AND
-                    (rel_inputfield.`lang_id` = '".$_LANGID."')
-                AND 
-                    ((`entry`.`duration_type`=2 AND `entry`.`duration_start` <= ".time()." AND `entry`.`duration_end` >= ".time().") OR (`entry`.`duration_type`=1))
-
-                GROUP BY 
-                    `rel_levels`.`level_id`";
-            
-            $rs = $objDatabase->Execute($query);
-            while(!$rs->EOF) {
-                $arrEntryCounts[$rs->fields['level_id']] = $rs->fields['c'];
-                $rs->MoveNext();
+            if ($isExpanded) {
+                $this->parseLevelTree($objTpl, $sublevel, $expandedLevelIds, $expandAll);
             }
         }
-
-        if ($objLevels !== false) {
-            while (!$objLevels->EOF) {
-                $arrLevel = array();
-                $arrLevelName = array();
-                $arrLevelDesc = array();
-                $this->intNumEntries = 0;
-
-                //get lang attributes
-                $arrLevelName[0] = $objLevels->fields['name'];
-                $arrLevelDesc[0] = $objLevels->fields['description'];
-
-                $objLevelAttributes = $objDatabase->Execute("
-                    SELECT
-                        `lang_id` AS `lang_id`,
-                        `level_name` AS `name`,
-                        `level_description` AS `description`
-                    FROM
-                        ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
-                    WHERE
-                        level_id=".$objLevels->fields['id']."
-                ");
-
-                if ($objLevelAttributes !== false) {
-                    while (!$objLevelAttributes->EOF) {
-                        $arrLevelName[$objLevelAttributes->fields['lang_id']] = htmlspecialchars($objLevelAttributes->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                        $arrLevelDesc[$objLevelAttributes->fields['lang_id']] = $objLevelAttributes->fields['description'];
-
-                        $objLevelAttributes->MoveNext();
-                    }
-                }
-
-                $arrLevel['levelId'] = intval($objLevels->fields['id']);
-                $arrLevel['levelOrder'] = intval($objLevels->fields['order']);
-                $arrLevel['levelParentId'] = intval($objLevels->fields['parent_id']);
-                $arrLevel['levelName'] = $arrLevelName;
-                $arrLevel['levelDescription'] = $arrLevelDesc;
-                $arrLevel['levelPicture'] = htmlspecialchars($objLevels->fields['picture'], ENT_QUOTES, CONTREXX_CHARSET);
-                if($weAreCountingEntries) {
-                    $arrLevel['levelNumEntries'] = isset($arrEntryCounts[$arrLevel['levelId']]) ? $arrEntryCounts[$arrLevel['levelId']] : 0;
-                }
-                $arrLevel['levelShowEntries'] = intval($objLevels->fields['show_entries']);
-                $arrLevel['levelShowSublevels'] = intval($objLevels->fields['show_sublevels']);
-                $arrLevel['levelShowCategories'] = intval($objLevels->fields['show_categories']);
-                $arrLevel['levelActive'] = intval($objLevels->fields['active']);
-
-                if($this->bolGetChildren){
-                    $arrLevel['levelChildren'] = self::getLevels(null, $objLevels->fields['id']);
-                }
-
-                $arrLevels[$objLevels->fields['id']] = $arrLevel;
-                $objLevels->MoveNext();
-            }
-        }
-        
-        return $arrLevels;
     }
 
-    function listLevels($objTpl, $intView, $intLevelId=null, $arrParentIds=null, $intEntryId=null, $arrExistingBlocks=null, $strClass=null)
-    {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase;
+    /**
+     * List the levels by the view type
+     *
+     * @param type $objTpl
+     * @param type $intView
+     * @param type $levelId
+     * @param type $parentLevelId
+     * @param type $intEntryId
+     * @param type $arrExistingBlocks
+     *
+     * @return type
+     */
+    function listLevels(
+        $objTpl,
+        $intView,
+        $levelId = null,
+        $parentLevelId = null,
+        $intEntryId = null,
+        $arrExistingBlocks = null
+    ) {
 
-        if(!isset($arrParentIds)) {
-            $arrLevels = $this->arrLevels;
-        } else {
-            $arrLevelChildren = $this->arrLevels;
-
-            foreach ($arrParentIds as $key => $intParentId) {
-                $arrLevelChildren = $arrLevelChildren[$intParentId]['levelChildren'];
-            }
-            $arrLevels = $arrLevelChildren;
-        }
         switch ($intView) {
             case 1:
                 //Backend View
-                $expandLevel = isset($_GET['exp_level']) ? $_GET['exp_level'] : null;
-                foreach ($arrLevels as $key => $arrLevel) {
-                    //generate space
-                    $spacer = null;
-                    $intSpacerSize = null;
-                    $intSpacerSize = (count($arrParentIds)*21);
-                    $spacer .= '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
+                $expandLevel      = isset($_GET['exp_level']) ? $_GET['exp_level'] : '';
+                $expandedLevelIds = $this->getExpandedLevelIds($expandLevel);
 
-                    //check expanded categories
-                    if($expandLevel == 'all') {
-                        $bolExpandLevel = true;
-                    } else {
-                        $this->arrExpandedLevelIds = array();
-                        $bolExpandLevel = $this->getExpandedLevels($expandLevel, array($arrLevel));
-                    }
-
-                    if(!empty($arrLevel['levelChildren'])) {
-                        if((in_array($arrLevel['levelId'], $this->arrExpandedLevelIds) && $bolExpandLevel) || $expandLevel == 'all'){
-                            $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='.$arrLevel['levelParentId'].'"><img src="../core/Core/View/Media/icons/minuslink.gif" border="0" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" /></a>';
-                        } else {
-                            $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='.$arrLevel['levelId'].'"><img src="../core/Core/View/Media/icons/pluslink.gif" border="0" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" /></a>';
-                        }
-                    } else {
-                        $strLevelIcon = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="11" height="11" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" />';
-                    }
-
-                    //parse variables
-                    $objTpl->setVariable(array(
-                        $this->moduleLangVar.'_LEVEL_ROW_CLASS' =>  $this->intRowCount%2==0 ? 'row1' : 'row2',
-                        $this->moduleLangVar.'_LEVEL_ID' => $arrLevel['levelId'],
-                        $this->moduleLangVar.'_LEVEL_ORDER' => $arrLevel['levelOrder'],
-                        $this->moduleLangVar.'_LEVEL_NAME' => contrexx_raw2xhtml($arrLevel['levelName'][0]),
-                        $this->moduleLangVar.'_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
-                        $this->moduleLangVar.'_LEVEL_DESCRIPTION_ESCAPED' => strip_tags($arrLevel['levelDescription'][0]),
-                        $this->moduleLangVar.'_LEVEL_PICTURE' => $arrLevel['levelPicture'],
-                        $this->moduleLangVar.'_LEVEL_NUM_ENTRIES' => $arrLevel['levelNumEntries'],
-                        $this->moduleLangVar.'_LEVEL_ICON' => $spacer.$strLevelIcon,
-                        $this->moduleLangVar.'_LEVEL_VISIBLE_STATE_ACTION' => $arrLevel['levelActive'] == 0 ? 1 : 0,
-                        $this->moduleLangVar.'_LEVEL_VISIBLE_STATE_IMG' => $arrLevel['levelActive'] == 0 ? 'off' : 'on',
-                    ));
-
-                    $objTpl->parse($this->moduleNameLC.'LevelsList');
-                    $arrParentIds[] = $arrLevel['levelId'];
-                    $this->intRowCount++;
-
-                    //get children
-                    if(!empty($arrLevel['levelChildren'])){
-                        if($bolExpandLevel) {
-                            self::listLevels($objTpl, 1, $intLevelId, $arrParentIds);
-                        }
-                    }
-
-                    @array_pop($arrParentIds);
-                }
+                $rootLevel = $this->getLevelById($this->nestedSetRootId);
+                $this->parseLevelTree(
+                    $objTpl,
+                    $rootLevel,
+                    $expandedLevelIds,
+                    $expandLevel == 'all'
+                );
                 break;
             case 2:
                 //Frontend View
-                $intNumBlocks = count($arrExistingBlocks);
-                $i = $intNumBlocks-1;
+                $intNumBlocks   = count($arrExistingBlocks);
                 $strIndexHeader = '';
-                
+                $i              = $intNumBlocks - 1;
+
                 //set first index header
                 if($this->arrSettings['settingsLevelOrder'] == 2) {
                     $strFirstIndexHeader = null;
                 }
 
-                foreach ($arrLevels as $key => $arrLevel) {
-                    if($this->arrSettings['settingsLevelOrder'] == 2) {
-                        $strIndexHeader = strtoupper(substr($arrLevel['levelName'][0],0,1));
+                $level = $parentLevelId ? $this->getLevelById($parentLevelId) : false;
+                if (!$level) {
+                    $level = $this->getLevelById($this->nestedSetRootId);
+                }
 
-                        if($strFirstIndexHeader != $strIndexHeader) {
-                            if ($i < $intNumBlocks-1) {
+                $subLevels = $this->getSubLevelsByLevel($level);
+                foreach ($subLevels as $subLevel) {
+                    $levelName = $this->getLevelName($subLevel);
+                    $levelDesc = $this->getLevelDescription($subLevel);
+
+                    $strIndexHeaderTag = null;
+                    if ($this->arrSettings['settingsLevelOrder'] == 2) {
+                        $strIndexHeader = strtoupper(substr($levelName, 0, 1));
+
+                        if ($strFirstIndexHeader != $strIndexHeader) {
+                            if ($i < $intNumBlocks - 1) {
                                 ++$i;
                             } else {
                                 $i = 0;
                             }
-                            $strIndexHeaderTag = '<span class="'.$this->moduleNameLC.'LevelCategoryIndexHeader">'.$strIndexHeader.'</span><br />';
-                        } else {
-                            $strIndexHeaderTag = null;
+                            $strIndexHeaderTag = '<span class="' . $this->moduleNameLC . 'LevelCategoryIndexHeader">' . $strIndexHeader . '</span><br />';
                         }
                     } else {
-                        if ($i < $intNumBlocks-1) {
+                        if ($i < $intNumBlocks - 1) {
                             ++$i;
                         } else {
                             $i = 0;
                         }
-                        $strIndexHeaderTag = null;
                     }
 
                     //get ids
-                    if(isset($_GET['cmd'])) {
-                        $strLevelCmd = '&amp;cmd='.$_GET['cmd'];
-                    } else {
-                        $strLevelCmd = null;
-                    }
+                    $strLevelCmd = isset($_GET['cmd'])
+                                        ? '&amp;cmd='.$_GET['cmd']
+                                        : '';
 
                     //parse variables
                     $objTpl->setVariable(array(
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevel['levelId'],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevel['levelName'][0]),
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$arrLevel['levelId'].'">'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</a>',
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevel['levelPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'" />',
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel['levelPicture'],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => isset($arrLevel['levelNumEntries']) ? $arrLevel['levelNumEntries'] : '',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $subLevel->getId(),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_NAME'           => contrexx_raw2xhtml($levelName),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK'           => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$subLevel->getId().'">'.contrexx_raw2xhtml($levelName).'</a>',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION'    => contrexx_raw2xhtml($levelDesc),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE'        => '<img src="'.$subLevel->getPicture().'" border="0" alt="'.contrexx_raw2xhtml($levelName).'" />',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $subLevel->getPicture(),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES'    => $this->countEntries($level->getId()),
                     ));
 
                     $intBlockId = $arrExistingBlocks[$i];
@@ -366,352 +303,622 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 break;
             case 3:
                 //Dropdown Menu
-				$strDropdownOptions = '';
-                foreach ($arrLevels as $key => $arrLevel) {
-                    $spacer = null;
-                    $intSpacerSize = null;
-
-                    if($arrLevel['levelId'] == $intLevelId) {
-                        $strSelected = 'selected="selected"';
-                    } else {
-                        $strSelected = '';
-                    }
-
-                    //generate space
-                    $intSpacerSize = (count($arrParentIds));
-                    for($i = 0; $i < $intSpacerSize; $i++) {
-                        $spacer .= "----";
-                    }
-
-                    if($spacer != null) {
-                    	$spacer .= "&nbsp;";
-                    }
-
-                    $strDropdownOptions .= '<option value="'.$arrLevel['levelId'].'" '.$strSelected.' >'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
-
-                    if(!empty($arrLevel['levelChildren'])) {
-                        $arrParentIds[] = $arrLevel['levelId'];
-                        $strDropdownOptions .= self::listLevels($objTpl, 3, $intLevelId, $arrParentIds);
-                        @array_pop($arrParentIds);
-                    }
-                }
-
-                return $strDropdownOptions;
+                $rootLevel = $this->getLevelById($this->nestedSetRootId);
+                return $this->getLevelDropDown($rootLevel, $levelId);
                 break;
             case 4:
                 //level Selector (modify view)
-                if(!isset($this->arrSelectedLevels) && $intEntryId!=null) {
-                    $this->arrSelectedLevels = array();
-
-                    $objLevelSelector = $objDatabase->Execute("
-                        SELECT
-                            `level_id`
-                        FROM
-                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels
-                        WHERE
-                            `entry_id` = '".$intEntryId."'
-                    ");
-
-                    if ($objLevelSelector !== false) {
-                        while (!$objLevelSelector->EOF) {
-                            $this->arrSelectedLevels[] = intval($objLevelSelector->fields['level_id']);
-                            $objLevelSelector->MoveNext();
-                        }
-                    }
-                }
-                
-                foreach ($arrLevels as $key => $arrLevel) {
-                	
-                    $spacer = null;
-                    $intSpacerSize = null;
-
-                     //generate space
-                    $intSpacerSize = (count($arrParentIds));
-                    for($i = 0; $i < $intSpacerSize; $i++) {
-                        $spacer .= "----";
-                    }
-
-                    if($spacer != null) {
-                        $spacer .= "&nbsp;";
-                    }
-
-                    if(in_array($arrLevel['levelId'], $this->arrSelectedLevels)) {
-                        $this->strSelectedOptions .= '<option value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
-                    } else {
-                        $this->strNotSelectedOptions .= '<option value="'.$arrLevel['levelId'].'">'.$spacer.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</option>';
-                    }
-
-                    if(!empty($arrLevel['levelChildren'])) {
-                        $arrParentIds[] = $arrLevel['levelId'];
-                        self::listLevels($objTpl, 4, $intLevelId, $arrParentIds, $intEntryId);
-                        @array_pop($arrParentIds);
-                    }
-                }
-                
-                $arrSelectorOptions['selected'] = $this->strSelectedOptions;
-                $arrSelectorOptions['not_selected'] = $this->strNotSelectedOptions;
-
+                $rootLevel         = $this->getLevelById($this->nestedSetRootId);
+                $arrSelectedLevels = $this->getSelectedLevelsByEntryId($intEntryId);
+                list($selectedOptions, $notSelectedOptions) = $this->getLevelOptions4EditView($rootLevel, $arrSelectedLevels);
+                $arrSelectorOptions = array(
+                  'selected'     => $selectedOptions,
+                  'not_selected' => $notSelectedOptions
+                );
                 return $arrSelectorOptions;
                 break;
             case 5:
                 //Frontend View Detail
-                $thumbImage = $this->getThumbImage($arrLevels[$intLevelId]['levelPicture']);
+                $level  = $this->getLevelById($levelId);
+                if (!$level) {
+                    $objTpl->hideBlock($this->moduleNameLC.'CategoryLevelDetail');
+                    return;
+                }
+
+                $strLevelId       = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
+                $levelName        = $this->getLevelName($level);
+                $levelDescription = $this->getLevelDescription($level);
+                $thumbImage       = $this->getThumbImage($level->getPicture());
                 $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevels[$intLevelId]['levelId'],
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]),
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.'&amp;cid='.$arrLevels[$intCategoryId]['levelId'].'">'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'</a>',
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevels[$intLevelId]['levelDescription'][0],
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$thumbImage.'" border="0" alt="'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'" />',
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevels[$intLevelId]['levelPicture'],
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevels[$intLevelId]['levelNumEntries'],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $level->getId(),
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_NAME'           => contrexx_raw2xhtml($levelName),
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK'           => '<a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$level->getId().'">'.contrexx_raw2xhtml($levelName).'</a>',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION'    => contrexx_raw2xhtml($levelDescription),
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE'        => '<img src="'. $thumbImage .'" border="0" alt="'. contrexx_raw2xhtml($levelName) .'" />',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $level->getPicture(),
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES'    => $this->countEntries($level->getId()),
                 ));
 
-                if(!empty($arrLevels[$intLevelId]['levelPicture']) && $this->arrSettings['settingsShowLevelImage'] == 1) {
+                if(!\FWValidator::isEmpty($level->getPicture()) && $this->arrSettings['settingsShowLevelImage'] == 1) {
                     $objTpl->parse($this->moduleNameLC.'CategoryLevelPicture');
                 } else {
                     $objTpl->hideBlock($this->moduleNameLC.'CategoryLevelPicture');
                 }
 
-                if(!empty($arrLevels[$intLevelId]['levelDescription'][0]) && $this->arrSettings['settingsShowLevelDescription'] == 1) {
+                if(!empty($levelDescription) && $this->arrSettings['settingsShowLevelDescription'] == 1) {
                     $objTpl->parse($this->moduleNameLC.'CategoryLevelDescription');
                 } else {
                     $objTpl->hideBlock($this->moduleNameLC.'CategoryLevelDescription');
                 }
 
-                if(!empty($arrLevels)) {
-                    $objTpl->parse($this->moduleNameLC.'CategoryLevelDetail');
-                } else {
-                    $objTpl->hideBlock($this->moduleNameLC.'CategoryLevelDetail');
-                }
+                $objTpl->parse($this->moduleNameLC.'CategoryLevelDetail');
 
                 break;
             case 6:
                 //Frontend Tree Placeholder
-                foreach ($arrLevels as $key => $arrLevel) {
-                    $this->arrExpandedLevelIds = array();
-                    $bolExpandLevel = $this->getExpandedLevels($intLevelId, array($arrLevel));
-                    $strLinkClass = $bolExpandLevel ? 'active' : 'inactive';
-                    $strListClass = 'level_'.intval(count($arrParentIds)+1);
-                    
-                    $this->strNavigationPlaceholder .= '<li class="'.$strListClass.'"><a href="index.php?section='.$this->moduleName.'&amp;lid='.$arrLevel['levelId'].'" class="'.$strLinkClass.'">'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</a></li>';
-            
-                    $arrParentIds[] = $arrLevel['levelId'];
+                $expandedLevelIds = $this->getExpandedLevelIds($levelId);
 
-                    //get children
-                    if(!empty($arrLevel['levelChildren']) && $arrLevel['levelShowSublevels'] == 1){
-                        if($bolExpandLevel) {
-                            self::listLevels($objTpl, 6, $intLevelId, $arrParentIds);
-                        }                    
-                    }
-                    
-                    if($arrLevel['levelShowCategories'] == 1){
-                        if($bolExpandLevel) {
-	                    	$objCategories = new MediaDirectoryCategory(null, null, 0, $this->moduleName);
-	                        $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : null;
-	                        if($_GET['lid'] == $arrLevel['levelId']) {
-	                           $this->strNavigationPlaceholder .= $objCategories->listCategories($this->_objTpl, 6, $intCategoryId, null, null, null, intval(count($arrParentIds)+1));
-	                        }
-                        }
-                    }
-
-                    @array_pop($arrParentIds);
+                $level = $levelId ? $this->getLevelById($levelId) : false;
+                if (!$level) {
+                    $level = $this->getLevelById($this->nestedSetRootId);
                 }
-                
-                return $this->strNavigationPlaceholder;
-                
+
+                $tpl = <<<TEMPLATE
+    <!-- BEGIN {$this->moduleNameLC}LevelsList -->
+    <li class="level_{{$this->moduleLangVar}_LEVEL_LEVEL_NUMBER}">
+        <a href="index.php?section={$this->moduleName}{$strLevelId}&amp;cid={{$this->moduleLangVar}_LEVEL_ID}" class="{{$this->moduleLangVar}_LEVEL_ACTIVE_STATUS}">
+            {{$this->moduleLangVar}_LEVEL_NAME}
+        </a>
+    </li>
+    <!-- END {$this->moduleNameLC}LevelsList -->
+TEMPLATE;
+                $template = new \Cx\Core\Html\Sigma('.');
+                $template->setTemplate($tpl);
+                $this->parseLevelTree(
+                    $template,
+                    $level,
+                    $expandedLevelIds,
+                    $expandLevel == 'all',
+                    $level->getShowSublevels()
+                );
+                return $template->get();
                 break;
         }
     }
 
-
-
-    function getExpandedLevels($intExpand, $arrData)
+    /**
+     * Get level dropdown for Entry edit view
+     *
+     * @param Level  $level              Parent level
+     * @param array  $arrSelectedLevels  Array selected levels
+     *
+     * @return array
+     */
+    public function getLevelOptions4EditView(\Cx\Modules\MediaDir\Model\Entity\Level $level, $arrSelectedLevels)
     {
-        foreach ($arrData as $key => $arrLevel) {
-            if ($arrLevel['levelId'] != $intExpand) {
-                if(!empty($arrLevel['levelChildren'])) {
-                    $this->arrExpandedLevelIds[] = $arrLevel['levelId'];
-                    $this->getExpandedLevels($intExpand, $arrLevel['levelChildren']);
-                }
+        $subLevels = $this->getSubLevelsByLevel($level);
+        $strSelectedOptions = $strNotSelectedOptions = '';
+        foreach ($subLevels as $subLevel) {
+            $spacer       = str_repeat('----', $subLevel->getLvl() - 2);
+            $spacer      .= $subLevel->getLvl() > 1 ? '&nbsp;' : '';
+            $levelName = $this->getLevelName($subLevel);
+
+            $option = '<option value="'. $subLevel->getId() .'">'. $spacer . contrexx_raw2xhtml($levelName).'</option>';
+            if (in_array($subLevel->getId(), $arrSelectedLevels)) {
+                $strSelectedOptions .= $option;
             } else {
-                $this->arrExpandedLevelIds[] = $arrLevel['levelId'];
-                $this->arrExpandedLevelIds[] = "found";
+                $strNotSelectedOptions .= $option;
             }
+            list($selectedOptions, $notSelectedOptions) = $this->getLevelOptions4EditView($subLevel, $arrSelectedLevels);
+            $strSelectedOptions    .= $selectedOptions;
+            $strNotSelectedOptions .= $notSelectedOptions;
         }
-
-        if(in_array("found", $this->arrExpandedLevelIds)) {
-            return true;
-        } else {
-           return false;
-        }
-
-
+        return array($strSelectedOptions, $strNotSelectedOptions);
     }
 
-
-
-
-    function saveLevel($arrData, $intLevelId=null)
-    {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
-
-        //get data
-        $intId = intval($intLevelId);
-        $intParentId = intval($arrData['levelPosition']);
-        $intShowEntries = intval($arrData['levelShowEntries']);
-        $intShowSublevels = isset($arrData['levelShowSublevels']) ? contrexx_input2int($arrData['levelShowSublevels']) : 0;
-        $intShowCategories = intval($arrData['levelShowCategories']);
-        $intActive = intval($arrData['levelActive']);
-        $strPicture = contrexx_addslashes(contrexx_strip_tags($arrData['levelImage']));
-
-        $arrName = $arrData['levelName'];
-        $arrDescription = $arrData['levelDescription'];
-
-        if(empty($intId)) {
-            //insert new category
-            $objInsertAttributes = $objDatabase->Execute("
-                INSERT INTO
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_levels
-                SET
-                    `parent_id`='".$intParentId."',
-                    `order`=0,
-                    `show_entries`='".$intShowEntries."',
-                    `show_sublevels`='".$intShowSublevels."',
-                    `show_categories`='".$intShowCategories."',
-                    `picture`='".$strPicture."',
-                    `active`='".$intActive."'
-            ");
-
-            if($objInsertAttributes !== false) {
-                $intId = $objDatabase->Insert_ID();
-
-                foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                    if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
-
-                    $strName = $arrName[$arrLang['id']];
-                    $strDescription = $arrDescription[$arrLang['id']];
-
-                    if(empty($strName)) $strName = $arrName[0];
-                    if(empty($strDescription)) $strDescription = $arrDescription[0];
-
-                    $objInsertNames = $objDatabase->Execute("
-                        INSERT INTO
-                            ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
-                        SET
-                            `lang_id`='".intval($arrLang['id'])."',
-                            `level_id`='".intval($intId)."',
-                            `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
-                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
-                    ");
-                }
-
-                if($objInsertNames !== false) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            //update category
-            if($intParentId == $intLevelId) {
-                $parentSql = null;
-            } else {
-                $parentSql = "`parent_id`='".$intParentId."',";
-            }
-
-            $objUpdateAttributes = $objDatabase->Execute("
-                UPDATE
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_levels
-                SET
-                    ".$parentSql."
-                    `show_entries`='".$intShowEntries."',
-                    `show_sublevels`='".$intShowSublevels."',
-                    `show_categories`='".$intShowCategories."',
-                    `picture`='".$strPicture."',
-                    `active`='".$intActive."'
-                WHERE
-                    `id`='".$intId."'
-            ");
-
-            if($objUpdateAttributes !== false) {
-                
-                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names WHERE level_id='".$intId."'");
-
-                foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                    if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
-                    if(empty($arrDescription[0])) $arrDescription[0] = isset($arrDescription[$_LANGID]) ? $arrDescription[$_LANGID] : '';
-
-                    $strName = $arrName[$arrLang['id']];
-                    $strDescription = $arrDescription[$arrLang['id']];
-
-                    if(empty($strName)) $strName = $arrName[0];
-                    if(empty($strDescription)) $strDescription = $arrDescription[0];
-
-                    $objInsertNames = $objDatabase->Execute("
-                        INSERT INTO
-                            ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
-                        SET
-                            `lang_id`='".intval($arrLang['id'])."',
-                            `level_id`='".intval($intId)."',
-                            `level_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
-                            `level_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
-                    ");
-                }
-
-                if($objInsertNames !== false) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
-    }
-
-
-
-    function deleteLevel($intLevelId=null)
+    /**
+     * Get levels related to the entry
+     *
+     * @param integer $entryId Entry id
+     *
+     * @return array Array of level id's
+     */
+    public function getSelectedLevelsByEntryId($entryId)
     {
         global $objDatabase;
 
-        $intLevelId = intval($intLevelId);
+        $entryId = contrexx_input2int($entryId);
+        if (!$entryId) {
+            return array();
+        }
+        $levels = $objDatabase->Execute('SELECT
+                                               `level_id`
+                                            FROM
+                                                `'. DBPREFIX .'module_'. $this->moduleTablePrefix .'_rel_entry_levels`
+                                            WHERE
+                                                `entry_id` = "'. $entryId .'"');
+        if (!$levels) {
+            return array();
+        }
+        $selectedLevels = array();
+        while (!$levels->EOF) {
+            $selectedLevels[] = $levels->fields['level_id'];
+            $levels->MoveNext();
+        }
+        return $selectedLevels;
+    }
 
-        $objSubLevelsRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_levels WHERE parent_id='".$intLevelId."'");
-        if ($objSubLevelsRS !== false) {
-            while (!$objSubLevelsRS->EOF) {
-                $intSubLevelId = $objSubLevelsRS->fields['id'];
-                $this->deleteLevel($intSubLevelId);
-                $objSubLevelsRS->MoveNext();
-            };
+    /**
+     * Get name of level by output language
+     *
+     * @param Level $level
+     *
+     * @return string
+     */
+    public function getLevelName(\Cx\Modules\MediaDir\Model\Entity\Level $level)
+    {
+        global $_LANGID;
+
+        $locale = $level->getLocaleByLang($_LANGID);
+        return $locale ? $locale->getLevelName() : '';
+    }
+
+    /**
+     * Get level description by output language
+     *
+     * @param Level $level
+     *
+     * @return string
+     */
+    public function getLevelDescription(\Cx\Modules\MediaDir\Model\Entity\Level $level)
+    {
+        global $_LANGID;
+
+        $locale = $level->getLocaleByLang($_LANGID);
+        return $locale ? $locale->getLevelDescription() : '';
+    }
+
+    /**
+     * Get sub levels of a level, by applying the sorting and status
+     *
+     * @param Level $level
+     *
+     * @return array Array collection of sublevels
+     */
+    public function getSubLevelsByLevel(\Cx\Modules\MediaDir\Model\Entity\Level $level)
+    {
+        $addSql   = array();
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            $addSql['where'] = array(
+                'active' => 1
+            );
+        }
+        $children = array();
+        $childrenResult = $this->levelNestedSet->getChildren($level->getId(), true, true, false, $addSql);
+        if (!$childrenResult) {
+            return $children;
+        }
+        foreach ($childrenResult as $value) {
+            $subLevel = $this->createLevelFromArray($value);
+            $this->loadLevelLocale($subLevel);
+            $children[] = $subLevel;
+        }
+        if (in_array($this->arrSettings['settingsLevelOrder'], array(1, 2))) {
+            // sort by category name
+            uasort($children, array($this, 'sortLevelsByName'));
+        }
+        return $children;
+    }
+
+    /**
+     * Custom sorting callback function to sort the levels by name
+     *
+     * @param \Cx\Modules\MediaDir\Model\Entity\Level $a
+     * @param \Cx\Modules\MediaDir\Model\Entity\Level $b
+     *
+     * @return boolean
+     */
+    public function sortLevelsByName(
+        \Cx\Modules\MediaDir\Model\Entity\Level $a,
+        \Cx\Modules\MediaDir\Model\Entity\Level $b
+    ) {
+        return strcmp($this->getLevelName($a), $this->getLevelName($b));
+    }
+
+    /**
+     * Get the level dropdown
+     *
+     * @param Level $level
+     *
+     * @return string
+     */
+    public function getLevelDropDown(\Cx\Modules\MediaDir\Model\Entity\Level $level, $selectedLevelId = null)
+    {
+        $strDropdownOptions = '';
+        $subLevels          = $this->getSubLevelsByLevel($level);
+        foreach ($subLevels as $subLevel) {
+            $strSelected  = $selectedLevelId == $subLevel->getId() ? 'selected="selected"' : '';
+            $spacer       = str_repeat('----', $subLevel->getLvl() - 2);
+            $spacer      .= $subLevel->getLvl() > 0 ? '&nbsp;' : '';
+            $levelName    = $this->getLevelName($subLevel);
+
+            $strDropdownOptions .= '<option value="'. $subLevel->getId() .'" '. $strSelected .' >'. $spacer . contrexx_raw2xhtml($levelName) .'</option>';
+            $strDropdownOptions .= $this->getLevelDropDown($subLevel, $selectedLevelId);
+        }
+        return $strDropdownOptions;
+    }
+
+    /**
+     * Get expanaged level id's
+     *
+     * @param integer $levelId Level id
+     *
+     * @return Array
+     */
+    public function getExpandedLevelIds($levelId)
+    {
+        $levels = $this->getExpandedLevels($levelId);
+        $levelIds = array();
+        foreach ($levels as $level) {
+            $levelIds[] = $level->getId();
         }
 
-        $objDeleteLevelRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_levels WHERE id='$intLevelId'");
-        $objDeleteLevelRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names WHERE level_id='$intLevelId'");
-        $objDeleteLevelRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels WHERE level_id='$intLevelId'");
+        return $levelIds;
+    }
 
-        if ($objDeleteLevelRS !== false) {
-            return true;
+    /**
+     * Get all expanded levels
+     *
+     * @param type $levelId
+     *
+     * @return Array
+     */
+    function getExpandedLevels($levelId)
+    {
+        $levelId = contrexx_input2int($levelId);
+        if (!$levelId) {
+            return array();
+        }
+        $level = $this->getLevelById($levelId);
+        if (!$level) {
+            return array();
+        }
+        $levels = array($level);
+        while (   $level->getId() != $level->getParent()
+               && $level = $this->getLevelById($level->getParent())
+        ) {
+            $levels[] = $level;
+        }
+
+        return $levels;
+    }
+
+    /**
+     * Save Level from given array
+     *
+     * @param Level     $level   Level instance
+     * @param array     $arrData Array date to save
+     *
+     * @return boolean True on save success, false otherwise
+     */
+    function saveLevel(\Cx\Modules\MediaDir\Model\Entity\Level $level, $arrData)
+    {
+        global $_ARRAYLANG;
+
+        $oldParentId = $level->getParent();
+        $parentId    = intval($arrData['levelPosition']);
+
+        $parentLevel = null;
+        if ($parentId) {
+            $parentLevel = $this->getLevelById($parentId) ? $parentId : null;
         } else {
+            $parentLevel = $this->nestedSetRootId;
+        }
+        if (!$parentLevel) {
             return false;
         }
-    }
+        if ($level->getId() && $level->getId() == $parentLevel) {
+            return false;
+        }
 
-    function saveOrder($arrData) {
-        global $objDatabase;
+        //get data
+        $intShowEntries    = intval($arrData['levelShowEntries']);
+        $intShowSublevels  = isset($arrData['levelShowSublevels']) ? contrexx_input2int($arrData['levelShowSublevels']) : 0;
+        $intShowCategories = isset($arrData['levelShowCategories']) ? contrexx_input2int($arrData['levelShowCategories']) : 0;
+        $intActive         = intval($arrData['levelActive']);
+        $strPicture        = contrexx_addslashes(contrexx_strip_tags($arrData['levelImage']));
 
-        foreach($arrData['levelOrder'] as $intLevelId => $intLevelOrder) {
-            $objRSLevelOrder = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_levels SET `order`='".intval($intLevelOrder)."' WHERE `id`='".intval($intLevelId)."'");
+        $arrName           = $arrData['levelName'];
+        $arrDescription    = $arrData['levelDescription'];
 
-            if ($objRSLevelOrder === false) {
+        $level->setParent($parentLevel);
+        $level->setShowEntries($intShowEntries);
+        $level->setShowSublevels($intShowSublevels);
+        $level->setShowCategories($intShowCategories);
+        $level->setActive($intActive);
+        $level->setPicture($strPicture);
+
+        if(empty($arrName[0])) {
+            $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
+        }
+        foreach ($this->arrFrontendLanguages as $arrLang) {
+            $langId         = $arrLang['id'];
+            $strName        = $arrName[$langId] ? $arrName[$langId] : $arrName[0];
+            $strDescription = $arrDescription[$langId];
+
+            $levelLocale = $level->getLocaleByLang($langId);
+            if (!$levelLocale) {
+                $levelLocale = new \Cx\Modules\MediaDir\Model\Entity\LevelLocale();
+            }
+
+            $levelLocale->setLevel($level);
+            $levelLocale->setLangId($arrLang['id']);
+            $levelLocale->setLevelName($strName);
+            $levelLocale->setLevelDescription($strDescription);
+
+            if (!$level->getId()) {
+                $level->addLocale($levelLocale);
+            }
+        }
+        $values = array(
+            'level_order'       => $level->getOrder(),
+            'show_sublevels'    => $level->getShowSublevels(),
+            'show_categories'   => $level->getShowCategories(),
+            'show_entries'      => $level->getShowEntries(),
+            'picture'           => $level->getPicture(),
+            'active'            => $level->getActive(),
+        );
+        if (!$level->getId()) {
+            $intId = $this->levelNestedSet->createSubNode($level->getParent(), $values);
+            if (!$intId) {
                 return false;
             }
+            $level->setId($intId);
+        } else {
+            if ($oldParentId != $level->getParent()) {
+                $this->levelNestedSet->moveTree($level->getId(), $level->getParent(), NESE_MOVE_BELOW);
+            }
+            $this->levelNestedSet->updateNode($level->getId(), $values);
+        }
+
+        foreach ($level->getLocale() as $locale) {
+            $this->saveLevelLocale($locale);
         }
 
         return true;
     }
+
+    /**
+     * Save the level locale information
+     *
+     * @param \Cx\Modules\MediaDir\Model\Entity\LevelLocale $locale
+     */
+    public function saveLevelLocale(\Cx\Modules\MediaDir\Model\Entity\LevelLocale $locale)
+    {
+        global $objDatabase;
+
+        $objDatabase->Execute('
+            INSERT INTO
+                `' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_level_names`
+            SET
+                `lang_id`="' . intval($locale->getLangId()) . '",
+                `level_id`="' . ($locale->getLevel() ? $locale->getLevel()->getId() : 0) . '",
+                `level_name`="' . contrexx_raw2db($locale->getLevelName()) . '",
+                `level_description`="' . contrexx_raw2db($locale->getLevelDescription()) . '"
+            ON DUPLICATE KEY UPDATE
+                `level_name`="' . contrexx_raw2db($locale->getLevelName()) . '",
+                `level_description`="' . contrexx_raw2db($locale->getLevelDescription()) . '"
+        ');
+    }
+
+    /**
+     * Get the level entity by given id
+     *
+     * @param integer $id Level id
+     *
+     * @return mixed \Cx\Modules\MediaDir\Model\Entity\Level instance if loaded, false otherwise
+     */
+    public function getLevelById($id)
+    {
+        $levelArray = $this->levelNestedSet->pickNode($id, true);
+        if (empty($levelArray)) {
+            return false;
+        }
+
+        $level = $this->createLevelFromArray($levelArray);
+        $this->loadLevelLocale($level);
+
+        return $level;
+    }
+
+    /**
+     * Loaded the locale information of level from the database
+     *
+     * @param \Cx\Modules\MediaDir\Model\Entity\Level $level
+     */
+    public function loadLevelLocale(\Cx\Modules\MediaDir\Model\Entity\Level $level)
+    {
+        global $objDatabase;
+
+        $levelAttributes = $objDatabase->Execute('
+            SELECT
+                `lang_id` AS `lang_id`,
+                `level_name` AS `name`,
+                `level_description` AS `description`
+            FROM
+                `' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_level_names`
+            WHERE
+                `level_id` =' . $level->getId()
+        );
+
+        if ($levelAttributes !== false) {
+            while (!$levelAttributes->EOF) {
+                $locale = new \Cx\Modules\MediaDir\Model\Entity\LevelLocale();
+                $locale->setLangId($levelAttributes->fields['lang_id']);
+                $locale->setLevelName($levelAttributes->fields['name']);
+                $locale->setLevelDescription($levelAttributes->fields['description']);
+                $level->addLocale($locale);
+                $levelAttributes->MoveNext();
+            }
+        }
+    }
+
+
+    /**
+     * Create the level instance and set the info of level from the given array
+     * 
+     * @param array $input
+     *
+     * @return \Cx\Modules\MediaDir\Model\Entity\Level
+     */
+    public function createLevelFromArray($input)
+    {
+        $level = new \Cx\Modules\MediaDir\Model\Entity\Level();
+        $level->setId($input['id']);
+        $level->setParent($input['rootid']);
+        $level->setOrder($input['norder']);
+        $level->setLvl($input['level']);
+        $level->setShowSublevels($input['show_sublevels']);
+        $level->setShowCategories($input['show_categories']);
+        $level->setShowEntries($input['show_entries']);
+        $level->setPicture($input['picture']);
+        $level->setActive($input['active']);
+
+        return $level;
+    }
+
+    /**
+     * Remove the Level from database
+     *
+     * @param integer $levelId Level id
+     *
+     * @return boolean True on success, false otherwise
+     */
+    function deleteLevel($levelId = null)
+    {
+        global $objDatabase;
+
+        if (!$levelId) {
+            return false;
+        }
+        $subcats = $this->levelNestedSet->getSubBranch($levelId, true);
+        if (count($subcats) > 0) {
+            foreach ($subcats as $subcat) {
+                if (!$this->deleteLevel(intval($subcat['id']))) {
+                    return false;
+                }
+            }
+        }
+        if (   $objDatabase->Execute('DELETE FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_level_names WHERE level_id='. contrexx_input2int($levelId))
+            && $objDatabase->Execute('DELETE FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_levels WHERE level_id='. contrexx_input2int($levelId))
+            && $this->levelNestedSet->deleteNode($levelId) !== false
+        ) {
+            return true;
+        }
+        return true;
+    }
+
+    /**
+     * Update sorting order
+     *
+     * @param array $arrData
+     *
+     * @return boolean
+     */
+    function saveOrder($arrData)
+    {
+        $sorting = !empty($arrData['levelOrder']) ? $arrData['levelOrder'] : array();
+        asort($sorting);
+        $levels = array_keys($sorting);
+        foreach($levels as $levelId) {
+            $level = $this->levelNestedSet->pickNode($levelId);
+            if (!$level) {
+                continue;
+            }
+            $this->levelNestedSet->moveTree($levelId, $level->rootid, NESE_MOVE_BELOW);
+        }
+        return true;
+    }
+
+    /**
+     * Get sublevels id
+     *
+     * @param Level $level
+     *
+     * @return array sublevel id's
+     */
+    public function getSubLevels(\Cx\Modules\MediaDir\Model\Entity\Level $level)
+    {
+        $levels    = array();
+        $subLevels = $this->getSubLevelsByLevel($level);
+        foreach ($subLevels as $subLevel) {
+            $levels = array_merge(
+                array($subLevel->getId()),
+                $this->getSubLevels($subLevel)
+            );
+        }
+        return $levels;
+    }
+
+    /**
+     * Count number of entries for the level
+     *
+     * @param integer $intLevelId Level id
+     *
+     * @return integer
+     */
+    function countEntries($intLevelId = null)
+    {
+        global $objDatabase, $_LANGID;
+
+        if (!$this->countEntries) {
+            return 0;
+        }
+
+        $intLevelId = intval($intLevelId);
+        if (!$intLevelId) {
+            $level = $this->getLevelById($this->nestedSetRootId);
+        } else {
+            $level = $this->getLevelById($intLevelId);
+        }
+
+        if (!$level) {
+            return 0;
+        }
+
+        $levels = array_merge(
+            array($level->getId()),
+            $this->getSubLevels($level)
+        );
+        $whereLevel = '';
+        if ($levels) {
+            $whereLevel = " AND `rel_levels`.`level_id` IN (" . implode(', ', contrexx_input2int($levels)) .")";
+        }
+        $objCountEntriesRS = $objDatabase->Execute("
+                                                SELECT COUNT(`entry`.`id`) as c
+                                                FROM
+                                                        `" . DBPREFIX . "module_".$this->moduleTablePrefix."_entries` AS `entry`
+                                                INNER JOIN
+                                                    `".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels` AS `rel_levels`
+                                                ON
+                                                    `rel_levels`.`entry_id` = `entry`.`id`
+                                                LEFT JOIN
+                                                    `".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields` AS rel_inputfield
+                                                ON
+                                                    rel_inputfield.`entry_id` = `entry`.`id`
+                                                WHERE
+                                                    `entry`.`active` = 1
+                                                AND
+                                                    (rel_inputfield.`form_id` = entry.`form_id`)
+                                                AND
+                                                    (rel_inputfield.`field_id` = (".$this->getQueryToFindFirstInputFieldId()."))
+                                                AND
+                                                    (rel_inputfield.`lang_id` = '".$_LANGID."')
+                                                AND ((`entry`.`duration_type`=2 AND `entry`.`duration_start` <= ".time()." AND `entry`.`duration_end` >= ".time().") OR (`entry`.`duration_type`=1))
+                                                    " . $whereLevel . "
+                                                GROUP BY
+                                                    `rel_levels`.`level_id`");
+
+        return contrexx_input2int($objCountEntriesRS->fields['c']);
+    }
 }
-?>

@@ -2202,24 +2202,35 @@ CREATE TABLE `contrexx_module_media_settings` (
   `value` varchar(250) NOT NULL,
   KEY `name` (`name`)
 ) ENGINE=InnoDB;
-CREATE TABLE `contrexx_module_mediadir_categories` (
-  `id` int(7) NOT NULL AUTO_INCREMENT,
-  `parent_id` int(7) NOT NULL,
-  `order` int(7) NOT NULL,
-  `show_subcategories` int(11) NOT NULL,
-  `show_entries` int(1) NOT NULL,
+CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) NOT NULL,
+  `category_order` int(11) NOT NULL,
+  `show_subcategories` tinyint(1) NOT NULL,
+  `show_entries` tinyint(1) NOT NULL,
   `picture` mediumtext NOT NULL,
-  `active` int(1) NOT NULL,
+  `active` tinyint(1) NOT NULL,
+  `lft` int(11) NOT NULL,
+  `rgt` int(11) NOT NULL,
+  `lvl` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_mediadir_categories_names` (
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_categories_names` (
   `lang_id` int(1) NOT NULL,
-  `category_id` int(7) NOT NULL,
+  `category_id` int(11) NOT NULL,
   `category_name` varchar(255) NOT NULL,
   `category_description` mediumtext NOT NULL,
-  KEY `lang_id` (`lang_id`),
-  KEY `category_id` (`category_id`)
-) ENGINE=MyISAM;
+  UNIQUE KEY `category` (`lang_id`,`category_id`)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_categories_id` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_categories_locks` (
+  `lockId` varchar(32) NOT NULL,
+  `lockTable` varchar(32) NOT NULL,
+  `lockStamp` bigint(11) NOT NULL
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_mediadir_comments` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
   `entry_id` int(7) NOT NULL,
@@ -2317,25 +2328,36 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `context_type` enum('none','title','content','address','zip','city','country') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
-CREATE TABLE `contrexx_module_mediadir_level_names` (
-  `lang_id` int(1) NOT NULL,
-  `level_id` int(7) NOT NULL,
-  `level_name` varchar(255) NOT NULL,
-  `level_description` mediumtext NOT NULL,
-  KEY `lang_id` (`lang_id`),
-  KEY `category_id` (`level_id`)
-) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_mediadir_levels` (
   `id` int(7) NOT NULL AUTO_INCREMENT,
-  `parent_id` int(7) NOT NULL,
-  `order` int(7) NOT NULL,
-  `show_sublevels` int(11) NOT NULL,
-  `show_categories` int(1) NOT NULL,
-  `show_entries` int(1) NOT NULL,
+  `parent_id` int(11) NOT NULL,
+  `level_order` int(11) NOT NULL,
+  `show_sublevels` tinyint(11) NOT NULL,
+  `show_categories` tinyint(1) NOT NULL,
+  `show_entries` tinyint(1) NOT NULL,
   `picture` mediumtext NOT NULL,
   `active` int(1) NOT NULL,
+  `lft` int(11) NOT NULL,
+  `rgt` int(11) NOT NULL,
+  `lvl` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM ;
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_module_mediadir_level_names` (
+  `lang_id` int(1) NOT NULL,
+  `level_id` int(11) NOT NULL,
+  `level_name` varchar(255) NOT NULL,
+  `level_description` mediumtext NOT NULL,
+  UNIQUE KEY `level` (`lang_id`,`level_id`)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_levels_id` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS `contrexx_module_mediadir_levels_locks` (
+  `lockId` varchar(32) NOT NULL,
+  `lockTable` varchar(32) NOT NULL,
+  `lockStamp` bigint(11) NOT NULL
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_mediadir_mail_actions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,

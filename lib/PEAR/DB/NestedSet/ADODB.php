@@ -190,7 +190,12 @@ class DB_NestedSet_ADODB extends DB_NestedSet {
         $nextId = $this->db->NextID($sequence);
 
         // workaround since ADOConnection::NextID() doesn't return the last inserted id in `contrexx_module_news_categories_catid`
-        if (empty($nextId) && ($sequence == DBPREFIX.'module_news_categories_catid')) {
+        if (   empty($nextId)
+            && (in_array(
+                    $sequence,
+                    array(DBPREFIX.'module_news_categories_catid', DBPREFIX.'module_mediadir_categories_id', DBPREFIX.'module_mediadir_levels_id')
+                ))
+        ) {
             if ($objResult = $this->db->Execute('SELECT `id` FROM `'.contrexx_raw2db($sequence).'` LIMIT 1')) {
                 $nextId = $objResult->fields['id'];
             }
