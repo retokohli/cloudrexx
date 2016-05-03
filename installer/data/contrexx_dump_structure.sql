@@ -606,6 +606,13 @@ CREATE TABLE `contrexx_module_block_settings` (
   `value` varchar(100) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE IF NOT EXISTS `contrexx_module_block_targeting_option` (
+  `block_id` int(11) NOT NULL,
+  `filter` enum('include','exclude') NOT NULL DEFAULT 'include',
+  `type` enum('country') NOT NULL DEFAULT 'country',
+  `value` text NOT NULL,
+  PRIMARY KEY (`block_id`,`type`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_blog_categories` (
   `category_id` int(4) unsigned NOT NULL DEFAULT '0',
   `lang_id` int(2) unsigned NOT NULL DEFAULT '0',
