@@ -427,7 +427,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
     {
         return \Html::getSelectCustom(
             $menuName,
-            self::getMenuoptions($selected),
+            self::getCountryMenuOptions($selected),
             false,
             $onchange
         );

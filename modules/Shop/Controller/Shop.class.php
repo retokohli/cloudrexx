@@ -142,7 +142,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         // Check session and user data, log in if present.
         // The Customer is required to properly calculate prices in the Cart
         self::_authenticate();
-        \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
+        \Cx\Core\Setting\Controller\Setting::init('Shop');
         self::$initialized = true;
         if (isset($_REQUEST['remoteJs'])) return;
         // Javascript Cart: Shown when active,

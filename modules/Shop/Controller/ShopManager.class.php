@@ -70,7 +70,7 @@ class ShopManager extends ShopLibrary
     {
         global $_ARRAYLANG, $objTemplate;
 
-        \Cx\Core\Setting\Controller\Setting::init('Shop', '');
+        \Cx\Core\Setting\Controller\Setting::init('Shop');
         
         $this->checkProfileAttributes();
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
@@ -1369,7 +1369,7 @@ class ShopManager extends ShopLibrary
             'settings_block',
             'module_shop_settings_countries.html'
         );
-        $selectedCountries = $availableCountries ? explode(',', $availableCountries) : '';
+        $selectedCountries = $availableCountries ? explode(',', $availableCountries) : array();
         foreach (\Cx\Core\Country\Controller\Country::getNameArray() as $countryId => $countryName) {
             $blockName = in_array($countryId, $selectedCountries) ? 'shop_selected_countries' : 'shop_not_selected_countries';
             self::$objTemplate->setVariable(array(
