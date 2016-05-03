@@ -117,33 +117,39 @@ class CalendarRegistrationManager extends CalendarLibrary
     public $defaultView;
 
     /**
+     * Calendar Event instance
+     *
+     * @var \Cx\Modules\Calendar\Controller\CalendarEvent
+     */
+    public $event;
+
+    /**
      * Registration manager constructor
      *
      * Loads the form object by loading the calendarEvent object
      *
-     * @param integer $eventId              Event id
-     * @param boolean $getRegistrations     condition to check whether we need the
-     *                                      registrations
-     * @param boolean $getDeregistrations   condition to check whether we need the
-     *                                      deregistrations
-     * @param boolean $getWaitlist          condition to check whether we need the
-     *                                      waitlist
-     * @param integer $startDate            Startdate filter
-     * @param integer $endDate              Enddate filter
-     * @param boolean $isDefaultView        Is registration manager is loaded to parse the current view
+     * @param \Cx\Modules\Calendar\Controller\CalendarEvent     $event                Event id
+     * @param boolean                                           $getRegistrations     condition to check whether we need the
+     *                                                                                  registrations
+     * @param boolean                                           $getDeregistrations   condition to check whether we need the
+     *                                                                                  deregistrations
+     * @param boolean                                           $getWaitlist          condition to check whether we need the
+     *                                                                                  waitlist
+     * @param integer                                           $startDate            Startdate filter
+     * @param integer                                           $endDate              Enddate filter
+     * @param boolean                                           $isDefaultView        Is registration manager is loaded to parse the current view
      */
-    function __construct($eventId, $getRegistrations = true, $getDeregistrations = false, $getWaitlist = false, $startDate = null, $endDate = null, $isDefaultView = false)
+    function __construct(CalendarEvent $event, $getRegistrations = true, $getDeregistrations = false, $getWaitlist = false, $startDate = null, $endDate = null, $isDefaultView = false)
     {   
-        $this->eventId            = intval($eventId);
+        $this->event              = $event;
+        $this->eventId            = intval($event->id);
         $this->getRegistrations   = $getRegistrations;
         $this->getDeregistrations = $getDeregistrations;
         $this->getWaitlist        = $getWaitlist;
         $this->startDate          = $startDate;
         $this->endDate            = $endDate;
         $this->defaultView        = $isDefaultView;
-        
-        $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId); 
-        $this->formId = $objEvent->registrationForm;                    
+        $this->formId             = $this->event->registrationForm;
     }  
     
     /**
@@ -486,22 +492,20 @@ class CalendarRegistrationManager extends CalendarLibrary
 
     /**
      * Set the registration fields placeholders to the template
-     *      
-     * @param integer $formId Form id
-     * @param integer $regId  Registration id
-     * @param object  $objTpl Template object
-     * 
-     * @return null
+     *
+     * @param \Cx\Core\Html\Sigma   $objTpl Template instance
+     * @param integer               $regId  Registration id
      */
-    function showRegistrationInputfields($formId, $regId = null, $objTpl)
+    function showRegistrationInputfields(\Cx\Core\Html\Sigma $objTpl, $regId = null)
     {
-        global $objDatabase, $_LANGID, $_ARRAYLANG;
+        global $_LANGID, $_ARRAYLANG;
         
         $i = 0;
-        $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($formId));
+        $objForm         = new \Cx\Modules\Calendar\Controller\CalendarForm($this->formId);
+        $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration($this->formId, $regId);
         
         // parse the registration type for the add/edit subscription        
-        $regType      = isset($_POST['registrationType']) ? (int) $_POST['registrationType'] : (!empty($regId) ? $this->registrationList[$regId]->type : 1);
+        $regType      = isset($_POST['registrationType']) ? (int) $_POST['registrationType'] : (!empty($regId) ? $objRegistration->type : 1);
         $regTypeField = '<select style="width: 208px;" class="calendarSelect" name="registrationType">
                             <option value="1" '. ($regType == 1 ? "selected='selected'" : '') .' />'.$_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].'</option>
                             <option value="0" '. ($regType == 0 ? "selected='selected'" : '') .' />'.$_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'].'</option>
@@ -514,6 +518,33 @@ class CalendarRegistrationManager extends CalendarLibrary
         ));
         $objTpl->parse('calendar_registration_inputfield');
         $i++;
+
+        if ($this->event && $this->event->seriesStatus && $this->event->independentSeries) {
+            $endDate = new \DateTime();
+            $endDate->modify('+10 years');
+
+            $eventManager = new CalendarEventManager(null, $endDate);
+            $objEvent     = new \Cx\Modules\Calendar\Controller\CalendarEvent($this->event->id);
+            if ($eventManager->_addToEventList($objEvent)) {
+                $eventManager->eventList[] = $objEvent;
+            }
+            $eventManager->_setNextSeriesElement($objEvent);
+
+            $regEventDateField = '<select style="width: 208px;" class="calendarSelect" name="registrationEventDate">';
+            foreach ($eventManager->eventList as $event) {
+                $selectedDate       = $objRegistration->eventDate == $event->startDate->getTimestamp() ? 'selected="selected"' : '';
+                $regEventDateField .= '<option value="' . $event->startDate->getTimestamp() . '" ' . $selectedDate . ' />' . $this->format2userDate($event->startDate) . '</option>';
+            }
+            $regEventDateField .= '</select>';
+
+            $objTpl->setVariable(array(
+                $this->moduleLangVar.'_ROW'                             => $i % 2 == 0 ? 'row1' : 'row2',
+                $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_NAME'    => $_ARRAYLANG['TXT_CALENDAR_DATE_OF_THE_EVENT'],
+                $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_VALUE'   => $regEventDateField,
+            ));
+            $objTpl->parse('calendar_registration_inputfield');
+            $i++;
+        }
         
         foreach ($objForm->inputfields as $arrInputfield) {
             $inputfield = '';
@@ -523,7 +554,7 @@ class CalendarRegistrationManager extends CalendarLibrary
             if(isset($_POST['registrationField'][$arrInputfield['id']])) {
                 $value = $_POST['registrationField'][$arrInputfield['id']];
             } else {
-                $value = $regId != null ? $this->registrationList[$regId]->fields[$arrInputfield['id']]['value'] : '';
+                $value = $regId != null ? $objRegistration->fields[$arrInputfield['id']]['value'] : '';
             }
             
             switch ($arrInputfield['type']) {
@@ -584,9 +615,10 @@ class CalendarRegistrationManager extends CalendarLibrary
             
             if ($arrInputfield['type'] != 'fieldset') {
                 $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_ROW'                             => $i % 2 == 0 ? 'row1' : 'row2',
-                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_NAME'    => $arrInputfield['name'][$_LANGID],
-                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_VALUE'   => $inputfield,
+                    $this->moduleLangVar.'_ROW'                              => $i % 2 == 0 ? 'row1' : 'row2',
+                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_NAME'     => $arrInputfield['name'][$_LANGID],
+                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_REQUIRED' => $arrInputfield['required'] == 1 ? '<font class="calendarRequired"> *</font>' : '',
+                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_VALUE'    => $inputfield,
                 ));
                 $objTpl->parse('calendar_registration_inputfield');
                 $i++;

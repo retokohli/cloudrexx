@@ -635,3 +635,4 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW'] = "Detail view";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAIL_VIEW_LABEL'] = "Show link to detail view of this event";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TEASER'] = "Teaser";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TREAT_AS_INDEPENDENT'] = 'Treat as independent events';
+$_ARRAYLANG['TXT_CALENDAR_DATE_OF_THE_EVENT'] = 'Date of the event';

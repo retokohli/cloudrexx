@@ -1364,7 +1364,7 @@ class CalendarManager extends CalendarLibrary
         
         $filename = urlencode($objEvent->title).".csv"; 
         
-        $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($eventId, $getRegistrations, $getDeregistrations, $getWaitlist);  
+        $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($objEvent, $getRegistrations, $getDeregistrations, $getWaitlist);
         $objRegistrationManager->getRegistrationList(); 
         
         if(!empty($objRegistrationManager->registrationList)) {                 
@@ -1599,7 +1599,7 @@ class CalendarManager extends CalendarLibrary
                 $filterEndTimeStamp   = $filterEndDateTime->getTimestamp();
             }
 
-            $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($eventId, $r, $d, $w, $filterStartTimeStamp, $filterEndTimeStamp, $containerDisplay);
+            $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($objEvent, $r, $d, $w, $filterStartTimeStamp, $filterEndTimeStamp, $containerDisplay);
             $objRegistrationManager->getRegistrationList();
             $objRegistrationManager->showRegistrationList($this->_objTpl, $tpl);
             
@@ -1661,9 +1661,8 @@ class CalendarManager extends CalendarLibrary
             $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration($objEvent->registrationForm);
         }
         
-        $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($eventId, true, true, true);
-        $objRegistrationManager->getRegistrationList();
-        $objRegistrationManager->showRegistrationInputfields($objEvent->registrationForm, $regId, $this->_objTpl);
+        $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($objEvent, true, true, true);
+        $objRegistrationManager->showRegistrationInputfields($this->_objTpl, $regId);
         
         $this->getSettings();
         if ($this->arrSettings['paymentStatus'] == '1' && ($this->arrSettings['paymentBillStatus'] == '1' || $this->arrSettings['paymentYellowpayStatus'] == '1')) {
