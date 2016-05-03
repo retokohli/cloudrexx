@@ -916,20 +916,21 @@ class CalendarEventManager extends CalendarLibrary
             }
 
             $eventDay       = $eventDate->format('d');
+            $isSeries       = $objEvent->seriesStatus && !$objEvent->independentSeries;
             $isEventStarted = $currentTime >= $objEvent->startDate->getTimestamp();
-            $freePlaces     = $isEventStarted ? 0 : $objEvent->getFreePlaces();
-            $eventClass     = 'event_full';
+            $freePlaces     = $isSeries || $isEventStarted ? 0 : $objEvent->getFreePlaces();
+            $eventClass     = ' event_full';
             $eventurl       = false;
-            if (   !$isEventStarted
+            if (   ($isSeries || !$isEventStarted)
                 && (   !$objEvent->registration
                     || $objEvent->getRegistrationCount() < $objEvent->numSubscriber
                     || $objEvent->external == 1)
             ) {
-                $eventClass = 'event_open';
+                $eventClass = ' event_open';
                 $eventurl   = $this->_getDetailLink($objEvent);
             }
 
-            $seatsLeft = $freePlaces . ' ' . $_ARRAYLANG['TXT_CALENDAR_EVENT_FREE'];
+            $seatsLeft = empty($freePlaces) ? '&nbsp;' : $freePlaces . ' ' . $_ARRAYLANG['TXT_CALENDAR_EVENT_FREE'];
             $cal->setEvent($eventYear, $eventMonth, $eventDay, $eventClass, $eventurl);
             $cal->setEventContent($eventYear, $eventMonth, $eventDay, $seatsLeft, $eventurl, 'free_places');
         }
