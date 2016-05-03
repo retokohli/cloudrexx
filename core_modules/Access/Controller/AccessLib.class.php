@@ -1611,6 +1611,8 @@ JS
             $arrLetters[] = 48;
             $arrLetters = array_merge($arrLetters, range(65, 90)); // ascii codes of characters "A" to "Z"
             $arrLetters[] = '';
+            
+            $selfUri = \Cx\Core\Routing\Url::fromPage(\Cx\Core\Core\Controller\Cx::instanciate()->getPage());
 
             foreach ($arrLetters as $letter) {
                 switch ($letter) {
@@ -1630,10 +1632,17 @@ JS
                 if ($letter == '' && $selectedLetter == '' || chr($letter) == $selectedLetter) {
                     $parsedLetter = '<strong>'.$parsedLetter.'</strong>';
                 }
+                
+                $uriLetter = null;
+                if (!empty($letter)) {
+                    $uriLetter = chr($letter);
+                }
+                $selfUri->setParam($paramName, $uriLetter);
 
                 $this->_objTpl->setVariable(array(
                     $this->modulePrefix.'USER_LETTER_INDEX_URI'        => $URI.(!empty($letter) ? '&amp;'.$paramName.'='.chr($letter) : null),
-                    $this->modulePrefix.'USER_LETTER_INDEX_LETTER'    => $parsedLetter
+                    $this->modulePrefix.'USER_LETTER_INDEX_LETTER'    => $parsedLetter,
+                    $this->modulePrefix.'USER_LETTER_INDEX_URI_SELF' => $selfUri,
                 ));
 
                 $this->_objTpl->parse('access_user_letter_index_list');

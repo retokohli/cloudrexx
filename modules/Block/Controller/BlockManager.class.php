@@ -549,8 +549,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'TXT_BLOCK_CATEGORY_SEPERATOR'          => $_ARRAYLANG['TXT_BLOCK_CATEGORY_SEPERATOR'],
             'BLOCK_CATEGORY_ID'                     => $catId,
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'      => $this->_getCategoriesDropdown($arrCategory['parent'], $catId),
-            'BLOCK_CATEGORY_NAME'                   => $arrCategory['name'],
-            'BLOCK_CATEGORY_SEPERATOR'              => $arrCategory['seperator'],
+            'BLOCK_CATEGORY_NAME'                   => contrexx_raw2xhtml($arrCategory['name']),
+            'BLOCK_CATEGORY_SEPERATOR'              => contrexx_raw2xhtml($arrCategory['seperator']),
             'DIRECTORY_INDEX'                       => CONTREXX_DIRECTORY_INDEX,
             'CSRF_PARAM'                            => \Cx\Core\Csrf\Controller\Csrf::param(),
         ));

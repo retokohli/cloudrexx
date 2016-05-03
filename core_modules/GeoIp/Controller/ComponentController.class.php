@@ -49,14 +49,14 @@ namespace Cx\Core_Modules\GeoIp\Controller;
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     
     /**
-     * List of available locales
+     * List of available locales (as IETF language tags)
      * 
      * @var array
      */
     protected $availableLocale = array('de', 'en', 'fr', 'ru', 'es', 'ja', 'pt-BR', 'zh-CN');
 
     /**
-     * Default locale
+     * Default locale, specified as IETF language tag
      * 
      * @var string
      */

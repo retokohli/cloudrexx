@@ -124,7 +124,7 @@ $_ARRAYLANG['TXT_BLOCK_DIRECT_PLACEHOLDERS'] = "Activate Content Pane's own plac
 $_ARRAYLANG['TXT_BLOCK_DIRECT_PLACEHOLDERS_INFO'] = "Select the pages on which this Content Pane's own placeholder [[BLOCK_XY]] shall be displayed.";
 $_ARRAYLANG['TXT_BLOCK_CATEGORY_PLACEHOLDERS'] = "Include Content Pane in category placeholder";
 $_ARRAYLANG['TXT_BLOCK_CATEGORY_PLACEHOLDERS_INFO'] = "Select the pages on which this Content Pane shall be included in its associated category's placeholder [[BLOCK_CAT_XY]].";
-$_ARRAYLANG['TXT_BLOCK_CATEGORY_SEPERATOR'] = "Trennzeichen für Rubrik Platzhalter";
+$_ARRAYLANG['TXT_BLOCK_CATEGORY_SEPERATOR'] = "Separator for category placeholder";
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME'] = "Publication";
 $_ARRAYLANG['TXT_BLOCK_CONTENT'] = "Content";
 $_ARRAYLANG['TXT_BLOCK_ORDER']   = "Order";
@@ -149,3 +149,4 @@ $_ARRAYLANG['TXT_BLOCK_TARGETING_INFO_EXCLUDE'] = 'This Content Pane will be sho
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_GLOBAL_INACTIVE'] = 'This Content Pane is not included in the global placeholder [[BLOCK_GLOBAL]]';
 $_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_ALL_PAGES'] = 'This Content Pane gets displayed on all pages in its own placeholder %s';
 $_ARRAYLANG['TXT_BLOCK_DIRECT_INFO_SHOW_SELECTED_PAGES'] = 'This Content Pane gets displayed on the following pages in its own placeholder %s:';
+?>

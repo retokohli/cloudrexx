@@ -277,7 +277,6 @@ class Recommend extends RecommendLibrary
 
                 $objMail->CharSet = CONTREXX_CHARSET;
                 $objMail->SetFrom($sendermail, $sendername);
-                $objMail->AddReplyTo($sendermail);
                 $objMail->Subject = $subject;
                 $objMail->IsHTML(false);
                 $objMail->Body = $body;

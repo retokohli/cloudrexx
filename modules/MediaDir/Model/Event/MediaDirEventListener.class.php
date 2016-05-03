@@ -58,6 +58,9 @@ class MediaDirEventListener extends DefaultEventListener
      * @param array $search
      */
     public function SearchFindContent($search) {
+        if (!$search->getAccessablePage('MediaDir')) {
+            return;
+        }
         $objEntry = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry('MediaDir');
         $result   = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($objEntry->searchResultsForSearchModule($search->getTerm()));
         $search->appendResult($result);

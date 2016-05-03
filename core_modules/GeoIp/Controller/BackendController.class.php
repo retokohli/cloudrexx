@@ -75,7 +75,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         $this->template = $template;
 
         //GeoIp configuration setting
-        self::errorHandler();
+        self::initConfig();
         $this->showOverview();
         
         \Message::show();
@@ -111,18 +111,19 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @return boolean
      * @throws GeoIpException
      */
-    static function errorHandler() {
+    static function initConfig() {
 
         try {
             \Cx\Core\Setting\Controller\Setting::init('GeoIp', '', 'Yaml');
 
             //setup config
             \Cx\Core\Setting\Controller\Setting::init('GeoIp', 'config', 'Yaml');
-            if (!\Cx\Core\Setting\Controller\Setting::isDefined('serviceStatus')
+            if (
+                   !\Cx\Core\Setting\Controller\Setting::isDefined('serviceStatus')
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceStatus', 0, 1,
-               \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'config')
+                       \Cx\Core\Setting\Controller\Setting::TYPE_RADIO, '1:TXT_ACTIVATED,0:TXT_DEACTIVATED', 'config')
             ) {
-                    throw new GeoIpException("Failed to add Setting entry for GeoIp Service Status");
+                throw new GeoIpException("Failed to add Setting entry for GeoIp Service Status");
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());

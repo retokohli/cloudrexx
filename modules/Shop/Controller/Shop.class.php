@@ -415,7 +415,7 @@ die("Failed to get Customer for ID $customer_id");
         if (!$use_cache) $content[$templateHash] = NULL;
         // Note: This is valid only as long as the content is the same every
         // time this method is called!
-        if ($content[$templateHash]) return $content[$templateHash];
+        if (isset($content[$templateHash])) return $content[$templateHash];
         $objTpl = new \Cx\Core\Html\Sigma('.');
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTpl->setTemplate(empty($template)
@@ -1907,8 +1907,9 @@ die("Failed to update the Cart!");
                         $selected = false;
                         // Show the price only if non-zero
                         if ($arrOption['price'] != 0) {
+                            $pricePrefix = $arrOption['price'] > 0 ? '+' : '';
                             $option_price =
-                                '&nbsp;('.Currency::getCurrencyPrice($arrOption['price']).
+                                '&nbsp;('.$pricePrefix.Currency::getCurrencyPrice($arrOption['price']).
                                 '&nbsp;'.Currency::getActiveCurrencySymbol().')';
                         }
                         // mark the option value as selected if it was before
