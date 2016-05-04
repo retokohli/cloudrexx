@@ -560,13 +560,18 @@ cx.ready(function() {
     });
     
     cx.bind("setEditorData", function(data) {
-        if (cx.jQuery('input[name="page[type]"]:checked').val() == 'application') {
-            var pattern = /\[\[APPLICATION_DATA\]\]/;
+        if (
+            cx.jQuery('input[name="page[type]"]:checked').val() != 'application' ||
+            !cx.cm.editorInUse() ||
+            cx.jQuery("[name=\"page[application]\"").val() == 'Home'
+        ) {
+            return;
+        }
+        var pattern = /\[\[APPLICATION_DATA\]\]/;
 
-            //check whether the application type contains the placeholder [[APPLICATION_DATA]] in textarea
-            if (!pattern.test(data.content)) {
-                data.content = data.content + '[[APPLICATION_DATA]]';
-            }
+        //check whether the application type contains the placeholder [[APPLICATION_DATA]] in textarea
+        if (!pattern.test(data.content)) {
+            data.content = data.content + '[[APPLICATION_DATA]]';
         }
     }, "contentmanager");
 
