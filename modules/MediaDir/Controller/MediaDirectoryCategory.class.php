@@ -124,6 +124,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
      * @param \Cx\Modules\MediaDir\Model\Entity\Category    $category           Instance of category to parse
      * @param string                                        $strCategoryIcon    String category icon
      * @param string                                        $strCategoryClass   Class name for the category
+     * @param integer                                       $level              Parsing level
      * @param string                                        $blockName          Parse block name
      */
     public function parseCategoryDetail(
@@ -194,6 +195,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
      * @param \Cx\Modules\MediaDir\Model\Entity\Category    $category               Root category to parse
      * @param array                                         $expandedCategoryIds    Expanded category array
      * @param boolean                                       $expandAll              True to expand all categories
+     * @param integer                                       $level                  Category level
      * @param boolean                                       $checkShowSubCategory   True to check the show subcategory option
      */
     public function parseCategoryTree(
@@ -275,6 +277,8 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
      * @param integer   $parentCategoryId   Parent category id
      * @param integer   $intEntryId         Entry id
      * @param array     $arrExistingBlocks  Existing blocks to parse
+     * @param integer   $startLevel         Starting level, default 1. Level number will be changed
+     *                                      when parsing levels and categories (navigation tree)
      *
      * @return string
      */

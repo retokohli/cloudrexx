@@ -125,6 +125,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
      * @param Level                 $level           Instance of level to parse
      * @param string                $strLevelIcon    String level icon
      * @param string                $strLevelClass   Class name for the level
+     * @param boolean               $showCategories  True to parse the categories
      * @param string                $blockName       Parse block name
      */
     public function parseLevelDetail(
@@ -179,6 +180,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
      * @param array                 $expandedLevelIds    Expanded level array
      * @param boolean               $expandAll           True to expand all levels
      * @param boolean               $checkShowSubLevel   True to check the show sublevel option
+     * @param boolean               $showCategories      True to parse the categories
      */
     public function parseLevelTree(
         \Cx\Core\Html\Sigma $objTpl,
