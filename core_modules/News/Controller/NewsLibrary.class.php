@@ -1228,51 +1228,38 @@ class NewsLibrary
 
     /**
      * Find the Page based on the category id $cmdId
-     * 
-     * @param string  $cmdName
-     * @param array   $cmdId
-     * @param string  $cmdSeparator
-     * @param string  $module
-     * @param integer $lang
-     * 
-     * @return boolean
+     *
+     * @param string  $cmdName      CMD name
+     * @param array   $cmdId        category id
+     * @param string  $cmdSeparator CMD seperator
+     * @param string  $module       module name
+     * @param integer $lang         lang id
+     *
+     * @return object $page an object of page
      */
     protected function findPageById($cmdName, $cmdId, $cmdSeparator=',', $module='News', $lang=FRONTEND_LANG_ID)
     {
         if (empty($cmdId)) {
-            return false;
+            return null;
         }
-                
-        $qb = \Env::get('em')->createQueryBuilder();
-        $qb ->select('p', 'LENGTH(p.cmd) AS length')
-            ->from('\Cx\Core\ContentManager\Model\Entity\Page', 'p')
-            ->where($qb->expr()->andX(
-                $qb->expr()->orX(
-                    $qb->expr()->eq('p.cmd', ':cmd1'),
-                    $qb->expr()->like('p.cmd', ':cmd2'),
-                    $qb->expr()->like('p.cmd', ':cmd3'),
-                    $qb->expr()->like('p.cmd', ':cmd4')
-                ),
-                $qb->expr()->eq('p.type', ':type'),
-                $qb->expr()->eq('p.lang', ':lang'),
-                $qb->expr()->eq('p.module', ':module')
-            ))
-            ->orderBy('length', 'ASC')
-            ->setMaxResults(1)
-            ->setParameters(array(
-                'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-                'cmd1' => $cmdName.$cmdId,
-                'cmd2' => $cmdName.$cmdId.$cmdSeparator.'%',
-                'cmd3' => $cmdName.'%'.$cmdSeparator.$cmdId.$cmdSeparator.'%',
-                'cmd4' => $cmdName.'%'.$cmdSeparator.$cmdId,
-                'lang' => $lang,
-                'module' => $module,
-            ));
-        $page = $qb->getQuery()->getResult();
-        
-        return !empty($page[0][0]) ? $page[0][0] : null;
+
+        $em          = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
+        $pageRepo    = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
+        $searchTerms = array(
+            $cmdName.$cmdId,
+            $cmdName.$cmdId.$cmdSeparator.'%',
+            $cmdName.'%'.$cmdSeparator.$cmdId.$cmdSeparator.'%',
+            $cmdName.'%'.$cmdSeparator.$cmdId
+        );
+        foreach ($searchTerms as $cmdSearchTerm) {
+            $page = $pageRepo->findOneByModuleCmdLang($module, $cmdSearchTerm, $lang);
+            if ($page) {
+                return $page;
+            }
+        }
+        return null;
     }
-    
+
     /**
      * Searches for cmds having the passed id and 
      * returns the cmd of the result set having the lowest length.
@@ -1291,7 +1278,7 @@ class NewsLibrary
         //Get the CMD based on the $cmdIds
         foreach ($cmdIds as $cmdId) {
             $page = $this->findPageById($cmdName, $cmdId, $cmdSeparator=',', $module='News', $lang=FRONTEND_LANG_ID);
-            if (!empty($page)) {
+            if ($page) {
                 return $page->getCmd();
             }
         }
