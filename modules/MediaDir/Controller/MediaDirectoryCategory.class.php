@@ -131,9 +131,10 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         \Cx\Modules\MediaDir\Model\Entity\Category $category,
         $strCategoryIcon = null,
         $strCategoryClass = 'inactive',
+        $level = 1,
         $blockName = 'CategoriesList'
     ) {
-        $intSpacerSize = ($category->getLvl() - 2) * 21;
+        $intSpacerSize = ($level - 1) * 21;
         $spacer        = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
 
         $categoryDesc = $this->getCategoryDescription($category);
@@ -149,7 +150,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
             $this->moduleLangVar.'_CATEGORY_ICON'                 => $spacer.$strCategoryIcon,
             $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_ACTION' => $category->getActive() == 0 ? 1 : 0,
             $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_IMG'    => $category->getActive() == 0 ? 'off' : 'on',
-            $this->moduleLangVar.'_CATEGORY_LEVEL_NUMBER'         => $category->getLvl() - 1,
+            $this->moduleLangVar.'_CATEGORY_LEVEL_NUMBER'         => $level,
             $this->moduleLangVar.'_CATEGORY_ACTIVE_STATUS'        => $strCategoryClass,
         ));
 
@@ -200,6 +201,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         \Cx\Modules\MediaDir\Model\Entity\Category $category,
         $expandedCategoryIds = array(),
         $expandAll = false,
+        $level = 1,
         $checkShowSubCategory = false
     ) {
         $subCategories = $this->getSubCategoriesByCategory($category);
@@ -222,10 +224,10 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
             } else {
                 $strCategoryIcon = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="11" height="11" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" />';
             }
-            $this->parseCategoryDetail($objTpl, $subcategory, $strCategoryIcon, $strCategoryClass);
+            $this->parseCategoryDetail($objTpl, $subcategory, $strCategoryIcon, $strCategoryClass, $level);
 
             if ($isExpanded) {
-                $this->parseCategoryTree($objTpl, $subcategory, $expandedCategoryIds, $expandAll);
+                $this->parseCategoryTree($objTpl, $subcategory, $expandedCategoryIds, $expandAll, $level + 1);
             }
         }
     }
@@ -282,7 +284,8 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
         $categoryId = null,
         $parentCategoryId = null,
         $intEntryId = null,
-        $arrExistingBlocks = null
+        $arrExistingBlocks = null,
+        $startLevel = 1
     ) {
 
         switch ($intView) {
@@ -441,16 +444,13 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
             case 6:
                 //Frontend Tree Placeholder
                 $expandedCategoryIds = $this->getExpandedCategoryIds($categoryId);
+                $category            = $this->getCategoryById($this->nestedSetRootId);
 
-                $category = $categoryId ? $this->getCategoryById($categoryId) : false;
-                if (!$category) {
-                    $category = $this->getCategoryById($this->nestedSetRootId);
-                }
-
+                $strLevelId = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
                 $tpl = <<<TEMPLATE
     <!-- BEGIN {$this->moduleNameLC}CategoriesList -->
     <li class="level_{{$this->moduleLangVar}_CATEGORY_LEVEL_NUMBER}">
-        <a href="index.php?section={$this->moduleName}{$strLevelId}&amp;cid={{$this->moduleLangVar}_CATEGORY_ID}" class="{{$this->moduleLangVar}_CATEGORY_ACTIVE_STATUS}">
+        <a href="index.php?section={$this->moduleName}{$strLevelId}&amp;cid={{$this->moduleLangVar}_CATEGORY_ID}$strLevelId" class="{{$this->moduleLangVar}_CATEGORY_ACTIVE_STATUS}">
             {{$this->moduleLangVar}_CATEGORY_NAME}
         </a>
     </li>
@@ -463,6 +463,7 @@ TEMPLATE;
                     $category,
                     $expandedCategoryIds,
                     $expandCategory == 'all',
+                    $startLevel,
                     $category->getShowSubcategories()
                 );
                 return $template->get();

@@ -130,14 +130,27 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
     public function parseLevelDetail(
         \Cx\Core\Html\Sigma $objTpl,
         \Cx\Modules\MediaDir\Model\Entity\Level $level,
-        $strLevelIcon = null,
-        $strLevelClass = 'inactive',
-        $blockName = 'LevelsList'
+        $strLevelIcon   = null,
+        $strLevelClass  = 'inactive',
+        $showCategories = false,
+        $blockName      = 'LevelsList'
     ) {
         $intSpacerSize = ($level->getLvl() - 2) * 21;
         $spacer        = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
 
         $levelDesc = $this->getLevelDescription($level);
+
+        $levelCategory = '';
+        if (   $showCategories
+            && $level->getShowCategories()
+            && $strLevelClass = 'active'
+            && !empty($_GET['lid'])
+            && $_GET['lid'] == $level->getId()
+        ) {
+            $objCategories = new MediaDirectoryCategory($this->moduleName);
+            $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : null;
+            $levelCategory = $objCategories->listCategories($objTpl, 6, $intCategoryId, null, null, array(), $level->getLvl());
+        }
         //parse variables
         $objTpl->setVariable(array(
             $this->moduleLangVar.'_LEVEL_ID'                   => $level->getId(),
@@ -152,6 +165,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             $this->moduleLangVar.'_LEVEL_VISIBLE_STATE_IMG'    => $level->getActive() == 0 ? 'off' : 'on',
             $this->moduleLangVar.'_LEVEL_LEVEL_NUMBER'         => $level->getLvl() - 1,
             $this->moduleLangVar.'_LEVEL_ACTIVE_STATUS'        => $strLevelClass,
+            $this->moduleLangVar.'_LEVEL_CATEGORY'             => $levelCategory,
         ));
 
         $objTpl->parse($this->moduleNameLC . $blockName);
@@ -171,7 +185,8 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
         \Cx\Modules\MediaDir\Model\Entity\Level $level,
         $expandedLevelIds = array(),
         $expandAll = false,
-        $checkShowSubLevel = false
+        $checkShowSubLevel = false,
+        $showCategories = false
     ) {
         $subLevels = $this->getSubLevelsByLevel($level);
         foreach ($subLevels as $sublevel) {
@@ -193,7 +208,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             } else {
                 $strLevelIcon = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="11" height="11" />';
             }
-            $this->parseLevelDetail($objTpl, $sublevel, $strLevelIcon, $strLevelClass);
+            $this->parseLevelDetail($objTpl, $sublevel, $strLevelIcon, $strLevelClass, $showCategories);
 
             if ($isExpanded) {
                 $this->parseLevelTree($objTpl, $sublevel, $expandedLevelIds, $expandAll);
@@ -332,7 +347,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_CATEGORY_LEVEL_ID'             => $level->getId(),
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NAME'           => contrexx_raw2xhtml($levelName),
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK'           => '<a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$level->getId().'">'.contrexx_raw2xhtml($levelName).'</a>',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK'           => '<a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;lid='.$level->getId().'">'.contrexx_raw2xhtml($levelName).'</a>',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION'    => contrexx_raw2xhtml($levelDescription),
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE'        => '<img src="'. $thumbImage .'" border="0" alt="'. contrexx_raw2xhtml($levelName) .'" />',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $level->getPicture(),
@@ -357,19 +372,16 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             case 6:
                 //Frontend Tree Placeholder
                 $expandedLevelIds = $this->getExpandedLevelIds($levelId);
-
-                $level = $levelId ? $this->getLevelById($levelId) : false;
-                if (!$level) {
-                    $level = $this->getLevelById($this->nestedSetRootId);
-                }
+                $level = $this->getLevelById($this->nestedSetRootId);
 
                 $tpl = <<<TEMPLATE
     <!-- BEGIN {$this->moduleNameLC}LevelsList -->
     <li class="level_{{$this->moduleLangVar}_LEVEL_LEVEL_NUMBER}">
-        <a href="index.php?section={$this->moduleName}{$strLevelId}&amp;cid={{$this->moduleLangVar}_LEVEL_ID}" class="{{$this->moduleLangVar}_LEVEL_ACTIVE_STATUS}">
+        <a href="index.php?section={$this->moduleName}{$strLevelId}&amp;lid={{$this->moduleLangVar}_LEVEL_ID}" class="{{$this->moduleLangVar}_LEVEL_ACTIVE_STATUS}">
             {{$this->moduleLangVar}_LEVEL_NAME}
         </a>
     </li>
+    {{$this->moduleLangVar}_LEVEL_CATEGORY}
     <!-- END {$this->moduleNameLC}LevelsList -->
 TEMPLATE;
                 $template = new \Cx\Core\Html\Sigma('.');
@@ -379,7 +391,8 @@ TEMPLATE;
                     $level,
                     $expandedLevelIds,
                     $expandLevel == 'all',
-                    $level->getShowSublevels()
+                    $level->getShowSublevels(),
+                    true
                 );
                 return $template->get();
                 break;
