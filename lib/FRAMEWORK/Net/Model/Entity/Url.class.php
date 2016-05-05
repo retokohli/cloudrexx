@@ -35,6 +35,14 @@
 
 namespace Cx\Lib\Net\Model\Entity;
 
+/**
+ * Exception from within this file
+ * @copyright   CLOUDREXX CMS - CLOUDREXX AG
+ * @author      Michael Ritter <drissg@gmail.com>
+ * @version     1.0.0
+ * @package     cloudrexx
+ * @subpackage  lib_net
+ */
 class UrlException extends \Exception {}
 
 /**
