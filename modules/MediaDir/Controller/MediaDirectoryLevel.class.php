@@ -379,7 +379,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                 $tpl = <<<TEMPLATE
     <!-- BEGIN {$this->moduleNameLC}LevelsList -->
     <li class="level_{{$this->moduleLangVar}_LEVEL_LEVEL_NUMBER}">
-        <a href="index.php?section={$this->moduleName}{$strLevelId}&amp;lid={{$this->moduleLangVar}_LEVEL_ID}" class="{{$this->moduleLangVar}_LEVEL_ACTIVE_STATUS}">
+        <a href="index.php?section={$this->moduleName}&amp;lid={{$this->moduleLangVar}_LEVEL_ID}" class="{{$this->moduleLangVar}_LEVEL_ACTIVE_STATUS}">
             {{$this->moduleLangVar}_LEVEL_NAME}
         </a>
     </li>
@@ -392,7 +392,7 @@ TEMPLATE;
                     $template,
                     $level,
                     $expandedLevelIds,
-                    $expandLevel == 'all',
+                    false,
                     $level->getShowSublevels(),
                     true
                 );
@@ -596,11 +596,10 @@ TEMPLATE;
         if (!$level) {
             return array();
         }
-        $levels = array($level);
-        while (   $level->getId() != $level->getParent()
-               && $level = $this->getLevelById($level->getParent())
-        ) {
+        $levels = array();
+        while ($level->getId() != $level->getParent()) {
             $levels[] = $level;
+            $level    = $this->getLevelById($level->getParent());
         }
 
         return $levels;

@@ -325,18 +325,15 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                     $category = $this->getCategoryById($this->nestedSetRootId);
                 }
 
-                $intNumCategories = $this->categoryNestedSet->getSubBranch($category->getId(), true, true, array('where' => array('active' => 1)));
-
+                $subCategories    = $this->getSubCategoriesByCategory($category);
+                $intNumCategories = count($subCategories);
                 if ($intNumCategories % $intNumBlocks != 0) {
                     $intNumCategories = $intNumCategories + ($intNumCategories % $intNumBlocks);
                 }
 
                 $intNumPerRow = intval($intNumCategories / $intNumBlocks);
-                $x = 0;
-
-                $strLevelId    = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
-
-                $subCategories = $this->getSubCategoriesByCategory($category);
+                $strLevelId   = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
+                $x            = 0;
                 foreach ($subCategories as $subCategory) {
 
                     $strIndexHeaderTag = null;
@@ -611,11 +608,10 @@ TEMPLATE;
             return array();
         }
 
-        $categories = array($category);
-        while (   $category->getId() != $category->getParent()
-               && $category = $this->getCategoryById($category->getParent())
-        ) {
+        $categories = array();
+        while ($category->getId() != $category->getParent()) {
             $categories[] = $category;
+            $category     = $this->getCategoryById($category->getParent());
         }
 
         return $categories;

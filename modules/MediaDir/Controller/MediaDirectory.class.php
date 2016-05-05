@@ -302,7 +302,7 @@ class MediaDirectory extends MediaDirectoryLibrary
             if($this->arrSettings['settingsShowLevels'] == 1 && $intCategoryId == 0 && $bolFormUseLevel) {
                 $objLevels = new MediaDirectoryLevel($this->moduleName);
                 $objCategories = new MediaDirectoryCategory($this->moduleName);
-                $objLevels->listLevels($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
+                $objLevels->listLevels($this->_objTpl, 2, null, $intLevelId, null, $arrExistingBlocks);
                 $this->_objTpl->clearVariables();
                 $this->_objTpl->parse($this->moduleNameLC.'CategoriesLevelsList');
             }
