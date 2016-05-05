@@ -254,6 +254,14 @@ class Uri {
     }
     
     /**
+     * Returns the current path section split by path delimiter
+     * @return array Path section
+     */
+    public function getPathParts() {
+        return $this->path;
+    }
+    
+    /**
      * Sets the current path
      * @param string $path New path
      */
