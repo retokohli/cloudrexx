@@ -56,17 +56,11 @@ class JsonData {
      * @var array List of adapter class names 
      */
     protected static $adapter_classes = array(
-        '\\Cx\\Core\\Json\\Adapter\\Block' => array(
-            'JsonBlock',
-        ),
         '\\Cx\\Core\\Json\\Adapter\\User' => array(
             'JsonUser',
         ),
         '\\Cx\\Core\\Json\\Adapter\\Calendar' => array(
             'JsonCalendar',
-        ),
-        '\\Cx\\modules\\Survey\\Controller' => array(
-            'JsonSurvey',
         ),
         '\\Cx\\Modules\\Crm\\Controller' => array(
             'JsonCrm',
@@ -145,7 +139,7 @@ class JsonData {
         $controllerClass = end($nsParts);
         
         // legacy adapter
-        if (in_array($possibleComponentName, array('Json', 'Survey', 'Crm'))) {
+        if (in_array($possibleComponentName, array('Json', 'Crm'))) {
             $this->loadLegacyAdapter($adapter);
             return;
         }

@@ -1665,7 +1665,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
-            $objMail->AddReplyTo($objUserMail->getSenderMail());
             $objMail->Subject = $objUserMail->getSubject();
 
             if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {

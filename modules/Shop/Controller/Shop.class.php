@@ -395,7 +395,7 @@ die("Failed to get Customer for ID $customer_id");
      * @global  array   $_ARRAYLANG
      * @global  array   $themesPages
      * @global  array   $_CONFIGURATION
-     * @staticvar string    $strContent Caches created content
+     * @staticvar array $content    Caches created content
      * @param   type    $template   Replaces the default template
      *                              ($themesPages['shopnavbar']) and sets
      *                              $use_cache to false unless empty.
@@ -409,12 +409,13 @@ die("Failed to get Customer for ID $customer_id");
     static function getNavbar($template=NULL, $use_cache=true)
     {
         global $_ARRAYLANG, $themesPages;
-        static $strContent = NULL;
+        static $content = array();
+        $templateHash = md5($template);
 
-        if (!$use_cache) $strContent = NULL;
+        if (!$use_cache) $content[$templateHash] = NULL;
         // Note: This is valid only as long as the content is the same every
         // time this method is called!
-        if ($strContent) return $strContent;
+        if (isset($content[$templateHash])) return $content[$templateHash];
         $objTpl = new \Cx\Core\Html\Sigma('.');
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTpl->setTemplate(empty($template)
@@ -518,8 +519,8 @@ die("Failed to get Customer for ID $customer_id");
 //        if ($objTpl->blockExists('shopJsCart')) {
 //            $objTpl->touchBlock('shopJsCart');
 //        }
-        $strContent = $objTpl->get();
-        return $strContent;
+        $content[$templateHash] = $objTpl->get();
+        return $content[$templateHash];
     }
 
 
@@ -1906,8 +1907,9 @@ die("Failed to update the Cart!");
                         $selected = false;
                         // Show the price only if non-zero
                         if ($arrOption['price'] != 0) {
+                            $pricePrefix = $arrOption['price'] > 0 ? '+' : '';
                             $option_price =
-                                '&nbsp;('.Currency::getCurrencyPrice($arrOption['price']).
+                                '&nbsp;('.$pricePrefix.Currency::getCurrencyPrice($arrOption['price']).
                                 '&nbsp;'.Currency::getActiveCurrencySymbol().')';
                         }
                         // mark the option value as selected if it was before
