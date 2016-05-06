@@ -98,21 +98,7 @@ CKEDITOR.editorConfig = function( config )
     
     config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','Wysiwyg')? 'true' : 'false' ?>;
 
-    config.toolbar_Full = config.toolbar_Small = [
-        ['Source','-','NewPage','Templates'],
-        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
-        ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-        ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
-        ['NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'],
-        ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-        ['Link','Unlink','Anchor'],
-        ['Image','Flash','Table','HorizontalRule','SpecialChar'],
-        ['Format'],
-        ['TextColor','BGColor'],
-        ['ShowBlocks'],
-        ['Maximize'],
-        ['Div','CreateDiv']
-    ];
+    config.toolbar_Full = config.toolbar_Small = <?php echo $wysiwyg->getFullToolbar() ?>;
 
     config.toolbar_BBCode = [
         ['Source','-','NewPage'],

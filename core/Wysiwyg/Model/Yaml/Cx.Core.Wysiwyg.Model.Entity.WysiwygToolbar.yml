@@ -1,0 +1,29 @@
+Cx\Core\Wysiwyg\Model\Entity\WysiwygToolbar:
+  type: entity
+  table: core_wysiwyg_toolbar
+  fields:
+    id:
+      id: true
+      type: integer
+      length: 6
+      generator:
+        strategy: AUTO
+    availableFunctions:
+      type: text
+      nullable: false
+      column: available_functions
+      options:
+        default: ''
+    removedButtons:
+      type: text
+      nullable: false
+      column: removed_buttons
+      options:
+        default: ''
+    isDefault:
+      type: integer
+      length: 1
+      nullable: false
+      column: is_default
+      options:
+        default: 0

@@ -58,10 +58,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
         }
         return $cmds;
     }
-    
+
     /**
     * Use this to parse your backend page
-    * 
+    *
     * You will get the template located in /View/Template/{CMD}.html
     * You can access Cx class using $this->cx
     * To show messages, use \Message class
@@ -113,6 +113,39 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
                 
                 $template->setVariable('WYSIWYG_CONFIG_TEMPLATE', $tmpl->get());
+                break;
+            case 'Functions':
+                $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($this->cx);
+                // check if the toolbar shall be saved
+                if (isset($_POST) && isset($_POST['save'])) {
+                    // get the entitymanager
+                    $em = $this->cx->getDb()->getEntityManager();
+                    // load the repository for the toolabrs
+                    $toolbarRepo = $em->getRepository('\\Cx\\Core\\Wysiwyg\\Model\\Entity\\WysiwygToolbar');
+                    // get the available functions
+                    $availableFunctions = $toolbarController->getAsOldSyntax($_POST['removedButtons'], 'defaultFull');
+                    // check if there is already a default toolbar saved
+                    if ($toolbarRepo->findOneBy(array('isDefault' => 1))) {
+                        // load the saved default toolbar
+                        $toolbar = $toolbarRepo->findOneBy(array('isDefault' => 1));
+                        // update the available functions
+                        $toolbar->setAvailableFunctions($availableFunctions);
+                    } else {
+                        // create a new toolbar entity
+                        $toolbar = new \Cx\Core\Wysiwyg\Model\Entity\WysiwygToolbar();
+                        // set the available functions
+                        $toolbar->setAvailableFunctions($availableFunctions);
+                        $toolbar->setRemovedButtons($_POST['removedButtons']);
+                        $toolbar->setIsDefault(1);
+                    }
+                    $em->persist($toolbar);
+                }
+                $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate();
+                // get the template and replace the placeholder
+                $template->setVariable(
+                    'WYSIWYG_CONFIG_TEMPLATE',
+                    $toolbarConfigurator->get()
+                );
                 break;
             case '':
             default:

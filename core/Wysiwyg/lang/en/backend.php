@@ -50,6 +50,8 @@ $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS_DEFAULT'] = 'Mailing';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_SETTINGS_HELP'] = 'Help';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_TEMPLATE_ENTITY'] = 'WysiwygTemplate';
 
+$_ARRAYLANG['TXT_CORE_WYSIWYG_ACT_FUNCTIONS'] = 'Base configuration';
+
 // Now our content specific values:
 $_ARRAYLANG['TXT_CORE_WYSIWYG_CONGRATULATIONS'] = 'Overview';
 $_ARRAYLANG['TXT_CORE_WYSIWYG_SUCCESSFUL_CREATION'] = 'This is the Overview/Dashboard of your new Component. More tabs will be generated if you add entities to this component.';

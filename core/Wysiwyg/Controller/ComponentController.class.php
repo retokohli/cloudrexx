@@ -96,7 +96,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
-        return array('Backend');
+        return array('Backend', 'Toolbar');
     }
     
     /**
@@ -194,5 +194,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function registerEventListeners() {
         $eventListener = new WysiwygEventListener($this->cx);
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
+    }
+
+    public function getFullToolbar() {
+        $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController(
+            $this->cx
+        );
+
+        return $toolbarController->getToolbar('Full');
     }
 }
