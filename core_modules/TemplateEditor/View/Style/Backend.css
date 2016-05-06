@@ -338,6 +338,10 @@ body {
     bottom: 31px;
 }
 
+.series-list {
+    display: none;
+}
+
 .series-list .elements img,
 .image.option img {
     margin: auto;
@@ -850,6 +854,7 @@ span.introjs-helperNumberLayer {
 }
 .option-list {
     float: left;
+    width: 100%;
 }
 
 #content button.button.help {
@@ -868,3 +873,20 @@ span.introjs-helperNumberLayer {
     text-shadow: none;
     cursor: pointer;
 }
+
+.optionsInGroup {
+    overflow: auto;
+    display: none;
+}
+
+.optionGroup {
+    width: 100%;
+}
+p.groupName {
+    display: block;
+    width: calc(100% - 20px);
+    margin: 0;
+    padding: 10px;
+    border-bottom: 1px solid grey;
+    font-weight: bold;
+ }

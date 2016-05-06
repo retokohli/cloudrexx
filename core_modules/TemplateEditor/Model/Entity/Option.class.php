@@ -103,18 +103,27 @@ abstract class Option extends \Cx\Model\Base\EntityBase
     protected $optionTemplate;
 
     /**
+     * The group of the option
+     *
+     * @var Group
+     */
+    protected $group;
+
+    /**
      * @param String $name Name of the option
      * @param array  $translations Array with translations for option.
      * @param array  $data
      * @param String $type         the type of the option
      * @param bool   $series       handle the elements as series if true
+     * @param Group  $group        the group of the option
      */
     public function __construct(
         $name,
         $translations,
         $data,
         $type,
-        $series = false
+        $series = false,
+        $group
     ) {
         global $_LANGID;
         $this->name         = $name;
@@ -124,6 +133,7 @@ abstract class Option extends \Cx\Model\Base\EntityBase
         $this->translations = $translations;
         $this->type = $type;
         $this->series = $series;
+        $this->group = $group;
     }
 
     /**
@@ -262,6 +272,24 @@ abstract class Option extends \Cx\Model\Base\EntityBase
      */
     public function setSeries($series) {
         $this->name = $series;
+    }
+
+    /**
+     * Get the group of the option.
+     *
+     * @return Group the group of the option
+     */
+    public function getGroup() {
+        return $this->group;
+    }
+
+    /**
+     * Set the group for the option.
+     *
+     * @param Group $group the group of the option
+     */
+    public function setGroup($group) {
+        $this->group = $group;
     }
 
     /**

@@ -69,13 +69,13 @@ class OptionSetFileStorage implements Storable
             \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
                 ->getFilePath(
                     $this->path
-                    . '/' . $name . '/options/options.yml'
+                    . '/' . $name . '/options/Options.yml'
                 )
         );
         if ($file) {
             try {
                 $yaml = new Parser();
-                return $yaml->parse($file);
+                $data = $yaml->parse($file);
             } catch (ParserException $e) {
                 preg_match(
                     "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
@@ -85,9 +85,28 @@ class OptionSetFileStorage implements Storable
         } else {
             throw new ParserException(
                 "File" . $this->path
-                . '/' . $name . '/options/options.yml not found'
+                . '/' . $name . '/options/Options.yml not found'
             );
         }
+        $file = file_get_contents(
+            \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
+                ->getFilePath(
+                    $this->path
+                    . '/' . $name . '/options/Groups.yml'
+                )
+        );
+        if ($file) {
+            try {
+                $yaml = new Parser();
+                $data['groups'] = $yaml->parse($file);
+            } catch (ParserException $e) {
+                preg_match(
+                    "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
+                );
+                throw new ParserException($e->getMessage(), $matches['line']);
+            }
+        }
+        return $data;
     }
 
     /**
@@ -102,7 +121,7 @@ class OptionSetFileStorage implements Storable
         mkdir($this->path . '/' . $name . '/options');
         return file_put_contents(
             $this->path
-            . '/' . $name . '/options/options.yml',
+            . '/' . $name . '/options/Options.yml',
             Yaml::dump($data->yamlSerialize(), 6)
         );
     }

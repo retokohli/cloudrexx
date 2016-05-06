@@ -321,3 +321,13 @@ function removeElement(button) {
         }
     )
 }
+
+jQuery(document).ready(function(){
+    jQuery('.groupName').click(function(){
+        jQuery(this).parent().siblings('.optionGroup').children('.optionsInGroup').hide();
+        jQuery(this).siblings('.optionsInGroup').toggle();
+    });
+    jQuery('.series').children('label').click(function(){
+        jQuery(this).siblings('.series-list').toggle();
+    });
+});
