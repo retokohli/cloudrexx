@@ -134,8 +134,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
         $this->theme = $theme;
         $presetStorage =
             new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
-            $this->cx->getWebsiteThemesPath() . '/' . $theme->getFoldername()
-        );
+                $theme->getPath()
+            );
         $this->presetRepository = new PresetRepository($presetStorage);
 
         if (!isset($data['activePreset'])) {

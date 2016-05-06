@@ -1,0 +1,5 @@
+options:
+  -
+    name: main_color
+    specific:
+      color: '#066196'

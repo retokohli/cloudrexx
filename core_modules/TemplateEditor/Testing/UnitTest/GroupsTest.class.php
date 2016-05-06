@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -28,14 +28,14 @@
 namespace Cx\Core_Modules\TemplateEditor\Testing\UnitTest;
 
 /**
- * Class StorableTest
+ * Class GroupsTest
  *
  * @copyright   CLOUDREXX CMS - CLOUDREXX AG
- * @author      Robin Glauser <robin.glauser@cloudrexx.com>
+ * @author      Adrian Berger <adrian.berger@cloudrexx.com>
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class StorableTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
+class GroupsTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
 {
     /**
      * @var \Cx\Core_Modules\TemplateEditor\Model\TestStorage
@@ -47,6 +47,16 @@ class StorableTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
      */
     protected $themeOptionRepository;
 
+    /**
+     * @var \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet
+     */
+    protected $optionSet;
+
+    /**
+     * Set up the unit test
+     *
+     * @access protected
+     */
     protected function setUp()
     {
         $this->testStorage =
@@ -55,60 +65,34 @@ class StorableTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
             new \Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository(
                 $this->testStorage
             );
-    }
-
-    public function testLoadOption()
-    {
-        $themeOption = $this->themeOptionRepository->get(
+        $this->optionSet = $this->themeOptionRepository->get(
             new \Cx\Core\View\Model\Entity\Theme(
                 null,
                 null,
                 '/core_modules/TemplateEditor/Testing/UnitTest/Test_Template'
             )
         );
-        $isOptionSet = is_a(
-            $themeOption,
-            '\Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet',
-            true
-        );
-        $this->assertTrue($isOptionSet);
-        if ($isOptionSet) {
-            $this->assertTrue(
-                is_a(
-                    'Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption',
-                    $themeOption->getOption('main_color')->getType(),
-                    true
-                )
-            );
-        }
     }
 
-    public function testSaveOption()
+    /**
+     * Check if the function getOptionsOrderedByGroups works properly
+     *
+     * @access protected
+     */
+    protected function checkOrderOfOptions()
     {
-        $themeOption = $this->themeOptionRepository->get(
-            new \Cx\Core\View\Model\Entity\Theme(
-                null,
-                null,
-                '/core_modules/TemplateEditor/Testing/UnitTest/Test_Template'
-            )
+        $optionGroups = $this->optionSet->getOptionsOrderedByGroups();
+        $this->assertTrue(is_array($optionGroups));
+        // check one self defined group
+        $this->assertTrue(
+            count($optionGroups['example_group_1']) == 2 &&
+            array_key_exists('main_title', $optionGroups['example_group_1']) &&
+            array_key_exists('news_area', $optionGroups['example_group_1'])
         );
-        $newColor = '#dddddd';
-        $isOptionSet = is_a(
-            $themeOption,
-            '\Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet',
-            true
+        // check standard group
+        $this->assertTrue(
+            array_key_exists('logo_image', $optionGroups['others_group'])
         );
-        $this->assertTrue($isOptionSet);
-        if ($isOptionSet) {
-            /**
-             * @var $color \Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption
-             */
-            $color = $themeOption->getOption('main_color');
-            $color->handleChange($newColor);
-            $this->assertTrue($color->getColor() == $newColor);
-        }
-
-        $this->assertTrue($this->themeOptionRepository->save($themeOption));
     }
 
 }

@@ -48,7 +48,12 @@ class Theme extends \Cx\Model\Base\EntityBase
 {
     private $id = null;
     private $themesname;
-    private $foldername;
+
+    /**
+     * Relative path to the theme folder (relative to cx folder)
+     * @var String
+     */
+    protected $path;
     private $expert;
     
     private $defaults = array();
@@ -67,12 +72,17 @@ class Theme extends \Cx\Model\Base\EntityBase
     const THEME_DEFAULT_PREVIEW_FILE = '/core/Core/View/Media/theme_preview.gif'; // path from the document root
     const THEME_COMPONENT_FILE = '/component.yml'; // path from theme folder
 
-    public function __construct($id = null, $themesname = null, $foldername = null, $expert = 1) {
+    public function __construct(
+        $id = null,
+        $themesname = null,
+        $path = '',
+        $expert = 1
+    ) {
         $this->db = \Env::get('db');
         
         $this->setId($id);
         $this->setThemesname($themesname);
-        $this->setFoldername($foldername);
+        $this->setPath($path);
         $this->setExpert($expert);
     }
     
@@ -158,16 +168,16 @@ class Theme extends \Cx\Model\Base\EntityBase
      * @return string the preview image source web path
      */
     public function getPreviewImage() {
-        $websiteFilePath  = \Env::get('cx')->getWebsiteThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
-        $codeBaseFilePath = \Env::get('cx')->getCodeBaseThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
-        $filePath         = file_exists($websiteFilePath) 
+        $websiteFilePath  = \Env::get('cx')->getWebsiteThemesPath() . '/' . $this->getFoldername() . self::THEME_PREVIEW_FILE;
+        $codeBaseFilePath = \Env::get('cx')->getCodeBaseThemesPath() . '/' . $this->getFoldername() . self::THEME_PREVIEW_FILE;
+        $filePath         = file_exists($websiteFilePath)
                             ? $websiteFilePath
                             : ( file_exists($codeBaseFilePath)
                                 ? $codeBaseFilePath
                                 : ''
                               );
         if ($filePath && file_exists($filePath)) {
-            return \Env::get('cx')->getWebsiteThemesWebPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
+            return \Env::get('cx')->getWebsiteThemesWebPath() . '/' . $this->getFoldername() . self::THEME_PREVIEW_FILE;
         }
         return \Env::get('cx')->getCodeBaseOffsetPath(). self::THEME_DEFAULT_PREVIEW_FILE;
     }
@@ -340,10 +350,28 @@ class Theme extends \Cx\Model\Base\EntityBase
         return $this->themesname;
     }
 
+    /**
+     * Returns the themes folder name
+     * Used for backwards compatibility
+     *
+     * @deprecated use getPath
+     * @access public
+     * @return string   the name of the themes folder without the path
+     */
     public function getFoldername() {
-        return $this->foldername;
+        return end(explode('/', $this->path));
     }
-    
+
+    /**
+     * Returns the path name
+     *
+     * @access public
+     * @return String the path name
+     */
+    public function getPath() {
+        return $this->path;
+    }
+
     public function getExpert() {
         return $this->expert;
     }
@@ -360,8 +388,33 @@ class Theme extends \Cx\Model\Base\EntityBase
         $this->themesname = $themesname;
     }
 
+    /**
+     * Sets the path using $this->setPath()
+     * Used for backwards compatibility
+     *
+     * @deprecated use setPath
+     * @access public
+     * @param string $foldername    the name of the theme folder
+     */
     public function setFoldername($foldername) {
-        $this->foldername = $foldername;
+        $this->setPath($foldername);
+    }
+
+    /**
+     * Set the path of the theme relative to clx
+     *
+     * If $path only contains the folder name, it will use getWebsiteThemesPath
+     * as path
+     *
+     * @access public
+     * @param string $path  the relative path to the theme
+     */
+    public function setPath($path) {
+        // path should always contain the full path to the folder
+        if (strpos($path, '/') === false) {
+            $path = $this->cx->getWebsiteThemesPath() . '/' . $path;
+        }
+        $this->path = $path;
     }
 
     public function setExpert($expert) {
