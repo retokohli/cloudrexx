@@ -342,18 +342,6 @@ cx.ready(function() {
         }
     });
     
-    // aliases:
-    if (!publishAllowed) {
-        cx.jQuery("div.page_alias").each(function (index, field) {
-            field = cx.jQuery(field);
-            field.removeClass("empty");
-            if (field.children("span.noedit").html() == "") {
-                field.addClass("empty");
-            }
-        });
-        cx.jQuery(".empty").hide();
-    }
-    
     // alias input fields
     cx.jQuery("div.page_alias input").keyup(function() {
         cx.jQuery("div.page_alias input.warning").removeClass("warning");
@@ -2907,15 +2895,17 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
         myField.children("span.noedit").html(alias);
         field.before(myField);
     });
-    if (!publishAllowed) {
-        cx.jQuery("div.page_alias").each(function (index, field) {
-            field = cx.jQuery(field);
-            field.removeClass("empty");
-            if (field.children("span.noedit").html() == "") {
-                field.addClass("empty");
-            }
-        });
-        cx.jQuery(".empty").hide();
+    
+    // If alias management is forbidden
+    if (!aliasManagementAllowed) {
+        // never show the "new alias" field
+        jQuery("div.page_alias").show().last().hide();
+        
+        // show alias title if there are any aliases
+        jQuery("label[for=page_alias]").parent().toggle(!!page.aliases.length);
+        
+        // show if aliases
+        jQuery("#page_alias_container").toggle(!!page.aliases.length);
     }
     
     if (selectTab != undefined) {
