@@ -595,6 +595,55 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
             }
             $objGroup->setDynamicPermissionIds($arrCurrentAccessIds);
+            // Get Cx object from Environment variable
+            $cx = \Env::get('cx');
+            // Load entity manager
+            $em = $cx->getDb()->getEntityManager();
+            // Load group and Toolbar repository
+            $groupRepo = $em->getRepository('\\Cx\\Core\\User\\Model\\Entity\\Group');
+            $toolbarRepo = $em->getRepository('\\Cx\\Core\\Wysiwyg\\Model\\Entity\\WysiwygToolbar');
+            // Get the entity of the current group
+            $group = $groupRepo->findOneBy(array('groupId' => $objGroup->getId()));
+            // Instantiate a new Toolbarcontroller
+            $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($cx);
+            $newFunctions = json_decode($toolbarController->getAsOldSyntax($_POST['removedButtons'], 'full'));
+            if (!empty($group->getToolbar())) {
+                $toolbar = $toolbarRepo->findOneBy(array('id' => $group->getToolbar()));
+                $currentFunctions = json_decode($toolbar->getAvailableFunctions());
+                $diff = array_diff($currentFunctions, $newFunctions);
+                // Check if the toolbar has been changed
+                if (!empty($diff)) {
+                    // Re-initiate the toolbar variable as a new toolbar entity
+                    // and set the values respectively
+                    $newToolbar = new \Cx\Core\Wysiwyg\Model\Entity\WysiwygToolbar();
+                    $newToolbar->setAvailableFunctions(json_encode($newFunctions));
+                    $newToolbar->setRemovedButtons($_POST['removedButtons']);
+                    $newToolbar->setIsDefault(0);
+                    // Save the new toolbar
+                    $em->persist($newToolbar);
+                    // check if the other toolbar is still in usage
+                    $groups = $groupRepo->findBy(
+                        array(
+                            'toolbar' => $toolbar->getId()
+                        )
+                    );
+                    // Old toolbar is no longer in use
+                    if (empty($groups)) {
+                        // Remove it to prevent overflow of database
+                        $em->remove($toolbar);
+                    }
+                }
+            } else {
+                //TODO: IMPLEMENT CHECK IF SAME TOOLBAR EXISTS ALREADY
+                // Group has currently no special toolbar assigned
+                // initiate a new toolbar entity and set variables respectively
+                $toolbar = new \Cx\Core\Wysiwyg\Model\Entity\WysiwygToolbar();
+                $toolbar->setIsDefault(0);
+                $toolbar->setRemovedButtons($_POST['removedButtons']);
+                $toolbar->setAvailableFunctions($newFunctions);
+                // Save the new toolbar
+                $em->persist($toolbar);
+            }
 
             if (isset($_POST['access_save_group'])) {
                 if ($objGroup->store()) {
@@ -782,7 +831,12 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     'style'            => 'display: none;'
         ));
         $mediaBrowser->setCallback('SetUrl');
-        
+
+        // Parse toolbarconfigurator
+        $cx = \Env::get('cx');
+        $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($cx);
+        $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate();
+
         $this->attachJavaScriptFunction('accessSetWebpage');
         $this->attachJavaScriptFunction('accessSelectAllGroups');
         $this->attachJavaScriptFunction('accessDeselectAllGroups');
@@ -793,6 +847,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_MEDIA_BROWSER_BUTTON'   => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_ACCESS_BROWSE']),
             'TXT_ACCESS_GENERAL'            => $_ARRAYLANG['TXT_ACCESS_GENERAL'],
             'TXT_ACCESS_PERMISSIONS'        => $_ARRAYLANG['TXT_ACCESS_PERMISSIONS'],
+            'TXT_ACCESS_TOOLBARCONFIGURATOR'=> $_ARRAYLANG['TXT_ACCESS_TOOLBARCONFIGURATOR'],
             'TXT_ACCESS_NAME'               => $_ARRAYLANG['TXT_ACCESS_NAME'],
             'TXT_ACCESS_DESCRIPTION'        => $_ARRAYLANG['TXT_ACCESS_DESCRIPTION'],
             'TXT_ACCESS_STATUS'             => $_ARRAYLANG['TXT_ACCESS_STATUS'],
@@ -824,6 +879,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_PROTECT_PAGE_TXT'           => $objGroup->getType() == 'backend' ? $_ARRAYLANG['TXT_ACCESS_CONFIRM_LOCK_PAGE'] : $_ARRAYLANG['TXT_ACCESS_CONFIRM_PROTECT_PAGE'],
             'ACCESS_UNPROTECT_PAGE_TXT'         => $objGroup->getType() == 'backend' ? $_ARRAYLANG['TXT_ACCESS_CONFIRM_UNLOCK_PAGE'] : $_ARRAYLANG['TXT_ACCESS_CONFIRM_UNPROTECT_PAGE'],
             'ACCESS_JAVASCRIPT_FUNCTIONS'       => $this->getJavaScriptCode(),
+            'ACCESS_GROUP_WYSIWYG_TOOLBAR'      => $toolbarConfigurator->get(),
         ));
         $this->_objTpl->parse('module_access_group_modify');
     }

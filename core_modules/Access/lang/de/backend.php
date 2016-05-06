@@ -337,4 +337,5 @@ $_ARRAYLANG['TXT_ACCESS_PASSWORD_MANUALLY'] = "Kennwort manuell setzen";
 $_ARRAYLANG['TXT_ACCESS_PASSWORD_GENERATED'] = "Automatisch und an die E-Mail Adresse zustellen";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION'] = "Konformität Pflichtfelder (Profil Eigenschaften)";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'] = "Die Pflichtfelder müssen geprüft und gesetzt sein";
+$_ARRAYLANG['TXT_ACCESS_TOOLBARCONFIGURATOR'] = 'Toolbar Funktionen'
 ?>

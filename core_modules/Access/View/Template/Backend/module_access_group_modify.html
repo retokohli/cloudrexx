@@ -53,6 +53,7 @@ function accessChangeProtection(triggerLink, nodeId, lang, backend)
 <ul id="tabmenu">
 <li><a id="groupTab_modifyGroup1" class="active" href="javascript:void(0);" onclick="selectTab('modifyGroup1')" title="{TXT_ACCESS_GENERAL}">{TXT_ACCESS_GENERAL}</a></li>
 <li><a id="groupTab_modifyGroup2" href="javascript:void(0);" onclick="selectTab('modifyGroup2')" title="{TXT_ACCESS_PERMISSIONS}">{TXT_ACCESS_PERMISSIONS}</a></li>
+<li><a id="groupTab_modifyGroup3" href="javascript:void(0);" onclick="selectTab('modifyGroup3')" title="{TXT_ACCESS_TOOLBAR}">{TXT_ACCESS_TOOLBARCONFIGURATOR}</a></li>
 </ul>
 <form action="?cmd=Access&amp;act=group&amp;tpl=modify&amp;id={ACCESS_GROUP_ID}" method="post" id="access_group_form" onsubmit="accessSelectAllGroups(document.getElementById('access_group_associated_users'));">
 <input type="hidden" name="access_change_protection" value="1" />
@@ -198,6 +199,9 @@ function accessChangeProtection(triggerLink, nodeId, lang, backend)
 				</div>
 			<!-- END access_permission_tabs -->
 		</div>
+	</div>
+	<div id="modifyGroup3" class="groupTab" style="display:none;">
+		{ACCESS_GROUP_WYSIWYG_TOOLBAR}
 	</div>
 	<div style="clear:left;">
 		<br />
