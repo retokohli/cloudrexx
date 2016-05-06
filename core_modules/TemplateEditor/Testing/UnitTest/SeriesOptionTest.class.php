@@ -78,6 +78,30 @@ class SeriesOptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
     }
 
     /**
+     * Test the option 'combinedOption' as series
+     */
+    public function testCombinedSeriesOption() {
+        $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption';
+        $elements = array(
+            'options' => array(
+                'Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption',
+                'Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption',
+            ),
+            'elements' => array(
+                array(
+                    array('textvalue' => 'Funny Cat'),
+                    array('url' => 'https://placekitten.com/1500/300'),
+                ),
+                array(
+                    array('textvalue' => 'Small Cat'),
+                    array('url' => 'https://placekitten.com/500/300'),
+                ),
+            )
+        );
+        $this->renderSeriesOption($type, $elements);
+    }
+
+    /**
      * Render the template for series option and try to find the elements
      *
      * @param string    $type       the type of the option
@@ -88,11 +112,31 @@ class SeriesOptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
             'test',
             array(1 => 'Unit-Test'),
             array('elements' => $elements),
-            $type
+            $type,
+            true
         );
         $backendTemplate = $option->renderOptionField();
         $renderedTemplate = $backendTemplate->get();
-        foreach ($elements as $element) {
+        // CombinedOption has one level more than the other series options
+        if (
+            $type == 'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption'
+        ) {
+            foreach ($elements['elements'] as $elements) {
+                $this->checkElementsExists($elements, $renderedTemplate);
+            }
+        } else {
+            $this->checkElementsExists($elements, $renderedTemplate);
+        }
+    }
+
+    /**
+     * Checks if the given elements exists in the renderer template
+     *
+     * @param array     $elements           the elements which should be found
+     * @param string    $renderedTemplate   the rendered html template
+     */
+    private function checkElementsExists($elements, $renderedTemplate) {
+        foreach($elements as $element) {
             foreach($element as $value) {
                 $this->assertTrue((strpos($renderedTemplate, $value) !== false));
             }

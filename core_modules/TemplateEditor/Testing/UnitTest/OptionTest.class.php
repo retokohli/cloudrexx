@@ -151,15 +151,55 @@ class OptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
     }
 
     /**
+     * Test the option 'CombinedOption'
+     */
+    public function testCombinedOption() {
+        $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption';
+        $options = array(
+            'Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption',
+            'Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption',
+        );
+        $elements = array(
+            array('textvalue' => 'Funny Cat'),
+            array('url' => 'https://placekitten.com/1500/300'),
+        );
+        $combinedOption = new $type(
+            'test_combined_option',
+            array(1 => 'Unit-Test'),
+            array(
+                'options' => $options,
+                'elements' => $elements
+            ),
+            $type
+        );
+        $this->renderCombinedOption($combinedOption, $elements);
+    }
+    /**
      * Render the option and try to find the searchValue
      *
      * @param object    $option         the option to render
-     * @param string    $searchValue    the value which should be find
+     * @param string    $searchValue    the value which should be found
      */
     public function renderOption($option, $searchValue){
-
         $backendTemplate = $option->renderOptionField();
         $renderedTemplate = $backendTemplate->get();
         $this->assertTrue((strpos($renderedTemplate, $searchValue) !== false));
+    }
+
+    /**
+     * Render the CombinedOption and try to find all searchValues
+     * The test will only be positive if all values were found
+     *
+     * @param object   $option          the option to render
+     * @param array    $searchValues    the values which should be found
+     */
+    public function renderCombinedOption($option, $searchValues){
+        $backendTemplate = $option->renderOptionField();
+        $renderedTemplate = $backendTemplate->get();
+        foreach ($searchValues as $searchValue) {
+            // strpos returns false if not found, otherwise an integer (may
+            // also be zero), so we have to check !== false here
+            $this->assertTrue(strpos($renderedTemplate, $searchValue) !== false);
+        }
     }
 }
