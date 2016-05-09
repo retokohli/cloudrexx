@@ -200,7 +200,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController(
             $this->cx
         );
-
         return $toolbarController->getToolbar('Full');
+    }
+
+    public function getRemovedButtons($buttonsOnly = false) {
+        $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController(
+            $this->cx
+        );
+        return $toolbarController->getRemovedButtons($buttonsOnly);
     }
 }

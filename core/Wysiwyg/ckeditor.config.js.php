@@ -132,6 +132,8 @@ CKEDITOR.editorConfig = function( config )
     config.contentsCss = cx.variables.get('css', 'wysiwyg');
     config.bodyClass = cx.variables.get('bodyClass', 'wysiwyg');
     config.bodyId = cx.variables.get('bodyId', 'wysiwyg');
+
+    <?php echo $wysiwyg->getRemovedButtons(); ?>;
 };
 
 //loading the templates
@@ -163,6 +165,13 @@ CKEDITOR.on('instanceReady',function(){
                 this.button.setState(CKEDITOR.TRISTATE_ENABLE) // Enable "Template"-Button
             }
         }).bind(loadingTemplates)();
+    }
+    var removedButtons = <?php echo $wysiwyg->getRemovedButtons(true); ?>;
+    removedButtons = removedButtons.split(',');
+    if (removedButtons.length) {
+        for(button of removedButtons) {
+            cx.jQuery('[data-name="' + button + '"]').css('display', 'none');
+        };
     }
 });
 

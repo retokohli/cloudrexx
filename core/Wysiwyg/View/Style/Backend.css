@@ -7,3 +7,28 @@
 #form-X-title, #imagePath, #form-X-description, #form-X-htmlContent {width: 500px;}
 #form-X-description {height: 50px;}
 #editor-htmlContent {height: 300px;width: 100%;}
+#toolbarModifierWrapper .toolbar,
+body .staticContainer .inner .toolbar,
+main .adjoined-top .grid-switch-magic {
+    display: none;
+}
+main .adjoined-top {
+    background: none;
+}
+main .adjoined-top .content h1 {
+    color: black;
+    margin-top: 0;
+}
+main .adjoined-top .content #help,
+main .adjoined-top .content .switch,
+main .adjoined-top .content .switch .switch-inner .handler,
+main .adjoined-top .content .switch .switch-inner .handler:before {
+    background: #0071bc;
+}
+.align-right {
+    position: relative;
+}
+.align-right > * {
+    position: absolute;
+    right: 0;
+}
