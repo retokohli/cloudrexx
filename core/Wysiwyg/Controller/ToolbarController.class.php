@@ -128,7 +128,6 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      * Get the template for the toolbar configurator
      *
      * Also registers the necessary css and js files
-     * @param \Cx\Core\Core\Controller\Cx $cx
      * @return \Cx\Core\Html\Sigma $template The toolbar configurator template
      */
     public function getToolbarConfiguratorTemplate() {
@@ -185,33 +184,59 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      * @return string
      */
     public function getToolbar($type) {
-        $em = $this->cx->getDb()->getEntityManager();
-        $toolbarRepo = $em->getRepository('\\Cx\\Core\\Wysiwyg\\Model\\Entity\\WysiwygToolbar');
+        $pdo = $this->cx->getDb()->getPdoConnection();
         if (in_array(lcfirst($type), $this->types)) {
             $functionName = 'get' . ucfirst($type) . 'Toolbar';
             // Call the function to merge the toolbars
             return call_user_func_array(
                 array($this, $functionName),
-                array($toolbarRepo, $em)
+                array($pdo)
             );
         } else {
-            $defaultToolbar = $toolbarRepo->findOneBy(array('isDefault' => 1));
-            return $defaultToolbar->getAvailableFunctions();
+            $functionsResult = $pdo->query("
+                SELECT `available_functions`
+                  FROM `" . DBPREFIX . "core_wysiwyg_toolbar`
+                WHERE `is_default` = 1
+                LIMIT 1"
+            );
+            // Assure that the query did not fail
+            if ($functionsResult === false) {
+                // In case of failure return the default full
+                return $this->defaultFull;
+            }
+            // Verify that we could fetch the data
+            $availableFunctions = $functionsResult->fetch(\PDO::FETCH_ASSOC);
+            if ($availableFunctions === false) {
+                // In case of failure return the default full
+                return $this->defaultFull;
+            }
+            return $availableFunctions['available_functions'];
         }
     }
 
     /**
-     * @param \Doctrine\ORM\EntityRepository    $toolbarRepo    The toolbar
-     *                                                          repository
-     * @param \Doctrine\ORM\EntityManager       $em             The entity
-     *                                                          manager
-     * @return string $mergedToolbar            The merged toolbar of all
-     *                                          assigned user groups or the
-     *                                          default Full
+     * Get the toolbar of the type full
+     * @return string $mergedToolbar    The merged toolbar of all assigned user
      */
-    protected function getFullToolbar(\Doctrine\ORM\EntityRepository $toolbarRepo, \Doctrine\ORM\EntityManager $em) {
-        // Load the group repository
-        $groupRepo = $em->getRepository('\\Cx\\Core\\User\\Model\\Entity\\Group');
+    protected function getFullToolbar() {
+        // Get all the toolbar ids of every user group assigned to the user
+        $toolbarIds = $this->getToolbarIdsOfUserGroup();
+        // Make sure that we do not have any redundant toolbar ids
+        $toolbarIds = array_unique($toolbarIds);
+        // Load the toolbars
+        $toolbars = $this->loadToolbars($toolbarIds);
+        // return the merged toolbars
+        return $this->mergeToolbars($toolbars);
+    }
+
+    /**
+     * Get all toolbar ids of the assigned user groups of the current user
+     * @return array    All the available toolbar ids. Be wary though, as this
+     *                  array might be empty.
+     */
+    protected function getToolbarIdsOfUserGroup() {
+        // Get the database connection
+        $pdo = $this->cx->getDb()->getPdoConnection();
         // Load the current user
         $user = \FWUser::getFWUserObject();
         // Get all assigned user group ids
@@ -220,24 +245,62 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         $toolbarIds = array();
         // Loop through all user group ids
         foreach ($groupIds as $groupId) {
-            // Load user group entity through group repository
-            $group = $groupRepo->findOneBy(array('groupId' => $groupId));
-            // Check if the user group has a toolbar assigned
-            if (!empty($group->getToolbar())) {
-                // Store the assigned toolbar id
-                $toolbarIds[] = $group->getToolbar();
+            // Load user group information
+            $groupResult = $pdo->query("
+                SELECT `toolbar` FROM `" . DBPREFIX . "access_user_groups`
+                WHERE `group_id` = " . intval($groupId) . "
+                LIMIT 1");
+            // Assure that the query did not fail
+            if ($groupResult !== false) {
+                $hasToolbar = $groupResult->fetch(\PDO::FETCH_ASSOC);
+                // Verify that we could fetch the result
+                if ($hasToolbar !== false) {
+                    // Check if the user group has a toolbar assigned
+                    if (!empty($hasToolbar['toolbar'])) {
+                        // Store the assigned toolbar id
+                        $toolbarIds[] = $hasToolbar['toolbar'];
+                    }
+                }
             }
         }
-        // Make sure that we do not have any redundant toolbar ids
-        $toolbarIds = array_unique($toolbarIds);
+        return $toolbarIds;
+    }
+
+    protected function loadToolbars(array $toolbarIds) {
+        // Get the database connection
+        $pdo = $this->cx->getDb()->getPdoConnection();
         // Initiate an empty toolbar array
         $toolbars = array();
         // Loop through each toolbar id
         foreach ($toolbarIds as $toolbarId) {
             // Load the toolbar entity through the toolbar repository
-            $toolbar = $toolbarRepo->findOneBy($toolbarId);
-            // Store the available functions for the current toolbar
-            $toolbars[] = $toolbar->getAvailableFunctions();
+            $toolbarResult = $pdo->query("
+                SELECT `available_functions`
+                  FROM `" . DBPREFIX . "`core_wysiyg_toolbar`
+                WHERE `id` = " . intval($toolbarId). "
+                LIMIT 1 ");
+            if ($toolbarResult !== false) {
+                $toolbarFunctions = $toolbarResult->fetch(\PDO::FETCH_ASSOC);
+                if ($toolbarFunctions !== false) {
+                    // Store the available functions for the current toolbar
+                    $toolbars[] = $toolbarFunctions['available_functions'];
+                }
+            }
+        }
+        return $toolbars;
+    }
+
+    /**
+     * Merge the given toolbars in $toolbars into one
+     * @param array     $toolbars   The toolbars which shall be merged into one
+     * @return array                The merged toolbar. Be wary that this array
+     *                              might be empty
+     */
+    protected function mergeToolbars(array $toolbars) {
+        // Check if the given toolbars are more than 1
+        if (count($toolbars) <= 1) {
+            // No more than one toolbar given, not necessary to merge anything
+            return $toolbars;
         }
         // Initiate a mergedToolbar as an empty array
         $mergedToolbar = array();
@@ -255,8 +318,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
                     json_decode($toolbars[$i]),
                     json_decode($toolbars[$i + 1])
                 );
-                // Check if we have reached the last index and the next one
-                // would already be out of range of the array keys
+                // Check if we have reached the last index
             } else if (
                 array_key_exists($i, $toolbars) &&
                 !array_key_exists($i + 1, $toolbars)
@@ -270,5 +332,6 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
                 break;
             }
         }
+        return $mergedToolbar;
     }
 }

@@ -118,30 +118,40 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($this->cx);
                 // check if the toolbar shall be saved
                 if (isset($_POST) && isset($_POST['save'])) {
-                    // get the entitymanager
-                    $em = $this->cx->getDb()->getEntityManager();
-                    // load the repository for the toolabrs
-                    $toolbarRepo = $em->getRepository('\\Cx\\Core\\Wysiwyg\\Model\\Entity\\WysiwygToolbar');
-                    // get the available functions
+                    // Get the database connection
+                    $pdo = $this->cx->getDb()->getPdoConnection();
+                    // Get the available functions
                     $availableFunctions = $toolbarController->getAsOldSyntax($_POST['removedButtons'], 'defaultFull');
-                    // check if there is already a default toolbar saved
-                    if ($toolbarRepo->findOneBy(array('isDefault' => 1))) {
-                        // load the saved default toolbar
-                        $toolbar = $toolbarRepo->findOneBy(array('isDefault' => 1));
-                        // update the available functions
-                        $toolbar->setAvailableFunctions($availableFunctions);
+                    // Check if there is already a default toolbar
+                    $defaultToolbar = $pdo->query('
+                        SELECT `id` FROM `' . DPREFIX . 'core_wysiwyg_toolbar`
+                        WHERE `is_default` = 1
+                        LIMIT 1');
+                    // Check if there is already a default toolbar saved
+                    if ($defaultToolbar !== false) {
+                        // Load the saved default toolbar
+                        $toolbarId = $defaultToolbar->fetch(\PDO::FETCH_ASSOC);
+                        // Update the available functions
+                        $query = 'UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`'
+                               . 'SET `available_functions` = \'' .
+                                    contrexx_input2db($availableFunctions) . '\'
+                                  WHERE `id` = ' . intval($toolbarId['id']) . '
+                                  AND `is_default` = 1';
+                        $pdo->exec($query);
                     } else {
-                        // create a new toolbar entity
-                        $toolbar = new \Cx\Core\Wysiwyg\Model\Entity\WysiwygToolbar();
-                        // set the available functions
-                        $toolbar->setAvailableFunctions($availableFunctions);
-                        $toolbar->setRemovedButtons($_POST['removedButtons']);
-                        $toolbar->setIsDefault(1);
+                        // Store the configuration as a new default toolbar
+                        $query = '
+                            INSERT INTO `' . DPREFIX . 'core_wysiwyg_toolbar`(
+                                `available_functions`, `removed_buttons`,
+                                `is_default`)
+                            VALUES (\'' . $defaultToolbar . '\', \'' .
+                                contrexx_input2db($_POST['removedButtons']) . '\',
+                                1)';
+                        $pdo->exec($query);
                     }
-                    $em->persist($toolbar);
                 }
                 $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate();
-                // get the template and replace the placeholder
+                // Get the template and replace the placeholder
                 $template->setVariable(
                     'WYSIWYG_CONFIG_TEMPLATE',
                     $toolbarConfigurator->get()
