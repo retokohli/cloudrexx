@@ -128,23 +128,24 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      * Get the template for the toolbar configurator
      *
      * Also registers the necessary css and js files
+     * @param   string  $componentRoot  The Path to the location of the template
      * @return \Cx\Core\Html\Sigma $template The toolbar configurator template
      */
-    public function getToolbarConfiguratorTemplate() {
-        $componentRoot = $this->cx->getWebsiteDocumentRootPath() . '/core/Wysiwyg';
+    public function getToolbarConfiguratorTemplate($componentRoot = '/') {
+//        $componentRoot = $this->cx->getWebsiteDocumentRootPath() . '/core/Wysiwyg';
         // load the toolbarconfigurator template
         $template = new \Cx\Core\Html\Sigma($componentRoot . '/View/Template/Backend');
         $template->loadTemplateFile('ToolbarConfigurator.html');
         // prepare the js and css files which are needed
         $requiredJsFiles = array(
-            'CodeMirror',
-            'CodeMirrorJavascript',
-            'ShowHint',
-            'FullToolbarEditor',
-            'AbstractToolabrModifier',
-            'ToolbarModifier',
-            'ToolbarTextModifier',
-            'sf',
+            'lib/codemirror/codemirror',
+            'lib/codemirror/javascript',
+            'lib/codemirror/show-hint',
+            'js/fulltoolbareditor',
+            'js/abstracttoolbarmodifier',
+            'js/toolbarmodifier',
+            'js/toolbartextmodifier',
+            'js/sf',
         );
         $requiredCssFiles = array(
             'CodeMirror',
@@ -154,21 +155,29 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
             'Samples',
         );
         \JS::registerJS($componentRoot . '/ckeditor.config.js.php');
-        \JS::registerJS($this->cx->getWebsiteDocumentRootPath() . '/lib/ckeditor/ckeditor.js');
-        // register js and css files for the toolbarconfigurator
-        foreach ($requiredJsFiles as $filename) {
-            \JS::registerJS($componentRoot . '/View/Script/' . $filename . '.js');
+        if ($componentRoot[0] = '/') {
+            $componentRoot = substr($componentRoot, 1);
         }
+        // register js and css files for the toolbarconfigurator
         foreach ($requiredCssFiles as $filename) {
             \JS::registerCSS($componentRoot . '/View/Style/' . $filename . '.css');
         }
+        foreach ($requiredJsFiles as $filename) {
+            \JS::registerJS($componentRoot . '/View/Script/toolbarconfigurator/' . $filename . '.js');
+        }
+        \JS::activate('ckeditor');
+        \JS::activate('jquery');
         // get the init object to change to te proper language file
         $init = \Env::get('init');
         // get the language file of the Wysiwyg component (this one btw.)
         $_ARRAYLANG = $init->getComponentSpecificLanguageData('Wysiwyg', false, FRONTEND_LANG_ID);
         // replace language variables
         $template->setVariable(array(
-            'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR' => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'],
+            'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'      => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'],
+            'TXT_WYSIWYG_TOOLBAR_CONFIGURATION_TYPE'=> $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATION_TYPE'],
+            'TXT_WYSIWYG_TOOLBAR_TYPE_BASIC'        => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_TYPE_BASIC'],
+            'TXT_WYSIWYG_TOOLBAR_TYPE_ADVANCED'     => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_TYPE_ADVANCED'],
+            'TXT_WYSIWYG_TOOLBAR_SAVE'              => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SAVE'],
 
         ));
 

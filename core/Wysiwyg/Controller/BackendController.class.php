@@ -71,7 +71,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
     */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
         global $_ARRAYLANG;
-        
+
         // Parse entity view generation pages
         $entityClassName = $this->getNamespace() . '\\Model\\Entity\\' . current($cmd);
         if (in_array($entityClassName, $this->getEntityClasses())) {
@@ -150,7 +150,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         $pdo->exec($query);
                     }
                 }
-                $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate();
+                $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate(
+                    $this->getDirectory(false, true)
+                );
                 // Get the template and replace the placeholder
                 $template->setVariable(
                     'WYSIWYG_CONFIG_TEMPLATE',

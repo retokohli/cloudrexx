@@ -265,6 +265,9 @@ class Config
             case 'Settings':
                 $wysiwygBackendController->parsePage($objTpl, array('Settings'));
                 break;
+            case 'Functions':
+                $wysiwygBackendController->parsePage($objTpl, array('Functions'));
+                break;
             case '':
             default:
                 $objTpl->addBlockfile('WYSIWYG_CONFIG_TEMPLATE', 'wysiwyg_template', 'Default.html');
