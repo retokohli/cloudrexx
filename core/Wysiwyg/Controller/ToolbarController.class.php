@@ -51,27 +51,33 @@ namespace Cx\Core\Wysiwyg\Controller;
 class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
     /**
      * This is the default toolbar for either full or small as json
-     * @var string $defaultFull
+     * @var array $defaultFull
      * @access protected
      */
-    protected $defaultFull = "[
-        ['Source','-','NewPage','Templates'],
-        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
-        ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-        ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
-        ['NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'],
-        ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-        ['Link','Unlink','Anchor'],
-        ['Image','Flash','Table','HorizontalRule','SpecialChar'],
-        ['Format'],
-        ['TextColor','BGColor'],
-        ['ShowBlocks'],
-        ['Maximize'],
-        ['Div','CreateDiv']
-    ]";
+    protected $defaultFull = array(
+        array('Source','-','NewPage','Templates'),
+        array('Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'),
+        array('Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'),
+        array('Bold','Italic','Underline','Strike','-','Subscript','Superscript'),
+        array('NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'),
+        array('JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'),
+        array('Link','Unlink','Anchor'),
+        array('Image','Flash','Table','HorizontalRule','SpecialChar'),
+        array('Format'),
+        array('TextColor','BGColor'),
+        array('ShowBlocks'),
+        array('Maximize'),
+        array('Div','CreateDiv'),
+    );
     protected $defaultFrontendEditingContent;
     protected $defaultFrontendEditingTitle;
     protected $defaultBbcode;
+    /**
+     * These are the buttons that are removed by default and are not accessible
+     * @var string
+     * @access protected
+     */
+    protected $defaultRemovedButtons = 'autoFormat,CommentSelectedRange,UncommentSelectedRange,AutoComplete,Preview,Smiley,Iframe,Styles';
     protected $cx;
     protected $types = array(
         'small',
@@ -116,10 +122,19 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
                 $oldSyntax = $this->defaultFull;
                 break;
         }
-        // create array out of json array
-        $oldSyntax = json_decode($oldSyntax);
         // remove the buttons which shall be removed
-        array_diff($oldSyntax, $removedButtons);
+        foreach ($oldSyntax as $key => $functionGroup) {
+            foreach ($removedButtons as $toRemove) {
+                if (in_array($toRemove, $functionGroup)) {
+                    $keyToRemove = array_search($toRemove, $functionGroup);
+                    unset($oldSyntax[$key][$keyToRemove]);
+                    if (count($oldSyntax[$key]) == 1) {
+                        unset($oldSyntax[$key]);
+                    }
+                }
+            }
+        }
+        $oldSyntax = array_values($oldSyntax);
         // create a json array once again
         return json_encode($oldSyntax);
     }
@@ -155,6 +170,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
             'Samples',
         );
         \JS::registerJS($componentRoot . '/ckeditor.config.js.php');
+        \JS::registerJS($componentRoot . '/View/Script/Backend.js');
         if ($componentRoot[0] = '/') {
             $componentRoot = substr($componentRoot, 1);
         }
@@ -174,11 +190,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         // replace language variables
         $template->setVariable(array(
             'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'      => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'],
-            'TXT_WYSIWYG_TOOLBAR_CONFIGURATION_TYPE'=> $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATION_TYPE'],
-            'TXT_WYSIWYG_TOOLBAR_TYPE_BASIC'        => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_TYPE_BASIC'],
-            'TXT_WYSIWYG_TOOLBAR_TYPE_ADVANCED'     => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_TYPE_ADVANCED'],
             'TXT_WYSIWYG_TOOLBAR_SAVE'              => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SAVE'],
-
         ));
 
         return $template;
@@ -228,14 +240,25 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      * @return string $mergedToolbar    The merged toolbar of all assigned user
      */
     protected function getFullToolbar() {
+        \DBG::activate(DBG_LOG_FILE|DBG_PHP);
         // Get all the toolbar ids of every user group assigned to the user
         $toolbarIds = $this->getToolbarIdsOfUserGroup();
         // Make sure that we do not have any redundant toolbar ids
         $toolbarIds = array_unique($toolbarIds);
         // Load the toolbars
         $toolbars = $this->loadToolbars($toolbarIds);
+        // Add default full toolbar to list of toolbars
+        $pdo = $this->cx->getDb()->getPdoConnection();
+        $defaultFullRes = $pdo->query("
+                SELECT `available_functions`
+                  FROM `" . DBPREFIX . "core_wysiwyg_toolbar`
+                WHERE `is_default` = 1
+                LIMIT 1");
+        $defaultFull = $defaultFullRes->fetch(\PDO::FETCH_ASSOC);
+        $toolbars[] = $defaultFull['available_functions'];
         // return the merged toolbars
-        return $this->mergeToolbars($toolbars);
+        \DBG::dump(count($toolbars));
+        return json_encode($this->mergeToolbars($toolbars));
     }
 
     /**
@@ -308,39 +331,64 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
     protected function mergeToolbars(array $toolbars) {
         // Check if the given toolbars are more than 1
         if (count($toolbars) <= 1) {
+            \DBG::log('only one toolbar given');
             // No more than one toolbar given, not necessary to merge anything
-            return $toolbars;
-        }
-        // Initiate a mergedToolbar as an empty array
-        $mergedToolbar = array();
-        // Loop through all available function constellation
-        for ($i = 0; $i < count($toolbars) - 1; $i += 2) {
-            // Check if the current index is still in range of the array keys
-            if (
-                array_key_exists($i, $toolbars) &&
-                array_key_exists($i + 1, $toolbars)
-            ) {
-                // Merge the already merged toolbar, the current one and the
-                // next one together
-                $mergedToolbar = array_merge(
-                    $mergedToolbar,
-                    json_decode($toolbars[$i]),
-                    json_decode($toolbars[$i + 1])
-                );
-                // Check if we have reached the last index
-            } else if (
-                array_key_exists($i, $toolbars) &&
-                !array_key_exists($i + 1, $toolbars)
-            ) {
-                // merge the last toolbar and the product of the previous merges
-                $mergedToolbar = array_merge(
-                    $mergedToolbar,
-                    json_decode($toolbars[$i])
-                );
-                // leave the loop just to be sure as we should leave anyway
-                break;
+            if (!empty($toolbars)) {
+                $mergedToolbar = json_decode($toolbars[0]);
+            } else {
+                $mergedToolbar = $toolbars;
+            }
+        } else {
+            // Initiate a mergedToolbar with the last added toolbar (the default one)
+            $lastKey = count($toolbars) - 1;
+            $mergedToolbar = $toolbars[$lastKey];
+            unset($toolbars[$lastKey]);
+            // Loop through all available function constellation
+            for ($i = 0; $i < count($toolbars) - 1; $i += 2) {
+                // Check if the current index is still in range of the array keys
+                if (
+                    array_key_exists($i, $toolbars) &&
+                    array_key_exists($i + 1, $toolbars)
+                ) {
+                    // Merge the already merged toolbar, the current one and the
+                    // next one together
+                    $mergedToolbar = array_merge(
+                        $mergedToolbar,
+                        json_decode($toolbars[$i]),
+                        json_decode($toolbars[$i + 1])
+                    );
+                    // Check if we have reached the last index
+                } else if (
+                    array_key_exists($i, $toolbars) &&
+                    !array_key_exists($i + 1, $toolbars)
+                ) {
+                    // merge the last toolbar and the product of the previous merges
+                    $mergedToolbar = array_merge(
+                        $mergedToolbar,
+                        json_decode($toolbars[$i])
+                    );
+                    // leave the loop just to be sure as we should leave anyway
+                    break;
+                }
             }
         }
         return $mergedToolbar;
+    }
+
+    /**
+     * Get the buttons that shall be removed
+     * @param bool|false    $buttonsOnly    Only buttons no config.removeButtons
+     *                                      prefix
+     * @return string
+     * @TODO implement merge for user groups
+     */
+    public function getRemovedButtons($buttonsOnly = false) {
+        if ($this->cx->getMode() == 'frontend') {
+            return '';
+        }
+        if ($buttonsOnly) {
+            return '\'' . $this->defaultRemovedButtons . '\'';
+        }
+        return 'config.removeButtons = \'' . $this->defaultRemovedButtons . '\'';
     }
 }

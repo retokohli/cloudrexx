@@ -124,30 +124,37 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $availableFunctions = $toolbarController->getAsOldSyntax($_POST['removedButtons'], 'defaultFull');
                     // Check if there is already a default toolbar
                     $defaultToolbar = $pdo->query('
-                        SELECT `id` FROM `' . DPREFIX . 'core_wysiwyg_toolbar`
+                        SELECT `id` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
                         WHERE `is_default` = 1
                         LIMIT 1');
-                    // Check if there is already a default toolbar saved
+                    // Check if the query did not fail
                     if ($defaultToolbar !== false) {
                         // Load the saved default toolbar
                         $toolbarId = $defaultToolbar->fetch(\PDO::FETCH_ASSOC);
-                        // Update the available functions
-                        $query = 'UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`'
-                               . 'SET `available_functions` = \'' .
-                                    contrexx_input2db($availableFunctions) . '\'
-                                  WHERE `id` = ' . intval($toolbarId['id']) . '
-                                  AND `is_default` = 1';
-                        $pdo->exec($query);
-                    } else {
-                        // Store the configuration as a new default toolbar
-                        $query = '
-                            INSERT INTO `' . DPREFIX . 'core_wysiwyg_toolbar`(
+                        // Check if there is already a default toolbar saved
+                        if (!empty($toolbarId) && $toolbarId !== false) {
+                            // Update the available functions
+                            $query = 'UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`'
+                                   . 'SET `available_functions` = \'' .
+                                        contrexx_input2db($availableFunctions) . '\',
+                                        `removed_buttons` = \'' .
+                                        contrexx_input2db($_POST['removedButtons']) . '\'
+                                      WHERE `id` = ' . intval($toolbarId['id']) . '
+                                      AND `is_default` = 1';
+                            $pdo->exec($query);
+                        } else {
+                            // Store the configuration as a new default toolbar
+                            $query = '
+                            INSERT INTO `' . DBPREFIX . 'core_wysiwyg_toolbar`(
                                 `available_functions`, `removed_buttons`,
                                 `is_default`)
-                            VALUES (\'' . $defaultToolbar . '\', \'' .
+                            VALUES (\'' . $availableFunctions . '\', \'' .
                                 contrexx_input2db($_POST['removedButtons']) . '\',
                                 1)';
-                        $pdo->exec($query);
+                            $pdo->exec($query);
+                        }
+                    } else {
+                        //TODO: Do something since we could not submit a query
                     }
                 }
                 $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate(
