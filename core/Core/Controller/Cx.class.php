@@ -2062,8 +2062,9 @@ namespace Cx\Core\Core\Controller {
 
                 // replace links from before contrexx 3
                 $ls = new \LinkSanitizer(
-                    $this->codeBaseOffsetPath . \Env::get('virtualLanguageDirectory').'/',
-                    $endcode);
+                    $this->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
+                    $endcode
+                );
                 $endcode = $ls->replace();
 
                 echo $endcode;
@@ -2172,8 +2173,9 @@ namespace Cx\Core\Core\Controller {
 
                 // replace links from before contrexx 3
                 $ls = new \LinkSanitizer(
-                    ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
-                    $endcode);
+                    $this->getCodeBaseOffsetPath() . $this->getBackendFolderName() . '/',
+                    $endcode
+                );
                 $endcode = $ls->replace();
 
                 echo $endcode;
