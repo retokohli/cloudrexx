@@ -374,6 +374,7 @@ class Csrf {
         
         // replace links from before contrexx 3
         $ls = new \LinkSanitizer(
+            $cx,
             $cx->getCodeBaseOffsetPath() . $cx->getBackendFolderName() . '/',
             $endcode
         );

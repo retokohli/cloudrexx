@@ -232,8 +232,13 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
         if ($result === false || $result->RecordCount() == 0) {
             throw new NoBlockFoundException('no block content found with id: ' . $id);
         }
-
-        $ls = new \LinkSanitizer(ASCMS_PATH_OFFSET.\Env::get('virtualLanguageDirectory').'/', $result->fields['content']);
+        
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $ls = new \LinkSanitizer(
+            $cx,
+            $cx->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
+            $result->fields['content']
+        );
         return array('content' => $ls->replace());
     }
 
@@ -283,6 +288,7 @@ class JsonBlockController extends \Cx\Core\Core\Model\Entity\Controller implemen
         
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $ls = new \LinkSanitizer(
+            $cx,
             $cx->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
             $content
         );

@@ -91,6 +91,7 @@ class LoginManager {
         // replace links from before contrexx 3
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
         $ls = new \LinkSanitizer(
+            $cx,
             $cx->getCodeBaseOffsetPath() . $cx->getBackendFolderName() . '/',
             $endcode
         );

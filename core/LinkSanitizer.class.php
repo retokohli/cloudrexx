@@ -48,13 +48,15 @@ class LinkSanitizer {
     const FILE_PATH                = 3;
     const CLOSE_QUOTE              = 4;
     
+    protected $cx;
     protected $offset;
     protected $content;
 
     /**
      * @param string $offset the path offset to prepend, e.g. '/' or '/cms/'
      */
-    public function __construct($offset, &$content) {
+    public function __construct($cx, $offset, &$content) {
+        $this->cx = $cx;
         $this->content = &$content;
         $this->offset  = $offset;
     }
@@ -123,7 +125,7 @@ class LinkSanitizer {
         }
         $testPath = explode('?', $matches[\LinkSanitizer::FILE_PATH], 2);
         if ($testPath[0] == 'index.php' || $testPath[0] == '' || $testPath[0] == './') {
-            $ret = ASCMS_INSTANCE_OFFSET;
+            $ret = $this->cx->getWebsiteOffsetPath();
             if (\Env::get('cx')->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
                 $ret .= \Cx\Core\Core\Controller\Cx::instanciate()->getBackendFolderName();
             }
@@ -167,10 +169,10 @@ class LinkSanitizer {
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
             $ret .
             $matches[\LinkSanitizer::CLOSE_QUOTE];
-        } else if ($this->fileExists(ASCMS_DOCUMENT_ROOT . '/' . $matches[\LinkSanitizer::FILE_PATH])) {
+        } else if ($this->fileExists($this->cx->getCodeBaseDocumentRootPath() . '/' . $matches[\LinkSanitizer::FILE_PATH])) {
             // this is an existing file, do not add virtual language dir
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
-            ASCMS_INSTANCE_OFFSET .
+            $this->cx->getWebsiteOffsetPath() .
             '/' . $matches[\LinkSanitizer::FILE_PATH] .
             $matches[\LinkSanitizer::CLOSE_QUOTE];
         } else {
