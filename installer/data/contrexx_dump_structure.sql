@@ -260,7 +260,7 @@ CREATE TABLE `contrexx_core_modules_access_permission` (
   `valid_access_ids` longtext DEFAULT NULL,
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB;
-CREATE TABLE `contrexx_core_dataaccess_data_access` (
+CREATE TABLE `contrexx_core_module_dataaccess_data_access` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
   `read_permission` int(11) DEFAULT NULL,
   `name` varchar(45) NOT NULL,
@@ -271,15 +271,15 @@ CREATE TABLE `contrexx_core_dataaccess_data_access` (
   PRIMARY KEY(`id`),
   UNIQUE KEY `name` (`name`),
   KEY `read_permission` (`read_permission`),
-  CONSTRAINT `contrexx_core_dataaccess_data_access_ibfk_read_permission` FOREIGN KEY (`read_permission`) REFERENCES `contrexx_core_modules_access_permission` (`id`)
+  CONSTRAINT `contrexx_core_module_dataaccess_data_access_ibfk_read_permission` FOREIGN KEY (`read_permission`) REFERENCES `contrexx_core_modules_access_permission` (`id`)
 ) ENGINE = InnoDB;
-CREATE TABLE `contrexx_core_dataaccess_apikey` (
+CREATE TABLE `contrexx_core_module_dataaccess_apikey` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
   `api_key` varchar(45) NOT NULL,
   PRIMARY KEY(`id`),
   UNIQUE KEY `api_key` (`api_key`)
 ) ENGINE = InnoDB;
-CREATE TABLE `contrexx_core_dataaccess_data_access_apikey` (
+CREATE TABLE `contrexx_core_module_dataaccess_data_access_apikey` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
   `api_key_id` int(11) DEFAULT NULL,
   `data_access_id` int(11) DEFAULT NULL,
@@ -287,8 +287,8 @@ CREATE TABLE `contrexx_core_dataaccess_data_access_apikey` (
   PRIMARY KEY(id),
   KEY `api_key_id` (`api_key_id`),
   KEY `data_access_id` (`data_access_id`),
-  CONSTRAINT `contrexx_core_dataaccess_data_access_apikey_ibfk_api_key_id` FOREIGN KEY (`api_key_id`) REFERENCES `contrexx_core_dataaccess_apikey` (`id`),
-  CONSTRAINT `contrexx_core_dataaccess_data_access_apikey_ibfk_data_access_id` FOREIGN KEY (`data_access_id`) REFERENCES `contrexx_core_dataaccess_data_access` (`id`)
+  CONSTRAINT `contrexx_core_module_data_access_apikey_ibfk_api_key_id` FOREIGN KEY (`api_key_id`) REFERENCES `contrexx_core_module_dataaccess_apikey` (`id`),
+  CONSTRAINT `contrexx_core_module_data_access_apikey_ibfk_data_access_id` FOREIGN KEY (`data_access_id`) REFERENCES `contrexx_core_module_dataaccess_data_access` (`id`)
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_cron_job` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

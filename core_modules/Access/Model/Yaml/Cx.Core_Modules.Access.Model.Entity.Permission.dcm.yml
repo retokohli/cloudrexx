@@ -28,7 +28,7 @@ Cx\Core_Modules\Access\Model\Entity\Permission:
             nullable: true
     oneToMany:
         dataAccesses:
-            targetEntity: Cx\Core\DataAccess\Model\Entity\DataAccess
+            targetEntity: Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
             mappedBy: permission
             joinColumn:
                 name: id

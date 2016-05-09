@@ -100,7 +100,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
     protected $validAccessIds   = array();
     
     /**
-     * @var Cx\Core\DataAccess\Model\Entity\DataAccess
+     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
      */
     protected $dataAccesses;
     
@@ -251,9 +251,9 @@ class Permission extends \Cx\Model\Base\EntityBase {
     /**
      * Set the data access
      *
-     * @param \Cx\Core\DataAccess\Model\Entity\DataAccess $dataAccesses
+     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses
      */
-    public function setDataAccesses(\Cx\Core\DataAccess\Model\Entity\DataAccess $dataAccesses)
+    public function setDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses)
     {
         $this->dataAccesses[] = $dataAccesses;
     }

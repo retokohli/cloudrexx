@@ -1,7 +1,7 @@
-Cx\Core\DataAccess\Model\Entity\ApiKey:
+Cx\Core_Modules\DataAccess\Model\Entity\ApiKey:
     type: entity
-    table: core_dataaccess_apikey
-    repositoryClass: Cx\Core\DataAccess\Model\Repository\ApiKeyRepository
+    table: core_module_dataaccess_apikey
+    repositoryClass: Cx\Core_Modules\DataAccess\Model\Repository\ApiKeyRepository
     id:
         id:
             type: integer
@@ -17,7 +17,7 @@ Cx\Core\DataAccess\Model\Entity\ApiKey:
             columns: [ api_key ]
     oneToMany:
         dataAccessApiKeys:
-            targetEntity: Cx\Core\DataAccess\Model\Entity\DataAccessApiKey
+            targetEntity: Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey
             mappedBy: apiKey
             joinColumn:
                 name: id

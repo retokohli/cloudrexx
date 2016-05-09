@@ -1,7 +1,7 @@
-Cx\Core\DataAccess\Model\Entity\DataAccess:
+Cx\Core_Modules\DataAccess\Model\Entity\DataAccess:
     type: entity
-    table: core_dataaccess_data_access
-    repositoryClass: Cx\Core\DataAccess\Model\Repository\DataAccessRepository
+    table: core_module_dataaccess_data_access
+    repositoryClass: Cx\Core_Modules\DataAccess\Model\Repository\DataAccessRepository
     indexes:
         fk_DataAccess_Permission1_idx:
             columns: [ read_permission ]
@@ -32,7 +32,7 @@ Cx\Core\DataAccess\Model\Entity\DataAccess:
             columns: [ name ]
     oneToMany:
         dataAccessApiKeys:
-            targetEntity: Cx\Core\DataAccess\Model\Entity\DataAccessApiKey
+            targetEntity: Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey
             mappedBy: dataAccess
             joinColumn:
                 name: id

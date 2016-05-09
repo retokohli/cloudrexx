@@ -26,24 +26,24 @@
  */
 
 /**
- * DataAccessApiKeyRepository
+ * DataAccessRepository
  *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  core_dataaccess
+ * @subpackage  coremodule_dataaccess
  */
 
-namespace Cx\Core\DataAccess\Model\Repository;
+namespace Cx\Core_Modules\DataAccess\Model\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
 /**
- * DataAccessApiKeyRepository
+ * DataAccessRepository
  *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  core_dataaccess
+ * @subpackage  coremodule_dataaccess
  */
-class DataAccessApiKeyRepository extends EntityRepository {}
+class DataAccessRepository extends EntityRepository {}
