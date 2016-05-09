@@ -598,51 +598,62 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             // Get Cx object from Environment variable
             $cx = \Env::get('cx');
             // Load entity manager
-            $em = $cx->getDb()->getEntityManager();
-            // Load group and Toolbar repository
-            $groupRepo = $em->getRepository('\\Cx\\Core\\User\\Model\\Entity\\Group');
-            $toolbarRepo = $em->getRepository('\\Cx\\Core\\Wysiwyg\\Model\\Entity\\WysiwygToolbar');
-            // Get the entity of the current group
-            $group = $groupRepo->findOneBy(array('groupId' => $objGroup->getId()));
+            $pdo = $cx->getDb()->getPdoConnection();
             // Instantiate a new Toolbarcontroller
             $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($cx);
+            // Get the new toolbar as an array
             $newFunctions = json_decode($toolbarController->getAsOldSyntax($_POST['removedButtons'], 'full'));
-            if (!empty($group->getToolbar())) {
-                $toolbar = $toolbarRepo->findOneBy(array('id' => $group->getToolbar()));
-                $currentFunctions = json_decode($toolbar->getAvailableFunctions());
-                $diff = array_diff($currentFunctions, $newFunctions);
-                // Check if the toolbar has been changed
-                if (!empty($diff)) {
-                    // Re-initiate the toolbar variable as a new toolbar entity
-                    // and set the values respectively
-                    $newToolbar = new \Cx\Core\Wysiwyg\Model\Entity\WysiwygToolbar();
-                    $newToolbar->setAvailableFunctions(json_encode($newFunctions));
-                    $newToolbar->setRemovedButtons($_POST['removedButtons']);
-                    $newToolbar->setIsDefault(0);
-                    // Save the new toolbar
-                    $em->persist($newToolbar);
-                    // check if the other toolbar is still in usage
-                    $groups = $groupRepo->findBy(
-                        array(
-                            'toolbar' => $toolbar->getId()
-                        )
-                    );
-                    // Old toolbar is no longer in use
-                    if (empty($groups)) {
-                        // Remove it to prevent overflow of database
-                        $em->remove($toolbar);
+            // Get the assigned toolbar id of the current group
+            $toolbarIdRes = $pdo->query('
+                SELECT `toolbar` FROM `' . DBPREFIX . 'access_user_groups
+                WHERE `group_id` = ' . intval($objGroup->getId()) . '
+                LIMIT 1');
+            // Assure that the statement did not fail
+            if ($toolbarIdRes !== false) {
+                // Fetch the data
+                $toolbarId = $toolbarIdRes->fetch(\PDO::FETCH_ASSOC);
+                $toolbarId = $toolbarId['toolbar'];
+                // Ensure that the group has a toolbar assigned
+                if (!empty($toolbarId)) {
+                    // Load toolbar
+                    $toolbarFunctionRes = $pdo->query('
+                        SELECT `available_functions` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
+                        WHERE `id` = ' . intval($toolbarId) . '
+                        LIMIT 1');
+                    // Assure that the statement did not fail
+                    if ($toolbarFunctionRes !== false) {
+                        // Fetch the data
+                        $currentFunctions = $toolbarFunctionRes->fetch(\PDO::FETCH_ASSOC);
+                        // Get the current toolbar as an array
+                        $currentFunctions = json_decode($currentFunctions['available_functions']);
+                        // Diff the new and the current toolbar
+                        $diff = array_diff($currentFunctions, $newFunctions);
+                        // Check if the toolbar has been changed
+                        if (!empty($diff)) {
+                            // The toolbar has been modified
+                            $query = 'UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`
+                                  SET `available_functions` = \'' . json_encode($newFunctions) . '\',
+                                      `removed_buttons` = \'' . $_POST['removedButtons'] . '\'';
+                            $pdo->exec($query);
+                        }
                     }
                 }
             } else {
                 //TODO: IMPLEMENT CHECK IF SAME TOOLBAR EXISTS ALREADY
                 // Group has currently no special toolbar assigned
-                // initiate a new toolbar entity and set variables respectively
-                $toolbar = new \Cx\Core\Wysiwyg\Model\Entity\WysiwygToolbar();
-                $toolbar->setIsDefault(0);
-                $toolbar->setRemovedButtons($_POST['removedButtons']);
-                $toolbar->setAvailableFunctions($newFunctions);
-                // Save the new toolbar
-                $em->persist($toolbar);
+                // Store as a new toolbar
+                $query = 'INSERT INTO `' . DBPREFIX . 'core_wysiwyg_toolbar(
+                            `available_functions`, `removed_buttons`)
+                          VALUES (\'' . json_encode($newFunctions) . '\',
+                            \'' . contrexx_input2db($_POST['removedButtons']) . '\')';
+                $pdo->exec($query);
+                // Get the id of the new toolbar
+                $toolbarId = $pdo->lastInsertId();
+                // Set the toolbar id of the current group to the new id
+                $query = 'UPDATE `' . DBPREFIX . 'access_user_groups`
+                          SET `toolbar` = ' . intval($toolbarId) . '
+                          WHERE `group_id` = ' . intval($objGroup->getId());
+                $pdo->exec($query);
             }
 
             if (isset($_POST['access_save_group'])) {
