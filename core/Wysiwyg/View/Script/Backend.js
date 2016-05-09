@@ -11,14 +11,14 @@ function prepareConfiguration() {
   var configuration = jQuery('.configCode').val();
   // go back to the configurator view
   jQuery('[data-group="config"]').click();
-  var pattern = new Regexp(/config\.removeButtons\s=\s([a-z0-9',]*)*/, 'gmi');
+  var pattern = /config\.removeButtons\s=\s'([a-z0-9,]*)*/i;
   if (pattern.test(configuration)) {
     var removedButtons = pattern.exec(configuration);
-    jQuery('<input />').attr({
-      type:   'hidden',
-      name:   'removedButtons',
-      value:  removedButtons
-    });
+    jQuery('form[name="toolbarConfigurator"]').append(jQuery('<input />').attr({
+      "type":   'hidden',
+      "name":   'removedButtons',
+      "value":  removedButtons[1]
+    }));
   }
   return true;
 }

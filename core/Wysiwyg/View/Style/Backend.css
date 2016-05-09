@@ -8,7 +8,8 @@
 #form-X-description {height: 50px;}
 #editor-htmlContent {height: 300px;width: 100%;}
 #toolbarModifierWrapper .toolbar,
-body .staticContainer .inner .toolbar {
+body .staticContainer .inner .toolbar,
+main .adjoined-top .grid-switch-magic {
     display: none;
 }
 main .adjoined-top {
@@ -16,6 +17,7 @@ main .adjoined-top {
 }
 main .adjoined-top .content h1 {
     color: black;
+    margin-top: 0;
 }
 main .adjoined-top .content #help,
 main .adjoined-top .content .switch,
