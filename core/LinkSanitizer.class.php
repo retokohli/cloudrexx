@@ -169,11 +169,18 @@ class LinkSanitizer {
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
             $ret .
             $matches[\LinkSanitizer::CLOSE_QUOTE];
-        } else if ($this->fileExists($this->cx->getCodeBaseDocumentRootPath() . '/' . $matches[\LinkSanitizer::FILE_PATH])) {
+        } else if (
+            $this->cx->getClassLoader()->getWebFilePath(
+                $this->cx->getCodeBaseDocumentRootPath() . '/' .
+                $matches[\LinkSanitizer::FILE_PATH]
+            )
+        ) {
             // this is an existing file, do not add virtual language dir
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
-            $this->cx->getWebsiteOffsetPath() .
-            '/' . $matches[\LinkSanitizer::FILE_PATH] .
+            $this->cx->getClassLoader()->getWebFilePath(
+                $this->cx->getCodeBaseDocumentRootPath() . '/' .
+                $matches[\LinkSanitizer::FILE_PATH]
+            ) .
             $matches[\LinkSanitizer::CLOSE_QUOTE];
         } else {
             // this is a link to a page, add virtual language dir
