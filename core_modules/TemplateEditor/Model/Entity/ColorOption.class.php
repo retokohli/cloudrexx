@@ -59,6 +59,7 @@ class ColorOption extends Option
      * @param array  $translations Array with translations for option.
      * @param array  $data
      * @param String $type         the type of the option
+     * @param Group  $group        the group of the option
      * @param bool   $series       handle the elements as series if true
      */
     public function __construct(
@@ -66,9 +67,10 @@ class ColorOption extends Option
         $translations,
         $data,
         $type,
+        $group,
         $series = false
     ) {
-        parent::__construct($name, $translations, $data, $type, $series);
+        parent::__construct($name, $translations, $data, $type, $group, $series);
         $this->color = $data['color'];
         if (isset($data['choice'])) {
             $this->choice = $data['choice'];
