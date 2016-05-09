@@ -55,18 +55,18 @@ class SeriesOption extends Option
      * @param array  $translations Array with translations for option.
      * @param array  $data
      * @param String $type          the type of the option
-     * @param bool   $series        handle the elements as series if true
      * @param Group  $group        the group of the option
+     * @param bool   $series        handle the elements as series if true
      */
     public function __construct(
         $name,
         $translations,
         $data,
         $type,
-        $series = false,
-        $group
+        $group,
+        $series = false
     ) {
-        parent::__construct($name, $translations, $data, $type, $series, $group);
+        parent::__construct($name, $translations, $data, $type, $group, $series);
         foreach ($data['elements'] as $key => $elm) {
             if (!empty($elm)) {
                 $this->elements[$key] = $elm;

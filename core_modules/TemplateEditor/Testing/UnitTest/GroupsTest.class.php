@@ -77,9 +77,9 @@ class GroupsTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
     /**
      * Check if the function getOptionsOrderedByGroups works properly
      *
-     * @access protected
+     * @access public
      */
-    protected function checkOrderOfOptions()
+    public function testCheckOrderOfOptions()
     {
         $optionGroups = $this->optionSet->getOptionsOrderedByGroups();
         $this->assertTrue(is_array($optionGroups));

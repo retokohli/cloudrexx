@@ -114,16 +114,16 @@ abstract class Option extends \Cx\Model\Base\EntityBase
      * @param array  $translations Array with translations for option.
      * @param array  $data
      * @param String $type         the type of the option
-     * @param bool   $series       handle the elements as series if true
      * @param Group  $group        the group of the option
+     * @param bool   $series       handle the elements as series if true
      */
     public function __construct(
         $name,
         $translations,
         $data,
         $type,
-        $series = false,
-        $group
+        $group,
+        $series = false
     ) {
         global $_LANGID;
         $this->name         = $name;
@@ -132,8 +132,8 @@ abstract class Option extends \Cx\Model\Base\EntityBase
             : (isset($translations[2]) ? $translations[2] : $name);
         $this->translations = $translations;
         $this->type = $type;
-        $this->series = $series;
         $this->group = $group;
+        $this->series = $series;
     }
 
     /**

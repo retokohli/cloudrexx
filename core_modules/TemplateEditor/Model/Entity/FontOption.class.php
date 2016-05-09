@@ -381,20 +381,20 @@ class FontOption extends SelectOption
      * @param array  $translations Array with translations for option.
      * @param array  $data
      * @param String $type         the type of the option
-     * @param bool   $series       handle the elements as series if true
      * @param Group  $group        the group of the option
+     * @param bool   $series       handle the elements as series if true
      */
     public function __construct(
         $name,
         $translations,
         $data,
         $type,
-        $series = false,
-        $group
+        $group,
+        $series = false
     )
     {
         $this->optionTemplate = 'SelectOption';
-        parent::__construct($name, $translations, $data, $type, $series, $group);
+        parent::__construct($name, $translations, $data, $type, $group, $series);
         $this->activeChoice = isset($data['activeChoice'])
             ? $data['activeChoice'] : '';
         $this->choice       = $this->fonts;

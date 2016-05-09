@@ -60,6 +60,13 @@ class Group {
      */
     protected $translations;
 
+    /**
+     * The options of this group
+     *
+     * @var Option[]
+     */
+    protected $options;
+
     public function __construct(
         $name,
         $color = '#fff',
@@ -122,6 +129,33 @@ class Group {
      */
     public function setTranslations($translations) {
         $this->translations = $translations;
+    }
+
+    /**
+     * Get the options of the group
+     *
+     * @return Option[] the options of the group
+     */
+    public function getOptions() {
+        return $this->options;
+    }
+
+    /**
+     * Set the options of the group
+     *
+     * @param Option[] $options the options of the group
+     */
+    public function setOptions($options) {
+        $this->options = $options;
+    }
+
+    /**
+     * Add an option to the options of the group
+     *
+     * @param Option $option the options to add to the group
+     */
+    public function addOption($option) {
+        $this->options[$option->getName()] = $option;
     }
 
 }

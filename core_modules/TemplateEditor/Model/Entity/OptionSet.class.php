@@ -116,12 +116,16 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
         // try to initialize the options, so we do not need to load the from
         // $this->data every time
         if (isset($data['DlcInfo']) && isset($data['DlcInfo']['options'])) {
+            $this->initializeGroups($data['DlcInfo']['groups']);
             foreach ($data['DlcInfo']['options'] as $optionArray) {
                 if (
                     isset($optionArray['type'])
                     && isset($optionArray['name'])
                     && isset($optionArray['specific'])
                 ) {
+                    $groupName = ($optionArray['group']) ? $optionArray['group'] : 'others_group';
+                    $group = ($this->groups[$groupName]) ?
+                        $this->groups[$groupName] : $this->groups['others_group'];
                     $type = $optionArray['type'];
                     $option = new $type(
                         $optionArray['name'],
@@ -129,10 +133,12 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                             $optionArray['translations'] : array(),
                         $optionArray['specific'],
                         $optionArray['type'],
+                        $group,
                         ($optionArray['series']) ?
                             $optionArray['series'] : false
                     );
                     $this->setOption($optionArray['name'], $option);
+                    $group->addOption($option);
                 }
             }
         }
@@ -186,6 +192,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
      */
     public function renderOptions($template)
     {
+        global $_LANGID;
         foreach ($this->getOptionsOrderedByGroups() as $key => $group) {
             foreach ($group as $option) {
                 $subTemplate = $option->renderOptionField();
@@ -204,10 +211,22 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                 ));
                 $template->parse('option');
             }
+            // find the groupTranslation
+            $group = $this->groups[$key];
+            // if no translations exists, groupName will be shown
+            $groupTranslation = $group->getName();
+            $translations = $group->getTranslations();
+            if (isset($translations[$_LANGID])) {
+                $groupTranslation = $translations[$_LANGID];
+            } else if (isset($translations[2])) {
+                // if name is not defined in the wished language, try to load
+                // it in english
+                $groupTranslation = $translations[2];
+            }
             $template->setVariable(array(
                 'TEMPLATEEDITOR_GROUP_NAME' => $this->groups[$key]->getName(),
                 'TEMPLATEEDITOR_GROUP_COLOR' => $this->groups[$key]->getColor(),
-                'TEMPLATEEDITOR_GROUP_TRANSLATION' => $this->groups[$key]->getTranslations()[1],
+                'TEMPLATEEDITOR_GROUP_TRANSLATION' => $groupTranslation,
             ));
             $template->parse('group');
         }
@@ -367,23 +386,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
             }
         }
         if (isset($data['groups'])) {
-            $data['groups']['groups']['others_group'] = array(
-                "name" => "others_group",
-                "color" => '#fff',
-                "translation" => array(
-                    1 => "andere Optionen",
-                    2 => "other options" ,
-                ),
-            );
-            foreach ($data['groups']['groups'] as $group) {
-                $this->groups[$group['name']] = new Group(
-                    $group['name'],
-                    $group['color'],
-                    $group['translation']
-                );
-            }
+            $this->initializeGroups($data['groups']['groups']);
         }
-//        $this->options = array();
         foreach ($data['options'] as $option) {
             $optionType = $option['type'];
             if ($option['series']) {
@@ -426,16 +430,18 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                 }
             }
             $groupName = ($option['group']) ? $option['group'] : 'others_group';
+            $group = ($this->groups[$groupName]) ?
+                $this->groups[$groupName] : $this->groups['others_group'];
             $this->options[$option['name']]
                 = new $optionType(
                 $option['name'],
                 $option['translation'],
                 $option['specific'],
                 $option['type'],
-                $option['series'],
-                ($this->groups[$groupName]) ?
-                    $this->groups[$groupName] : $this->groups['others_group']
+                $group,
+                $option['series']
             );
+            $group->addOption($this->options[$option['name']]);
         }
     }
 
@@ -457,10 +463,38 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
      */
     public function getOptionsOrderedByGroups() {
         $groups = array();
-        foreach ($this->options as $option) {
-            $groups[$option->getGroup()->getName()][] = $option;
+        foreach ($this->groups as $group) {
+            $groups[$group->getName()] = $group->getOptions();
         }
         return $groups;
+    }
+
+    /**
+     * Initialize the groups from Groups.yml
+     *
+     * @access protected
+     * @param array $groups groups from Groups.yml
+     */
+    protected function initializeGroups($groups) {
+        if (!isset($groups)) {
+            $groups = array();
+        }
+        $groups[] = array(
+            "name" => "others_group",
+            "color" => '#fff',
+            "translation" => array(
+                1 => "andere Optionen",
+                2 => "other options" ,
+            ),
+        );
+        foreach ($groups as $key => $group) {
+            $this->groups[$group['name']] = new Group(
+                $group['name'],
+                $group['color'],
+                $group['translation'],
+                $key
+            );
+        }
     }
 }
 

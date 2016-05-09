@@ -322,12 +322,32 @@ function removeElement(button) {
     )
 }
 
+/**
+ * Set the toggle icon for an element
+ *
+ * @param {object} element the element which should get the icon
+ */
+function setToggleIcon(element) {
+    // check if we open or close the group and set the matching class, so we
+    // can load the proper icon
+    if (jQuery(element).hasClass('open')) {
+        jQuery(element).removeClass('open');
+    } else {
+        jQuery(element).addClass('open');
+    }
+}
+
 jQuery(document).ready(function(){
     jQuery('.groupName').click(function(){
-        jQuery(this).parent().siblings('.optionGroup').children('.optionsInGroup').hide();
+        // close all other groups
+        var otherGroups = jQuery(this).parent().siblings('.optionGroup');
+        jQuery(otherGroups).children('.optionsInGroup').hide();
+        jQuery(otherGroups).children('.groupName').removeClass('open');
+        setToggleIcon(jQuery(this));
         jQuery(this).siblings('.optionsInGroup').toggle();
     });
     jQuery('.series').children('label').click(function(){
+        setToggleIcon(jQuery(this).parent());
         jQuery(this).siblings('.series-list').toggle();
     });
 });
