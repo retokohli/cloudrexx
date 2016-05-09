@@ -69,7 +69,14 @@ class SeriesOption extends Option
         parent::__construct($name, $translations, $data, $type, $group, $series);
         foreach ($data['elements'] as $key => $elm) {
             if (!empty($elm)) {
-                $this->elements[$key] = $elm;
+                if(
+                    $type == 'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption'
+                ) {
+                    $this->elements[$key]['elements'] = $elm;
+                    $this->elements[$key]['options'] = $data['options'];
+                } else {
+                    $this->elements[$key] = $elm;
+                }
             }
         }
     }

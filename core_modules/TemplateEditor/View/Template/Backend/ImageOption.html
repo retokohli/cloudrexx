@@ -33,8 +33,7 @@
                 return false;
             }
             var splitedText = '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_seriesId');
-            if (splitedText[1]
-                    !== undefined) {
+            if (splitedText[1] !== undefined) {
                 var data = getSeriesElementValueById(
                         'url',
                         splitedText[1],
@@ -42,6 +41,10 @@
                 );
             } else {
                 var data = response.data.url;
+            }
+            var combinedId = '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_combinedId');
+            if (combinedId[1] !== undefined) {
+                var data = response.data['elements'][combinedId[1]].url;
             }
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(data);

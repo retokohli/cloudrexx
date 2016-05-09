@@ -10,20 +10,8 @@
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').text(response.message).slideDown();
                 return false;
             }
-            var splitedId = '#{TEMPLATEEDITOR_OPTION_NAME}'.split('_seriesId');
-            if (splitedId[1]
-                    !== undefined) {
-                var textvalue = getSeriesElementValueById(
-                        'textvalue',
-                        splitedId[1],
-                        response.data['elements']
-                );
-            } else {
-                var textvalue = response.data.textvalue;
-            }
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideUp();
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('error');
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(textvalue);
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saved');
             setTimeout(function(){

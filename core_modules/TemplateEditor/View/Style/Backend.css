@@ -381,7 +381,8 @@ p.groupName.open, .option.series.open {
 }
 
 .series-list .elements img,
-.image.option img {
+.image.option img,
+.combined > img{
     margin: auto;
     display: block;
     max-width: calc(100% - 2px);
@@ -391,7 +392,8 @@ p.groupName.open, .option.series.open {
     -o-transition: border 0.5s;
     transition: border 0.5s;
 }
-.series-list .elements label {
+.series-list .elements label,
+.combined.element > label {
     display: none;
 }
 .image {

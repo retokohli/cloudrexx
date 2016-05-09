@@ -180,17 +180,22 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller implements Js
                 $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_VALUE_EMPTY']
             );
         }
+
+        // if the element is a combined option we need to find out which
+        // option we want to edit by reading the _combinedId
         // if the element is part of an series, we need to load the seriesId
         // of the element, so we know which element we want to change. We do
         // this over the name of the series
-        $seriesSuffix = '_seriesId';
-        $seriesPosition = strpos($name, $seriesSuffix);
-        if ($seriesPosition !== false) {
-            $data = array(
-                'id' => substr($name, $seriesPosition + strlen($seriesSuffix)),
-                'value' => $data
-            );
-            $name = substr($name, 0, $seriesPosition);
+        $suffixes = array('_combinedId', '_seriesId');
+        foreach($suffixes as $suffix) {
+            $position = strpos($name, $suffix);
+            if ($position !== false) {
+                $data = array(
+                    'id' => substr($name, $position + strlen($suffix)),
+                    'value' => $data
+                );
+                $name = substr($name, 0, $position);
+            }
         }
         $data = $themeOptions->handleChanges(
             $name, $data
