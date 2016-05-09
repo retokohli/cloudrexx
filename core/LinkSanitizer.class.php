@@ -116,6 +116,11 @@ class LinkSanitizer {
         // For this reason, we replace escaped slashes by slashes.
         $matches[\LinkSanitizer::FILE_PATH] = str_replace('\\/', '/', $matches[\LinkSanitizer::FILE_PATH]);
 
+        if (empty($matches[\LinkSanitizer::FILE_PATH])) {
+            return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
+            $_SERVER['REQUEST_URI'] .
+            $matches[\LinkSanitizer::CLOSE_QUOTE];
+        }
         $testPath = explode('?', $matches[\LinkSanitizer::FILE_PATH], 2);
         if ($testPath[0] == 'index.php' || $testPath[0] == '' || $testPath[0] == './') {
             $ret = ASCMS_INSTANCE_OFFSET;
@@ -150,7 +155,13 @@ class LinkSanitizer {
                     }
                 }
                 if (count($params)) {
-                    $ret .= '?' . http_build_query($params);
+                    array_walk(
+                        $params,
+                        function(&$value, $key) {
+                            $value = $key . '=' . $value;
+                        }
+                    );
+                    $ret .= '?' . implode('&', $params);
                 }
             }
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
