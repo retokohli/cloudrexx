@@ -12,6 +12,7 @@ function settingsSmtpDeleteAccount(id,name)
 }
 // ]]>
 </script>
+<div class="responsive-table">
 <table border="0" width="100%" cellpadding="3" cellspacing="0" class="adminlist">
 	<thead>
 		<tr>
@@ -42,6 +43,7 @@ function settingsSmtpDeleteAccount(id,name)
 		<!-- END settings_smtp_accounts -->
 	</tbody>
 </table>
+</div>
 <br />
 <input type="button" onclick="window.location.href='?cmd=Config&{CSRF_PARAM}&amp;act=smtp&amp;tpl=modify'" value="{TXT_SETTINGS_ADD_NEW_SMTP_ACCOUNT}" />
 <!-- end settings_smtp.html -->

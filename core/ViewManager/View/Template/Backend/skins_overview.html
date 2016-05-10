@@ -374,7 +374,12 @@
     .themesOverview .cf {
         display: none;
     }
-
+    @media (max-width: 460px) {
+        .tabs-wraper #tab-menu li,
+        .tabs-wraper #tab-menu li a {
+            width: 100%;
+        }
+    }
     @media (min-width: 1930px)  {
         .themesOverview .cf:nth-child(10n){
             display:block;
@@ -455,7 +460,6 @@
         color: #fff;
         border-color: #c0392b;
         float:right;
-        margin-right: 5px;
     }
 
     .preview-overlay-small a.themeDelete.action-small-screen:hover,

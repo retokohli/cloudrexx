@@ -7,7 +7,7 @@
     2.2 Content Manager
     2.2.1 Type Tab
   3 Helpers
- */
+*/
 
 /* 1) Reset */
 body{ font-family: Arial, sans-serif;}
@@ -188,7 +188,6 @@ h1{ font-size: 20px }
 }
 
 #content-manager.edit_view #multiple-actions-select {
-    float: left;
     clear: both;
     margin: 5px 0 0 40px;
 }
@@ -884,7 +883,7 @@ div.date img{
 }
 
 .additionalInfo div.oneCol{
-    
+
 }
 .additionalInfo label.oneCol{
     display:block;
@@ -1455,3 +1454,37 @@ div.date img{
     margin:0px !important;
 }
 span.app-template-tooltip { word-wrap: break-word;}
+
+#page #titles_container {
+    width: 100%;
+    margin: 0;
+}
+#page #titles_container .line {
+    width: 100%;
+}
+#page #titles_container input[type="text"] {
+    width: 560px;
+}
+#content_wrapper .right-content #content #content-manager.edit_view #buttons {
+    padding: 0;
+}
+#content_wrapper .right-content #content #content-manager.edit_view #buttons input,
+#content_wrapper .right-content #content #content-manager.edit_view #buttons a.button {
+    margin: 10px 5px 0 0 !important;
+}
+@media (max-width:460px){
+    #content-manager.edit_view #multiple-actions-select {
+        margin: 5px 0;
+        width: 100%;
+    }
+}
+@media (min-width:992px) and (max-width:1200px){
+    #page #titles_container #types input[type=radio]:nth-of-type(4) {
+        clear: left;
+    }
+}
+@media (max-width:1200px){
+    #page #titles_container input[type="text"] {
+        width: 100%;
+    }  
+}

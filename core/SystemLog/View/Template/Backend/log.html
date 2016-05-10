@@ -1,6 +1,6 @@
 <!-- START log.html -->
-<form name="form_logs" method="post" action="index.php?cmd=SystemLog">
-    <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
+<form class="first-col" name="form_logs" method="post" action="index.php?cmd=SystemLog">
+    <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0" style="min-width: 100%;">
         <tr>
             <th>{TXT_SEARCH}</th>
         </tr>
@@ -15,6 +15,7 @@
     </table>
 </form>
 <br />
+<div class="responsive-table">
 <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
     <tr>
         <th colspan="6">{TXT_SYSTEM_LOGS}</th>
@@ -38,6 +39,7 @@
     </tr>
     <!-- END logRow -->
 </table>
+</div>
 <br />
 {LOG_PAGING}
 <!-- END log.html -->

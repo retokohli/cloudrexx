@@ -30,22 +30,27 @@ a.edit {
 }
 
 form.cx-ui {
-    float: none;
+    float: left;
     clear: both;
     display: block;
     width: 100%;
-    overflow: hidden;
+    overflow-y: hidden;
+    overflow-x: auto;
 }
 
 form.cx-ui > fieldset {
     border: 0;
     padding: 0;
     margin-left: 0;
-    overflow: hidden;
+    overflow-x: auto;
+    float: left;
+    width: 100%;
+    min-width: 750px;
 }
 
 form.cx-ui > fieldset + fieldset {
     margin: 25px 0 0 0;
+    clear: left;
 }
 
 form.cx-ui > fieldset > legend {

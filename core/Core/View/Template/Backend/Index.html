@@ -10,6 +10,7 @@
         <meta http-equiv="pragma" content="no-cache" />
         <meta http-equiv="cache-control" content="no-cache" />
         <meta http-equiv="X-UA-Compatible" content="requiresActiveX=true" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link href="../core/Core/View/Style/base.css" rel="stylesheet" type="text/css" />
 
         <!-- BEGIN additional_style -->
@@ -18,10 +19,79 @@
 
         {JAVASCRIPT}
         
+        <script>
+            jQuery(document).ready(function()
+            {
+                var menu = jQuery(".slide-right");
+                var nav = jQuery("#navbar-right");
+                var language = jQuery("#metanavigation>ul");
+                var small = jQuery("#small-navigation");
+                $languageClone = language.clone();
+                small.append($languageClone);                
+                
+                $navbarClone = menu.clone();
+                $navbarClone.removeClass('slide-right');
+                jQuery('#navbar-right').append($navbarClone);
+                var body = jQuery("body");
+                jQuery('#nav-button').sidr({
+                    name: 'navbar-right',
+                    side: 'right'
+                });
+                jQuery("#small-navigation>ul>li>a").click(function()
+                {                   
+                   jQuery("#small-navigation>ul>li>ul").toggleClass("view"); 
+                });
+                jQuery('#nav-button').click(function() {
+                    jQuery('body').css('overflow-y', 'hidden');
+                });
+
+                jQuery(window).resize(function()
+                {                    
+                    var form = jQuery(window).width();
+                    if (form >= "753")
+                    {
+                        nav.css({"right": "0px", "display": "none"});                       
+                        body.css({"right": "0px", "position": "relative", "width": "auto"});                        
+                    }                    
+                    find_width();                    
+                });
+                
+                jQuery(window).load(function() {
+                   find_width();
+                });
+                
+                jQuery("#tabmenu li a").click(function()
+                {
+                    find_width();
+                });
+                jQuery(".adminlist").closest('form').addClass("responsive-table");
+            });
+            function find_width()
+            {
+                var form = jQuery(window).width();
+                    
+                    if (form <= "753")
+                    {
+                        jQuery("#content").css("width", form - 30 + "px");
+                    }
+                    else if (form > "753" && form <= "978")
+                    {
+                        var right_width = jQuery(".right-content").width();
+                        jQuery("#content").css("width", right_width + "px");
+                    }
+                    else
+                    {
+                        jQuery("#content").css("width", "100%");
+                    }
+            }
+        </script>
     </head>
     <body>
+        <div id="loading" style="display: none;"><img src="../lib/javascript/jquery/jstree/themes/default/throbber.gif" alt="" /><span>Loading...</span></div>
+
         <div id="container" class="{CONTAINER_BACKEND_CLASS} {CONTAINER_DASHBOARD_CLASS}">
-            <div id="header">
+
+            <div id="header" class="full-grid">
                 <a class="logo" href="index.php"></a>
                 <!-- BEGIN backend_metanavigation -->
                 <div id="metanavigation">
@@ -48,9 +118,19 @@
                     <a class="logout" href="javascript:logout()">{TXT_LOGOUT}</a>
                 </div>
                 <!-- END backend_metanavigation -->
+
+
+                <button type="button" class="navbar-toggle collapsed" id="nav-button" >
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+                <a class="navbar-link lagout" href="javascript:logout()"></a>
+                <a class="navbar-link profile" href="index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id={USER_ID}"></a>
             </div>
             <div id="content_wrapper">{CONTENT_FILE}</div>
-            <div id="footer">
+            <div id="footer" class="full-grid">
                 <a href="http://www.cloudrexx.com" target="_blank">&copy; CLOUDREXX AG, Switzerland</a>
                 <div id="version">
                     {CONTREXX_VERSION}

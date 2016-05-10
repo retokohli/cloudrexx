@@ -336,7 +336,9 @@
         right: 0;
         z-index: 1001
     }
-
+    #content table.adminlist th {
+        line-height: 16px;
+    }
     .fullScreen {
         overflow: hidden
     }
@@ -349,15 +351,15 @@
         <li><a href="index.php?cmd=ViewManager&amp;act=import" title="{TXT_THEME_IMPORT}">{TXT_THEME_IMPORT}</a></li>
     </ul>
 </div>
-<div id="instance_table"><div id="tabid"></div>
-<table width="100%" border="0" cellspacing="0" cellpadding="0" >
+<div id="instance_table" class="responsive-table"><div id="tabid"></div>
+<table class="adminlist" min-width="100%" border="0" cellspacing="0" cellpadding="0" >
     <tr>
         <td  valign="top" nowrap >
 
             <form name="themesForm" action="index.php?cmd=ViewManager&amp;act=templates"  method="post">
                 <input type="hidden" class="selectedTheme" name="themes" value="{THEME_SELECTED_THEME}" />
 
-                <table summary=""  cellspacing="0" cellpadding="3" class="adminlist" id="themes_list">
+                <table summary=""  cellspacing="0" cellpadding="3" class="adminlist" id="themes_list" style="min-width: 100%;">
                     <tr>
                         <th width="300" nowrap="nowrap">{TXT_THEME_TEMPLATE}:{THEME_SELECTED_THEME_NAME}</th>
                     </tr>

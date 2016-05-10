@@ -30,7 +30,7 @@ a:active {
     cursor: pointer;
 }
 
-#container {
+/*#container {
     position: absolute;
     top: 140px;
     left: 50%;
@@ -39,7 +39,7 @@ a:active {
     padding: 25px;
     margin: 0 -330px;
     background: #ececec url(../Media/exclamation_mark.png) no-repeat 575px 21px;
-}
+}*/
 
 #container #title {
     float: left;
@@ -94,4 +94,55 @@ a:active {
 
 #container form {
     display: none;
+}
+
+/* new style */
+
+#container {
+    position: relative;
+    float: left;
+    top: 140px;
+    width: 610px;
+    padding: 25px;
+    margin-bottom: 100px;
+    background: #ececec url(../Media/exclamation_mark.png) no-repeat 575px 21px;
+}
+.container {
+    margin: 0 auto;
+    width: 660px;
+}
+
+@media (max-width: 767px) {
+    .container { 
+        margin: 0 auto;
+        width: 300px;
+    }
+    #container {
+        width: 300px;
+        padding: 15px;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -o-box-sizing: border-box;
+        background: #ececec url(../Media/exclamation_mark.png) no-repeat 230px 21px;
+    }
+    #container #title {
+        margin: 0 60px 30px 0;
+        font-size: 25px;
+    }
+    #container #message {        
+        width: 100%;
+        font-size: 13px;
+        margin: 0 0 20px 0;
+    }
+    #container .button {        
+        width: 100%;
+        height: 50px;
+        padding: 12px;        
+        margin-bottom: 15px;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -o-box-sizing: border-box;
+    }
 }
