@@ -59,7 +59,7 @@
     }
     function sortByCategory()
     {
-       sort = document.form2.form_show_category.value;
+        sort = document.form2.form_show_category.value;
        window.location.replace("index.php?cmd=Feed&{CSRF_PARAM}&sort="+sort);
     }
     function editNews(id)
@@ -166,10 +166,10 @@
                     <!-- BEGIN feed_table_option -->
                     <option value="{FEED_CATEGORY_ID}">{FEED_CATEGORY}</option>
                     <!-- END feed_table_option -->
-                   </select>
-               </td>
-               <td width="180">{TXT_FEED_NAME}:</td>
-               <td><input type="text" style="width: 300px" name="form_name"></td>
+                </select>
+            </td>
+            <td width="180">{TXT_FEED_NAME}:</td>
+            <td><input type="text" style="width: 300px" name="form_name"></td>
         </tr>
         <tr class="row2">
             <td>{TXT_FEED_LINK}:</td>
@@ -210,9 +210,9 @@
     <br><input type="submit" value="{TXT_FEED_SAVE}">
 </form><br>
 <form action="?cmd=Feed&chg=1" name="form2" method="POST" style="padding:0px; margin:0px;">
-<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-    <tr>
-        <th width="25"><center>#</center></th>
+    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+        <tr>
+            <th width="25"><center>#</center></th>
         <th width="70">{TXT_FEED_SORTING}</th>
         <th width="40">{TXT_FEED_STATUS}</th>
         <th width="35">{TXT_FEED_ID}</th>
@@ -224,25 +224,25 @@
                 <!-- BEGIN feed_category_option -->
                 <option value="{FEED_CATEGORY_ID}"{FEED_SELECTED}>{FEED_CATEGORY}</option>
                 <!-- END feed_category_option -->
-               </select>
+            </select>
         </th>
         <th width="55">{TXT_FEED_ARTICLE}</th>
         <th width="70" style="white-space: nowrap;">{TXT_FEED_CACHE_TIME}</th>
         <th width="150" style="white-space: nowrap;">{TXT_FEED_LAST_UPDATE}</th>
         <th width="20">&nbsp;</th>
         <th width="20">&nbsp;</th>
-    </tr>
-    <input type="hidden" name="ischecked" value="0">
-    <!-- BEGIN feed_table_row -->
-    <tr class="{FEED_CLASS}">
-        <td><input type="checkbox" name="form_selected[]" value="{FEED_ID}" onclick="isChecked(this.checked);" hidefocus></td>
-        <td align="center">
-            <input type="hidden" name="form_id[]" value="{FEED_ID}">
-            <input type="text" name="form_pos[]" value="{FEED_POS}" style="width:25px; text-align:right; padding:2px;">
-        </td>
-        <td align="center"><img src="../core/Core/View/Media/icons/led_{FEED_STATUS}.gif"></td>
-        <td align="center">{FEED_ID}</td>
-        <td><nobr><a href="javascript:editNews({FEED_ID})" title="{TXT_FEED_EDIT}" hidefocus>{FEED_NAME}</a></nobr></td>
+        </tr>
+        <input type="hidden" name="ischecked" value="0">
+        <!-- BEGIN feed_table_row -->
+        <tr class="{FEED_CLASS}">
+            <td><input type="checkbox" name="form_selected[]" value="{FEED_ID}" onclick="isChecked(this.checked);" hidefocus></td>
+            <td align="center">
+                <input type="hidden" name="form_id[]" value="{FEED_ID}">
+                <input type="text" name="form_pos[]" value="{FEED_POS}" style="width:25px; text-align:right; padding:2px;">
+            </td>
+            <td align="center"><img src="../core/Core/View/Media/icons/led_{FEED_STATUS}.gif"></td>
+            <td align="center">{FEED_ID}</td>
+            <td><nobr><a href="javascript:editNews({FEED_ID})" title="{TXT_FEED_EDIT}" hidefocus>{FEED_NAME}</a></nobr></td>
         <td align="center">[{FEED_LANG}]</td>
         <td><nobr>{FEED_CATEGORY}</nobr></td>
         <td align="center">{FEED_ARTICLE}</td>
@@ -258,33 +258,37 @@
                 <img src="../core/Core/View/Media/icons/pages.gif" border="0">
             </a>
         </td>
-    </tr>
-    <!-- END feed_table_row -->
-</table>
-<!-- BEGIN feed_table_hidden -->
-<table cellspacing="0" cellpadding="3" width="100%" border="0">
-    <tr>
-        <td>
-            <img src="../core/Core/View/Media/icons/arrow.gif">
-            <a href="" onclick="setCheckboxes(true); return false;" hidefocus>{TXT_FEED_MARK_ALL}</a> /
-            <a href="" onclick="setCheckboxes(false); return false;" hidefocus>{TXT_FEED_REMOVE_CHOICE}</a>
-            <img src="../core/Core/View/Media/icons/strike.gif">
-            <select name="form_select_todo" onchange="selectTodoCategory();">
-                <option value="0" selected>{TXT_FEED_SELECT_OPERATION}:</option>
-                <option value="sort">{TXT_FEED_SAVE_SORTING}</option>
-                <option value="activate">{TXT_FEED_ACTIVATE_NEWS_FEED}</option>
-                <option value="deactivate">{TXT_FEED_DEACTIVATE_NEWS_FEED}</option>
-                <option value="delete">{TXT_FEED_DELETE_NEWS_FEED}</option>
-            </select>
-            <input type="hidden" name="form_sort" value="">
-            <input type="hidden" name="form_activate" value="">
-            <input type="hidden" name="form_deactivate" value="">
-            <input type="hidden" name="form_delete" value="">
-        </td>
-        <td width="20">{FEED_RECORDS_HIDDEN}</td>
-    </tr>
-</table>
-<!-- END feed_table_hidden -->
+        </tr>
+        <!-- END feed_table_row -->
+    </table>
+    <!-- BEGIN feed_table_hidden -->
+    <table cellspacing="0" cellpadding="3" width="100%" border="0">
+        <tr>
+            <td>
+                <div class ="adminlist" style="clear: left;">
+                    <img src="../core/Core/View/Media/icons/arrow.gif">
+                    <a href="" onclick="setCheckboxes(true);
+                            return false;" hidefocus>{TXT_FEED_MARK_ALL}</a> /
+                    <a href="" onclick="setCheckboxes(false);
+                            return false;" hidefocus>{TXT_FEED_REMOVE_CHOICE}</a>
+                    <img src="../core/Core/View/Media/icons/strike.gif">
+                    <select name="form_select_todo" onchange="selectTodoCategory();">
+                        <option value="0" selected>{TXT_FEED_SELECT_OPERATION}:</option>
+                        <option value="sort">{TXT_FEED_SAVE_SORTING}</option>
+                        <option value="activate">{TXT_FEED_ACTIVATE_NEWS_FEED}</option>
+                        <option value="deactivate">{TXT_FEED_DEACTIVATE_NEWS_FEED}</option>
+                        <option value="delete">{TXT_FEED_DELETE_NEWS_FEED}</option>
+                    </select>
+                    <input type="hidden" name="form_sort" value="">
+                    <input type="hidden" name="form_activate" value="">
+                    <input type="hidden" name="form_deactivate" value="">
+                    <input type="hidden" name="form_delete" value="">
+                </div>
+            </td>
+            <td width="20">{FEED_RECORDS_HIDDEN}</td>
+        </tr>
+    </table>
+    <!-- END feed_table_hidden -->
 </form>
 <br>
 {FEED_CATEGORY_PAGING}
