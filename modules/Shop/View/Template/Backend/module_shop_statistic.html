@@ -1,4 +1,5 @@
 <!-- start module_shop_statistic.html -->
+<div class="responsive-table">
 <table class="adminlist" cellspacing="0" cellpadding="2" width="100%" border="0">
   <tr>
     <th colspan="4">{TXT_SHOP_STATISTIC_OVERVIEW}</th>
@@ -13,6 +14,7 @@
     <td>{TXT_TOTAL_SOLD_ARITCLES}:&nbsp;{SHOP_SOLD_ARTICLES}</td>
   </tr>
 </table>
+</div>
 <br />
 <form name="frmShopStatistic" method="post" action="index.php?cmd=Shop{MODULE_INDEX}&amp;act=statistics">
   <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
@@ -49,6 +51,7 @@
   </table>
 </form>
 <br />
+<div class="responsive-table">
 <table class="adminlist" cellSpacing="0" cellPadding="2" width="100%" border="0">
   <tr>
     <th>{TXT_COLUMN_1_DESC}</th>
@@ -69,6 +72,7 @@
     <td class="a_right f_bold">{SHOP_SUM_COLUMN_4}</td>
   </tr><!-- END statistic -->
 </table>
+</div>
 <br />
 {SHOP_STATISTIC_PAGING}
 <br />

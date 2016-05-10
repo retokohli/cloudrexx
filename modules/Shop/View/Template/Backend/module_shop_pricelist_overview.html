@@ -69,13 +69,16 @@ function shopPricelistDoAction(strForm, strCheckbox, objSelect, strAct)
     </tr>
 <!-- END shop_pricelist -->
   </table>
+  <div class="adminlist" style="clear: left;">
   <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
   <a href="javascript:{}" onclick="changeCheckboxes('form_pricelist','list_id',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
   <a href="javascript:{}" onclick="changeCheckboxes('form_pricelist','list_id',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+  <img src="../core/Core/View/Media/icons/strike.gif" width="34" height="22" alt="design" />
   <select name="multi_action" onchange="shopPricelistDoAction('form_pricelist','list_id',this,this.value)">
     <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
     <option value="del">{TXT_DELETE}</option>
   </select>
+  </div>
 </form>
 <!-- END shop_pricelist_overview -->
 <br />

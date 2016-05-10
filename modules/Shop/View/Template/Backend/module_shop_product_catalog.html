@@ -190,15 +190,18 @@ function shopProductsIsChecked(fieldName)
     </tr>
 <!-- END productRow -->
   </table>
+  <div class="adminlist" style="clear: left;">
   <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
   <a href="javascript:{}" onclick="changeCheckboxes('product_list','selectedProductId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
   <a href="javascript:{}" onclick="changeCheckboxes('product_list','selectedProductId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+  <img src="../core/Core/View/Media/icons/strike.gif" width="34" height="22" alt="design" />
   <select name="multi_action" onchange="shopProductsDoAction(this,this.value)">
     <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
     <option value="delete">{TXT_DELETE}</option>
     <option value="activate">{TXT_SHOP_ACTIVATE}</option>
     <option value="deactivate">{TXT_SHOP_DEACTIVATE}</option>
   </select>
+  </div>
   <br />
   <br />
   {SHOP_PRODUCT_PAGING}
