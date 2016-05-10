@@ -57,7 +57,7 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     protected $name;
 
     /**
-     * @var string $dataSource
+     * @var Cx\Core\DataSource\Model\Entity\DataSource
      */
     protected $dataSource;
 
@@ -126,7 +126,7 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
      *
      * @param string $dataSource
      */
-    public function setDataSource($dataSource)
+    public function setDataSource(\Cx\Core\DataSource\Model\Entity\DataSource $dataSource)
     {
         $this->dataSource = $dataSource;
     }

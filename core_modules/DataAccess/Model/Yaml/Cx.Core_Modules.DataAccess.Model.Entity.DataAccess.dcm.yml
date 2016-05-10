@@ -14,10 +14,6 @@ Cx\Core_Modules\DataAccess\Model\Entity\DataAccess:
         name:
             type: string
             length: 45
-        dataSource:
-            type: string
-            length: 45
-            column: data_source
         fieldList:
             type: array
             column: field_list
@@ -43,4 +39,10 @@ Cx\Core_Modules\DataAccess\Model\Entity\DataAccess:
             inversedBy: dataAccesses
             joinColumn:
                 name: read_permission
+                referencedColumnName: id
+        dataSource:
+            targetEntity: Cx\Core\DataSource\Model\Entity\DataSource
+            inversedBy: dataAccesses
+            joinColumn:
+                name: data_source_id
                 referencedColumnName: id

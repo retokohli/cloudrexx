@@ -251,6 +251,14 @@ CREATE TABLE `contrexx_core_mail_template` (
   `protected` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`key`(32),`section`(32))
 ) ENGINE=MyISAM;
+CREATE TABLE `contrexx_core_datasource_data_source` (
+  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `identifier` varchar(255) NOT NULL,
+  `options` longtext NOT NULL,
+  `type` varchar(50) NOT NULL,
+  PRIMARY KEY(`id`),
+  UNIQUE KEY `identifier` (`identifier`)
+) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_modules_access_permission` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
   `allowed_protocols` longtext NOT NULL,
@@ -263,6 +271,7 @@ CREATE TABLE `contrexx_core_modules_access_permission` (
 CREATE TABLE `contrexx_core_module_dataaccess_data_access` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
   `read_permission` int(11) DEFAULT NULL,
+  `data_source_id` int(11) DEFAULT NULL,
   `name` varchar(45) NOT NULL,
   `data_source` varchar(45) NOT NULL,
   `field_list` longtext NOT NULL,
@@ -271,7 +280,9 @@ CREATE TABLE `contrexx_core_module_dataaccess_data_access` (
   PRIMARY KEY(`id`),
   UNIQUE KEY `name` (`name`),
   KEY `read_permission` (`read_permission`),
-  CONSTRAINT `contrexx_core_module_dataaccess_data_access_ibfk_read_permission` FOREIGN KEY (`read_permission`) REFERENCES `contrexx_core_modules_access_permission` (`id`)
+  KEY `data_source_id` (`data_source_id`),
+  CONSTRAINT `contrexx_core_module_dataaccess_data_access_ibfk_read_permission` FOREIGN KEY (`read_permission`) REFERENCES `contrexx_core_modules_access_permission` (`id`),
+  CONSTRAINT `contrexx_core_module_dataaccess_data_access_ibfk_data_source_id` FOREIGN KEY (`data_source_id`) REFERENCES `contrexx_core_datasource_data_source` (`id`)
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_dataaccess_apikey` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
