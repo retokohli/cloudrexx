@@ -1,3 +1,22 @@
+<style type="text/css">
+    .responsive-table {
+        overflow: visible;
+    }
+    .responsive-table .adminlist {
+        min-width: auto;
+    }
+    #searchSubscription input, .chosen-container {
+        margin: 5px 5px 5px 0;
+    }
+    @media (max-width:480px) {
+        #searchSubscription input, .chosen-container {
+            width: 100% !important;
+        }
+        #searchSubscription input#searchButton {
+            width: auto !important;
+        }
+    }
+</style>
 <!-- BEGIN subscription_filter -->
 <form method="get" action="" name="searchSubscription" id="searchSubscription">
     <table cellspacing="0" cellpadding="5" border="0" width="100%" class="adminlist" >
@@ -11,7 +30,6 @@
                 <input type='hidden' name="cmd" value="Order" />
                 <input type='hidden' name="act" value="subscription" />
                 <input type="text" name="term" placeholder="{TXT_ORDER_SUBSCRIPTIONS_SEARCH_TERM}" id="term"  style="width: 300px;" class="search-box" value="{ORDER_SUBSCRIPTIONS_SEARCH_VALUE}" autocomplete="off" />
-                &nbsp;&nbsp;
                 <select tabindex="7" data-placeholder="{TXT_ORDER_SUBSCRIPTIONS_SEARCH_PRODUCT}" style="width: 300px;" name="filter_product[]" class="chzn-select" size="1" multiple>
                     <!-- BEGIN subscription_product_filter -->
                     <option value="{ORDER_SUBSCRIPTION_PRODUCT_VALUE}" {ORDER_SUBSCRIPTION_PRODUCT_SELECTED}>{ORDER_SUBSCRIPTION_PRODUCT_NAME}</option>
