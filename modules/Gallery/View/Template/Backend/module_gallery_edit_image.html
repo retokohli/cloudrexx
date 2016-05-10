@@ -154,6 +154,7 @@ function copyText(strType) {
 		<table cellpadding="2" cellspacing="0" border="0">
 			<tr>
 				<td>
+                                    <div class="adminlist" style="clear: left;">
 					<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
 					<a href="#" onclick="changeCheckboxes('frmShowComments','selectedCommentsId[]',true); return false;">{TXT_COMMENT_SELECT_ALL}</a> /
 					<a href="#" onclick="changeCheckboxes('frmShowComments','selectedCommentsId[]',false); return false;">{TXT_COMMENT_DESELECT_ALL}</a>
@@ -162,6 +163,7 @@ function copyText(strType) {
 						<option value="0">{TXT_COMMENT_SELECT_ACT}</option>
 						<option value="delete">{TXT_COMMENT_DELETE_ALL}</option>
 					</select>
+                                    </div>
 				</td>
 			</tr>
 		</table>
@@ -191,14 +193,16 @@ function copyText(strType) {
 		<table cellpadding="2" cellspacing="0" border="0">
 			<tr>
 				<td>
-				<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-				<a href="#" onclick="changeCheckboxes('frmShowVotes','selectedVotesId[]',true); return false;">{TXT_COMMENT_SELECT_ALL}</a> /
-				<a href="#" onclick="changeCheckboxes('frmShowVotes','selectedVotesId[]',false); return false;">{TXT_COMMENT_DESELECT_ALL}</a>
-				<img src="../core/Core/View/Media/icons/strike.gif">
-				<select name="frmShowVotes_MultiAction" onchange="selectVotingMultiAction();">
-					<option value="0">{TXT_COMMENT_SELECT_ACT}</option>
-					<option value="delete">{TXT_COMMENT_DELETE_ALL}</option>
-				</select>
+                                <div class="adminlist" style="clear: left;">
+                                    <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+                                    <a href="#" onclick="changeCheckboxes('frmShowVotes','selectedVotesId[]',true); return false;">{TXT_COMMENT_SELECT_ALL}</a> /
+                                    <a href="#" onclick="changeCheckboxes('frmShowVotes','selectedVotesId[]',false); return false;">{TXT_COMMENT_DESELECT_ALL}</a>
+                                    <img src="../core/Core/View/Media/icons/strike.gif">
+                                    <select name="frmShowVotes_MultiAction" onchange="selectVotingMultiAction();">
+                                            <option value="0">{TXT_COMMENT_SELECT_ACT}</option>
+                                            <option value="delete">{TXT_COMMENT_DELETE_ALL}</option>
+                                    </select>
+                                </div>
 				</td>
 			</tr>
 		</table>
