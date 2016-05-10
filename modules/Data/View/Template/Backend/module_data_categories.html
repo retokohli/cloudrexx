@@ -163,14 +163,16 @@ $J(document).ready(function () {
         <table cellpadding="2" cellspacing="0" border="0">
             <tr>
                 <td>
-                    <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_OVERVIEW_MARKED}:" />
-                    <a href="#" onclick="changeCheckboxes('frmShowCategories','selectedCategoryId[]',true); return false;">{TXT_OVERVIEW_SELECT_ALL}</a> / 
-                    <a href="#" onclick="changeCheckboxes('frmShowCategories','selectedCategoryId[]',false); return false;">{TXT_OVERVIEW_DESELECT_ALL}</a>
-                    <img src="../core/Core/View/Media/icons/strike.gif" alt="" />
-                    <select name="frmShowCategories_MultiAction" onchange="selectMultiAction();">
-                        <option value="0">{TXT_OVERVIEW_SUBMIT_SELECT}</option>
-                        <option value="delete">{TXT_OVERVIEW_SUBMIT_DELETE}</option>
-                    </select>
+                    <div class="adminlist" style="clear: left";>
+                        <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_OVERVIEW_MARKED}:" />
+                        <a href="#" onclick="changeCheckboxes('frmShowCategories','selectedCategoryId[]',true); return false;">{TXT_OVERVIEW_SELECT_ALL}</a> / 
+                        <a href="#" onclick="changeCheckboxes('frmShowCategories','selectedCategoryId[]',false); return false;">{TXT_OVERVIEW_DESELECT_ALL}</a>
+                        <img src="../core/Core/View/Media/icons/strike.gif" alt="" />
+                        <select name="frmShowCategories_MultiAction" onchange="selectMultiAction();">
+                            <option value="0">{TXT_OVERVIEW_SUBMIT_SELECT}</option>
+                            <option value="delete">{TXT_OVERVIEW_SUBMIT_DELETE}</option>
+                        </select>
+                    </div>
                 </td>
             </tr>
         </table>
