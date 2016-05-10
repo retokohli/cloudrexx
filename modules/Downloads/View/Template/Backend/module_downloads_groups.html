@@ -62,6 +62,7 @@ function downloadsGroupDoAction(action)
 <!-- END downloads_group_list -->
 </table>
 <!-- BEGIN downloads_group_action_dropdown -->
+<div class="adminlist" style="clear: left;">
 <img src="../core/Core/View/Media/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
 <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_group_form','downloads_group_id[]',true); return false;" title="{TXT_DOWNLOADS_CHECK_ALL}">{TXT_DOWNLOADS_CHECK_ALL}</a> /
 <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_group_form','downloads_group_id[]',false); return false;" title="{TXT_DOWNLOADS_UNCHECK_ALL}">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
@@ -70,6 +71,7 @@ function downloadsGroupDoAction(action)
     <option value="0" selected="selected" style="border-bottom: 1px solid #000;">{TXT_DOWNLOADS_SELECT_ACTION}</option>
     <option value="delete">{TXT_DOWNLOADS_DELETE}</option>
 </select>
+</div>
 <!-- END downloads_group_action_dropdown -->
 <br />
 <br />

@@ -122,7 +122,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <!-- END downloads_download_list -->
 </table>
 <input type="button" value="{TXT_SAVE_CHANGES}" onclick="downloadsUpdateSortOrder(event, this.form, 'downloads_download_select_action')" style="float: left; margin: 10px 0 0 65px;" />
-<div style="clear: left;">
+<div class="adminlist" style="clear: left;">
     <img src="../core/Core/View/Media/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
     <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_download_form','downloads_download_id[]',true); return false;" title="{TXT_DOWNLOADS_CHECK_ALL}">{TXT_DOWNLOADS_CHECK_ALL}</a> /
     <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_download_form','downloads_download_id[]',false); return false;" title="{TXT_DOWNLOADS_UNCHECK_ALL}">{TXT_DOWNLOADS_UNCHECK_ALL}</a>

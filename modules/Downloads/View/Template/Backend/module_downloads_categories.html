@@ -162,7 +162,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 </table>
 <input type="button" value="{TXT_SAVE_CHANGES_CATEGORIES}" onclick="downloadsUpdateSortOrder(event, this.form, 'downloads_category_select_action')" style="float: left; margin: 10px 0 0 65px;" />
 <!-- BEGIN downloads_category_action_dropdown -->
-<div style="clear: left;">
+<div class="adminlist" style="clear: left;">
     <img src="../core/Core/View/Media/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
     <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_category_form','downloads_category_id[]',true); return false;" title="{TXT_DOWNLOADS_CHECK_ALL}">{TXT_DOWNLOADS_CHECK_ALL}</a> /
     <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_category_form','downloads_category_id[]',false); return false;" title="{TXT_DOWNLOADS_UNCHECK_ALL}">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
@@ -268,7 +268,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <input type="button" value="{TXT_SAVE_CHANGES_DOWNLOADS}" onclick="downloadsUpdateSortOrder(event, this.form, 'downloads_download_select_action')" style="float: left; margin: 10px 0 0 65px;" />
 <!-- END downloads_download_no_save_button -->
 <!-- BEGIN downloads_download_action_dropdown -->
-<div style="clear: left;">
+<div class="adminlist" style="clear: left;">
     <img src="../core/Core/View/Media/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
     <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_download_form','downloads_download_id[]',true); return false;" title="{TXT_DOWNLOADS_CHECK_ALL}">{TXT_DOWNLOADS_CHECK_ALL}</a> /
     <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_download_form','downloads_download_id[]',false); return false;" title="{TXT_DOWNLOADS_UNCHECK_ALL}">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
