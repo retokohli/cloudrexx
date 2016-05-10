@@ -114,7 +114,6 @@ body .address_list_container input {
 #selectContact{width: 300px;}
 #content #selectContact,#content .selectCustomer {
     padding-left: 20px;
-    height: 16px;
     background: url("../../../../core/Core/View/Media/icons/search_lens.jpg") no-repeat scroll left center transparent;
     border-right: 1px solid #BBB;
 }

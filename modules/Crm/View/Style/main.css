@@ -70,10 +70,10 @@ table#mapCSVColumn tbody tr td {vertical-align: middle; padding-left: 7px;}
 table#mapCSVColumn tbody tr td.not_match {background-color: whiteSmoke;}
 .crmLeft {float: left;}
 .crmRight{float: right;}
-.notesdate{padding: 1px 0 1px 7px;margin: 5px 0;}
+.notesdate{padding: 1px 0 1px 7px;margin: 5px 0;line-height: 17px;}
 #notesCategoriesLink, .CategoriesDropDownLink,#taskStatusPanel {padding: 1px 0 1px 7px;margin: 5px 0;border: 1px solid #DDDDDD; }
 #notesCategoriesLink, .CategoriesDropDownLink {width: 255px;}
-#notesCategoriesLink, .CategoriesDropDownLink, .CategoriesDropDownLink:hover,#notesCategoriesLink:hover {background: url('../../../../core/Core/View/Media/icons/crm_arrow_down.gif') no-repeat 240px 3px  #fff;}
+#notesCategoriesLink, .CategoriesDropDownLink, .CategoriesDropDownLink:hover,#notesCategoriesLink:hover {background: url('../../../../core/Core/View/Media/icons/crm_arrow_down.gif') no-repeat 233px 3px  #fff;}
 #taskStatusPanel {background: #fff;min-width: 70px;padding: 0}
 #content #taskStatusPanel a {
     padding: 5px 0;
@@ -193,7 +193,7 @@ table#mapCSVColumn tbody tr td.not_match {background-color: whiteSmoke;}
     background-color: #F2F2F2;
 }
 #notesCategoriesPanel, .CategoriesDropDownPanel {
-    width: 262px;
+    width: 255px;
     background: #fff;
     border: 1px solid #C7C7C7;
     z-index: 1000;
@@ -322,20 +322,43 @@ table#general-info tr td:first-child {
 .document-xls{background: url('../../../../modules/Crm/View/Media/Spreadsheet.png') no-repeat;}
 .nowrap {white-space: nowrap;}
 progress {
-  color: #0063a6;
-  font-size: .6em;
-  line-height: 1.5em;
-  text-indent: .5em;
-  width: 15em;
-  height: 1.8em;
-  border: 1px solid #0063a6;
-  background: #fff;
+    color: #0063a6;
+    font-size: .6em;
+    line-height: 1.5em;
+    text-indent: .5em;
+    width: 15em;
+    height: 1.8em;
+    border: 1px solid #0063a6;
+    background: #fff;
 }
 progress::-moz-progress-bar { background: #0063a6; }
 .okBox-new {
-        color: #39950C;
-        background: #DFF0D8;
-        padding: 8px;
-        margin-bottom: 5px;
-        clear: left;
+    color: #39950C;
+    background: #DFF0D8;
+    padding: 8px;
+    margin-bottom: 5px;
+    clear: left;
+}
+#notesCategoriesPanel {
+    top:243px;
+}
+.CategoriesDropDownPanel{
+    top:282px;
+}
+@media (max-width:768px){
+    #notesCategoriesPanel {
+        top:258px;
+    } 
+    .CategoriesDropDownPanel{
+        top:34px;
+    }
+}
+@media (min-width:769px) and (max-width:992px){
+    #notesCategoriesPanel {
+        top:272px;
+    }
+    .CategoriesDropDownPanel{
+        top:285px;
+    }
+    
 }

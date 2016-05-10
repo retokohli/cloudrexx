@@ -119,6 +119,12 @@
         margin-bottom: 5px;
         clear: left;
     }
+    @media (max-width:1412px){
+        .addTaskFilters {
+            float: left !important;
+            margin-top: 0 !important;
+        }
+    }
 </style>
 <div id="subnavbar_level2">
     <ul>
@@ -131,7 +137,7 @@
 <form action="" method="get" name="searchtask" id="searchtask">
     <input type="hidden" name="cmd" value="{MODULE_NAME}" />
     <input type="hidden" name="act" value="task" />
-    <table  class="adminlist" width="100%" cellspacing="0" cellpadding="3">
+    <table  class="adminlist" width="100%" cellspacing="0" cellpadding="3" style="min-width: 800px;">
         <thead>
             <tr><th>{TXT_CRM_FILTERS}</th></tr>
         </thead>
@@ -140,7 +146,7 @@
                 <td>
                     <input type="text" placeholder="{TXT_CRM_ENTER_SEARCH_TERM}" name="searchTitle" id="searchTitle" size="30" value="{TXT_SEARCH_VALUE}" style="float: left;width: 300px;"/>&nbsp;
                     <input type="submit" value="{TXT_CRM_SEARCH}" title="{TXT_CRM_SEARCH}" />&nbsp;
-                    <div style="float: right;margin-top: -6px;">
+                    <div class="addTaskFilters" style="float: right;margin-top: -6px;">
                         {TXT_CRM_FILTER_STATUS}:
                         <label>
                             <input type="checkbox" name="status[]" value="0" class="searchForm" {CRM_TASK_STATUS_OPEN} />{TXT_CRM_TASK_STATUS_OPEN}

@@ -181,14 +181,17 @@
                 </tbody>
             </table>
             <br>
+            <div class="adminlist" style="clear: left;">
             <img height="22" border="0" width="38" src="../core/Core/View/Media/icons/arrow.gif" alt=":" />
             <a href="#" onclick="changeCheckboxes('success_overview_entries','successEntry[]',true); return false;">{TXT_CRM_SELECT_ALL}</a> / <a href="#" onclick="changeCheckboxes('success_overview_entries','successEntry[]',false); return false;">{TXT_CRM_REMOVE_SELECTION}</a>
+            <img src="../core/Core/View/Media/icons/strike.gif" alt="" />
             <select name="actionType" id="multiAction">
                 <option value="0">{TXT_CRM_SELECT_ACTION}</option>
                 <option value="activate">{TXT_CRM_ACTIVATESELECTED}</option>
                 <option value="deactivate">{TXT_CRM_DEACTIVATESELECTED}</option>
                 <option value="delete">{TXT_CRM_DELETE_SELECTED}</option>
             </select>
+            </div>
             <br>
             <br>
             <input type="submit" name="save_entries" value="{TXT_CRM_SAVE}" />

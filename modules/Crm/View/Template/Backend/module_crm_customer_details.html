@@ -393,6 +393,7 @@
         <a class="dropDownItem" task_status="1"><span><img src="../core/Core/View/Media/icons/led_green.gif" alt="status" />&nbsp;{TXT_CRM_TASK_COMPLETED}</span></a>
     </div>
 </div>
+<div class="responsive-table">
 <ul id="tabmenu">
     <li><a id="contact_profile" class="active" href="javascript:{}" onclick="selectTab('profile')">{TXT_CRM_PROFILE}</a></li>
     <!-- BEGIN contactSwitchTab -->
@@ -667,11 +668,12 @@
     <a title="{TXT_CRM_ADD_CONTACT}" href="index.php?cmd={MODULE_NAME}&act=customers&tpl=managecontact&type=contact&custId={ENTRY_ID}{CRM_ADD_CONTACT_REDIRECT}"><input type="button" name="add" value="{TXT_CRM_ADD_CONTACT}" /></a>
     <br />
 </div>
+</div>
 <br>
 <br>
 <!-- END displayContacts -->
 <!-- show_sub_tabs -->
-<div id="tabs">
+<div id="tabs" class="responsive-table">
     <ul id="tabmenu" class="crm_details_tabs">
         <li>
             <a href="#notes" rel="notes_notesdetail_{ENTRY_ID}" title="{TXT_CRM_HISTROY}">{TXT_CRM_HISTROY}</a>

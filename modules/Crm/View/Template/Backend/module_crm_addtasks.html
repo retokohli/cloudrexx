@@ -77,6 +77,11 @@
                 $J('#notify').removeAttr('disabled');
             }
         });
+        $J("#taskTypesLink").toggle(function () {
+            $J("#taskTypePanel").css('display', 'block');
+        }, function () {
+            $J("#taskTypePanel").css('display', 'none');
+        });
     });
 
     function checkValidations() {
@@ -120,12 +125,12 @@
             return true;
         }
     }
-    $J.dropdownToggle({
-        dropdownID: 'taskTypePanel',
-        switcherSelector: '#taskTypesLink',
-        addTop: 0,
-        addLeft: 0
-    });
+//    $J.dropdownToggle({
+//        dropdownID: 'taskTypePanel',
+//        switcherSelector: '#taskTypesLink',
+//        addTop: 0,
+//        addLeft: 0
+//    });
     function showTaskTypePanel(switcherUI) {
         $J("#taskTypePanel a.dropDownItem").unbind('click').click(function() {
             _changeTaskType(switcherUI, $J(this).text(), $J(this).attr("task_type"));
@@ -160,18 +165,6 @@
     </ul>
 </div>
 <div id="formerr"></div>
-<div class="CategoriesDropDownPanel" id="taskTypePanel" style="display: none;position: absolute;">
-    <div class="dropDownContent">
-        <!-- BEGIN Tasktype -->
-        <a class="dropDownItem" task_type="{TXT_TASKTYPE_ID}">
-            <div class="taskTypeDiv">
-                <div class="taskTypeImg"><img src="{TXT_TASKTYPE_IMAGE}" alt="{TXT_TASKTYPE_NAME}"/></div>
-                <div class="taskTypeTitle">{TXT_TASKTYPE_NAME}</div>
-            </div>
-        </a>
-        <!-- END Tasktype -->        
-    </div>
-</div>
 <br>
 <form action="index.php?cmd=Crm&amp;act=task&amp;tpl=modify" method="post" id="addTask" name="form1">
     <table cellspacing="0" class="adminlist" cellpadding="3" width="100%" border="0">
@@ -189,6 +182,18 @@
                 <div id="taskTypesLink" class="crmLeft CategoriesDropDownLink" onclick="showTaskTypePanel(this);">
                     {DEFAULT_CRM_NOTES_TYPE}
                 </div>
+                <div class="CategoriesDropDownPanel" id="taskTypePanel" style="display: none;position: absolute;">
+                    <div class="dropDownContent">
+                        <!-- BEGIN Tasktype -->
+                        <a class="dropDownItem" task_type="{TXT_TASKTYPE_ID}">
+                            <div class="taskTypeDiv">
+                                <div class="taskTypeImg"><img src="{TXT_TASKTYPE_IMAGE}" alt="{TXT_TASKTYPE_NAME}"/></div>
+                                <div class="taskTypeTitle">{TXT_TASKTYPE_NAME}</div>
+                            </div>
+                        </a>
+                        <!-- END Tasktype -->        
+                    </div>
+                </div>
             </td>
         </tr>
         <tr class="row1">
@@ -196,7 +201,7 @@
             <td width="90%" style="padding-left: 28px;">
                 <!-- cutomer name fetched from AJAX request -->
                 <input type="hidden" name="customerId" id="customerId" value="{CRM_CUSTOMER_ID}" />
-                <input type="text" name="customer_name" placeholder="{TXT_CRM_FIND_COMPANY_BY_NAME}" class="selectCustomer" id="customer_name" value="{CRM_CUSTOMER_NAME}" size="23" style="width: 239px;" /><span class="delete-customer"></span>&nbsp;
+                <input type="text" name="customer_name" placeholder="{TXT_CRM_FIND_COMPANY_BY_NAME}" class="selectCustomer" id="customer_name" value="{CRM_CUSTOMER_NAME}" size="23" style="width: 255px;" /><span class="delete-customer"></span>&nbsp;
             </td>
         </tr>
 
