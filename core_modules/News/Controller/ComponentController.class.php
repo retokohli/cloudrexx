@@ -143,7 +143,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $themesPages, $page_template;
+        global $themesPages, $page_template, $objCache;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 // Get Headlines
@@ -202,9 +202,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || strpos($themesPages['sidebar'], $newsCategoriesPlaceholder) !== false
                             || strpos($page_template, $newsCategoriesPlaceholder) !== false)
                    ) {
-                        $newsLib = new NewsLibrary();
-                        $newsCategories = $newsLib->getNewsCategories();
-                            
+                        $newsCategories = $objCache->getEsiContent(
+                            'News',
+                            'getNewsCategories'
+                        );
                         \Env::get('cx')->getPage()->setContent(str_replace($newsCategoriesPlaceholder, $newsCategories, \Env::get('cx')->getPage()->getContent()));
                         $themesPages['index']   = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['sidebar']);
@@ -220,9 +221,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                            || strpos($themesPages['sidebar'], $newsArchivePlaceholder) !== false
                            || strpos($page_template, $newsArchivePlaceholder) !== false)
                    ) {
-                        $newsLib = new NewsLibrary();
-                        $newsArchive = $newsLib->getNewsArchiveList();
-                            
+                        $newsArchive = $objCache->getEsiContent(
+                            'News',
+                            'getNewsArchiveList'
+                        );
                         \Env::get('cx')->getPage()->setContent(str_replace($newsArchivePlaceholder, $newsArchive, \Env::get('cx')->getPage()->getContent()));
                         $themesPages['index']   = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['sidebar']);

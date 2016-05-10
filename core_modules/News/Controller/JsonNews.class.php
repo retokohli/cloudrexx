@@ -67,7 +67,12 @@ class JsonNews implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('getAllNews');
+        return array(
+            'getAllNews',
+            'getNewsCategories',
+            'getNewsArchiveList',
+            'getTeaserFrame',
+        );
     }
 
     /**
@@ -82,7 +87,7 @@ class JsonNews implements JsonAdapter {
      * @return Object
      */
     public function getDefaultPermissions() {
-        return null;
+        return new \Cx\Core_Modules\Access\Model\Entity\Permission(null, null, false);
     }
 
     /**
@@ -144,6 +149,54 @@ class JsonNews implements JsonAdapter {
             }
         }
         return $result;
+    }
+
+    /**
+     * Generates the formated ul/li of categories
+     * Used in the template's
+     *
+     * @param array $params Get/Post parameters
+     *
+     * @return array Contains the formated ul/li of categories
+     */
+    public function getNewsCategories($params)
+    {
+        $newsLib = new NewsLibrary();
+
+        return array('content' => $newsLib->getNewsCategories());
+    }
+
+    /**
+     * Generates the formated ul/li of Archive list
+     *
+     * @param type $params
+     *
+     * @return array Contains the formated ul/li of Archive list
+     */
+    public function getNewsArchiveList($params)
+    {
+        $newsLib = new NewsLibrary();
+
+        return array('content' => $newsLib->getNewsArchiveList());
+    }
+
+    /**
+     * Get the Teaser text from by teaser id and template id
+     *
+     * @param array $params Get/Post parameters
+     *
+     * @return array Contains the teaser content
+     */
+    public function getTeaserFrame($params)
+    {
+        if (empty($params['get'])) {
+            return array('content' => '');
+        }
+        $id         = !empty($params['get']['id']) ? $params['get']['id'] : 0;
+        $templateId = !empty($params['get']['templateId']) ? $params['get']['templateId'] : 0;
+
+        $newsTeaser = new Teasers();
+        return array('content' => $newsTeaser->_getTeaserFrame($id, $templateId));
     }
 }
 

@@ -263,7 +263,7 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
 
     function setTeaserFrames($arrTeaserFrames, &$code)
     {
-        global $objDatabase;
+        global $objCache;
 
         $arrTeaserFramesNames = array_flip($this->arrTeaserFrameNames);
 
@@ -274,7 +274,15 @@ class Teasers extends \Cx\Core_Modules\News\Controller\NewsLibrary
                 $frameId = array_keys($arrMatches);
                 $id = $frameId[0];
                 $templateId = $this->arrTeaserFrames[$id]['frame_template_id'];
-                $code = str_replace("{TEASERS_".$teaserFrameName."}", $this->_getTeaserFrame($id, $templateId), $code);
+                $content = $objCache->getEsiContent(
+                    'News',
+                    'getTeaserFrame',
+                    array(
+                        'id'         => $id,
+                        'templateId' => $templateId,
+                    )
+                );
+                $code = str_replace("{TEASERS_".$teaserFrameName."}", $content, $code);
 
             }
         }
