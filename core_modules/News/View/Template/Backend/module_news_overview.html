@@ -143,12 +143,15 @@ $J(document).ready(function() {
       </tr>
     <!-- END newsrow -->
   </table>
+  <div class="adminlist" style="clear: left;">
   <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
   <a href="#" onclick="changeCheckboxes('formNews','selectedNewsId[]',true); return false;">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
   <a href="#" onclick="changeCheckboxes('formNews','selectedNewsId[]',false); return false;">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="../core/Core/View/Media/icons/strike.gif" width="34" height="22" alt="design" />
   <input type="submit" name="delete" value="{TXT_DELETE_MARKED}" onclick="deletePages('formNews'); return false;" />&nbsp;&nbsp;
   <input type="submit" name="activate" value="{TXT_ACTIVATE}" />&nbsp;&nbsp;
   <input type="submit" name="deactivate" value="{TXT_DEACTIVATE}" />
+  </div>
 </form>
 <br />
 <br />
@@ -198,11 +201,14 @@ $J(document).ready(function() {
       </tr>
     <!-- END news_validator_row -->
   </table>
+  <div class="adminlist" style="clear: left;">
   <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
   <a href="javascript:{}" onclick="changeCheckboxes('formUnvalidatedNews','selectedUnvalidatedNewsId[]',true); return false;">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
   <a href="javascript:{}" onclick="changeCheckboxes('formUnvalidatedNews','selectedUnvalidatedNewsId[]',false); return false;">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="../core/Core/View/Media/icons/strike.gif" width="34" height="22" alt="design" />
   <input type="submit" name="delete" value="{TXT_DELETE_MARKED}" onclick="deletePages('formUnvalidatedNews'); return false;" />&nbsp;&nbsp;
   <input type="submit" name="validate" value="{TXT_CONFIRM_AND_ACTIVATE}" />
+  </div>
 </form>
 <br />
 <br />
