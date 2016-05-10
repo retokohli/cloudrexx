@@ -10,6 +10,7 @@ function podcast_delete_template(id, name)
 }
 //]]>
 </script>
+<div class="responsive-table">
 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
 	<thead>
 		<th colspan="2">{TXT_PODCAST_TEMPLATES}</th>
@@ -30,6 +31,7 @@ function podcast_delete_template(id, name)
 		<!-- END podcast_templates -->
 	</tbody>
 </table>
+</div>
 <br />
 {PODCAST_PAGING}
 <input type="button" onclick="window.location.href='index.php?cmd=Podcast&amp;{CSRF_PARAM}&amp;act=modifyTemplate'" value="{TXT_PODCAST_ADD_NEW_TEMPLATE}" />

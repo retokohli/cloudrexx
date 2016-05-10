@@ -10,6 +10,7 @@ function podcast_delete_category(id, title)
 }
 //]]>
 </script>
+<div class="responsive-table">
 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
 	<tbody>
 		<tr>
@@ -35,6 +36,7 @@ function podcast_delete_category(id, title)
 		<!-- END podcast_categories_list -->
 	</tbody>
 </table>
+</div>
 <br />
 {PODCAST_PAGING}
 <input type="button" onclick="window.location.href='index.php?cmd=Podcast&{CSRF_PARAM}&amp;act=modifyCategory'" value="{TXT_PODCAST_ADD_NEW_CATEGORY}" />
