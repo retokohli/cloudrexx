@@ -36,7 +36,7 @@ function selectMultiAction()
     </tr>
     <tr class="row1"> 
         <td>
-          <form action="index.php?cmd=Market&act=entries" method="post">
+          <form  class="first-col" action="index.php?cmd=Market&act=entries" method="post">
             <input type="text" name="term" value="{TXT_SEARCH}" class="search" style="width: 240px" onclick="if(this.value=='{TXT_SEARCH}'){this.value=''}" />
             <input type="submit" name="submit" value="{TXT_SEARCH}" />
           </form>
@@ -85,6 +85,7 @@ function selectMultiAction()
 <table cellpadding="2" cellspacing="0" border="0">
 	<tr>
 		<td>
+                    <div class="adminlist" style="clear: left;">
 			<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
 			<a href="#" onClick="changeCheckboxes('frmShowEntries','selectedEntryId[]',true); return false;">{TXT_SELECT_ALL}</a> / 
 			<a href="#" onClick="changeCheckboxes('frmShowEntries','selectedEntryId[]',false); return false;">{TXT_DESELECT_ALL}</a>
@@ -95,6 +96,7 @@ function selectMultiAction()
 				<option value="activate">{TXT_ACTIVATE}</option>
 				<option value="deactivate">{TXT_DEACTIVATE}</option>
 			</select>
+                    </div>
 		</td>
 	</tr>
 </table>
