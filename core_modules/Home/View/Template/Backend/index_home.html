@@ -130,8 +130,9 @@ $J(document).ready(function() {
     <div id="alert_news_wrapper">
         <div id="alert_news" class="alert alert-info">{TXT_DASHBOARD_NEWS_ALERT}</div>
     </div>
+    <div class="full-width">
     
-    <div class="left">
+            <div class="grid-left">
         <div id="box_1" class="box">
             <h2>{TXT_CREATING_AND_PUBLISHING}</h2>
             <ul>
@@ -143,7 +144,7 @@ $J(document).ready(function() {
             <div class="icon"></div>
         </div>
     </div>
-    <div class="middle">
+            <div class="grid-middle">
         <div id="box_2" class="box">
             <h2>{TXT_EVALUATE_AND_VIEW}</h2>
             <ul>
@@ -156,7 +157,7 @@ $J(document).ready(function() {
             <div class="icon"></div>
         </div>
     </div>
-    <div class="right">
+            <div class="grid-right">
         <div id="box_3" class="box">
             <h2>{TXT_MANAGE}</h2>
             <ul>
@@ -170,6 +171,8 @@ $J(document).ready(function() {
         </div>
     </div>
     
+    </div>
+
     <!-- BEGIN stats -->
     <div id="stats_wrapper">
         <h1 class="stats_title">
@@ -180,8 +183,12 @@ $J(document).ready(function() {
         </h1>
         
         <!-- Inline style definitions (width & height) are necessary for the jqplot plugin -->
-        <div id="chart" style="width: 671px; height: 250px;"></div>
         
+        <div class="full-chart">
+            <div class="chart-left">
+                <div id="chart"></div>
+            </div>
+            <div class="chart-right">
         <div id="visitors_box" class="stat_box">
             <h2>{TXT_VISITORS}</h2>
             <span>{STATS_TOTAL_VISITORS}</span>
@@ -198,6 +205,9 @@ $J(document).ready(function() {
             <img src="../core_modules/Home/View/Media/dashboard_administrator_icon.png" alt="User Icon" />&nbsp;{LAST_LOGIN_USERNAME}<span> / {LAST_LOGIN_TIME}</span>
             <!-- END last_login -->
         </div>
+    </div>
+        </div>
+
     </div>
     <!-- END stats -->
     
