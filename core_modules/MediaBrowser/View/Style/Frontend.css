@@ -1352,7 +1352,8 @@
 
     .media-browser-modal-window .modal-content, .uploader-modal .modal-content {
         -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, .5);
-        box-shadow: 0 5px 30px rgba(0, 0, 0, .5)
+        box-shadow: 0 5px 30px rgba(0, 0, 0, .5);
+        overflow: hidden;
     }
 
     .media-browser-modal-window .modal-sm, .uploader-modal .modal-sm {
@@ -1906,4 +1907,151 @@
     max-width: 340px;
     overflow: hidden;
     word-wrap: break-word;
+}
+@media (max-width: 460px) {
+    .media-browser-modal-window .btn,
+    .media-browser-modal-window button.btn,
+    .uploader-modal .btn,
+    body #content .uploader-modal .btn {
+        margin: 2px 0;
+        width: 100%;
+    }
+    .bootbox.media-browser-modal-window .btn,
+    .bootbox.media-browser-modal-window button.btn,
+    .bootbox.uploader-modal .btn,
+    body #content .uploader-modal .btn {
+        width: auto;
+    }
+    .media-browser-modal-window .modal-footer, .uploader-modal .modal-footer {
+        margin-top: 0;
+        padding: 15px 20px;
+    }
+    .uploader-modal .modal-body {
+        padding: 10px 8px;
+    }
+}
+@media (max-width: 992px) {
+    .modal-open .modal.media-browser-modal-window,
+    .modal-open .modal.uploader-modal {
+        overflow-x: hidden;
+        overflow-y: auto;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .media-browser-modal-window.modal .modal-dialog, .uploader-modal.modal .modal-dialog {
+        width: 100%;
+        margin: 0;
+        position: absolute;
+        height: 100%;
+    }
+    
+    .media-browser-modal-window .modal-content,
+    .uploader-modal .modal-content {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: 80%;
+        position: absolute;
+        top: 8%;
+        width: 94%;
+        left: 3%;
+    }
+    .mediaBrowserMain > div:first-child {
+        padding: 10px;
+        width: 100%;
+        float: left;
+    }
+    .media-browser-modal-window .mediaBrowserNavigation {
+        width: 100%;
+        float: left;
+        border: 0;
+        height: auto;
+    }
+    .media-browser-modal-window .mediaBrowserContent {
+        width: 100%;
+        float: left;
+    }
+    .media-browser-modal-window .tabMediaBrowserBreadcrumbs > ul {
+        padding-left: 0;
+        width: 100%;
+    }
+    .media-browser-modal-window .mediaBrowserNavigation ul {
+        float: left;
+        height: auto;
+        margin: 0;
+        width: 100%;
+    }
+    .media-browser-modal-window .mediaBrowserNavigation li {
+        width: 50%;
+        float: left;
+    }
+    .media-browser-modal-window .mediaBrowserNavigation > ul li a,
+    .uploader-modal .mediaBrowserNavigation > ul li a {
+        padding-right: 5px;
+    }
+    .media-browser-modal-window .mediaBrowserNavigation select {
+        float: left;
+        width: 100%;
+        margin: 15px 0;
+    }
+    .media-browser-modal-window .fileOptions {
+        float: left;
+        width: 100%;
+        padding: 15px 0;
+    }
+    .media-browser-modal-window .fileActions {
+        position: relative;
+        right: 0;
+        top: 0;
+        float: left;
+        margin-top: 12px;
+        width: 100%;
+    }
+    .media-browser-modal-window .fileActions ul {
+        padding-left: 0;
+        float: left;
+        width: 100%;
+        height: auto;
+        margin: 10px 0 0;
+    }
+    .media-browser-modal-window .fileActions > ul li {
+        width: 50%;
+        float: left;
+    }
+    .media-browser-modal-window .contentWithOptions {
+        float: left;
+        width: 100%;
+        padding-bottom: 20px;
+        height: auto;
+    }
+    .media-browser-modal-window input#fileSearch,
+    .media-browser-modal-window #FileSearchIsRegexLabel
+    {
+        float: left;
+    }
+    .media-browser-modal-window .tabMediaBrowserFooter {
+        padding: 15px 0;
+        float: left;
+        width: 100%;
+    }
+    .media-browser-modal-window .successfulUpload.finished {
+        position: absolute;
+        width: 100%;
+        right: 0;
+        left: 0;
+    }
+    .uploader-modal .loadingPlatform, .media-browser-modal-window .loadingPlatform {
+        position: relative;
+    }
+    .uploader-modal table.adminlist.filelist, .media-browser-modal-window table.adminlist.filelist {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .modal-open .bootbox.modal.media-browser-modal-window .modal-content {
+        width: 80%;
+        height: 225px;
+        left: 9%;
+        top: 14%;
+        overflow: auto;
+    }
 }
