@@ -170,7 +170,7 @@ function accessChangeProtection(triggerLink, nodeId, lang, backend)
 						<!-- END access_permission_website -->
 					</tbody>
 				</table>
-                            <div class="adminlist" style="clear: left">
+                            <div class="adminlist">
 				<img src="../core/Core/View/Media/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
 				<a href="javascript:void(0);" onclick="cx.jQuery('#site-tree').find('input[type=checkbox]').each(function(i,el){cx.jQuery(el).attr('checked',true);})" title="{TXT_ACCESS_CHECK_ALL}">{TXT_ACCESS_CHECK_ALL}</a> /
 				<a href="javascript:void(0);" onclick="cx.jQuery('#site-tree').find('input[type=checkbox]').each(function(i,el){cx.jQuery(el).attr('checked',false);})" title="{TXT_ACCESS_UNCHECK_ALL}">{TXT_ACCESS_UNCHECK_ALL}</a>
@@ -193,7 +193,7 @@ function accessChangeProtection(triggerLink, nodeId, lang, backend)
 						</tr>
 					<!-- END access_permission_area -->
 					</table>
-                                    <div class="adminlist" style="clear: left">
+                                    <div class="adminlist">
 					<img src="../core/Core/View/Media/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
 					<a href="javascript:void(0);" onclick="for (i in document.getElementById('modifyPermission{ACCESS_TAB_NR}').getElementsByTagName('input')) {if (document.getElementById('modifyPermission{ACCESS_TAB_NR}').getElementsByTagName('input')[i].name == 'access_area_id[]') {document.getElementById('modifyPermission{ACCESS_TAB_NR}').getElementsByTagName('input')[i].checked = true;}}" title="{TXT_ACCESS_CHECK_ALL}">{TXT_ACCESS_CHECK_ALL}</a> /
 					<a href="javascript:void(0);" onclick="for (i in document.getElementById('modifyPermission{ACCESS_TAB_NR}').getElementsByTagName('input')) {if (document.getElementById('modifyPermission{ACCESS_TAB_NR}').getElementsByTagName('input')[i].name == 'access_area_id[]') {document.getElementById('modifyPermission{ACCESS_TAB_NR}').getElementsByTagName('input')[i].checked = false;}}" title="{TXT_ACCESS_UNCHECK_ALL}">{TXT_ACCESS_UNCHECK_ALL}</a>
@@ -203,7 +203,7 @@ function accessChangeProtection(triggerLink, nodeId, lang, backend)
 			<!-- END access_permission_tabs -->
 		</div>
 	</div>
-	<div style="clear:left;">
+	<div>
 		<br />
 		<input type="button" value="{TXT_ACCESS_CANCEL}" name="access_cancel" onclick="window.location.href='index.php?cmd=Access&{CSRF_PARAM}&amp;act=group'" />
 		<input type="submit" name="access_save_group" value="{TXT_ACCESS_SAVE}" />

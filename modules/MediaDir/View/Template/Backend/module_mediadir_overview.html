@@ -114,6 +114,10 @@ var searchEntries = function (event) {
         padding: 0;
         width: auto;
     }
+    #levelForm table.adminlist,
+    #categoryForm table.adminlist {
+        min-width: 100%;
+    }
 </style>
 
 <div class="responsive-table">
@@ -147,7 +151,7 @@ var searchEntries = function (event) {
             <!-- BEGIN levelsTab -->
             <div id="levels" class="{MODULE_NAME}Tab" style="display:{TAB_LEVELS_DISPLAY}; margin-right: 15px;">
                 <form id="levelForm" method="post" action="index.php?cmd={MODULE_NAME}&amp;act=order_level" >
-                <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist" style="min-width: 100%;">
+                <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
                     <tr>
                         <th colspan="2" nowrap="nowrap">{TXT_LEVELS}&nbsp;&nbsp;&nbsp;[<a href="index.php?cmd={MODULE_NAME}&amp;exp_level=all" title="{TXT_EXPAND_LINK}">{TXT_EXPAND_LINK}</a>&nbsp;|&nbsp;<a href="index.php?cmd={MODULE_NAME}&amp;exp_level=0" title="{TXT_COLLAPS_LINK}">{TXT_COLLAPS_LINK}</a>]</th>
                     </tr>
@@ -183,7 +187,7 @@ var searchEntries = function (event) {
             <!-- END levelsTab -->
             <div id="categories" class="{MODULE_NAME}Tab" style="display:{TAB_CATEGORIES_DISPLAY}; margin-right: 15px;">
                 <form id="categoryForm" method="post" action="index.php?cmd={MODULE_NAME}&amp;act=order_category">
-                <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist" style="min-width: 100%;">
+                <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
                     <tr>
                         <th colspan="2">{TXT_CATEGORIES}&nbsp;&nbsp;&nbsp;[<a href="index.php?cmd={MODULE_NAME}&amp;exp_cat=all" title="{TXT_EXPAND_LINK}">{TXT_EXPAND_LINK}</a>&nbsp;|&nbsp;<a href="index.php?cmd={MODULE_NAME}&amp;exp_cat=0" title="{TXT_EXPAND_LINK}">{TXT_COLLAPS_LINK}</a>]</th>
                     </tr>
@@ -250,7 +254,7 @@ var searchEntries = function (event) {
             <table border="0" cellpadding="3" cellspacing="0" width="100%">
                 <tr>
                     <td valign="top">
-                        <div class="adminlist" style="clear: left;">
+                        <div class="adminlist">
                             <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="" />
                             <a href="javascript:{void(0)};" onclick="changeCheckboxes('confirmForm','entriesFormSelected[]',true); return false;">{TXT_SELECT_ALL}</a> / <a href="javascript:{void(0)};" onclick="changeCheckboxes('confirmForm','entriesFormSelected[]',false); return false;">{TXT_DESELECT_ALL}</a>
                             <img src="../core/Core/View/Media/icons/strike.gif" width="34" height="22" alt="strike" />
@@ -306,7 +310,7 @@ var searchEntries = function (event) {
             <table border="0" cellpadding="3" cellspacing="0" width="100%">
                 <tr>
                     <td valign="top">
-                        <div class="adminlist" style="clear: left;">
+                        <div class="adminlist">
                             <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="" />
                             <a href="javascript:{void(0)};" onclick="changeCheckboxes('latestForm','entriesFormSelected[]',true); return false;">{TXT_SELECT_ALL}</a> / <a href="javascript:{void(0)};" onclick="changeCheckboxes('latestForm','entriesFormSelected[]',false); return false;">{TXT_DESELECT_ALL}</a>
                             <img src="../core/Core/View/Media/icons/strike.gif" width="34" height="22" alt="strike" />
