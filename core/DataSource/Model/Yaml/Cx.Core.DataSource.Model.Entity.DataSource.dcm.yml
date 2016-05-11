@@ -8,6 +8,7 @@ Cx\Core\DataSource\Model\Entity\DataSource:
     type: string
   discriminatorMap:
     dataSource: DataSource
+    mediaSource: \Cx\Core\MediaSource\Model\Entity\MediaSource
     ymlRepository: YmlRepository
     jsonDataSource: JsonDataSource
     doctrineRepository: DoctrineRepository

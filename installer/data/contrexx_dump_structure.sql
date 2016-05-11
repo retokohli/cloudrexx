@@ -273,7 +273,6 @@ CREATE TABLE `contrexx_core_module_dataaccess_data_access` (
   `read_permission` int(11) DEFAULT NULL,
   `data_source_id` int(11) DEFAULT NULL,
   `name` varchar(45) NOT NULL,
-  `data_source` varchar(45) NOT NULL,
   `field_list` longtext NOT NULL,
   `access_condition` longtext NOT NULL,
   `type` enum('doctrine', 'legacy'),
