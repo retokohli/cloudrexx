@@ -118,9 +118,10 @@ class LinkSanitizer {
         // For this reason, we replace escaped slashes by slashes.
         $matches[\LinkSanitizer::FILE_PATH] = str_replace('\\/', '/', $matches[\LinkSanitizer::FILE_PATH]);
 
+        // fix empty urls like empty form-action tags
         if (empty($matches[\LinkSanitizer::FILE_PATH])) {
             return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
-            $_SERVER['REQUEST_URI'] .
+            $this->cx->getRequest()->getUrl() .
             $matches[\LinkSanitizer::CLOSE_QUOTE];
         }
         $testPath = explode('?', $matches[\LinkSanitizer::FILE_PATH], 2);
