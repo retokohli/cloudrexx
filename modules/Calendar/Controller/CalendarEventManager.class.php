@@ -825,7 +825,10 @@ class CalendarEventManager extends CalendarLibrary
              
             if(($objEvent->registration == 1) && (time() <= $objEvent->startDate->getTimestamp())) {  
                 
-                if($numRegistrations < $objEvent->numSubscriber || $objEvent->external == 1) {
+                if(   ($objEvent->registration && empty($objEvent->numSubscriber))
+                   || !\FWValidator::isEmpty($objEvent->getFreePlaces())
+                   || $objEvent->external == 1
+                ) {
                     $regLinkSrc = $hostUri. '/' .CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate->getTimestamp();
                     $regLink = '<a href="'.$regLinkSrc.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
                     $objTpl->setVariable(array(
@@ -923,7 +926,8 @@ class CalendarEventManager extends CalendarLibrary
             $eventurl       = false;
             if (   ($isSeries || !$isEventStarted)
                 && (   !$objEvent->registration
-                    || $objEvent->getRegistrationCount() < $objEvent->numSubscriber
+                    || ($objEvent->registration && empty($objEvent->numSubscriber))
+                    || !\FWValidator::isEmpty($objEvent->getFreePlaces())
                     || $objEvent->external == 1)
             ) {
                 $eventClass = ' event_open';
