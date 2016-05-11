@@ -445,7 +445,7 @@ class MediaDirectoryInputfield extends MediaDirectoryLibrary
 	                            $strNotSelectedOptionsName = "deselectedCategories";
 	                        }
                         	
-                        	$strInputfield .= '<div class="mediadirSelector container-fluid"><div class="row"><div class="col-md-offset-3">';
+                        	$strInputfield .= '<div class="mediadirSelector container-fluid"><div class="row"><div class="col-md-12">';
 	                        $strInputfield .= '<div class="col-md-4 col-sm-12 col-xs-12 mediadirSelectorLeft"><div class="row"><select id="'.$strNotSelectedOptionsName.'" name="'.$strNotSelectedOptionsName.'[]" size="12" multiple="multiple">';
 	                        $strInputfield .= $arrSelectorOptions['not_selected'];
 	                        $strInputfield .= '</select></div></div>';

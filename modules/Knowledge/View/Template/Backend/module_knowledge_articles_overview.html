@@ -227,6 +227,12 @@ var deleteArticle = function(id)
 
 /* ]]> */
 </script>
+<style>
+    #knowledge_articles table#knowledgeForm {
+        min-width: 230px;
+        border-collapse: collapse;
+    }
+</style>
 <div id="knowledge_articles">
     <table style="float: left; width: 100%;">
         <tr>
@@ -238,7 +244,7 @@ var deleteArticle = function(id)
                     <input type="text" style="width: 30px;" name="id" />
                     <input type="submit" value="Go" style="margin: 0;"/>
                 </form>
-                <table class="adminlist" style="min-width: 232px; border-collapse: collapse;">
+                <table id="knowledgeForm" class="adminlist">
                     <tr>
                         <th>{TXT_CATEGORIES}</th>
                     </tr>
