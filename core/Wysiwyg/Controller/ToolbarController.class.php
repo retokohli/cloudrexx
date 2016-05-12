@@ -266,15 +266,6 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         $toolbarIds = array_unique($toolbarIds);
         // Load the removedButtons of the given toolbars
         $removedButtons = $this->loadRemovedButtons($toolbarIds);
-        // Add removed buttons of the default full toolbar to the list
-        $pdo = $this->cx->getDb()->getPdoConnection();
-        $defaultFullRes = $pdo->query("
-                SELECT `removed_buttons`
-                  FROM `" . DBPREFIX . "core_wysiwyg_toolbar`
-                WHERE `is_default` = 1
-                LIMIT 1");
-        $defaultFull = $defaultFullRes->fetch(\PDO::FETCH_ASSOC);
-        $removedButtons['default'] = $defaultFull['removed_buttons'];
         // return the merged toolbars
         $mergedButtons = $this->mergeRemovedButtons($removedButtons);
         $fullToolbar = $this->getAsOldSyntax($mergedButtons, 'full');
@@ -377,23 +368,29 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         // Check if there is more than one list of buttons
         if (count($removedButtons) < 2) {
             // Merging only one list of buttons would be pointless
-            if (array_key_exists('default', $removedButtons)) {
-                $mergedButtons = $removedButtons['default'];
-            } else {
-                $mergedButtons = $removedButtons[0];
-            }
+            $mergedButtons = $removedButtons[0];
         } else {
-            $defaultButtons = array();
-            if (array_key_exists('default', $removedButtons)) {
-                $defaultButtons = $removedButtons['default'];
+            // Create arrays out of the removed button strings
+            foreach($removedButtons as $key => $removedButtonsList) {
+                $removedButtons[$key] = explode(',', $removedButtonsList);
             }
-            // Loop through all removed buttons
-            for ($i = 0; $i < count($removedButtons); ++$i) {
-                $buttons = explode(',', $removedButtons[$i]);
-                $mergedButtons = array_diff($defaultButtons, $buttons, $mergedButtons);
+            // Initiate tmpMerged with the array containing the least amount of
+            // removed buttons
+            $tmpMerged = min($removedButtons);
+            // Unset the index
+            unset($removedButtons[array_search($tmpMerged, $removedButtons)]);
+            // Renumber the array
+            $removedButtons = array_reverse(array_reverse($removedButtons));
+            // Loop through all remaining lists of removed buttons
+            for ($i = 0; $i <= count($removedButtons) - 1; $i += 2) {
+                $buttonsOne = $removedButtons[$i];
+                $buttonsTwo = $removedButtons[$i + 1];
+                // Get the buttons that are definitely removed
+                $mergedButtons = array_intersect($tmpMerged, $buttonsOne, $buttonsTwo);
             }
         }
         // Combine the merged buttons into a string
+        $mergedButtons = join(',', $mergedButtons);
         return $mergedButtons;
     }
 
