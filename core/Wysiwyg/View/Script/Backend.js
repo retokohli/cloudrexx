@@ -4,7 +4,9 @@
  * \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/FileName.css', 1));
  * or remove this file if you don't need it
  */
-function prepareConfiguration() {
+function prepareConfiguration(formname) {
+  console.log('triggered');
+  formname = !formname ? '' : formname;
   // Trigger the download of the configuration
   jQuery('[data-group="edit"]').click();
   // get the content of the textarea
@@ -14,7 +16,7 @@ function prepareConfiguration() {
   var pattern = /config\.removeButtons\s=\s'([a-z0-9,]*)*/i;
   if (pattern.test(configuration)) {
     var removedButtons = pattern.exec(configuration);
-    jQuery('form[name="toolbarConfigurator"]').append(jQuery('<input />').attr({
+    jQuery('form[name="' + formname + '"]').append(jQuery('<input />').attr({
       "type":   'hidden',
       "name":   'removedButtons',
       "value":  removedButtons[1]

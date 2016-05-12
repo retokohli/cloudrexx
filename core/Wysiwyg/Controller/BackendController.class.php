@@ -158,7 +158,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     }
                 }
                 $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate(
-                    $this->getDirectory(false, true)
+                    $this->getDirectory(false, true),
+                    true
                 );
                 // Get the template and replace the placeholder
                 $template->setVariable(

@@ -15,6 +15,9 @@ main .adjoined-top .grid-switch-magic {
 main .adjoined-top {
     background: none;
 }
+main .adjoined-bottom {
+    min-height: 100px;
+}
 main .adjoined-top .content h1 {
     color: black;
     margin-top: 0;

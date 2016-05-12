@@ -143,14 +143,24 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      * Get the template for the toolbar configurator
      *
      * Also registers the necessary css and js files
-     * @param   string  $componentRoot  The Path to the location of the template
-     * @return \Cx\Core\Html\Sigma $template The toolbar configurator template
+     * @param   string              $componentRoot          The Path to the template
+     * @param   bool                $isDefaultConfiguration Wraps the template
+     *                                                      in a form tag
+     *                                                      defaults to false
+     * @return \Cx\Core\Html\Sigma  $template               The toolbar
+     *                                                      configurator template
      */
-    public function getToolbarConfiguratorTemplate($componentRoot = '/') {
+    public function getToolbarConfiguratorTemplate($componentRoot = '/', $isDefaultConfiguration = false) {
 //        $componentRoot = $this->cx->getWebsiteDocumentRootPath() . '/core/Wysiwyg';
         // load the toolbarconfigurator template
         $template = new \Cx\Core\Html\Sigma($componentRoot . '/View/Template/Backend');
-        $template->loadTemplateFile('ToolbarConfigurator.html');
+        if ($isDefaultConfiguration) {
+            $template->loadTemplateFile('ToolbarConfigurator.html');
+            $template->addBlockfile('WYSIWYG_TOOLBAR_CONFIGURATOR', 'ToolbarConfigurator', 'ToolbarConfigurator.html');
+        } else {
+            $template->loadTemplateFile('ToolbarConfigurator.html');
+            $template->touchBlock('ToolbarConfigurator');
+        }
         // prepare the js and css files which are needed
         $requiredJsFiles = array(
             'lib/codemirror/codemirror',
@@ -171,15 +181,21 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         );
         \JS::registerJS($componentRoot . '/ckeditor.config.js.php');
         \JS::registerJS($componentRoot . '/View/Script/Backend.js');
+        \JS::registerCSS($componentRoot . '/View/Style/Backend.css');
         if ($componentRoot[0] = '/') {
             $componentRoot = substr($componentRoot, 1);
         }
         // register js and css files for the toolbarconfigurator
         foreach ($requiredCssFiles as $filename) {
-            \JS::registerCSS($componentRoot . '/View/Style/' . $filename . '.css');
+            \JS::registerCSS(
+                $componentRoot . '/View/Style/' . $filename . '.css'
+            );
         }
         foreach ($requiredJsFiles as $filename) {
-            \JS::registerJS($componentRoot . '/View/Script/toolbarconfigurator/' . $filename . '.js');
+            \JS::registerJS(
+                $componentRoot . '/View/Script/toolbarconfigurator/' . $filename
+                . '.js'
+            );
         }
         \JS::activate('ckeditor');
         \JS::activate('jquery');
@@ -189,9 +205,14 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         $_ARRAYLANG = $init->getComponentSpecificLanguageData('Wysiwyg', false, FRONTEND_LANG_ID);
         // replace language variables
         $template->setVariable(array(
-            'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'      => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'],
-            'TXT_WYSIWYG_TOOLBAR_SAVE'              => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SAVE'],
+            'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'  => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'],
+            'TXT_WYSIWYG_TOOLBAR_SAVE'          => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SAVE'],
         ));
+
+        // Check if the toolbar configurator needs to be wrapped in a form tag
+        if (!$isDefaultConfiguration) {
+            $template->hideBlock('wysiwyg_toolbar_store_button');
+        }
 
         return $template;
     }
@@ -298,6 +319,13 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         return $toolbarIds;
     }
 
+    /**
+     * Load the toolbar information of the given toolbar ids
+     * @param   array   $toolbarIds Array containing all ids of the toolbars
+     *                              that shall be loaded
+     * @return  array               Array containg the removed buttons of
+     *                              the given toolbar ids
+     */
     protected function loadToolbars(array $toolbarIds) {
         // Get the database connection
         $pdo = $this->cx->getDb()->getPdoConnection();
@@ -379,7 +407,8 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      * Get the buttons that shall be removed
      * @param bool|false    $buttonsOnly    Only buttons no config.removeButtons
      *                                      prefix
-     * @return string
+     * @return string       Either the list of removed buttons or the proper
+     *                      config string
      * @TODO implement merge for user groups
      */
     public function getRemovedButtons($buttonsOnly = false) {
