@@ -605,7 +605,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $newFunctions = json_decode($toolbarController->getAsOldSyntax($_POST['removedButtons'], 'full'));
             // Get the assigned toolbar id of the current group
             $toolbarIdRes = $pdo->query('
-                SELECT `toolbar` FROM `' . DBPREFIX . 'access_user_groups
+                SELECT `toolbar` FROM `' . DBPREFIX . 'access_user_groups`
                 WHERE `group_id` = ' . intval($objGroup->getId()) . '
                 LIMIT 1');
             // Assure that the statement did not fail
@@ -631,29 +631,30 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         // Check if the toolbar has been changed
                         if (!empty($diff)) {
                             // The toolbar has been modified
-                            $query = 'UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`
-                                  SET `available_functions` = \'' . json_encode($newFunctions) . '\',
-                                      `removed_buttons` = \'' . $_POST['removedButtons'] . '\'';
+                            $query = '
+                                UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`
+                                SET `available_functions` = \'' . json_encode($newFunctions) . '\',
+                                    `removed_buttons` = \'' . $_POST['removedButtons'] . '\'';
                             $pdo->exec($query);
                         }
                     }
-                }
-            } else {
-                //TODO: IMPLEMENT CHECK IF SAME TOOLBAR EXISTS ALREADY
-                // Group has currently no special toolbar assigned
-                // Store as a new toolbar
-                $query = 'INSERT INTO `' . DBPREFIX . 'core_wysiwyg_toolbar(
+                } else {
+                    //TODO: IMPLEMENT CHECK IF SAME TOOLBAR EXISTS ALREADY
+                    // Group has currently no special toolbar assigned
+                    // Store as a new toolbar
+                    $query = 'INSERT INTO `' . DBPREFIX . 'core_wysiwyg_toolbar`(
                             `available_functions`, `removed_buttons`)
                           VALUES (\'' . json_encode($newFunctions) . '\',
                             \'' . contrexx_input2db($_POST['removedButtons']) . '\')';
-                $pdo->exec($query);
-                // Get the id of the new toolbar
-                $toolbarId = $pdo->lastInsertId();
-                // Set the toolbar id of the current group to the new id
-                $query = 'UPDATE `' . DBPREFIX . 'access_user_groups`
+                    $pdo->exec($query);
+                    // Get the id of the new toolbar
+                    $toolbarId = $pdo->lastInsertId();
+                    // Set the toolbar id of the current group to the new id
+                    $query = 'UPDATE `' . DBPREFIX . 'access_user_groups`
                           SET `toolbar` = ' . intval($toolbarId) . '
                           WHERE `group_id` = ' . intval($objGroup->getId());
-                $pdo->exec($query);
+                    $pdo->exec($query);
+                }
             }
 
             if (isset($_POST['access_save_group'])) {
@@ -846,7 +847,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         // Parse toolbarconfigurator
         $cx = \Env::get('cx');
         $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($cx);
-        $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate();
+        $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate('/core/Wysiwyg/');
 
         $this->attachJavaScriptFunction('accessSetWebpage');
         $this->attachJavaScriptFunction('accessSelectAllGroups');
