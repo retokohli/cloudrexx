@@ -280,11 +280,17 @@ class SeriesOption extends Option
             $this->type ==
                 'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption'
         ) {
-            // combinedOptions already have the index 'elements' in array
-            return $this->elements;
+            $elements = array();
+            // we only need to store the elements in the preset. There is no
+            // need to store the options in the presets
+            foreach($this->elements as $id => $element) {
+                $elements[$id] = $element['elements'];
+            }
+        } else {
+            $elements = $this->elements;
         }
         return array(
-            'elements' => $this->elements
+            'elements' => $elements
         );
     }
 
