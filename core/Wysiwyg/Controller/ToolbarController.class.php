@@ -128,8 +128,12 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
                 if (in_array($toRemove, $functionGroup)) {
                     $keyToRemove = array_search($toRemove, $functionGroup);
                     unset($oldSyntax[$key][$keyToRemove]);
+                    $oldSyntax[$key] = array_reverse(array_reverse($oldSyntax[$key]));
                     if (count($oldSyntax[$key]) == 1) {
-                        unset($oldSyntax[$key]);
+                        $tmp = array_reverse(array_reverse($oldSyntax[$key]));
+                        if ($tmp[0] == '-') {
+                            unset($oldSyntax[$key]);
+                        }
                     }
                 }
             }
@@ -390,7 +394,9 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
             }
         }
         // Combine the merged buttons into a string
-        $mergedButtons = join(',', $mergedButtons);
+        if (is_array($mergedButtons[0])) {
+            $mergedButtons = join(',', $mergedButtons);
+        }
         return $mergedButtons;
     }
 
