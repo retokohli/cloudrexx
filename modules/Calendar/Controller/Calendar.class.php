@@ -874,7 +874,9 @@ UPLOADER;
                             . ": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
         if(time() <= $objEvent->startDate->getTimestamp()) {
-            if($numRegistrations < $objEvent->numSubscriber) {
+            if(   ($objEvent->registration && empty($objEvent->numSubscriber))
+                || !\FWValidator::isEmpty($objEvent->getFreePlaces())
+             ) {
                 $this->_objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_ID'                   =>  intval($_REQUEST['id']),
                     $this->moduleLangVar.'_FORM_ID'                    =>  intval($objEvent->registrationForm),
