@@ -601,8 +601,9 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $pdo = $cx->getDb()->getPdoConnection();
             // Instantiate a new Toolbarcontroller
             $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($cx);
+            $newButtons = $_POST['removedButtons'];
             // Get the new toolbar as an array
-            $newFunctions = json_decode($toolbarController->getAsOldSyntax($_POST['removedButtons'], 'full'));
+            $newFunctions = json_decode($toolbarController->getAsOldSyntax($newButtons, 'full'));
             // Get the assigned toolbar id of the current group
             $toolbarIdRes = $pdo->query('
                 SELECT `toolbar` FROM `' . DBPREFIX . 'access_user_groups`
@@ -617,24 +618,27 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 if (!empty($toolbarId)) {
                     // Load toolbar
                     $toolbarFunctionRes = $pdo->query('
-                        SELECT `available_functions` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
+                        SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
                         WHERE `id` = ' . intval($toolbarId) . '
                         LIMIT 1');
                     // Assure that the statement did not fail
                     if ($toolbarFunctionRes !== false) {
                         // Fetch the data
-                        $currentFunctions = $toolbarFunctionRes->fetch(\PDO::FETCH_ASSOC);
+                        $currentButtons = $toolbarFunctionRes->fetch(\PDO::FETCH_ASSOC);
                         // Get the current toolbar as an array
-                        $currentFunctions = json_decode($currentFunctions['available_functions']);
+                        $currentButtons = $currentButtons['removed_buttons'];
+                        // Prepare the two removed buttons list for commparison
+                        $currentButtons = explode(',', $currentButtons);
+                        $newButtonsArr = explode(',', $newButtons);
                         // Diff the new and the current toolbar
-                        $diff = array_diff($currentFunctions, $newFunctions);
+                        $diff = array_diff($currentButtons, $newButtonsArr);
                         // Check if the toolbar has been changed
                         if (!empty($diff)) {
                             // The toolbar has been modified
                             $query = '
                                 UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`
                                 SET `available_functions` = \'' . json_encode($newFunctions) . '\',
-                                    `removed_buttons` = \'' . $_POST['removedButtons'] . '\'';
+                                    `removed_buttons` = \'' . contrexx_input2db($newButtons) . '\'';
                             $pdo->exec($query);
                         }
                     }
