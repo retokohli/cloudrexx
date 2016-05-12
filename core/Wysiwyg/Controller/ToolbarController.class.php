@@ -143,14 +143,23 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      * Get the template for the toolbar configurator
      *
      * Also registers the necessary css and js files
-     * @param   string  $componentRoot  The Path to the location of the template
-     * @return \Cx\Core\Html\Sigma $template The toolbar configurator template
+     * @param   string              $componentRoot          The Path to the template
+     * @param   bool                $isDefaultConfiguration Wraps the template
+     *                                                      in a form tag
+     *                                                      defaults to false
+     * @return \Cx\Core\Html\Sigma  $template               The toolbar
+     *                                                      configurator template
      */
-    public function getToolbarConfiguratorTemplate($componentRoot = '/') {
-//        $componentRoot = $this->cx->getWebsiteDocumentRootPath() . '/core/Wysiwyg';
+    public function getToolbarConfiguratorTemplate($componentRoot = '/', $isDefaultConfiguration = false) {
         // load the toolbarconfigurator template
         $template = new \Cx\Core\Html\Sigma($componentRoot . '/View/Template/Backend');
-        $template->loadTemplateFile('ToolbarConfigurator.html');
+        if ($isDefaultConfiguration) {
+            $template->loadTemplateFile('DefaultToolbarConfiguration.html');
+            $template->addBlockfile('WYSIWYG_TOOLBAR_CONFIGURATOR', 'ToolbarConfigurator', 'ToolbarConfigurator.html');
+        } else {
+            $template->loadTemplateFile('ToolbarConfigurator.html');
+            $template->touchBlock('ToolbarConfigurator');
+        }
         // prepare the js and css files which are needed
         $requiredJsFiles = array(
             'lib/codemirror/codemirror',
@@ -171,15 +180,21 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         );
         \JS::registerJS($componentRoot . '/ckeditor.config.js.php');
         \JS::registerJS($componentRoot . '/View/Script/Backend.js');
+        \JS::registerCSS($componentRoot . '/View/Style/Backend.css');
         if ($componentRoot[0] = '/') {
             $componentRoot = substr($componentRoot, 1);
         }
         // register js and css files for the toolbarconfigurator
         foreach ($requiredCssFiles as $filename) {
-            \JS::registerCSS($componentRoot . '/View/Style/' . $filename . '.css');
+            \JS::registerCSS(
+                $componentRoot . '/View/Style/' . $filename . '.css'
+            );
         }
         foreach ($requiredJsFiles as $filename) {
-            \JS::registerJS($componentRoot . '/View/Script/toolbarconfigurator/' . $filename . '.js');
+            \JS::registerJS(
+                $componentRoot . '/View/Script/toolbarconfigurator/' . $filename
+                . '.js'
+            );
         }
         \JS::activate('ckeditor');
         \JS::activate('jquery');
@@ -189,9 +204,14 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         $_ARRAYLANG = $init->getComponentSpecificLanguageData('Wysiwyg', false, FRONTEND_LANG_ID);
         // replace language variables
         $template->setVariable(array(
-            'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'      => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'],
-            'TXT_WYSIWYG_TOOLBAR_SAVE'              => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SAVE'],
+            'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'  => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'],
+            'TXT_WYSIWYG_TOOLBAR_SAVE'          => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SAVE'],
         ));
+
+        // Check if the toolbar configurator needs to be wrapped in a form tag
+        if (!$isDefaultConfiguration) {
+            $template->hideBlock('wysiwyg_toolbar_store_button');
+        }
 
         return $template;
     }
@@ -240,25 +260,25 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      * @return string $mergedToolbar    The merged toolbar of all assigned user
      */
     protected function getFullToolbar() {
-        \DBG::activate(DBG_LOG_FILE|DBG_PHP);
         // Get all the toolbar ids of every user group assigned to the user
         $toolbarIds = $this->getToolbarIdsOfUserGroup();
         // Make sure that we do not have any redundant toolbar ids
         $toolbarIds = array_unique($toolbarIds);
-        // Load the toolbars
-        $toolbars = $this->loadToolbars($toolbarIds);
-        // Add default full toolbar to list of toolbars
+        // Load the removedButtons of the given toolbars
+        $removedButtons = $this->loadRemovedButtons($toolbarIds);
+        // Add removed buttons of the default full toolbar to the list
         $pdo = $this->cx->getDb()->getPdoConnection();
         $defaultFullRes = $pdo->query("
-                SELECT `available_functions`
+                SELECT `removed_buttons`
                   FROM `" . DBPREFIX . "core_wysiwyg_toolbar`
                 WHERE `is_default` = 1
                 LIMIT 1");
         $defaultFull = $defaultFullRes->fetch(\PDO::FETCH_ASSOC);
-        $toolbars[] = $defaultFull['available_functions'];
+        $removedButtons['default'] = $defaultFull['removed_buttons'];
         // return the merged toolbars
-        \DBG::dump(count($toolbars));
-        return json_encode($this->mergeToolbars($toolbars));
+        $mergedButtons = $this->mergeRemovedButtons($removedButtons);
+        $fullToolbar = $this->getAsOldSyntax($mergedButtons, 'full');
+        return $fullToolbar;
     }
 
     /**
@@ -271,6 +291,8 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         $pdo = $this->cx->getDb()->getPdoConnection();
         // Load the current user
         $user = \FWUser::getFWUserObject();
+        // Login user
+        $user->objUser->login(true);
         // Get all assigned user group ids
         $groupIds = $user->objUser->getAssociatedGroupIds();
         // Initiate an empty array of toolbarIds
@@ -298,88 +320,82 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         return $toolbarIds;
     }
 
-    protected function loadToolbars(array $toolbarIds) {
+    /**
+     * Load the removed button of the given toolbar ids
+     * @param   array   $toolbarIds Array containing all ids of the toolbars
+     *                              that shall be loaded
+     * @return  array               Array containing the removed buttons of
+     *                              the given toolbar ids
+     */
+    protected function loadRemovedButtons(array $toolbarIds) {
         // Get the database connection
         $pdo = $this->cx->getDb()->getPdoConnection();
-        // Initiate an empty toolbar array
-        $toolbars = array();
+        // Initiate an empty removedButtons array
+        $removedButtons = array();
         // Loop through each toolbar id
         foreach ($toolbarIds as $toolbarId) {
-            // Load the toolbar entity through the toolbar repository
-            $toolbarResult = $pdo->query("
-                SELECT `available_functions`
-                  FROM `" . DBPREFIX . "`core_wysiyg_toolbar`
+            // Load the removed buttons from the database
+            $removedButtonRes = $pdo->query("
+                SELECT `removed_buttons`
+                  FROM `" . DBPREFIX . "core_wysiwyg_toolbar`
                 WHERE `id` = " . intval($toolbarId). "
                 LIMIT 1 ");
-            if ($toolbarResult !== false) {
-                $toolbarFunctions = $toolbarResult->fetch(\PDO::FETCH_ASSOC);
-                if ($toolbarFunctions !== false) {
+            if ($removedButtonRes !== false) {
+                // Fetch the removed buttons
+                $removedButton = $removedButtonRes->fetch(\PDO::FETCH_ASSOC);
+                // Verify that the toolbar has any removed buttons
+                if (!empty($removedButton)) {
                     // Store the available functions for the current toolbar
-                    $toolbars[] = $toolbarFunctions['available_functions'];
+                    $removedButtons[] = $removedButton['removed_buttons'];
                 }
             }
         }
-        return $toolbars;
+        return $removedButtons;
     }
 
     /**
-     * Merge the given toolbars in $toolbars into one
-     * @param array     $toolbars   The toolbars which shall be merged into one
-     * @return array                The merged toolbar. Be wary that this array
-     *                              might be empty
+     * Merge the given removed buttons in $removedButtons together
+     * @param   array   $removedButtons The removed buttons which shall be
+     *                                  merged together
+     * @return  string                  The merged buttons. Be wary that this
+     *                                  string might be empty
      */
-    protected function mergeToolbars(array $toolbars) {
-        // Check if the given toolbars are more than 1
-        if (count($toolbars) <= 1) {
-            \DBG::log('only one toolbar given');
-            // No more than one toolbar given, not necessary to merge anything
-            if (!empty($toolbars)) {
-                $mergedToolbar = json_decode($toolbars[0]);
+    protected function mergeRemovedButtons(array $removedButtons) {
+        $mergedButtons = array();
+        // Verify that there is anything to merge at all
+        if (empty($removedButtons)) {
+            return '';
+        }
+        // Check if there is more than one list of buttons
+        if (count($removedButtons) < 2) {
+            // Merging only one list of buttons would be pointless
+            if (array_key_exists('default', $removedButtons)) {
+                $mergedButtons = $removedButtons['default'];
             } else {
-                $mergedToolbar = $toolbars;
+                $mergedButtons = $removedButtons[0];
             }
         } else {
-            // Initiate a mergedToolbar with the last added toolbar (the default one)
-            $lastKey = count($toolbars) - 1;
-            $mergedToolbar = $toolbars[$lastKey];
-            unset($toolbars[$lastKey]);
-            // Loop through all available function constellation
-            for ($i = 0; $i < count($toolbars) - 1; $i += 2) {
-                // Check if the current index is still in range of the array keys
-                if (
-                    array_key_exists($i, $toolbars) &&
-                    array_key_exists($i + 1, $toolbars)
-                ) {
-                    // Merge the already merged toolbar, the current one and the
-                    // next one together
-                    $mergedToolbar = array_merge(
-                        $mergedToolbar,
-                        json_decode($toolbars[$i]),
-                        json_decode($toolbars[$i + 1])
-                    );
-                    // Check if we have reached the last index
-                } else if (
-                    array_key_exists($i, $toolbars) &&
-                    !array_key_exists($i + 1, $toolbars)
-                ) {
-                    // merge the last toolbar and the product of the previous merges
-                    $mergedToolbar = array_merge(
-                        $mergedToolbar,
-                        json_decode($toolbars[$i])
-                    );
-                    // leave the loop just to be sure as we should leave anyway
-                    break;
-                }
+            $defaultButtons = array();
+            if (array_key_exists('default', $removedButtons)) {
+                $defaultButtons = $removedButtons['default'];
+            }
+            // Loop through all removed buttons
+            for ($i = 0; $i < count($removedButtons); ++$i) {
+                $buttons = explode(',', $removedButtons[$i]);
+                $mergedButtons = array_diff($defaultButtons, $buttons, $mergedButtons);
             }
         }
-        return $mergedToolbar;
+        // Combine the merged buttons into a string
+        var_dump($mergedButtons);
+        return $mergedButtons;
     }
 
     /**
      * Get the buttons that shall be removed
      * @param bool|false    $buttonsOnly    Only buttons no config.removeButtons
      *                                      prefix
-     * @return string
+     * @return string       Either the list of removed buttons or the proper
+     *                      config string
      * @TODO implement merge for user groups
      */
     public function getRemovedButtons($buttonsOnly = false) {
