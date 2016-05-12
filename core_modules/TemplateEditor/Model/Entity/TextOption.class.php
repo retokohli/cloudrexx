@@ -68,12 +68,12 @@ class TextOption extends Option
     protected $html = false;
 
     /**
-     * @param String $name Name of the option
+     * @param String $name         Name of the option
      * @param array  $translations Array with translations for option.
-     * @param array  $data
-     * @param String $type          the type of the option
+     * @param array  $data         the specific data for this option
+     * @param String $type         the type of the option
      * @param Group  $group        the group of the option
-     * @param bool   $series        handle the elements as series if true
+     * @param bool   $series       handle the elements as series if true
      */
     public function __construct(
         $name,

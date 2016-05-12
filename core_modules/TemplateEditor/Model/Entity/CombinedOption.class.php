@@ -39,25 +39,25 @@ namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 class CombinedOption extends Option
 {
     /**
-     * Array with option types for the combinedOption
+     * Array with the types of the single options
      *
-     * @var Option[]
+     * @var array
      */
     protected $options;
 
     /**
-     * Array with values for the options
+     * Array with values for each single options
      *
      * @var array
      */
     protected $elements;
 
     /**
-     * @param String $name Name of the option
-     * @param array  $translations Array with translations for option.
-     * @param array  $data
+     * @param String $name          Name of the option
+     * @param array  $translations  Array with translations for option.
+     * @param array  $data          the specific data for this option
      * @param String $type          the type of the option
-     * @param Group  $group        the group of the option
+     * @param Group  $group         the group of the option
      * @param bool   $series        handle the elements as series if true
      */
     public function __construct(
@@ -69,44 +69,36 @@ class CombinedOption extends Option
         $series = false
     ) {
         parent::__construct($name, $translations, $data, $type, $group, $series);
-        foreach ($data['elements'] as $key => $elm) {
-            if (!empty($elm)) {
-                $this->elements[$key] = $elm;
-            }
-        }
-        foreach($data['options'] as $options) {
-            $this->options[] = $options['type'];
-        }
-        foreach($data['elements'] as $key => $element) {
-            $this->elements[$key] = $element;
-        }
+        $this->options = $data['options'];
+        $this->elements = $data['elements'];
     }
 
     /**
      * Render the option field in the backend.
      *
-     * @return Sigma    the template
+     * @return Sigma    the backend template
      */
     public function renderOptionField()
     {
-        global $_ARRAYLANG;
         $elements = array();
-        $template ='';
+        // is used to storage the parsed template of the single options
+        $template = '';
+        // parse each single option, using its own renderOptionField method
         foreach($this->elements as $id => $element) {
-            $optionName = $this->options[$id - 1];
-            $option = new $optionName (
+            // we need to instantiate each single option, because otherwise we
+            // can not use the renderOptionField method
+            $singleOptionType = $this->options[$id]['type'];
+            $option = new $singleOptionType (
                 $this->name . '_combinedId' .$id,
                 '',
                 $element,
-                $this->options[$id],
+                $this->options[$id]['type'],
                 $this->group,
                 false
             );
             $template .= $option->renderOptionField()->get();
-
         }
-        $elements['elements'][$this->name . $id]['COMBINED_ELEMENT'] =
-            $template;
+        $elements['elements'][$this->name]['COMBINED_ELEMENT'] = $template;
         return parent::renderOptionField(
             array(),
             array(),
@@ -115,20 +107,29 @@ class CombinedOption extends Option
     }
 
     /**
-     * Render the option in the frontend.
+     * Render the option in the frontend
      *
-     * @param Sigma $template
+     * Pattern for placeholder name is:
+     * TEMPLATE_EDITOR_{NAME_OF_COMBINED_OPTION}_{ID_OF_OF_SINGLE_OPTION}
+     * ID_OF_OF_SINGLE_OPTION = the numeric array key in field $this->options
+     *
+     * @param Sigma $template the frontend template
      */
     public function renderTheme($template)
     {
+        foreach($this->elements as $key => $element) {
+            $template->setVariable(
+                'TEMPLATE_EDITOR_' . strtoupper($this->name) . '_' . $key,
+                current($element)
+            );
+        }
     }
 
     /**
      * Handle a change of the option.
      *
-     * @param array $data Data from frontend javascript
-     *
-     * @return array Changed data for the frontend javascript
+     * @param  array  $data  data from frontend javascript
+     * @return array         new specific values
      */
     public function handleChange($data)
     {
@@ -144,13 +145,12 @@ class CombinedOption extends Option
     /**
      * Gets the current value of the option.
      *
-     * @return array
+     * @return array    array with the elements
      */
     public function getValue()
     {
         return array(
-            'options' => $this->options,
-            'elements' => $this->elements,
+            'elements' => $this->elements
         );
     }
 }
