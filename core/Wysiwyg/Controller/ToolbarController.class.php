@@ -386,7 +386,6 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
             }
         }
         // Combine the merged buttons into a string
-        var_dump($mergedButtons);
         return $mergedButtons;
     }
 
@@ -402,9 +401,28 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         if ($this->cx->getMode() == 'frontend') {
             return '';
         }
-        if ($buttonsOnly) {
-            return '\'' . $this->defaultRemovedButtons . '\'';
+        // Initiate default buttons with the buttons that are not allowed
+        $buttons = $this->defaultRemovedButtons;
+        // Prepare the query to load the default configuration
+        $query = 'SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
+                  WHERE `is_default` = 1
+                  LIMIT 1';
+        $defaultButtonsRes = $this->cx->getDb()->getPdoConnection()->query($query);
+        // Verify that the query could be executed
+        if ($defaultButtonsRes !== false) {
+            // Fetch the data
+            $defaultButtons = $defaultButtonsRes->fetch(\PDO::FETCH_ASSOC);
+            // Check that a default toolbar has been configured
+            if (!empty($defaultButtons)) {
+                $buttons= $defaultButtons['removed_buttons'];
+            }
         }
-        return 'config.removeButtons = \'' . $this->defaultRemovedButtons . '\'';
+        // Used to hide functions that are not allowed to be enable
+        if ($buttonsOnly) {
+            $buttons =  '\'' . $this->defaultRemovedButtons . '\'';
+        } else {
+            $buttons = 'config.removeButtons = \'' . $buttons . '\'';
+        }
+        return $buttons;
     }
 }

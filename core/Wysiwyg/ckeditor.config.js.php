@@ -167,6 +167,9 @@ CKEDITOR.on('instanceReady',function(){
         }).bind(loadingTemplates)();
     }
     var removedButtons = <?php echo $wysiwyg->getRemovedButtons(true); ?>;
+    if (window.location.pathname == '/cadmin/Access/group') {
+        removedButtons = <?php echo $wysiwyg->getRemovedButtons(false, true); ?>;
+    }
     removedButtons = removedButtons.split(',');
     if (removedButtons.length) {
         for(button of removedButtons) {
