@@ -282,19 +282,27 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
     }
 
     /**
-     * Get all toolbar ids of the assigned user groups of the current user
-     * @return array    All the available toolbar ids. Be wary though, as this
-     *                  array might be empty.
+     * Get all toolbar ids of the assigned user groups or by the given user groups
+     *
+     * If the parameter $userGroup is empty the assigned user groups of the
+     * current user are used
+     * @param   array $userGroups   Array containing the user group ids
+     * @return  array $toolbarIds   All the available toolbar ids.
+     *                              Be wary though, as this array might be empty
      */
-    protected function getToolbarIdsOfUserGroup() {
+    protected function getToolbarIdsOfUserGroup($userGroups = array()) {
         // Get the database connection
         $pdo = $this->cx->getDb()->getPdoConnection();
-        // Load the current user
-        $user = \FWUser::getFWUserObject();
-        // Login user
-        $user->objUser->login(true);
-        // Get all assigned user group ids
-        $groupIds = $user->objUser->getAssociatedGroupIds();
+        // populate $groupIds with the given user groups
+        $groupIds = $userGroups;
+        if (empty($groupIds)) {
+            // Load the current user
+            $user = \FWUser::getFWUserObject();
+            // Login user
+            $user->objUser->login(true);
+            // Get all assigned user group ids
+            $groupIds = $user->objUser->getAssociatedGroupIds();
+        }
         // Initiate an empty array of toolbarIds
         $toolbarIds = array();
         // Loop through all user group ids
