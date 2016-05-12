@@ -631,14 +631,15 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         $currentButtons = explode(',', $currentButtons);
                         $newButtonsArr = explode(',', $newButtons);
                         // Diff the new and the current toolbar
-                        $diff = array_diff($currentButtons, $newButtonsArr);
+                        $diff = array_diff($newButtonsArr, $currentButtons);
                         // Check if the toolbar has been changed
                         if (!empty($diff)) {
                             // The toolbar has been modified
                             $query = '
                                 UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`
                                 SET `available_functions` = \'' . json_encode($newFunctions) . '\',
-                                    `removed_buttons` = \'' . contrexx_input2db($newButtons) . '\'';
+                                    `removed_buttons` = \'' . contrexx_input2db($newButtons) . '\'
+                                WHERE `id` = ' . intval($toolbarId);
                             $pdo->exec($query);
                         }
                     }
