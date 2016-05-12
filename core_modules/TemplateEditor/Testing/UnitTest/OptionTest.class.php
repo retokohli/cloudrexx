@@ -156,8 +156,12 @@ class OptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
     public function testCombinedOption() {
         $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption';
         $options = array(
-            'Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption',
-            'Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption',
+            array(
+                'type' => 'Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption'
+            ),
+            array(
+                'type' => 'Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption'
+            ),
         );
         $elements = array(
             array('textvalue' => 'Funny Cat'),
@@ -199,7 +203,7 @@ class OptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
         foreach ($searchValues as $searchValue) {
             // strpos returns false if not found, otherwise an integer (may
             // also be zero), so we have to check !== false here
-            $this->assertTrue(strpos($renderedTemplate, $searchValue) !== false);
+            $this->assertTrue(strpos($renderedTemplate, current($searchValue)) !== false);
         }
     }
 }

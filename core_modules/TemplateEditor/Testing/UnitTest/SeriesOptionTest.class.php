@@ -84,8 +84,12 @@ class SeriesOptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
         $type = 'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption';
         $elements = array(
             'options' => array(
-                'Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption',
-                'Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption',
+                array(
+                    'type' => 'Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption'
+                ),
+                array(
+                    'type' => 'Cx\Core_Modules\TemplateEditor\Model\Entity\ImageOption'
+                ),
             ),
             'elements' => array(
                 array(
@@ -108,23 +112,24 @@ class SeriesOptionTest extends \Cx\Core\Test\Model\Entity\ContrexxTestCase
      * @param array     $elements   the elements to render
      */
     private function renderSeriesOption($type, $elements){
+        // CombinedOption has one level more than the other series options. If
+        // we add this level also to the others, we can use the same exist check
+        // for CombinedOptions and single options
+        if (
+            $type != 'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption'
+        ) {
+            $elements['elements'] = $elements;
+        }
         $option = new \Cx\Core_Modules\TemplateEditor\Model\Entity\SeriesOption(
             'test',
             array(1 => 'Unit-Test'),
-            array('elements' => $elements),
+            $elements,
             $type,
             true
         );
         $backendTemplate = $option->renderOptionField();
         $renderedTemplate = $backendTemplate->get();
-        // CombinedOption has one level more than the other series options
-        if (
-            $type == 'Cx\Core_Modules\TemplateEditor\Model\Entity\CombinedOption'
-        ) {
-            foreach ($elements['elements'] as $elements) {
-                $this->checkElementsExists($elements, $renderedTemplate);
-            }
-        } else {
+        foreach ($elements['elements'] as $elements) {
             $this->checkElementsExists($elements, $renderedTemplate);
         }
     }
