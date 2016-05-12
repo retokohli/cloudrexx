@@ -201,7 +201,7 @@ p.groupName.open, .option.series.open {
 
 #content .option .element{
     position: relative;
-    overflow: auto;
+    overflow: hidden;
 }
 
 #content .option.saved input,
@@ -288,6 +288,13 @@ p.groupName.open, .option.series.open {
     border: none;
 }
 
+#content .option.combined .element img.remove-element {
+    top: -3px;
+}
+
+#content .element.combined > .remove-element {
+    display: none;
+}
 #content .option.saved:after,
 #content .option .image.saved:after,
 #content .option .element.saved:after  {
@@ -299,7 +306,12 @@ p.groupName.open, .option.series.open {
     float: right;
 }
 
-#content  .colorPreview {
+#content .option .combined.element input[type=text].color-option {
+    width: calc(100% - 55px);
+    float: right;
+}
+
+#content .colorPreview {
     float: left;
     height: 20px;
     width: 22px;
@@ -360,12 +372,13 @@ p.groupName.open, .option.series.open {
 }
 
 .option.series {
+    padding: 0;
+    width: 100%;
+    position: static;
     background-position: 95% 9px;
     background-image: url('/cadmin/../core/Core/View/Media/icons/open.gif');
     background-repeat: no-repeat;
     background-size: 12px;
-    padding: 0;
-    width: 100%;
 }
 
 .option.series.open > label {
@@ -400,10 +413,14 @@ p.groupName.open, .option.series.open {
     position: relative;
 }
 
-.series-list .elements img {
+.series-list .elements img, .elements .combined > img {
     margin-top: 10px;
 }
 
+.series .combined.element {
+    padding-bottom: 10px;
+    border-bottom: 3px dotted grey;
+}
 
 .clearfix:after {
     content: " "; /* Older browser do not support empty content */
