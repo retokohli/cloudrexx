@@ -132,8 +132,12 @@ CKEDITOR.editorConfig = function( config )
     config.contentsCss = cx.variables.get('css', 'wysiwyg');
     config.bodyClass = cx.variables.get('bodyClass', 'wysiwyg');
     config.bodyId = cx.variables.get('bodyId', 'wysiwyg');
-
+    if (
+        window.location.pathname == '/cadmin/Config/Wysiwyg' ||
+        window.location.pathname == '/cadmin/Access/group'
+    ) {
     <?php echo $wysiwyg->getRemovedButtons(); ?>;
+    }
 };
 
 //loading the templates
@@ -167,6 +171,9 @@ CKEDITOR.on('instanceReady',function(){
         }).bind(loadingTemplates)();
     }
     var removedButtons = <?php echo $wysiwyg->getRemovedButtons(true); ?>;
+    if (window.location.pathname == '/cadmin/Access/group') {
+        removedButtons = <?php echo $wysiwyg->getRemovedButtons(false, true); ?>;
+    }
     removedButtons = removedButtons.split(',');
     if (removedButtons.length) {
         for(button of removedButtons) {

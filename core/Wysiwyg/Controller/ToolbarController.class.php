@@ -128,8 +128,12 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
                 if (in_array($toRemove, $functionGroup)) {
                     $keyToRemove = array_search($toRemove, $functionGroup);
                     unset($oldSyntax[$key][$keyToRemove]);
+                    $oldSyntax[$key] = array_reverse(array_reverse($oldSyntax[$key]));
                     if (count($oldSyntax[$key]) == 1) {
-                        unset($oldSyntax[$key]);
+                        $tmp = array_reverse(array_reverse($oldSyntax[$key]));
+                        if ($tmp[0] == '-') {
+                            unset($oldSyntax[$key]);
+                        }
                     }
                 }
             }
@@ -266,15 +270,6 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         $toolbarIds = array_unique($toolbarIds);
         // Load the removedButtons of the given toolbars
         $removedButtons = $this->loadRemovedButtons($toolbarIds);
-        // Add removed buttons of the default full toolbar to the list
-        $pdo = $this->cx->getDb()->getPdoConnection();
-        $defaultFullRes = $pdo->query("
-                SELECT `removed_buttons`
-                  FROM `" . DBPREFIX . "core_wysiwyg_toolbar`
-                WHERE `is_default` = 1
-                LIMIT 1");
-        $defaultFull = $defaultFullRes->fetch(\PDO::FETCH_ASSOC);
-        $removedButtons['default'] = $defaultFull['removed_buttons'];
         // return the merged toolbars
         $mergedButtons = $this->mergeRemovedButtons($removedButtons);
         $fullToolbar = $this->getAsOldSyntax($mergedButtons, 'full');
@@ -282,19 +277,27 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
     }
 
     /**
-     * Get all toolbar ids of the assigned user groups of the current user
-     * @return array    All the available toolbar ids. Be wary though, as this
-     *                  array might be empty.
+     * Get all toolbar ids of the assigned user groups or by the given user groups
+     *
+     * If the parameter $userGroup is empty the assigned user groups of the
+     * current user are used
+     * @param   array $userGroups   Array containing the user group ids
+     * @return  array $toolbarIds   All the available toolbar ids.
+     *                              Be wary though, as this array might be empty
      */
-    protected function getToolbarIdsOfUserGroup() {
+    protected function getToolbarIdsOfUserGroup($userGroups = array()) {
         // Get the database connection
         $pdo = $this->cx->getDb()->getPdoConnection();
-        // Load the current user
-        $user = \FWUser::getFWUserObject();
-        // Login user
-        $user->objUser->login(true);
-        // Get all assigned user group ids
-        $groupIds = $user->objUser->getAssociatedGroupIds();
+        // populate $groupIds with the given user groups
+        $groupIds = $userGroups;
+        if (empty($groupIds)) {
+            // Load the current user
+            $user = \FWUser::getFWUserObject();
+            // Login user
+            $user->objUser->login(true);
+            // Get all assigned user group ids
+            $groupIds = $user->objUser->getAssociatedGroupIds();
+        }
         // Initiate an empty array of toolbarIds
         $toolbarIds = array();
         // Loop through all user group ids
@@ -369,24 +372,31 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         // Check if there is more than one list of buttons
         if (count($removedButtons) < 2) {
             // Merging only one list of buttons would be pointless
-            if (array_key_exists('default', $removedButtons)) {
-                $mergedButtons = $removedButtons['default'];
-            } else {
-                $mergedButtons = $removedButtons[0];
-            }
+            $mergedButtons = $removedButtons[0];
         } else {
-            $defaultButtons = array();
-            if (array_key_exists('default', $removedButtons)) {
-                $defaultButtons = $removedButtons['default'];
+            // Create arrays out of the removed button strings
+            foreach($removedButtons as $key => $removedButtonsList) {
+                $removedButtons[$key] = explode(',', $removedButtonsList);
             }
-            // Loop through all removed buttons
-            for ($i = 0; $i < count($removedButtons); ++$i) {
-                $buttons = explode(',', $removedButtons[$i]);
-                $mergedButtons = array_diff($defaultButtons, $buttons, $mergedButtons);
+            // Initiate tmpMerged with the array containing the least amount of
+            // removed buttons
+            $tmpMerged = min($removedButtons);
+            // Unset the index
+            unset($removedButtons[array_search($tmpMerged, $removedButtons)]);
+            // Renumber the array
+            $removedButtons = array_reverse(array_reverse($removedButtons));
+            // Loop through all remaining lists of removed buttons
+            for ($i = 0; $i <= count($removedButtons) - 1; $i += 2) {
+                $buttonsOne = $removedButtons[$i];
+                $buttonsTwo = $removedButtons[$i + 1];
+                // Get the buttons that are definitely removed
+                $mergedButtons = array_intersect($tmpMerged, $buttonsOne, $buttonsTwo);
             }
         }
         // Combine the merged buttons into a string
-        var_dump($mergedButtons);
+        if (is_array($mergedButtons[0])) {
+            $mergedButtons = join(',', $mergedButtons);
+        }
         return $mergedButtons;
     }
 
@@ -402,9 +412,28 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         if ($this->cx->getMode() == 'frontend') {
             return '';
         }
-        if ($buttonsOnly) {
-            return '\'' . $this->defaultRemovedButtons . '\'';
+        // Initiate default buttons with the buttons that are not allowed
+        $buttons = $this->defaultRemovedButtons;
+        // Prepare the query to load the default configuration
+        $query = 'SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
+                  WHERE `is_default` = 1
+                  LIMIT 1';
+        $defaultButtonsRes = $this->cx->getDb()->getPdoConnection()->query($query);
+        // Verify that the query could be executed
+        if ($defaultButtonsRes !== false) {
+            // Fetch the data
+            $defaultButtons = $defaultButtonsRes->fetch(\PDO::FETCH_ASSOC);
+            // Check that a default toolbar has been configured
+            if (!empty($defaultButtons)) {
+                $buttons= $defaultButtons['removed_buttons'];
+            }
         }
-        return 'config.removeButtons = \'' . $this->defaultRemovedButtons . '\'';
+        // Used to hide functions that are not allowed to be enable
+        if ($buttonsOnly) {
+            $buttons =  '\'' . $this->defaultRemovedButtons . '\'';
+        } else {
+            $buttons = 'config.removeButtons = \'' . $buttons . '\'';
+        }
+        return $buttons;
     }
 }

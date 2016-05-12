@@ -5,7 +5,6 @@
  * or remove this file if you don't need it
  */
 function prepareConfiguration(formname) {
-  console.log('triggered');
   formname = !formname ? '' : formname;
   // Trigger the download of the configuration
   jQuery('[data-group="edit"]').click();
