@@ -907,12 +907,12 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         global $_CORELANG;
         
         // hide access areas of inactive modules
-        $em = \Env::get('cx')->getDb()->getEntityManager();
+        $em = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager();
         $componentRepository = $em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         $component = $componentRepository->findOneBy(array('id' => $arrAreas[$areaId]['module_id']));
         $areaHidden = '';
         if ($component && !$component->isActive()) {
-            $areaHidden = ' display:none;';
+            $areaHidden = 'display:none;';
         }
         
         $this->_objTpl->setVariable(array(
