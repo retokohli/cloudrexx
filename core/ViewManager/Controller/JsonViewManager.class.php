@@ -118,6 +118,8 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
             } else {
                $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET `". $themeTypes[$themeType] ."` ='".intval($themeId)."' WHERE `frontend` = 1"); 
             }
+            // Trigger template activated event
+            \Cx\Core\Core\Controller\Cx::instanciate()->getEvents()->triggerEvent('viewManager.themeActive');
         }
         
     }

@@ -87,9 +87,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * list statements like
      * $this->cx->getEvents()->addEventListener($eventName, $listener);
      */
-    public function registerEventListeners() {
-        $this->cx->getEvents()->addEventListener(
-            'mediasource.load', new ViewManagerEventListener($this->cx)
-        );
+    public function registerEventListeners()
+    {
+        $eventHandler = $this->cx->getEvents();
+        $eventHandler->addEvent('viewManager.themeActive');
+
+        $eventListener = new ViewManagerEventListener($this->cx);
+        $eventHandler->addEventListener('mediasource.load', $eventListener);
+        $eventHandler->addEventListener('viewManager.themeActive', $eventListener);
     }
 }

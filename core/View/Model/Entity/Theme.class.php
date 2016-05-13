@@ -158,20 +158,31 @@ class Theme extends \Cx\Model\Base\EntityBase
      * @return string the preview image source web path
      */
     public function getPreviewImage() {
-        $websiteFilePath  = \Env::get('cx')->getWebsiteThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
-        $codeBaseFilePath = \Env::get('cx')->getCodeBaseThemesPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
-        $filePath         = file_exists($websiteFilePath) 
-                            ? $websiteFilePath
-                            : ( file_exists($codeBaseFilePath)
-                                ? $codeBaseFilePath
-                                : ''
-                              );
+        $filePath = $this->getFullFilePath(self::THEME_PREVIEW_FILE);
         if ($filePath && file_exists($filePath)) {
             return \Env::get('cx')->getWebsiteThemesWebPath() . '/' . $this->foldername . self::THEME_PREVIEW_FILE;
         }
         return \Env::get('cx')->getCodeBaseOffsetPath(). self::THEME_DEFAULT_PREVIEW_FILE;
     }
     
+    /**
+     * Returns the absolute path of the file
+     * Check the website fodler first, if file not exists in website folder
+     * then it checks the codebase folder
+     *
+     * @param string $filePath Relative path to the file (with out template folder name)
+     *
+     * @return string
+     */
+    public function getFullFilePath($filePath)
+    {
+        $websiteFilePath  = $this->cx->getWebsiteThemesPath() . '/' . $this->foldername . $filePath;
+        $codeBaseFilePath = $this->cx->getCodeBaseThemesPath() . '/' . $this->foldername . $filePath;
+        return    file_exists($websiteFilePath)
+                ? $websiteFilePath
+                : (file_exists($codeBaseFilePath) ? $codeBaseFilePath : '');
+    }
+
     /**
      * @return string the extra description includes the names of end devices, where
      * the theme is set as default

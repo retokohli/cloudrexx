@@ -62,4 +62,44 @@ class ViewManagerEventListener extends DefaultEventListener
         );
         $mediaSourceManager->addMediaType($mediaType);
     }
+
+    /**
+     * Reload the MaintenanceFile config option
+     * Search for the offline.html in active templates and update the option
+     */
+    public function viewManagerThemeActive()
+    {
+        // reload Setting MaintenanceFiles
+        $subTypeArray = array(
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB      => 'standard',
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE   => 'mobile',
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT    => 'print',
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF      => 'pdf',
+          \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP      => 'app'
+        );
+        $themeRepository  = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $languages        = \FWLanguage::getActiveFrontendLanguages();
+        $maintenanceFiles = array();
+        foreach ($subTypeArray as $subType => $maintenanceFileKey) {
+            foreach ($languages as $language) {
+                $theme = $themeRepository->getDefaultTheme($subType, $language['id']);
+                if (!$theme) {
+                    continue;
+                }
+                $filePath = $theme->getFullFilePath('/offline.html');
+                if (!file_exists($filePath)) {
+                    continue;
+                }
+                if (!isset($maintenanceFiles[$maintenanceFileKey])) {
+                    $maintenanceFiles[$maintenanceFileKey] = array();
+                }
+                $fileRelativePath = \Cx\Core\Core\Controller\Cx::FOLDER_NAME_THEMES . '/' . $theme->getFoldername() . '/offline.html';
+                $maintenanceFiles[$maintenanceFileKey][$language['id']] = $fileRelativePath;
+            }
+        }
+
+        \Cx\Core\Setting\Controller\Setting::init('Config');
+        \Cx\Core\Setting\Controller\Setting::set('maintenanceFiles', json_encode($maintenanceFiles));
+        \Cx\Core\Setting\Controller\Setting::update('maintenanceFiles');
+    }
 }

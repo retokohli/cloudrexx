@@ -1432,6 +1432,18 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'core')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for installationId");
             }
+            if (   !\Cx\Core\Setting\Controller\Setting::isDefined('maintenanceFiles')
+                && !\Cx\Core\Setting\Controller\Setting::add(
+                        'maintenanceFiles',
+                        isset($existingConfig['maintenanceFiles']) ? $existingConfig['maintenanceFiles'] : '[]',
+                        1,
+                        \Cx\Core\Setting\Controller\Setting::TYPE_TEXT,
+                        null,
+                        'core'
+                    )
+            ) {
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for maintenanceFiles");
+            }
 
             // component
             \Cx\Core\Setting\Controller\Setting::init('Config', 'component','Yaml', $configPath);

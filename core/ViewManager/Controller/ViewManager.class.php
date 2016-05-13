@@ -1210,6 +1210,8 @@ CODE;
                 $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET app_themes_id='".intval($appThemesId)."' WHERE id=".intval($langid));
             }
             $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+            // Trigger template activated event
+            \Cx\Core\Core\Controller\Cx::instanciate()->getEvents()->triggerEvent('viewManager.themeActive');
         }
         $objResult = $objDatabase->Execute('
             SELECT   `id`, `lang`, `name`, `frontend`, `themesid`, `mobile_themes_id`, `print_themes_id`, `pdf_themes_id`, `app_themes_id`, `is_default`
