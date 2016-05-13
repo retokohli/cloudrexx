@@ -136,7 +136,7 @@ CKEDITOR.editorConfig = function( config )
         window.location.pathname == '/cadmin/Config/Wysiwyg' ||
         window.location.pathname == '/cadmin/Access/group'
     ) {
-    <?php echo $wysiwyg->getRemovedButtons(); ?>;
+        <?php echo $wysiwyg->getRemovedButtons(); ?>;
     }
 };
 
@@ -170,14 +170,25 @@ CKEDITOR.on('instanceReady',function(){
             }
         }).bind(loadingTemplates)();
     }
+    // Get the buttons that shall be removed
     var removedButtons = <?php echo $wysiwyg->getRemovedButtons(true); ?>;
+    // An user group is edited and therefore the buttons removed by the default
+    // configuration need to be removed as well
     if (window.location.pathname == '/cadmin/Access/group') {
         removedButtons = <?php echo $wysiwyg->getRemovedButtons(false, true); ?>;
     }
+    // Create an array from the removed button string
     removedButtons = removedButtons.split(',');
+    // Verify that there are any buttons to be removed
     if (removedButtons.length) {
+        // Loop through all the buttons
         for(button of removedButtons) {
-            cx.jQuery('[data-name="' + button + '"]').css('display', 'none');
+            var selector = '[data-name="' + button + '"]';
+            // Hide all the buttons that need to be removed
+            cx.jQuery(selector).css('display', 'none');
+            if (cx.jQuery(selector).find('[type="checkbox"]').prop('checked')){
+                cx.jQuery(selector).children('label').click();
+            }
         };
     }
 });

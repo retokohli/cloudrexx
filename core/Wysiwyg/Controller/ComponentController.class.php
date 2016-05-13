@@ -215,7 +215,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController(
             $this->cx
         );
-        $buttons = $toolbarController->getRemovedButtons($buttonsOnly);
+        $buttons = $toolbarController->getRemovedButtons($buttonsOnly, $isAccess);
         if ($isAccess) {
             $buttons = substr($buttons, 23);
         }
