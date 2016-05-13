@@ -123,10 +123,10 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
                 break;
         }
         // remove the buttons which shall be removed
-        foreach ($oldSyntax as $key => $functionGroup) {
+        foreach (array_keys($oldSyntax) as $key) {
             foreach ($removedButtons as $toRemove) {
-                if (in_array($toRemove, $functionGroup)) {
-                    $keyToRemove = array_search($toRemove, $functionGroup);
+                if (in_array($toRemove, $oldSyntax[$key])) {
+                    $keyToRemove = array_search($toRemove, $oldSyntax[$key]);
                     unset($oldSyntax[$key][$keyToRemove]);
                     $oldSyntax[$key] = array_reverse(array_reverse($oldSyntax[$key]));
                     if (count($oldSyntax[$key]) == 1) {
