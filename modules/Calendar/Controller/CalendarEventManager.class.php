@@ -857,7 +857,15 @@ class CalendarEventManager extends CalendarLibrary
 
         $registrationOpen = true;
         if ($numRegistrations < $event->numSubscriber || $event->external == 1) {
-            $regLinkSrc = $hostUri . '/' . CONTREXX_DIRECTORY_INDEX . '?section=' . $this->moduleName . '&amp;cmd=register&amp;id=' . $event->id . '&amp;date=' . $event->startDate->getTimestamp();
+            if ($hostUri) {
+                $regLinkSrc = $hostUri . '/?section=' . $this->moduleName . '&amp;cmd=register&amp;id=' . $event->id . '&amp;date=' . $event->startDate->getTimestamp();
+            } else {
+                $params = array(
+                    'id'    => $event->id,
+                    'date'  => $event->startDate->getTimestamp(),
+                );
+                $regLinkSrc = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', FRONTEND_LANG_ID, $params)->toString();
+            }
             $regLink    = '<a href="' . $regLinkSrc . '" ' . $hostTarget . '>' . $_ARRAYLANG['TXT_CALENDAR_REGISTRATION'] . '</a>';
         } else {
             $regLink          = '<i>' . $_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'] . '</i>';
