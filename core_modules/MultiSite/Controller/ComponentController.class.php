@@ -2841,7 +2841,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // we need to exit this method and proceed
                 // with the regular bootstrap process.
                 // This case is required by the cx-mode MODE_MINIMAL.
-                if ($this->deployWebsite($cx)) {
+                if ($this->deployWebsiteFromRequest($cx)) {
                     return;
                 }
                 $this->verifyRequest($cx);
@@ -2928,7 +2928,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
-    protected function deployWebsite(\Cx\Core\Core\Controller\Cx $cx) {
+    protected function deployWebsiteFromRequest(\Cx\Core\Core\Controller\Cx $cx) {
         $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\FileSystemWebsiteRepository();
 
         // dynamic mapping of <website>.cloudrexx.website
@@ -2936,37 +2936,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         $website = $multiSiteRepo->findByDomain(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/', $_SERVER['HTTP_HOST']);
         if ($website) {
-            // Recheck the system state of the Website Service Server (1st check
-            // has already been performed before executing the preInit-Hooks),
-            // but this time also lock the backend in case the system has been
-            // put into maintenance mode, as a Website must also not be
-            // accessable throuth the backend in case its Website Service Server
-            // has activated the maintenance-mode.
-            $cx->checkSystemState(true);
-
-            $configFile = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/'.$website->getName().'/config/configuration.php';
-            $requestInfo =    isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'JsonData'
-                           && isset($_REQUEST['object']) && $_REQUEST['object'] == 'MultiSite'
-                           && isset($_REQUEST['act'])
-                                ? '(API-call: '.$_REQUEST['act'].')'
-                                : $_SERVER['REQUEST_URI'];
-            \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...".$requestInfo);
-            \DBG::setLogPrefix($website->getName());
-            // set SERVER_NAME to BaseDN of Website
-            $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite');
-            \Cx\Core\Core\Controller\Cx::instanciate($cx->getMode(), true, $configFile, true);
-
-            // In cx-mode MODE_MINIMAL we must not abort
-            // script execution as the script that initialized
-            // the Cx object is most likely going to perform some
-            // additional operations after the Cx initialization
-            // has finished.
-            // To prevent that the bootstrap process of the service
-            // server is being proceeded, we must throw an
-            // InstanceException here.
-            if ($cx->getMode() == $cx::MODE_MINIMAL) {
-                throw new \Cx\Core\Core\Controller\InstanceException();
-            }
+            $this->deployWebsite($website);
             exit;
         }
 
@@ -2978,6 +2948,40 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             : '';
         \DBG::msg("MultiSite: Loading Website Service...".$requestInfo);
         return false;
+    }
+    
+    protected function deployWebsite($website) {
+        // Recheck the system state of the Website Service Server (1st check
+        // has already been performed before executing the preInit-Hooks),
+        // but this time also lock the backend in case the system has been
+        // put into maintenance mode, as a Website must also not be
+        // accessable throuth the backend in case its Website Service Server
+        // has activated the maintenance-mode.
+        $cx->checkSystemState(true);
+
+        $configFile = \Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/'.$website->getName().'/config/configuration.php';
+        $requestInfo =    isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'JsonData'
+                       && isset($_REQUEST['object']) && $_REQUEST['object'] == 'MultiSite'
+                       && isset($_REQUEST['act'])
+                            ? '(API-call: '.$_REQUEST['act'].')'
+                            : $_SERVER['REQUEST_URI'];
+        \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...".$requestInfo);
+        \DBG::setLogPrefix($website->getName());
+        // set SERVER_NAME to BaseDN of Website
+        $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite');
+        \Cx\Core\Core\Controller\Cx::instanciate($cx->getMode(), true, $configFile, true);
+
+        // In cx-mode MODE_MINIMAL we must not abort
+        // script execution as the script that initialized
+        // the Cx object is most likely going to perform some
+        // additional operations after the Cx initialization
+        // has finished.
+        // To prevent that the bootstrap process of the service
+        // server is being proceeded, we must throw an
+        // InstanceException here.
+        if ($cx->getMode() == $cx::MODE_MINIMAL) {
+            throw new \Cx\Core\Core\Controller\InstanceException();
+        }
     }
 
     /**
