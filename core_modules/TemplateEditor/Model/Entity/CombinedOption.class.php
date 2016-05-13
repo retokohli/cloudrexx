@@ -166,4 +166,44 @@ class CombinedOption extends Option
             'elements' => $this->elements
         );
     }
+
+    /**
+     * Return the elements of the combined option
+     *
+     * @return Array the elements of the combined option
+     */
+    public function getElements()
+    {
+        return $this->elements;
+    }
+
+    /**
+     * Set the elements of the combined option
+     *
+     * @param Array $elements the elements of the combined option
+     */
+    public function setElements($elements)
+    {
+        $this->elements = $elements;
+    }
+
+    /**
+     * Return array with the options
+     *
+     * @return Array the options
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * Set the options for the combined element
+     *
+     * @param Array $options    the options which should be set
+     */
+    public function setOptions($options)
+    {
+        $this->options = $options;
+    }
 }
