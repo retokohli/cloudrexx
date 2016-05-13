@@ -630,10 +630,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         // Prepare the two removed buttons list for commparison
                         $currentButtons = explode(',', $currentButtons);
                         $newButtonsArr = explode(',', $newButtons);
-                        // Diff the new and the current toolbar
-                        $diff = array_diff($newButtonsArr, $currentButtons);
                         // Check if the toolbar has been changed
-                        if (!empty($diff)) {
+                        if (count($currentButtons) !== count($newButtonsArr)) {
                             // The toolbar has been modified
                             $query = '
                                 UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`
@@ -644,7 +642,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         }
                     }
                 } else {
-                    //TODO: IMPLEMENT CHECK IF SAME TOOLBAR EXISTS ALREADY
                     // Group has currently no special toolbar assigned
                     // Store as a new toolbar
                     $query = 'INSERT INTO `' . DBPREFIX . 'core_wysiwyg_toolbar`(
