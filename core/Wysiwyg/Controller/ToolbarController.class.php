@@ -384,17 +384,24 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
             // Unset the index
             unset($removedButtons[array_search($tmpMerged, $removedButtons)]);
             // Renumber the array
-            $removedButtons = array_reverse(array_reverse($removedButtons));
+            $removedButtons = array_reverse($removedButtons);
             // Loop through all remaining lists of removed buttons
             for ($i = 0; $i <= count($removedButtons) - 1; $i += 2) {
                 $buttonsOne = $removedButtons[$i];
-                $buttonsTwo = $removedButtons[$i + 1];
-                // Get the buttons that are definitely removed
-                $mergedButtons = array_intersect($tmpMerged, $buttonsOne, $buttonsTwo);
+                // Check if we have more than one list of removed buttons
+                // remaining
+                if (array_key_exists($i + 1, $removedButtons)) {
+                    $buttonsTwo = $removedButtons[$i + 1];
+                    // Get the buttons that are definitely removed
+                    $mergedButtons = array_intersect($tmpMerged, $buttonsOne, $buttonsTwo);
+                } else {
+                    // Only one list of removed buttons left
+                    $mergedButtons = array_intersect($tmpMerged, $buttonsOne);
+                }
             }
         }
         // Combine the merged buttons into a string
-        if (is_array($mergedButtons[0])) {
+        if (is_array($mergedButtons)) {
             $mergedButtons = join(',', $mergedButtons);
         }
         return $mergedButtons;
@@ -402,31 +409,79 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
 
     /**
      * Get the buttons that shall be removed
-     * @param bool|false    $buttonsOnly    Only buttons no config.removeButtons
-     *                                      prefix
-     * @return string       Either the list of removed buttons or the proper
-     *                      config string
-     * @TODO implement merge for user groups
+     * @param   bool    $buttonsOnly    Only buttons no config.removeButtons
+     *                                  prefix
+     * @param   bool    $isAccess       If set remove buttons that are disabled
+     *                                  by the default configuration
+     * @return  string                  Either the list of removed buttons or
+     *                                  the proper config string
      */
-    public function getRemovedButtons($buttonsOnly = false) {
+    public function getRemovedButtons($buttonsOnly = false, $isAccess = false) {
         if ($this->cx->getMode() == 'frontend') {
             return '';
         }
         // Initiate default buttons with the buttons that are not allowed
         $buttons = $this->defaultRemovedButtons;
+        // Initiate the default removed buttons as empty string
+        $defaultButtons = '';
+        // Get the database connection
+        $pdo = $this->cx->getDb()->getPdoConnection();
         // Prepare the query to load the default configuration
-        $query = 'SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
+        $query = 'SELECT `removed_buttons` FROM `' . DBPREFIX .
+                    'core_wysiwyg_toolbar`
                   WHERE `is_default` = 1
                   LIMIT 1';
-        $defaultButtonsRes = $this->cx->getDb()->getPdoConnection()->query($query);
+        $defaultButtonsRes = $pdo->query($query);
         // Verify that the query could be executed
         if ($defaultButtonsRes !== false) {
             // Fetch the data
             $defaultButtons = $defaultButtonsRes->fetch(\PDO::FETCH_ASSOC);
             // Check that a default toolbar has been configured
             if (!empty($defaultButtons)) {
-                $buttons= $defaultButtons['removed_buttons'];
+                // Rewrite the buttons with the default removed buttons
+                $buttons = $defaultButtons['removed_buttons'];
             }
+        }
+        // Check if a user group is edited
+        if (!empty($_GET['groupId'])) {
+            // Get the group id
+            $groupId = intval($_GET['groupId']);
+            // Prepare the query to load the user group toolbar
+            $query = 'SELECT `toolbar` FROM `' . DBPREFIX .
+                        'access_user_groups`
+                      WHERE `group_id` = ' . $groupId . '
+                      LIMIT 1';
+            $toolbarIdRes = $pdo->query($query);
+            // Verify that the query could be executed
+            if ($toolbarIdRes !== false) {
+                // Fetch the toolbar id
+                $toolbarId = $toolbarIdRes->fetch(\PDO::FETCH_ASSOC);
+                if (!empty($toolbarId['toolbar'])) {
+                    // Prepare the query to get the removed button of the toolbar
+                    $query = 'SELECT `removed_buttons` FROM `' . DBPREFIX .
+                        'core_wysiwyg_toolbar`
+                          WHERE `id` = ' . intval($toolbarId['toolbar']) . '
+                          LIMIT 1';
+                    $toolbarButtonsRes = $pdo->query($query);
+                    // Verify that the query could be executed
+                    if ($toolbarButtonsRes !== false) {
+                        // Fetch the removed buttons
+                        $toolbarButtons = $toolbarButtonsRes->fetch(
+                            \PDO::FETCH_ASSOC
+                        );
+                        // Verify that there are any removed buttons
+                        if (!empty($toolbarButtons)) {
+                            // Rewrite the buttons with the removed buttons of
+                            // the user group
+                            $buttons = $toolbarButtons['removed_buttons'];
+                        }
+                    }
+                }
+            }
+        }
+        // Used to hide functions that are disabled by the default config
+        if ($isAccess && $defaultButtons) {
+            $buttons = $defaultButtons['removed_buttons'];
         }
         // Used to hide functions that are not allowed to be enable
         if ($buttonsOnly) {
