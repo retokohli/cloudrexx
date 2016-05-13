@@ -354,7 +354,7 @@ class ViewManager
                 $cx->getClassLoader()->getFilePath(
                     $cx->getWebsiteThemesPath() . '/'
                     . $theme->getFoldername()
-                    . '/options/options.yml'
+                    . '/options/Options.yml'
                 )
             )
         ) {
