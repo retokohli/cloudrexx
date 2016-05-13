@@ -13,7 +13,7 @@
                 var parent = jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent();
                 if (response.status == 'error'){
                     jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
-                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box')
+                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first')
                             .text(response.message).slideDown();
                     return false;
                 }
@@ -28,7 +28,7 @@
                 } else { // case: single textarea
                     var textvalue = response.data.textvalue;
                 }
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideUp();
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first').slideUp();
                 parent.removeClass('error');
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(textvalue);
                 parent.removeClass('saving');

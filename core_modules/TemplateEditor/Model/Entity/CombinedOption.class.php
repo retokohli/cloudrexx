@@ -133,13 +133,26 @@ class CombinedOption extends Option
      */
     public function handleChange($data)
     {
-        $element = $this->elements[$data['id']];
-        $element[key($element)] = $data['value'];
-        $this->elements[$data['id']] = $element;
-        return array(
-            'options' => $this->options,
-            'elements' => $this->elements,
+        $optionData = $this->elements[$data['id']];
+        $optionClass = $this->options[$data['id']]['type'];
+        $option = new $optionClass(
+            '',
+            array(),
+            $optionData,
+            $this->type
         );
+        // parse the new value using the single option class
+        $newValue = $option->handleChange($data['value']);
+        if ($newValue) {
+            $this->elements[$data['id']][key($optionData)] =
+                $newValue[key($optionData)];
+            return array(
+                'options' => $this->options,
+                'elements' => $this->elements,
+            );
+        }
+
+
     }
 
     /**

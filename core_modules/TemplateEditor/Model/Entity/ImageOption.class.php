@@ -192,6 +192,8 @@ class ImageOption extends Option
         if (empty($this->url)) {
             return '';
         }
+        // remove the leading slash. It will be added again if url is internal
+        $this->url = ltrim($this->url, '/');
         $url = \Cx\Core\Routing\Url::fromMagic($this->url);
         if ($url->isInternal()) {
             return $this->cx->getWebsiteOffsetPath() . '/' . $this->url;

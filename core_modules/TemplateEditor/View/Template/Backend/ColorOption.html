@@ -31,7 +31,7 @@
         var color = new tinycolor(jQuery(this).val());
         if (!color.isValid()){
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').text(cx.variables.get('colorError','TemplateEditor')).slideDown();
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first').text(cx.variables.get('colorError','TemplateEditor')).slideDown();
             return;
         }
         jQuery("#{TEMPLATEEDITOR_OPTION_NAME}").spectrum("set", jQuery(this).val());
@@ -39,10 +39,10 @@
         updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val(), function(response){
             if (response.status == 'error'){
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').text(response.message).slideDown();
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first').text(response.message).slideDown();
                 return false;
             }
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().find('.error-box').slideUp();
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first').slideUp();
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saved');
             setTimeout(function () {

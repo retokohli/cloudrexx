@@ -29,7 +29,7 @@
         updateOption('{TEMPLATEEDITOR_OPTION_NAME}',jQuery(this).val() , function(response){
             if (response.status == 'error'){
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('error');
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').text(response.message).slideDown();
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first').text(response.message).slideDown();
                 parent.removeClass('saving');
                 return false;
             }
@@ -58,7 +58,7 @@
                 }
                 data = data[combinedId[1]].url;
             }
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').next('.error-box').slideUp();
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first').slideUp();
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(data);
             // add relative path config if not external domain
             if(data && data.indexOf("http") < 0) {

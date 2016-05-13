@@ -289,7 +289,7 @@ p.groupName.open, .option.series.open {
 }
 
 #content .option.combined .element img.remove-element {
-    top: -3px;
+    top: 1px;
 }
 
 #content .element.combined > .remove-element {
@@ -382,7 +382,7 @@ p.groupName.open, .option.series.open {
 }
 
 .option.series.open > label {
-    border-bottom: 1px dotted grey;
+    padding-bottom: 0;
 }
 
 .option.series > label, .option.series > div {
@@ -415,6 +415,10 @@ p.groupName.open, .option.series.open {
 
 .series-list .elements img, .elements .combined > img {
     margin-top: 10px;
+}
+
+.series-list .combinedOption {
+    padding-top: 5px;
 }
 
 .series .combined.element {
