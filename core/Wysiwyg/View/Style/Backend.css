@@ -9,7 +9,12 @@
 #editor-htmlContent {height: 300px;width: 100%;}
 #toolbarModifierWrapper .toolbar,
 body .staticContainer .inner .toolbar,
-main .adjoined-top .grid-switch-magic {
+main .adjoined-top .grid-switch-magic,
+div.toolbarModifier ul[data-type="table-header"] > li[data-type="header"] > p,
+div.toolbarModifier ul[data-type="table-header"] > li[data-type="header"] > ul li > p:first-child,
+div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > p,
+div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p > span > button.move,
+div.toolbarModifier ul[data-type="table-body"] > li[data-type="separator"] {
     display: none;
 }
 main .adjoined-top {
@@ -34,4 +39,7 @@ main .adjoined-top .content .switch .switch-inner .handler:before {
 .align-right > * {
     position: absolute;
     right: 0;
+}
+div.toolbarModifier ul[data-type="table-header"] > li[data-type="header"] > ul li > p:last-child {
+    padding: 5px 0 5px 5px;
 }
