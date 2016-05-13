@@ -481,11 +481,12 @@ class ViewManager
         
         $filePath = '';
         $relativeFilePath = '';
+        $isContactModulesPath = preg_match('/^\/core_module\/Contact\/.*/', $themesPage);
         if (!empty($themesPage)) {
-            list($filePath, $relativeFilePath) = $this->getFileFullPath($themesPage, $isComponentFile);
+            list($filePath, $relativeFilePath) = $this->getFileFullPath($themesPage, $isComponentFile, $isContactModulesPath);
         }
-        
-        if (!is_file($filePath)) {
+
+        if (!is_file($filePath) && !$isContactModulesPath) {
             $filePath   = file_exists($this->websiteThemesFilePath . '/index.html') 
                           ? $this->websiteThemesFilePath . '/index.html'
                           : $this->codeBaseThemesFilePath . '/index.html';
@@ -496,7 +497,7 @@ class ViewManager
         // Get the left side file's menu
         $this->getFilesDropdown($theme, $themesPage, $isComponentFile);
         // Load the content
-        $this->getFilesContent($filePath, $relativeFilePath);
+        $this->getFilesContent($filePath, $relativeFilePath, $isContactModulesPath);
         
         $objTemplate->setVariable(array(            
             'THEME_ID'                  => $theme->getId(),
@@ -1650,12 +1651,13 @@ CODE;
     /**
      * Get the file's full path
      * 
-     * @param string  $filePath        Relative path of file
-     * @param boolean $isComponentFile load from component directory or not
+     * @param string  $filePath            Relative path of file
+     * @param boolean $isComponentFile     load from component directory or not
+     * @param boolean $isContactModulePath load from Contact component or not
      * 
      * @return array full and relative path of a file
      */
-    function getFileFullPath($filePath, $isComponentFile)
+    function getFileFullPath($filePath, $isComponentFile, $isContactModulePath = false)
     {
         if (empty($filePath)) {
             return array('', '');
@@ -1681,8 +1683,7 @@ CODE;
         
         $websiteFilePath  = $websitePath . $relativeFilePath;
         $codeBaseFilePath = $codebasePath . $relativeFilePath;
-        
-        if (file_exists($websiteFilePath)) {
+        if (file_exists($websiteFilePath) || $isContactModulePath) {
             $filePath = $websiteFilePath;
             $relativeFilePath = preg_replace('#' . \Env::get('cx')->getWebsitePath() . '#', '', $websiteFilePath);
         } elseif (file_exists($codeBaseFilePath)) {
@@ -1693,7 +1694,6 @@ CODE;
         }
         
         return array($filePath, $relativeFilePath);
-        
     }
     
     /**
@@ -1949,7 +1949,16 @@ CODE;
         $components = $objSystemComponent->findAll();
         $componentFiles = array();
         foreach ($components as $component) {
-           $componentDirectory = $component->getDirectory() . '/View/Template/Frontend';
+            if ($component->getName() == 'Contact') {
+                $contactLib = new \Cx\Core_Modules\Contact\Controller\ContactLib();
+                $contactLib->initContactForms();
+                $contactFormIds = array_keys($contactLib->arrForms);
+                foreach ($contactFormIds as $formId) {
+                    $componentFiles[$component->getType()][$component->getName()][] = $formId.'.html';
+                }
+                continue;
+            }
+            $componentDirectory = $component->getDirectory() . '/View/Template/Frontend';
             if (file_exists($componentDirectory)) {
                 foreach (glob("$componentDirectory/*") as $componentFile) {
                    $componentFiles[$component->getType()][$component->getName()][]= basename($componentFile);
@@ -2152,22 +2161,28 @@ CODE;
     
     /**
      * Gets the themes pages file content
-     * @access   public
-     * @param    string   $filePath
-     * @param    string   $relativeFilePath
-     * 
-     * @return   string   $fileContent
+     *
+     * @param string  $filePath             file path
+     * @param string  $relativeFilePath     relative file path
+     * @param boolean $isContactModulesPath content from Contact component or not
      */
-    function getFilesContent($filePath, $relativeFilePath)
+    function getFilesContent($filePath, $relativeFilePath, $isContactModulesPath = false)
     {
-        global $objTemplate, $_ARRAYLANG;
-        
-        if (file_exists($filePath)) {
+        global $objTemplate, $_ARRAYLANG, $_LANGID;
+
+        if (file_exists($filePath) || $isContactModulesPath) {
             $objImageManager = new \ImageManager;
             $fileIsImage = $objImageManager->_isImage($filePath);
             $contenthtml = '';
             if (!$fileIsImage) {
                 $contenthtml = file_get_contents($filePath);
+                //Get the Contact form content if the contact template not exists in default webdesign template
+                if (!$contenthtml && $isContactModulesPath) {
+                    $contactLib  = new \Cx\Core_Modules\Contact\Controller\ContactLib();
+                    $matches     = null;
+                    preg_match('/\/(\d+)\.html/', $filePath, $matches);
+                    $contenthtml = $matches[1] ? $contactLib->getSourceCode($matches[1], $_LANGID) : '';
+                }
                 $contenthtml = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $contenthtml);
                 $contenthtml = htmlspecialchars($contenthtml);
             }

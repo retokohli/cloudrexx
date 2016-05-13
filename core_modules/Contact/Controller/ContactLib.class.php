@@ -1611,9 +1611,9 @@ JS_misc;
 
         $hasFileInput = false; //remember if we added a file input -> this would need the uploader to be initialized
 
+        $this->initContactForms();
         $arrFields = $this->getFormFields($id);
         $sourcecode = array();
-        $this->initContactForms();
 
         $sourcecode[] = '<div class="text-warning" id="contactFeedback">{CONTACT_FEEDBACK_TEXT}</div>
 <div id="contactDescription"><!-- BEGIN formText -->'.($preview ? $this->arrForms[$id]['lang'][$lang]['text'] : '{'.$id.'_FORM_TEXT}').'<!-- END formText --></div>
