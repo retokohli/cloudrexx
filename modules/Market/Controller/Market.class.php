@@ -201,7 +201,11 @@ class Market extends MarketLibrary
                 }
             }
 
-            $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_market WHERE status = '1'");
+            $objResult = $objDatabase->Execute("SELECT `m`.`id`
+                                                    FROM `".DBPREFIX."module_market` as m
+                                                    LEFT JOIN `".DBPREFIX."module_market_categories` as mc
+                                                        ON (`m`.`catid` = `mc`.`id`)
+                                                    WHERE `m`.`status` = '1' AND `mc`.`status` = '1'");
             $allFeeds = $objResult->RecordCount();
             $insertFeeds = $allFeeds." ".$_ARRAYLANG['TXT_MARKET_ADD_ADVERTISEMENT'];
 
