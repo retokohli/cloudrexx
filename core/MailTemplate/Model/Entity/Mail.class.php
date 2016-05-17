@@ -54,6 +54,7 @@ class Mail extends \PHPMailer
 
         if (   !empty($_CONFIG['coreSmtpServer'])
             && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php')) {
+            die('test');
             $arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
             if ($arrSmtp) {
                 $this->isSMTP();
