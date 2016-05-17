@@ -2787,7 +2787,9 @@ END;
                 $this->crmInterfaceController->csvImport();
             break;
         case 'importoptions':
-                $this->crmInterfaceController->getImportOptions();
+                $importOptions = $this->crmInterfaceController->getImportOptions();
+                echo json_encode($importOptions);
+                exit();
             break;
         case 'save':
                 $this->crmInterfaceController->saveCsvData();

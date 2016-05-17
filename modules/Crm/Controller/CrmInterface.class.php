@@ -224,8 +224,8 @@ class CrmInterface extends CrmLibrary
 
         $csvSeprator    = isset ($_POST['csv_delimiter']) && in_array($_POST['csv_delimiter'], array_keys($this->_delimiter)) ? $this->_delimiter[$_POST['csv_delimiter']]['value'] : $this->_delimiter[0]['value'];
         $csvDelimiter   = isset ($_POST['csv_enclosure']) && in_array($_POST['csv_enclosure'], array_keys($this->_enclosure)) ? $this->_enclosure[$_POST['csv_enclosure']]['value'] : $this->_enclosure[0]['value'];
-        $csvIgnoreFirst = isset ($_POST['ignore_first']) && (int) $_POST['ignore_first'];
-        $fileName       = isset ($_POST['fileName']) ? trim($_POST['fileName']) : '';
+        $csvIgnoreFirst = isset ($_POST['ignore_first']) && contrexx_input2int($_POST['ignore_first']);
+        $fileName       = isset ($_POST['fileName']) ? \FWValidator::getCleanFileName(contrexx_input2raw($_POST['fileName'])) : '';
 
         if (!empty ($fileName)) {
             $json['fileUri'] = $fileName;
@@ -271,8 +271,8 @@ class CrmInterface extends CrmLibrary
 
         $csvSeprator    = isset ($_POST['csv_delimiter']) && in_array($_POST['csv_delimiter'], array_keys($this->_delimiter)) ? $this->_delimiter[$_POST['csv_delimiter']]['value'] : $this->_delimiter[0]['value'];
         $csvDelimiter   = isset ($_POST['csv_enclosure']) && in_array($_POST['csv_enclosure'], array_keys($this->_enclosure)) ? $this->_enclosure[$_POST['csv_enclosure']]['value'] : $this->_enclosure[0]['value'];
-        $fileName       = isset ($_POST['fileUri']) ? $_POST['fileUri'] : '';
-        $currentRow     = isset ($_GET['currentRow']) ? (int) $_GET['currentRow'] : '';
+        $fileName       = isset ($_POST['fileUri']) ? \FWValidator::getCleanFileName(contrexx_input2raw($_POST['fileUri'])) : '';
+        $currentRow     = isset ($_GET['currentRow']) ? contrexx_input2int($_GET['currentRow']) : '';
 
         $importedLines = 0;
         $objCsv        = new CrmCsv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
@@ -660,9 +660,7 @@ class CrmInterface extends CrmLibrary
     /**
      * Export all fields can be imported
      *
-     * @global array $_ARRAYLANG     
-     *
-     * @return all fields can be imported
+     * @return array return all the import field options
      */
     function getImportOptions()
     {
@@ -707,9 +705,7 @@ class CrmInterface extends CrmLibrary
                 }
             }
         }
-        
-        echo json_encode($headerCsv);
-        exit();
+        return $headerCsv;
     }
 
     /**
@@ -727,15 +723,16 @@ class CrmInterface extends CrmLibrary
 
         $csvSeprator    = isset ($_POST['csv_delimiter']) && in_array($_POST['csv_delimiter'], array_keys($this->_delimiter)) ? $this->_delimiter[$_POST['csv_delimiter']]['value'] : $this->_delimiter[0]['value'];
         $csvDelimiter   = isset ($_POST['csv_enclosure']) && in_array($_POST['csv_enclosure'], array_keys($this->_enclosure)) ? $this->_enclosure[$_POST['csv_enclosure']]['value'] : $this->_enclosure[0]['value'];
-        $csvIgnoreFirst = isset ($_POST['ignore_first']) && (int) $_POST['ignore_first'];
-        $duplicate      = isset ($_POST['on_duplicate']) ? (int) $_POST['on_duplicate'] : 2;
-        $fileName       = isset ($_POST['fileUri']) ? $_POST['fileUri'] : '';
+        $csvIgnoreFirst = isset ($_POST['ignore_first']) && contrexx_input2int($_POST['ignore_first']);
+        $duplicate      = isset ($_POST['on_duplicate']) ? contrexx_input2int($_POST['on_duplicate']) : 2;
+        $fileName       = isset ($_POST['fileUri']) ? \FWValidator::getCleanFileName(contrexx_input2raw($_POST['fileUri'])) : '';
         $objFWUser      = \FWUser::getFWUserObject();
 
         $_SESSION[$fileName] = array();
         
+        $importOptions = array_column($this->getImportOptions(), 'value');
         foreach ($_POST['crm_contact_option_base'] as $colId => $value) {
-            if (!empty($value)) {
+            if (!empty($value) && in_array($value, $importOptions)) {
                 ${$value} = $colId;
             }
         }
