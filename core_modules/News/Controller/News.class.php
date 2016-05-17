@@ -1409,30 +1409,17 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $msg .= "\n\n";
         $msg .= $_CONFIG['coreAdminName'];
 
-        if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-            $objMail = new \phpmailer();
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
+        $objMail->From = $_CONFIG['coreAdminEmail'];
+        $objMail->FromName = $_CONFIG['coreAdminName'];
+        $objMail->Subject = $_ARRAYLANG['TXT_NOTIFY_SUBJECT'];
+        $objMail->IsHTML(false);
+        $objMail->Body = $msg;
 
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $_CONFIG['coreAdminName'];
-            $objMail->Subject = $_ARRAYLANG['TXT_NOTIFY_SUBJECT'];
-            $objMail->IsHTML(false);
-            $objMail->Body = $msg;
+        $objMail->AddAddress($objUser->getEmail(), $name);
+        $objMail->Send();
 
-            $objMail->AddAddress($objUser->getEmail(), $name);
-            $objMail->Send();
-        }
         return true;
     }
 
@@ -2060,26 +2047,8 @@ RSS2JSCODE;
         }
 
         // Send a notification e-mail to administrator
-        if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-            \DBG::msg('Unable to send e-mail notification to admin');
-            //DBG::stack();
-            return array(true, null);
-        }
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        $objMail = new \phpmailer();
-
-        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-            if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                $objMail->IsSMTP();
-                $objMail->Host = $arrSmtp['hostname'];
-                $objMail->Port = $arrSmtp['port'];
-                $objMail->SMTPAuth = true;
-                $objMail->Username = $arrSmtp['username'];
-                $objMail->Password = $arrSmtp['password'];
-            }
-        }
-
-        $objMail->CharSet   = CONTREXX_CHARSET;
         $objMail->From      = $_CONFIG['coreAdminEmail'];
         $objMail->FromName  = $_CONFIG['coreGlobalPageTitle'];
         $objMail->IsHTML(false);

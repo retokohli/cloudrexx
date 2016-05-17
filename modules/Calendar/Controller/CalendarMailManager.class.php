@@ -267,21 +267,8 @@ class CalendarMailManager extends \Cx\Modules\Calendar\Controller\CalendarLibrar
             
             $recipients = $this->getSendMailRecipients($actionId, $objEvent, $regId, $objRegistration);
                         
-            $objMail = new \phpmailer();
+            $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-            if ($_CONFIG['coreSmtpServer'] > 0) {
-                $arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-                if ($arrSmtp !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
-
-            $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->From = $_CONFIG['coreAdminEmail'];
             $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
             $objMail->AddReplyTo($_CONFIG['coreAdminEmail']); 

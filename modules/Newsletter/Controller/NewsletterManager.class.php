@@ -2987,8 +2987,6 @@ class NewsletterManager extends NewsletterLib
     ) {
         global $objDatabase, $_ARRAYLANG, $_DBCONFIG;
 
-        require_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php';
-
         $newsletterValues = $this->getNewsletterValues($NewsletterID);
         if ($newsletterValues !== false) {
             $subject      = $newsletterValues['subject'];
@@ -3034,7 +3032,7 @@ class NewsletterManager extends NewsletterLib
         );
         \LinkGenerator::parseTemplate($NewsletterBody_TEXT, true);
 
-        $mail = new \phpmailer();
+        $mail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
         if ($smtpAccount > 0) {
             if (($arrSmtp = \SmtpSettings::getSmtpAccount($smtpAccount)) !== false) {
                 $mail->IsSMTP();
@@ -3045,7 +3043,6 @@ class NewsletterManager extends NewsletterLib
                 $mail->Password = $arrSmtp['password'];
             }
         }
-        $mail->CharSet  = CONTREXX_CHARSET;
         $mail->From     = $sender_email;
         $mail->FromName = $sender_name;
         $mail->AddReplyTo($return_path);
@@ -3222,8 +3219,7 @@ class NewsletterManager extends NewsletterLib
     {
         // Get the current user's email address
         $addy = \FWUser::getFWUserObject()->objUser->getEmail();
-        \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php');
-        $mail = new \phpmailer();
+        $mail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
         $newsletterValues = $this->getNewsletterValues($newsletterID);
         if ($newsletterValues['smtp_server'] > 0) {
             if (($arrSmtp = \SmtpSettings::getSmtpAccount($newsletterValues['smtp_server'])) !== false) {
@@ -3235,7 +3231,6 @@ class NewsletterManager extends NewsletterLib
                 $mail->Password = $arrSmtp['password'];
             }
         }
-        $mail->CharSet      = CONTREXX_CHARSET;
         $mail->From         = $newsletterValues['sender_email'];
         $mail->FromName     = $newsletterValues['sender_name'];
         $mail->AddReplyTo($newsletterValues['return_path']);

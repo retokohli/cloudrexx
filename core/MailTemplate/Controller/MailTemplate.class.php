@@ -508,23 +508,8 @@ die("MailTemplate::init(): Empty section!");
     {
         global $_CONFIG; //, $_CORELANG;
 
-        if (!\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) {
-\DBG::log("MailTemplate::send(): ERROR: Failed to load phpMailer");
-            return false;
-        }
-        $objMail = new \phpmailer();
-        if (   !empty($_CONFIG['coreSmtpServer'])
-            && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php')) {
-            $arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-            if ($arrSmtp) {
-                $objMail->IsSMTP();
-                $objMail->SMTPAuth = true;
-                $objMail->Host     = $arrSmtp['hostname'];
-                $objMail->Port     = $arrSmtp['port'];
-                $objMail->Username = $arrSmtp['username'];
-                $objMail->Password = $arrSmtp['password'];
-            }
-        }
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
         if (empty($arrField['lang_id'])) {
             $arrField['lang_id'] = FRONTEND_LANG_ID;
         }
@@ -604,7 +589,6 @@ die("MailTemplate::init(): Empty section!");
         $objMail->FromName = $arrTemplate['sender'];
         $objMail->From = $arrTemplate['from'];
         $objMail->Subject = $arrTemplate['subject'];
-        $objMail->CharSet = CONTREXX_CHARSET;
 //        $objMail->IsHTML(false);
         if ($arrTemplate['html']) {
             $objMail->IsHTML(true);
@@ -663,7 +647,6 @@ die("MailTemplate::init(): Empty section!");
             }
         }
 //die("MailTemplate::send(): Attachments and inlines<br />".var_export($objMail, true));
-        $objMail->CharSet = CONTREXX_CHARSET;
         $objMail->IsHTML($arrTemplate['html']);
 //DBG::log("MailTemplate::send(): Sending: ".nl2br(htmlentities(var_export($objMail, true), ENT_QUOTES, CONTREXX_CHARSET))."<br />Sending...<hr />");
         $result = true;

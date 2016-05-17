@@ -1423,66 +1423,52 @@ CODE;
         }
         $message .= $_ARRAYLANG['TXT_CONTACT_BROWSER_VERSION']." : ".contrexx_raw2xhtml($arrFormData['meta']['browser'])."\n";
 
-        if (@include_once \Env::get('cx')->getCodeBaseLibraryPath().'/phpmailer/class.phpmailer.php') {
-            $objMail = new \phpmailer();
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once \Env::get('cx')->getCodeBaseCorePath().'/SmtpSettings.class.php') {
-                if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
+        $objMail->From = $_CONFIG['coreAdminEmail'];
+        $objMail->FromName = $senderName;
+        if (!empty($replyAddress)) {
+            $objMail->AddReplyTo($replyAddress);
+
+            if ($arrFormData['sendCopy'] == 1) {
+                $objMail->AddAddress($replyAddress);
             }
 
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $senderName;
-            if (!empty($replyAddress)) {
-                $objMail->AddReplyTo($replyAddress);
-
-                if ($arrFormData['sendCopy'] == 1) {
-                    $objMail->AddAddress($replyAddress);
-                }
-
-                if ($arrFormData['useEmailOfSender'] == 1) {
-                    $objMail->From = $replyAddress;
-                }
+            if ($arrFormData['useEmailOfSender'] == 1) {
+                $objMail->From = $replyAddress;
             }
-            $objMail->Subject = $arrFormData['subject'];
+        }
+        $objMail->Subject = $arrFormData['subject'];
 
-            if ($isHtml) {
-                $objMail->Body = $objTemplate->get();
-                $objMail->AltBody = $message;
-            } else {
-                $objMail->IsHTML(false);
-                $objMail->Body = $message;
-            }
+        if ($isHtml) {
+            $objMail->Body = $objTemplate->get();
+            $objMail->AltBody = $message;
+        } else {
+            $objMail->IsHTML(false);
+            $objMail->Body = $message;
+        }
 
-            // attach submitted files to email
-            if (count($arrFormData['uploadedFiles']) > 0 && $arrFormData['sendAttachment'] == 1) {
-                foreach ($arrFormData['uploadedFiles'] as $arrFilesOfField) {
-                    foreach ($arrFilesOfField as $file) {
-                        $objMail->AddAttachment(\Env::get('cx')->getWebsiteDocumentRootPath().$file['path'], $file['name']);
-                    }
+        // attach submitted files to email
+        if (count($arrFormData['uploadedFiles']) > 0 && $arrFormData['sendAttachment'] == 1) {
+            foreach ($arrFormData['uploadedFiles'] as $arrFilesOfField) {
+                foreach ($arrFilesOfField as $file) {
+                    $objMail->AddAttachment(\Env::get('cx')->getWebsiteDocumentRootPath().$file['path'], $file['name']);
                 }
             }
+        }
 
-            if ($chosenMailRecipient !== null) {
-                if (!empty($chosenMailRecipient)) {
-                    $objMail->AddAddress($chosenMailRecipient);
+        if ($chosenMailRecipient !== null) {
+            if (!empty($chosenMailRecipient)) {
+                $objMail->AddAddress($chosenMailRecipient);
+                $objMail->Send();
+                $objMail->ClearAddresses();
+            }
+        } else {
+            foreach ($arrFormData['emails'] as $sendTo) {
+                if (!empty($sendTo)) {
+                    $objMail->AddAddress($sendTo);
                     $objMail->Send();
                     $objMail->ClearAddresses();
-                }
-            } else {
-                foreach ($arrFormData['emails'] as $sendTo) {
-                    if (!empty($sendTo)) {
-                        $objMail->AddAddress($sendTo);
-                        $objMail->Send();
-                        $objMail->ClearAddresses();
-                    }
                 }
             }
         }

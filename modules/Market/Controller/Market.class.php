@@ -862,30 +862,16 @@ class Market extends MarketLibrary
                 $oldPrice     = $_POST['price']!='' ? "\n\n".$_ARRAYLANG['TXT_MARKET_MESSAGE_PRICE']."\n".$_POST['price'] : '';
                 $message     = $_POST['message'].$oldPrice.$newPrice;
 
-                if (\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) {
-                    $objMail = new \phpmailer();
+                $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-                    if ($_CONFIG['coreSmtpServer'] > 0 && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php')) {
-                        if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                            $objMail->IsSMTP();
-                            $objMail->Host = $arrSmtp['hostname'];
-                            $objMail->Port = $arrSmtp['port'];
-                            $objMail->SMTPAuth = true;
-                            $objMail->Username = $arrSmtp['username'];
-                            $objMail->Password = $arrSmtp['password'];
-                        }
-                    }
-
-                    $objMail->CharSet = CONTREXX_CHARSET;
-                    $objMail->From = $fromMail;
-                    $objMail->FromName = $fromName;
-                    $objMail->AddReplyTo($fromMail);
-                    $objMail->Subject = $subject;
-                    $objMail->IsHTML(false);
-                    $objMail->Body = $message;
-                    $objMail->AddAddress($sendTo);
-                    $objMail->Send();
-                }
+                $objMail->From = $fromMail;
+                $objMail->FromName = $fromName;
+                $objMail->AddReplyTo($fromMail);
+                $objMail->Subject = $subject;
+                $objMail->IsHTML(false);
+                $objMail->Body = $message;
+                $objMail->AddAddress($sendTo);
+                $objMail->Send();
 
                 // set variables
                 $this->_objTpl->setVariable(array(

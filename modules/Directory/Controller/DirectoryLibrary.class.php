@@ -1106,33 +1106,22 @@ class DirectoryLibrary
         $subject = str_replace($array_1, $array_2, $subject);
         $message = str_replace($array_1, $array_2, $message);
         $sendTo = explode(';', $sendTo);
-        if (@\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') ) {
-            $objMail = new \phpmailer();
-            if ($_CONFIG['coreSmtpServer'] > 0 && @\Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php') ) {
-                $arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-                if ($arrSmtp !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $_CONFIG['coreAdminEmail'];
-            $objMail->FromName = $_CONFIG['coreAdminName'];
-            $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
-            $objMail->Subject = $subject;
-            $objMail->IsHTML(false);
-            $objMail->Body = $message;
 
-            foreach($sendTo as $mailAdress) {
-                $objMail->ClearAddresses();
-                $objMail->AddAddress($mailAdress);
-                $objMail->Send();
-            }
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
+        $objMail->From = $_CONFIG['coreAdminEmail'];
+        $objMail->FromName = $_CONFIG['coreAdminName'];
+        $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+        $objMail->Subject = $subject;
+        $objMail->IsHTML(false);
+        $objMail->Body = $message;
+
+        foreach($sendTo as $mailAdress) {
+            $objMail->ClearAddresses();
+            $objMail->AddAddress($mailAdress);
+            $objMail->Send();
         }
+
         return true;
     }
 

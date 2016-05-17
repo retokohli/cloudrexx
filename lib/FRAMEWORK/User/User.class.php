@@ -1772,21 +1772,9 @@ class User extends User_Profile
                 $objUserMail->load('user_account_invitation', $_LANGID) ||
                 $objUserMail->load('user_account_invitation')
             ) &&
-            (\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')) &&
-            ($objMail = new \PHPMailer()) !== false
+            ($objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail()) !== false
         ) {
-            if ($_CONFIG['coreSmtpServer'] > 0 && \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/SmtpSettings.class.php')) {
-                if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
 
-            $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->From = $objUserMail->getSenderMail();
             $objMail->FromName = $objUserMail->getSenderName();
             $objMail->AddReplyTo($objUserMail->getSenderMail());

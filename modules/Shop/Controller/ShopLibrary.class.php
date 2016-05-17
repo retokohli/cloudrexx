@@ -90,32 +90,19 @@ die("ShopLibrary::shopSendmail(): Obsolete method called");
         // replace cr/lf by lf only
         $shopMailBody = preg_replace('/\015\012/', "\012", $shopMailBody);
 
-        if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-            $objMail = new \phpmailer();
-            if (   isset($_CONFIG['coreSmtpServer'])
-                && $_CONFIG['coreSmtpServer'] > 0
-                && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = preg_replace('/\015\012/', "\012", $shopMailFrom);
-            $objMail->FromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
-            $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
-            $objMail->Subject = $shopMailSubject;
-            $objMail->IsHTML(false);
-            $objMail->Body = $shopMailBody;
-            $objMail->AddAddress($shopMailTo);
-            if ($objMail->Send()) {
-                return true;
-            }
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
+
+        $objMail->From = preg_replace('/\015\012/', "\012", $shopMailFrom);
+        $objMail->FromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
+        $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+        $objMail->Subject = $shopMailSubject;
+        $objMail->IsHTML(false);
+        $objMail->Body = $shopMailBody;
+        $objMail->AddAddress($shopMailTo);
+        if ($objMail->Send()) {
+            return true;
         }
+
         return false;
  */
     }

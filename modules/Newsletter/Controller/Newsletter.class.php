@@ -176,7 +176,6 @@ class Newsletter extends NewsletterLib
                         $content     = $objResult_content->fields['content'];
                     }
 
-                    require_once ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php';
 
                     $url            = $_SERVER['SERVER_NAME'];
                     $now             = date(ASCMS_DATE_FORMAT);
@@ -191,20 +190,8 @@ class Newsletter extends NewsletterLib
                     $mailContent = str_replace($array_1, $array_2, $content);
 
 
-                    $mail = new \phpmailer();
+                    $mail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-                    if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                        if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                            $mail->IsSMTP();
-                            $mail->Host = $arrSmtp['hostname'];
-                            $mail->Port = $arrSmtp['port'];
-                            $mail->SMTPAuth = true;
-                            $mail->Username = $arrSmtp['username'];
-                            $mail->Password = $arrSmtp['password'];
-                        }
-                    }
-
-                    $mail->CharSet = CONTREXX_CHARSET;
                     $mail->From             = $value_sender_emailDEF;
                     $mail->FromName         = $value_sender_nameDEF;
                     $mail->AddReplyTo($value_reply_mailDEF);
@@ -743,10 +730,6 @@ class Newsletter extends NewsletterLib
     {
         global $_CONFIG, $_ARRAYLANG, $objDatabase;
 
-        if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-            return false;
-        }
-
 // TODO: use FWUSER
         $arrRecipientTitles = &$this->_getRecipientTitles();
         $recipientTitleTxt = $arrRecipientTitles[$recipientTitle];
@@ -777,20 +760,8 @@ class Newsletter extends NewsletterLib
 
         $arrSettings = &$this->_getSettings();
 
-        $objMail = new \phpmailer();
+        $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-            if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                $objMail->IsSMTP();
-                $objMail->Host = $arrSmtp['hostname'];
-                $objMail->Port = $arrSmtp['port'];
-                $objMail->SMTPAuth = true;
-                $objMail->Username = $arrSmtp['username'];
-                $objMail->Password = $arrSmtp['password'];
-            }
-        }
-
-        $objMail->CharSet = CONTREXX_CHARSET;
         $objMail->From = $arrSettings['sender_mail']['setvalue'];
         $objMail->FromName = $arrSettings['sender_name']['setvalue'];
         $objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);
@@ -822,9 +793,6 @@ class Newsletter extends NewsletterLib
         if (   ($arrSettings['notificationSubscribe'] == 1 && $action == 1)
             || ($arrSettings['notificationUnsubscribe'] == 1 && $action == 2)) {
 
-            if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-                return false;
-            }
             $objRecipient = $objDatabase->SelectLimit("SELECT sex, salutation, lastname, firstname, email FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
             if ($objRecipient !== false) {
                 $arrRecipient['sex'] = $objRecipient->fields['sex'];
@@ -871,20 +839,8 @@ class Newsletter extends NewsletterLib
 
             $arrSettings = &$this->_getSettings();
 
-            $objMail = new \phpmailer();
+            $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-            if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                if (($arrSmtp = \SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
-
-            $objMail->CharSet = CONTREXX_CHARSET;
             $objMail->From = $arrSettings['sender_mail']['setvalue'];
             $objMail->FromName = $arrSettings['sender_name']['setvalue'];
             $objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);

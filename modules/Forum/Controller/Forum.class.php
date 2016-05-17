@@ -1292,14 +1292,13 @@ class Forum extends ForumLibrary {
      */
     function _sendNotifications($intThreadId, $strSubject, $strContent){
         global $objDatabase, $_CONFIG;
-        require_once(ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php');
 
         $arrTempSubcribers = array();
         $arrSubscribers = array();
 
         $intCategoryId = $this->_getCategoryIdFromThread($intThreadId);
 
-        $mail =new \PHPMailer();
+        $mail  = new \Cx\Core\MailTemplate\Model\Entity\Mail();
         $query = '    SELECT `subject`, `user_id` FROM `'.DBPREFIX.'module_forum_postings`
                     WHERE `thread_id` = '.$intThreadId.'
                     AND `prev_post_id` = 0';
@@ -1344,7 +1343,6 @@ class Forum extends ForumLibrary {
         }
 
         if(!empty($arrSubscribers)){
-            $mail->CharSet = CONTREXX_CHARSET;
             $mail->IsHTML(false);
             $mail->From     = $this->_arrSettings['notification_from_email'];
             $mail->FromName = $this->_arrSettings['notification_from_name'];
