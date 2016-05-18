@@ -193,6 +193,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $this->executeCommandEmail($objTemplate, $arguments);
                         break;
                     
+                    case 'list':
+                        echo $this->executeCommandList($arguments);
+                        break;
+                    
                     default:
                         break;
                 }
@@ -1813,6 +1817,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $cron = $this->getController('Cron');
         $cron->sendNotificationMails();
     }
+    
+    public function executeCommandList($arguments) {
+        $em = $this->cx->getDb()->getEntityManager();
+        $multiSiteRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $websites = $multiSiteRepo->findAll();
+        
+        foreach ($websites as $website) {
+            if (
+                (!isset($arguments[1]) || $arguments[1] != '--all') &&
+                $website->getStatus() != \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE
+            ) {
+                continue;
+            }
+            echo $website->getName() . "\n";
+        }
+    }
 
     /**
      * Create new payment (handler Payrexx)
@@ -2903,6 +2923,37 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             header('Location: '.$this->getApiProtocol().$marketingWebsiteDomainName, true, 301);
             exit;
         }
+        // Allow access to command-mode only through Manager domain (-> Main Domain) and Customer Panel domain
+        // Other requests will be forwarded to the Marketing Website of MultiSite.
+        if (   $cx->getMode() == $cx::MODE_COMMAND
+            && php_sapi_name() == 'cli'
+        ) {
+            global $argv;
+            
+            if (!isset($argv[1]) || $argv[1] != $this->getName()) {
+                return;
+            }
+            if (!isset($argv[2]) || $argv[2] != 'pass') {
+                return;
+            }
+            if (!isset($argv[3])) {
+                echo 'Not enough arguments' . "\n";
+                return;
+            }
+            
+            $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\FileSystemWebsiteRepository();
+            $website = $multiSiteRepo->findByName(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/', $argv[3]);
+            
+            if (!$website) {
+                echo 'No such website: "' . $argv[3] . '"' . "\n";
+            }
+            
+            array_shift($argv); // MultiSite
+            array_shift($argv); // pass
+            array_shift($argv); // <websiteName>
+            $websiteCx = $this->deployWebsite($cx, $website);
+            die();
+        }
 
         // Allow access to frontend only on domain of Marketing Website and Customer Panel.
         // Other requests will be forwarded to the Marketing Website of MultiSite.
@@ -2936,7 +2987,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         $website = $multiSiteRepo->findByDomain(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/', $_SERVER['HTTP_HOST']);
         if ($website) {
-            $this->deployWebsite($website);
+            $this->deployWebsite($cx, $website);
             exit;
         }
 
@@ -2950,7 +3001,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return false;
     }
     
-    protected function deployWebsite($website) {
+    protected function deployWebsite($cx, $website) {
         // Recheck the system state of the Website Service Server (1st check
         // has already been performed before executing the preInit-Hooks),
         // but this time also lock the backend in case the system has been
