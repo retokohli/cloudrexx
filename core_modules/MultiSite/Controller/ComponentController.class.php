@@ -2945,7 +2945,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $website = $multiSiteRepo->findByName(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/', $argv[3]);
             
             if (!$website) {
-                echo 'No such website: "' . $argv[3] . '"' . "\n";
+                die('No such website: "' . $argv[3] . '"' . "\n");
             }
             
             array_shift($argv); // MultiSite
