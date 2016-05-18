@@ -1,8 +1,14 @@
 #!/bin/bash
 
-LOCKFILE=/tmp/cronjob.lock
-WEBSITE_LIST_FILE=/tmp/websiteList.txt
-PATH_TO_CLX=/var/www/cloudrexx/git/cloudrexx
+WEBSITE_LIST_FILE=`mktemp`
+LOCKFILE=$0
+PATH_TO_CLX=$1
+
+if [[ ! -d "$PATH_TO_CLX" ]]; then
+    echo "Usage:"
+    echo "cronjob.sh <pathToMainClx>"
+    exit 0
+fi
 
 # make sure script is only running once at a time
 (
@@ -19,8 +25,12 @@ cd $PATH_TO_CLX
 ./cx MultiSite list > $WEBSITE_LIST_FILE
 
 while read website; do
+    echo "Executing Cronjobs for Website '$website'"
     ./cx MultiSite pass $website Cron
 done < $WEBSITE_LIST_FILE
 
-) 200>$LOCKFILE
+echo "Script terminated"
+rm "$WEBSITE_LIST_FILE"
+
+) 200<$LOCKFILE
 
