@@ -1,6 +1,5 @@
 #!/bin/bash
 
-WEBSITE_LIST_FILE=`mktemp`
 LOCKFILE=$0
 PATH_TO_CLX=$1
 
@@ -20,6 +19,7 @@ then
     exit 1
 fi
 
+WEBSITE_LIST_FILE=`mktemp`
 cd $PATH_TO_CLX
 
 ./cx MultiSite list > $WEBSITE_LIST_FILE
