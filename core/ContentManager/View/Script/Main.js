@@ -1869,6 +1869,10 @@ cx.cm.performAction = function(action, pageId, nodeId) {
     var pageLang = pageElement.attr("class").split(" ")[0];
     var page = cx.cm.getPageStatus(nodeId, pageLang);
     var url = "index.php?cmd=JsonData&object=page&act=set&action=" + action + "&pageId=" + pageId;
+    // when page not exists create fallback page then perform action
+    if (pageId == '0') {
+        url += '&nodeId=' + nodeId + '&lang=' + cx.cm.getCurrentLang();
+    }
     switch (action) {
         case "new":
             cx.cm.showEditView(true);
@@ -1911,6 +1915,12 @@ cx.cm.performAction = function(action, pageId, nodeId) {
         type: "POST",
         data: url,
         success: function(json) {
+            if (json.data.reload) {
+                cx.cm.createJsTree();
+                cx.cm.loadHistory(cx.jQuery("#pageId").val());
+                cx.trigger("loadingEnd", "contentmanager", {});
+                return;
+            }
             switch (action) {
                 case "show":
                     page.visibility.visible = true;
