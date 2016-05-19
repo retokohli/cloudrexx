@@ -1247,6 +1247,11 @@ class Config
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Frontend)");
             }
+            if (!\Cx\Core\Setting\Controller\Setting::isDefined('favicon')
+                && !\Cx\Core\Setting\Controller\Setting::add('favicon', 'favicon.ico', 12,
+                \Cx\Core\Setting\Controller\Setting::TYPE_IMAGE, '{"type":"copy"}', 'site')) {
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for favicon");
+            }
 
             //administrationArea group
             \Cx\Core\Setting\Controller\Setting::init('Config', 'administrationArea','Yaml', $configPath);
