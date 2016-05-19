@@ -837,10 +837,18 @@ class InitCMS
      * @param integer $languageId Id of the desired language i.e. 1 for german
      * @return array The language data which has been loaded
      */
-    public function getComponentSpecificLanguageData($componentName, $frontend = true, $languageId) {
+    public function getComponentSpecificLanguageData($componentName, $frontend = true, $languageId = 0) {
         global $_ARRAYLANG;
 
         $mode = $frontend ? 'frontend' : 'backend';
+        
+        if (!$languageId) {
+            if ($frontend) {
+                $languageId = $this->frontendLangId;
+            } else {
+                $languageId = $this->backendLangId;
+            }
+        }
 
         if ($componentName == 'Core') {
             $componentName = lcfirst($componentName);
@@ -1013,17 +1021,7 @@ class InitCMS
                 // Variant 2:  Use any (GET) request parameters
                 // Note that this is generally unsafe, as most modules/methods do
                 // not rely on posted data only!
-                $arrParameter = null;
-                $uri = $_SERVER['QUERY_STRING'];
-                Html::stripUriParam($uri, 'userFrontendLangId');
-                parse_str($uri, $arrParameter);
-                $first = true;
-                foreach ($arrParameter as $name => $value) {
-                $action .=
-                    ($first ? '?' : '&amp;').
-                    $name.'='.urlencode(contrexx_input2raw($value));
-                $first = false;
-                }
+                $action = '';
                 // The dropdown is built below
             break;
             // TODO: Add your case here if variant 1 is enabled, too
@@ -1034,12 +1032,7 @@ class InitCMS
             case 'alias':
                 // The old way
                 $i = 0;
-                $arrVars = array();
-                if (isset($_SERVER['QUERY_STRING'])) {
-                    parse_str($_SERVER['QUERY_STRING'], $arrVars);
-                }
-                $query = isset($arrVars['cmd']) ? "?cmd=".$arrVars['cmd'] : "";
-                $return = "\n<form action='index.php".$query."' method='post' name='userFrontendLangIdForm'>\n";
+                $return = "\n<form action='' method='post' name='userFrontendLangIdForm'>\n";
                 $return .= "<select name='userFrontendLangId' size='1' class='chzn-select' onchange=\"document.forms['userFrontendLangIdForm'].submit()\">\n";
                 foreach ($this->arrLang as $id=>$value){
                     if ($this->arrLang[$id]['frontend']==1) {

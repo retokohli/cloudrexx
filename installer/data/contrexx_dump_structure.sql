@@ -611,7 +611,9 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `place_zip` varchar(10) DEFAULT NULL,
   `place_city` varchar(255) DEFAULT NULL,
   `place_country` varchar(255) DEFAULT NULL,
+  `place_website` VARCHAR(255) NOT NULL DEFAULT '',
   `place_link` varchar(255) NOT NULL,
+  `place_phone` VARCHAR(20) NOT NULL DEFAULT '',
   `place_map` varchar(255) NOT NULL,
   `host_type` tinyint(1) NOT NULL DEFAULT '1',
   `org_name` varchar(255) NOT NULL,
@@ -619,7 +621,9 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `org_zip` varchar(10) NOT NULL,
   `org_city` varchar(255) NOT NULL,
   `org_country` varchar(255) NOT NULL,
+  `org_website` VARCHAR(255) NOT NULL DEFAULT '',
   `org_link` varchar(255) NOT NULL,
+  `org_phone` VARCHAR(20) NOT NULL DEFAULT '',
   `org_email` varchar(255) NOT NULL,
   `host_mediadir_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
@@ -629,12 +633,12 @@ CREATE TABLE `contrexx_module_calendar_event_field` (
   `event_id` int(11) NOT NULL DEFAULT '0',
   `lang_id` varchar(225) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
-  `teaser` text DEFAULT NULL,
+  `teaser` text,
   `description` mediumtext,
   `redirect` varchar(255) NOT NULL,
   KEY `lang_field` (`title`),
   KEY `fk_contrexx_module_calendar_note_field_contrexx_module_calend1` (`event_id`),
-  FULLTEXT KEY `eventIndex` (`title`,`description`)
+  FULLTEXT KEY `eventIndex` (`title`,`teaser`,`description`)
 ) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_calendar_host` (
   `id` int(1) NOT NULL AUTO_INCREMENT,
@@ -2315,7 +2319,7 @@ CREATE TABLE `contrexx_module_mediadir_inputfields` (
   `required` int(10) NOT NULL,
   `order` int(10) NOT NULL,
   `show_in` int(10) NOT NULL,
-  `context_type` enum('none','title','address','zip','city','country') NOT NULL,
+  `context_type` enum('none','title','content','address','zip','city','country') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_mediadir_level_names` (
