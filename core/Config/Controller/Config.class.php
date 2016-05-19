@@ -1237,13 +1237,13 @@ class Config
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Protocol In Use");
             }            
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('portFrontendHTTP')
-                && !\Cx\Core\Setting\Controller\Setting::add('portFrontendHTTP', isset($existingConfig['portFrontendHTTP']) ? $existingConfig['portFrontendHTTP'] : 80, 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('portFrontendHTTP', isset($existingConfig['portFrontendHTTP']) ? $existingConfig['portFrontendHTTP'] : 80, 10,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
                     \DBG::log("Failed to add Setting entry for core HTTP Port (Frontend)");
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTP Port (Frontend)");
             }
             if (!\Cx\Core\Setting\Controller\Setting::isDefined('portFrontendHTTPS')
-                && !\Cx\Core\Setting\Controller\Setting::add('portFrontendHTTPS', isset($existingConfig['portFrontendHTTPS']) ? $existingConfig['portFrontendHTTPS'] : 443, 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('portFrontendHTTPS', isset($existingConfig['portFrontendHTTPS']) ? $existingConfig['portFrontendHTTPS'] : 443, 11,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'site')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for core HTTPS Port (Frontend)");
             }
