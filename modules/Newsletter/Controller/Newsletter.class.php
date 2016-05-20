@@ -425,10 +425,7 @@ class Newsletter extends NewsletterLib
                                 if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
                                     if (!empty($arrAssociatedInactiveLists) || !empty($arrAssociatedLists) && ($objList = $objDatabase->SelectLimit('SELECT id FROM '.DBPREFIX.'module_newsletter_category WHERE status=1 AND (id='.implode(' OR id=', $arrAssociatedLists).')' , 1)) && $objList->RecordCount() > 0) {
                                         if ($recipientId > 0) {
-                                            // Get subscribed list to send notification email
-                                            $arrPreAssociatedActiveLists = $this->_getAssociatedListsOfRecipient($recipientId);
                                             if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, 1, $arrAssociatedLists, $recipientLanguage)) {
-                                                $this->sendSubscriptionNotificationMail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname, $arrAssociatedLists, $arrPreAssociatedActiveLists);
                                                 array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED']);
                                                 $showForm = false;
                                             } else {
@@ -461,27 +458,41 @@ class Newsletter extends NewsletterLib
 
                                     // It could be that a user who has unsubscribed himself from the newsletter system (recipient = deactivated) would like to subscribe the newsletter again.
                                     // Therefore, lets see if we can find a recipient by the specified e-mail address that has been deactivated (status=0)
-                                    $objRecipient      = $objDatabase->SelectLimit("SELECT id, language, notes FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."' AND status=0", 1);
-                                    if ($objRecipient && !$objRecipient->EOF) {
-                                        $recipientId       = $objRecipient->fields['id'];
-                                        $recipientLanguage = $objRecipient->fields['language'];
-                                        
+                                    $objRecipient = $objDatabase->SelectLimit("SELECT id, language, notes, status FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
+                                    $recipientId  = $objRecipient && !$objRecipient->EOF ? $objRecipient->fields['id'] : 0;
+
+                                    if ($recipientId) {
+                                        $arrPreAssociatedActiveLists = array();
+                                        if ($objRecipient->fields['status']) {
+                                            // When recipient is active then load his associative list and send notification about the new/existing subscription lists
+                                            // otherwise someone could unsubscribe lists of someone else
+                                            $arrPreAssociatedActiveLists = $this->_getAssociatedListsOfRecipient($recipientId);
+                                            $arrAssociatedLists = array_merge($arrPreAssociatedActiveLists, $arrAssociatedLists);
+                                        }
+
                                         // Important: We intentionally do not load existing recipient list associations, due to the fact that the user most likely had
                                         // himself been unsubscribed from the newsletter system some time in the past. Therefore the user most likey does not want
                                         // to be subscribed to any lists more than to those he just selected
                                         $arrAssociatedLists = array_unique($arrAssociatedLists);
                                         $this->_setRecipientLists($recipientId, $arrAssociatedLists);
+                                        if (!$objRecipient->fields['status']) {
+                                            $recipientLanguage = $objRecipient->fields['language'];
 
-                                        // Important: We do not update the recipient's profile data here by the reason that we can't verify the recipient's identity at this point!
-                                        
-                                        if ($this->_sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
-                                            // Important: We must output the same status message as if the user has been newly added!
-                                            //            This shall prevent email-address-crawling-bots from detecting existing e-mail accounts.
+                                            // Important: We do not update the recipient's profile data here by the reason that we can't verify the recipient's identity at this point!
+
+                                            if ($this->_sendAuthorizeEmail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname)) {
+                                                // Important: We must output the same status message as if the user has been newly added!
+                                                //            This shall prevent email-address-crawling-bots from detecting existing e-mail accounts.
+                                                array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
+                                                $showForm = false;
+                                            } else {
+                                                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU']);
+                                                array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL']);
+                                            }
+                                        } else {
+                                            $this->sendSubscriptionNotificationMail($recipientEmail, $recipientSex, $recipientSalutation, $recipientFirstname, $recipientLastname, $arrAssociatedLists, $arrPreAssociatedActiveLists);
                                             array_push($arrStatusMessage['ok'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK']);
                                             $showForm = false;
-                                        } else {
-                                            array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU']);
-                                            array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL']);
                                         }
                                     }
                                 } else {
