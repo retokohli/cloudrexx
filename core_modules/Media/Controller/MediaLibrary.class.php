@@ -116,7 +116,7 @@ class MediaLibrary
     function _downloadMediaOLD()
     {
         if (is_file($this->path.$this->getFile)) {
-            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".$this->webPath.$this->getFile);
+            \Cx\Core\Csrf\Controller\Csrf::redirect($this->webPath.$this->getFile);
             exit;
         }
     }
@@ -1345,7 +1345,7 @@ END;
             return;
         }
         $redirect = \FWUser::getRedirectUrl(urlencode(base64_decode(urldecode($_REQUEST['redirect']))));
-        \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$redirect);
+        \Cx\Core\Csrf\Controller\Csrf::redirect($redirect);
         exit;
     }
 }
