@@ -1693,6 +1693,7 @@ namespace Cx\Core\Core\Controller {
             global $_CONFIG;
 
             $content = str_replace('{PAGE_URL}',        htmlspecialchars(\Env::get('init')->getPageUri()), $content);
+            $content = str_replace('{PAGE_URL_ENCODED}',urlencode(\Env::get('init')->getPageUri()), $content);
             $content = str_replace('{STANDARD_URL}',    \Env::get('init')->getUriBy('smallscreen', 0),     $content);
             $content = str_replace('{MOBILE_URL}',      \Env::get('init')->getUriBy('smallscreen', 1),     $content);
             $content = str_replace('{PRINT_URL}',       \Env::get('init')->getUriBy('printview', 1),       $content);
@@ -1905,6 +1906,7 @@ namespace Cx\Core\Core\Controller {
                 'APP_URL'                        => \Env::get('init')->getUriBy('appview', 1),
                 'LOGOUT_URL'                     => \Env::get('init')->getUriBy('section', 'logout'),
                 'PAGE_URL'                       => htmlspecialchars(\Env::get('init')->getPageUri()),
+                'PAGE_URL_ENCODED'               => urlencode(\Env::get('init')->getPageUri()),
                 'CURRENT_URL'                    => \Env::get('init')->getCurrentPageUri(),
                 'DATE'                           => showFormattedDate(),
                 'TIME'                           => date('H:i', time()),
