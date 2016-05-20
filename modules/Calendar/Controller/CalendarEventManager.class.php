@@ -902,7 +902,16 @@ class CalendarEventManager extends CalendarLibrary
             if(($objEvent->registration == 1) && (time() <= $objEvent->startDate->getTimestamp())) {  
                 
                 if($numRegistrations < $objEvent->numSubscriber || $objEvent->external == 1) {
-                    $regLinkSrc = $hostUri. '/' .CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate->getTimestamp();
+                    if ($hostUri) {
+                        $regLinkSrc = $hostUri. '/' .CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate->getTimestamp();
+                    } else {
+                        $params = array(
+                            'id'    => $objEvent->id,
+                            'date'  => $objEvent->startDate->getTimestamp(),
+                        );
+                        $regLinkSrc = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', FRONTEND_LANG_ID, $params)->toString();
+                    }
+
                     $regLink = '<a href="'.$regLinkSrc.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_EVENT_REGISTRATION_LINK'    => $regLink,
