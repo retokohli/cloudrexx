@@ -52,7 +52,7 @@ class DefaultEventListener implements EventListener {
     }
     
     /**
-     * Get component a controller object
+     * Get a component controller object
      * 
      * @param string $name  component name
      * @return \Cx\Core\Core\Model\Entity\SystemComponentController 
