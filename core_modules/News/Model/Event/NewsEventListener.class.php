@@ -149,7 +149,7 @@ class NewsEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                                 )
                                 SELECT `news_id`, 
                                         ' . $langId . ',
-                                        `is_active`, 
+                                        0,
                                         `title`, 
                                         `text`, 
                                         `teaser_text` 
