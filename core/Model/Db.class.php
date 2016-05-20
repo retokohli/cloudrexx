@@ -190,7 +190,15 @@ namespace Cx\Core\Model {
             $modes = $statement->fetch(\PDO::FETCH_NUM);
             $sqlModes = explode(',', $modes[0]);
             array_walk($sqlModes, 'trim');
-            $sqlModes = array_filter($sqlModes, function($e) {if (in_array($e, array('ONLY_FULL_GROUP_BY', 'STRICT_TRANS_TABLES'))) {return false;} return true;});
+            $sqlModes = array_filter(
+                $sqlModes,
+                function($e) {
+                    if (in_array($e, array('ONLY_FULL_GROUP_BY', 'STRICT_TRANS_TABLES'))) {
+                        return false;
+                    }
+                    return true;
+                }
+            );
             $this->pdo->exec('SET SESSION sql_mode = \'' . implode(',', $sqlModes) . '\'');
 
             \Env::set('pdo', $this->pdo);
