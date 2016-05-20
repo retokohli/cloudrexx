@@ -189,11 +189,10 @@ namespace Cx\Core\Model {
             $statement = $this->pdo->query('SELECT @@SESSION.sql_mode');
             $modes = $statement->fetch(\PDO::FETCH_NUM);
             $sqlModes = explode(',', $modes[0]);
-            array_walk($sqlModes, 'trim');
             $sqlModes = array_filter(
                 $sqlModes,
                 function($e) {
-                    if (in_array($e, array('ONLY_FULL_GROUP_BY', 'STRICT_TRANS_TABLES'))) {
+                    if (in_array(trim($e), array('ONLY_FULL_GROUP_BY', 'STRICT_TRANS_TABLES'))) {
                         return false;
                     }
                     return true;
