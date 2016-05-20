@@ -901,7 +901,7 @@ class CalendarEventManager extends CalendarLibrary
              
             if(($objEvent->registration == 1) && (time() <= $objEvent->startDate->getTimestamp())) {  
                 
-                if(   ($objEvent->registration && empty($objEvent->numSubscriber))
+                if (   empty($objEvent->numSubscriber)
                    || !\FWValidator::isEmpty($objEvent->getFreePlaces())
                    || $objEvent->external == 1
                 ) {
