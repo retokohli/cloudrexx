@@ -93,7 +93,7 @@ class TestCommand extends Command {
         $systemConfig      = \Env::get('config');
         $useCustomizing    = isset($systemConfig['useCustomizings']) && $systemConfig['useCustomizings'] == 'on';
         
-        $arrComponentTypes = array('core', 'core_module', 'module');                
+        $arrComponentTypes = array('core', 'core_module', 'module', 'lib');                
         
         // check for the component type
         $componentType = (isset($arguments[2]) && in_array($arguments[2], $arrComponentTypes)) ? $arguments[2] : null;
@@ -114,7 +114,7 @@ class TestCommand extends Command {
         
         if ($componentType && !$componentName) {
             $this->getTestingFoldersByType($componentType, $useCustomizing);
-        } elseif ($componentName) {
+        } else if ($componentName) {
             $this->getTestingFoldersByName($componentName, $useCustomizing);
         }
         
@@ -182,7 +182,7 @@ class TestCommand extends Command {
      */
     private function getTestingFoldersByName($componentName, $useCustomizing)
     {
-        $arrComponentTypes = array('core', 'core_module', 'module');
+        $arrComponentTypes = array('core', 'core_module', 'module', 'lib');
         
         foreach ($arrComponentTypes as $cType) {
             $componentFolder = $this->getModuleFolder($componentName, $cType, $useCustomizing);
@@ -244,6 +244,18 @@ class TestCommand extends Command {
                     $componentFolder = $this->getModuleFolder($component, $componentType, $useCustomizing);
                     $this->addTestingFolderToArray($component, $componentFolder);
                 }
+            }
+        }
+        
+        // lib
+        if ($componentType == 'lib') {
+            $basepath = ASCMS_DOCUMENT_ROOT . \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($componentType) . '/FRAMEWORK';
+            foreach (new \DirectoryIterator($basepath) as $dir) {
+                if (!$dir->isDir() || $dir->isDot()) {
+                    continue;
+                }
+                $componentName = $dir->getFilename();
+                $this->addTestingFolderToArray($componentName, $basepath . '/' . $componentName);
             }
         }
     }
