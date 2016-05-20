@@ -4018,6 +4018,10 @@ INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media1_f
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media2_frontend_managable','off');
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media3_frontend_managable','off');
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media4_frontend_managable','off');
+INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media1_frontend_search','off');
+INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media2_frontend_search','off');
+INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media3_frontend_search','off');
+INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media4_frontend_search','off');
 INSERT INTO `contrexx_module_mediadir_categories` (`id`, `parent_id`, `order`, `show_subcategories`, `show_entries`, `picture`, `active`) VALUES (177,0,0,0,1,'',1);
 INSERT INTO `contrexx_module_mediadir_categories` (`id`, `parent_id`, `order`, `show_subcategories`, `show_entries`, `picture`, `active`) VALUES (178,0,0,0,1,'',1);
 INSERT INTO `contrexx_module_mediadir_categories` (`id`, `parent_id`, `order`, `show_subcategories`, `show_entries`, `picture`, `active`) VALUES (179,0,0,0,1,'',1);
