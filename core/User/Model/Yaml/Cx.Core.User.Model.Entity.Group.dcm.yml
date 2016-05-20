@@ -32,9 +32,6 @@ Cx\Core\User\Model\Entity\Group:
       type: string
       length: 255
       nullable: false
-    #toolbar:
-    #  type: integer
-    #  length: 6
   manyToMany:
     user:
       targetEntity: Cx\Core\User\Model\Entity\User
