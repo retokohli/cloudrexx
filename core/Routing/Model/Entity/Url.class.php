@@ -15,7 +15,34 @@ class UrlException extends \Cx\Lib\Net\Model\Entity\UrlException {}
 /**
  * Represents a Cloudrexx URL (knows about internal/external, frontend/backend/command, forces protocol, ports)
  * @todo add missing docblocks
- * @todo support cli
+ * @todo handle get and post params (contrexx_input2raw())
+ * Future resolving process:
+ * // to get mode:
+ * $request = \Cx\Core\Routing\Model\Entity\Request::fromCurrent();
+ * $url = $request->getUrl();
+ * $cx->mode = $url->getMode();
+ * 
+ * // resolving:
+ * switch ($cx->mode) {
+ *     case 'frontend':
+ *         $page = $url->getPage(); // could be any type of page including alias
+ *         $isAdjusting = true;
+ *         while ($isAdjusting) {
+ *             $isAdjusting = false;
+ *             if (external redirect || !$page) { // type redirect (internal or external)
+ *                 redirect to $url->getTargetPage()!
+ *             }
+ *             if (internal redirect) { // types symlink and fallback
+ *                 $isAdjusting = false;
+ *                 $page = $page->getTargetPage();
+ *             }
+ *         }
+ *         break;
+ *     case 'command':
+ *     case 'backend':
+ *         $url->getComponent()
+ *         $url->getArguments()
+ * }
  */
 abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
     
@@ -27,7 +54,7 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
         try {
             switch (static::getMode($url)) {
                 case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
-                    return new FrontendUrl($stringUrl); // virtual language dirs and can be generated from pages and so
+                    return new FrontendUrl($stringUrl); // resolving (incl. aliases), virtual language dirs and can be generated from pages and so
                     break;
                 case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
                     return new BackendUrl($stringUrl); // can be generated from component backend commands
@@ -52,10 +79,15 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
      * @throws UrlException if Url is not internal
      * @return string One of the modes defined in Cx class
      */
-    public static function getMode($internalUrl) {
+    protected static function getMode($internalUrl) {
         // sort out externals
         if (!static::isInternal($internalUrl)) {
             throw new UrlException('Not an internal Url');
+        }
+        
+        // commmand line is always command mode
+        if (php_sapi_name() == 'cli') {
+            return \Cx\Core\Core\Controller\Cx::MODE_COMMAND;
         }
         
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
@@ -79,6 +111,8 @@ abstract class Url extends \Cx\Lib\Net\Model\Entity\Url {
                 break;
         }
     }
+    
+    public abstract function getMode();
     
     /**
      * Tells wheter the given Url points to this CLX installation
