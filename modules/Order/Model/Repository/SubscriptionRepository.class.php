@@ -96,7 +96,7 @@ class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
         $subscriptions = array();
         foreach ($products as $product) {
             $ids  = array();
-            $repo = $this->getEntityManager()->getRepository($product->getEntityClass());
+                $repo = $product->getEntityClass() ? $this->getEntityManager()->getRepository($product->getEntityClass()) : null;
             if ($repo && method_exists($repo, 'findByTerm')) {
                 if (!empty($filter['term'])) {
                     $entities = $repo->findByTerm($filter['term']);
