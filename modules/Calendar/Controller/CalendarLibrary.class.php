@@ -132,6 +132,13 @@ class CalendarLibrary
     public $arrSettings = array();
     
     /**
+     * Static settings array to cache the fetched data from the database
+     *
+     * @var array 
+     */
+    public static $settings = array();
+
+    /**
      * Community group array
      *
      * @access public
@@ -317,6 +324,14 @@ class CalendarLibrary
             return;
         }
         
+        // hotfix: this fixes the issue that the settings are being fetch from the
+        // database over and over again.
+        // This is just workaround without having to refactor the whole implementation of CalendarLibrary::$arrSettings
+        if (isset(static::$settings[$this->moduleTablePrefix])) {
+            $this->arrSettings = static::$settings[$this->moduleTablePrefix];
+            return;
+        }
+
     	$arrSettings = array();
         $arrDateSettings =  array(
                             'separatorDateList','separatorDateTimeList', 'separatorSeveralDaysList', 'separatorTimeList',
@@ -348,6 +363,7 @@ class CalendarLibrary
             }
         }
         
+        static::$settings[$this->moduleTablePrefix] = $arrSettings;
         $this->arrSettings = $arrSettings;
     }
     
@@ -396,12 +412,8 @@ class CalendarLibrary
      */
     function getDateFormat($type=null)
     {
-        global $objDatabase;
-        
-        $objDateFormat = $objDatabase->Execute("SELECT value FROM  ".DBPREFIX."module_".$this->moduleTablePrefix."_settings WHERE name = 'dateFormat' LIMIT 1");
-        if ($objDateFormat !== false) {        
-            $dateFormat = $objDateFormat->fields['value'];      
-        }
+        self::getSettings();
+        $dateFormat = $this->arrSettings['dateFormat'];
         
         if($type == 1) {
             switch ($dateFormat) {
