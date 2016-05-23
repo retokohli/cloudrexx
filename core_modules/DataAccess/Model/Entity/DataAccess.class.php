@@ -31,10 +31,10 @@
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  core_dataaccess
+ * @subpackage  coremodule_dataaccess
  */
 
-namespace Cx\Core\DataAccess\Model\Entity;
+namespace Cx\Core_Modules\DataAccess\Model\Entity;
 
 /**
  * DataAccess
@@ -42,7 +42,7 @@ namespace Cx\Core\DataAccess\Model\Entity;
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  core_dataaccess
+ * @subpackage  coremodule_dataaccess
  */
 
 class DataAccess extends \Cx\Model\Base\EntityBase {
@@ -57,7 +57,7 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     protected $name;
 
     /**
-     * @var string $dataSource
+     * @var Cx\Core\DataSource\Model\Entity\DataSource
      */
     protected $dataSource;
 
@@ -77,7 +77,7 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     protected $type;
 
     /**
-     * @var Cx\Core\DataAccess\Model\Entity\DataAccessApiKey
+     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey
      */
     protected $dataAccessApiKeys;
 
@@ -126,7 +126,7 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
      *
      * @param string $dataSource
      */
-    public function setDataSource($dataSource)
+    public function setDataSource(\Cx\Core\DataSource\Model\Entity\DataSource $dataSource)
     {
         $this->dataSource = $dataSource;
     }
@@ -204,9 +204,9 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     /**
      * Add dataAccessApiKeys
      *
-     * @param Cx\Core\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys
+     * @param Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys
      */
-    public function addDataAccessApiKeys(\Cx\Core\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys)
+    public function addDataAccessApiKeys(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys)
     {
         $this->dataAccessApiKeys[] = $dataAccessApiKeys;
     }

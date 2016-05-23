@@ -26,45 +26,45 @@
  */
 
 /**
- * DataAccessApiKey
+ * ApiKey
  *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  core_dataaccess
+ * @subpackage  coremodule_dataaccess
  */
 
-namespace Cx\Core\DataAccess\Model\Entity;
+namespace Cx\Core_Modules\DataAccess\Model\Entity;
 
 /**
- * DataAccessApiKey
+ * ApiKey
  *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  core_dataaccess
+ * @subpackage  coremodule_dataaccess
  */
-class DataAccessApiKey extends \Cx\Model\Base\EntityBase {
+
+class ApiKey extends \Cx\Model\Base\EntityBase {
     /**
-     * @var integer id
+     * @var integer $id
      */
     protected $id;
 
     /**
-     * @var boolean $readOnly
-     */
-    protected $readOnly;
-
-    /**
-     * @var Cx\Core\DataAccess\Model\Entity\ApiKey
+     * @var string $apiKey
      */
     protected $apiKey;
 
     /**
-     * @var Cx\Core\DataAccess\Model\Entity\DataAccess
+     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey
      */
-    protected $dataAccess;
+    protected $dataAccessApiKeys;
 
+    public function __construct()
+    {
+        $this->dataAccessApiKeys = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -77,31 +77,11 @@ class DataAccessApiKey extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set readOnly
-     *
-     * @param boolean $readOnly
-     */
-    public function setReadOnly($readOnly)
-    {
-        $this->readOnly = $readOnly;
-    }
-
-    /**
-     * Get readOnly
-     *
-     * @return boolean $readOnly
-     */
-    public function getReadOnly()
-    {
-        return $this->readOnly;
-    }
-
-    /**
      * Set apiKey
      *
-     * @param Cx\Core\DataAccess\Model\Entity\ApiKey $apiKey
+     * @param string $apiKey
      */
-    public function setApiKey(\Cx\Core\DataAccess\Model\Entity\ApiKey $apiKey)
+    public function setApiKey($apiKey)
     {
         $this->apiKey = $apiKey;
     }
@@ -109,7 +89,7 @@ class DataAccessApiKey extends \Cx\Model\Base\EntityBase {
     /**
      * Get apiKey
      *
-     * @return Cx\Core\DataAccess\Model\Entity\ApiKey $apiKey
+     * @return string $apiKey
      */
     public function getApiKey()
     {
@@ -117,22 +97,22 @@ class DataAccessApiKey extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set dataAccess
+     * Add dataAccessApiKeys
      *
-     * @param Cx\Core\DataAccess\Model\Entity\DataAccess $dataAccess
+     * @param Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys
      */
-    public function setDataAccess(\Cx\Core\DataAccess\Model\Entity\DataAccess $dataAccess)
+    public function addDataAccessApiKeys(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys)
     {
-        $this->dataAccess = $dataAccess;
+        $this->dataAccessApiKeys[] = $dataAccessApiKeys;
     }
 
     /**
-     * Get dataAccess
+     * Get dataAccessApiKeys
      *
-     * @return Cx\Core\DataAccess\Model\Entity\DataAccess $dataAccess
+     * @return Doctrine\Common\Collections\Collection $dataAccessApiKeys
      */
-    public function getDataAccess()
+    public function getDataAccessApiKeys()
     {
-        return $this->dataAccess;
+        return $this->dataAccessApiKeys;
     }
 }

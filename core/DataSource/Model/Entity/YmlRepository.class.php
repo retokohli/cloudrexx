@@ -26,24 +26,23 @@
  */
 
 /**
- * ApiKeyRepository
+ * YmlRepository
  *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  core_dataaccess
+ * @subpackage  core_datasource
  */
 
-namespace Cx\Core\DataAccess\Model\Repository;
-
-use Doctrine\ORM\EntityRepository;
+namespace Cx\Core\DataSource\Model\Entity;
 
 /**
- * ApiKeyRepository
+ * YmlRepository
  *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
- * @subpackage  core_dataaccess
+ * @subpackage  core_datasource
  */
-class ApiKeyRepository extends EntityRepository {}
+
+class YmlRepository extends DataSource {}

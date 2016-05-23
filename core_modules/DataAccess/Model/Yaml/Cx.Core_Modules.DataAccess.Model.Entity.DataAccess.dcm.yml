@@ -1,7 +1,7 @@
-Cx\Core\DataAccess\Model\Entity\DataAccess:
+Cx\Core_Modules\DataAccess\Model\Entity\DataAccess:
     type: entity
-    table: core_dataaccess_data_access
-    repositoryClass: Cx\Core\DataAccess\Model\Repository\DataAccessRepository
+    table: core_module_dataaccess_data_access
+    repositoryClass: Cx\Core_Modules\DataAccess\Model\Repository\DataAccessRepository
     indexes:
         fk_DataAccess_Permission1_idx:
             columns: [ read_permission ]
@@ -14,10 +14,6 @@ Cx\Core\DataAccess\Model\Entity\DataAccess:
         name:
             type: string
             length: 45
-        dataSource:
-            type: string
-            length: 45
-            column: data_source
         fieldList:
             type: array
             column: field_list
@@ -32,7 +28,7 @@ Cx\Core\DataAccess\Model\Entity\DataAccess:
             columns: [ name ]
     oneToMany:
         dataAccessApiKeys:
-            targetEntity: Cx\Core\DataAccess\Model\Entity\DataAccessApiKey
+            targetEntity: Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey
             mappedBy: dataAccess
             joinColumn:
                 name: id
@@ -43,4 +39,10 @@ Cx\Core\DataAccess\Model\Entity\DataAccess:
             inversedBy: dataAccesses
             joinColumn:
                 name: read_permission
+                referencedColumnName: id
+        dataSource:
+            targetEntity: Cx\Core\DataSource\Model\Entity\DataSource
+            inversedBy: dataAccesses
+            joinColumn:
+                name: data_source_id
                 referencedColumnName: id
