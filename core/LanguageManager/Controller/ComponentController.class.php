@@ -46,6 +46,11 @@ namespace Cx\Core\LanguageManager\Controller;
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener {
     
+    /**
+     * @var array List of components who's language already is in $_ARRAYLANG
+     */
+    protected $componentsWithLoadedLang = array();
+    
     public function getControllerClasses() {
         // Return an empty array here to let the component handler know that there
         // does not exist a backend, nor a frontend controller of this component.
@@ -66,13 +71,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         // we might be in a hook where lang is not yet initialized (before resolve)
         if (!count($_ARRAYLANG)) {
-            return;
+            $_ARRAYLANG = array();
         }
         
         $frontend = $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND;
         $objInit = \Env::get('init');
         switch ($eventName) {
             case 'preComponent':
+                // Skip if this component's lang already is in $_ARRAYLANG
+                if (
+                    in_array(
+                        $eventArgs['componentName'],
+                        $this->componentsWithLoadedLang
+                    )
+                ) {
+                    return;
+                }
+                
                 $_ARRAYLANG = array_merge(
                     $_ARRAYLANG,
                     $objInit->getComponentSpecificLanguageData(
@@ -80,6 +95,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $frontend
                     )
                 );
+                $this->componentsWithLoadedLang[] = $eventArgs['componentName'];
                 break;
         }
     }
