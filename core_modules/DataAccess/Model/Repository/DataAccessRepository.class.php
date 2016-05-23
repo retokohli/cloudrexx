@@ -62,6 +62,7 @@ class DataAccessRepository extends EntityRepository {
         // do we have a DataAccess for this DataSource?
         $dataAccesses = $dataSource->getDataAccesses();
         if (!$dataAccesses->count()) {
+            \DBG::msg('This DataSource has no DataAccess!');
             return false;
         }
         
@@ -87,6 +88,7 @@ class DataAccessRepository extends EntityRepository {
         // this request. If there's at least one, this user has access to this
         // DataAccess object.
         if (!count($validApiKeys)) {
+            \DBG::msg('There\'s no DataAccess with a matching API key!');
             return false;
         }
         
@@ -106,6 +108,7 @@ class DataAccessRepository extends EntityRepository {
                 return true;
             }
         }
+        \DBG::msg('Your API key does not allow access to this DataSource!');
         return false;
     }
 }
