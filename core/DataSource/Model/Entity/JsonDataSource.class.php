@@ -45,4 +45,10 @@ namespace Cx\Core\DataSource\Model\Entity;
  * @subpackage  core_datasource
  */
 
-class JsonDataSource extends DataSource {}
+class JsonDataSource extends DataSource {
+    
+    public function get($elementId, $filter, $order, $limit, $offset) {
+        return array();
+    }
+}
+
