@@ -784,6 +784,9 @@ class InitCMS
         if(!isset($_ARRAYLANG))
             $_ARRAYLANG = array();
 
+        if(!isset($_CORELANG))
+            $_CORELANG = array();
+
         if ($this->mode == 'backend') {
             $langId = $this->backendLangId;
         } else {
