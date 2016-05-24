@@ -502,7 +502,7 @@ class CalendarEvent extends CalendarLibrary
     public $cancellationCount = 0;
     
     /**
-     * Array of language IDs the event has been fetched form the database from already
+     * Array of language IDs the event has been fetched from the database from already
      * @var array
      */
     protected $fetchedLangIds = array();
@@ -773,7 +773,9 @@ class CalendarEvent extends CalendarLibrary
         $this->fetchedLangIds[] = $langId;
 
         // check if events of all languages shall be listed (not only those available in the requested language)
-        if (\Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND || $this->arrSettings['showEventsOnlyInActiveLanguage'] == 2) {
+        if (   \Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+            || $this->arrSettings['showEventsOnlyInActiveLanguage'] == 2
+        ) {
             // try to refetch the event in case it does not exist in the current requested language
             if($objResult->RecordCount() == 0) {
                 $langIdsToFetch = array_diff(array_keys(\FWLanguage::getActiveFrontendLanguages()), $this->fetchedLangIds);
