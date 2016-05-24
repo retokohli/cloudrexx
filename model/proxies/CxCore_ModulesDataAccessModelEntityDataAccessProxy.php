@@ -81,18 +81,6 @@ class CxCore_ModulesDataAccessModelEntityDataAccessProxy extends \Cx\Core_Module
         return parent::getAccessCondition();
     }
 
-    public function setType($type)
-    {
-        $this->_load();
-        return parent::setType($type);
-    }
-
-    public function getType()
-    {
-        $this->_load();
-        return parent::getType();
-    }
-
     public function addDataAccessApiKeys(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys)
     {
         $this->_load();
@@ -105,16 +93,28 @@ class CxCore_ModulesDataAccessModelEntityDataAccessProxy extends \Cx\Core_Module
         return parent::getDataAccessApiKeys();
     }
 
-    public function setPermission(\Cx\Core_Modules\Access\Model\Entity\Permission $permission)
+    public function setReadPermission(\Cx\Core_Modules\Access\Model\Entity\Permission $readPermission)
     {
         $this->_load();
-        return parent::setPermission($permission);
+        return parent::setReadPermission($readPermission);
     }
 
-    public function getPermission()
+    public function getReadPermission()
     {
         $this->_load();
-        return parent::getPermission();
+        return parent::getReadPermission();
+    }
+
+    public function setWritePermission(\Cx\Core_Modules\Access\Model\Entity\Permission $writePermission)
+    {
+        $this->_load();
+        return parent::setWritePermission($writePermission);
+    }
+
+    public function getWritePermission()
+    {
+        $this->_load();
+        return parent::getWritePermission();
     }
 
     public function __get($name)
@@ -156,7 +156,7 @@ class CxCore_ModulesDataAccessModelEntityDataAccessProxy extends \Cx\Core_Module
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'name', 'fieldList', 'accessCondition', 'type', 'dataAccessApiKeys', 'permission', 'dataSource');
+        return array('__isInitialized__', 'id', 'name', 'fieldList', 'accessCondition', 'dataAccessApiKeys', 'readPermission', 'writePermission', 'dataSource');
     }
 
     public function __clone()

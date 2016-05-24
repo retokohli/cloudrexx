@@ -26,10 +26,3 @@ Cx\Core_Modules\Access\Model\Entity\Permission:
             type: array
             column: valid_access_ids
             nullable: true
-    oneToMany:
-        dataAccesses:
-            targetEntity: Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
-            mappedBy: permission
-            joinColumn:
-                name: id
-                referencedColumnName: read_permission

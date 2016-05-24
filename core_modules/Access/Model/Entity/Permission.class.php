@@ -98,12 +98,7 @@ class Permission extends \Cx\Model\Base\EntityBase {
      * @var array
      */
     protected $validAccessIds   = array();
-    
-    /**
-     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
-     */
-    protected $dataAccesses;
-    
+
     /**
      * Callback function name
      * 
@@ -135,7 +130,6 @@ class Permission extends \Cx\Model\Base\EntityBase {
             $this->requiresLogin = true;
         }
         $this->setCallback($callback);
-        $this->dataAccesses     = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -246,26 +240,6 @@ class Permission extends \Cx\Model\Base\EntityBase {
     public function getvalidAccessIds()
     {
         return $this->validAccessIds;
-    }
-
-    /**
-     * Set the data access
-     *
-     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses
-     */
-    public function setDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses)
-    {
-        $this->dataAccesses[] = $dataAccesses;
-    }
-
-    /**
-     * Get the data access
-     *
-     * @return type
-     */
-    public function getDataAccesses()
-    {
-        return $this->dataAccesses;
     }
 
     /**

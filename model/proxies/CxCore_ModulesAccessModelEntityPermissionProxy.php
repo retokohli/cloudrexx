@@ -93,18 +93,6 @@ class CxCore_ModulesAccessModelEntityPermissionProxy extends \Cx\Core_Modules\Ac
         return parent::getvalidAccessIds();
     }
 
-    public function setDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses)
-    {
-        $this->_load();
-        return parent::setDataAccesses($dataAccesses);
-    }
-
-    public function getDataAccesses()
-    {
-        $this->_load();
-        return parent::getDataAccesses();
-    }
-
     public function setCallback($callback)
     {
         $this->_load();
@@ -163,7 +151,7 @@ class CxCore_ModulesAccessModelEntityPermissionProxy extends \Cx\Core_Modules\Ac
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'allowedProtocols', 'allowedMethods', 'requiresLogin', 'validUserGroups', 'validAccessIds', 'dataAccesses');
+        return array('__isInitialized__', 'id', 'allowedProtocols', 'allowedMethods', 'requiresLogin', 'validUserGroups', 'validAccessIds');
     }
 
     public function __clone()
