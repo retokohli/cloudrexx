@@ -375,36 +375,36 @@ class CalendarForm extends CalendarLibrary
 
                 if ($arrLang['id'] == $_LANGID) {
                     if (   $this->inputfields[$intFieldId]['name'][0] == $strFieldName
-                        && $this->inputfields[$intFieldId]['name'][$arrLang['id']] != $arrField['name'][$arrLang['id']]
+                        && $this->inputfields[$intFieldId]['name'][$arrLang['id']] != $strFieldName
                     ) {
                         $strFieldName = $arrField['name'][$_LANGID];
                     }
                     if (   $this->inputfields[$intFieldId]['default_value'][0] == $strFieldDefaultValue
-                        && $this->inputfields[$intFieldId]['default_value'][$arrLang['id']] != $arrField['default_value'][$arrLang['id']]
+                        && $this->inputfields[$intFieldId]['default_value'][$arrLang['id']] != $strFieldDefaultValue
                     ) {
                         $strFieldDefaultValue = $arrField['default_value'][$_LANGID];
                     }
                     if (   (   $this->inputfields[$intFieldId]['name'][0] != $arrField['name'][0]
-                            && $this->inputfields[$intFieldId]['name'][$arrLang['id']] == $arrField['name'][$arrLang['id']]
+                            && $this->inputfields[$intFieldId]['name'][$arrLang['id']] == $strFieldName
                            )
                         || (   $this->inputfields[$intFieldId]['name'][0] != $arrField['name'][0]
-                            && $this->inputfields[$intFieldId]['name'][$arrLang['id']] != $arrField['name'][$arrLang['id']]
+                            && $this->inputfields[$intFieldId]['name'][$arrLang['id']] != $strFieldName
                            )
                         || (   $this->inputfields[$intFieldId]['name'][0] == $arrField['name'][0]
-                            && $this->inputfields[$intFieldId]['name'][$arrLang['id']] == $arrField['name'][$arrLang['id']]
+                            && $this->inputfields[$intFieldId]['name'][$arrLang['id']] == $strFieldName
                            )
                     ) {
                         $strFieldName = $arrField['name'][0];
                     }
 
                     if (   (   $this->inputfields[$intFieldId]['default_value'][0] != $arrField['default_value'][0]
-                            && $this->inputfields[$intFieldId]['default_value'][$arrLang['id']] == $arrField['default_value'][$arrLang['id']]
+                            && $this->inputfields[$intFieldId]['default_value'][$arrLang['id']] == $strFieldDefaultValue
                            )
                         || (   $this->inputfields[$intFieldId]['default_value'][0] != $arrField['default_value'][0]
-                            && $this->inputfields[$intFieldId]['default_value'][$arrLang['id']] != $arrField['default_value'][$arrLang['id']]
+                            && $this->inputfields[$intFieldId]['default_value'][$arrLang['id']] != $strFieldDefaultValue
                            )
                         || (    $this->inputfields[$intFieldId]['default_value'][0] == $arrField['default_value'][0]
-                            && $this->inputfields[$intFieldId]['default_value'][$arrLang['id']] == $arrField['default_value'][$arrLang['id']]
+                            && $this->inputfields[$intFieldId]['default_value'][$arrLang['id']] == $strFieldDefaultValue
                            )
                     ) {
                         $strFieldDefaultValue = $arrField['default_value'][0];
