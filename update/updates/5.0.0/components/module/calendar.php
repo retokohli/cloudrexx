@@ -279,7 +279,8 @@ function _calendarUpdate()
                         'ticket_sales'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email_template'),
                         'num_seating'                        => array('type' => 'text', 'after' => 'ticket_sales'),
                         'series_status'                      => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'num_seating'),
-                        'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_status'),
+                        'independent_series'                 => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '1', 'after' => 'series_status'),
+                        'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'independent_series'),
                         'series_pattern_count'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_type'),
                         'series_pattern_weekday'             => array('type' => 'VARCHAR(7)', 'after' => 'series_pattern_count'),
                         'series_pattern_day'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_weekday'),
@@ -418,7 +419,8 @@ function _calendarUpdate()
                     'ticket_sales'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email_template'),
                     'num_seating'                        => array('type' => 'text', 'after' => 'ticket_sales'),
                     'series_status'                      => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'num_seating'),
-                    'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_status'),
+                    'independent_series'                 => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '1', 'after' => 'series_status'),
+                    'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'independent_series'),
                     'series_pattern_count'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_type'),
                     'series_pattern_weekday'             => array('type' => 'VARCHAR(7)', 'after' => 'series_pattern_count'),
                     'series_pattern_day'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_weekday'),
@@ -479,6 +481,8 @@ function _calendarUpdate()
                     'eventIndex' => array('fields' => array('title', 'teaser', 'description'), 'type' => 'FULLTEXT')
                 )
             );
+
+            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_calendar_event` SET `independent_series` = 0");
 
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -923,7 +927,8 @@ class CalendarUpdate
                         'ticket_sales'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email_template'),
                         'num_seating'                        => array('type' => 'text', 'after' => 'ticket_sales'),
                         'series_status'                      => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'num_seating'),
-                        'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_status'),
+                        'independent_series'                 => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '1', 'after' => 'series_status'),
+                        'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'independent_series'),
                         'series_pattern_count'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_type'),
                         'series_pattern_weekday'             => array('type' => 'VARCHAR(7)', 'after' => 'series_pattern_count'),
                         'series_pattern_day'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_weekday'),
