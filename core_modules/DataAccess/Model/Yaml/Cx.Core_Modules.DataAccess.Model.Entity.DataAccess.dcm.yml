@@ -13,7 +13,7 @@ Cx\Core_Modules\DataAccess\Model\Entity\DataAccess:
     fields:
         name:
             type: string
-            length: 45
+            size: 45
         fieldList:
             type: array
             column: field_list
