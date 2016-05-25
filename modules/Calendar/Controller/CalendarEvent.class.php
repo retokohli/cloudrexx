@@ -541,6 +541,14 @@ class CalendarEvent extends CalendarLibrary
     public $place_country;
     
     /**
+     * Event place website
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_website;
+    
+    /**
      * Event map
      * 
      * @access public
@@ -555,6 +563,14 @@ class CalendarEvent extends CalendarLibrary
      * @var string
      */
     public $place_link;
+    
+    /**
+     * Event place phone
+     * 
+     * @access public
+     * @var string
+     */
+    public $place_phone;
     
     /**
      * Event organizer name
@@ -597,12 +613,28 @@ class CalendarEvent extends CalendarLibrary
     public $org_country;
     
     /**
+     * Event organizer website 
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_website;
+    
+    /**
      * Event organizer link
      * 
      * @access public
      * @var string
      */
     public $org_link;
+    
+    /**
+     * Event organizer phone
+     * 
+     * @access public
+     * @var string
+     */
+    public $org_phone;
     
     /**
      * Event organizer email
@@ -720,7 +752,9 @@ class CalendarEvent extends CalendarLibrary
                          event.place_zip AS place_zip, 
                          event.place_city AS place_city, 
                          event.place_country AS place_country, 
+                         event.place_website AS place_website, 
                          event.place_link AS place_link, 
+                         event.place_phone AS place_phone, 
                          event.place_map AS place_map, 
                          event.host_type AS host_type,
                          event.org_name AS org_name, 
@@ -728,7 +762,9 @@ class CalendarEvent extends CalendarLibrary
                          event.org_zip AS org_zip, 
                          event.org_city AS org_city, 
                          event.org_country AS org_country, 
+                         event.org_website AS org_website, 
                          event.org_link AS org_link, 
+                         event.org_phone AS org_phone, 
                          event.org_email AS org_email, 
                          field.title AS title,
                          field.teaser AS teaser,
@@ -803,7 +839,9 @@ class CalendarEvent extends CalendarLibrary
                 $this->place_zip    = htmlentities(stripslashes($objResult->fields['place_zip']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->place_city   = htmlentities(stripslashes($objResult->fields['place_city']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->place_country = htmlentities(stripslashes($objResult->fields['place_country']), ENT_QUOTES, CONTREXX_CHARSET);
+                $this->place_website= contrexx_raw2xhtml($objResult->fields['place_website']);
                 $this->place_link   = contrexx_raw2xhtml($objResult->fields['place_link']);
+                $this->place_phone  = contrexx_raw2xhtml($objResult->fields['place_phone']);
                 $this->place_map    = contrexx_raw2xhtml($objResult->fields['place_map']);
                 $this->hostType = (int) $objResult->fields['host_type'];
                 $this->host_mediadir_id = (int) $objResult->fields['host_mediadir_id'];
@@ -812,7 +850,9 @@ class CalendarEvent extends CalendarLibrary
                 $this->org_zip      = contrexx_raw2xhtml($objResult->fields['org_zip']);
                 $this->org_city     = contrexx_raw2xhtml($objResult->fields['org_city']);
                 $this->org_country  = contrexx_raw2xhtml($objResult->fields['org_country']);
+                $this->org_website  = contrexx_raw2xhtml($objResult->fields['org_website']);
                 $this->org_link     = contrexx_raw2xhtml($objResult->fields['org_link']);
+                $this->org_phone    = contrexx_raw2xhtml($objResult->fields['org_phone']);
                 $this->org_email    = contrexx_raw2xhtml($objResult->fields['org_email']);
                                 
                 $this->showIn = htmlentities($objResult->fields['show_in'], ENT_QUOTES, CONTREXX_CHARSET);
@@ -1038,10 +1078,18 @@ class CalendarEvent extends CalendarLibrary
         $zip                       = isset($data['zip']) ? contrexx_input2db(contrexx_strip_tags($data['zip'])) : '';
         $city                      = isset($data['city']) ? contrexx_input2db(contrexx_strip_tags($data['city'])) : '';
         $country                   = isset($data['country']) ? contrexx_input2db(contrexx_strip_tags($data['country'])) : '';
+        $placeWebsite              = isset($data['placeWebsite']) ? contrexx_input2db($data['placeWebsite']) : '';
         $placeLink                 = isset($data['placeLink']) ? contrexx_input2db($data['placeLink']) : '';
+        $placePhone                = isset($data['placePhone']) ? contrexx_input2db($data['placePhone']) : '';
         $placeMap                  = isset($data['placeMap']) ? contrexx_input2db($data['placeMap']) : '';
         $update_invitation_sent    = ($send_invitation == 1);
         
+        if (!empty($placeWebsite)) {
+            if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeWebsite)) {
+                $placeWebsite = "http://".$placeWebsite;
+            }
+        }
+
         if (!empty($placeLink)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeLink)) {
                 $placeLink = "http://".$placeLink;
@@ -1065,8 +1113,17 @@ class CalendarEvent extends CalendarLibrary
         $orgZip    = isset($data['organizerZip']) ? contrexx_input2db($data['organizerZip']) : '';
         $orgCity   = isset($data['organizerCity']) ? contrexx_input2db($data['organizerCity']) : '';
         $orgCountry= isset($data['organizerCountry']) ? contrexx_input2db($data['organizerCountry']) : '';
+        $orgWebsite= isset($data['organizerWebsite']) ? contrexx_input2db($data['organizerWebsite']) : '';
         $orgLink   = isset($data['organizerLink']) ? contrexx_input2db($data['organizerLink']) : '';
+        $orgPhone  = isset($data['organizerPhone']) ? contrexx_input2db($data['organizerPhone']) : '';
         $orgEmail  = isset($data['organizerEmail']) ? contrexx_input2db($data['organizerEmail']) : '';
+
+        if (!empty($orgWebsite)) {
+            if (!preg_match('%^(?:ftp|http|https):\/\/%', $orgWebsite)) {
+                $orgWebsite = "http://".$orgWebsite;
+            }
+        }
+
         if (!empty($orgLink)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $orgLink)) {
                 $orgLink = "http://".$orgLink;
@@ -1288,14 +1345,18 @@ class CalendarEvent extends CalendarLibrary
             'place_zip'                     => $zip,
             'place_city'                    => $city,
             'place_country'                 => $country,
+            'place_website'                 => $placeWebsite,
             'place_link'                    => $placeLink,
+            'place_phone'                   => $placePhone,
             'place_map'                     => $placeMap,
             'org_name'                      => $orgName,
             'org_street'                    => $orgStreet,
             'org_zip'                       => $orgZip,
             'org_city'                      => $orgCity,
             'org_country'                   => $orgCountry,
+            'org_website'                   => $orgWebsite,
             'org_link'                      => $orgLink,
+            'org_phone'                     => $orgPhone,
             'org_email'                     => $orgEmail,
             'invitation_sent'               => $update_invitation_sent ? 1 : 0,
         );
@@ -1800,6 +1861,8 @@ class CalendarEvent extends CalendarLibrary
         $place_zip     = '';
         $place_city    = '';
         $place_country = '';        
+        $place_website = '';        
+        $place_phone   = '';        
                 
         if (!empty($intMediaDirId)) {
             $objMediadirEntry = new \Cx\Modules\MediaDir\Controller\MediaDirectoryEntry('MediaDir');
@@ -1839,6 +1902,12 @@ class CalendarEvent extends CalendarLibrary
                                 case 'country':
                                     $place_country = end($arrInputfieldContent);
                                     break;
+                                case 'website':
+                                    $place_website = end($arrInputfieldContent);
+                                    break;
+                                case 'phone':
+                                    $place_phone = end($arrInputfieldContent);
+                                    break;
                             }
 
                         } catch (Exception $error) {
@@ -1855,6 +1924,8 @@ class CalendarEvent extends CalendarLibrary
             $this->place_zip     = $place_zip;
             $this->place_city    = $place_city;
             $this->place_country = $place_country;
+            $this->place_website = $place_website;
+            $this->place_phone   = $place_phone;
             $this->place_map     = '';
         } else {            
             $this->org_name   = $place;
@@ -1862,6 +1933,8 @@ class CalendarEvent extends CalendarLibrary
             $this->org_zip    = $place_zip;
             $this->org_city   = $place_city;
             $this->org_country= $place_country;
+            $this->org_website= $place_website;
+            $this->org_phone  = $place_phone;
             $this->org_email  = '';
         }
         
