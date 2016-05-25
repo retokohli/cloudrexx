@@ -93,6 +93,30 @@ class CxCore_ModulesAccessModelEntityPermissionProxy extends \Cx\Core_Modules\Ac
         return parent::getvalidAccessIds();
     }
 
+    public function setReadDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
+    {
+        $this->_load();
+        return parent::setReadDataAccesses($dataAccess);
+    }
+
+    public function getReadDataAccesses()
+    {
+        $this->_load();
+        return parent::getReadDataAccesses();
+    }
+
+    public function setWriteDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
+    {
+        $this->_load();
+        return parent::setWriteDataAccesses($dataAccess);
+    }
+
+    public function getWriteDataAccesses()
+    {
+        $this->_load();
+        return parent::getWriteDataAccesses();
+    }
+
     public function setCallback($callback)
     {
         $this->_load();
@@ -151,7 +175,7 @@ class CxCore_ModulesAccessModelEntityPermissionProxy extends \Cx\Core_Modules\Ac
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'allowedProtocols', 'allowedMethods', 'requiresLogin', 'validUserGroups', 'validAccessIds');
+        return array('__isInitialized__', 'id', 'allowedProtocols', 'allowedMethods', 'requiresLogin', 'validUserGroups', 'validAccessIds', 'readDataAccesses', 'writeDataAccesses');
     }
 
     public function __clone()

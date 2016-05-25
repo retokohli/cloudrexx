@@ -276,6 +276,7 @@ CREATE TABLE `contrexx_core_module_data_access` (
   `name` varchar(45) NOT NULL,
   `field_list` longtext NOT NULL,
   `access_condition` longtext NOT NULL,
+  `allowed_output_methods` longtext NOT NULL,
   PRIMARY KEY(`id`),
   UNIQUE KEY `name` (`name`),
   KEY `read_permission` (`read_permission`),

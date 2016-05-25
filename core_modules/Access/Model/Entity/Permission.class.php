@@ -100,6 +100,16 @@ class Permission extends \Cx\Model\Base\EntityBase {
     protected $validAccessIds   = array();
 
     /**
+     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
+     */
+    protected $readDataAccesses;
+
+    /**
+     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
+     */
+    protected $writeDataAccesses;
+
+    /**
      * Callback function name
      * 
      * @var string
@@ -130,6 +140,8 @@ class Permission extends \Cx\Model\Base\EntityBase {
             $this->requiresLogin = true;
         }
         $this->setCallback($callback);
+        $this->readDataAccesses  = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->writeDataAccesses = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -240,6 +252,46 @@ class Permission extends \Cx\Model\Base\EntityBase {
     public function getvalidAccessIds()
     {
         return $this->validAccessIds;
+    }
+
+    /**
+     * Set the read data access
+     *
+     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
+     */
+    public function setReadDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
+    {
+        $this->readDataAccesses[] = $dataAccess;
+    }
+
+    /**
+     * Get the read data access
+     *
+     * @return type
+     */
+    public function getReadDataAccesses()
+    {
+        return $this->readDataAccesses;
+    }
+
+    /**
+     * Set the write data access
+     *
+     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
+     */
+    public function setWriteDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
+    {
+        $this->writeDataAccesses[] = $dataAccess;
+    }
+
+    /**
+     * Get the read data access
+     *
+     * @return type
+     */
+    public function getWriteDataAccesses()
+    {
+        return $this->writeDataAccesses;
     }
 
     /**

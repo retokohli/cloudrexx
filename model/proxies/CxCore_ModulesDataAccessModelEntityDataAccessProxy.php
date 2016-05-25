@@ -81,6 +81,18 @@ class CxCore_ModulesDataAccessModelEntityDataAccessProxy extends \Cx\Core_Module
         return parent::getAccessCondition();
     }
 
+    public function setAllowedOutputMethods($allowedOutputMethods)
+    {
+        $this->_load();
+        return parent::setAllowedOutputMethods($allowedOutputMethods);
+    }
+
+    public function getAllowedOutputMethods()
+    {
+        $this->_load();
+        return parent::getAllowedOutputMethods();
+    }
+
     public function addDataAccessApiKeys(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey $dataAccessApiKeys)
     {
         $this->_load();
@@ -156,7 +168,7 @@ class CxCore_ModulesDataAccessModelEntityDataAccessProxy extends \Cx\Core_Module
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'name', 'fieldList', 'accessCondition', 'dataAccessApiKeys', 'readPermission', 'writePermission', 'dataSource');
+        return array('__isInitialized__', 'id', 'name', 'fieldList', 'accessCondition', 'allowedOutputMethods', 'dataAccessApiKeys', 'readPermission', 'writePermission', 'dataSource');
     }
 
     public function __clone()

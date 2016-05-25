@@ -22,6 +22,9 @@ Cx\Core_Modules\DataAccess\Model\Entity\DataAccess:
         accessCondition:
             type: array
             column: access_condition
+        allowedOutputMethods:
+            type: array
+            column: allowed_output_methods
     uniqueConstraints:
         name_UNIQUE:
             columns: [ name ]
@@ -35,11 +38,13 @@ Cx\Core_Modules\DataAccess\Model\Entity\DataAccess:
     manyToOne:
         readPermission:
             targetEntity: Cx\Core_Modules\Access\Model\Entity\Permission
+            inversedBy: readDataAccesses
             joinColumn:
                 name: read_permission
                 referencedColumnName: id
         writePermission:
             targetEntity: Cx\Core_Modules\Access\Model\Entity\Permission
+            inversedBy: writeDataAccesses
             joinColumn:
                 name: write_permission
                 referencedColumnName: id

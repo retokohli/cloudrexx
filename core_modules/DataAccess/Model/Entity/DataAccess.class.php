@@ -72,6 +72,11 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     protected $accessCondition;
 
     /**
+     * @var array $allowedOutputMethods
+     */
+    protected $allowedOutputMethods;
+
+    /**
      * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey
      */
     protected $dataAccessApiKeys;
@@ -179,6 +184,26 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     public function getAccessCondition()
     {
         return $this->accessCondition;
+    }
+
+    /**
+     * Set allowedOutputMethods
+     *
+     * @param array $allowedOutputMethods
+     */
+    public function setAllowedOutputMethods($allowedOutputMethods)
+    {
+        $this->allowedOutputMethods = $allowedOutputMethods;
+    }
+
+    /**
+     * Get allowedOutputMethods
+     *
+     * @return array $allowedOutputMethods
+     */
+    public function getAllowedOutputMethods()
+    {
+        return $this->allowedOutputMethods;
     }
 
     /**
