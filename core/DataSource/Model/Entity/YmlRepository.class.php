@@ -47,7 +47,7 @@ namespace Cx\Core\DataSource\Model\Entity;
 
 class YmlRepository extends DataSource {
     
-    public function get($elementId, $filter, $order, $limit, $offset) {
+    public function get($elementId, $filter, $order, $limit, $offset, $fieldList) {
         return array();
     }
 }

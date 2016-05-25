@@ -44,11 +44,77 @@ namespace Cx\Core\DataSource\Model\Entity;
  * @package     cloudrexx
  * @subpackage  core_datasource
  */
-
 class LegacyDatabaseRepository extends DataSource {
     
-    public function get($elementId, $filter, $order, $limit, $offset) {
-        return array();
+    public function get($elementId, $filter, $order, $limit, $offset, $fieldList) {
+        $tableName = DBPREFIX . $this->getIdentifier();
+        
+        // $elementId
+        $whereList = array();
+        if (isset($elementId)) {
+            $whereList[] = '`id` = "' . contrexx_raw2db($elementId) . '"';
+        }
+        
+        // $filter
+        if (count($filter)) {
+            foreach ($filter as $field => $value) {
+                $whereList[] = '`' . contrexx_raw2db($field) . '` = "' . contrexx_raw2db($value) . '"';
+            }
+        }
+        
+        // $order
+        $orderList = array();
+        if (count($order)) {
+            foreach ($order as $field => $ascdesc) {
+                if (!in_array($ascdesc, array('ASC', 'DESC'))) {
+                    $ascdesc = 'ASC';
+                }
+                $orderList[] = '`' . contrexx_raw2db($field) . '` ' . $ascdesc;
+            }
+        }
+        
+        // $limit, $offset
+        $limitQuery = '';
+        if ($limit) {
+            $limitQuery = 'LIMIT ' . intval($limit);
+            if ($offset) {
+                $limitQuery .= ',' . intval($offset);
+            }
+        }
+        
+        // $fieldList
+        $fieldListQuery = '*';
+        if (count($fieldList)) {
+            $fieldListQuery = '`' . implode('`, `', $fieldList) . '`';
+        }
+        
+        // query parsing
+        $whereQuery = '';
+        if (count($whereList)) {
+            $whereQuery = 'WHERE ' . implode(' AND ', $whereList);
+        }
+        $orderQuery = '';
+        if (count($orderList)) {
+            $orderQuery = 'ORDER BY ' . implode(', ', $orderList);
+        }
+        $query = '
+            SELECT
+                ' . $fieldListQuery . '
+            FROM
+                `' . $tableName . '`
+            ' . $whereQuery . '
+            ' . $orderQuery . '
+            ' . $limitQuery . '
+        ';
+        
+        $result = $this->cx->getDb()->getAdoDb()->query($query);
+        $data = array();
+        while (!$result->EOF) {
+            $data[] = $result->fields;
+            $result->MoveNext();
+        }
+        
+        return $data;//new \Cx\Core_Modules\Listing\Model\Entity\DataSet($data);//array($query);
     }
 }
 

@@ -53,7 +53,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
-        return array('JsonOutput');
+        return array('JsonOutput', 'RawOutput');
     }
     
     /**
@@ -121,6 +121,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return void
      */
     public function apiV1($command, $arguments) {
+        // handle CLI options
+        if (php_sapi_name() == 'cli') {
+            foreach ($arguments as $key=>$value) {
+                $argParts = explode('=', $value, 2);
+                if (count($argParts) == 2) {
+                    $arguments[$argParts[0]] = $argParts[1];
+                    unset($arguments[$key]);
+                }
+            }
+            array_unshift($arguments, 'raw');
+        }
+        
         // If we can't find the output module, we can't produce a proper error message
         if (empty($arguments[0])) {
             throw new \InvalidArgumentException('Not enough arguments');
@@ -149,35 +161,56 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if (isset($arguments['order'])) {
                 $order = $arguments['order'];
             }
+            $order = array();
+            if (isset($arguments['order'])) {
+                $orderStrings = explode(';', $arguments['order']);
+                foreach ($orderStrings as $orderString) {
+                    $orderStringParts = explode('/', $orderString);
+                    $order[$orderStringParts[0]] = $orderStringParts[1];
+                }
+            }
             
             $filter = array();
             if (isset($arguments['filter'])) {
-                $filter = $arguments['filter'];
+                $filterStrings = explode(';', $arguments['filter']);
+                foreach ($filterStrings as $filterString) {
+                    $filterStringParts = explode('=', $filterString);
+                    $filter[$filterStringParts[0]] = $filterStringParts[1];
+                }
             }
             
             $limit = 0;
             $offset = 0;
             if (isset($arguments['limit'])) {
                 $limitParts = explode(',', $arguments['limit']);
-                $limit = $limit[0];
-                if (isset($limit[1])) {
-                    $offset = $limit[1];
+                $limit = $limitParts[0];
+                if (isset($limitParts[1])) {
+                    $offset = $limitParts[1];
                 }
             }
             
             $method = strtolower($_SERVER['REQUEST_METHOD']);
+            if ($method == '') {
+                // in cli, method is not set, this is a temporary fix!
+                $method = 'get';
+            }
             
             $em = $this->cx->getDb()->getEntityManager();
             $dataAccessRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\DataAccess');
-            if (!$dataAccessRepo->hasAccess($outputModule, $dataSource, $method, $apiKey)) {
+            $dataAccess = $dataAccessRepo->getAccess($outputModule, $dataSource, $method, $apiKey);
+            if (!$dataAccess) {
                 $response->setStatusCode(403);
                 throw new \BadMethodCallException('Access denied');
+            }
+            
+            if (count($dataAccess->getAccessCondition())) {
+                $filter = array_merge($filter, $dataAccess->getAccessCondition());
             }
             
             switch ($method) {
                 case 'get':
                 default:
-                    $data = $dataSource->get($elementId, $filter, $order, $limit, $offset);
+                    $data = $dataSource->get($elementId, $filter, $order, $limit, $offset, $dataAccess->getFieldList());
                     $response->setStatus(
                         \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_OK
                     );
@@ -200,7 +233,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $e->getMessage()
                 )
             );
-            echo '<pre>';
             $response->send($outputModule);
         }
     }
@@ -225,12 +257,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     protected function getDataSource($name) {
         $em = $this->cx->getDb()->getEntityManager();
-        $dataSourceRepo = $em->getRepository('Cx\Core\DataSource\Model\Entity\DataSource');
-        $dataSource = $dataSourceRepo->findOneBy(array('identifier' => $name));
-        if (!$dataSource) {
+        $dataAccessRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\DataAccess');
+        $dataAccess = $dataAccessRepo->findOneBy(array('name' => $name));
+        if (!$dataAccess || !$dataAccess->getDataSource()) {
             throw new \Exception('No such DataSource: ' . $name);
         }
-        return $dataSource;
+        return $dataAccess->getDataSource();
     }
 }
 
