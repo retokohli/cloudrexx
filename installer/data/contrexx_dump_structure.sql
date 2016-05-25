@@ -586,7 +586,6 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `ticket_sales` tinyint(1) NOT NULL DEFAULT '0',
   `num_seating` text NOT NULL,
   `series_status` tinyint(4) NOT NULL DEFAULT '0',
-  `independent_series` tinyint(2) NOT NULL DEFAULT '1',
   `series_type` int(11) NOT NULL DEFAULT '0',
   `series_pattern_count` int(11) NOT NULL DEFAULT '0',
   `series_pattern_weekday` varchar(7) NOT NULL,
