@@ -152,5 +152,51 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
         return $this->dataAccesses;
     }
     
-    public abstract function get($elementId, $filter, $order, $limit, $offset, $fieldList);
+    /**
+     * Gets one or more entries from this DataSource
+     *
+     * If an option is not provided, no restriction is made for this option.
+     * So if this is called without any arguments, all entries of this
+     * DataSource are returned.
+     * If no entry is found, an empty array is returned.
+     * @param string $elementId (optional) ID of the element if only one is to be returned
+     * @param array $filter (optional) field=>value-type condition array, only supports = for now
+     * @param array $order (optional) field=>order-type array, order is either "ASC" or "DESC"
+     * @param int $limit (optional) If set, no more than $limit results are returned
+     * @param int $offset (optional) Entry to start with
+     * @param array $fieldList (optional) Limits the result to the values for the fields in this list
+     * @throws \Exception If something did not go as planned
+     * @return array Two dimensional array (/table) of results (array($row=>array($fieldName=>$value)))
+     */
+    public abstract function get(
+        $elementId = null,
+        $filter = array(),
+        $order = array(),
+        $limit = 0,
+        $offset = 0,
+        $fieldList = array()
+    );
+    
+    /**
+     * Adds a new entry to this DataSource
+     * @param array $data Field=>value-type array. Not all fields may be required.
+     * @throws \Exception If something did not go as planned
+     */
+    public abstract function add($data);
+    
+    /**
+     * Updates an existing entry of this DataSource
+     * @param string $elementId ID of the element to update
+     * @param array $data Field=>value-type array. Not all fields are required.
+     * @throws \Exception If something did not go as planned
+     */
+    public abstract function update($elementId, $data);
+    
+    /**
+     * Drops an entry from this DataSource
+     * @param string $elementId ID of the element to update
+     * @throws \Exception If something did not go as planned
+     */
+    public abstract function remove($elementId);
 }
+
