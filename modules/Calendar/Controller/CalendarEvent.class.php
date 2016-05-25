@@ -509,6 +509,12 @@ class CalendarEvent extends CalendarLibrary
     protected $cancellationCount = 0;
     
     /**
+     * Array of language IDs the event has been fetched from the database from already
+     * @var array
+     */
+    protected $fetchedLangIds = array();
+
+    /**
      * Event street
      * 
      * @access public
@@ -661,7 +667,7 @@ class CalendarEvent extends CalendarLibrary
      */
     function __construct($id=null){
         if($id != null) {
-            self::get($id);
+            $this->get($id);
         }
         
         $this->uploadImgPath    = \Env::get('cx')->getWebsiteImagesPath().'/'.$this->moduleName.'/';
@@ -684,10 +690,8 @@ class CalendarEvent extends CalendarLibrary
         
         $this->getSettings();
         
-        if($objInit->mode == 'backend' || $langId == null) {
-            $lang_where = "AND field.lang_id = '".intval($_LANGID)."' ";
-        } else {
-            $lang_where = "AND field.lang_id = '".intval($langId)."' ";                             
+        if ($langId == null) {
+            $langId = $_LANGID;
         }
 
         $query = "SELECT event.id AS id,
@@ -773,31 +777,27 @@ class CalendarEvent extends CalendarLibrary
                     FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event AS event,
                          ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field AS field
                    WHERE event.id = '".intval($eventId)."'  
-                     AND (event.id = field.event_id ".$lang_where.")                                          
+                     AND (    event.id = field.event_id
+                          AND field.lang_id = '".intval($langId)."'
+                          AND FIND_IN_SET('".intval($langId)."',event.show_in)>0)
                    LIMIT 1";
 
         
         $objResult = $objDatabase->Execute($query);  
 
-        if($this->arrSettings['showEventsOnlyInActiveLanguage'] == 2) {
+        $this->fetchedLangIds[] = $langId;
+
+        // check if events of all languages shall be listed (not only those available in the requested language)
+        if (   \Cx\Core\Core\Controller\Cx::instanciate()->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+            || $this->arrSettings['showEventsOnlyInActiveLanguage'] == 2
+        ) {
+            // try to refetch the event in case it does not exist in the current requested language
             if($objResult->RecordCount() == 0) {
-                
-                if($langId == null) {
-                    $langId = 1;   
-                } else {
-                    $langId++;
-                }
-                
-                if($langId <= 99) {
-                    self::get($eventId,$eventStartDate,$langId); 
-                }
-            } else {
-                if($langId == null) {
-                    $langId = $_LANGID;   
+                $langIdsToFetch = array_diff(array_keys(\FWLanguage::getActiveFrontendLanguages()), $this->fetchedLangIds);
+                if ($langIdsToFetch) {
+                    $this->get($eventId,$eventStartDate,current($langIdsToFetch)); 
                 }
             }
-        } else {
-           $langId = $_LANGID;
         }
         
         if ($objResult !== false) {
@@ -911,7 +911,7 @@ class CalendarEvent extends CalendarLibrary
                     }
                 }
                 
-                self::getData(); 
+                $this->getData(); 
             }
         }
     }

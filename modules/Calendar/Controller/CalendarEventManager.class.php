@@ -598,13 +598,13 @@ class CalendarEventManager extends CalendarLibrary
             $objEvent = $this->eventList[0];
             
             if(empty($objEvent)) {
-                \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
+                \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
                 return;   
             }
             
             if($objEvent->access == 1 && !\FWUser::getFWUserObject()->objUser->login()){
                 $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);           
-                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);  
+                \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);  
                 return;    
             }   
             

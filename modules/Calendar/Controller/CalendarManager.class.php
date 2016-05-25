@@ -1337,7 +1337,7 @@ class CalendarManager extends CalendarLibrary
         global $_ARRAYLANG, $_LANGID;
         
         if (empty($eventId)) {
-            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=".$this->moduleName);
+            \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?cmd=".$this->moduleName);
             return;
         }   
         
@@ -1471,7 +1471,7 @@ class CalendarManager extends CalendarLibrary
             
             exit();   
        } else {   
-            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=".$this->moduleName);
+            \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?cmd=".$this->moduleName);
             return;
        }
     }
@@ -1648,7 +1648,7 @@ class CalendarManager extends CalendarLibrary
                     }
                     $tpl = !empty($_POST['regtpl']) ? $_POST['regtpl'] : $tpl;
                     $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_SAVED'];                    
-                    \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd='.$this->moduleName.'&act=event_registrations&tpl='.$tpl.'&id='.$eventId);
+                    \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd='.$this->moduleName.'&act=event_registrations&tpl='.$tpl.'&id='.$eventId);
 	        } else {
                     $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_CORRUPT_SAVED'];
 	        }
