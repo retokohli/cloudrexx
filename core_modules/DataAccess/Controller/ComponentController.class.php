@@ -203,6 +203,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 throw new \BadMethodCallException('Access denied');
             }
             
+            if (
+                count($dataAccess->getAllowedOutputMethods()) &&
+                !in_array($arguments[0], $dataAccess->getAllowedOutputMethods())
+            ) {
+                $response->setStatusCode(403);
+                throw new \BadMethodCallException('Access denied');
+            }
+            
             if (count($dataAccess->getAccessCondition())) {
                 $filter = array_merge($filter, $dataAccess->getAccessCondition());
             }
