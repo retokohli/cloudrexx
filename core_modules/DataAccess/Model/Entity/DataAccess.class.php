@@ -72,9 +72,9 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     protected $accessCondition;
 
     /**
-     * @var string $type
+     * @var array $allowedOutputMethods
      */
-    protected $type;
+    protected $allowedOutputMethods;
 
     /**
      * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey
@@ -84,7 +84,12 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     /**
      * @var Cx\Core_Modules\Access\Model\Entity\Permission
      */
-    protected $permission;
+    protected $readPermission;
+
+    /**
+     * @var Cx\Core_Modules\Access\Model\Entity\Permission
+     */
+    protected $writePermission;
 
     public function __construct()
     {
@@ -182,23 +187,23 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set type
+     * Set allowedOutputMethods
      *
-     * @param string $type
+     * @param array $allowedOutputMethods
      */
-    public function setType($type)
+    public function setAllowedOutputMethods($allowedOutputMethods)
     {
-        $this->type = $type;
+        $this->allowedOutputMethods = $allowedOutputMethods;
     }
 
     /**
-     * Get type
+     * Get allowedOutputMethods
      *
-     * @return string $type
+     * @return array $allowedOutputMethods
      */
-    public function getType()
+    public function getAllowedOutputMethods()
     {
-        return $this->type;
+        return $this->allowedOutputMethods;
     }
 
     /**
@@ -222,22 +227,42 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set permission
+     * Set read permission
      *
-     * @param Cx\Core_Modules\Access\Model\Entity\Permission $permission
+     * @param Cx\Core_Modules\Access\Model\Entity\Permission $readPermission
      */
-    public function setPermission(\Cx\Core_Modules\Access\Model\Entity\Permission $permission)
+    public function setReadPermission(\Cx\Core_Modules\Access\Model\Entity\Permission $readPermission)
     {
-        $this->permission = $permission;
+        $this->readPermission = $readPermission;
     }
 
     /**
-     * Get permission
+     * Get read permission
      *
-     * @return Cx\Core_Modules\Access\Model\Entity\Permission $permission
+     * @return Cx\Core_Modules\Access\Model\Entity\Permission $readPermission
      */
-    public function getPermission()
+    public function getReadPermission()
     {
-        return $this->permission;
+        return $this->readPermission;
+    }
+
+    /**
+     * Set write permission
+     *
+     * @param Cx\Core_Modules\Access\Model\Entity\Permission $writePermission
+     */
+    public function setWritePermission(\Cx\Core_Modules\Access\Model\Entity\Permission $writePermission)
+    {
+        $this->writePermission = $writePermission;
+    }
+
+    /**
+     * Get write permission
+     *
+     * @return Cx\Core_Modules\Access\Model\Entity\Permission $writePermission
+     */
+    public function getWritePermission()
+    {
+        return $this->writePermission;
     }
 }

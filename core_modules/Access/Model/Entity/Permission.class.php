@@ -98,12 +98,17 @@ class Permission extends \Cx\Model\Base\EntityBase {
      * @var array
      */
     protected $validAccessIds   = array();
-    
+
     /**
      * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
      */
-    protected $dataAccesses;
-    
+    protected $readDataAccesses;
+
+    /**
+     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
+     */
+    protected $writeDataAccesses;
+
     /**
      * Callback function name
      * 
@@ -135,7 +140,8 @@ class Permission extends \Cx\Model\Base\EntityBase {
             $this->requiresLogin = true;
         }
         $this->setCallback($callback);
-        $this->dataAccesses     = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->readDataAccesses  = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->writeDataAccesses = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -249,23 +255,43 @@ class Permission extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set the data access
+     * Set the read data access
      *
-     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses
+     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
      */
-    public function setDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses)
+    public function setReadDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
     {
-        $this->dataAccesses[] = $dataAccesses;
+        $this->readDataAccesses[] = $dataAccess;
     }
 
     /**
-     * Get the data access
+     * Get the read data access
      *
      * @return type
      */
-    public function getDataAccesses()
+    public function getReadDataAccesses()
     {
-        return $this->dataAccesses;
+        return $this->readDataAccesses;
+    }
+
+    /**
+     * Set the write data access
+     *
+     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
+     */
+    public function setWriteDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
+    {
+        $this->writeDataAccesses[] = $dataAccess;
+    }
+
+    /**
+     * Get the read data access
+     *
+     * @return type
+     */
+    public function getWriteDataAccesses()
+    {
+        return $this->writeDataAccesses;
     }
 
     /**

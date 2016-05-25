@@ -27,9 +27,15 @@ Cx\Core_Modules\Access\Model\Entity\Permission:
             column: valid_access_ids
             nullable: true
     oneToMany:
-        dataAccesses:
+        readDataAccesses:
             targetEntity: Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
-            mappedBy: permission
+            mappedBy: readPermission
             joinColumn:
                 name: id
                 referencedColumnName: read_permission
+        writeDataAccesses:
+            targetEntity: Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
+            mappedBy: writePermission
+            joinColumn:
+                name: id
+                referencedColumnName: write_permission

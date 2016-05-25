@@ -1,10 +1,12 @@
 Cx\Core_Modules\DataAccess\Model\Entity\DataAccess:
     type: entity
-    table: core_module_dataaccess_data_access
+    table: core_module_data_access
     repositoryClass: Cx\Core_Modules\DataAccess\Model\Repository\DataAccessRepository
     indexes:
         fk_DataAccess_Permission1_idx:
             columns: [ read_permission ]
+        fk_DataAccess_Permission2_idx:
+            columns: [ write_permission ]
     id:
         id:
             type: integer
@@ -20,9 +22,9 @@ Cx\Core_Modules\DataAccess\Model\Entity\DataAccess:
         accessCondition:
             type: array
             column: access_condition
-        type:
-            type: string
-            columnDefinition: ENUM('doctrine', 'legacy')
+        allowedOutputMethods:
+            type: array
+            column: allowed_output_methods
     uniqueConstraints:
         name_UNIQUE:
             columns: [ name ]
@@ -34,11 +36,17 @@ Cx\Core_Modules\DataAccess\Model\Entity\DataAccess:
                 name: id
                 referencedColumnName: data_access_id
     manyToOne:
-        permission:
+        readPermission:
             targetEntity: Cx\Core_Modules\Access\Model\Entity\Permission
-            inversedBy: dataAccesses
+            inversedBy: readDataAccesses
             joinColumn:
                 name: read_permission
+                referencedColumnName: id
+        writePermission:
+            targetEntity: Cx\Core_Modules\Access\Model\Entity\Permission
+            inversedBy: writeDataAccesses
+            joinColumn:
+                name: write_permission
                 referencedColumnName: id
         dataSource:
             targetEntity: Cx\Core\DataSource\Model\Entity\DataSource
