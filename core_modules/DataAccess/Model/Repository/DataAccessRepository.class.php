@@ -99,8 +99,7 @@ class DataAccessRepository extends EntityRepository {
             
             $permission = null;
             if ($requestReadonly) {
-                //$permission = $dataAccess->getReadPermission();
-                $permission = $dataAccess->getPermission();
+                $permission = $dataAccess->getReadPermission();
             } else {
                 $permission = $dataAccess->getWritePermission();
             }
