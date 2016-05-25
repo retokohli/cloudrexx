@@ -146,6 +146,7 @@ class RawOutputController extends OutputController {
      * @return string Encoded data
      */
     public function parse($data) {
+        header('Content-Type: text/plain');
         if ($data['status'] == 'error') {
             return 'Error: ' . current($data['messages']['error']) . "\n";
         }
