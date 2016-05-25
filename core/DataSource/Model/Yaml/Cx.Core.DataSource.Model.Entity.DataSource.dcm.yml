@@ -1,6 +1,6 @@
 Cx\Core\DataSource\Model\Entity\DataSource:
   type: entity
-  table: core_datasource_data_source
+  table: core_data_source
   repositoryClass: Cx\Core\DataSource\Model\Repository\DataSourceRepository
   inheritanceType: SINGLE_TABLE
   discriminatorColumn:
