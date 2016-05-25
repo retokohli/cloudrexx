@@ -58,6 +58,9 @@ class LegacyDatabaseRepository extends DataSource {
         // $filter
         if (count($filter)) {
             foreach ($filter as $field => $value) {
+                if (count($fieldList) && !in_array($field, $fieldList)) {
+                    continue;
+                }
                 $whereList[] = '`' . contrexx_raw2db($field) . '` = "' . contrexx_raw2db($value) . '"';
             }
         }
@@ -66,6 +69,9 @@ class LegacyDatabaseRepository extends DataSource {
         $orderList = array();
         if (count($order)) {
             foreach ($order as $field => $ascdesc) {
+                if (count($fieldList) && !in_array($field, $fieldList)) {
+                    continue;
+                }
                 if (!in_array($ascdesc, array('ASC', 'DESC'))) {
                     $ascdesc = 'ASC';
                 }
