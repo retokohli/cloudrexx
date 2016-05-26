@@ -2054,7 +2054,7 @@ class CalendarEvent extends CalendarLibrary
      */
     protected function calculateRegistrationCount()
     {
-        global $objDatabase, $objInit;
+        global $objDatabase, $objInit, $_LANGID;
 
         if ($this->registrationCalculated) {
             return;
@@ -2096,25 +2096,51 @@ class CalendarEvent extends CalendarLibrary
             }
         }
 
-        $queryRegistrations = '
-            SELECT `v`.`value` AS `reserved_seating`
-            FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value` AS `v`
-            INNER JOIN `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration` AS `r`
-            ON `v`.`reg_id` = `r`.`id`
-            INNER JOIN `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field` AS `f`
-            ON `v`.`field_id` = `f`.`id`
-            WHERE `r`.`event_id` = '. contrexx_input2int($this->id) .'
-                '. $filterEventTime .'
-            AND `r`.`type` = 1
-            AND `f`.`type` = "seating"
-        ';
-        $objResultRegistrations = $objDatabase->Execute($queryRegistrations);
+        $seatingOption = $objDatabase->getOne('
+            SELECT
+                `fn`.`default` AS `seating_option`
+            FROM
+                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form` AS `f`
+            INNER JOIN
+                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field` AS `ff`
+            ON
+                `f`.`id` = `ff`.`form`
+            INNER JOIN
+                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` AS `fn`
+            ON
+                `ff`.`id` = `fn`.`field_id`
+            WHERE
+                `f`.`id` = '. contrexx_input2int($this->registrationForm) .'
+            AND
+                `ff`.`type` = "seating"
+            ORDER BY CASE `fn`.lang_id
+                WHEN '. $_LANGID .' THEN 1
+                ELSE 2
+                END
+        ');
 
         $reservedSeating = 0;
-        if ($objResultRegistrations !== false && $objResultRegistrations->RecordCount()) {
-            while (!$objResultRegistrations->EOF) {
-                $reservedSeating += contrexx_input2int($objResultRegistrations->fields['reserved_seating']);
-                $objResultRegistrations->MoveNext();
+        if ($seatingOption) {
+            $seatingOptionArray = explode(',', $seatingOption);
+            $queryRegistrations = '
+                SELECT `v`.`value` AS `reserved_seating`
+                FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value` AS `v`
+                INNER JOIN `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration` AS `r`
+                ON `v`.`reg_id` = `r`.`id`
+                INNER JOIN `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field` AS `f`
+                ON `v`.`field_id` = `f`.`id`
+                WHERE `r`.`event_id` = '. contrexx_input2int($this->id) .'
+                    '. $filterEventTime .'
+                AND `r`.`type` = 1
+                AND `f`.`type` = "seating"
+            ';
+            $objResultRegistrations = $objDatabase->Execute($queryRegistrations);
+            if ($objResultRegistrations !== false && $objResultRegistrations->RecordCount()) {
+                while (!$objResultRegistrations->EOF) {
+                    $selectedSeat     = contrexx_input2int($objResultRegistrations->fields['reserved_seating']) - 1;
+                    $reservedSeating += !empty($seatingOptionArray[$selectedSeat]) ? $seatingOptionArray[$selectedSeat] : 1;
+                    $objResultRegistrations->MoveNext();
+                }
             }
         } else {
             $reservedSeating = $this->registrationCount;
