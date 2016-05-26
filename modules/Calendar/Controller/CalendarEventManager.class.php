@@ -661,6 +661,9 @@ class CalendarEventManager extends CalendarLibrary
             } else {
                 $freeSeats = $_ARRAYLANG['TXT_CALENDAR_YES'];
             }
+            if (!$objEvent->registration) {
+                $freeSeats = $_ARRAYLANG['TXT_CALENDAR_NOT_SPECIFIED'];
+            }
 
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
@@ -1062,6 +1065,9 @@ class CalendarEventManager extends CalendarLibrary
                     $freeSeats = \FWValidator::isEmpty($objEvent->getFreePlaces()) ? '0 ('.$_ARRAYLANG['TXT_CALENDAR_SAVE_IN_WAITLIST'].')' : $objEvent->getFreePlaces();
                 } else {
                     $freeSeats = $_ARRAYLANG['TXT_CALENDAR_YES'];
+                }
+                if (!$objEvent->registration) {
+                    $freeSeats = $_ARRAYLANG['TXT_CALENDAR_NOT_SPECIFIED'];
                 }
                 
                 $objTpl->setVariable(array(
