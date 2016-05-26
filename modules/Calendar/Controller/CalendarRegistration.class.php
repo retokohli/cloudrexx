@@ -323,7 +323,8 @@ class CalendarRegistration extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
         
         $numSeating = intval($data['registrationField'][$objResult->fields['id']]);
-        $type = intval($objEvent->getFreePlaces() - $numSeating) < 0 ? 2 : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
+        $type       =   empty($regId) && intval($objEvent->getFreePlaces() - $numSeating) < 0
+                      ? 2 : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
         $this->saveIn = intval($type);
         $paymentMethod = intval($data['paymentMethod']);
         $paid = intval($data['paid']);
