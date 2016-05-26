@@ -1,6 +1,6 @@
 Cx\Core_Modules\DataAccess\Model\Entity\ApiKey:
     type: entity
-    table: core_module_dataaccess_apikey
+    table: core_module_data_access_apikey
     repositoryClass: Cx\Core_Modules\DataAccess\Model\Repository\ApiKeyRepository
     id:
         id:

@@ -1,6 +1,6 @@
 Cx\Core_Modules\DataAccess\Model\Entity\DataAccessApiKey:
     type: entity
-    table: core_module_dataaccess_data_access_apikey
+    table: core_module_data_access_data_access_apikey
     repositoryClass: Cx\Core_Modules\DataAccess\Model\Repository\DataAccessApiKeyRepository
     indexes:
         fk_DataAccessApiKey_DataAccess_idx:
