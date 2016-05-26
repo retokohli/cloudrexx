@@ -1004,6 +1004,7 @@ class CalendarEventManager extends CalendarLibrary
         $cal->enableMonthNav($url->toString(false));
 
         $currentTime = time();
+        $isNotIndependentSerieEventStarted = array();
         foreach ($eventList as $objEvent) {
             $eventDate  = $this->getUserDateTimeFromIntern($objEvent->startDate);
             $eventYear  = $eventDate->format('Y');
@@ -1012,17 +1013,29 @@ class CalendarEventManager extends CalendarLibrary
                 continue;
             }
 
-            $eventDay       = $eventDate->format('d');
-            $isSeries       = $objEvent->seriesStatus && !$objEvent->independentSeries;
-            $isEventStarted = $currentTime >= $objEvent->startDate->getTimestamp();
-            $freePlaces     = $isSeries || $isEventStarted ? 0 : $objEvent->getFreePlaces();
-            $eventClass     = ' event_full';
-            $eventurl       = false;
-            if (   ($isSeries || !$isEventStarted)
+            $eventDay                   = $eventDate->format('d');
+            $isSeriesByNotIndependent   = $objEvent->seriesStatus && !$objEvent->independentSeries;
+            $isEventStarted             = $currentTime >= $objEvent->startDate->getTimestamp();
+
+            // check if non-independent-serie-event did already start
+            if ($isSeriesByNotIndependent) {
+                // the first date of a non-independent-serie-event does determine if
+                // the event did already start
+                if (!isset($isNotIndependentSerieEventStarted[$objEvent->getId()])) {
+                    $isNotIndependentSerieEventStarted[$objEvent->getId()] = $isEventStarted;
+                }
+                // overwrite the started info from the serie data
+                $isEventStarted = $isNotIndependentSerieEventStarted[$objEvent->getId()];
+            }
+
+            $freePlaces                 = !$objEvent->registration || $isEventStarted || empty($objEvent->numSubscriber) || $isSeriesByNotIndependent ? 0 : $objEvent->getFreePlaces();
+            $eventClass                 = ' event_full';
+            $eventurl                   = false;
+            if (   !$isEventStarted
                 && (   !$objEvent->registration
-                    || ($objEvent->registration && empty($objEvent->numSubscriber))
+                    || empty($objEvent->numSubscriber)
                     || !\FWValidator::isEmpty($objEvent->getFreePlaces())
-                    || $objEvent->external == 1)
+                )
             ) {
                 $eventClass = ' event_open';
                 $eventurl   = $this->_getDetailLink($objEvent);
