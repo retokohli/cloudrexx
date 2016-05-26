@@ -877,7 +877,11 @@ class CalendarEvent extends CalendarLibrary
                     $this->seriesData['seriesPatternEnd'] = intval($objResult->fields['series_pattern_end']); 
                     $this->seriesData['seriesPatternEndDate'] = $this->getInternDateTimeFromDb($objResult->fields['series_pattern_end_date']);
                     $this->seriesData['seriesPatternBegin'] = intval($objResult->fields['series_pattern_begin']); 
-                    $this->seriesData['seriesPatternExceptions'] = array_map(array($this, 'getInternDateTimeFromDb'), (array) explode(",", $objResult->fields['series_pattern_exceptions']));
+                    $seriesPatternExceptions = array();
+                    if (!empty($objResult->fields['series_pattern_exceptions'])) {
+                        $seriesPatternExceptions = array_map(array($this, 'getInternDateTimeFromDb'), (array) explode(",", $objResult->fields['series_pattern_exceptions']));
+                    }
+                    $this->seriesData['seriesPatternExceptions'] = $seriesPatternExceptions;
                 }    
                   
                 
