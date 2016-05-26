@@ -356,6 +356,8 @@ class CalendarFormManager extends CalendarLibrary
                     $inputfield = null;
                     $hide = false;
                     $optionSelect = true;
+                    $availableSeat = 0;
+                    $checkSeating  = false;
 
                     if(isset($_POST['registrationField'][$arrInputfield['id']])) {
                         $value = $_POST['registrationField'][$arrInputfield['id']];
@@ -399,15 +401,23 @@ class CalendarFormManager extends CalendarLibrary
                                 $hide = true;
                             }
                             $optionSelect = false;
+
+                            if ($this->event) {
+                                $checkSeating  = $this->event->registration && $this->event->numSubscriber;
+                                $availableSeat = $this->event->getFreePlaces();
+                            }
                         case 'select':
                         case 'salutation':
                             $inputfield = '<select class="calendarSelect" name="registrationField['.$arrInputfield['id'].']">';
                             $selected =  empty($_POST) ? 'selected="selected"' : '';  
                             $inputfield .= $optionSelect ? '<option value="" '.$selected.'>'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>' : '';
 
-                            foreach($options as $key => $name)  {
-                                $selected =  ($key+1 == $value)  ? 'selected="selected"' : '';        
-                                $inputfield .= '<option value="'.intval($key+1).'" '.$selected.'>'.$name.'</option>';       
+                            foreach ($options as $key => $name) {
+                                if ($checkSeating && contrexx_input2int($name) > $availableSeat) {
+                                    continue;
+                                }
+                                $selected    = ($key + 1 == $value) ? 'selected="selected"' : '';
+                                $inputfield .= '<option value="' . intval($key + 1) . '" ' . $selected . '>' . $name . '</option>';
                             }
 
                             $inputfield .= '</select>'; 
