@@ -873,16 +873,21 @@ UPLOADER;
             return;
         }
 
-        $numRegistrations = (int) $objEvent->getRegistrationCount();
-
         $dateForPageTitle = $objEvent->startDate;
         $this->pageTitle = $this->format2userDate($dateForPageTitle)
                             . ": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
+        // Only show registration form if event lies in the future
         if(time() <= $objEvent->startDate->getTimestamp()) {
-            if(   ($objEvent->registration && empty($objEvent->numSubscriber))
-                || !\FWValidator::isEmpty($objEvent->getFreePlaces())
-             ) {
+            // Only show registration form if event accepts registrations.
+            // Event accepts registrations, if registration is set up and
+            //     - no attendee limit is set
+            //     - or if there are still free places available
+            if (   $objEvent->registration
+                && (   empty($objEvent->numSubscriber)
+                    || !\FWValidator::isEmpty($objEvent->getFreePlaces())
+                )
+            ) {
                 $this->_objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_ID'                   =>  intval($_REQUEST['id']),
                     $this->moduleLangVar.'_FORM_ID'                    =>  intval($objEvent->registrationForm),
@@ -896,7 +901,8 @@ UPLOADER;
                 $objFormManager->getFormList();
                 //$objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, $objEvent->ticketSales);
                 // Made the ticket sales always true, because ticket functionality currently not implemented
-                $objFormManager->showForm($this->_objTpl, intval($objEvent->registrationForm), 2, true);
+                $objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, true); 
+                
 
                 /* if ($this->arrSettings['paymentStatus'] == '1' && $objEvent->ticketSales && ($this->arrSettings['paymentBillStatus'] == '1' || $this->arrSettings['paymentYellowpayStatus'] == '1')) {
                     $paymentMethods  = '<select class="calendarSelect" name="paymentMethod">';

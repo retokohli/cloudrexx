@@ -2113,8 +2113,10 @@ class CalendarEvent extends CalendarLibrary
                 `f`.`id` = '. contrexx_input2int($this->registrationForm) .'
             AND
                 `ff`.`type` = "seating"
-            AND
-                `fn`.lang_id = '. $_LANGID .'
+            ORDER BY CASE `fn`.lang_id
+                WHEN '. $_LANGID .' THEN 1
+                ELSE 2
+                END
         ');
 
         $reservedSeating = 0;
