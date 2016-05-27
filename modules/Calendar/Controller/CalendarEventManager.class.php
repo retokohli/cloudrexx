@@ -651,7 +651,7 @@ class CalendarEventManager extends CalendarLibrary
             $numRegistrations  = (int) $objEvent->getRegistrationCount();
             $numDeregistration = (int) $objEvent->getCancellationCount();
 
-            $objEscortManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($objEvent->id, true, false);         
+            $objEscortManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($objEvent, true, false);
    
             $startDate = $objEvent->startDate;
             $endDate   = $objEvent->endDate;

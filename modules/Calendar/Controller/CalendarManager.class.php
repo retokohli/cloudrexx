@@ -1370,7 +1370,7 @@ class CalendarManager extends CalendarLibrary
         
         $filename = urlencode($objEvent->title).".csv"; 
         
-        $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($eventId, $getRegistrations, $getDeregistrations, $getWaitlist);  
+        $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($objEvent, $getRegistrations, $getDeregistrations, $getWaitlist);
         $objRegistrationManager->getRegistrationList(); 
         
         if(!empty($objRegistrationManager->registrationList)) {                 
@@ -1579,8 +1579,33 @@ class CalendarManager extends CalendarLibrary
                 default:                    
                     break;
             }
+            $filterStartTimeStamp = $filterEndTimeStamp = false;
+            if (isset($_GET['date']) && $containerDisplay) {
+                $filterYear = $filterMonth = $filterDate = 0;
+                list($filterYear, $filterMonth, $filterDate) = explode('-', $_GET['date']);
 
-            $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($eventId, $r, $d, $w);
+                $filterStartYear  = !empty($filterYear) ? $filterYear : date('Y');
+                $filterStartMonth = !empty($filterMonth) ? $filterMonth : 1;
+                $filterStartDay   = !empty($filterDate) ? $filterDate : 1;
+                $filterStartDateTime = new \DateTime();
+                $filterStartDateTime->setDate($filterStartYear, $filterStartMonth, $filterStartDay);
+                $filterStartDateTime->setTime(0, 0, 0);
+
+                $filterEndYear  = !empty($filterYear) ? $filterYear : date('Y');
+                $filterEndMonth = !empty($filterMonth) ? $filterMonth : 12;
+                $filterEndDay   = !empty($filterDate) ? $filterDate : 1;
+                $filterEndDateTime = new \DateTime();
+                $filterEndDateTime->setDate($filterEndYear, $filterEndMonth, $filterEndDay);
+                if (empty($filterDate)) {
+                    $filterEndDateTime->modify('last day of this month');
+                }
+                $filterEndDateTime->setTime(23, 59, 59);
+
+                $filterStartTimeStamp = $filterStartDateTime->getTimestamp();
+                $filterEndTimeStamp   = $filterEndDateTime->getTimestamp();
+            }
+
+            $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($objEvent, $r, $d, $w, $filterStartTimeStamp, $filterEndTimeStamp, $containerDisplay);
             $objRegistrationManager->getRegistrationList();
             $objRegistrationManager->showRegistrationList($this->_objTpl, $tpl);
             
@@ -1642,9 +1667,8 @@ class CalendarManager extends CalendarLibrary
             $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration($objEvent->registrationForm);
         }
         
-        $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($eventId, true, true, true);
-        $objRegistrationManager->getRegistrationList();
-        $objRegistrationManager->showRegistrationInputfields($objEvent->registrationForm, $regId, $this->_objTpl);
+        $objRegistrationManager = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($objEvent, true, true, true);
+        $objRegistrationManager->showRegistrationInputfields($this->_objTpl, $regId);
         
         $this->getSettings();
         if ($this->arrSettings['paymentStatus'] == '1' && ($this->arrSettings['paymentBillStatus'] == '1' || $this->arrSettings['paymentYellowpayStatus'] == '1')) {
