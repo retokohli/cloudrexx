@@ -537,6 +537,33 @@ class CalendarRegistrationManager extends CalendarLibrary
         ));
         $objTpl->parse('calendar_registration_inputfield');
         $i++;
+
+        if ($this->event && $this->event->seriesStatus && $this->event->independentSeries) {
+            $endDate = new \DateTime();
+            $endDate->modify('+10 years');
+
+            $eventManager = new CalendarEventManager(null, $endDate);
+            $objEvent     = new \Cx\Modules\Calendar\Controller\CalendarEvent($this->event->id);
+            if ($eventManager->_addToEventList($objEvent)) {
+                $eventManager->eventList[] = $objEvent;
+            }
+            $eventManager->_setNextSeriesElement($objEvent);
+
+            $regEventDateField = '<select style="width: 208px;" class="calendarSelect" name="registrationEventDate">';
+            foreach ($eventManager->eventList as $event) {
+                $selectedDate       = $objRegistration->eventDate == $event->startDate->getTimestamp() ? 'selected="selected"' : '';
+                $regEventDateField .= '<option value="' . $event->startDate->getTimestamp() . '" ' . $selectedDate . ' />' . $this->format2userDate($event->startDate) . '</option>';
+            }
+            $regEventDateField .= '</select>';
+
+            $objTpl->setVariable(array(
+                $this->moduleLangVar.'_ROW'                             => $i % 2 == 0 ? 'row1' : 'row2',
+                $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_NAME'    => $_ARRAYLANG['TXT_CALENDAR_DATE_OF_THE_EVENT'],
+                $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_VALUE'   => $regEventDateField,
+            ));
+            $objTpl->parse('calendar_registration_inputfield');
+            $i++;
+        }
         
         foreach ($objForm->inputfields as $arrInputfield) {
             $inputfield = '';

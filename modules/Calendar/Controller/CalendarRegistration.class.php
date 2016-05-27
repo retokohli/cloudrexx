@@ -301,10 +301,25 @@ class CalendarRegistration extends CalendarLibrary
         $userId = intval($data['userid']);
         
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
-        $query = 'SELECT `id`
-                    FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field`
-                   WHERE `type` = "seating"
-                   LIMIT 1';
+
+        if (   $objInit->mode == \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+            && $objEvent->seriesStatus
+            && $objEvent->independentSeries
+        ) {
+            $eventDate = isset($data['registrationEventDate']) ? contrexx_input2int($data['registrationEventDate']) : $eventDate;
+        }
+
+        $query = '
+            SELECT
+                `id`
+            FROM
+                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field`
+            WHERE
+                `form` = '. $formId .'
+            AND
+                `type` = "seating"
+            LIMIT 1
+        ';
         $objResult = $objDatabase->Execute($query);
         
         $numSeating = intval($data['registrationField'][$objResult->fields['id']]);
