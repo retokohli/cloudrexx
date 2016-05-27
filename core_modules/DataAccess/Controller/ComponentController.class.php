@@ -271,6 +271,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $e->getMessage()
                 )
             );
+            /*$response->addMessage(
+                \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::MESSAGE_TYPE_INFO,
+                $e->getTraceAsString()
+            );//*/
             $response->send($outputModule);
         }
     }
