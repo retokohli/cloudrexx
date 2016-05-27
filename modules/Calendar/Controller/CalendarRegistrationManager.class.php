@@ -634,9 +634,10 @@ class CalendarRegistrationManager extends CalendarLibrary
             
             if ($arrInputfield['type'] != 'fieldset') {
                 $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_ROW'                             => $i % 2 == 0 ? 'row1' : 'row2',
-                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_NAME'    => $arrInputfield['name'][$_LANGID],
-                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_VALUE'   => $inputfield,
+                    $this->moduleLangVar.'_ROW'                              => $i % 2 == 0 ? 'row1' : 'row2',
+                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_NAME'     => $arrInputfield['name'][$_LANGID],
+                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_REQUIRED' => $arrInputfield['required'] == 1 ? '<font class="calendarRequired"> *</font>' : '',
+                    $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_VALUE'    => $inputfield,
                 ));
                 $objTpl->parse('calendar_registration_inputfield');
                 $i++;
