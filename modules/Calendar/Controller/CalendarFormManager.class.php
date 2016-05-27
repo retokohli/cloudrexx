@@ -111,6 +111,13 @@ class CalendarFormManager extends CalendarLibrary
             </div>';
 
     /**
+     * Instance of Event
+     *
+     * @var CalendarEvent
+     */
+    protected $event = null;
+
+    /**
      * Form manager constructor
      * 
      * @param boolean $onlyActive get only active forms
@@ -127,23 +134,37 @@ class CalendarFormManager extends CalendarLibrary
      * @return null
      */
     function getFormList() {
-        global $objDatabase,$_ARRAYLANG,$_LANGID;    
-        
-        $onlyActive_where = ($this->onlyActive == true ? ' WHERE status=1' : '');
-        
-        $query = "SELECT id AS id
-                    FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
-                         ".$onlyActive_where."
-                ORDER BY `order`";
-        
+        global $objDatabase;
+
+        $where = array();
+        if ($this->onlyActive) {
+            $where[] = 'status = 1';
+        }
+        if ($this->event) {
+            $where[] = 'id = '. contrexx_input2int($this->event->registrationForm);
+        }
+        $whereCondition = '';
+        if (!empty($where)) {
+            $whereCondition = 'WHERE '. implode(' AND ', $where);
+        }
+
+        $query = '
+            SELECT
+                `id` AS id
+            FROM
+                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form`
+                ' . $whereCondition . '
+            ORDER BY `order`
+        ';
         $objResult = $objDatabase->Execute($query);
-        
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($objResult->fields['id']));
-                $this->formList[] = $objForm;   
-                $objResult->MoveNext();
-            }
+        if (!$objResult) {
+            return;
+        }
+
+        while (!$objResult->EOF) {
+            $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($objResult->fields['id']));
+            $this->formList[] = $objForm;
+            $objResult->MoveNext();
         }
     }
     
@@ -458,5 +479,25 @@ class CalendarFormManager extends CalendarLibrary
                 }
                 break;
         }        
+    }
+
+    /**
+     * Returns the CalendarEvent instance if set, null otherwise
+     *
+     * @return CalendarEvent
+     */
+    public function getEvent()
+    {
+        return $this->event;
+    }
+
+    /**
+     * Set the Event
+     *
+     * @param \Cx\Modules\Calendar\Controller\CalendarEvent $event
+     */
+    public function setEvent(CalendarEvent $event)
+    {
+        $this->event = $event;
     }
 }
