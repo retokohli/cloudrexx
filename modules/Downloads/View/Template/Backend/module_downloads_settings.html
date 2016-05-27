@@ -169,6 +169,35 @@
                         <input type="checkbox" name="downloads_settings_attribute_website" id="downloads_settings_attribute_website" value="1" {DOWNLOADS_SETTINGS_ATTRIBUTE_WEBSITE_CHECKED} /> <label for="downloads_settings_attribute_website">{TXT_DOWNLOADS_WEBSITE}</label><br />
                     </td>
                 </tr>
+                <tr class="row3">
+                    <td colspan="2" style="font-weight:bold;">{TXT_DOWNLOADS_SETTINGS_SORTING}</td>
+                </tr>
+                <tr class="row1">
+                    <td style="padding-bottom: 10px;">
+                        <strong>{TXT_DOWNLOADS_SETTINGS_OPTION_DOWNLOADS}</strong><br />
+                        {TXT_DOWNLOADS_SETTINGS_OPTION_DOWNLOADS_DESC}
+                    </td>
+                    <td style="padding-bottom: 10px;">
+                        <select name="downloads_settings_sorting_downloads">
+                            <!-- BEGIN downloads_settings_sorting_dropdown_downloads -->
+                            <option value="{DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE}" {DOWNLOADS_SETTINGS_DROPDOWN_SELECTED_OPTION}>{DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME}</option>
+                            <!-- END downloads_settings_sorting_dropdown_downloads -->
+                        </select>
+                    </td>
+                </tr>
+                <tr class="row1">
+                    <td style="padding-bottom: 10px;">
+                        <strong>{TXT_DOWNLOADS_SETTINGS_OPTION_CATEGORIES}</strong><br />
+                        {TXT_DOWNLOADS_SETTINGS_OPTION_CATEGORIES_DESC}
+                    </td>
+                    <td style="padding-bottom: 10px;">
+                        <select name="downloads_settings_sorting_categories">
+                            <!-- BEGIN downloads_settings_sorting_dropdown_categories -->
+                            <option value="{DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE}" {DOWNLOADS_SETTINGS_DROPDOWN_SELECTED_OPTION}>{DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME}</option>
+                            <!-- END downloads_settings_sorting_dropdown_categories -->
+                        </select>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
