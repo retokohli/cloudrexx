@@ -235,22 +235,28 @@ class CalendarFormManager extends CalendarLibrary
                     $i          = 0;
                     $formFields = array();
                     if (!empty($formId)) {
+                        $defaultLangId = $_LANGID;
+                        if (!in_array($defaultLangId, \FWLanguage::getIdArray())) {
+                            $defaultLangId = \FWLanguage::getDefaultLangId();
+                        }
                         foreach ($objForm->inputfields as $key => $arrInputfield) {
                             $i++;
 
                             $fieldValue = array();
                             $defaultFieldValue = array();
                             foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-                                $fieldValue[$arrLang['id']]        = $arrInputfield['name'][$arrLang['id']];
-                                $defaultFieldValue[$arrLang['id']] = $arrInputfield['default_value'][$arrLang['id']];
+                                $fieldValue[$arrLang['id']]        =  isset($arrInputfield['name'][$arrLang['id']])
+                                                                     ? $arrInputfield['name'][$arrLang['id']] : '';
+                                $defaultFieldValue[$arrLang['id']] =  isset($arrInputfield['default_value'][$arrLang['id']])
+                                                                     ? $arrInputfield['default_value'][$arrLang['id']] : '';
                             }
                             $formFields[] = array(
                                 'type'                 => $arrInputfield['type'],
                                 'id'                   => $arrInputfield['id'],
                                 'row'                  => $i%2 == 0 ? 'row2' : 'row1',
                                 'order'                => $arrInputfield['order'],
-                                'name_master'          => $arrInputfield['name'][0],
-                                'default_value_master' => $arrInputfield['default_value'][0],
+                                'name_master'          => $fieldValue[$defaultLangId],
+                                'default_value_master' => $defaultFieldValue[$defaultLangId],
                                 'required'             => $arrInputfield['required'],
                                 'affiliation'          => $arrInputfield['affiliation'],
                                 'field_value'          => json_encode($fieldValue),
