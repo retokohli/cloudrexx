@@ -235,6 +235,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 case 'post':
                     // create entry
                     $data = $dataSource->add($dataArguments);
+                    break;
                 case 'put':
                     // update entry
                     $data = $dataSource->update($elementId, $dataArguments);
