@@ -84,13 +84,15 @@
                 <tr>
                     <th colspan="2">{TXT_DOWNLOADS_SETTINGS_SORTING}</th>
                 </tr>
+                <tr class="row3">
+                    <td colspan="2">{TXT_DOWNLOADS_SETTINGS_OPTION_SORTING_DESC}</td>
+                </tr>
                 <tr class="row1">
                     <td width="280">
-                        <strong>{TXT_DOWNLOADS_SETTINGS_OPTION_DOWNLOADS}</strong><br />
-                        {TXT_DOWNLOADS_SETTINGS_OPTION_DOWNLOADS_DESC}
+                        {TXT_DOWNLOADS_SETTINGS_OPTION_DOWNLOADS}
                     </td>
                     <td>
-                        <select name="downloads_settings_sorting_downloads">
+                        <select name="downloads_settings_sorting_downloads" style="width:300px;">
                             <!-- BEGIN downloads_settings_sorting_dropdown_downloads -->
                             <option value="{DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE}" {DOWNLOADS_SETTINGS_DROPDOWN_SELECTED_OPTION}>{DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME}</option>
                             <!-- END downloads_settings_sorting_dropdown_downloads -->
@@ -98,12 +100,11 @@
                     </td>
                 </tr>
                 <tr class="row1">
-                    <td style="padding-bottom: 10px;">
-                        <strong>{TXT_DOWNLOADS_SETTINGS_OPTION_CATEGORIES}</strong><br />
-                        {TXT_DOWNLOADS_SETTINGS_OPTION_CATEGORIES_DESC}
+                    <td>
+                        {TXT_DOWNLOADS_SETTINGS_OPTION_CATEGORIES}
                     </td>
-                    <td style="padding-bottom: 10px;">
-                        <select name="downloads_settings_sorting_categories">
+                    <td>
+                        <select name="downloads_settings_sorting_categories" style="width:300px;">
                             <!-- BEGIN downloads_settings_sorting_dropdown_categories -->
                             <option value="{DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE}" {DOWNLOADS_SETTINGS_DROPDOWN_SELECTED_OPTION}>{DOWNLOADS_SETTINGS_DROPDOWN_OPTION_NAME}</option>
                             <!-- END downloads_settings_sorting_dropdown_categories -->
@@ -125,18 +126,18 @@
                     <td colspan="2" style="font-weight:bold;">{TXT_DOWNLOADS_OVERVIEW_PAGE}</td>
                 </tr>
                 <tr class="row1">
-                    <td width="280">
+                    <td width="50%">
                         <strong>{TXT_DOWNLOADS_COL_COUNT}</strong><br />
                     {TXT_DOWNLOADS_COL_COUNT_DESC}
                     </td>
-                    <td><input type="text" name="downloads_settings_col_count" value="{DOWNLOADS_SETTINGS_COL_COUNT}" /></td>
+                    <td style="vertical-align:middle;"><input type="text" name="downloads_settings_col_count" value="{DOWNLOADS_SETTINGS_COL_COUNT}" /></td>
                 </tr>
                 <tr class="row2">
                     <td style="padding-bottom: 10px;">
                         <strong>{TXT_DOWNLOADS_SUBCAT_COUNT}</strong><br />
                         {TXT_DOWNLOADS_SUBCAT_COUNT_DESC}
                     </td>
-                    <td style="padding-bottom: 10px;"><input type="text" name="downloads_settings_subcat_count" value="{DOWNLOADS_SETTINGS_SUBCAT_COUNT}" /></td>
+                    <td style="vertical-align:middle;padding-bottom: 10px;"><input type="text" name="downloads_settings_subcat_count" value="{DOWNLOADS_SETTINGS_SUBCAT_COUNT}" /></td>
                 </tr>
                 <tr class="row3">
                     <td colspan="2" style="font-weight:bold;">{TXT_DOWNLOADS_BLOCKS}</td>
@@ -146,35 +147,35 @@
                         <strong>{TXT_DOWNLOADS_MOST_VIEWED_FILE_COUNT}</strong><br />
                         {TXT_DOWNLOADS_MOST_VIEWED_FILE_COUNT_DESC}
                     </td>
-                    <td><input type="text" name="downloads_settings_most_viewed_file_count" value="{DOWNLOADS_SETTINGS_MOST_VIEWED_FILE_COUNT}" /></td>
+                    <td style="vertical-align:middle;"><input type="text" name="downloads_settings_most_viewed_file_count" value="{DOWNLOADS_SETTINGS_MOST_VIEWED_FILE_COUNT}" /></td>
                 </tr>
                 <tr class="row2">
                     <td>
                         <strong>{TXT_DOWNLOADS_MOST_DOWNLOADED_FILE_COUNT}</strong><br />
                         {TXT_DOWNLOADS_MOST_DOWNLOADED_FILE_COUNT_DESC}
                     </td>
-                    <td><input type="text" name="downloads_settings_most_downloaded_file_count" value="{DOWNLOADS_SETTINGS_MOST_DOWNLOADED_FILE_COUNT}" /></td>
+                    <td style="vertical-align:middle;"><input type="text" name="downloads_settings_most_downloaded_file_count" value="{DOWNLOADS_SETTINGS_MOST_DOWNLOADED_FILE_COUNT}" /></td>
                 </tr>
                 <tr class="row1">
                     <td>
                         <strong>{TXT_DOWNLOADS_MOST_POPULAR_FILE_COUNT}</strong><br />
                         {TXT_DOWNLOADS_MOST_POPULAR_FILE_COUNT_DESC}
                     </td>
-                    <td><input type="text" name="downloads_settings_most_popular_file_count" value="{DOWNLOADS_SETTINGS_MOST_POPULAR_FILE_COUNT}" /></td>
+                    <td style="vertical-align:middle;"><input type="text" name="downloads_settings_most_popular_file_count" value="{DOWNLOADS_SETTINGS_MOST_POPULAR_FILE_COUNT}" /></td>
                 </tr>
                 <tr class="row2">
                     <td>
                         <strong>{TXT_DOWNLOADS_NEWEST_FILE_COUNT}</strong><br />
                         {TXT_DOWNLOADS_NEWEST_FILE_COUNT_DESC}
                     </td>
-                    <td><input type="text" name="downloads_settings_newest_file_count" value="{DOWNLOADS_SETTINGS_NEWEST_FILE_COUNT}" /></td>
+                    <td style="vertical-align:middle;"><input type="text" name="downloads_settings_newest_file_count" value="{DOWNLOADS_SETTINGS_NEWEST_FILE_COUNT}" /></td>
                 </tr>
                 <tr class="row1">
                     <td style="padding-bottom: 10px;">
                         <strong>{TXT_DOWNLOADS_UPDATE_FILE_COUNT}</strong><br />
                         {TXT_DOWNLOADS_UPDATE_FILE_COUNT_DESC}
                     </td>
-                    <td style="padding-bottom: 10px;"><input type="text" name="downloads_settings_updated_file_count" value="{DOWNLOADS_SETTINGS_UPDATED_FILE_COUNT}" /></td>
+                    <td style="vertical-align:middle;padding-bottom: 10px;"><input type="text" name="downloads_settings_updated_file_count" value="{DOWNLOADS_SETTINGS_UPDATED_FILE_COUNT}" /></td>
                 </tr>
             </tbody>
         </table>
@@ -188,12 +189,12 @@
                     <th colspan="2">{TXT_DOWNLOADS_SETTINGS_STATISTICS}</th>
                 </tr>
                 <tr class="row1">
-                    <td width="280">
+                    <td width="50%">
                         <strong>{TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT}</strong><br />
                         {TXT_DOWNLOADS_NEW_FILE_TIME_LIMIT_DESC}<br />
                         {TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES}
                     </td>
-                    <td><input type="text" name="downloads_settings_new_file_time_limit" value="{DOWNLOADS_SETTINGS_NEW_FILE_TIME_LIMIT}" /></td>
+                    <td style="vertical-align:middle;"><input type="text" name="downloads_settings_new_file_time_limit" value="{DOWNLOADS_SETTINGS_NEW_FILE_TIME_LIMIT}" /></td>
                 </tr>
                 <tr class="row2">
                     <td style="padding-bottom: 10px;">
@@ -201,7 +202,7 @@
                         {TXT_DOWNLOADS_UPDATED_FILE_TIME_LIMIT_DESC}<br />
                         {TXT_DOWNLOADS_SECONDS_COMB_EXAMPLES}
                     </td>
-                    <td style="padding-bottom: 10px;"><input type="text" name="downloads_settings_updated_file_time_limit" value="{DOWNLOADS_SETTINGS_UPDATEDED_FILE_TIME_LIMIT}" /></td>
+                    <td style="vertical-align:middle;padding-bottom: 10px;"><input type="text" name="downloads_settings_updated_file_time_limit" value="{DOWNLOADS_SETTINGS_UPDATEDED_FILE_TIME_LIMIT}" /></td>
                 </tr>
             </tbody>
         </table>
