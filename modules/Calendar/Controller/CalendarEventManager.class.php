@@ -930,10 +930,6 @@ class CalendarEventManager extends CalendarLibrary
     ) {
         global $_ARRAYLANG;
 
-        if (!$event->registration) {
-            return;
-        }
-
         $numRegistrations  = contrexx_input2int($event->getRegistrationCount());
         $numDeregistration = contrexx_input2int($event->getCancellationCount());
         $objEscortManager  = new \Cx\Modules\Calendar\Controller\CalendarRegistrationManager($event, true, false);
@@ -945,7 +941,7 @@ class CalendarEventManager extends CalendarLibrary
         ));
 
         // Only link to registration form if event registration is set up and event lies in the future
-        if (time() >= $event->startDate->getTimestamp()) {
+        if (!$event->registration || time() >= $event->startDate->getTimestamp()) {
             $objTpl->hideBlock('calendarEventRegistration');
             return;
         }
