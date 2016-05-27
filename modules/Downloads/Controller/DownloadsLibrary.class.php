@@ -416,7 +416,7 @@ class DownloadsLibrary
             return;
         }
 
-        foreach ($settingValues as $key => $value) {
+        foreach (array_keys($settingValues) as $key) {
             $selectedOption = ($selected == $key) ? 'selected="selected"' : '';
             $objTemplate->setVariable(array(
                 'DOWNLOADS_SETTINGS_DROPDOWN_OPTION_VALUE'    => $key,
