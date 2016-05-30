@@ -362,14 +362,14 @@ class Calendar extends CalendarLibrary
         }
         $this->objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents,$this->sortDirection,true,$this->author);
         
-        if($cmd != 'detail') {
-            $this->objEventManager->getEventList();  
-        } else { 
+        if (!in_array($cmd, array('detail', 'register'))) {
+            $this->objEventManager->getEventList();
+        } else {
             /* if($_GET['external'] == 1 && $this->arrSettings['publicationStatus'] == 1) {
                 $this->objEventManager->getExternalEvent(intval($_GET['id']), intval($_GET['date'])); 
             } else { */
-                $eventId = isset($_GET['id']) ? intval($_GET['id']) : 0;
-                $date    = isset($_GET['date']) ? intval($_GET['date']) : 0;
+                $eventId = isset($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
+                $date    = isset($_REQUEST['date']) ? contrexx_input2int($_REQUEST['date']) : 0;
 
                 $this->objEventManager->getEvent($eventId, $date);
             /* } */
@@ -859,23 +859,35 @@ UPLOADER;
                 ));
             }
         }
-        
-        $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($_REQUEST['id']));
-        
-        $numRegistrations = (int) $objEvent->registrationCount;
-        
-        if (isset($_GET['date'])) {
-            $dateFromGet = new \DateTime();
-            $dateFromGet->setTimestamp(intval($_GET['date']));
-            $dateForPageTitle = $dateFromGet;
-        } else {
-            $dateForPageTitle = $objEvent->startDate;
+
+        $objEvent = $this->objEventManager->eventList[0];
+
+        if(empty($objEvent)) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
+            return;
         }
+
+        if($objEvent->access == 1 && !\FWUser::getFWUserObject()->objUser->login()){
+            $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+            \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
+            return;
+        }
+
+        $dateForPageTitle = $objEvent->startDate;
         $this->pageTitle = $this->format2userDate($dateForPageTitle)
                             . ": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
-        if(time() <= intval($_REQUEST['date'])) {
-            if($numRegistrations < $objEvent->numSubscriber) {
+        // Only show registration form if event lies in the future
+        if(time() <= $objEvent->startDate->getTimestamp()) {
+            // Only show registration form if event accepts registrations.
+            // Event accepts registrations, if registration is set up and
+            //     - no attendee limit is set
+            //     - or if there are still free places available
+            if (   $objEvent->registration
+                && (   empty($objEvent->numSubscriber)
+                    || !\FWValidator::isEmpty($objEvent->getFreePlaces())
+                )
+            ) {
                 $this->_objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_ID'                   =>  intval($_REQUEST['id']),
                     $this->moduleLangVar.'_FORM_ID'                    =>  intval($objEvent->registrationForm),
@@ -885,11 +897,11 @@ UPLOADER;
                 ));
 
                 $objFormManager = new \Cx\Modules\Calendar\Controller\CalendarFormManager();
+                $objFormManager->setEvent($objEvent);
                 $objFormManager->getFormList();
                 //$objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, $objEvent->ticketSales);
                 // Made the ticket sales always true, because ticket functionality currently not implemented
-                $objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, true); 
-                
+                $objFormManager->showForm($this->_objTpl, intval($objEvent->registrationForm), 2, true);
 
                 /* if ($this->arrSettings['paymentStatus'] == '1' && $objEvent->ticketSales && ($this->arrSettings['paymentBillStatus'] == '1' || $this->arrSettings['paymentYellowpayStatus'] == '1')) {
                     $paymentMethods  = '<select class="calendarSelect" name="paymentMethod">';
@@ -1070,15 +1082,15 @@ UPLOADER;
                         $this->_objTpl->touchBlock("cancelMessage");
                         break;
                     default:
-                        \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
+                        \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
                         break;
                 }
             } else {
-                \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
+                \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
                 return;
             }            
         } else {
-            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
+            \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
             return;
         }
     }
