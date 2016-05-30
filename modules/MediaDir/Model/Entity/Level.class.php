@@ -101,7 +101,7 @@ class Level extends \Cx\Model\Base\EntityBase
     protected $locale;
 
     /**
-     * @var Cx\Modules\MediaDir\Model\Entity\Level
+     * @var integer Parent Level id
      */
     protected $parent;
 

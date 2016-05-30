@@ -199,7 +199,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
             $strLevelClass = 'inactive';
             if ($hasChildren) {
                 if ($isExpanded) {
-                    $expLvlId = $sublevel->getParent()->getId();
+                    $expLvlId = $sublevel->getParent();
                     $iconFile = 'minuslink.gif';
                     $strLevelClass = 'active';
                 } else {

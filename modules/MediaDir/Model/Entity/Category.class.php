@@ -96,7 +96,7 @@ class Category extends \Cx\Model\Base\EntityBase
     protected $locale;
 
     /**
-     * @var Cx\Modules\MediaDir\Model\Entity\Category
+     * @var integer Parent category id
      */
     protected $parent;
 
