@@ -191,6 +191,16 @@ CKEDITOR.on('instanceReady',function(){
             }
         };
     }
+    var translationsDefault = {"mode": "modus", "document": "dokument", "doctools": "dokumenten werkzeuge"};
+    if (cx.variables.get('language') == 'de') {
+        var translations = cx.variables.get('toolbarTranslations', 'toolbarConfigurator');
+        cx.jQuery('div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p > span').each(function() {
+            if (translations.hasOwnProperty(cx.jQuery(this).text())) {
+                var translation = cx.jQuery(this).text();
+                cx.jQuery(this).text(translations[translation]);
+            }
+        });
+    }
 });
 
 // hide 'browse'-buttons in case the user is a sole frontend-user

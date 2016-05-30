@@ -208,14 +208,22 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         $_ARRAYLANG = $init->getComponentSpecificLanguageData('Wysiwyg', false, FRONTEND_LANG_ID);
         // replace language variables
         $template->setVariable(array(
-            'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'  => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'],
-            'TXT_WYSIWYG_TOOLBAR_SAVE'          => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SAVE'],
+            'TXT_WYSIWYG_TOOLBAR_SAVE'  => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SAVE'],
         ));
 
         // Check if the toolbar configurator needs to be wrapped in a form tag
         if (!$isDefaultConfiguration) {
             $template->hideBlock('wysiwyg_toolbar_store_button');
+            $template->setVariable(array(
+                'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'  => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'],
+            ));
+        } else  {
+            $template->setVariable(array(
+                'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'  => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_DEFAULT_CONFIGURATOR'],
+            ));
         }
+
+        $this->getToolbarTranslations();
 
         return $template;
     }
@@ -490,5 +498,43 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
             $buttons = 'config.removeButtons = \'' . $buttons . '\'';
         }
         return $buttons;
+    }
+
+    /**
+     * Get the translations for the toolbar functions as json
+     * @return string   $translations   Toolbar function translations as json
+     */
+    protected function getToolbarTranslations() {
+        // Get the init object to change to te proper language file
+        $init = \Env::get('init');
+        // Initiate $translations as empty stdClass object
+        $translations = new \stdClass();
+        // Get the language file of the Wysiwyg component (this one btw.)
+        $_ARRAYLANG = $init->getComponentSpecificLanguageData('Wysiwyg', false, 1);
+        // Populate the std object with the translations
+        $translations->mode = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_MODE'];
+        $translations->document = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_DOCUMENT'];
+        $translations->doctools = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_DOCUMENT_TOOLS'];
+        $translations->clipboard = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CLIPBOARD'];
+        $translations->undo = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_UNDO'];
+        $translations->find = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_FIND'];
+        $translations->selection = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SELECTION'];
+        $translations->spellchecker = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_SPELLCHECKER'];
+        $translations->basicstyles = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_BASICSTYLES'];
+        $translations->cleanup = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CLEANUP'];
+        $translations->list = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_LIST'];
+        $translations->indent = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_INDENT'];
+        $translations->blocks = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_BLOCKS'];
+        $translations->align = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_ALIGN'];
+        $translations->links = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_LINKS'];
+        $translations->insert = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_INSERT'];
+        $translations->styles = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_STYLES'];
+        $translations->colors = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_COLORS'];
+        $translations->tools = $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_TOOLS'];
+        \ContrexxJavascript::getInstance()->setVariable(
+            'toolbarTranslations',
+            $translations,
+            'toolbarConfigurator'
+        );
     }
 }
