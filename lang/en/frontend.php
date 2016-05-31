@@ -312,3 +312,5 @@ $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "The file extension is not allow
 $_ARRAYLANG['TXT_ACCESS_UNKNOWN'] = "unknown";
 
 $_ARRAYLANG['TXT_LOGIN_WELCOME_PAGE'] = 'Forward to the <a href="%s" title="Website">Website</a>';
+
+$_ARRAYLANG['TXT_READ_MORE'] = "Continue reading";

@@ -301,3 +301,5 @@ $_ARRAYLANG['UPLOAD_FORM_ADD'] = "Ajouter autres fichiers";
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Code de sécurité";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Veuillez saisir la séquence de caractères de l'image dans le champ ci-dessous.";
 $_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Souviens de moi";
+
+$_ARRAYLANG['TXT_READ_MORE'] = "Plus";
