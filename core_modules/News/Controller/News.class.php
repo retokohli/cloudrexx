@@ -896,20 +896,25 @@ class News extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         
         //Filter by tag
         if (!empty($_REQUEST['tag'])) {
-            $parameters['filterTag'] = $searchTag = contrexx_input2raw($_REQUEST['tag']);
+            $searchTag = is_array($_REQUEST['tag'])
+                    ? contrexx_input2raw($_REQUEST['tag'])
+                    : contrexx_input2raw(array($_REQUEST['tag']));
+            $parameters['filterTag[]'] = implode('&filterTag[]=', $searchTag);
             $searchedTag   = $this->getNewsTags(null, $searchTag);
-            $searchedTagId = current(array_keys($searchedTag['tagList']));
             if (!empty($searchedTag['newsIds'])) {
-                $this->incrementViewingCount($searchedTagId);
+                $this->incrementViewingCount(array_keys($searchedTag['tagList']));
                 $newsfilter .= ' AND n.`id` IN ('
                     . implode(',', $searchedTag['newsIds'])
                     . ')';
-                $this->_objTpl->setVariable(array(
-                   'NEWS_FILTER_TAG_ID'   =>  $searchedTagId,
-                   'NEWS_FILTER_TAG_NAME' =>  ucfirst(current($searchedTag['tagList']))
-                ));
-                if ($this->_objTpl->blockExists('tagFilterCont')) {
-                    $this->_objTpl->parse('tagFilterCont');
+                if ($this->_objTpl->blockExists('news_headlines_filter_tags')) {
+                    foreach ($searchedTag['tagList'] as $tagId => $tagName) {
+                        $this->_objTpl->setVariable(array(
+                           'NEWS_FILTER_TAG_ID'   => contrexx_raw2xhtml($tagId),
+                           'NEWS_FILTER_TAG_NAME' => ucfirst(contrexx_raw2xhtml($tagName))
+                        ));
+                        $this->_objTpl->parse('news_headlines_filter_tag');
+                    }
+                    $this->_objTpl->parse('news_headlines_filter_tags');
                 }
             } else {
                 $validToShowList = false;

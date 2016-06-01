@@ -1576,9 +1576,8 @@ class NewsLibrary
         //Filter by tag
         if (isset($params['filterTag']) && !empty($params['filterTag'])) {
             $searchedTag = $this->getNewsTags(null, contrexx_input2raw($params['filterTag']));
-            $searchedTagId = current(array_keys($searchedTag['tagList']));
             if (!empty($searchedTag['newsIds'])) {
-                $this->incrementViewingCount($searchedTagId);
+                $this->incrementViewingCount(array_keys($searchedTag['tagList']));
                 $newsFilter['id'] = $searchedTag['newsIds'];
             }
         }
@@ -2159,20 +2158,21 @@ class NewsLibrary
         }
         return $tagList;
     }
+
     /**
      * Getting the related news tags with given news id (and|or) tag
      *
      * @global object $objDatabase
      *
-     * @param type $newsId News id to get the corresponding related tags
-     * @param type $tag    Tag string to search the corresponding tags
+     * @param integer $newsId News id to get the corresponding related tags
+     * @param array   $tags   Tag string to search the corresponding tags
      *
      * @return boolean|array Array List of News Related tags
      */
-    public function getNewsTags($newsId = null, $tag = null)
+    public function getNewsTags($newsId = null, $tags = array())
     {
         global $objDatabase;
-        if (empty($newsId) && empty($tag)) {
+        if (empty($newsId) && empty($tags)) {
             return array();
         }
         $query = 'SELECT
@@ -2190,9 +2190,9 @@ class NewsLibrary
         }
 
         //Search the given tag
-        if (!empty($tag)) {
+        if (is_array($tags) && !empty($tags)) {
             $where .= (empty($where)) ? ' WHERE ' : ' AND ';
-            $where .= 't.`tag` = "' . contrexx_raw2db($tag) . '"';
+            $where .= ' (t.`tag` = "' . implode('" OR t.`tag` =  "', contrexx_raw2db($tags)) . '")';
         }
 
 
@@ -2216,6 +2216,7 @@ class NewsLibrary
             'newsIds' => $newsIdList
         );
     }
+
     /**
      * Add the new tag
      *
@@ -2379,18 +2380,19 @@ class NewsLibrary
             }
         }
     }
+
     /**
      * Increment the viewing count
      *
-     * @global object $objDatabase
-     * @param type $tagId
-     * @return type
+     * @param array $tagIds tag ids
+     *
+     * @return null
      */
-    public function incrementViewingCount($tagId = null)
+    public function incrementViewingCount($tagIds = array())
     {
         global $objDatabase;
 
-        if (empty($tagId)) {
+        if (empty($tagIds) || !is_array($tagIds)) {
             return;
         }
         //Update the tag using count
@@ -2398,9 +2400,10 @@ class NewsLibrary
             'UPDATE `'
             . DBPREFIX . 'module_news_tags`
             SET `viewed_count` = `viewed_count`+1
-            WHERE `id`=' . $tagId
+            WHERE `id` IN (' . implode(', ', $tagIds) . ')'
         );
     }
+
     /**
      * Retruns most Frequent(Searched|Viewed) tag details.
      *
