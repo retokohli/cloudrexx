@@ -608,12 +608,15 @@ TEMPLATE;
             return array();
         }
 
-        $categories = array();
-        while ($category->getId() != $category->getParent()) {
-            $categories[] = $category;
-            $category     = $this->getCategoryById($category->getParent());
+        $parentCategories = $this->categoryNestedSet->getParents($categoryId, true);
+        $categories       = array($category);
+        foreach ($parentCategories as $parentCategory) {
+            $parentId = $parentCategory['id'];
+            if ($parentId == $this->nestedSetRootId) {
+                continue;
+            }
+            $categories[] = $this->getCategoryById($parentId);
         }
-
         return $categories;
     }
 
@@ -792,9 +795,11 @@ TEMPLATE;
      */
     public function createCategoryFromArray($input)
     {
+        $parent = $this->categoryNestedSet->getParent($input['id'], true);
+
         $category = new \Cx\Modules\MediaDir\Model\Entity\Category();
         $category->setId($input['id']);
-        $category->setParent($input['rootid']);
+        $category->setParent($parent['id']);
         $category->setOrder($input['norder']);
         $category->setLvl($input['level']);
         $category->setShowSubcategories($input['show_subcategories']);

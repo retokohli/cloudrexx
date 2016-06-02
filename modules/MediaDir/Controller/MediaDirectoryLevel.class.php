@@ -596,12 +596,16 @@ TEMPLATE;
         if (!$level) {
             return array();
         }
-        $levels = array();
-        while ($level->getId() != $level->getParent()) {
-            $levels[] = $level;
-            $level    = $this->getLevelById($level->getParent());
-        }
 
+        $parentlevels = $this->levelNestedSet->getParents($levelId, true);
+        $levels       = array($level);
+        foreach ($parentlevels as $parentLevel) {
+            $parentId = $parentLevel['id'];
+            if ($parentId == $this->nestedSetRootId) {
+                continue;
+            }
+            $levels[] = $this->getLevelById($parentId);
+        }
         return $levels;
     }
 
