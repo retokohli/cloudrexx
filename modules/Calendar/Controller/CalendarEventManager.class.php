@@ -957,7 +957,7 @@ class CalendarEventManager extends CalendarLibrary
                     || !\FWValidator::isEmpty($event->getFreePlaces())))
         ) {
             if ($event->registration == CalendarEvent::EVENT_REGISTRATION_EXTERNAL) {
-                $regLinkSrc = $event->registrationExternalLink;
+                $regLinkSrc = \FWValidator::getUrl($event->registrationExternalLink);
             } elseif ($hostUri) {
                 $regLinkSrc = $hostUri. '/' .CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$event->id.'&amp;date='.$event->startDate->getTimestamp();
             } else {
