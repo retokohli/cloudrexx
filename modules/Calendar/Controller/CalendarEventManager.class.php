@@ -1061,13 +1061,18 @@ class CalendarEventManager extends CalendarLibrary
                 $isEventStarted = $isNotIndependentSerieEventStarted[$objEvent->getId()];
             }
 
-            $freePlaces                 = !$objEvent->registration || $isEventStarted || empty($objEvent->numSubscriber) || $isSeriesByNotIndependent ? 0 : $objEvent->getFreePlaces();
+            $freePlaces                 = (   $isEventStarted
+                                           || (in_array($objEvent->registration, array(CalendarEvent::EVENT_REGISTRATION_NONE, CalendarEvent::EVENT_REGISTRATION_EXTERNAL)))
+                                           || ($objEvent->registration == CalendarEvent::EVENT_REGISTRATION_INTERNAL && empty($objEvent->numSubscriber))
+                                           || $isSeriesByNotIndependent)
+                                         ? 0 : $objEvent->getFreePlaces();
             $eventClass                 = ' event_full';
             $eventurl                   = false;
             if (   !$isEventStarted
-                && (   !$objEvent->registration
-                    || empty($objEvent->numSubscriber)
-                    || !\FWValidator::isEmpty($objEvent->getFreePlaces())
+                && (   ($objEvent->registration == CalendarEvent::EVENT_REGISTRATION_NONE)
+                    || ($objEvent->registration == CalendarEvent::EVENT_REGISTRATION_EXTERNAL && !$objEvent->registrationExternalFullyBooked)
+                    || (   $objEvent->registration == CalendarEvent::EVENT_REGISTRATION_INTERNAL
+                        && (empty($objEvent->numSubscriber) || !\FWValidator::isEmpty($objEvent->getFreePlaces())))
                 )
             ) {
                 $eventClass = ' event_open';
