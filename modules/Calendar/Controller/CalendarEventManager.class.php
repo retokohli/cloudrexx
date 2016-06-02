@@ -941,7 +941,7 @@ class CalendarEventManager extends CalendarLibrary
         ));
 
         // Only link to registration form if event registration is set up and event lies in the future
-        if (!$event->registration || time() >= $event->startDate->getTimestamp()) {
+        if (!$event->registration || time() > $event->startDate->getTimestamp()) {
             $objTpl->hideBlock('calendarEventRegistration');
             return;
         }
@@ -973,6 +973,10 @@ class CalendarEventManager extends CalendarLibrary
             $regLinkSrc       = '';
             $registrationOpen = false;
         }
+        $objTpl->setVariable(array(
+            $this->moduleLangVar . '_EVENT_REGISTRATION_LINK'     => $regLink,
+            $this->moduleLangVar . '_EVENT_REGISTRATION_LINK_SRC' => $regLinkSrc,
+        ));
         if ($objTpl->blockExists('calendarEventRegistrationOpen')) {
             if ($registrationOpen) {
                 $objTpl->parse('calendarEventRegistrationOpen');
@@ -987,10 +991,6 @@ class CalendarEventManager extends CalendarLibrary
                 $objTpl->hideBlock('calendarEventRegistrationClosed');
             }
         }
-        $objTpl->setVariable(array(
-            $this->moduleLangVar . '_EVENT_REGISTRATION_LINK'     => $regLink,
-            $this->moduleLangVar . '_EVENT_REGISTRATION_LINK_SRC' => $regLinkSrc,
-        ));
         $objTpl->parse('calendarEventRegistration');
     }
 
