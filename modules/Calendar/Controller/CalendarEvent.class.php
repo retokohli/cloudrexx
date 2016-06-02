@@ -2202,6 +2202,17 @@ class CalendarEvent extends CalendarLibrary
     }
 
     /**
+     * Get unique identifier of event
+     *
+     * Note: Event reocurrences do share the same unique identifier
+     *
+     * @return  integer ID of event
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
      * PHP clone, clone the start and end dates on clone
      */
     public function __clone()
