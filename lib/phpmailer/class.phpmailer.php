@@ -792,6 +792,14 @@ class PHPMailer {
           $port = $this->Port;
         }
 
+        // automatically activate SSL or TLS in case its specified
+        // as protocol on the SMTP host.
+        // I.e.: ssl//smtp.example.com
+        if (preg_match('#^([a-z]+)://(.*)$#i', $host, $matches)) {
+            $host = $matches[2];
+            $this->SMTPSecure = $matches[1];
+        }
+
         $tls = ($this->SMTPSecure == 'tls');
         $ssl = ($this->SMTPSecure == 'ssl');
 
