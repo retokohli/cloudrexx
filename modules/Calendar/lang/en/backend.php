@@ -516,7 +516,6 @@ $_ARRAYLANG['TXT_CALENDAR_COPY'] = "Copy";
 $_ARRAYLANG['TXT_CALENDAR_USE_DATEPICKER'] = "Use Datepicker";
 $_ARRAYLANG['TXT_CALENDAR_DATEPICKER'] = "JS DatePickerControl";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_MORE_INVITATIONS_INFO'] = "Add additional e-mail addresses in this field (comma separated) to be the person to whom an invitation by e-mail should be sent.";
-$_ARRAYLANG['TXT_CALENDAR_EVENT_NUM_SUBSCRIBER_INFO'] = "Number of participants must be greater than \\\"0\\\".";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_NOTIFICATION_TO_INFO'] = "Email This field allows addresses (comma separated) to specify to which a notification on and notices should be sent by e-mail.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL_TEMPLATE_INFO'] = "Here is the e-mail template can be (per event) selected for the confirmation email.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_NUM_SEATING_INFO'] = "Can increase the number of seats that can be eye dials in front then in this field (comma separated) to specify.";
