@@ -224,30 +224,44 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $data = array();
             switch ($method) {
                 // administrative access
-                case 'head':
-                    // return metadata, tdb: might give info about relations
                 case 'options':
                     // lists available methods for a request
-                case 'trace':
-                    // returns the request for debugging purposes
+                    http_response_code(204); // No Content
+                    $allowedMethods = $dataAccessRepo->getAllowedMethods($dataSource, $apiKey);
+                    header('Allow: ' . implode(', ', $allowedMethods));
+                    die();
+                    break;
                 
                 // write access
                 case 'post':
                     // create entry
+                    // should be 201 (Created) with Location header to item URL
+                    // should be 404 if ressource does not exist
+                    // should be 409 (Conflict) if ressource already exists
                     $data = $dataSource->add($dataArguments);
                     break;
+                case 'patch':
                 case 'put':
                     // update entry
+                    // should be 200 or 204 (No content)
+                    // should be 404 if $elementId not set or not found
                     $data = $dataSource->update($elementId, $dataArguments);
                     break;
                 case 'delete':
                     // delete entry
+                    // should be 200
+                    // should be 404 if element is not set or not found
                     $data = $dataSource->remove($elementId);
                     break;
                 
                 // read access
+                case 'head':
+                    // return the same headers as 'get', but no body
+                    break;
                 case 'get':
                 default:
+                    // should be 200
+                    // should be 404 if item not found
                     $data = $dataSource->get($elementId, $filter, $order, $limit, $offset, $dataAccess->getFieldList());
                     break;
             }
