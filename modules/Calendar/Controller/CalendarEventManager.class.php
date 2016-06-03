@@ -656,7 +656,7 @@ class CalendarEventManager extends CalendarLibrary
             } else {
                 $freeSeats = $_ARRAYLANG['TXT_CALENDAR_YES'];
             }
-            if (!$objEvent->registration) {
+            if (in_array($objEvent->registration, array(CalendarEvent::EVENT_REGISTRATION_NONE, CalendarEvent::EVENT_REGISTRATION_EXTERNAL))) {
                 $freeSeats = $_ARRAYLANG['TXT_CALENDAR_NOT_SPECIFIED'];
             }
 
@@ -951,10 +951,14 @@ class CalendarEventManager extends CalendarLibrary
         //     - no attendee limit is set
         //     - or if there are still free places available
         $registrationOpen = true;
-        if (   empty($event->numSubscriber)
-            || !\FWValidator::isEmpty($event->getFreePlaces())
+        if (   ($event->registration == CalendarEvent::EVENT_REGISTRATION_EXTERNAL && !$event->registrationExternalFullyBooked)
+            || (   $event->registration == CalendarEvent::EVENT_REGISTRATION_INTERNAL
+                && (   empty($event->numSubscriber)
+                    || !\FWValidator::isEmpty($event->getFreePlaces())))
         ) {
-            if ($hostUri) {
+            if ($event->registration == CalendarEvent::EVENT_REGISTRATION_EXTERNAL) {
+                $regLinkSrc = \FWValidator::getUrl($event->registrationExternalLink);
+            } elseif ($hostUri) {
                 $regLinkSrc = $hostUri. '/' .CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$event->id.'&amp;date='.$event->startDate->getTimestamp();
             } else {
                 $params = array(
@@ -1057,13 +1061,20 @@ class CalendarEventManager extends CalendarLibrary
                 $isEventStarted = $isNotIndependentSerieEventStarted[$objEvent->getId()];
             }
 
-            $freePlaces                 = !$objEvent->registration || $isEventStarted || empty($objEvent->numSubscriber) || $isSeriesByNotIndependent ? 0 : $objEvent->getFreePlaces();
-            $eventClass                 = ' event_full';
-            $eventurl                   = false;
+            $freePlaces = (   $isEventStarted
+                           || (in_array($objEvent->registration, array(CalendarEvent::EVENT_REGISTRATION_NONE, CalendarEvent::EVENT_REGISTRATION_EXTERNAL)))
+                           || ($objEvent->registration == CalendarEvent::EVENT_REGISTRATION_INTERNAL && empty($objEvent->numSubscriber))
+                           || $isSeriesByNotIndependent
+                          ) ? 0 : $objEvent->getFreePlaces();
+            $eventClass = ' event_full';
+            $eventurl = false;
+
             if (   !$isEventStarted
-                && (   !$objEvent->registration
-                    || empty($objEvent->numSubscriber)
-                    || !\FWValidator::isEmpty($objEvent->getFreePlaces())
+                && (   $objEvent->registration == CalendarEvent::EVENT_REGISTRATION_NONE
+                    || ($objEvent->registration == CalendarEvent::EVENT_REGISTRATION_EXTERNAL && !$objEvent->registrationExternalFullyBooked)
+                    || (   $objEvent->registration == CalendarEvent::EVENT_REGISTRATION_INTERNAL
+                        && (empty($objEvent->numSubscriber) || !\FWValidator::isEmpty($objEvent->getFreePlaces()))
+                    )
                 )
             ) {
                 $eventClass = ' event_open';
@@ -1188,7 +1199,7 @@ class CalendarEventManager extends CalendarLibrary
                 } else {
                     $freeSeats = $_ARRAYLANG['TXT_CALENDAR_YES'];
                 }
-                if (!$objEvent->registration) {
+                if (in_array($objEvent->registration, array(CalendarEvent::EVENT_REGISTRATION_NONE, CalendarEvent::EVENT_REGISTRATION_EXTERNAL))) {
                     $freeSeats = $_ARRAYLANG['TXT_CALENDAR_NOT_SPECIFIED'];
                 }
                 
