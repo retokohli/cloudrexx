@@ -535,11 +535,20 @@ cx.ready(function() {
         dateFormat: '$dateFormat',        
         timeFormat: 'hh:mm',
         onSelect: function(dateText, inst) {
-            startDateTime = cx.jQuery(".startDate").datetimepicker("getDate").getTime() / 1000;
-            endDateTime   = cx.jQuery(".endDate").datetimepicker("getDate").getTime() / 1000;                
+            var lastVal       = inst.lastVal;
+            var startDateTime = cx.jQuery(".startDate").datetimepicker("getDate");
+            var endDateTime   = cx.jQuery(".endDate").datetimepicker("getDate");
 
-            if (startDateTime > endDateTime) {
-                cx.jQuery(".endDate").datetimepicker('setDate', cx.jQuery(".startDate").val());
+            if ( inst.id == 'startDate' && cx.jQuery( '.all_day' ).is( ':checked' ) && dateText != lastVal) {
+                var lastStartTimeStamp = cx.jQuery.datepicker.parseDate('{CALENDAR_EVENT_DATE_FORMAT}', lastVal).getTime();
+                var endTimeStamp       = endDateTime.getTime();
+
+                var timeDiff = Math.abs(endTimeStamp - lastStartTimeStamp);
+                var endDate  = new Date(startDateTime.getTime() + timeDiff);
+
+                cx.jQuery(".endDate").datetimepicker('setDate', endDate);
+            } else if ( startDateTime > endDateTime ) {
+                cx.jQuery(".endDate").datetimepicker('setDate', startDateTime);
             }
         },
         showSecond: false
