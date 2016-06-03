@@ -792,6 +792,7 @@ class PHPMailer {
           $port = $this->Port;
         }
 
+// WORKAROUND until Cx\Core\MailTemplate\Model\Entity\Mail is implemented
         // automatically activate SSL or TLS in case its specified
         // as protocol on the SMTP host.
         // I.e.: ssl//smtp.example.com
@@ -799,6 +800,7 @@ class PHPMailer {
             $host = $matches[2];
             $this->SMTPSecure = $matches[1];
         }
+// END WORKAROUND
 
         $tls = ($this->SMTPSecure == 'tls');
         $ssl = ($this->SMTPSecure == 'ssl');
