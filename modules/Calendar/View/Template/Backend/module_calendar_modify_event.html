@@ -165,28 +165,57 @@
         var options = {
             dateFormat: '{CALENDAR_EVENT_DATE_FORMAT}',
             timeFormat: 'hh:mm',
-            onSelect: function(dateText, inst) {
-                var lastVal       = inst.lastVal;
-                var startDateTime = cx.jQuery(".startDate").datetimepicker("getDate");
-                var endDateTime   = cx.jQuery(".endDate").datetimepicker("getDate");
-
-                if ( inst.id == 'startDate' && cx.jQuery( '.all_day' ).is( ':checked' ) && dateText != lastVal) {
-                    var lastStartTimeStamp = cx.jQuery.datepicker.parseDate('{CALENDAR_EVENT_DATE_FORMAT}', lastVal).getTime();
-                    var endTimeStamp       = endDateTime.getTime();
-
-                    var timeDiff = Math.abs(endTimeStamp - lastStartTimeStamp);
-                    var endDate  = new Date(startDateTime.getTime() + timeDiff);
-
-                    cx.jQuery(".endDate").datetimepicker('setDate', endDate);
-                } else if ( startDateTime > endDateTime ) {
-                    cx.jQuery(".endDate").datetimepicker('setDate', startDateTime);
-                }
-            },
             showSecond: false
         };
-        cx.jQuery('input[name=startDate]').datetimepicker(options);
-        cx.jQuery('input[name=endDate]').datetimepicker(options);
-        modifyEvent._handleAllDayEvent($J(".all_day"));
+        cx.jQuery('input[name=startDate]')
+            .datetimepicker(options)
+            .data('prevDate', cx.jQuery(".startDate").datetimepicker("getDate"))
+            .change(function(){
+                var prevStartDate = cx.jQuery( this ).data('prevDate');
+                var startDate     = cx.jQuery(".startDate").datetimepicker("getDate");
+                var endDate       = cx.jQuery(".endDate").datetimepicker("getDate");
+
+                if ($J(".all_day").is(':checked')) {
+                    prevStartDate.setHours(0, 0, 0);
+                    startDate.setHours(0, 0, 0);
+                    endDate.setHours(0, 0, 0);
+                }
+
+                if (prevStartDate.getTime() != startDate.getTime()) {
+                    var timeDiff = Math.abs(endDate.getTime() - prevStartDate.getTime());
+                    if (timeDiff > 0) {
+                        var endDate  = new Date(startDate.getTime() + timeDiff);
+
+                        cx.jQuery(".endDate").datetimepicker('setDate', endDate);
+                    }
+                } else if (startDate.getTime() > endDate.getTime()) {
+                    cx.jQuery(".endDate").datetimepicker('setDate', startDate);
+                }
+
+                cx.jQuery( this ).data('prevDate', cx.jQuery(".startDate").datetimepicker("getDate"));
+
+            });
+
+        cx.jQuery('input[name=endDate]')
+            .datetimepicker(options)
+            .change(function() {
+
+                var startDate     = cx.jQuery(".startDate").datetimepicker("getDate");
+                var endDate       = cx.jQuery(".endDate").datetimepicker("getDate");
+
+                if ($J(".all_day").is(':checked')) {
+                    startDate.setHours(0, 0, 0);
+                    endDate.setHours(0, 0, 0);
+                }
+                if (startDate.getTime() > endDate.getTime()) {
+                    var newEndDate  = new Date(startDate.getTime() + (30*60*1000));
+
+                    cx.jQuery(".endDate").datetimepicker('setDate', newEndDate);
+                }
+            });
+        if ( $J(".all_day").is(':checked') ) {
+            modifyEvent._handleAllDayEvent($J(".all_day"));
+        }
         refreshDatePickers();
 
         blankException = $J( "#exceptionDateTemplate" ).html();
