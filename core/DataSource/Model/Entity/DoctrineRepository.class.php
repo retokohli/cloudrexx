@@ -46,7 +46,7 @@ namespace Cx\Core\DataSource\Model\Entity;
  */
 
 class DoctrineRepository extends DataSource {
-    
+
     /**
      * Gets one or more entries from this DataSource
      *
@@ -71,12 +71,8 @@ class DoctrineRepository extends DataSource {
         $offset = 0,
         $fieldList = array()
     ) {
+        $repo = $this->getRepository();
         $em = $this->cx->getDb()->getEntityManager();
-        $repo = $em->getRepository($this->getIdentifier());
-        
-        if (!$repo) {
-            throw new \Exception('Repository not found!');
-        }
         
         $criteria = array();
         
@@ -162,9 +158,19 @@ class DoctrineRepository extends DataSource {
      * Adds a new entry to this DataSource
      * @param array $data Field=>value-type array. Not all fields may be required.
      * @throws \Exception If something did not go as planned
+     * @return string ID of the new entry
      */
     public function add($data) {
-        throw new \Exception('Not yet implemented');
+        $em = $this->cx->getDb()->getEntityManager();
+        $entityClass = $this->getIdentifier();
+        $entityClassMetadata = $em->getClassMetadata($entityClass);
+        $entity = $entityClassMetadata->newInstance();
+        
+        $this->setEntityData($entity, $data);
+        
+        $em->persist($entity);
+        $em->flush();
+        return $entityClassMetadata->getSingleIdReflectionProperty()->getValue($entity);
     }
     
     /**
@@ -174,7 +180,19 @@ class DoctrineRepository extends DataSource {
      * @throws \Exception If something did not go as planned
      */
     public function update($elementId, $data) {
-        throw new \Exception('Not yet implemented');
+        $em = $this->cx->getDb()->getEntityManager();
+        $repo = $this->getRepository();
+        
+        $entity = $repo->find($elementId);
+        
+        if (!$entity) {
+            throw new \Exception('Entry not found!');
+        }
+        
+        $this->setEntityData($entity, $data);
+        
+        $em->persist($entity);
+        $em->flush();
     }
     
     /**
@@ -183,7 +201,66 @@ class DoctrineRepository extends DataSource {
      * @throws \Exception If something did not go as planned
      */
     public function remove($elementId) {
-        throw new \Exception('Not yet implemented');
+        $em = $this->cx->getDb()->getEntityManager();
+        $repo = $this->getRepository();
+        
+        $entity = $repo->find($elementId);
+        
+        if (!$entity) {
+            throw new \Exception('Entry not found!');
+        }
+        
+        $em->remove($entity);
+        $em->flush();
+    }
+    
+    /**
+     * Returns the repository for this DataSource
+     * @return \Doctrine\ORM\EntityRepository Repository for this DataSource
+     */
+    protected function getRepository() {
+        $em = $this->cx->getDb()->getEntityManager();
+        $repo = $em->getRepository($this->getIdentifier());
+        
+        if (!$repo) {
+            throw new \Exception('Repository not found!');
+        }
+        
+        return $repo;
+    }
+    
+    /**
+     * Sets data for an entity
+     * @todo Check relations
+     * @param \Cx\Model\Base\EntityBase $entity Entity to set data
+     * @param array $data Field=>$value-type array
+     */
+    protected function setEntityData($entity, $data) {
+        $em = $this->cx->getDb()->getEntityManager();
+        $entityClassMetadata = $em->getClassMetadata(get_class($entity));
+        $primaryKeyName = $entityClassMetadata->getSingleIdentifierFieldName(); //get primary key name
+        $entityColumnNames = $entityClassMetadata->getColumnNames(); //get the names of all fields
+        
+        foreach($entityColumnNames as $column) {
+            $name = $entityClassMetadata->getFieldName($column);
+            if ($name == $primaryKeyName || !isset($data[$name])) {
+                continue;
+            }
+            
+            $fieldDefinition = $entityClassMetadata->getFieldMapping($name);
+            if ($fieldDefinition['type'] == 'datetime') {
+                $data[$name] = new \DateTime($data[$name]);
+            } elseif ($fieldDefinition['type'] == 'array') {
+                // verify that the value is actually an array -> prevent to store other php data
+                if (!is_array($data[$name])) {
+                    $data[$name] = array();
+                }
+            }
+            
+            $fieldSetMethodName = 'set'.preg_replace('/_([a-z])/', '\1', ucfirst($name));
+            // set the value as property of the current object, so it is ready to be stored in the database
+            $entity->$fieldSetMethodName($data[$name]);
+        }
     }
 }
 

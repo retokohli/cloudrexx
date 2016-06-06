@@ -149,29 +149,29 @@ class LegacyDatabaseRepository extends DataSource {
     /**
      * Adds a new entry to this DataSource
      * @param array $data Field=>value-type array. Not all fields may be required.
-     * @throws \Exception If something did not go as planned
+     * @throws \BadMethodCallException ALWAYS! Legacy is not intended to be used for write access!
      */
     public function add($data) {
-        throw new \Exception('Not yet implemented');
+        throw new \BadMethodCallException('Access denied');
     }
     
     /**
      * Updates an existing entry of this DataSource
      * @param string $elementId ID of the element to update
      * @param array $data Field=>value-type array. Not all fields are required.
-     * @throws \Exception If something did not go as planned
+     * @throws \BadMethodCallException ALWAYS! Legacy is not intended to be used for write access!
      */
     public function update($elementId, $data) {
-        throw new \Exception('Not yet implemented');
+        throw new \BadMethodCallException('Access denied');
     }
     
     /**
      * Drops an entry from this DataSource
      * @param string $elementId ID of the element to update
-     * @throws \Exception If something did not go as planned
+     * @throws \BadMethodCallException ALWAYS! Legacy is not intended to be used for write access!
      */
     public function remove($elementId) {
-        throw new \Exception('Not yet implemented');
+        throw new \BadMethodCallException('Access denied');
     }
 }
 
