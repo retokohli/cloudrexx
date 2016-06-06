@@ -191,7 +191,7 @@ class MediaSource extends DataSource {
     /**
      * Gets one or more entries from this DataSource
      *
-     * If an option is not provided, no restriction is made for this option.
+     * If an argument is not provided, no restriction is made for this argument.
      * So if this is called without any arguments, all entries of this
      * DataSource are returned.
      * If no entry is found, an empty array is returned.
