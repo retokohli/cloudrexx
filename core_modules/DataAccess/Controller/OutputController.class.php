@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- *
+ * 
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,31 +24,33 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
-
+ 
 /**
- * LegacyDatabaseRepository
- *
+ * Output controller
+ * 
  * @copyright   Cloudrexx AG
- * @author      Project Team SS4U <info@cloudrexx.com>
- * @package     cloudrexx
- * @subpackage  core_datasource
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package cloudrexx
+ * @subpackage core_modules_dataaccess
  */
 
-namespace Cx\Core\DataSource\Model\Entity;
+namespace Cx\Core_Modules\DataAccess\Controller;
 
 /**
- * LegacyDatabaseRepository
- *
+ * Output controller
+ * 
  * @copyright   Cloudrexx AG
- * @author      Project Team SS4U <info@cloudrexx.com>
- * @package     cloudrexx
- * @subpackage  core_datasource
+ * @author Michael Ritter <michael.ritter@cloudrexx.com>
+ * @package cloudrexx
+ * @subpackage core_modules_dataaccess
  */
-
-class LegacyDatabaseRepository extends DataSource {
+abstract class OutputController extends \Cx\Core\Core\Model\Entity\Controller {
     
-    public function get($elementId, $filter, $order, $limit, $offset) {
-        return array();
-    }
+    /**
+     * Returns encoded data
+     * @param array $data Data to encode
+     * @return string Encoded data
+     */
+    public abstract function parse($data);
 }
 

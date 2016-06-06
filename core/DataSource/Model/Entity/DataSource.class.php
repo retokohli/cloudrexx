@@ -151,4 +151,6 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
     {
         return $this->dataAccesses;
     }
+    
+    public abstract function get($elementId, $filter, $order, $limit, $offset);
 }

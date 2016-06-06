@@ -188,5 +188,7 @@ class MediaSource extends DataSource {
         return $this->fileSystem;
     }
 
-
+    public function get($elementId, $filter, $order, $limit, $offset) {
+        return array();
+    }
 }
