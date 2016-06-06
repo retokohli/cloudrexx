@@ -34,7 +34,7 @@
 
 namespace Cx\Core\MediaSource\Model\Entity;
 
-use Cx\Model\Base\EntityBase;
+use Cx\Core\DataSource\Model\Entity\DataSource;
 
 /**
  * Class MediaSource
@@ -44,7 +44,7 @@ use Cx\Model\Base\EntityBase;
  * @package     cloudrexx
  * @subpackage  coremodule_mediabrowser
  */
-class MediaSource extends EntityBase {
+class MediaSource extends DataSource {
 
     /**
      * Name of the mediatype e.g. files, shop, media1
@@ -188,5 +188,7 @@ class MediaSource extends EntityBase {
         return $this->fileSystem;
     }
 
-
+    public function get($elementId, $filter, $order, $limit, $offset) {
+        return array();
+    }
 }
