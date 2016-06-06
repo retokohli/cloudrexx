@@ -234,6 +234,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 case 'post':
                     // create entry
                     $data = $dataSource->add($dataArguments);
+                    break;
                 case 'put':
                     // update entry
                     $data = $dataSource->update($elementId, $dataArguments);
@@ -269,6 +270,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $e->getMessage()
                 )
             );
+            /*$response->addMessage(
+                \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::MESSAGE_TYPE_INFO,
+                $e->getTraceAsString()
+            );//*/
             $response->send($outputModule);
         }
     }
