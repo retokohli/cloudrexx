@@ -93,7 +93,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 return 'RESTful data interchange API v1' . "\n" .
                     'Usage: v1 <outputModule> <dataSource> (<elementId>) (apikey=<apiKey>) (<options>)';
-                break;
             default:
                 return '';
         }

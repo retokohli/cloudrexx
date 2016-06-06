@@ -273,7 +273,7 @@ CREATE TABLE `contrexx_core_module_data_access` (
   `read_permission` int(11) DEFAULT NULL,
   `write_permission` int(11) DEFAULT NULL,
   `data_source_id` int(11) DEFAULT NULL,
-  `name` varchar(45) NOT NULL,
+  `name` varchar(255) NOT NULL,
   `field_list` longtext NOT NULL,
   `access_condition` longtext NOT NULL,
   `allowed_output_methods` longtext NOT NULL,
@@ -288,7 +288,7 @@ CREATE TABLE `contrexx_core_module_data_access` (
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_data_access_apikey` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
-  `api_key` varchar(45) NOT NULL,
+  `api_key` varchar(32) NOT NULL,
   PRIMARY KEY(`id`),
   UNIQUE KEY `api_key` (`api_key`)
 ) ENGINE = InnoDB;
