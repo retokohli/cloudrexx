@@ -534,11 +534,12 @@ cx.ready(function() {
     var options = {
         dateFormat: '$dateFormat',        
         timeFormat: 'hh:mm',
+        showSecond: false,
         onSelect: function(dateText, inst){
             var startDate = cx.jQuery( ".startDate" ).datetimepicker("getDate");
             var endDate   = cx.jQuery( ".endDate" ).datetimepicker("getDate");
 
-            if (inst.id == 'startDate' || (inst.\$input && inst.\$input[0].id == 'startDate')) {
+            if ( cx.jQuery( this )[0].id == 'startDate' ) {
                 var prevStartDate = cx.jQuery( ".startDate" ).data('prevDate');
 
                 if (cx.jQuery(".all_day").is(':checked')) {
@@ -555,20 +556,25 @@ cx.ready(function() {
                     }
                 }
 
-                cx.jQuery( ".startDate" ).data('prevDate', cx.jQuery(".startDate").datetimepicker("getDate"));
-            }
-            if (startDate.getTime() > endDate.getTime()) {
+            } else if (startDate.getTime() > endDate.getTime()) {
                 endDate = new Date(startDate.getTime() + (30*60*1000));
                 cx.jQuery(".endDate").datetimepicker('setDate', endDate);
             }
+
+            cx.jQuery( ".startDate" ).data('prevDate', cx.jQuery(".startDate").datetimepicker("getDate"));
+            cx.jQuery( ".endDate" ).data('prevDate', cx.jQuery(".endDate").datetimepicker("getDate"));
+            cx.jQuery( this ).datetimepicker('refresh');
         }
     };
     cx.jQuery('input[name=startDate]')
         .datetimepicker(options)
         .data('prevDate', cx.jQuery(".startDate").datetimepicker("getDate"));
     cx.jQuery('input[name=endDate]')
-        .datetimepicker(options);
-    modifyEvent._handleAllDayEvent(\$J(".all_day"));
+        .datetimepicker(options)
+        .data('prevDate', cx.jQuery(".endDate").datetimepicker("getDate"));
+    if ( \$J(".all_day").is(':checked') ) {
+        modifyEvent._handleAllDayEvent( \$J(".all_day") );
+    }
     showOrHidePlaceFields('$locationType', 'place');
     showOrHidePlaceFields('$hostType', 'host');
 });
