@@ -10,7 +10,7 @@ Cx\Core_Modules\DataAccess\Model\Entity\ApiKey:
     fields:
         apiKey:
             type: string
-            length: 45
+            length: 32
             column: api_key
     uniqueConstraints:
         key_UNIQUE:
