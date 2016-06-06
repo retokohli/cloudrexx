@@ -54,16 +54,16 @@ class DataAccessRepository extends EntityRepository {
      * @param \Cx\Core\DataSource\Model\Entity\DataSource $dataSource Requested data source
      * @param string $method Request method (get, post, ...)
      * @param string $requestApiKey API key used in request
-     * @return boolean Wheter the current user has access to this data source or not
+     * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess Matching DataAccess object or null
      */
-    public function hasAccess($outputModule, $dataSource, $method, $requestApiKey) {
+    public function getAccess($outputModule, $dataSource, $method, $requestApiKey) {
         $requestReadonly = $method == 'get';
         
         // do we have a DataAccess for this DataSource?
         $dataAccesses = $dataSource->getDataAccesses();
         if (!$dataAccesses->count()) {
             \DBG::msg('This DataSource has no DataAccess!');
-            return false;
+            return null;
         }
         
         // does our apiKey match with one or more of the DataAccesses?
@@ -89,7 +89,7 @@ class DataAccessRepository extends EntityRepository {
         // DataAccess object.
         if (!count($validApiKeys)) {
             \DBG::msg('There\'s no DataAccess with a matching API key!');
-            return false;
+            return null;
         }
         
         // Now let's check if one of the remaining data access objects allow
@@ -99,17 +99,16 @@ class DataAccessRepository extends EntityRepository {
             
             $permission = null;
             if ($requestReadonly) {
-                //$permission = $dataAccess->getReadPermission();
-                $permission = $dataAccess->getPermission();
+                $permission = $dataAccess->getReadPermission();
             } else {
                 $permission = $dataAccess->getWritePermission();
             }
             if (!$permission || $permission->hasAccess()) {
-                return true;
+                return $dataAccess;
             }
         }
         \DBG::msg('Your API key does not allow access to this DataSource!');
-        return false;
+        return null;
     }
 }
 

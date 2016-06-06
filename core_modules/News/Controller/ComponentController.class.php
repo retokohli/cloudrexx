@@ -72,8 +72,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * 
      * @param string $command Name of command to execute
      * @param array  $arguments List of arguments for the command
+     * @param array  $dataArguments (optional) List of data arguments for the command
      */
-    public function executeCommand($command, $arguments) {
+    public function executeCommand($command, $arguments, $dataArguments = array()) {
         $subcommand = null;
         if (!empty($arguments[0])) {
             $subcommand = $arguments[0];
