@@ -53,7 +53,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return array List of Controller class names (without namespace)
      */
     public function getControllerClasses() {
-        return array('JsonOutput');
+        return array('JsonOutput', 'RawOutput');
     }
     
     /**
@@ -64,7 +64,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array(
             'v1' => new \Cx\Core_Modules\Access\Model\Entity\Permission(
                 array('http', 'https'), // allowed protocols
-                array('get', 'post', 'cli'),   // allowed methods
+                array(
+                    'get',
+                    'post',
+                    'put',
+                    'delete',
+                    'trace',
+                    'options',
+                    'head',
+                    'cli',
+                ),   // allowed methods
                 false                   // requires login
             ),
         );
@@ -98,11 +107,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param array $arguments List of arguments for the command
      * @return void
      */
-    public function executeCommand($command, $arguments) {
+    public function executeCommand($command, $arguments, $dataArguments) {
         try {
             switch ($command) {
                 case 'v1':
-                    $this->apiV1($command, $arguments);
+                    $this->apiV1($command, $arguments, $dataArguments);
             }
         } catch (\Exception $e) {
             // This should only be used if API cannot handle the request at all.
@@ -119,7 +128,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param array $arguments List of arguments for the command
      * @return void
      */
-    public function apiV1($command, $arguments) {
+    public function apiV1($command, $arguments, $dataArguments) {
+        $method = strtolower($_SERVER['REQUEST_METHOD']);
+        
+        // handle CLI
+        if (php_sapi_name() == 'cli') {
+            // we force usage of output module "raw" in CLI
+            array_unshift($arguments, 'raw');
+            
+            // method will not be set in CLI, there for we educate-guess it
+            $method = 'get';
+            if (count($dataArguments)) {
+                // this is a temporary fix:
+                $method = 'put';
+            }
+        }
+        
         // If we can't find the output module, we can't produce a proper error message
         if (empty($arguments[0])) {
             throw new \InvalidArgumentException('Not enough arguments');
@@ -148,41 +172,87 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if (isset($arguments['order'])) {
                 $order = $arguments['order'];
             }
+            $order = array();
+            if (isset($arguments['order'])) {
+                $orderStrings = explode(';', $arguments['order']);
+                foreach ($orderStrings as $orderString) {
+                    $orderStringParts = explode('/', $orderString);
+                    $order[$orderStringParts[0]] = $orderStringParts[1];
+                }
+            }
             
             $filter = array();
             if (isset($arguments['filter'])) {
-                $filter = $arguments['filter'];
+                $filterStrings = explode(';', $arguments['filter']);
+                foreach ($filterStrings as $filterString) {
+                    $filterStringParts = explode('=', $filterString);
+                    $filter[$filterStringParts[0]] = $filterStringParts[1];
+                }
             }
             
             $limit = 0;
             $offset = 0;
             if (isset($arguments['limit'])) {
                 $limitParts = explode(',', $arguments['limit']);
-                $limit = $limit[0];
-                if (isset($limit[1])) {
-                    $offset = $limit[1];
+                $limit = $limitParts[0];
+                if (isset($limitParts[1])) {
+                    $offset = $limitParts[1];
                 }
             }
             
-            $method = strtolower($_SERVER['REQUEST_METHOD']);
-            
             $em = $this->cx->getDb()->getEntityManager();
             $dataAccessRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\DataAccess');
-            if (!$dataAccessRepo->hasAccess($outputModule, $dataSource, $method, $apiKey)) {
+            $dataAccess = $dataAccessRepo->getAccess($outputModule, $dataSource, $method, $apiKey);
+            if (!$dataAccess) {
                 $response->setStatusCode(403);
                 throw new \BadMethodCallException('Access denied');
             }
             
+            if (
+                count($dataAccess->getAllowedOutputMethods()) &&
+                !in_array($arguments[0], $dataAccess->getAllowedOutputMethods())
+            ) {
+                $response->setStatusCode(403);
+                throw new \BadMethodCallException('Access denied');
+            }
+            
+            if (count($dataAccess->getAccessCondition())) {
+                $filter = array_merge($filter, $dataAccess->getAccessCondition());
+            }
+            
+            $data = array();
             switch ($method) {
+                // administrative access
+                case 'head':
+                    // return metadata, tdb: might give info about relations
+                case 'options':
+                    // lists available methods for a request
+                case 'trace':
+                    // returns the request for debugging purposes
+                
+                // write access
+                case 'post':
+                    // create entry
+                    $data = $dataSource->add($dataArguments);
+                case 'put':
+                    // update entry
+                    $data = $dataSource->update($elementId, $dataArguments);
+                    break;
+                case 'delete':
+                    // delete entry
+                    $data = $dataSource->remove($elementId);
+                    break;
+                
+                // read access
                 case 'get':
                 default:
-                    $data = $dataSource->get($elementId, $filter, $order, $limit, $offset);
-                    $response->setStatus(
-                        \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_OK
-                    );
-                    $response->setData($data);
+                    $data = $dataSource->get($elementId, $filter, $order, $limit, $offset, $dataAccess->getFieldList());
                     break;
             }
+            $response->setStatus(
+                \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_OK
+            );
+            $response->setData($data);
             
             $response->send($outputModule);
         } catch (\Exception $e) {
@@ -199,7 +269,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $e->getMessage()
                 )
             );
-            echo '<pre>';
             $response->send($outputModule);
         }
     }
@@ -224,12 +293,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     protected function getDataSource($name) {
         $em = $this->cx->getDb()->getEntityManager();
-        $dataSourceRepo = $em->getRepository('Cx\Core\DataSource\Model\Entity\DataSource');
-        $dataSource = $dataSourceRepo->findOneBy(array('identifier' => $name));
-        if (!$dataSource) {
+        $dataAccessRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\DataAccess');
+        $dataAccess = $dataAccessRepo->findOneBy(array('name' => $name));
+        if (!$dataAccess || !$dataAccess->getDataSource()) {
             throw new \Exception('No such DataSource: ' . $name);
         }
-        return $dataSource;
+        return $dataAccess->getDataSource();
     }
 }
 
