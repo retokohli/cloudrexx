@@ -57,7 +57,7 @@ class DataAccessRepository extends EntityRepository {
      * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess Matching DataAccess object or null
      */
     public function getAccess($outputModule, $dataSource, $method, $requestApiKey) {
-        $requestReadonly = $method == 'get';
+        $requestReadonly = in_array($method, array('options', 'head', 'get'));
         
         // do we have a DataAccess for this DataSource?
         $dataAccesses = $dataSource->getDataAccesses();
@@ -109,6 +109,61 @@ class DataAccessRepository extends EntityRepository {
         }
         \DBG::msg('Your API key does not allow access to this DataSource!');
         return null;
+    }
+    
+    /**
+     * Returns the HTTP method names you're allowed to use for this DataSource with this API key
+     * @param \Cx\Core\DataSource\Model\Entity\DataSource $dataSource Requested DataSource
+     * @param string $requestApiKey API key of the request
+     * @return array List of HTTP methods
+     */
+    public function getAllowedMethods($dataSource, $requestApiKey) {
+        $baseMethods = array('OPTIONS');
+        $readMethods = array('HEAD', 'GET');
+        $writeMethods = array('PUT', 'PATCH', 'POST', 'DELETE');
+        
+        $hasAccess = false;
+        $canRead = false;
+        $canWrite = false;
+        
+        foreach ($dataSource->getDataAccesses() as $dataAccess) {
+            $apiKeys = $dataAccess->getDataAccessApiKeys();
+            foreach ($apiKeys as $apiKey) {
+                if ($apiKey->getApiKey()->getApiKey() != $requestApiKey) {
+                    continue;
+                }
+                $hasAccess = true;
+                
+                if (
+                    !$dataAccess->getReadPermission() ||
+                    $dataAccess->getReadPermission()->hasAccess()
+                ) {
+                    $canRead = true;
+                }
+                
+                if (
+                    !$apiKey->getReadOnly() &&
+                    (
+                        !$dataAccess->getWritePermission() ||
+                        $dataAccess->getWritePermission()->hasAccess()
+                    )
+                ) {
+                    $canWrite = true;
+                }
+            }
+        }
+        
+        $allowedMethods = array();
+        if ($hasAccess) {
+            $allowedMethods = array_merge($allowedMethods, $baseMethods);
+        }
+        if ($canRead) {
+            $allowedMethods = array_merge($allowedMethods, $readMethods);
+        }
+        if ($canWrite) {
+            $allowedMethods = array_merge($allowedMethods, $writeMethods);
+        }
+        return $allowedMethods;
     }
 }
 
