@@ -1,0 +1,17 @@
+Cx\Core_Modules\Sync\Model\Entity\Sync:
+  type: entity
+  table: core_module_sync
+  repositoryClass: Cx\Core_Modules\Sync\Model\Repository\SyncRepository
+  id: 
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    dataAccess:
+      type: integer
+      column: data_access
+  oneToMany: # inverse side
+    relations:
+      targetEntity: Cx\Core_Modules\Sync\Model\Entity\Relation
+      mappedBy: relatedSync

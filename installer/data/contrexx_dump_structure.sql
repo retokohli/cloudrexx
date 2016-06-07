@@ -309,6 +309,35 @@ CREATE TABLE `contrexx_core_module_linkmanager_link` (
   `brokenLinkText` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
+CREATE TABLE `contrexx_core_module_sync_id_mapping` (
+  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `foreign_host` varchar(255) NOT NULL,
+  `entity_type` varchar(255) NOT NULL,
+  `foreign_id` int(11) NOT NULL,
+  `local_id` int(11) NOT NULL,
+  PRIMARY KEY(`id`)
+) ENGINE = InnoDB;
+CREATE TABLE `contrexx_core_module_sync` (
+  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `data_access` int(11) NOT NULL,
+  PRIMARY KEY(`id`)
+) ENGINE = InnoDB;
+CREATE TABLE `contrexx_core_module_sync_relation` (
+  `id` int(11) AUTO_INCREMENT NOT NULL,
+  `parent_id` int(11) DEFAULT NULL,
+  `related_sync_id` int(11) DEFAULT NULL,
+  `lft` int(11) NOT NULL,
+  `rgt` int(11) NOT NULL,
+  `lvl` int(11) NOT NULL,
+  `foreign_data_access_id` int(11) NOT NULL,
+  `do_sync` tinyint(1) NOT NULL,
+  `default_entity_id` int(11) NOT NULL,
+  KEY `parent_id` (`parent_id`),
+  KEY `related_sync_id` (`related_sync_id`),
+  PRIMARY KEY(`id`),
+  CONSTRAINT `contrexx_core_module_sync_relation_ibfk_parent_id` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_core_module_sync_relation` (`id`),
+  CONSTRAINT `contrexx_core_module_sync_relation_ibfk_related_sync_id` FOREIGN KEY (`related_sync_id`) REFERENCES `contrexx_core_module_sync` (`id`)
+) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_rewrite_rule` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `regular_expression` varchar(255) NOT NULL,
