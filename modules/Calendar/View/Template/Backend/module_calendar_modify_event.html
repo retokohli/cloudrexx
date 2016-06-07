@@ -89,6 +89,10 @@
         },
         _handleAllDayEvent: function(elm) {
             if (elm.is(":checked")) {
+                // Timepicker should be shown atleast once before disable
+                // Instead of showing, initialization of datepicker will solve the issue
+                cx.jQuery(".startDate").datetimepicker('setDate', cx.jQuery( ".startDate" ).data('prevDate'));
+                cx.jQuery(".endDate").datetimepicker('setDate', cx.jQuery( ".endDate" ).data('prevDate'));
                 cx.jQuery(".startDate, .endDate").datetimepicker('disableTimepicker');
             } else {
                 cx.jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
