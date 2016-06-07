@@ -712,6 +712,16 @@
                 );
             } 
         };
+        if ($('#website_mode').length) {
+            $('#website_mode').change(function(){
+                var that = $(this).val();
+                $('#website_server').closest('tr').hide();
+                if (that === cx.variables.get('websiteMode', 'multisite/website')) {
+                    $('#website_server').closest('tr').show();
+                }
+            });
+            $('#website_mode').trigger('change');
+        }
     });
 })(jQuery);
 

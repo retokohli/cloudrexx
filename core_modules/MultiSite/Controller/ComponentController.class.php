@@ -38,6 +38,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     const MODE_SERVICE = 'service';
     const MODE_HYBRID = 'hybrid';
     const MODE_WEBSITE = 'website';
+    const WEBSITE_MODE_STANDALONE = 'standalone';
+    const WEBSITE_MODE_SERVER = 'server';
+    const WEBSITE_MODE_CLIENT = 'client';
     
     /**
      * Main Domain
@@ -3188,7 +3191,37 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         return implode(',', $display);
     }
-    
+
+    /**
+     * Get the server website list by using website owner id
+     * 
+     * @return string list of websites seperate by comma
+     */
+    public static function getServerWebsiteList()
+    {
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
+        if ($mode !== self::MODE_WEBSITE) {
+            return '';
+        }
+
+        $ownerId     = \FWUser::getFWUserObject()->objUser->getId();
+        if ($ownerId != \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite')) {
+            return '';
+        }
+
+        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
+        $response    = JsonMultiSiteController::executeCommandOnMyServiceServer(
+            'getServerWebsiteList',
+            array('websiteName' => $websiteName)
+        );
+
+        if (!$response || $response->status === 'error' || empty($response->data->websiteList)) {
+            return '';
+        }
+
+        return implode(',', $response->data->websiteList);
+    }
+
     /**
      * Get the product list
      * 

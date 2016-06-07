@@ -417,6 +417,30 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::removeDomain($domain);
     }
 
+    public function setMode($mode)
+    {
+        $this->_load();
+        return parent::setMode($mode);
+    }
+
+    public function getMode()
+    {
+        $this->_load();
+        return parent::getMode();
+    }
+
+    public function setServerWebsite($serverWebsite)
+    {
+        $this->_load();
+        return parent::setServerWebsite($serverWebsite);
+    }
+
+    public function getServerWebsite()
+    {
+        $this->_load();
+        return parent::getServerWebsite();
+    }
+
     public function __get($name)
     {
         $this->_load();
@@ -444,7 +468,7 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'name', 'creationDate', 'codeBase', 'language', 'status', 'websiteServiceServerId', 'secretKey', 'ipAddress', 'themeId', 'installationId', 'ftpUser', 'mailAccountId', 'websiteServiceServer', 'owner', 'mailServiceServer', 'websiteCollection', 'domains');
+        return array('__isInitialized__', 'id', 'name', 'creationDate', 'codeBase', 'language', 'status', 'websiteServiceServerId', 'secretKey', 'ipAddress', 'themeId', 'installationId', 'ftpUser', 'mailAccountId', 'mode', 'websiteServiceServer', 'owner', 'mailServiceServer', 'websiteCollection', 'serverWebsite', 'domains');
     }
 
     public function __clone()
