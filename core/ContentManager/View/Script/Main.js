@@ -158,6 +158,8 @@ cx.ready(function() {
     cx.cm.pageContentTemplate = '';
     // initialise the page custom application template
     cx.cm.pageApplicationTemplate = '';
+    // this is true between the events loadingStart and loadingEnd
+    cx.cm.isAdjusting = true;
 
     // Disable the option use for all channels by default
     cx.jQuery('input[name="page[useSkinForAllChannels]"], input[name="page[useCustomContentForAllChannels]"], input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('disabled', 'disabled');
@@ -176,19 +178,19 @@ cx.ready(function() {
         }
         var lang = cx.variables.get('language', 'contrexx');
         cx.jQuery('#page_target_wrapper').hide();
-        cx.jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + lang + '/' + path).attr('href', function() {return cx.jQuery(this).text()});
-        cx.jQuery('#page_target_text_wrapper').show();
+        cx.jQuery('.page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + lang + '/' + path).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('.page_target_text_wrapper').show();
         cx.jQuery('#page_target_protocol > option').removeAttr('selected');
         cx.jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
-        cx.jQuery('#page_target, #page_target_backup').val(url);
+        cx.jQuery('#page_target, .page_target_backup').val(url);
       }
       else if (data.type == "file") {
         cx.jQuery('#page_target_wrapper').hide();
-        cx.jQuery('#page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + data.data[0].datainfo.filepath.substr(1)).attr('href', function() {return cx.jQuery(this).text()});
-        cx.jQuery('#page_target_text_wrapper').show();
+        cx.jQuery('.page_target_text').text(cx.variables.get('contrexxBaseUrl', 'contentmanager') + data.data[0].datainfo.filepath.substr(1)).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('.page_target_text_wrapper').show();
         cx.jQuery('#page_target_protocol > option').removeAttr('selected');
         cx.jQuery('#page_target_protocol > option[value=""]').attr("selected", "selected");
-        cx.jQuery('#page_target, #page_target_backup').val(data.data[0].datainfo.filepath);
+        cx.jQuery('#page_target, .page_target_backup').val(data.data[0].datainfo.filepath);
       }
     }
     
@@ -197,7 +199,7 @@ cx.ready(function() {
         if (cx.jQuery(this).val() != targetValue) {
             cx.jQuery(this).val(targetValue);
         }
-        var targetValueBackup = cx.jQuery('#page_target_backup').val();
+        var targetValueBackup = cx.jQuery('.page_target_backup').val();
         var matchesPageTarget = regExpUriProtocol.exec(targetValueBackup);
         if (matchesPageTarget) {
             targetValueBackup = targetValueBackup.replace(matchesPageTarget[0], '');
@@ -209,7 +211,7 @@ cx.ready(function() {
         cx.jQuery('#page_target_check').toggle(showOrHide);
     });
     cx.jQuery('#page_target_protocol').change(function() {
-        var targetValueBackup    = cx.jQuery('#page_target_backup').val();
+        var targetValueBackup    = cx.jQuery('.page_target_backup').val();
         var matchesPageTarget    = regExpUriProtocol.exec(targetValueBackup);
         var targetProtocolBackup = '';
         if (matchesPageTarget) {
@@ -223,19 +225,19 @@ cx.ready(function() {
     });
     cx.jQuery('#page_target_edit').click(function() {
         cx.jQuery('#page_target_cancel').show();
-        cx.jQuery('#page_target_text_wrapper').hide().prev().show();
+        cx.jQuery('.page_target_text_wrapper').hide().prev().show();
     });
     cx.jQuery('#page_target_cancel').click(function() {
-        cx.cm.setPageTarget(cx.jQuery("#page_target_backup").val(), cx.jQuery("#page_target_text").text());
+        cx.cm.setPageTarget(cx.jQuery(".page_target_backup").val(), cx.jQuery(".page_target_text").text());
     });
     cx.jQuery('#page_target_check').click(function() {
         cx.jQuery(this).hide();
-        cx.jQuery('#page_target_text').text('');
-        cx.jQuery('#page_target_backup').val(cx.jQuery('#page_target_protocol').val() + cx.jQuery('#page_target').val());
+        cx.jQuery('.page_target_text').text('');
+        cx.jQuery('.page_target_backup').val(cx.jQuery('#page_target_protocol').val() + cx.jQuery('#page_target').val());
         cx.jQuery.getJSON('index.php?cmd=JsonData&object=page&act=getPathByTarget', {
-            target: cx.jQuery('#page_target_backup').val()
+            target: cx.jQuery('.page_target_backup').val()
         }, function(data) {
-            cx.jQuery('#page_target_text').text(data.data).attr('href', function() {return cx.jQuery(this).text()});
+            cx.jQuery('.page_target_text').text(data.data).attr('href', function() {return cx.jQuery(this).text()});
         });
         cx.jQuery('#page_target_wrapper').hide().next().show();
     });
@@ -341,18 +343,6 @@ cx.ready(function() {
             cx.jQuery('#multiple-actions-select').val(0);
         }
     });
-    
-    // aliases:
-    if (!publishAllowed) {
-        cx.jQuery("div.page_alias").each(function (index, field) {
-            field = cx.jQuery(field);
-            field.removeClass("empty");
-            if (field.children("span.noedit").html() == "") {
-                field.addClass("empty");
-            }
-        });
-        cx.jQuery(".empty").hide();
-    }
     
     // alias input fields
     cx.jQuery("div.page_alias input").keyup(function() {
@@ -556,6 +546,22 @@ cx.ready(function() {
                                       cx.jQuery('#page input[name="page[area]"]').val(), 
                                       cx.jQuery('#page select[name="page[skin]"]').val());
     });
+    
+    cx.bind("setEditorData", function(data) {
+        if (
+            cx.jQuery('input[name="page[type]"]:checked').val() != 'application' ||
+            !cx.cm.editorInUse() ||
+            cx.jQuery("[name=\"page[application]\"").val() == 'Home'
+        ) {
+            return;
+        }
+        var pattern = /\[\[APPLICATION_DATA\]\]/;
+
+        //check whether the application type contains the placeholder [[APPLICATION_DATA]] in textarea
+        if (!pattern.test(data.content)) {
+            data.content = data.content + '[[APPLICATION_DATA]]';
+        }
+    }, "contentmanager");
 
     // react to get ?loadpage=
     /*if (jQuery.getUrlVar('loadPage')) {
@@ -563,6 +569,8 @@ cx.ready(function() {
     }*/
     if (cx.jQuery.getUrlVar("page") || cx.jQuery.getUrlVar("node")) {
         cx.cm.loadPage(cx.jQuery.getUrlVar("page"), cx.jQuery.getUrlVar("node"), cx.jQuery.getUrlVar("version"), cx.jQuery.getUrlVar("tab"));
+    } else {
+        cx.cm.isAdjusting = false;
     }
 
     cx.cm();
@@ -852,27 +860,23 @@ cx.cm = function(target) {
         cx.jQuery('#page .type_hidable').hide();
         cx.jQuery('#page .type_'+cx.jQuery(event.target).val()).show();
         cx.jQuery('#page #type_toggle label').text(cx.jQuery(this).next().text());
+
+        // if we change type from fallback to content or application, we want to
+        // load content from fallback page:
+        var content = cx.cm.getEditorData();
+
         if (cx.jQuery(this).val() == 'application') {
-            var pattern = /\[\[APPLICATION_DATA\]\]/;
-            if (cx.jQuery('#page_sourceMode').prop('checked')) {
-                var content = cx.jQuery('#cm_ckeditor').val();
-
-                //check whether the application type contains the placeholder [[APPLICATION_DATA]] in textarea
-                if (!pattern.test(content)) {
-                    cx.jQuery("#cm_ckeditor").val(content + '[[APPLICATION_DATA]]');
-                }
-            } else if (CKEDITOR.instances.cm_ckeditor != null) {
-                var content = CKEDITOR.instances.cm_ckeditor.getData();
-
-                //check whether the application type contains the placeholder [[APPLICATION_DATA]] in ckeditor
-                if (!pattern.test(content)) {
-                    var range = CKEDITOR.instances['cm_ckeditor'].createRange();
-                    if (range && CKEDITOR.instances['cm_ckeditor'].getSelection()!=null) {
-                        range.moveToPosition(range.root, CKEDITOR.POSITION_BEFORE_END);
-                        CKEDITOR.instances['cm_ckeditor'].getSelection().selectRanges([range]);
-                    }
-                    CKEDITOR.instances['cm_ckeditor'].insertText('[[APPLICATION_DATA]]');
-                }
+            cx.bind("loadingStart", function() {
+                cx.cm.isAdjusting = true;
+            }, "contentmanager");
+            cx.bind("loadingEnd", function() {
+                cx.cm.isAdjusting = false;
+            }, "contentmanager");
+            if (    event.originalEvent !== undefined
+                &&  cx.cm.isAdjusting != undefined
+                &&  !cx.cm.isAdjusting
+            ) {
+                cx.cm.setEditorData(content);
             }
             cx.jQuery('#page #application_toggle label').text(cx.jQuery(this).next().text());
         }
@@ -887,15 +891,7 @@ cx.cm = function(target) {
             cx.jQuery("#type_toggle").show();
         }
         cx.cm.resizeEditorHeight();
-        
-        // if we change type from fallback to content or application, we want to
-        // load content from fallback page:
-        var content = cx.jQuery('#cm_ckeditor').val();
-        var isCkEditor = false;
-        if (CKEDITOR.instances.cm_ckeditor != null) {
-            content = CKEDITOR.instances.cm_ckeditor.getData();
-            isCkEditor = true;
-        }
+
         if (cx.cm.lastPageType == "fallback" && (cx.jQuery(this).val() == "content" || cx.jQuery(this).val() == "application") && content == "") {
             var fallbackLanguage = cx.cm.getCurrentLang();
             while (true) {
@@ -915,7 +911,7 @@ cx.cm = function(target) {
                         return;
                     }
                     var fallbackPageContent = response.data.content;
-                    if (isCkEditor) {
+                    if (cx.cm.editorInUse()) {
                         CKEDITOR.instances.cm_ckeditor.setData(fallbackPageContent);
                     } else {
                         cx.jQuery("#cm_ckeditor").val(fallbackPageContent);
@@ -1879,6 +1875,7 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             cx.jQuery('.tab.page_history').hide();
             cx.jQuery("#parent_node").val(nodeId);
             cx.cm.createEditor();
+            cx.cm.setEditorData("");
             return;
         case "copy":
             url = "index.php?cmd=JsonData&object=node&act=copy&id=" + nodeId;
@@ -2467,11 +2464,6 @@ cx.cm.resetEditView = function() {
         el.val("");
     });
 
-    // empty existing ckeditor
-    if (cx.cm.editorInUse()) {
-        CKEDITOR.instances.cm_ckeditor.setData('');
-    }
-
     // reset hidden fields
     cx.jQuery("input#pageId").val("new");
     cx.jQuery("input#pageLang").val(cx.jQuery('.chzn-select').val());
@@ -2587,6 +2579,9 @@ cx.cm.destroyEditor = function() {
 
 cx.cm.setEditorData = function(pageContent) {
     cx.jQuery(document).ready(function() {
+        var eventData = {content: pageContent};
+        cx.trigger("setEditorData", "contentmanager", eventData);
+        pageContent = eventData.content;
         if (!cx.jQuery('#page_sourceMode').prop('checked') && cx.cm.editorInUse()) {
             // This is bit of a hacky solution but CKEDITOR seems to have
             // problems with setData() sometimes (without throwing an exception)
@@ -2599,6 +2594,14 @@ cx.cm.setEditorData = function(pageContent) {
         }
     });
 };
+
+cx.cm.getEditorData = function() {
+    if (!cx.jQuery('#page_sourceMode').prop('checked') && cx.cm.editorInUse()) {
+        return CKEDITOR.instances.cm_ckeditor.getData();
+    } else {
+        return cx.jQuery('#page textarea[name="page[content]"]').val();
+    }
+}
 
 cx.cm.showEditModeWindow = function(cmdName, pageId) {
     var dialog = cx.variables.get("editmodedialog", 'contentmanager');
@@ -2907,15 +2910,17 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
         myField.children("span.noedit").html(alias);
         field.before(myField);
     });
-    if (!publishAllowed) {
-        cx.jQuery("div.page_alias").each(function (index, field) {
-            field = cx.jQuery(field);
-            field.removeClass("empty");
-            if (field.children("span.noedit").html() == "") {
-                field.addClass("empty");
-            }
-        });
-        cx.jQuery(".empty").hide();
+    
+    // If alias management is forbidden
+    if (!aliasManagementAllowed) {
+        // never show the "new alias" field
+        jQuery("div.page_alias").show().last().hide();
+        
+        // show alias title if there are any aliases
+        jQuery("label[for=page_alias]").parent().toggle(!!page.aliases.length);
+        
+        // show if aliases
+        jQuery("#page_alias_container").toggle(!!page.aliases.length);
     }
     
     if (selectTab != undefined) {
@@ -2932,7 +2937,7 @@ cx.cm.setPageTarget = function(pageTarget, pageTargetPath) {
     if (pageTarget == null) {
         pageTarget = "";
     }
-    cx.jQuery('#page_target_backup').val(pageTarget);
+    cx.jQuery('.page_target_backup').val(pageTarget);
     cx.jQuery('#page_target_protocol > option').removeAttr("selected");
 
     var matchesPageTarget = regExpUriProtocol.exec(pageTarget);
@@ -2947,7 +2952,7 @@ cx.cm.setPageTarget = function(pageTarget, pageTargetPath) {
         cx.jQuery('#page_target_protocol > option[value="' + pageTargetOptionValue + '"]').attr("selected", "selected");
     }
     if (pageTarget != "") {
-        cx.jQuery('#page_target_text').text(pageTargetPath).attr('href', function() {return cx.jQuery(this).text()});
+        cx.jQuery('.page_target_text').text(pageTargetPath).attr('href', function() {return cx.jQuery(this).text()});
         cx.jQuery('#page_target_wrapper').hide().next().show();
     }
     cx.jQuery('#page_target').val(pageTarget);

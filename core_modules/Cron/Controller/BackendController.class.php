@@ -70,6 +70,9 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param array $cmd CMD separated by slashes
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+        // we don't want users to access cron config on cloud
+        \Permission::noAccess();
+        
         // this class inherits from Controller, therefore you can get access to
         // Cx like this:
         $this->cx;
