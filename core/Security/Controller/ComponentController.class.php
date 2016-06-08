@@ -207,9 +207,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // Send the e-mail to the administrator
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        $objMail->From = $config['coreAdminEmail'];
-        $objMail->FromName = $config['coreAdminName'];
-        $objMail->AddReplyTo($config['coreAdminEmail']);
+        $objMail->SetFrom($config['coreAdminEmail'], $config['coreAdminName']);
         $objMail->Subject = $_SERVER['HTTP_HOST']." : $type";
         $objMail->IsHTML(false);
         $objMail->Body = $message;

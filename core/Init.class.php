@@ -71,6 +71,13 @@ class InitCMS
     public $arrModulePath = array();
 
     /**
+     * Current view type(web, app, mobile, etc)
+     *
+     * @var string
+     */
+    protected $currentChannel;
+
+    /**
     * int $isMobileDevice
     * whether we're dealing with a mobile device.
     * values 1 or 0.
@@ -229,22 +236,27 @@ class InitCMS
         // Load print template
         if (isset($_GET['printview']) && $_GET['printview'] == 1) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['print_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PRINT;
         }
         // Load PDF template
         elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['pdf_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_PDF;
         }
         // Load mobile template
         elseif ($this->isMobileDevice and $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['mobile_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_MOBILE;
         }
         // Load app template
         elseif (isset($_GET['appview']) && $_GET['appview'] == 1) {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['app_themes_id'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_APP;
         }
         // Load regular content template
         else {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['themesid'];
+            $this->currentChannel  = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB;
         }
         
         $this->channelThemeId = $this->currentThemesId;
@@ -486,18 +498,16 @@ class InitCMS
             $this->customContentTemplate=$_GET['custom_content'];
         }
 
-        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
-
         if (isset($_GET['preview']) && intval($_GET['preview'])){
             $id = intval($_GET['preview']);
-            $theme = $themeRepository->findById($id);
+            $theme = $this->themeRepository->findById($id);
             if ($theme){
                 $this->currentThemesId = $id;
             }
         }
 
-		// get theme object so we get the configured libraries
-        $theme = $themeRepository->findById($this->currentThemesId);
+        // get theme object so we get the configured libraries
+        $theme = $this->getFrontendTemplate();
         $themesPath = $theme->getFoldername();
         if ($theme && $theme->isComponent()) {
             $libraries = JS::getConfigurableLibraries();
@@ -531,6 +541,8 @@ class InitCMS
         $this->templates['sidebar']                 = $this->getThemeFileContent($themesPath, 'sidebar.html');
         $this->templates['top_news']                = $this->getThemeFileContent($themesPath, 'top_news.html');
         $this->templates['shopnavbar']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html');
+        $this->templates['shopnavbar2']              = $this->getThemeFileContent($themesPath, 'shopnavbar2.html');
+        $this->templates['shopnavbar3']              = $this->getThemeFileContent($themesPath, 'shopnavbar3.html');
         $this->templates['headlines']               = $this->getThemeFileContent($themesPath, 'headlines.html');
         $this->templates['headlines2']              = $this->getThemeFileContent($themesPath, 'headlines2.html');
         $this->templates['headlines3']              = $this->getThemeFileContent($themesPath, 'headlines3.html');
@@ -553,6 +565,43 @@ class InitCMS
         }
 
         return $this->templates;
+    }
+
+    /**
+     * Load the frontend template
+     *
+     * @return Cx\Core\View\Model\Entity\Theme Template instance
+     * @throws \Exception Throws exception when no template was found
+     */
+    protected function getFrontendTemplate()
+    {
+        // fetch and return the configured frontend template
+        $theme = $this->themeRepository->findById($this->currentThemesId);
+        if ($theme) {
+            return $theme;
+        }
+
+        // The configured frontend template does not exist
+        \DBG::msg('Template width ID '.$this->currentThemesId.' does not exist!');
+
+        // We will try to load the frontend template of a fallback-language therefore
+        $langId = $this->frontendLangId;
+        while ($langId = \FWLanguage::getFallbackLanguageIdById($langId)) {
+            // fetch and return default template of fallback language
+            $theme = $this->themeRepository->getDefaultTheme($this->currentChannel, $langId);
+            if ($theme) {
+                // reset local variables based on the loaded fallback frontend template
+                $this->channelThemeId = $this->currentThemesId = $theme->getId();
+                return $theme;
+            }
+
+            // template of fallback language does not exist
+            \DBG::msg('Default template of language '.$langId.' does not exist!');
+        }
+
+        // None of the fallback-languages did have an existing frontend template.
+        // Therefore, we will abort the system execution now
+        throw new \Exception('Unable to load a webdesign template!');
     }
 
     /**
@@ -735,6 +784,9 @@ class InitCMS
         if(!isset($_ARRAYLANG))
             $_ARRAYLANG = array();
 
+        if(!isset($_CORELANG))
+            $_CORELANG = array();
+
         if ($this->mode == 'backend') {
             $langId = $this->backendLangId;
         } else {
@@ -762,7 +814,8 @@ class InitCMS
                 $this->loadLangFile($path);
             }
             //...and overwrite with actual language where translated.
-            if($langId != 2) { //don't do it for english, already loaded.
+            //...but only if $langId is set (otherwise it will overwrite English by the default language
+            if($langId && $langId != 2) { //don't do it for english, already loaded.
                 $path = $this->getLangFilePath($module, $langId);
                 if (!empty($path)) {
                     $this->loadLangFile($path);
@@ -788,10 +841,18 @@ class InitCMS
      * @param integer $languageId Id of the desired language i.e. 1 for german
      * @return array The language data which has been loaded
      */
-    public function getComponentSpecificLanguageData($componentName, $frontend = true, $languageId) {
+    public function getComponentSpecificLanguageData($componentName, $frontend = true, $languageId = 0) {
         global $_ARRAYLANG;
 
         $mode = $frontend ? 'frontend' : 'backend';
+        
+        if (!$languageId) {
+            if ($frontend) {
+                $languageId = $this->frontendLangId;
+            } else {
+                $languageId = $this->backendLangId;
+            }
+        }
 
         if ($componentName == 'Core') {
             $componentName = lcfirst($componentName);
@@ -816,7 +877,7 @@ class InitCMS
 
         // set custom init state
         $this->mode = $mode;
-        $this->frontentLangId = $languageId;
+        $this->frontendLangId = $languageId;
         $this->backendLangId = $languageId;
 
         // load language data
@@ -964,17 +1025,7 @@ class InitCMS
                 // Variant 2:  Use any (GET) request parameters
                 // Note that this is generally unsafe, as most modules/methods do
                 // not rely on posted data only!
-                $arrParameter = null;
-                $uri = $_SERVER['QUERY_STRING'];
-                Html::stripUriParam($uri, 'userFrontendLangId');
-                parse_str($uri, $arrParameter);
-                $first = true;
-                foreach ($arrParameter as $name => $value) {
-                $action .=
-                    ($first ? '?' : '&amp;').
-                    $name.'='.urlencode(contrexx_input2raw($value));
-                $first = false;
-                }
+                $action = '';
                 // The dropdown is built below
             break;
             // TODO: Add your case here if variant 1 is enabled, too
@@ -985,12 +1036,7 @@ class InitCMS
             case 'alias':
                 // The old way
                 $i = 0;
-                $arrVars = array();
-                if (isset($_SERVER['QUERY_STRING'])) {
-                    parse_str($_SERVER['QUERY_STRING'], $arrVars);
-                }
-                $query = isset($arrVars['cmd']) ? "?cmd=".$arrVars['cmd'] : "";
-                $return = "\n<form action='index.php".$query."' method='post' name='userFrontendLangIdForm'>\n";
+                $return = "\n<form action='' method='post' name='userFrontendLangIdForm'>\n";
                 $return .= "<select name='userFrontendLangId' size='1' class='chzn-select' onchange=\"document.forms['userFrontendLangIdForm'].submit()\">\n";
                 foreach ($this->arrLang as $id=>$value){
                     if ($this->arrLang[$id]['frontend']==1) {

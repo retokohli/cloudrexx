@@ -290,6 +290,12 @@ namespace Cx\Core\Core\Controller {
         const FOLDER_NAME_THEMES = '/themes';
 
         /**
+         * The folder name used for the application feeds (/feed).
+         * @var string
+         */
+        const FOLDER_NAME_FEED = '/feed';
+
+        /**
          * @var string
          */
         const FOLDER_NAME_PUBLIC_TEMP = '/public';
@@ -610,6 +616,32 @@ namespace Cx\Core\Core\Controller {
             return self::$preferredInstance;
         }
 
+        /**
+         * Register a \Cx\Core\Core\Controller\Cx compatible object as new instance
+         *
+         * @param   \Cx\Core\Core\Controller\Cx $cx Instanciated Cx object
+         * @param   string $configFilePath The absolute path to a Cloudrexx configuration file (configuration.php).
+         * @param   boolean $setAsPreferred Whether or not to set the Cx instance as preferred instance to be used
+         */
+        public static function registerInstance($cx, $configFilePath = null, $setAsPreferred = false) {
+            if (!isset(self::$instances[null])) {
+                $key = null;
+            } else {
+                $key = spl_object_hash($cx);
+            }
+
+            self::$autoIncrementValueOfId++;
+            $cx->setId(self::$autoIncrementValueOfId);
+
+            if (!count(self::$instances) || $setAsPreferred) {
+                self::$preferredInstance = $cx;
+            }
+            if (!isset(self::$instances[$configFilePath])) {
+                self::$instances[$configFilePath] = array();
+            }
+            self::$instances[$configFilePath][] = $cx;
+        }
+
         /* STAGE 2: __construct(), early initializations */
 
         /**
@@ -619,19 +651,12 @@ namespace Cx\Core\Core\Controller {
          * @param string $configFilePath The absolute path to a Cloudrexx configuration
          *                               file (configuration.php) that shall be loaded
          *                               instead of the default one.
+         * @param   boolean $setAsPreferred Whether or not to set the Cx instance as preferred instance to be used
          */
         protected function __construct($mode = null, $configFilePath = null, $setAsPreferred = false, $checkInstallationStatus = true) {
-            /** setting up id of new initialized object**/
-            self::$autoIncrementValueOfId++;
-            $this->id = self::$autoIncrementValueOfId;
-
-            if (!count(self::$instances) || $setAsPreferred) {
-                self::$preferredInstance = $this;
-            }
-            if (!isset(self::$instances[$configFilePath])) {
-                self::$instances[$configFilePath] = array();
-            }
-            self::$instances[$configFilePath][] = $this;
+            // register this new Cx instance
+            // will be used by \Cx\Core\Core\Controller\Cx::instanciate()
+            self::registerInstance($this, $configFilePath, $setAsPreferred);
 
             try {
                 /**
@@ -877,7 +902,7 @@ namespace Cx\Core\Core\Controller {
             @ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
 
             // Set timezone
-            @ini_set('date.timezone', (empty($_CONFIG['timezone'])?$_DBCONFIG['timezone']:$_CONFIG['timezone']));
+            @ini_set('date.timezone', $_CONFIG['timezone']);
         }
 
         /**
@@ -1105,8 +1130,24 @@ namespace Cx\Core\Core\Controller {
                 $filename = $this->getWebsiteConfigPath() . '/postInitHooks.yml';
                 $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
                 foreach ($objDataSet as $componentDefinition) {
+                    $this->eventManager->triggerEvent(
+                        'preComponent',
+                        array(
+                            'componentName' => $componentDefinition['name'],
+                            'component' => null,
+                            'hook' => 'postInit',
+                        )
+                    );
                     $componentController = $this->getComponentControllerByNameAndType($componentDefinition['name'], $componentDefinition['type']);
                     $componentController->postInit($this);
+                    $this->eventManager->triggerEvent(
+                        'postComponent',
+                        array(
+                            'componentName' => $componentDefinition['name'],
+                            'component' => null,
+                            'hook' => 'postInit',
+                        )
+                    );
                 }
             } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
                 throw new \Exception('Error in processing postInit-hooks: '.$e->getMessage());
@@ -1287,7 +1328,7 @@ namespace Cx\Core\Core\Controller {
             $objDb->setDbType($_DBCONFIG['dbType']);
             $objDb->setCharset($_DBCONFIG['charset']);
             $objDb->setCollation($_DBCONFIG['collation']);
-            $objDb->setTimezone((empty($_CONFIG['timezone'])?$_DBCONFIG['timezone']:$_CONFIG['timezone']));
+            $objDb->setTimezone($_DBCONFIG['timezone']);
 
             // Set database user details
             $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
@@ -1304,8 +1345,10 @@ namespace Cx\Core\Core\Controller {
 
             \DBG::set_adodb_debug_mode();
 
-            $this->eventManager = new \Cx\Core\Event\Controller\EventManager();
+            $this->eventManager = new \Cx\Core\Event\Controller\EventManager($this);
             new \Cx\Core\Event\Controller\ModelEventWrapper($this);
+            $this->eventManager->addEvent('preComponent');
+            $this->eventManager->addEvent('postComponent');
 
             // Initialize base system
             // TODO: Get rid of InitCMS class, merge it with this class instead
@@ -1389,11 +1432,31 @@ namespace Cx\Core\Core\Controller {
                     $params = array();
                     if (isset($argv)) {
                         $params = array_slice($argv, 1);
+                        foreach ($params as $key=>$value) {
+                            $argParts = explode('=', $value, 2);
+                            if (count($argParts) == 2) {
+                                $params[$argParts[0]] = $argParts[1];
+                                unset($params[$key]);
+                            }
+                        }
                     } else {
                         $params = preg_replace('#' . $this->getWebsiteOffsetPath() . static::FOLDER_NAME_COMMAND_MODE . '(/)?#', '', $_GET['__cap']);
                         $params = explode('/', $params) + $_GET;
                         unset($params['__cap']);
                     }
+                    $params = contrexx_input2raw($params);
+                    
+                    // parse body arguments:
+                    // todo: this does not work for form-data encoded body (boundary...)
+                    $dataArguments = array();
+                    if (php_sapi_name() == 'cli') {
+                        // the following does block if there's no data:
+                        //$input = trim(stream_get_contents(STDIN));
+                    } else {
+                        $input = file_get_contents('php://input');
+                    }
+                    parse_str($input, $dataArguments);
+                    $dataArguments = contrexx_input2raw($dataArguments);
 
                     $this->getCommands();
 
@@ -1415,7 +1478,7 @@ namespace Cx\Core\Core\Controller {
                         throw new \Exception('The command ' . $command . ' has been rejected by not complying to the permission requirements of the requested method.');
                     }
                     // execute command
-                    $objCommand->executeCommand($command, $params);
+                    $objCommand->executeCommand($command, $params, $dataArguments);
                     return;
                 } catch (\Exception $e) {
                     throw new \Exception($e);
@@ -1650,6 +1713,7 @@ namespace Cx\Core\Core\Controller {
             global $_CONFIG;
 
             $content = str_replace('{PAGE_URL}',        htmlspecialchars(\Env::get('init')->getPageUri()), $content);
+            $content = str_replace('{PAGE_URL_ENCODED}',urlencode(\Env::get('init')->getPageUri()->toString()), $content);
             $content = str_replace('{STANDARD_URL}',    \Env::get('init')->getUriBy('smallscreen', 0),     $content);
             $content = str_replace('{MOBILE_URL}',      \Env::get('init')->getUriBy('smallscreen', 1),     $content);
             $content = str_replace('{PRINT_URL}',       \Env::get('init')->getUriBy('printview', 1),       $content);
@@ -1775,13 +1839,12 @@ namespace Cx\Core\Core\Controller {
          * @todo Remove usage of globals
          * @global array $_CONFIG
          * @global type $themesPages
-         * @global type $objCounter
          * @global type $objBanner
          * @global type $_CORELANG
          * @return type
          */
         protected function setPostContentLoadPlaceholders() {
-            global $_CONFIG, $themesPages, $objCounter, $objBanner, $_CORELANG;
+            global $_CONFIG, $themesPages, $objBanner, $_CORELANG;
 
             if ($this->mode == self::MODE_BACKEND) {
                 $formattedVersion = htmlentities(
@@ -1829,6 +1892,13 @@ namespace Cx\Core\Core\Controller {
                 return;
             }
 
+            $objCounter              = null;
+            $componentRepo           = $this->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+            $statsComponentContoller = $componentRepo->findOneBy(array('name' => 'Stats'));
+            if ($statsComponentContoller) {
+                $objCounter = $statsComponentContoller->getCounterInstance();
+            }
+
             // set global template variables
             $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
@@ -1856,6 +1926,7 @@ namespace Cx\Core\Core\Controller {
                 'APP_URL'                        => \Env::get('init')->getUriBy('appview', 1),
                 'LOGOUT_URL'                     => \Env::get('init')->getUriBy('section', 'logout'),
                 'PAGE_URL'                       => htmlspecialchars(\Env::get('init')->getPageUri()),
+                'PAGE_URL_ENCODED'               => urlencode(\Env::get('init')->getPageUri()->toString()),
                 'CURRENT_URL'                    => \Env::get('init')->getCurrentPageUri(),
                 'DATE'                           => showFormattedDate(),
                 'TIME'                           => date('H:i', time()),
@@ -1866,9 +1937,9 @@ namespace Cx\Core\Core\Controller {
                 'NAVBAR_FILE'                    => $objNavbar->getNavigation($themesPages['navbar'], $this->license, $boolShop),
                 'NAVBAR2_FILE'                   => $objNavbar->getNavigation($themesPages['navbar2'], $this->license, $boolShop),
                 'NAVBAR3_FILE'                   => $objNavbar->getNavigation($themesPages['navbar3'], $this->license, $boolShop),
-                'ONLINE_USERS'                   => $objCounter->getOnlineUsers(),
-                'VISITOR_NUMBER'                 => $objCounter->getVisitorNumber(),
-                'COUNTER'                        => $objCounter->getCounterTag(),
+                'ONLINE_USERS'                   => $objCounter ? $objCounter->getOnlineUsers() : '',
+                'VISITOR_NUMBER'                 => $objCounter ? $objCounter->getVisitorNumber() : '',
+                'COUNTER'                        => $objCounter ? $objCounter->getCounterTag() : '',
                 'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
                 'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
                 'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl()),
@@ -2037,8 +2108,10 @@ namespace Cx\Core\Core\Controller {
 
                 // replace links from before contrexx 3
                 $ls = new \LinkSanitizer(
-                    $this->codeBaseOffsetPath . \Env::get('virtualLanguageDirectory').'/',
-                    $endcode);
+                    $this,
+                    $this->getCodeBaseOffsetPath() . \Env::get('virtualLanguageDirectory') . '/',
+                    $endcode
+                );
                 $endcode = $ls->replace();
 
                 echo $endcode;
@@ -2147,8 +2220,10 @@ namespace Cx\Core\Core\Controller {
 
                 // replace links from before contrexx 3
                 $ls = new \LinkSanitizer(
-                    ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
-                    $endcode);
+                    $this,
+                    $this->getCodeBaseOffsetPath() . $this->getBackendFolderName() . '/',
+                    $endcode
+                );
                 $endcode = $ls->replace();
 
                 echo $endcode;
@@ -2541,7 +2616,8 @@ namespace Cx\Core\Core\Controller {
             $this->websiteTempWebPath           = $this->websiteOffsetPath       . self::FOLDER_NAME_TEMP;
             $this->websiteThemesPath            = $this->websiteDocumentRootPath . self::FOLDER_NAME_THEMES;
             $this->websiteThemesWebPath         = $this->websiteOffsetPath       . self::FOLDER_NAME_THEMES;
-            $this->websiteFeedPath              = $this->websiteDocumentRootPath . '/feed';
+            $this->websiteFeedPath              = $this->websiteDocumentRootPath . self::FOLDER_NAME_FEED;
+            $this->websiteFeedWebPath           = $this->websiteOffsetPath       . self::FOLDER_NAME_FEED;
 
             $this->websiteImagesPath            = $this->websiteDocumentRootPath . self::FOLDER_NAME_IMAGES;
             $this->websiteImagesWebPath         = $this->websiteOffsetPath       . self::FOLDER_NAME_IMAGES;
@@ -2710,6 +2786,16 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteFeedPath() {
             return $this->websiteFeedPath;
+        }
+
+         /**
+         * Return the offset path to the feed storage location (/feed)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_FEED_WEB_PATH
+         * @return string
+         */
+        public function getWebsiteFeedWebPath() {
+            return $this->websiteFeedWebPath;
         }
 
         /**
@@ -3143,6 +3229,18 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteMediaDirectoryWebPath() {
             return $this->websiteMediaDirectoryWebPath;
+        }
+
+        /**
+         * Set the ID of the object
+         *
+         * WARNING: Setting the ID manually might break the system!
+         *          Only do it in respect to self::$autoIncrementValueOfId.
+         *
+         * @param int   ID this object shall be identified by
+         */
+        public function setId($id) {
+            $this->id = $id;
         }
 
         /**

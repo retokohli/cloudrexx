@@ -282,6 +282,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                         $this->moduleLangVar.'_LEVEL_ORDER' => $arrLevel['levelOrder'],
                         $this->moduleLangVar.'_LEVEL_NAME' => contrexx_raw2xhtml($arrLevel['levelName'][0]),
                         $this->moduleLangVar.'_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
+                        $this->moduleLangVar.'_LEVEL_DESCRIPTION_ESCAPED' => strip_tags($arrLevel['levelDescription'][0]),
                         $this->moduleLangVar.'_LEVEL_PICTURE' => $arrLevel['levelPicture'],
                         $this->moduleLangVar.'_LEVEL_NUM_ENTRIES' => $arrLevel['levelNumEntries'],
                         $this->moduleLangVar.'_LEVEL_ICON' => $spacer.$strLevelIcon,

@@ -76,6 +76,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     const TYPE_CONTENT = 'content';
     const TYPE_APPLICATION = 'application';
     const TYPE_REDIRECT = 'redirect';
+    const TYPE_SYMLINK = 'symlink';
     const TYPE_FALLBACK = 'fallback';
     const TYPE_ALIAS = 'alias';
 
@@ -830,6 +831,17 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
                 } catch (PageRepositoryException $e){
                     $status .= 'broken ';
                 }
+            }
+        } else if ($this->getType() == self::TYPE_SYMLINK) {
+            $status .= 'symlink ';
+            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            try {
+                $targetPage = $pageRepo->getTargetPage($this);
+                if (!$targetPage->isActive()){
+                    throw new PageRepositoryException("Page is not active");
+                }
+            } catch (PageRepositoryException $e){
+                $status .= 'broken ';
             }
         }
         
@@ -1900,6 +1912,10 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @throws PageException If parent page can not be found
      */
     public function getParent() {
+        // virtual pages may not have a node. Throw an exception instead of dying.
+        if (!$this->getNode() && $this->isVirtual()) {
+            throw new PageException('Virtual page has no node');
+        }
         $parentNode = $this->getNode()->getParent();
         if (!$parentNode) {
             throw new PageException('Parent node not found (my page id is ' . $this->getId() . ')');

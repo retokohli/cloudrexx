@@ -208,9 +208,7 @@ class MediaDirectoryMail extends MediaDirectoryLibrary
 
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        $objMail->From = $_CONFIG['coreAdminEmail'];
-        $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
-        $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+        $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreGlobalPageTitle']);
         $objMail->Subject = $this->strTitle;
         $objMail->IsHTML(false);
         $objMail->Body = $this->strTemplate;

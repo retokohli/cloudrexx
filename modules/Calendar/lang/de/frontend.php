@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Calendar Language variables
  * 
@@ -140,6 +140,8 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_STREET'] = "Strasse / Nr.";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_ZIP'] = "PLZ";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CITY'] = "Stadt";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_COUNTRY'] = "Land";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_WEBSITE'] = "Website";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_PHONE'] = "Telefon";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_MAP'] = "Karte";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_USE_GOOGLEMAPS'] = "GoogleMaps verwenden";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_LINK'] = "Link";
@@ -152,7 +154,7 @@ $_ARRAYLANG['TXT_CALENDAR_EDIT'] = "bearbeiten";
 $_ARRAYLANG['TXT_CALENDAR_PAYMENT_METHOD'] = "Zahlungsmethode";
 $_ARRAYLANG['TXT_CALENDAR_PAYMENT_BILL'] = "Rechnung";
 $_ARRAYLANG['TXT_CALENDAR_PAYMENT_YELLOWPAY'] = "Yellowpay";
-$_ARRAYLANG['TXT_CALENDAR_AGB'] = "Ich akzeptiere die <a href=\"index.php?section=Agb\" target=\"_blank\">Annullationsbedingungen</a>";
+$_ARRAYLANG['TXT_CALENDAR_AGB'] = "Ich akzeptiere die <a href=\"index.php?section=Agb\" target=\"_blank\">allgemeinen Geschäftsbedingungen</a>";
 $_ARRAYLANG['TXT_CALENDAR_SAVE_IN_WAITLIST'] = "Anmeldungen werden in die Warteliste aufgenommen";
 $_ARRAYLANG['TXT_CALENDAR_SEPARATOR_NOTHING'] = "";
 $_ARRAYLANG['TXT_CALENDAR_SEPARATOR_SPACE'] = " ";
@@ -199,3 +201,5 @@ $_ARRAYLANG['TXT_CALENDAR_ACTIVE'] = "aktiv";
 $_ARRAYLANG['TXT_CALENDAR_COMMENT'] = "Beschreibung";
 $_ARRAYLANG['TXT_CALENDAR_HOST'] = "Host";
 $_ARRAYLANG['TXT_CALENDAR_NO_SERIES'] = "keine Wiederholung";
+$_ARRAYLANG['TXT_CALENDAR_NOT_SPECIFIED'] = "Keine Angabe";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_FREE'] = "frei";

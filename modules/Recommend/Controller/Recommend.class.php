@@ -263,8 +263,7 @@ class Recommend extends RecommendLibrary
 
             $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-            $objMail->From = $sendermail;
-            $objMail->FromName = $sendername;
+            $objMail->SetFrom($sendermail, $sendername);
             $objMail->AddReplyTo($sendermail);
             $objMail->Subject = $subject;
             $objMail->IsHTML(false);

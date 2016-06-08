@@ -302,9 +302,7 @@ class MarketLibrary
 
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        $objMail->From = $fromMail;
-        $objMail->FromName = $fromName;
-        $objMail->AddReplyTo($fromMail);
+        $objMail->SetFrom($fromMail, $fromName);
         $objMail->Subject = $subject;
         $objMail->IsHTML(false);
         $objMail->Body = $message;
@@ -401,9 +399,7 @@ class MarketLibrary
 
             $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-            $objMail->From = $fromMail;
-            $objMail->FromName = $fromName;
-            $objMail->AddReplyTo($fromMail);
+            $objMail->SetFrom($fromMail, $fromName);
             $objMail->Subject = $subject;
             $objMail->IsHTML(false);
             $objMail->Body = $message;

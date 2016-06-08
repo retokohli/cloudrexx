@@ -1109,9 +1109,7 @@ class DirectoryLibrary
 
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        $objMail->From = $_CONFIG['coreAdminEmail'];
-        $objMail->FromName = $_CONFIG['coreAdminName'];
-        $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+        $objMail->SetFrom($_CONFIG['coreAdminEmail'], $_CONFIG['coreAdminName']);
         $objMail->Subject = $subject;
         $objMail->IsHTML(false);
         $objMail->Body = $message;

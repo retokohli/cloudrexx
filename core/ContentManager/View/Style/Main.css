@@ -87,13 +87,17 @@ h1{ font-size: 20px }
 .ie7 #input1{ float:left; }
 .ie7 .space{ margin-bottom: 10px; }
 
-#site-language {
+#subnav {
     float: left;
     width: 100%;
     border-right: 1px solid #e5e5e5;
     border-left: 1px solid #e5e5e5;
     margin-left: -1px;
     min-height: 31px;
+}
+
+#site-language {
+    float: right;
 }
 
 #content-manager.edit_view #site-language {
@@ -637,6 +641,19 @@ li.jstree-closed, li.jstree-leaf {
 }
 #site-tree .page.redirection.fallback.protected {
     background-position: -33px -209px;
+}
+
+#site-tree .page.symlink {
+    background-position: 1px -238px;
+}
+#site-tree .page.symlink.protected {
+    background-position: -33px -238px;
+}
+#site-tree .page.symlink.fallback {
+    background-position: 1px -267px;
+}
+#site-tree .page.symlink.fallback.protected {
+    background-position: -33px -267px;
 }
 
 #content-manager.edit_view #site-structure .translations,
@@ -1289,14 +1306,13 @@ div.date img{
     margin: 0 5px 0 0;
 }
 
-#page #page_target_text_wrapper {
-    display: none;
+#page .page_target_text_wrapper {
     float: left;
     margin: 0 10px 0 0;
 }
 
 #page #page_target_wrapper .icon,
-#page #page_target_text_wrapper .icon {
+#page .page_target_text_wrapper .icon {
     float: left;
     width: 16px;
     height: 16px;
@@ -1307,7 +1323,7 @@ div.date img{
     display: none;
 }
 
-#page #page_target_text {
+#page .page_target_text {
     float: left;
     padding: 3px 0 0 0;
     margin: 0 5px 0 0;

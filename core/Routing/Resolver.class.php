@@ -381,6 +381,14 @@ class Resolver {
                 $componentController->resolve($parts, $this->page);
             }
         }
+        $canonicalPage = $this->page;
+        if (
+            $this->urlPage &&
+            $this->urlPage->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK
+        ) {
+            $canonicalPage = $this->pageRepo->getTargetPage($this->urlPage);
+        }
+        header('Link: <' . \Cx\Core\Routing\Url::fromPage($canonicalPage)->toString() . '>; rel="canonical"');
         return $this->page;
     }
 
@@ -515,6 +523,9 @@ class Resolver {
             $this->url->setParams($this->url->getSuggestedParams());
 
             $this->page = $result['page'];
+        }
+        if (!$this->urlPage) {
+            $this->urlPage = clone $this->page;
         }
         /*
           the page we found could be a redirection.
@@ -750,7 +761,10 @@ class Resolver {
         // See bug-report #1536
         $page = $this->pageRepo->findOneById($page->getId());
 
-        if($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK) {
+        if (
+            $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK ||
+            $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK
+        ) {
             // in case the first resolved page (= original requested page) is a fallback page
             // we must check here if this very page is active.
             // If we miss this check, we would only check if the referenced fallback page is active!
@@ -761,7 +775,11 @@ class Resolver {
             // if this page is protected, we do not follow fallback
             $this->checkPageFrontendProtection($page);
 
-            $fallbackPage = $this->getFallbackPage($page);
+            if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_SYMLINK) {
+                $fallbackPage = $this->pageRepo->getTargetPage($page);
+            } else {
+                $fallbackPage = $this->getFallbackPage($page);
+            }
 
             // due that the fallback is located within a different language
             // we must set $this->lang to the fallback's language.

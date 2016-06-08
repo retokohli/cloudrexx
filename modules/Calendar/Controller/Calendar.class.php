@@ -149,6 +149,14 @@ class Calendar extends CalendarLibrary
      * @var integer
      */
     public $boxCount = 3;
+
+    /**
+     * When using the ID of a category, we will
+     * simulate as if cmd=category has been requested
+     *
+     * @var boolean
+     */
+    protected $simulateCategoryView = false;
     
     /**
      * Constructor
@@ -162,7 +170,7 @@ class Calendar extends CalendarLibrary
         global $_ARRAYLANG, $objTemplate;
 
         parent::__construct('.');
-        parent::getSettings();
+        $this->getSettings();
         
         $this->pageContent = $pageContent;
     }
@@ -174,7 +182,7 @@ class Calendar extends CalendarLibrary
      */
     function getCalendarPage()
     {
-        self::loadEventManager();
+        $this->loadEventManager();
         $id = !empty($_GET['id']) ? $_GET['id'] : 0 ;
 
         if(isset($_GET['export'])) {
@@ -182,7 +190,12 @@ class Calendar extends CalendarLibrary
             $objEvent->export();
         }
 
-        switch ($_REQUEST['cmd']) {
+        $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : null;
+        if ($this->simulateCategoryView) {
+            $cmd = 'category';
+        }
+
+        switch ($cmd) {
             case 'detail':
                 if( $id!= null && $_GET['date'] != null) {
                     self::showEvent();
@@ -206,15 +219,15 @@ class Calendar extends CalendarLibrary
                 self::showCategoryView();
                 break;
             case 'add':                
-                parent::checkAccess('add_event');
+                $this->checkAccess('add_event');
                 self::modifyEvent();
                 break;
             case 'edit':
-                parent::checkAccess('edit_event');
+                $this->checkAccess('edit_event');
                 self::modifyEvent(intval($id));
                 break;
             case 'my_events':
-                parent::checkAccess('my_events');
+                $this->checkAccess('my_events');
                 self::myEvents();
                 break;
             case 'success':
@@ -246,72 +259,83 @@ class Calendar extends CalendarLibrary
         
         // get startdate
         if (!empty($from)) {
-            $this->startDate = parent::getDateTimestamp($from);
+            $this->startDate = $this->getDateTime($from);
         } else if ($cmd == 'archive') {
             $this->startDate = null;
             $this->sortDirection = 'DESC';
         } else {
-            $startDay   = isset($_GET['day']) ? $_GET['day'] : date("d", time());
-            $startMonth = isset($_GET['month']) ? $_GET['month'] : date("m", time());
-            $startYear  = isset($_GET['year']) ? $_GET['year'] : date("Y", time());
+            $this->startDate = new \DateTime();
 
-            $this->startDate = mktime(0, 0, 0, $startMonth, $startDay, $startYear);
+            $startDay   = isset($_GET['day']) ? $_GET['day'] : $this->startDate->format('d');
+            $startMonth = isset($_GET['month']) ? $_GET['month'] : $this->startDate->format('m');
+            $startYear  = isset($_GET['year']) ? $_GET['year'] : $this->startDate->format('Y');
+
+            $this->startDate->setDate($startYear, $startMonth, $startDay);
+            $this->startDate->setTime(0, 0, 0);
         }
 
         // get enddate
         if (!empty($till)) {
-            $this->endDate = parent::getDateTimestamp($till);
+            $this->endDate = $this->getDateTime($till);
         } else if ($cmd == 'archive') {
-            $this->endDate = time();
+            $this->endDate = new \DateTime();
         } else {
-            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : date("d", time());
-            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : date("m", time());
-            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : date("Y", time());
+            $this->endDate = new \DateTime();
+
+            $endDay   = isset($_GET['endDay']) ? $_GET['endDay'] : $this->endDate->format('d');
+            $endMonth = isset($_GET['endMonth']) ? $_GET['endMonth'] : $this->endDate->format('m');
+            $endYear  = isset($_GET['endYear']) ? $_GET['endYear'] : $this->endDate->format('Y');
 
             $endYear = empty($_GET['endYear']) && empty($_GET['endMonth']) ? $endYear+10: $endYear;
 
-            $this->endDate = mktime(23, 59, 59, $endMonth, $endDay, $endYear);
+            $this->endDate->setDate($endYear, $endMonth, $endDay);
+            $this->endDate->setTime(23, 59, 59);
         }
 
 
         // get datepicker-time
-         if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $cmd != 'boxes') {
-            $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : date('Y');
-            $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : date('m');
-            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : date('d');
-            
-            $dateObj = new \DateTime("{$year}-{$month}-{$day}");
-            
-            $dateObj->modify("first day of this month");
-            $dateObj->setTime(0, 0, 0);
-            $this->startDate = $dateObj->getTimestamp();
-            
+        if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $cmd != 'boxes') {
+
+            $this->startDate = new \DateTime();
+            $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : $this->startDate->format('Y');
+            $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : $this->startDate->format('m');
+            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : $this->startDate->format('d');
+
+            $this->startDate->setDate($year, $month, $day);
+            $this->startDate->modify("first day of this month");
+            $this->startDate->setTime(0, 0, 0);
+
+            $this->endDate = clone $this->startDate;
             // add months for the list view(month view)
             if ((empty($_GET['act']) || $_GET['act'] != 'list') && empty($_REQUEST['dayID'])) {
-                $dateObj->modify("+{$this->boxCount} months");
+                $this->endDate->modify("+{$this->boxCount} months");
             }
-            
-            $dateObj->modify("last day of this month");
-            $dateObj->setTime(23, 59, 59);
-            $this->endDate = $dateObj->getTimestamp();
-            
 
-         } elseif (isset ($_GET["yearID"]) && isset ($_GET["monthID"]) && isset ($_GET["dayID"])) {
+            $this->endDate->modify("last day of this month");
+            $this->endDate->setTime(23, 59, 59);
+        } elseif (isset ($_GET["yearID"]) && isset ($_GET["monthID"]) && isset ($_GET["dayID"])) {
+            $this->startDate = new \DateTime();
 
-            $year = isset($_REQUEST["yearID"]) ? intval($_REQUEST["yearID"]) : date('Y', time());
-            $month = isset($_REQUEST["monthID"]) ? intval($_REQUEST["monthID"]) : date('m', time());
-            $day = isset($_REQUEST["dayID"]) ? intval($_REQUEST["dayID"]) : date('d', time());
+            $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : $this->startDate->format('Y');
+            $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : $this->startDate->format('m');
+            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : $this->startDate->format('d');
 
-            $this->startDate = mktime(0, 0, 0, $month, $day, $year);
-            $this->endDate = mktime(23, 59, 59, $month, $day, $year);
+            $this->startDate->setDate($year, $month, $day);
+            $this->startDate->setTime(0, 0, 0);
+            $this->endDate   = clone $this->startDate;
+            $this->endDate->setTime(23, 59, 59);
         }
         
+        // In case $_GET['cmd'] is an integer, then we shall treat it as the
+        // ID of a category and switch to category-mode
+        if (!empty($cmd) && (string)intval($cmd) == $cmd) {
+            $catid = intval($cmd);
+            $cmd == 'category';
+            $this->simulateCategoryView = true;
+        }
         
         $this->searchTerm = !empty($term) ? contrexx_raw2db($term) : null;
         $this->categoryId = !empty($catid) ? intval($catid) : null;
-
-
-
 
         if ($cmd == 'boxes' || $cmd == 'category') {
             $this->startPos = 0;
@@ -338,14 +362,15 @@ class Calendar extends CalendarLibrary
         }
         $this->objEventManager = new \Cx\Modules\Calendar\Controller\CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents,$this->sortDirection,true,$this->author);
         
-        if($cmd != 'detail') {
-            $this->objEventManager->getEventList();  
-        } else { 
+        if (!in_array($cmd, array('detail', 'register'))) {
+            $this->objEventManager->getEventList();
+        } else {
             /* if($_GET['external'] == 1 && $this->arrSettings['publicationStatus'] == 1) {
                 $this->objEventManager->getExternalEvent(intval($_GET['id']), intval($_GET['date'])); 
             } else { */
-                $eventId = isset($_GET['id']) ? intval($_GET['id']) : 0;
-                $date    = isset($_GET['date']) ? intval($_GET['date']) : 0;
+                $eventId = isset($_REQUEST['id']) ? contrexx_input2int($_REQUEST['id']) : 0;
+                $date    = isset($_REQUEST['date']) ? contrexx_input2int($_REQUEST['date']) : 0;
+
                 $this->objEventManager->getEvent($eventId, $date);
             /* } */
         }
@@ -362,9 +387,9 @@ class Calendar extends CalendarLibrary
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
        
-        parent::getSettings();
+        $this->getSettings();
         
-        $dateFormat = parent::getDateFormat(1);
+        $dateFormat = $this->getDateFormat(1);
         
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
@@ -466,8 +491,8 @@ EOF;
         
         \JS::registerJS('modules/Calendar/View/Script/Frontend.js');
          
-        parent::getFrontendLanguages();
-        parent::getSettings();
+        $this->getFrontendLanguages();
+        $this->getSettings();
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
         $showFrom = true;
@@ -498,7 +523,7 @@ EOF;
             $objEvent->getData();
         }
 
-        $dateFormat = parent::getDateFormat(1);
+        $dateFormat = $this->getDateFormat(1);
         
         $locationType = $this->arrSettings['placeData'] == 3 ? ($eventId != 0 ? $objEvent->locationType : 1) : $this->arrSettings['placeData'];
         $hostType     = $this->arrSettings['placeDataHost'] == 3 ? ($eventId != 0 ? $objEvent->hostType : 1) : $this->arrSettings['placeDataHost'];
@@ -548,7 +573,18 @@ UPLOADER;
 
         $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
-        
+
+        if ($eventId) {
+            $startDate = $objEvent->startDate;
+            $endDate   = $objEvent->endDate;
+        } else {
+            $startDate = new \DateTime();
+            $endDate   = new \DateTime();
+        }
+
+        $eventStartDate = $this->format2userDateTime($startDate);
+        $eventEndDate   = $this->format2userDateTime($endDate);
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DETAILS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAILS'],
@@ -563,6 +599,8 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_EVENT_ZIP'                => $_ARRAYLANG['TXT_CALENDAR_EVENT_ZIP'],
             'TXT_'.$this->moduleLangVar.'_EVENT_CITY'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_CITY'],
             'TXT_'.$this->moduleLangVar.'_EVENT_COUNTRY'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_COUNTRY'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_WEBSITE'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_WEBSITE'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_PHONE'              => $_ARRAYLANG['TXT_CALENDAR_EVENT_PHONE'],
             'TXT_'.$this->moduleLangVar.'_EVENT_MAP'                => $_ARRAYLANG['TXT_CALENDAR_EVENT_MAP'],
             'TXT_'.$this->moduleLangVar.'_EVENT_USE_GOOGLEMAPS'     => $_ARRAYLANG['TXT_CALENDAR_EVENT_USE_GOOGLEMAPS'],
             'TXT_'.$this->moduleLangVar.'_EVENT_LINK'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_LINK'],
@@ -588,8 +626,8 @@ UPLOADER;
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
-            $this->moduleLangVar.'_EVENT_START_DATE'                => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->startDate) : date(parent::getDateFormat()." H:i"),
-            $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->endDate) : date(parent::getDateFormat()." H:i"),
+            $this->moduleLangVar.'_EVENT_START_DATE'                => $eventStartDate,
+            $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventEndDate,
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
             $this->moduleLangVar.'_EVENT_PICTURE_THUMB'             => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
             $this->moduleLangVar.'_EVENT_ATTACHMENT'                => $objEvent->attach,
@@ -600,15 +638,19 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_ZIP'                       => $objEvent->place_zip,
             $this->moduleLangVar.'_EVENT_CITY'                      => $objEvent->place_city,
             $this->moduleLangVar.'_EVENT_COUNTRY'                   => $objEvent->place_country,
+            $this->moduleLangVar.'_EVENT_PLACE_WEBSITE'             => $objEvent->place_website,
             $this->moduleLangVar.'_EVENT_PLACE_MAP'                 => $objEvent->place_map,
             $this->moduleLangVar.'_EVENT_PLACE_LINK'                => $objEvent->place_link,
+            $this->moduleLangVar.'_EVENT_PLACE_PHONE'               => $objEvent->place_phone,
             $this->moduleLangVar.'_EVENT_MAP'                       => $objEvent->map == 1 ? 'checked="checked"' : '',
             $this->moduleLangVar.'_EVENT_HOST'                      => $objEvent->org_name,
             $this->moduleLangVar.'_EVENT_HOST_ADDRESS'              => $objEvent->org_street,
             $this->moduleLangVar.'_EVENT_HOST_ZIP'                  => $objEvent->org_zip,
             $this->moduleLangVar.'_EVENT_HOST_CITY'                 => $objEvent->org_city,
             $this->moduleLangVar.'_EVENT_HOST_COUNTRY'              => $objEvent->org_country,
+            $this->moduleLangVar.'_EVENT_HOST_WEBSITE'              => $objEvent->org_website,
             $this->moduleLangVar.'_EVENT_HOST_LINK'                 => $objEvent->org_link,
+            $this->moduleLangVar.'_EVENT_HOST_PHONE'                => $objEvent->org_phone,
             $this->moduleLangVar.'_EVENT_HOST_EMAIL'                => $objEvent->org_email,
             $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MANUAL'      => $eventId != 0 ? ($objEvent->locationType == 1 ? "checked='checked'" : '') : "checked='checked'",
             $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MEDIADIR'    => $eventId != 0 ? ($objEvent->locationType == 2 ? "checked='checked'" : '') : "",
@@ -817,15 +859,35 @@ UPLOADER;
                 ));
             }
         }
-        
-        $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($_REQUEST['id']));
-        
-        $numRegistrations = (int) $objEvent->registrationCount;
-        
-        $this->pageTitle = date("d.m.Y", (isset($_GET['date']) ? $_GET['date'] : $objEvent->startDate)).": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
-        if(time() <= intval($_REQUEST['date'])) {
-            if($numRegistrations < $objEvent->numSubscriber) {
+        $objEvent = $this->objEventManager->eventList[0];
+
+        if(empty($objEvent)) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
+            return;
+        }
+
+        if($objEvent->access == 1 && !\FWUser::getFWUserObject()->objUser->login()){
+            $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+            \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
+            return;
+        }
+
+        $dateForPageTitle = $objEvent->startDate;
+        $this->pageTitle = $this->format2userDate($dateForPageTitle)
+                            . ": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
+
+        // Only show registration form if event lies in the future
+        if(time() <= $objEvent->startDate->getTimestamp()) {
+            // Only show registration form if event accepts registrations.
+            // Event accepts registrations, if registration is set up and
+            //     - no attendee limit is set
+            //     - or if there are still free places available
+            if (   $objEvent->registration == CalendarEvent::EVENT_REGISTRATION_INTERNAL
+                && (   empty($objEvent->numSubscriber)
+                    || !\FWValidator::isEmpty($objEvent->getFreePlaces())
+                )
+            ) {
                 $this->_objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_ID'                   =>  intval($_REQUEST['id']),
                     $this->moduleLangVar.'_FORM_ID'                    =>  intval($objEvent->registrationForm),
@@ -835,11 +897,11 @@ UPLOADER;
                 ));
 
                 $objFormManager = new \Cx\Modules\Calendar\Controller\CalendarFormManager();
+                $objFormManager->setEvent($objEvent);
                 $objFormManager->getFormList();
                 //$objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, $objEvent->ticketSales);
                 // Made the ticket sales always true, because ticket functionality currently not implemented
-                $objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, true); 
-                
+                $objFormManager->showForm($this->_objTpl, intval($objEvent->registrationForm), 2, true);
 
                 /* if ($this->arrSettings['paymentStatus'] == '1' && $objEvent->ticketSales && ($this->arrSettings['paymentBillStatus'] == '1' || $this->arrSettings['paymentYellowpayStatus'] == '1')) {
                     $paymentMethods  = '<select class="calendarSelect" name="paymentMethod">';
@@ -880,7 +942,7 @@ UPLOADER;
                             /* if($_POST["paymentMethod"] == 2) {
                                 $objRegistration->get($objRegistration->id);
                                 $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($objRegistration->eventId);                                
-                                parent::getSettings();
+                                $this->getSettings();
                                 $amount  = (int) $objEvent->price * 100;
                                 $status .= \Cx\Modules\Calendar\Controller\CalendarPayment::_yellowpay(array("orderID" => $objRegistration->id, "amount" => $amount, "currency" => $this->arrSettings["paymentCurrency"], "language" => "DE"));
                             } */
@@ -935,6 +997,18 @@ UPLOADER;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
+        // load source code if cmd value is integer
+        if ($this->_objTpl->placeholderExists('APPLICATION_DATA')) {
+            $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+            $page->setVirtual(true);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('Calendar');
+            // load source code
+            $applicationTemplate = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+            \LinkGenerator::parseTemplate($applicationTemplate);
+            $this->_objTpl->addBlock('APPLICATION_DATA', 'application_data', $applicationTemplate);
+        }
+
         $objCategoryManager = new \Cx\Modules\Calendar\Controller\CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
 
@@ -985,7 +1059,7 @@ UPLOADER;
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         if($_REQUEST["handler"] == "yellowpay") {
             $orderId = \Yellowpay::getOrderId();
-            parent::getSettings();
+            $this->getSettings();
             if (\Yellowpay::checkin($this->arrSettings["paymentYellowpayShaOut"])) {
                 switch(abs($_REQUEST["result"])) {
                     case 2:
@@ -1008,15 +1082,15 @@ UPLOADER;
                         $this->_objTpl->touchBlock("cancelMessage");
                         break;
                     default:
-                        \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
+                        \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
                         break;
                 }
             } else {
-                \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
+                \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
                 return;
             }            
         } else {
-            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
+            \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
             return;
         }
     }

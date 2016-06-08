@@ -290,8 +290,7 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
 
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        $objMail->FromName = $arrFields['name'];
-        $objMail->From = $arrFields['fromEmail'];
+        $objMail->SetFrom($arrFields['fromEmail'], $arrFields['name']);
         $objMail->Subject = 'Cloudrexx - ' . $_ARRAYLANG['TXT_SUPPORT_EMAIL_MESSAGE_SUBJECT'];
         $objMail->AddReplyTo($arrFields['fromEmail']);
         $objMail->AddAddress($arrFields['toEmail']);

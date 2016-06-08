@@ -192,9 +192,8 @@ class Newsletter extends NewsletterLib
 
                     $mail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-                    $mail->From             = $value_sender_emailDEF;
-                    $mail->FromName         = $value_sender_nameDEF;
                     $mail->AddReplyTo($value_reply_mailDEF);
+                    $mail->SetFrom($value_sender_emailDEF, $value_sender_nameDEF);
                     $mail->Subject             = $mailTitle;
                     $mail->Priority         = 3;
                     $mail->IsHTML(false);
@@ -762,9 +761,8 @@ class Newsletter extends NewsletterLib
 
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        $objMail->From = $arrSettings['sender_mail']['setvalue'];
-        $objMail->FromName = $arrSettings['sender_name']['setvalue'];
         $objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);
+        $objMail->SetFrom($arrSettings['sender_mail']['setvalue'], $arrSettings['sender_name']['setvalue']);
         $objMail->Subject = $arrParsedTxts[0];
         $objMail->Priority = 3;
         $objMail->IsHTML(false);
@@ -841,9 +839,8 @@ class Newsletter extends NewsletterLib
 
             $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-            $objMail->From = $arrSettings['sender_mail']['setvalue'];
-            $objMail->FromName = $arrSettings['sender_name']['setvalue'];
             $objMail->AddReplyTo($arrSettings['reply_mail']['setvalue']);
+            $objMail->SetFrom($arrSettings['sender_mail']['setvalue'], $arrSettings['sender_name']['setvalue']);
             $objMail->Subject = $arrParsedTxts[0];
             $objMail->Priority = 3;
             $objMail->IsHTML(false);

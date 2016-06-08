@@ -92,9 +92,10 @@ die("ShopLibrary::shopSendmail(): Obsolete method called");
 
         $objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail();
 
-        $objMail->From = preg_replace('/\015\012/', "\012", $shopMailFrom);
-        $objMail->FromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
+        $from = preg_replace('/\015\012/', "\012", $shopMailFrom);
+        $fromName = preg_replace('/\015\012/', "\012", $shopMailFromText);
         $objMail->AddReplyTo($_CONFIG['coreAdminEmail']);
+        $objMail->SetFrom($from, $fromName);
         $objMail->Subject = $shopMailSubject;
         $objMail->IsHTML(false);
         $objMail->Body = $shopMailBody;

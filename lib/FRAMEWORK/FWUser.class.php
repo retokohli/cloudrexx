@@ -527,9 +527,7 @@ class FWUser extends User_Setting
             return false;
         }
 
-        $objMail->From = $objUserMail->getSenderMail();
-        $objMail->FromName = $objUserMail->getSenderName();
-        $objMail->AddReplyTo($objUserMail->getSenderMail());
+        $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
         $objMail->Subject = $objUserMail->getSubject();
 
         $restoreLink = self::getPasswordRestoreLink($this->isBackendMode(), $objUser);

@@ -47,7 +47,7 @@ namespace Cx\Modules\Calendar\Controller;
  * @copyright  CLOUDREXX CMS - CLOUDREXX AG
  * @version    1.00
  */ 
-class CalendarRegistration extends \Cx\Modules\Calendar\Controller\CalendarLibrary
+class CalendarRegistration extends CalendarLibrary
 {
     /**
      * Registration id
@@ -301,20 +301,36 @@ class CalendarRegistration extends \Cx\Modules\Calendar\Controller\CalendarLibra
         $userId = intval($data['userid']);
         
         $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
-        $query = 'SELECT `id`
-                    FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field`
-                   WHERE `type` = "seating"
-                   LIMIT 1';
+
+        if (   $objInit->mode == \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+            && $objEvent->seriesStatus
+            && $objEvent->independentSeries
+        ) {
+            $eventDate = isset($data['registrationEventDate']) ? contrexx_input2int($data['registrationEventDate']) : $eventDate;
+        }
+
+        $query = '
+            SELECT
+                `id`
+            FROM
+                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field`
+            WHERE
+                `form` = '. $formId .'
+            AND
+                `type` = "seating"
+            LIMIT 1
+        ';
         $objResult = $objDatabase->Execute($query);
         
         $numSeating = intval($data['registrationField'][$objResult->fields['id']]);
-        $type = intval($objEvent->freePlaces - $numSeating) < 0 ? 2 : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
+        $type       =   empty($regId) && intval($objEvent->getFreePlaces() - $numSeating) < 0
+                      ? 2 : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
         $this->saveIn = intval($type);
         $paymentMethod = intval($data['paymentMethod']);
         $paid = intval($data['paid']);
         $hostName = 0;
         $ipAddress = 0;
-        $key = parent::generateKey();
+        $key = $this->generateKey();
         
         if ($regId == 0) {
             $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration
@@ -478,7 +494,7 @@ class CalendarRegistration extends \Cx\Modules\Calendar\Controller\CalendarLibra
     function tagExport() { 
         global $objDatabase, $_LANGID;
         
-        $now = mktime();
+        $now = time();
         
         if(intval($this->id) != 0) {
             $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration SET `export` = '".intval($now)."' WHERE `id` = '".intval($this->id)."'";              

@@ -3043,9 +3043,9 @@ class NewsletterManager extends NewsletterLib
                 $mail->Password = $arrSmtp['password'];
             }
         }
-        $mail->From     = $sender_email;
-        $mail->FromName = $sender_name;
+
         $mail->AddReplyTo($return_path);
+        $mail->SetFrom($sender_email, $sender_name);
         $mail->Subject  = $subject;
         $mail->Priority = $priority;
         $mail->Body     = $NewsletterBody_HTML;
@@ -3231,9 +3231,8 @@ class NewsletterManager extends NewsletterLib
                 $mail->Password = $arrSmtp['password'];
             }
         }
-        $mail->From         = $newsletterValues['sender_email'];
-        $mail->FromName     = $newsletterValues['sender_name'];
         $mail->AddReplyTo($newsletterValues['return_path']);
+        $mail->SetFrom($newsletterValues['sender_email'], $newsletterValues['sender_name']);
         $mail->Subject      = $newsletterValues['subject'];
         $mail->Priority     = $newsletterValues['priority'];
         $mail->Body         = $this->getInformMailBody($userID, $email, $type);
@@ -3418,22 +3417,102 @@ class NewsletterManager extends NewsletterLib
         $allImg = array();
         preg_match_all('/src="([^"]*)"/', $content_text, $allImg, PREG_PATTERN_ORDER);
         $size = sizeof($allImg[1]);
+        
         $i = 0;
-        $port = $_SERVER['SERVER_PORT'] != 80 ? ':'.intval($_SERVER['SERVER_PORT']) : '';
-
         while ($i < $size) {
             $URLforReplace = $allImg[1][$i];
-            if (substr($URLforReplace, 0, 7) != ASCMS_PROTOCOL.'://') {
-                $ReplaceWith = '"'.ASCMS_PROTOCOL.'://'.$_SERVER['SERVER_NAME'].$port.$URLforReplace.'"';
+            
+            $replaceUrl = new \Cx\Core\Routing\Url($URLforReplace, true);
+            if ($replaceUrl->isInternal()) {
+                $ReplaceWith = $replaceUrl->toString();
             } else {
                 $ReplaceWith = $URLforReplace;
             }
-            $content_text = str_replace('"'.$URLforReplace.'"', $ReplaceWith, $content_text);
+            
+            $content_text = str_replace('"'.$URLforReplace.'"', '"'.$ReplaceWith.'"', $content_text);
             $i++;
+        }
+        
+        // Set HTML height and width attributes for img-tags
+        $allImgsWithHeightOrWidth = array();
+        preg_match_all('/<img[^>]*style=(["\'])[^\1]*(?:width|height):\s*[^;\1]+;?\s*[^\1]*\1[^>]*>/', $content_text, $allImgsWithHeightOrWidth);
+        foreach ($allImgsWithHeightOrWidth as $img) {
+            $htmlHeight = $this->getAttributeOfTag($img, 'img', 'height');
+            $htmlWidth = $this->getAttributeOfTag($img, 'img', 'width');
+            // no need to proceed if attributes are already set
+            if (!empty($htmlHeight) && !empty($htmlWidth)) {
+                continue;
+            }
+            
+            $cssHeight = $this->getCssAttributeOfTag($img, 'img', 'height');
+            $cssWidth = $this->getCssAttributeOfTag($img, 'img', 'width');
+            // no need to proceed if we have no values to set
+            if (empty($cssHeight) && empty($cssWidth)) {
+                continue;
+            }
+            
+            $imgOrig = $img;
+            // set height and width attributes (if not yet set)
+            if (empty($htmlHeight) && !empty($cssHeight)) {
+                $img = $this->setAttributeOfTag($img, 'img', 'height', $cssHeight);
+            }
+            if (empty($htmlWidth) && !empty($cssWidth)) {
+                $img = $this->setAttributeOfTag($img, 'img', 'width', $cssWidth);
+            }
+            $content_text = str_replace($imgOrig, $img, $content_text);
         }
 
         $NewsletterBody = str_replace("[[content]]", $content_text, $TemplateSource);
         return $NewsletterBody;
+    }
+    
+    /**
+     * Returns the value of an attribute of the specified HTML tag name
+     * @param string $html HTML to perform search in
+     * @param string $tagName HTML tag to look for
+     * @param string $attributeName HTML attribute to look for
+     * @return string Attribute value or empty string if not set
+     */
+    protected function getAttributeOfTag($html, $tagName, $attributeName) {
+        $matches = array();
+        preg_match('/<' . preg_quote($tagName) . '[^>]*' . preg_quote($attributeName) . '=(["\'])([^\1]*)/', $html, $matches);
+        if (!isset($matches[1])) {
+            return '';
+        }
+        return $matches[1];
+    }
+    
+    /**
+     * Sets the HTML attribute of a tag to a specified value
+     * @param string $html HTML to perform search in
+     * @param string $tagName HTML tag to look for
+     * @param string $attributeName HTML attribute to look for
+     * @param string $attributeValue Value to set
+     * @return string altered HTML
+     */
+    protected function setAttributeOfTag($html, $tagName, $attributeName, $attributeValue) {
+        $count = 0;
+        $html = preg_replace('/(<' . preg_quote($tagName) . '[^>]*' . preg_quote($attributeName) . '=(["\']))[^\2]*/', '\1' . $attributeValue, $html, -1, $count);
+        if ($count == 0) {
+            $html = preg_replace('/(<' . preg_quote($tagName) . '[^>]*)(\/?>)/U', '\1 ' . $attributeName . '="' . $attributeValue . '"\s\2', $html);
+        }
+        return $html;
+    }
+    
+    /**
+     * Returns the value of an attribute of the style attribute of an HTML tag
+     * @param string $html HTML to perform search in
+     * @param string $tagName HTML tag to look for
+     * @param string $cssAttributeName CSS attribute to look for in style attribute
+     * @return string Attribute value or empty string if not set
+     */
+    protected function getCssAttributeOfTag($html, $tagName, $cssAttributeName) {
+        $matches = array();
+        preg_match('/<' . preg_quote($tagName) . '[^>]*style=(["\'])[^\1]*' . preg_quote($cssAttributeName) . '\s*:\s*([^;\1]*)/', $html, $matches);
+        if (!isset($matches[2])) {
+            return '';
+        }
+        return $matches[2];
     }
 
 
@@ -3580,33 +3659,32 @@ class NewsletterManager extends NewsletterLib
             return '';
         }
 
+        $cmd = '';
         switch ($type) {
             case self::USER_TYPE_ACCESS:
-                $profileURI = '?section=Newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
+                $cmd = 'profile';
                 break;
 
             case self::USER_TYPE_NEWSLETTER:
             default:
-                $profileURI = '?section=Newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email);
+                $cmd = 'unsubscribe';
                 break;
         }
 
-        $uri =
-            ASCMS_PROTOCOL.'://'.
-            $_CONFIG['domainUrl'].
-            ($_SERVER['SERVER_PORT'] == 80
-              ? '' : ':'.intval($_SERVER['SERVER_PORT'])).
-            ASCMS_PATH_OFFSET.'/'.
-            \FWLanguage::getLanguageParameter(
-                $this->getUsersPreferredLanguageId(
-                    $email, 
-                    $type
-                ),
-                'lang'
-            ).
-            '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
+        $unsubscribeUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Newsletter',
+            $cmd,
+            $this->getUsersPreferredLanguageId(
+                $email,
+                $type
+            ),
+            array(
+                'code' => $code,
+                'mail' => urlencode($email),
+            )
+        );
 
-        return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
+        return '<a href="'.$unsubscribeUrl->toString().'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
     }
 
 
@@ -3615,29 +3693,26 @@ class NewsletterManager extends NewsletterLib
      */
     function GetProfileURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG;
 
         if ($type == self::USER_TYPE_CORE) {
             // recipients that will receive the newsletter through the selection of their user group don't have a profile
             return '';
         }
 
-        $profileURI = '?section=Newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
-        $uri =
-            ASCMS_PROTOCOL.'://'.
-            $_CONFIG['domainUrl'].
-            ($_SERVER['SERVER_PORT'] == 80
-              ? NULL : ':'.intval($_SERVER['SERVER_PORT'])).
-            ASCMS_PATH_OFFSET.'/'.
-            \FWLanguage::getLanguageParameter(
-                $this->getUsersPreferredLanguageId(
-                    $email,
-                    $type
-                ),
-                'lang'
-            ).
-            '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
-        return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
+        $profileUrl = \Cx\Core\Routing\Url::fromModuleAndCmd(
+            'Newsletter',
+            'profile',
+            $this->getUsersPreferredLanguageId(
+                $email,
+                $type
+            ),
+            array(
+                'code' => $code,
+                'mail' => urlencode($email),
+            )
+        );
+        return '<a href="'.$profileUrl->toString().'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
     }
 
 

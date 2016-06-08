@@ -130,6 +130,7 @@ class CrmTask extends CrmLibrary
         }
 
         $filterTaskType  = isset($_GET['searchType'])? intval($_GET['searchType']) : 0 ;
+        $filterTaskStatus= !empty($_GET['status']) && is_array($_GET['status']) ? contrexx_input2int($_GET['status']) : array(0);
         $filterTaskTitle = isset($_GET['searchTitle'])? contrexx_input2raw($_GET['searchTitle']) : '';
         $sortField       = isset($_GET['sort_by']) && array_key_exists($_GET['sort_by'], $this->_sortFields) ? (int) $_GET['sort_by'] : 2;
         $sortOrder       = (isset($_GET['sort_order']) && $_GET['sort_order'] == 1)  ? 1 : 0 ;
@@ -144,6 +145,11 @@ class CrmTask extends CrmLibrary
         if (!empty($filterTaskTitle)) {
             $filter[]    = " t.task_title LIKE '%$filterTaskTitle%' OR c.customer_name LIKE '%$filterTaskTitle%'";
             $filterLink .= "&searchTitle=$filterTaskTitle";
+        }
+
+        if (!empty($filterTaskStatus)) {
+            $filter[]    = ' t.task_status IN ('. implode(" ,", $filterTaskStatus) .')';
+            $filterLink .= '&status[]='. implode('&status[]=', $filterTaskStatus);
         }
 
         $filterCondition = !empty($filter) ? " WHERE ". implode(" AND", $filter) : '';
@@ -262,6 +268,8 @@ class CrmTask extends CrmLibrary
                 'CRM_TASK_SORT_ORDER_TITLE'     => $sortOrder ? 'descending' : 'ascending',
                 'CRM_TASK_SORT_ORDER_ICONS'     => json_encode($sortIcons),
                 'CRM_REDIRECT_LINK'             => '&redirect='.base64_encode("&act=task$filterLink&pos=$intPos"),
+                'CRM_TASK_STATUS_OPEN'          => !empty($filterTaskStatus) && in_array(0, $filterTaskStatus) ? 'checked="checked"' : '',
+                'CRM_TASK_STATUS_COMPLETED'     => !empty($filterTaskStatus) && in_array(1, $filterTaskStatus) ? 'checked="checked"' : '',
                 'TXT_CRM_OVERVIEW'              => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
                 'TXT_CRM_ADD_TASK'              => $_ARRAYLANG['TXT_CRM_ADD_TASK'],
                 'TXT_CRM_ADD_IMPORT'            => $_ARRAYLANG['TXT_CRM_ADD_IMPORT'],
@@ -290,7 +298,10 @@ class CrmTask extends CrmLibrary
                 'TXT_CRM_FILTER_TASK_TYPE'      => $_ARRAYLANG['TXT_CRM_FILTER_TASK_TYPE'],
                 'TXT_CRM_TASK_OPEN'             => $_ARRAYLANG['TXT_CRM_TASK_OPEN'],
                 'TXT_CRM_TASK_COMPLETED'        => $_ARRAYLANG['TXT_CRM_TASK_COMPLETED'],
-                'TXT_CRM_FILTER_SORT_BY'        => $_ARRAYLANG['TXT_CRM_FILTER_SORT_BY']
+                'TXT_CRM_FILTER_SORT_BY'        => $_ARRAYLANG['TXT_CRM_FILTER_SORT_BY'],
+                'TXT_CRM_FILTER_STATUS'         => $_ARRAYLANG['TXT_CRM_FILTER_STATUS'],
+                'TXT_CRM_TASK_STATUS_OPEN'      => $_ARRAYLANG['TXT_CRM_TASK_STATUS_OPEN'],
+                'TXT_CRM_TASK_STATUS_COMPLETED' => $_ARRAYLANG['TXT_CRM_TASK_STATUS_COMPLETED'],
         ));
     }
 

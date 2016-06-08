@@ -63,6 +63,8 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $cmd = isset($_REQUEST['cmd']) ? explode('_', $_REQUEST['cmd']) : array(0 => null);
         $groupId = isset($cmd[1]) ? intval($cmd[1]) : null;
 
+        // add whole component's language data to every application page of component
+        $this->_objTpl->setVariable(\Env::get('init')->getComponentSpecificLanguageData('Access'));
         \Cx\Lib\SocialLogin::parseSociallogin($this->_objTpl, 'access_');
         \Cx\Core\Csrf\Controller\Csrf::add_code();
         switch ($cmd[0]) {
@@ -178,7 +180,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         if ($objGroup->getType() == 'frontend' && $objGroup->getUserCount() > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, array('username' => 'asc'), null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
 
             if ($userCount > $_CONFIG['corePagingLimit']) {
-                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&section=Access&cmd=members&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
+                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&groupId=".$groupId."&search=".htmlspecialchars(implode(' ',$search), ENT_QUOTES, CONTREXX_CHARSET)."&username_filter=".$usernameFilter, "<strong>".$_ARRAYLANG['TXT_ACCESS_MEMBERS']."</strong>"));
             }
 
             $this->_objTpl->setVariable('ACCESS_GROUP_NAME', (($objGroup = $objFWUser->objGroup->getGroup($groupId)) && $objGroup->getId()) ? htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET) : $_ARRAYLANG['TXT_ACCESS_MEMBERS']);
@@ -743,9 +745,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             ($objMail = new \Cx\Core\MailTemplate\Model\Entity\Mail()) !== false
         ) {
 
-            $objMail->From = $objUserMail->getSenderMail();
-            $objMail->FromName = $objUserMail->getSenderName();
-            $objMail->AddReplyTo($objUserMail->getSenderMail());
+            $objMail->SetFrom($objUserMail->getSenderMail(), $objUserMail->getSenderName());
             $objMail->Subject = $objUserMail->getSubject();
 
             if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
