@@ -736,6 +736,8 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (109,'MediaSource
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (110,'TemplateEditor','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (111,'GeoIp','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (112,'DateTime','core');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (113,'DataAccess','core_module');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (114,'DataSource','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (115,'Sync','core_module');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,336,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
@@ -5552,6 +5554,8 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (111,'GeoIp','Cloudrexx AG','TXT_CORE_MODULE_GEOIP_DESCRIPTION','y',0,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (109,'MediaSource','Cloudrexx AG','TXT_CORE_MEDIASOURCE_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (112,'DateTime','Cloudrexx AG','TXT_CORE_DATETIME_DESCRIPTION','y',1,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (113,'DataAccess','Cloudrexx AG','TXT_CORE_MODULE_DATAACCESS_DESCRIPTION','y',1,1,1,1,NULL);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (114,'DataSource','Cloudrexx AG','TXT_CORE_MODULE_DATASOURCE_DESCRIPTION','y',1,0,1,1,NULL);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`, `additional_data`) VALUES (115,'Sync','Cloudrexx AG','TXT_CORE_MODULE_SYNC_DESCRIPTION','y',1,1,1,1,NULL);
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (1,'image_cut_width','500');
 INSERT INTO `contrexx_settings_image` (`id`, `name`, `value`) VALUES (2,'image_cut_height','500');
