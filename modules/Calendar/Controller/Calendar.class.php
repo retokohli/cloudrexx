@@ -550,10 +550,8 @@ cx.ready(function() {
 
                 if (prevStartDate.getTime() != startDate.getTime()) {
                     var timeDiff = Math.abs(endDate.getTime() - prevStartDate.getTime());
-                    if (timeDiff > 0) {
-                        endDate = new Date(startDate.getTime() + timeDiff);
-                        cx.jQuery( ".endDate" ).datetimepicker('setDate', endDate);
-                    }
+                    endDate = new Date(startDate.getTime() + timeDiff);
+                    cx.jQuery( ".endDate" ).datetimepicker('setDate', endDate);
                 }
 
             } else if (startDate.getTime() > endDate.getTime()) {
