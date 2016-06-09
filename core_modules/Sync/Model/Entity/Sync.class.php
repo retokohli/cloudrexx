@@ -51,6 +51,21 @@ class Sync extends \Cx\Model\Base\EntityBase {
     protected $id;
 
     /**
+     * @var string $toUri
+     */
+    protected $toUri;
+
+    /**
+     * @var string $apiKey
+     */
+    protected $apiKey;
+
+    /**
+     * @var boolean $active
+     */
+    protected $active;
+
+    /**
      * @var integer $dataAccess
      */
     protected $dataAccess;
@@ -73,6 +88,60 @@ class Sync extends \Cx\Model\Base\EntityBase {
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set toUri
+     *
+     * @param string $toUri
+     */
+    public function setToUri($toUri) {
+        $this->toUri = $toUri;
+    }
+
+    /**
+     * Get toUri
+     *
+     * @return string
+     */
+    public function getToUri() {
+        return $this->toUri;
+    }
+
+    /**
+     * Set apiKey
+     *
+     * @param string $apiKey
+     */
+    public function setApiKey($apiKey) {
+        $this->apiKey = $apiKey;
+    }
+
+    /**
+     * Get apiKey
+     *
+     * @return string
+     */
+    public function getApiKey() {
+        return $this->apiKey;
+    }
+
+    /**
+     * Set active
+     *
+     * @param boolean $active
+     */
+    public function setActive($active) {
+        $this->active = $active;
+    }
+
+    /**
+     * Get active
+     *
+     * @return boolean
+     */
+    public function getActive() {
+        return $this->active;
     }
 
     /**

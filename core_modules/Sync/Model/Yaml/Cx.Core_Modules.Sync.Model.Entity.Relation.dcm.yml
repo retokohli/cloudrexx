@@ -48,6 +48,7 @@ Cx\Core_Modules\Sync\Model\Entity\Relation:
       joinColumn:
         name: related_sync_id
         referencedColumnName: id
+        nullable: false
         cascade: [remove]
   oneToMany: # inverse side
     children:

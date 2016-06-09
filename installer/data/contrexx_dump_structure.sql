@@ -371,13 +371,16 @@ CREATE TABLE `contrexx_core_module_sync_id_mapping` (
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_sync` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
+  `to_uri` varchar(255) NOT NULL,
+  `api_key` varchar(32) NOT NULL,
+  `active` tinyint(1) NOT NULL,
   `data_access` int(11) NOT NULL,
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_sync_relation` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
   `parent_id` int(11) DEFAULT NULL,
-  `related_sync_id` int(11) DEFAULT NULL,
+  `related_sync_id` int(11) NOT NULL,
   `lft` int(11) NOT NULL,
   `rgt` int(11) NOT NULL,
   `lvl` int(11) NOT NULL,

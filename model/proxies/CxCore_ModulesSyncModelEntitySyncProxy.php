@@ -33,6 +33,42 @@ class CxCore_ModulesSyncModelEntitySyncProxy extends \Cx\Core_Modules\Sync\Model
         return parent::getId();
     }
 
+    public function setToUri($toUri)
+    {
+        $this->_load();
+        return parent::setToUri($toUri);
+    }
+
+    public function getToUri()
+    {
+        $this->_load();
+        return parent::getToUri();
+    }
+
+    public function setApiKey($apiKey)
+    {
+        $this->_load();
+        return parent::setApiKey($apiKey);
+    }
+
+    public function getApiKey()
+    {
+        $this->_load();
+        return parent::getApiKey();
+    }
+
+    public function setActive($active)
+    {
+        $this->_load();
+        return parent::setActive($active);
+    }
+
+    public function getActive()
+    {
+        $this->_load();
+        return parent::getActive();
+    }
+
     public function setDataAccess($dataAccess)
     {
         $this->_load();
@@ -96,7 +132,7 @@ class CxCore_ModulesSyncModelEntitySyncProxy extends \Cx\Core_Modules\Sync\Model
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'dataAccess', 'relations');
+        return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'dataAccess', 'relations');
     }
 
     public function __clone()

@@ -8,6 +8,16 @@ Cx\Core_Modules\Sync\Model\Entity\Sync:
       generator:
         strategy: AUTO
   fields:
+    toUri:
+      type: string
+      length: 255
+      column: to_uri
+    apiKey:
+      type: string
+      length: 32
+      column: api_key
+    active:
+      type: boolean
     dataAccess:
       type: integer
       column: data_access
