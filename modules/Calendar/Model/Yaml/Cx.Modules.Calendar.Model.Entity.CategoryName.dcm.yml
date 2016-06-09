@@ -1,0 +1,25 @@
+Cx\Modules\Calendar\Model\Entity\CategoryName:
+  type: entity
+  table: module_calendar_category_name
+  indexes:
+    contrexx_module_calendar_cat_id_ibfk:
+      columns: [ cat_id ]
+  id:
+    catId:
+      type: integer
+      column: cat_id
+  fields:
+    name:
+      type: string
+      length: 225
+      nullable: true
+    langId:
+      type: integer
+      column: lang_id
+  manyToOne:
+    category:
+      targetEntity: Cx\Modules\Calendar\Model\Entity\Category
+      inversedBy: categoryNames
+      joinColumn:
+        name: cat_id
+        referencedColumnName: id
