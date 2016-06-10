@@ -103,19 +103,18 @@ var modifyEvent = {
           $J('.series-event-row').hide();
       }
     },
-    _handleAllDayEvent : function(elm){        
-      cx.jQuery(".startDate").data('dateTime', cx.jQuery(".startDate").datetimepicker("getDate").getTime());
-      cx.jQuery(".endDate").data('dateTime', cx.jQuery(".endDate").datetimepicker("getDate").getTime());
-      if (elm.is(":checked")) {
-         // new initialization instead of show up once
-         cx.jQuery(".startDate").datepicker('setDate', new Date(cx.jQuery(".startDate").data('dateTime')));
-         cx.jQuery(".endDate").datepicker('setDate', new Date(cx.jQuery(".endDate").data('dateTime')));
-         cx.jQuery( ".startDate, .endDate" ).datetimepicker('disableTimepicker');
-      } else {
-         cx.jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
-      }
-      cx.jQuery(".startDate").datepicker('setDate', new Date(cx.jQuery(".startDate").data('dateTime')));
-      cx.jQuery(".endDate").datepicker('setDate', new Date(cx.jQuery(".endDate").data('dateTime')));
+    _handleAllDayEvent: function(elm) {
+        if (elm.is(":checked")) {
+            // Timepicker should be shown atleast once before disable
+            // Instead of showing, initialization of datepicker will solve the issue
+            cx.jQuery(".startDate").datetimepicker('setDate', cx.jQuery( ".startDate" ).data('prevDate'));
+            cx.jQuery(".endDate").datetimepicker('setDate', cx.jQuery( ".endDate" ).data('prevDate'));
+            cx.jQuery(".startDate, .endDate").datetimepicker('disableTimepicker');
+        } else {
+            cx.jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
+        }
+        cx.jQuery(".startDate").datetimepicker('setDate', cx.jQuery( ".startDate" ).data('prevDate'));
+        cx.jQuery(".endDate").datetimepicker('setDate', cx.jQuery( ".endDate" ).data('prevDate'));
     },
     _isNumber : function(evt) {
       evt = (evt) ? evt : window.event;
