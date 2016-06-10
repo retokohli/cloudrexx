@@ -261,6 +261,21 @@ class DoctrineRepository extends DataSource {
             // set the value as property of the current object, so it is ready to be stored in the database
             $entity->$fieldSetMethodName($data[$name]);
         }
+        
+        $associationMappings = $entityClassMetadata->getAssociationMappings();
+        $classMethods = get_class_methods($entity);
+        foreach ($associationMappings as $field => $associationMapping) {
+            if (   $entityClassMetadata->isSingleValuedAssociation($field)
+                && in_array('set'.ucfirst($field), $classMethods)
+            ) {
+                $targetRepo = $em->getRepository($associationMapping['targetEntity']);
+                $targetEntity = $targetRepo->findOneBy(array(
+                    $associationMapping['joinColumns'][0]['referencedColumnName'] => $data[$field],
+                ));
+                $setMethod = 'set'.ucfirst($field);
+                $entity->$setMethod($targetEntity);
+            }
+        }
     }
 }
 
