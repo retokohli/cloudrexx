@@ -187,7 +187,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $apiVersion = array_shift($arguments); // shift api version
         
         if (!in_array($apiVersion, $this->supportedApiVersions)) {
-            throw new \BadMethodCall('Unsupported API version: "' . $apiVersion . '"');
+            throw new \BadMethodCallException('Unsupported API version: "' . $apiVersion . '"');
         }
         
         // if an existing element is altered (delete, put, patch)
@@ -195,7 +195,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if (in_array($method, array('put', 'patch', 'delete'))) {
             if (!isset($arguments[2])) {
                 // API would produce a 404 here
-                throw new \BadMethodCall('No element given');
+                throw new \BadMethodCallException('No element given');
             }
             $elementId = $arguments[2];
             
@@ -246,7 +246,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param object $eventArgs Doctrine event args
      */
     public function onEvent($eventName, array $eventArgs) {
-        switch ($eventName) {
+        $em = $this->cx->getDb()->getEntityManager();
+        $dlea = current($eventArgs);
+        $entity = $dlea->getEntity();
+        $entityClassName = get_class($entity);
+        $entityMetaData = $em->getClassMetadata($entityClassName);
+        $entityIndexData = array();
+        foreach ($entityMetaData->getIdentifierColumnNames() as $field) {
+            $entityIndexData[$field] = $entityMetaData->getFieldValue($entity, $field);
+        }
+        
+        switch (substr($eventName, 6)) {
             // entity was dropped
             case \Doctrine\ORM\Events::postRemove:
                 // remote side code
@@ -286,7 +296,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     protected function updateMappingTable($eventType, $entityClassName, $entityIndexData, $newEntityIndexData = array()) {
         // search for entry in mapping table
         $em = $this->cx->getDb()->getEntityManager();
-        $mappingRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Mapping');
+        $mappingRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\IdMapping');
         $mappings = $mappingRepo->findBy(array(
             'entityType' => $entityClassName,
             'localId' => $entityIndexData,
@@ -315,7 +325,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function spoolSync($eventType, $entityClassName, $entityIndexData, $entity = null) {
         // suppress push on incoming changes (allows two-way sync)
-        if (!$this->doSync) {
+        if (!$this->doPush) {
             return;
         }
         

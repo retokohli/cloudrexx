@@ -114,7 +114,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
         //<domain>(/<offset>)/api/sync/<apiVersion>/<outputModule>/<dataSource>/<parameters>[(?apikey=<apikey>(&<options>))|?<options>]
         //<domain>(/<offset>)/api/sync/<apiVersion>/<outputModule>/[[DATA_SOURCE]]/[[INDEX_DATA]][(?apikey=[[API_KEY]](&<options>))|?<options>]
         $uri = $this->toUri;
-        $uri = str_replace('[[DATA_SOURCE]]', $this->getDataAccess()->getDataSource()->getIdentifier(), $uri);
+        $uri = str_replace('[[DATA_SOURCE]]', $this->getDataAccess()->getName(), $uri);
         $uri = str_replace('[[API_KEY]]', $this->getApiKey(), $uri);
         $uri = str_replace('[[INDEX_DATA]]', $indexData, $uri);
         return $uri;
@@ -173,6 +173,9 @@ class Sync extends \Cx\Model\Base\EntityBase {
      */
     public function getDataAccess()
     {
+        $em = $this->cx->getDb()->getEntityManager();
+        $dataAccessRepo = $em->getRepository('Cx\Core_Modules\DataAccess\Model\Entity\DataAccess');
+        return $dataAccessRepo->find($this->dataAccess);
         return $this->dataAccess;
     }
 
