@@ -91,8 +91,14 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
      */
     protected $writePermission;
 
+    /**
+     * @var \Cx\Core_Modules\Sync\Model\Entity\Sync
+     */
+    protected $syncs;
+
     public function __construct()
     {
+        $this->syncs = new \Doctrine\Common\Collections\ArrayCollection();
         $this->dataAccessApiKeys = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
@@ -264,5 +270,25 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     public function getWritePermission()
     {
         return $this->writePermission;
+    }
+
+    /**
+     * Add Sync
+     *
+     * @param \Cx\Core_Modules\Sync\Model\Entity\Sync $sync
+     */
+    public function addSync(\Cx\Core_Modules\Sync\Model\Entity\Sync $sync)
+    {
+        $this->syncs[] = $sync;
+    }
+
+    /**
+     * Get Syncs
+     *
+     * @return Doctrine\Common\Collections\Collection $syncs
+     */
+    public function getSyncs()
+    {
+        return $this->syncs;
     }
 }

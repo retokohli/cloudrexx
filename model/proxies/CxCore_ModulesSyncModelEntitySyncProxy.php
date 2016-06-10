@@ -69,7 +69,7 @@ class CxCore_ModulesSyncModelEntitySyncProxy extends \Cx\Core_Modules\Sync\Model
         return parent::getActive();
     }
 
-    public function setDataAccess($dataAccess)
+    public function setDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
     {
         $this->_load();
         return parent::setDataAccess($dataAccess);
@@ -132,7 +132,7 @@ class CxCore_ModulesSyncModelEntitySyncProxy extends \Cx\Core_Modules\Sync\Model
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'dataAccess', 'relations');
+        return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'relations', 'dataAccess');
     }
 
     public function __clone()

@@ -66,7 +66,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
     protected $active;
 
     /**
-     * @var integer $dataAccess
+     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
      */
     protected $dataAccess;
 
@@ -147,9 +147,9 @@ class Sync extends \Cx\Model\Base\EntityBase {
     /**
      * Set dataAccess
      *
-     * @param integer $dataAccess
+     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
      */
-    public function setDataAccess($dataAccess)
+    public function setDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
     {
         $this->dataAccess = $dataAccess;
     }
@@ -157,7 +157,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
     /**
      * Get dataAccess
      *
-     * @return integer $dataAccess
+     * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
      */
     public function getDataAccess()
     {
