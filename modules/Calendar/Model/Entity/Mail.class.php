@@ -1,56 +1,98 @@
 <?php
 
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * Mail
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  module_calendar
+*/
 namespace Cx\Modules\Calendar\Model\Entity;
 
 /**
- * Cx\Modules\Calendar\Model\Entity\Mail
- */
-class Mail
-{
+ * Mail
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  module_calendar
+*/
+class Mail extends \Cx\Model\Base\EntityBase {
     /**
      * @var integer $id
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $title
      */
-    private $title;
+    protected $title;
 
     /**
      * @var text $contentText
      */
-    private $contentText;
+    protected $contentText;
 
     /**
      * @var text $contentHtml
      */
-    private $contentHtml;
+    protected $contentHtml;
 
     /**
      * @var text $recipients
      */
-    private $recipients;
+    protected $recipients;
 
     /**
      * @var integer $langId
      */
-    private $langId;
+    protected $langId;
 
     /**
      * @var integer $actionId
      */
-    private $actionId;
+    protected $actionId;
 
     /**
      * @var integer $isDefault
      */
-    private $isDefault;
+    protected $isDefault;
 
     /**
      * @var integer $status
      */
-    private $status;
+    protected $status;
+
+    /**
+     * @var integer $eventLangId
+     */
+    protected $eventLangId;
 
 
     /**
@@ -221,5 +263,25 @@ class Mail
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * Set eventLangId
+     *
+     * @param integer $eventLangId
+     */
+    public function setEventLangId($eventLangId)
+    {
+        $this->eventLangId = $eventLangId;
+    }
+
+    /**
+     * Get eventLangId
+     *
+     * @return integer $eventLangId
+     */
+    public function getEventLangId()
+    {
+        return $this->eventLangId;
     }
 }
