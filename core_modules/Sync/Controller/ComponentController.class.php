@@ -203,6 +203,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 throw new \BadMethodCallException('No element given');
             }
             $elementId = $arguments[2];
+            $this->currentInsertId = $elementId;
             
             // get mapping table entry
             $em = $this->cx->getDb()->getEntityManager();
@@ -212,7 +213,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 throw new \Exception('No such DataSource: ' . $name);
             }
             $entityType = $dataAccess->getDataSource()->getIdentifier();
-            $foreignHost = $_SERVER['HTTP_REFERER'];
+            $foreignHost = $_SERVER['HTTP_REFERRER'];
             
             $mappingRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\IdMapping');
             $mapping = $mappingRepo->findOneBy(array(
@@ -281,7 +282,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             // entity was added
             case \Doctrine\ORM\Events::postPersist:
                 // remote side code
-                    // add ID to mapping table
+                if (!$this->doPush && get_class($entity) != 'Cx\Core_Modules\Sync\Model\Entity\IdMapping') {
+                    $mapping = new \Cx\Core_Modules\Sync\Model\Entity\IdMapping();
+                    $mapping->setForeignHost($_SERVER['HTTP_REFERRER']);
+                    $mapping->setEntityType($entityClassName);
+                    $mapping->setForeignId($this->currentInsertId);
+                    $mapping->setLocalId(current($entityIndexData));
+                    $em->persist($mapping);
+                    $em->flush();
+                }
                 
                 // local side code
                 $this->spoolSync('post', $entityClassName, $entityIndexData, $entity);
@@ -289,7 +298,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             // entity was updated
             case \Doctrine\ORM\Events::postUpdate:
                 // remote side code
-                $this->updateMappingTable('put', $entityClassName, $entityIndexData);
+                // @todo: set oldEntityIndexData
+                $this->updateMappingTable('put', $entityClassName, $oldEntityIndexData, $entityIndexData);
                 
                 // local side code
                 $this->spoolSync('put', $entityClassName, $entityIndexData, $entity);
