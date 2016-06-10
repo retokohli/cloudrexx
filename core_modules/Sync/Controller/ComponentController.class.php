@@ -185,6 +185,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param array $arguments Arguments for API, first entry is API version
      * @param array  $dataArguments (optional) List of data arguments for the command
      * @todo pretending delete was successful does not work for other output methods than json
+     * @todo update ID fields does not work as expected
      */
     public function sync($command, $arguments, $dataArguments) {
         $method = strtolower($_SERVER['REQUEST_METHOD']);
@@ -245,6 +246,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             } else {
                 $arguments[2] = $mapping->getLocalId();
             }
+            
+            // on put/patch: if the ID of the element changes we need to check
+            // if the ID is a relation. If so: we need to update here as well
+            // if not, we should ignore the change
         }
         
         $this->getComponent('DataAccess')->executeCommand(
@@ -258,6 +263,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * Pushes changes to remote (local side) and updates mapping table (remote side)
      * @param string $eventName Name of the triggered event
      * @param object $eventArgs Doctrine event args
+     * @todo update ID fields does not work as expected
      */
     public function onEvent($eventName, array $eventArgs) {
         $em = $this->cx->getDb()->getEntityManager();
@@ -270,11 +276,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $entityIndexData[$field] = $entityMetaData->getFieldValue($entity, $field);
         }
         
+        $mappingRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\IdMapping');
         switch (substr($eventName, 6)) {
             // entity was dropped
             case \Doctrine\ORM\Events::postRemove:
                 // remote side code
-                $this->updateMappingTable('delete', $entityClassName, $entityIndexData);
+                $mappings = $mappingRepo->findBy(array(
+                    'entityType' => $entityClassName,
+                    'localId' => $entityIndexData,
+                ));
+                foreach ($mappings as $mapping) {
+                    $em->remove($mapping);
+                }
+                $em->flush();
                 
                 // local side code
                 $this->spoolSync('delete', $entityClassName, $entityIndexData);
@@ -298,8 +312,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             // entity was updated
             case \Doctrine\ORM\Events::postUpdate:
                 // remote side code
-                // @todo: set oldEntityIndexData
-                $this->updateMappingTable('put', $entityClassName, $oldEntityIndexData, $entityIndexData);
+                // @todo: set old/new ID
+                /*$oldId = ??;
+                $newId = ??;
+                $mappings = $mappingRepo->findBy(array(
+                    'entityType' => $entityClassName,
+                    'localId' => $oldId,
+                ));
+                foreach ($mappings as $mapping) {
+                    $em->setLocalId($newId);
+                }
+                $em->flush();*/
                 
                 // local side code
                 $this->spoolSync('put', $entityClassName, $entityIndexData, $entity);
@@ -310,40 +333,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     
     /**
-     * Updates mapping table on remote side
-     * @param string $eventType One of "put", "delete"
-     * @param string $entityClassName Classname of the entity to update
-     * @param array $entityIndexData Field=>value-type array with primary key data
-     * @param array $newEntityIndexData (optional) Field=>value-type array with primary key data for "put" events
-     */
-    protected function updateMappingTable($eventType, $entityClassName, $entityIndexData, $newEntityIndexData = array()) {
-        // search for entry in mapping table
-        $em = $this->cx->getDb()->getEntityManager();
-        $mappingRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\IdMapping');
-        $mappings = $mappingRepo->findBy(array(
-            'entityType' => $entityClassName,
-            'localId' => $entityIndexData,
-        ));
-        
-        foreach ($mappings as $mapping) {
-            if ($eventType == 'delete') {
-                // drop entry
-                $em->remove($mapping);
-            } else if ($eventType == 'put') {
-                // update entry
-                $mapping->setLocalId($newEntityIndexData);
-                $em->persist($mapping);
-            }
-        }
-        $em->flush();
-    }
-    
-    /**
      * Spools changes to be pushed to remote on local side
      * @param string $eventType One of "post", "put", "delete"
      * @param string $entityClassName Classname of the entity to update
      * @param array $entityIndexData Field=>value-type array with primary key data
      * @param \Cx\Model\Base\EntityBase $entity (optional) Entity for "post" and "put"
+     * @todo: Push relations first
      * @todo: This does not spool yet, instead it writes changes instantly
      */
     public function spoolSync($eventType, $entityClassName, $entityIndexData, $entity = null) {
