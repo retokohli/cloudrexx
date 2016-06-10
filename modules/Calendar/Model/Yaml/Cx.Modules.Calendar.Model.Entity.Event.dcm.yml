@@ -1,0 +1,253 @@
+Cx\Modules\Calendar\Model\Entity\Event:
+  type: entity
+  table: module_calendar_event
+  indexes:
+    contrexx_module_calendar_cat_id_ibfk:
+      columns: [ catid ]
+    contrexx_module_calendar_registration_form_ibkf:
+      columns: [ registration_form ]
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    type:
+      type: integer
+    startDate:
+      type: datetime
+      nullable: true
+      column: startdate
+    endDate:
+      type: datetime
+      nullable: true
+      column: enddate
+    useCustomDateDisplay:
+      type: boolean
+      column: use_custom_date_display
+    showStartDateList:
+      type: integer
+    showEndDateList:
+      type: integer
+    showStartTimeList:
+      type: integer
+    showEndTimeList:
+      type: integer
+    showTimeTypeList:
+      type: integer
+    showStartDateDetail:
+      type: integer
+    showEndDateDetail:
+      type: integer
+    showStartTimeDetail:
+      type: integer
+    showEndTimeDetail:
+      type: integer
+    showTimeTypeDetail:
+      type: integer
+    google:
+      type: integer
+    access:
+      type: integer
+    priority:
+      type: integer
+    price:
+      type: integer
+    link:
+      type: string
+      length: 255
+    pic:
+      type: string
+      length: 255
+    attach:
+      type: string
+      length: 255
+    placeMediadirId:
+      type: integer
+      column: place_mediadir_id
+    showIn:
+      type: string
+      length: 255
+      column: show_in
+    invitedGroups:
+      type: string
+      length: 45
+      nullable: true
+      column: invited_groups
+    invitedMails:
+      type: text
+      nullable: true
+      column: invited_mails
+    invitationSent:
+      type: integer
+      column: invitation_sent
+    invitationEmailTemplate:
+      type: string
+      length: 255
+      column: invitation_email_template
+    registration:
+      type: integer
+    registrationNum:
+      type: string
+      length: 45
+      nullable: true
+      column: registration_num
+    registrationNotification:
+      type: string
+      length: 1024
+      nullable: true
+      column: registration_notification
+    emailTemplate:
+      type: string
+      length: 255
+      column: email_template
+    ticketSales:
+      type: boolean
+      column: ticket_sales
+    numSeating:
+      type: text
+      column: num_seating
+    seriesStatus:
+      type: smallint
+      column: series_status
+    seriesType:
+      type: integer
+      column: series_type
+    seriesPatternCount:
+      type: integer
+      column: series_pattern_count
+    seriesPatternWeekday:
+      type: string
+      length: 7
+      column: series_pattern_weekday
+    seriesPatternDay:
+      type: integer
+      column: series_pattern_day
+    seriesPatternWeek:
+      type: integer
+      column: series_pattern_week
+    seriesPatternMonth:
+      type: integer
+      column: series_pattern_month
+    seriesPatternType:
+      type: integer
+      column: series_pattern_type
+    seriesPatternDouranceType:
+      type: integer
+      column: series_pattern_dourance_type
+    seriesPatternEnd:
+      type: integer
+      column: series_pattern_end
+    seriesPatternEndDate:
+      type: datetime
+      column: series_pattern_end_date
+    seriesPatternBegin:
+      type: integer
+      column: series_pattern_begin
+    seriesPatternExceptions:
+      type: text
+      column: series_pattern_exceptions
+    status:
+      type: boolean
+    confirmed:
+      type: boolean
+    showDetailView:
+      type: boolean
+      column: show_detail_view
+    author:
+      type: string
+      length: 255
+    allDay:
+      type: boolean
+      column: all_day
+    locationType:
+      type: boolean
+      column: location_type
+    place:
+      type: string
+      length: 255
+    placeId:
+      type: integer
+      column: place_id
+    placeStreet:
+      type: string
+      length: 255
+      nullable: true
+      column: place_street
+    placeZip:
+      type: string
+      length: 10
+      nullable: true
+      column: place_zip
+    placeCity:
+      type: string
+      length: 255
+      nullable: true
+      column: place_city
+    placeCountry:
+      type: string
+      length: 255
+      nullable: true
+      column: place_country
+    placeLink:
+      type: string
+      length: 255
+      column: place_link
+    placeMap:
+      type: string
+      length: 255
+      column: place_map
+    hostType:
+      type: boolean
+      column: host_type
+    orgName:
+      type: string
+      length: 255
+      column: org_name
+    orgStreet:
+      type: string
+      length: 255
+      column: org_street
+    orgZip:
+      type: string
+      length: 10
+      column: org_zip
+    orgCity:
+      type: string
+      length: 255
+      column: org_city
+    orgCountry:
+      type: string
+      length: 255
+      column: org_country
+    orgLink:
+      type: string
+      length: 255
+      column: org_link
+    orgEmail:
+      type: string
+      length: 255
+      column: org_email
+    hostMediadirId:
+      type: integer
+      column: host_mediadir_id
+  oneToMany:
+    eventFields:
+      targetEntity: Cx\Modules\Calendar\Model\Entity\EventField
+      mappedBy: event
+    registrations:
+      targetEntity: Cx\Modules\Calendar\Model\Entity\Registration
+      mappedBy: event
+  manyToOne:
+    category:
+      targetEntity: Cx\Modules\Calendar\Model\Entity\Category
+      inversedBy: events
+      joinColumn:
+        name: catid
+        referencedColumnName: id
+    registrationForm:
+      targetEntity: Cx\Modules\Calendar\Model\Entity\RegistrationForm
+      inversedBy: events
+      joinColumn:
+        name: registration_form
+        referencedColumnName: id
