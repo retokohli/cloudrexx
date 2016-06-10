@@ -18,10 +18,14 @@ Cx\Core_Modules\Sync\Model\Entity\Sync:
       column: api_key
     active:
       type: boolean
-    dataAccess:
-      type: integer
-      column: data_access
   oneToMany: # inverse side
     relations:
       targetEntity: Cx\Core_Modules\Sync\Model\Entity\Relation
       mappedBy: relatedSync
+  manyToOne: # owning side
+    dataAccess:
+      targetEntity: Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
+      inversedBy: syncs
+      joinColumn:
+        name: data_access_id
+        referencedColumnName: id

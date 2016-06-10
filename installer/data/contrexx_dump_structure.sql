@@ -371,11 +371,13 @@ CREATE TABLE `contrexx_core_module_sync_id_mapping` (
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_sync` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
+  `data_access_id` int(11) DEFAULT NULL,
   `to_uri` varchar(255) NOT NULL,
   `api_key` varchar(32) NOT NULL,
   `active` tinyint(1) NOT NULL,
-  `data_access` int(11) NOT NULL,
-  PRIMARY KEY(`id`)
+  KEY `data_access_id` (`data_access_id`),
+  PRIMARY KEY(`id`),
+  CONSTRAINT `contrexx_core_module_sync_ibfk_data_access_id` FOREIGN KEY (`data_access_id`) REFERENCES `contrexx_core_module_data_access` (`id`)
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_sync_relation` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
