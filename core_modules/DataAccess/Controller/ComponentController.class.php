@@ -129,7 +129,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @return void
      */
     public function apiV1($command, $arguments, $dataArguments) {
-        $method = strtolower($_SERVER['REQUEST_METHOD']);
+        $method = $this->cx->getRequest()->getHttpRequestMethod();
         
         // handle CLI
         if (php_sapi_name() == 'cli') {
