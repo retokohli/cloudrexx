@@ -104,8 +104,20 @@ class Sync extends \Cx\Model\Base\EntityBase {
      *
      * @return string
      */
-    public function getToUri() {
-        return $this->toUri;
+    public function getToUri($entityIndexData = array()) {
+        if (!count($entityIndexData)) {
+            return $this->toUri();
+        }
+        
+        $indexData = implode('/', $entityIndexData);
+        
+        //<domain>(/<offset>)/api/sync/<apiVersion>/<outputModule>/<dataSource>/<parameters>[(?apikey=<apikey>(&<options>))|?<options>]
+        //<domain>(/<offset>)/api/sync/<apiVersion>/<outputModule>/[[DATA_SOURCE]]/[[INDEX_DATA]][(?apikey=[[API_KEY]](&<options>))|?<options>]
+        $uri = $this->toUri;
+        $uri = str_replace('[[DATA_SOURCE]]', $this->getDataAccess()->getDataSource()->getIdentifier(), $uri);
+        $uri = str_replace('[[API_KEY]]', $this->getApiKey(), $uri);
+        $uri = str_replace('[[INDEX_DATA]]', $indexData, $uri);
+        return $uri;
     }
 
     /**
@@ -182,5 +194,30 @@ class Sync extends \Cx\Model\Base\EntityBase {
     public function getRelations()
     {
         return $this->relations;
+    }
+    
+    /**
+     * Pushes entity changes to remote
+     * @param string $eventType One of "post", "put", "delete"
+     * @param array $entityIndexData Field=>value-type array with primary key data
+     * @param \Cx\Model\Base\EntityBase $entity (optional) Entity for "post" and "put"
+     * @throws   HTTP_Request2_Exception
+     */
+    public function push($eventType, $entityIndexData, $entity) {
+        if (!$this->getActive()) {
+            return;
+        }
+        
+        $url = $this->getToUri($entityIndexData);
+        $method = strtoupper($eventType);
+        $content = $entity;
+        
+        $config = array(
+        );
+        
+        $request = new \HTTP_Request2($url, $method, $config);
+        $request->setBody($content);
+        
+        $request->send();
     }
 }
