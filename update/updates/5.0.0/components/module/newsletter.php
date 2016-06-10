@@ -524,7 +524,373 @@ function _newsletterUpdate()
         return false;
     }
 
+    if (   $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')
+        && \Cx\Lib\UpdateUtil::table_exist(DBPREFIX . 'module_newsletter_confirm_mail')
+    ) {
+        migrateNewsletterEmailTemplates();
+    }
+
     return true;
+}
+
+/**
+ * Migrate the existing newsletter mail templates to Emailtemplate component (\MailTemplate)
+ */
+function migrateNewsletterEmailTemplates()
+{
+
+    $mailTemplateArray = array(
+        1 => array(
+            'name' => array(
+                1 => 'Anmeldung zum Newsletter',
+                2 => 'Newsletter Activation',
+            ),
+            'subject' => array(
+                1 => '[NEWSLETTER_DOMAIN_URL] - Anmeldung zum Newsletter',
+                2 => '[NEWSLETTER_DOMAIN_URL] - Newsletter subscription',
+            ),
+            'content' => array(
+                1 => '[NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME]
+
+Wir freuen uns,Sie bei unserem Newsletter begrüssen zu dürfen und wünschen Ihnen viel Freude damit.
+Sie erhalten ab sofort wöchentlich die neuesten Informationen in elektronischer Form zu gestellt.
+
+Um die Bestellung des Newsletters zu bestätigen,bitten wir Sie,auf den folgenden Link zu klicken bzw. ihn in die Adresszeile Ihres Browsers zu kopieren:
+
+[NEWSLETTER_CONFIRM_CODE]
+
+Um zu verhindern,dass unser Newsletter in Ihrem Spam-Ordner landet,fügen Sie bitte die Adresse dieser E-Mail Ihrem Adressbuch hinzu.
+
+Sofern Sie diese E-Mail ungewünscht erhalten haben,bitten wir um Entschuldigung. Sie werden keine weitere E-Mail mehr von uns erhalten.
+
+--
+Dies ist eine automatisch generierte Nachricht.
+[NEWSLETTER_CURRENT_DATE]',
+                2 => '[NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME]
+
+We are glad to welcome you to our newsletter and wish you much enjoyment with it.
+From now on you will receive the most actual news weekly.
+
+In order to confirm the newsletter subscription please click on the following link or copy it to the address bar of your webbrowser:
+
+[NEWSLETTER_CONFIRM_CODE]
+
+In order to prevent our newsletter ending up in your span folder,please add this email\'s sender address to your contacts.
+
+Should you have received this mail without wanting it we would like to apologize. You will not receive any further mails from us.
+
+–
+This is an automatically generated message.
+[NEWSLETTER_CURRENT_DATE]',
+            ),
+            'key' => 'activation_email',
+            'text_id' => 24,
+        ),
+        2 => array(
+            'name' => array(
+                1 => 'Bestätigung der Anmeldung zum Newsletter',
+                2 => 'Newsletter Activation',
+            ),
+            'subject' => array(
+                1 => '[NEWSLETTER_DOMAIN_URL] - Bestätigung zur Newsletteranmeldung',
+                2 => '[NEWSLETTER_DOMAIN_URL] - Newsletter subscription confirmation',
+            ),
+            'content' => array(
+                1 => '[NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME]
+
+Ihr Newsletter Abonnement wurde erfolgreich registriert.
+Sie werden nun in Zukunft unsere Newsletter erhalten.
+
+--
+Dies ist eine automatisch generierte Nachricht.
+[NEWSLETTER_CURRENT_DATE]',
+                2 => '[NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME]
+
+Your subscription to this newsletter was successfully registered.
+You will receive our newsletter messages.
+
+
+
+–
+This is an automatically generated message.
+[NEWSLETTER_CURRENT_DATE]',
+            ),
+            'key' => 'confirm_email',
+            'text_id' => 25,
+        ),
+        3 => array(
+            'name' => array(
+                1 => 'Benachrichtigung über eine Änderung in Ihrer Newsletter-Anmeldung',
+                2 => 'Newsletter Notification Email',
+            ),
+            'subject' => array(
+                1 => '[NEWSLETTER_DOMAIN_URL] - Newsletter Empfänger [NEWSLETTER_NOTIFICATION_ACTION]',
+                2 => '[NEWSLETTER_DOMAIN_URL] - Newsletter receiver [NEWSLETTER_NOTIFICATION_ACTION]',
+            ),
+            'content' => array(
+                1 => 'Folgende Mutation wurde im Newsletter System getätigt:
+
+Getätigte Aktion: [NEWSLETTER_NOTIFICATION_ACTION]
+Geschlecht:       [NEWSLETTER_USER_SEX]
+Anrede:           [NEWSLETTER_USER_TITLE]
+Vorname:          [NEWSLETTER_USER_FIRSTNAME]
+Nachname:         [NEWSLETTER_USER_LASTNAME]
+E-Mail:           [NEWSLETTER_USER_EMAIL]
+
+--
+Dies ist eine automatisch generierte Nachricht.
+[NEWSLETTER_CURRENT_DATE]',
+                2 => 'The following changes were made to the newsletter system:
+
+Action:     [NEWSLETTER_NOTIFICATION_ACTION]
+Sex:        [NEWSLETTER_USER_SEX]
+Salutation: [NEWSLETTER_USER_TITLE]
+Firstname:  [NEWSLETTER_USER_FIRSTNAME]
+Lastname:   [NEWSLETTER_USER_LASTNAME]
+Email:      [NEWSLETTER_USER_EMAIL]
+
+–
+This is an automatically generated message.
+[NEWSLETTER_CURRENT_DATE]',
+            ),
+            'key' => 'notification_email',
+            'text_id' => 26,
+        ),
+        4 => array(
+            'name' => array(
+                1 => 'Benachrichtung über nicht zustellbaren Newsletter',
+                2 => 'Undeliverable mail notification',
+            ),
+            'subject' => array(
+                1 => '[NEWSLETTER_SUBJECT]',
+                2 => '[NEWSLETTER_SUBJECT]',
+            ),
+            'content' => array(
+                1 => 'Der Newsletter konnte an folgende E-Mail-Adresse nicht versendet werden:
+[NEWSLETTER_USER_EMAIL]
+
+Um die E-Mail Adresse zu bearbeiten,klicken Sie bitte auf den folgenden Link:
+[NEWSLETTER_USER_EDIT_LINK]',
+                2 => 'Sending the newsletter to the following email address has failed:
+[NEWSLETTER_USER_EMAIL]
+
+In order to edit the email address please click the following link:
+[NEWSLETTER_USER_EDIT_LINK]',
+            ),
+            'key' => 'notify_undelivered_email',
+            'text_id' => 27,
+        ),
+    );
+
+    $languages     = \FWLanguage::getLanguageArray();
+    $defaultLangId = \FWLanguage::getDefaultLangId();
+
+    $query = '
+        SELECT
+            `id`,
+            `title`,
+            `setvalue`,
+            `recipients`
+        FROM
+            `' . DBPREFIX . 'module_newsletter_confirm_mail`
+        WHERE
+            id IN (1,2,3)
+        UNION
+        SELECT
+            4,
+            "",
+            `setvalue`,
+            ""
+        FROM
+            `' . DBPREFIX . 'module_newsletter_settings WHERE `setname` = "reject_info_mail_text"`';
+    $mailTemplates = \Cx\Lib\UpdateUtil::sql($query);
+    if (!$mailTemplates) {
+        return;
+    }
+    while (!$mailTemplates->EOF) {
+        $mailTemplateReplacement =   isset($mailTemplateArray[$mailTemplates->fields['id']])
+                                   ? $mailTemplateArray[$mailTemplates->fields['id']]
+                                   : array();
+        if (empty($mailTemplateReplacement)) {
+            $mailTemplates->MoveNext();
+            continue;
+        }
+
+        $key    = $mailTemplateReplacement['key'];
+        $textId = $mailTemplateReplacement['text_id'];
+
+        $toAddr = $mailTemplates->fields['id'] == 3 ? '[NEWSLETTER_NOTIFICATION_RECIPIENT]' : '[NEWSLETTER_USER_EMAIL]';
+        $mailTo =   !empty($mailTemplates->fields['recipients'])
+                  ? $mailTemplates->fields['recipients'] . ',' . $toAddr
+                  : $toAddr;
+
+        foreach ($languages as $lang) {
+            $langId = $lang['id'];
+            $name   =  isset($mailTemplateReplacement['name'][$langId])
+                     ? $mailTemplateReplacement['name'][$langId]
+                     : $mailTemplateReplacement['name'][1];
+            $title = $content = '';
+            if ($langId == $defaultLangId) {
+                $title   = $mailTemplates->fields['title'];
+                $content = $mailTemplates->fields['setvalue'];
+            }
+            if (empty($title)) {
+                $title  =  isset($mailTemplateReplacement['subject'][$langId])
+                         ? $mailTemplateReplacement['subject'][$langId]
+                         : $mailTemplateReplacement['subject'][1];
+            }
+            if (empty($content)) {
+                $content =  isset($mailTemplateReplacement['content'][$langId])
+                          ? $mailTemplateReplacement['content'][$langId]
+                          : $mailTemplateReplacement['content'][1];
+            }
+            insertMailTemplate($key, $textId, $langId, $name, $title, $content, $mailTo);
+        }
+
+        $mailTemplates->MoveNext();
+    }
+
+    // insert new template keys
+    $newMailTemplates = array(
+        array(
+            'name' => array(
+                1 => 'Informiert den Abonnenten über die erneute Anmeldung an den Newsletter',
+                2 => 'Notify user about subscribing to the same newsletter list again',
+            ),
+            'subject' => array(
+                1 => '[NEWSLETTER_DOMAIN_URL] - Anmeldung Newsletter',
+                2 => '[NEWSLETTER_DOMAIN_URL] - Newsletter subscription',
+            ),
+            'content' => array(
+                1 => 'Guten Tag [NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME],
+
+Sie sind bereits Abonnent des gewählten Newsletters.',
+                2 => 'Hi [NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME],
+
+You have already subscribed to this newsletter list.',
+            ),
+            'key' => 'notify_subscription_list_same',
+            'text_id' => 28,
+        ),
+        array(
+            'name' => array(
+                1 => 'Informiert den Abonnenten über die Anmeldung an einen weiteren Newsletter',
+                2 => 'Notify user about the additional newsletter list subscription',
+            ),
+            'subject' => array(
+                1 => '[NEWSLETTER_DOMAIN_URL] - Newsletter subscription',
+                2 => '[NEWSLETTER_DOMAIN_URL] - Anmeldung Newsletter',
+            ),
+            'content' => array(
+                1 => 'Guten Tag [NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME],
+Sie haben sich erfolgreich in den/die folgende(n) Newsletter eingetragen:
+[[NEWSLETTER_LISTS]
+   [NEWSLETTER_LIST]
+[NEWSLETTER_LISTS]]',
+                2 => 'Hi [NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME],
+You have successfully registered to the following newsletter list(s):
+[[NEWSLETTER_LISTS]
+    [NEWSLETTER_LIST]
+[NEWSLETTER_LISTS]]',
+            ),
+            'key' => 'notify_subscription_list_additional',
+            'text_id' => 29,
+        ),
+    );
+
+    foreach ($newMailTemplates as $mailTemplateReplacement) {
+
+        $key    = $mailTemplateReplacement['key'];
+        $textId = $mailTemplateReplacement['text_id'];
+        $mailTo = '[NEWSLETTER_USER_EMAIL]';
+
+        foreach ($languages as $lang) {
+            $langId = $lang['id'];
+            $name   = $title = $content = '';
+            if (isset($mailTemplateReplacement['name'][$langId])) {
+                $name = $mailTemplateReplacement['name'][$langId];
+            } else {
+                $name = $mailTemplateReplacement['name'][1];
+            }
+            if (isset($mailTemplateReplacement['subject'][$langId])) {
+                $title = $mailTemplateReplacement['subject'][$langId];
+            } else {
+                $title = $mailTemplateReplacement['subject'][1];
+            }
+            if (isset($mailTemplateReplacement['content'][$langId])) {
+                $content = $mailTemplateReplacement['content'][$langId];
+            } else {
+                $content = $mailTemplateReplacement['content'][1];
+            }
+            insertMailTemplate($key, $textId, $langId, $name, $title, $content, $mailTo);
+        }
+    }
+
+    try {
+        \Cx\Lib\UpdateUtil::sql('DELETE FROM `'. DBPREFIX .'module_newsletter_settings` WHERE `setname` = "reject_info_mail_text"`');
+        \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'module_newsletter_confirm_mail');
+    } catch (\Cx\Lib\UpdateException $e) {
+        return "Error: $e->sql";
+    }
+
+}
+
+/**
+ * Insert MailTemplate into database
+ *
+ * @param string  $key      Mail template key
+ * @param string  $textId   Core text id
+ * @param integer $langId   Language id
+ * @param string  $name     Mail template name
+ * @param string  $title    Mail template title
+ * @param string  $content  Mail template content
+ * @param string  $mailTo   To address field
+ */
+function insertMailTemplate($key, $textId, $langId, $name, $title, $content, $mailTo)
+{
+
+    //replase placeholder
+    $array_1 = array(
+        '[[title]]',
+        '[[sex]]',
+        '[[firstname]]',
+        '[[lastname]]',
+        '[[e-mail]]',
+        '[[url]]',
+        '[[date]]',
+        '[[code]]',
+        '[[action]]',
+        '[[EMAIL]]',
+        '[[LINK]]',
+    );
+    $array_2 = array(
+        '[NEWSLETTER_USER_TITLE]',
+        '[NEWSLETTER_USER_SEX]',
+        '[NEWSLETTER_USER_FIRSTNAME]',
+        '[NEWSLETTER_USER_LASTNAME]',
+        '[NEWSLETTER_USER_EMAIL]',
+        '[NEWSLETTER_DOMAIN_URL]',
+        '[NEWSLETTER_CURRENT_DATE]',
+        '[NEWSLETTER_CONFIRM_CODE]',
+        '[NEWSLETTER_NOTIFICATION_ACTION]',
+        '[NEWSLETTER_USER_EMAIL]',
+        '[NEWSLETTER_USER_EDIT_LINK]',
+    );
+
+    $mailTitle   = str_replace($array_1, $array_2, $title);
+    $mailContent = str_replace($array_1, $array_2, $content);
+
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES("'. $key .'", "Newsletter", '. $textId .', 0, 1)');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_bcc\', \'\')');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_cc\', \'\')');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_from\', \'[NEWSLETTER_SENDER_EMAIL]\')');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_message\', "'. $mailContent .'")');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_name\', "'. $name . '")');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_reply\', \'[NEWSLETTER_REPLY_TO]\')');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_sender\', \'[NEWSLETTER_SENDER_NAME]\')');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_subject\', "'. $mailTitle .'")');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_to\', "'. $mailTo .'")');
+
 }
 
 /**
