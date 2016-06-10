@@ -1,76 +1,113 @@
 <?php
 
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * Registration
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  module_calendar
+*/
 namespace Cx\Modules\Calendar\Model\Entity;
 
 /**
- * Cx\Modules\Calendar\Model\Entity\Registration
- */
-class Registration
-{
+ * Registration
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  module_calendar
+*/
+class Registration extends \Cx\Model\Base\EntityBase {
     /**
      * @var integer $id
      */
-    private $id;
+    protected $id;
 
     /**
      * @var integer $date
      */
-    private $date;
+    protected $date;
 
     /**
      * @var string $hostName
      */
-    private $hostName;
+    protected $hostName;
 
     /**
      * @var string $ipAddress
      */
-    private $ipAddress;
+    protected $ipAddress;
 
     /**
      * @var integer $type
      */
-    private $type;
+    protected $type;
 
     /**
      * @var string $key
      */
-    private $key;
+    protected $key;
 
     /**
      * @var integer $userId
      */
-    private $userId;
+    protected $userId;
 
     /**
      * @var integer $langId
      */
-    private $langId;
+    protected $langId;
 
     /**
      * @var integer $export
      */
-    private $export;
+    protected $export;
 
     /**
      * @var integer $paymentMethod
      */
-    private $paymentMethod;
+    protected $paymentMethod;
 
     /**
      * @var integer $paid
      */
-    private $paid;
+    protected $paid;
 
     /**
      * @var Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue
      */
-    private $registrationFormFieldValues;
+    protected $registrationFormFieldValues;
 
     /**
      * @var Cx\Modules\Calendar\Model\Entity\Event
      */
-    private $event;
+    protected $event;
 
     public function __construct()
     {

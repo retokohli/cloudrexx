@@ -1,381 +1,418 @@
 <?php
 
+/**
+ * Cloudrexx
+ *
+ * @link      http://www.cloudrexx.com
+ * @copyright Cloudrexx AG 2007-2015
+ *
+ * According to our dual licensing model, this program can be used either
+ * under the terms of the GNU Affero General Public License, version 3,
+ * or under a proprietary license.
+ *
+ * The texts of the GNU Affero General Public License with an additional
+ * permission and of our proprietary license can be found at and
+ * in the LICENSE file you have received along with this program.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * "Cloudrexx" is a registered trademark of Cloudrexx AG.
+ * The licensing of the program under the AGPLv3 does not imply a
+ * trademark license. Therefore any rights, title and interest in
+ * our trademarks remain entirely with us.
+ */
+
+/**
+ * Event
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  module_calendar
+*/
 namespace Cx\Modules\Calendar\Model\Entity;
 
 /**
- * Cx\Modules\Calendar\Model\Entity\Event
- */
-class Event
-{
+ * Event
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Project Team SS4U <info@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  module_calendar
+*/
+class Event extends \Cx\Model\Base\EntityBase {
     /**
      * @var integer $id
      */
-    private $id;
+    protected $id;
 
     /**
      * @var integer $type
      */
-    private $type;
+    protected $type;
 
     /**
      * @var datetime $startDate
      */
-    private $startDate;
+    protected $startDate;
 
     /**
      * @var datetime $endDate
      */
-    private $endDate;
+    protected $endDate;
 
     /**
      * @var boolean $useCustomDateDisplay
      */
-    private $useCustomDateDisplay;
+    protected $useCustomDateDisplay;
 
     /**
      * @var integer $showStartDateList
      */
-    private $showStartDateList;
+    protected $showStartDateList;
 
     /**
      * @var integer $showEndDateList
      */
-    private $showEndDateList;
+    protected $showEndDateList;
 
     /**
      * @var integer $showStartTimeList
      */
-    private $showStartTimeList;
+    protected $showStartTimeList;
 
     /**
      * @var integer $showEndTimeList
      */
-    private $showEndTimeList;
+    protected $showEndTimeList;
 
     /**
      * @var integer $showTimeTypeList
      */
-    private $showTimeTypeList;
+    protected $showTimeTypeList;
 
     /**
      * @var integer $showStartDateDetail
      */
-    private $showStartDateDetail;
+    protected $showStartDateDetail;
 
     /**
      * @var integer $showEndDateDetail
      */
-    private $showEndDateDetail;
+    protected $showEndDateDetail;
 
     /**
      * @var integer $showStartTimeDetail
      */
-    private $showStartTimeDetail;
+    protected $showStartTimeDetail;
 
     /**
      * @var integer $showEndTimeDetail
      */
-    private $showEndTimeDetail;
+    protected $showEndTimeDetail;
 
     /**
      * @var integer $showTimeTypeDetail
      */
-    private $showTimeTypeDetail;
+    protected $showTimeTypeDetail;
 
     /**
      * @var integer $google
      */
-    private $google;
+    protected $google;
 
     /**
      * @var integer $access
      */
-    private $access;
+    protected $access;
 
     /**
      * @var integer $priority
      */
-    private $priority;
+    protected $priority;
 
     /**
      * @var integer $price
      */
-    private $price;
+    protected $price;
 
     /**
      * @var string $link
      */
-    private $link;
+    protected $link;
 
     /**
      * @var string $pic
      */
-    private $pic;
+    protected $pic;
 
     /**
      * @var string $attach
      */
-    private $attach;
+    protected $attach;
 
     /**
      * @var integer $placeMediadirId
      */
-    private $placeMediadirId;
+    protected $placeMediadirId;
 
     /**
      * @var string $showIn
      */
-    private $showIn;
+    protected $showIn;
 
     /**
      * @var string $invitedGroups
      */
-    private $invitedGroups;
+    protected $invitedGroups;
 
     /**
      * @var text $invitedMails
      */
-    private $invitedMails;
+    protected $invitedMails;
 
     /**
      * @var integer $invitationSent
      */
-    private $invitationSent;
+    protected $invitationSent;
 
     /**
      * @var string $invitationEmailTemplate
      */
-    private $invitationEmailTemplate;
+    protected $invitationEmailTemplate;
 
     /**
      * @var integer $registration
      */
-    private $registration;
+    protected $registration;
 
     /**
      * @var string $registrationNum
      */
-    private $registrationNum;
+    protected $registrationNum;
 
     /**
      * @var string $registrationNotification
      */
-    private $registrationNotification;
+    protected $registrationNotification;
 
     /**
      * @var string $emailTemplate
      */
-    private $emailTemplate;
+    protected $emailTemplate;
 
     /**
      * @var boolean $ticketSales
      */
-    private $ticketSales;
+    protected $ticketSales;
 
     /**
      * @var text $numSeating
      */
-    private $numSeating;
+    protected $numSeating;
 
     /**
      * @var smallint $seriesStatus
      */
-    private $seriesStatus;
+    protected $seriesStatus;
 
     /**
      * @var integer $seriesType
      */
-    private $seriesType;
+    protected $seriesType;
 
     /**
      * @var integer $seriesPatternCount
      */
-    private $seriesPatternCount;
+    protected $seriesPatternCount;
 
     /**
      * @var string $seriesPatternWeekday
      */
-    private $seriesPatternWeekday;
+    protected $seriesPatternWeekday;
 
     /**
      * @var integer $seriesPatternDay
      */
-    private $seriesPatternDay;
+    protected $seriesPatternDay;
 
     /**
      * @var integer $seriesPatternWeek
      */
-    private $seriesPatternWeek;
+    protected $seriesPatternWeek;
 
     /**
      * @var integer $seriesPatternMonth
      */
-    private $seriesPatternMonth;
+    protected $seriesPatternMonth;
 
     /**
      * @var integer $seriesPatternType
      */
-    private $seriesPatternType;
+    protected $seriesPatternType;
 
     /**
      * @var integer $seriesPatternDouranceType
      */
-    private $seriesPatternDouranceType;
+    protected $seriesPatternDouranceType;
 
     /**
      * @var integer $seriesPatternEnd
      */
-    private $seriesPatternEnd;
+    protected $seriesPatternEnd;
 
     /**
      * @var datetime $seriesPatternEndDate
      */
-    private $seriesPatternEndDate;
+    protected $seriesPatternEndDate;
 
     /**
      * @var integer $seriesPatternBegin
      */
-    private $seriesPatternBegin;
+    protected $seriesPatternBegin;
 
     /**
      * @var text $seriesPatternExceptions
      */
-    private $seriesPatternExceptions;
+    protected $seriesPatternExceptions;
 
     /**
      * @var boolean $status
      */
-    private $status;
+    protected $status;
 
     /**
      * @var boolean $confirmed
      */
-    private $confirmed;
+    protected $confirmed;
 
     /**
      * @var boolean $showDetailView
      */
-    private $showDetailView;
+    protected $showDetailView;
 
     /**
      * @var string $author
      */
-    private $author;
+    protected $author;
 
     /**
      * @var boolean $allDay
      */
-    private $allDay;
+    protected $allDay;
 
     /**
      * @var boolean $locationType
      */
-    private $locationType;
+    protected $locationType;
 
     /**
      * @var string $place
      */
-    private $place;
+    protected $place;
 
     /**
      * @var integer $placeId
      */
-    private $placeId;
+    protected $placeId;
 
     /**
      * @var string $placeStreet
      */
-    private $placeStreet;
+    protected $placeStreet;
 
     /**
      * @var string $placeZip
      */
-    private $placeZip;
+    protected $placeZip;
 
     /**
      * @var string $placeCity
      */
-    private $placeCity;
+    protected $placeCity;
 
     /**
      * @var string $placeCountry
      */
-    private $placeCountry;
+    protected $placeCountry;
 
     /**
      * @var string $placeLink
      */
-    private $placeLink;
+    protected $placeLink;
 
     /**
      * @var string $placeMap
      */
-    private $placeMap;
+    protected $placeMap;
 
     /**
      * @var boolean $hostType
      */
-    private $hostType;
+    protected $hostType;
 
     /**
      * @var string $orgName
      */
-    private $orgName;
+    protected $orgName;
 
     /**
      * @var string $orgStreet
      */
-    private $orgStreet;
+    protected $orgStreet;
 
     /**
      * @var string $orgZip
      */
-    private $orgZip;
+    protected $orgZip;
 
     /**
      * @var string $orgCity
      */
-    private $orgCity;
+    protected $orgCity;
 
     /**
      * @var string $orgCountry
      */
-    private $orgCountry;
+    protected $orgCountry;
 
     /**
      * @var string $orgLink
      */
-    private $orgLink;
+    protected $orgLink;
 
     /**
      * @var string $orgEmail
      */
-    private $orgEmail;
+    protected $orgEmail;
 
     /**
      * @var integer $hostMediadirId
      */
-    private $hostMediadirId;
+    protected $hostMediadirId;
 
     /**
      * @var Cx\Modules\Calendar\Model\Entity\EventField
      */
-    private $eventFields;
+    protected $eventFields;
 
     /**
      * @var Cx\Modules\Calendar\Model\Entity\Registration
      */
-    private $registrations;
+    protected $registrations;
 
     /**
      * @var Cx\Modules\Calendar\Model\Entity\Category
      */
-    private $category;
+    protected $category;
 
     /**
      * @var Cx\Modules\Calendar\Model\Entity\RegistrationForm
      */
-    private $registrationForm;
+    protected $registrationForm;
 
     public function __construct()
     {
@@ -926,11 +963,11 @@ class Event
     /**
      * Get invitationEmailTemplate
      *
-     * @return string $invitationEmailTemplate
+     * @return \Doctrine\Common\Collections\ArrayCollection $invitationEmailTemplate
      */
     public function getInvitationEmailTemplate()
     {
-        return $this->invitationEmailTemplate;
+        return $this->getMail($this->invitationEmailTemplate);
     }
 
     /**
@@ -1006,11 +1043,45 @@ class Event
     /**
      * Get emailTemplate
      *
-     * @return string $emailTemplate
+     * @return \Doctrine\Common\Collections\ArrayCollection $emailTemplate
      */
     public function getEmailTemplate()
     {
-        return $this->emailTemplate;
+        return $this->getMail($this->emailTemplate);
+    }
+
+    /**
+     * Get mail
+     *
+     * @param string $mailString
+     *
+     * @return \Doctrine\Common\Collections\ArrayCollection $emailTemplates
+     */
+    public function getMail($mailString)
+    {
+        // return null if $mailString is empty
+        if (empty($mailString)) {
+            return null;
+        }
+
+        $emailTemplate = json_decode($mailString, true);
+        if (empty($emailTemplate)) {
+            return null;
+        }
+
+        $emailTemplates = new \Doctrine\Common\Collections\ArrayCollection();
+        $cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $em = $cx->getDb()->getEntityManager();
+        $mailRepo = $em->getRepository('Cx\Modules\Calendar\Model\Entity\Mail');
+        foreach ($emailTemplate as $langId => $emailTemplateId) {
+            $mail = $mailRepo->findOneById($emailTemplateId);
+            if ($mail) {
+                $mail->setEventLangId($langId);
+                $emailTemplates[] = $mail;
+            }
+        }
+
+        return $emailTemplates;
     }
 
     /**

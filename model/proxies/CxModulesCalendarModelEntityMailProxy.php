@@ -129,6 +129,54 @@ class CxModulesCalendarModelEntityMailProxy extends \Cx\Modules\Calendar\Model\E
         return parent::getStatus();
     }
 
+    public function setEventLangId($eventLangId)
+    {
+        $this->_load();
+        return parent::setEventLangId($eventLangId);
+    }
+
+    public function getEventLangId()
+    {
+        $this->_load();
+        return parent::getEventLangId();
+    }
+
+    public function __get($name)
+    {
+        $this->_load();
+        return parent::__get($name);
+    }
+
+    public function getComponentController()
+    {
+        $this->_load();
+        return parent::getComponentController();
+    }
+
+    public function setVirtual($virtual)
+    {
+        $this->_load();
+        return parent::setVirtual($virtual);
+    }
+
+    public function isVirtual()
+    {
+        $this->_load();
+        return parent::isVirtual();
+    }
+
+    public function validate()
+    {
+        $this->_load();
+        return parent::validate();
+    }
+
+    public function __toString()
+    {
+        $this->_load();
+        return parent::__toString();
+    }
+
 
     public function __sleep()
     {
