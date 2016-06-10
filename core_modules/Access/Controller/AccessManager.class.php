@@ -107,7 +107,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     */
     function _exportUsers($groupId = 0, $langId = null)
     {
-        global $_CORELANG, $objInit;
+        global $_CORELANG, $_ARRAYLANG, $objInit;
 
         $csvSeparator = ";";
         $groupId = intval($groupId);
@@ -129,7 +129,23 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             ($langId != null ? '_lang_'.$arrLangs[$langId]['lang'] : '').
             '.csv"', true);
 
-        $arrFields = array ('active', 'frontend lang', 'backend lang', 'gender', 'title', 'firstname', 'lastname', 'username', 'email', 'regdate');
+        $arrFields = array (
+            'active'            => $_ARRAYLANG['TXT_ACCESS_ACTIVE'],
+            'frontend_lang_id'  => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' (frontend)',
+            'backend_lang_id'   => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' (backend)',
+            'username'          => $_ARRAYLANG['TXT_ACCESS_USERNAME'],
+            'email'             => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
+            'regdate'           => $_ARRAYLANG['TXT_ACCESS_REGISTERED_SINCE'],
+        );
+
+        // fetch profile attributes
+        $arrProfileFields = array_merge($objFWUser->objUser->objAttribute->getCoreAttributeIds(), $objFWUser->objUser->objAttribute->getCustomAttributeIds());
+        $getProfileAttributeNameFn = function($field) use ($objFWUser) {
+            return $objFWUser->objUser->objAttribute->getById($field)->getName();
+        };
+        $arrProfileFields = array_combine($arrProfileFields, array_map($getProfileAttributeNameFn, $arrProfileFields));
+        $arrFields += $arrProfileFields;
+
         foreach ($arrFields as $field) {
             print $this->_escapeCsvValue($field).$csvSeparator;
         }
@@ -146,7 +162,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $filter['frontend_lang_id'] = $langId;
             }
         }
-        $objUser = $objFWUser->objUser->getUsers($filter, null, array('username'), array('active', 'frontend_lang_id', 'backend_lang_id', 'gender', 'title', 'firstname', 'lastname', 'username', 'email', 'regdate'));
+        $objUser = $objFWUser->objUser->getUsers($filter, null, array('username'), array_keys($arrFields));
         if ($objUser) {
             while (!$objUser->EOF) {
                 $activeStatus = $objUser->getActiveStatus() ? $_CORELANG['TXT_YES'] : $_CORELANG['TXT_NO'];
@@ -163,42 +179,64 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
                 $backendLang = $arrLangs[$backendLangId]['name']." (".$arrLangs[$backendLangId]['lang'].")";
 
-                // gender
-                switch ($objUser->getProfileAttribute('gender')) {
-                    case 'gender_male':
-                       $gender = $_CORELANG['TXT_ACCESS_MALE'];
-                    break;
-
-                    case 'gender_female':
-                       $gender = $_CORELANG['TXT_ACCESS_FEMALE'];
-                    break;
-
-                    default:
-                       $gender = $_CORELANG['TXT_ACCESS_NOT_SPECIFIED'];
-                    break;
-                }
-
-                // title
-                $title = '';
-                $objAttribute = $objFWUser->objUser->objAttribute->getById('title');
-                foreach ($objAttribute->getChildren() as $childAttributeId) {
-                    $objChildAtrribute = $objAttribute->getById($childAttributeId);
-                    if ($objChildAtrribute->getMenuOptionValue() == $objUser->getProfileAttribute('title')) {
-                        $title = $objChildAtrribute->getName();
-                        break;
-                    }
-                }
-
+                // active
                 print $this->_escapeCsvValue($activeStatus).$csvSeparator;
+
+                // frontend_lang_id
                 print $this->_escapeCsvValue($frontendLang).$csvSeparator;
+
+                // backend_lang_id
                 print $this->_escapeCsvValue($backendLang).$csvSeparator;
-                print $this->_escapeCsvValue($gender).$csvSeparator;
-                print $this->_escapeCsvValue($title).$csvSeparator;
-                print $this->_escapeCsvValue($objUser->getProfileAttribute('firstname')).$csvSeparator;
-                print $this->_escapeCsvValue($objUser->getProfileAttribute('lastname')).$csvSeparator;
+
+                // username
                 print $this->_escapeCsvValue($objUser->getUsername()).$csvSeparator;
+
+                // email
                 print $this->_escapeCsvValue($objUser->getEmail()).$csvSeparator;
+
+                // regdate
                 print $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate())).$csvSeparator;
+
+                // profile attributes
+                foreach (array_keys($arrProfileFields) as $field) {
+                    $value = $objFWUser->objUser->getProfileAttribute($field);
+
+                    switch ($field) {
+                        case 'gender':
+                            switch ($value) {
+                                case 'gender_male':
+                                   $value = $_CORELANG['TXT_ACCESS_MALE'];
+                                break;
+
+                                case 'gender_female':
+                                   $value = $_CORELANG['TXT_ACCESS_FEMALE'];
+                                break;
+
+                                default:
+                                   $value = $_CORELANG['TXT_ACCESS_NOT_SPECIFIED'];
+                                break;
+                            }
+                            break; 
+
+                        case 'title':
+                        case 'country':
+                            $title = '';
+                            $value = $objFWUser->objUser->objAttribute->getById($field . '_' . $value)->getName();
+                            break; 
+
+                        default:
+                            $objAttribute = $objFWUser->objUser->objAttribute->getById($field);
+                            if ($objAttribute->getType() == 'date') {
+                                $date = new \DateTime();
+                                $date ->setTimestamp($value);
+                                $value = $date->format(ASCMS_DATE_FORMAT_DATE);
+                            }
+                            break; 
+                    }
+                    print $this->_escapeCsvValue($value).$csvSeparator;
+                }
+
+                // add line break at end of row
                 print "\n";
 
                 $objUser->next();
