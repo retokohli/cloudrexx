@@ -206,11 +206,19 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             
             // get mapping table entry
             $em = $this->cx->getDb()->getEntityManager();
+            $dataAccessRepo = $em->getRepository('Cx\Core_Modules\DataAccess\Model\Entity\DataAccess');
+            $dataAccess = $dataAccessRepo->findOneBy(array('name' => $arguments[1]));
+            if (!$dataAccess || !$dataAccess->getDataSource()) {
+                throw new \Exception('No such DataSource: ' . $name);
+            }
+            $entityType = $dataAccess->getDataSource()->getIdentifier();
+            $foreignHost = $_SERVER['HTTP_REFERER'];
+            
             $mappingRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\IdMapping');
             $mapping = $mappingRepo->findOneBy(array(
                 'foreignHost' => $foreignHost,
                 'entityType' => $entityType,
-                'foreignId' => $foreignId,
+                'foreignId' => $elementId,
             ));
             
             if (!$mapping) {
@@ -233,9 +241,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // - make sure our eventlistener thinks it's a POST request
                     $this->cx->getRequest()->setHttpRequestMethod('post');
                 }
+            } else {
+                $arguments[2] = $mapping->getLocalId();
             }
-            
-            $arguments[2] = $mapping->getLocalId();
         }
         
         $this->getComponent('DataAccess')->executeCommand(
