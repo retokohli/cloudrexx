@@ -213,14 +213,44 @@ class Sync extends \Cx\Model\Base\EntityBase {
         
         $url = $this->getToUri($entityIndexData);
         $method = strtoupper($eventType);
-        $content = $entity;
+        $content = array();
+        $metaData = $this->cx->getDb()->getEntityManager()->getClassMetadata(get_class($entity));
+        $primaryKeyNames = $metaData->getIdentifierFieldNames(); // get the name of primary key in database table
+        foreach ($metaData->getColumnNames() as $column) {
+            $field = $metaData->getFieldName($column);
+            if (in_array($field, $primaryKeyNames)) {
+                continue;
+            }
+            $content[$field] = $metaData->getFieldValue($entity, $field);
+            if (is_object($content[$field]) && get_class($content[$field]) == 'DateTime') {
+                $content[$field] = $content[$field]->format(DATE_ATOM);
+            }
+        }
+        $associationMappings = $metaData->getAssociationMappings();
+        $classMethods = get_class_methods($entity);
+        foreach ($associationMappings as $field => $associationMapping) {
+            if (   $metaData->isSingleValuedAssociation($field)
+                && in_array('set'.ucfirst($field), $classMethods)
+            ) {
+                if ($metaData->getFieldValue($entity, $field)) {
+                    $content[$field] = (string) $metaData->getFieldValue($entity, $field);
+                    continue;
+                }
+                $content[$field]= new $associationMapping['targetEntity']();
+            } elseif ($metaData->isCollectionValuedAssociation($field)) {
+                $content[$field]= new $associationMapping['targetEntity']();
+            }
+        }
         
         $config = array(
         );
-        
         $request = new \HTTP_Request2($url, $method, $config);
-        $request->setBody($content);
+        $request->setBody(http_build_query($content, null, '&'));
         
-        $request->send();
+        $response = $request->send();
+        var_dump($response->getStatus());
+        echo '<hr />';
+        echo '<pre>' . $response->getBody() . '</pre>';
+        die('Pushed to ' . $url . ' with method ' . $method . ', body was: ' . http_build_query($content));
     }
 }
