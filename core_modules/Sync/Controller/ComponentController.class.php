@@ -46,6 +46,11 @@ namespace Cx\Core_Modules\Sync\Controller;
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener {
     /**
+     * @var array List of supported API versions
+     */
+    protected $supportedApiVersions = array('v1');
+    
+    /**
      * @var array Two dimensional array array(<entityClassName> => <listOfSyncEntities)
      */
     protected $syncs = array();
