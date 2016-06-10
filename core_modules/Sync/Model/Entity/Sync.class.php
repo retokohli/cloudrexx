@@ -245,6 +245,9 @@ class Sync extends \Cx\Model\Base\EntityBase {
         $config = array(
         );
         $request = new \HTTP_Request2($url, $method, $config);
+        $refUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $refUrl->setMode('backend');
+        $request->setHeader('Referrer', $refUrl->toString());
         $request->setBody(http_build_query($content, null, '&'));
         
         $response = $request->send();
