@@ -318,6 +318,9 @@ EOF;
             $arrSelect[]    = 'rel_inputfield.`entry_id` AS `entry_id`';
             $arrFrom[]      = DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields AS rel_inputfield';
             $arrWhere[]     = 'rel_inputfield.`entry_id` != 0';
+            if ($this->arrSettings['settingsIndividualEntryOrder']) {
+                $arrOrder[] = 'entry.`order` ASC';
+            }
             $arrOrder[]     = 'rel_inputfield.`value` ASC';
         }
 
