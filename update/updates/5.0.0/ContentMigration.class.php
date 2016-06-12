@@ -684,12 +684,12 @@ class ContentMigration
                     if ($aliasPage) {
                         $targetPage = $pageRepo->getTargetPage($aliasPage);
                         if ($targetPage) {
-                            $objAliasLib = new \aliasLib($targetPage->getLang());
+                            $objAliasLib = new \Cx\Core_Modules\Alias\Controller\AliasLib($targetPage->getLang());
                             $objAliasLib->_saveAlias($slug, $aliasPage->getTarget(), true);
                         }
                     }
                 } else {
-                    $objAliasLib = new \aliasLib(\FWLanguage::getDefaultLangId());
+                    $objAliasLib = new \Cx\Core_Modules\Alias\Controller\AliasLib(\FWLanguage::getDefaultLangId());
                     $objAliasLib->_saveAlias($slug, $target, false);
                 }
             }
