@@ -216,5 +216,27 @@ function _knowledgeUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    // migrate path to images and media
+    $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+    $attributes = array(
+        'answer'  =>  'module_knowledge_article_content',
+        'value' =>  'module_knowledge_settings',
+    );
+    try {
+        foreach ($attributes as $attribute => $table) {
+            foreach ($pathsToMigrate as $oldPath => $newPath) {
+                \Cx\Lib\UpdateUtil::migratePath(
+                    '`' . DBPREFIX . $table . '`',
+                    '`' . $attribute . '`',
+                    $oldPath,
+                    $newPath
+                );
+            }
+        }
+    } catch (\Cx\Lib\Update_DatabaseException $e) {
+        \DBG::log($e->getMessage());
+        return false;
+    }
+
     return true;
 }

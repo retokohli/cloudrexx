@@ -75,6 +75,28 @@ class Update_DatabaseException extends UpdateException {
 class UpdateUtil
 {
     /**
+     * @var array $migrationPaths Array with the old and new path names
+     * @access private
+     */
+    protected static $migrationPaths = array(
+        'images/access'     =>  'images/Access',
+        'images/blog'       =>  'images/Blog',
+        'images/calendar'   =>  'images/Calendar',
+        'images/crm'        =>  'images/Crm',
+        'images/downloads'  =>  'images/Downloads',
+        'images/gallery'    =>  'images/Gallery',
+        'images/mediadir'   =>  'images/MediaDir',
+        'images/podcast'    =>  'images/Podcast',
+        'images/shop'       =>  'images/Shop',
+        'media/crm'         =>  'media/Crm',
+        'media/directory'   =>  'media/Directory',
+        'media/filesharing' =>  'media/FileSharing',
+        'media/forum'       =>  'media/Forum',
+        'media/market'      =>  'media/Market',
+        'media/shop'        =>  'media/Shop',
+        'webcam'            =>  'media/Webcam',
+    );
+    /**
      * Creates or modifies a table to the given specification.
      *
      * @param string name - the name of the table. do not forget DBPREFIX!
@@ -82,15 +104,15 @@ class UpdateUtil
      *     array with the keys being the column names and the values being an array
      *     with the following keys:
      *       array(
-     *           'type'            => 'INT', # or VARCHAR(30) or whatever
-     *           'notnull'         => true/false, # optional, defaults to true
-     *           'auto_increment'  => true/false, # optional, defaults to false
-     *           'default'         => 'value',    # optional, defaults to '' (or 0 if type is INT)
-     *           'default_expr'    => expression, # use this instead of 'default' to use NOW(), CURRENT_TIMESTAMP etc
-     *           'primary'         => true/false, # optional, defaults to false
-     *           'renamefrom'      => 'a_name'    # optional. Use this if the column existed previously with another name
-     *           'on_update'       => value for ON UPDATE #optional, defaults to none
-     *           'on_delete'       => value for ON DELETE #optional, defaults to none
+     *           'type'            => 'INT',                # or VARCHAR(30) or whatever
+     *           'notnull'         => true/false,           # optional, defaults to true
+     *           'auto_increment'  => true/false,           # optional, defaults to false
+     *           'default'         => 'value',              # optional, defaults to '' (or 0 if type is INT)
+     *           'default_expr'    => expression,           # use this instead of 'default' to use NOW(), CURRENT_TIMESTAMP etc
+     *           'primary'         => true/false/0-9,       # optional, defaults to false
+     *           'renamefrom'      => 'a_name'              # optional. Use this if the column existed previously with another name
+     *           'on_update'       => value for ON UPDATE   # optional, defaults to none
+     *           'on_delete'       => value for ON DELETE   # optional, defaults to none
      *       )
      * @param array idx - optional. Additional index specification. This is an associative array
      *     where the keys are index names and the values are arrays with the following
@@ -330,13 +352,21 @@ class UpdateUtil
             $cols[] = "`$col` ". self::_colspec($spec, true);
         }
         $colspec    = join(",\n", $cols);
-        $primaries  = join("`,\n`", self::_getprimaries($struc));
-        $comment    = !empty($comment) ? ' COMMENT="'.$comment.'"' : '';
+        $primaries  = self::_getprimaries($struc);
+        foreach ($primaries as &$primary) {
+            if (preg_match('/(\w+)(\(\d+\))?/', $primary, $match)) {
+                $primary =
+                    '`'.$match[1].'`'.
+                    (empty($match[2]) ? '' : $match[2]);
+            }
+        }
+        $primaries = join(",\n", $primaries);
+            $comment    = !empty($comment) ? ' COMMENT="'.$comment.'"' : '';
         $charset    = ' DEFAULT CHARACTER SET '.$_DBCONFIG['charset'].' COLLATE '.$_DBCONFIG['collation'];
 
         $table_stmt = "CREATE TABLE `$name`(
             $colspec".(!empty($primaries) ? ",
-            PRIMARY KEY (`$primaries`)" : '')."
+            PRIMARY KEY ($primaries)" : '')."
         ) ENGINE=$engine$charset$comment";
 
         self::sql($table_stmt);
@@ -938,6 +968,64 @@ class UpdateUtil
         }
 
         return true;
+    }
+
+    /**
+     * Migrate paths in the database
+     * @param $table        string  Name of the database table doesn't need
+     *                              DBPREFIX
+     * @param $attribute    string  Name of attribute in the database table
+     * @param $oldPath      string  The old path
+     * @param $newPath      string  The new path
+     * @return \ADORecordset
+     */
+    public static function migratePath($table, $attribute, $oldPath, $newPath)
+    {
+        self::regexpquote('table', $table);
+        self::regexpquote('attribute', $attribute);
+        $query = 'UPDATE ' . $table .
+                 ' SET ' . $attribute . ' = REPLACE(' . $attribute . ', \'' . $oldPath . '\', \'' . $newPath . '\')';
+
+        return self::sql($query);
+    }
+
+    /**
+     * Add backtiks and DBPREFIX to table and attribute if necessary
+     * @param $type     string  Either 'table' or 'attribute'
+     * @param $value    string  The name of the table or the attribute
+     */
+    private static function regexpquote($type, &$value)
+    {
+        // define backtik and regex variables
+        $backtik = '';
+        $regex = array(
+            'table'     => '/^(?P<first>`)?(?P<prefix>' . DBPREFIX . ')?(?P<name>[a-z_]+)(?P<last>`)?$/',
+            'attribute' => '/^(?P<first>`)?(?P<name>[a-z_]+)(?P<last>`)?$/',
+        );
+        preg_match($regex[$type], $value, $matches);
+        // Check if table has DBPREFIX assigned
+        if ($type == 'table' && empty($matches['prefix'])) {
+            // remove leading backtik if there is one
+            if (substr($value, 0, 1) == '`') {
+                $value = substr($value, 1);
+                $backtik = '`';
+            }
+            // add database prefix with backtik
+            $value = $backtik . DBPREFIX . $value;
+        }
+        // add beginning backtik if missing
+        if (empty($matches['first']) && empty($backtik)) {
+            $value = '`' . $value;
+        }
+        // add the tailing backtik if missing
+        if (empty($matches['last'])) {
+            $value = $value . '`';
+        }
+    }
+
+    public static function getMigrationPaths()
+    {
+        return self::$migrationPaths;
     }
 
 }

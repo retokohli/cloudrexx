@@ -291,6 +291,60 @@ function _directoryUpdate() {
             return false;
         }
     }
+    $attributes = array(
+        'attachment'    => 'module_directory_dir',
+        'logo'          => 'module_directory_dir',
+        'map'           => 'module_directory_dir',
+        'lokal'         => 'module_directory_dir',
+        'spez_field_1'  => 'module_directory_dir',
+        'spez_field_2'  => 'module_directory_dir',
+        'spez_field_3'  => 'module_directory_dir',
+        'spez_field_4'  => 'module_directory_dir',
+        'spez_field_5'  => 'module_directory_dir',
+        'spez_field_6'  => 'module_directory_dir',
+        'spez_field_7'  => 'module_directory_dir',
+        'spez_field_8'  => 'module_directory_dir',
+        'spez_field_9'  => 'module_directory_dir',
+        'spez_field_10' => 'module_directory_dir',
+        'spez_field_11' => 'module_directory_dir',
+        'spez_field_12' => 'module_directory_dir',
+        'spez_field_13' => 'module_directory_dir',
+        'spez_field_14' => 'module_directory_dir',
+        'spez_field_15' => 'module_directory_dir',
+        'spez_field_16' => 'module_directory_dir',
+        'spez_field_17' => 'module_directory_dir',
+        'spez_field_18' => 'module_directory_dir',
+        'spez_field_19' => 'module_directory_dir',
+        'spez_field_20' => 'module_directory_dir',
+        'spez_field_25' => 'module_directory_dir',
+        'spez_field_26' => 'module_directory_dir',
+        'spez_field_27' => 'module_directory_dir',
+        'spez_field_28' => 'module_directory_dir',
+        'spez_field_29' => 'module_directory_dir',
+        'content'       => 'module_directory_mail',
+
+    );
+    // migrate path to images and media
+    $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+    try {
+        foreach ($attributes as $attribute => $table) {
+            foreach ($pathsToMigrate as $oldPath => $newPath) {
+                \Cx\Lib\UpdateUtil::migratePath(
+                    '`' . DBPREFIX . $table . '`',
+                    '`' . $attribute . '`',
+                    $oldPath,
+                    $newPath
+                );
+            }
+        }
+    } catch (\Cx\Lib\Update_DatabaseException $e) {
+        \DBG::log($e->getMessage());
+        setUpdateMsg(sprintf(
+            $_ARRAYLANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'],
+            'Verzeichnis (Directory)'
+        ));
+        return false;
+    }
 
     return true;
 }

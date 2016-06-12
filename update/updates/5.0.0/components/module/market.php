@@ -105,6 +105,55 @@ function _marketUpdate()
     }
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        \Cx\Lib\UpdateUtil::sql(
+            'INSERT IGNORE INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`)
+             VALUES
+                 (6, \'spez_field_6\', \'\', 1, 1, 0),
+                 (7, \'spez_field_7\', \'\', 1, 1, 0),
+                 (8, \'spez_field_8\', \'\', 1, 1, 0),
+                 (9, \'spez_field_9\', \'\', 1, 1, 0),
+                 (10, \'spez_field_10\', \'\', 1, 1, 0);
+        ');
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX . 'module_market`',
+            array(
+                'id'        => array('type' => 'INT(9)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'      => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'email'     => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'type'      => array('type' => 'set(\'search\',\'offer\')', 'notnull' => true, 'default' => ''),
+                'title'     => array('type' => 'varchar(255)', 'notnull' => true, 'default' => ''),
+                'description'   => array('type' =>  'mediumtext', 'notnull' => true),
+                'color'     => array('type' => 'varchar(50)', 'notnull' => true, 'default' => ''),
+                'premium'   => array('type' => 'int(1)', 'notnull' => true, 'default' => '0'),
+                'picture'   => array('type' => 'varchar(255)', 'notnull' => true, 'default' => ''),
+                'catid'     => array('type' => 'int(4)', 'notnull' => true, 'default' => '0'),
+                'price'     => array('type' => 'varchar(10)', 'notnull' => true, 'default' => ''),
+                'regdate'   => array('type' => 'varchar(20)', 'notnull' => true, 'default' => ''),
+                'enddate'   => array('type' => 'varchar(20)', 'notnull' => true, 'default' => ''),
+                'userid'    => array('type' => 'int(4)', 'notnull' => true, 'default' => '0'),
+                'userdetails'   => array('type' => 'int(1)', 'notnull' => true, 'default' => '0'),
+                'status'    => array('type' => 'int(1)', 'notnull' => true, 'default' => '0'),
+                'regkey'    => array('type' => 'varchar(50)', 'notnull' => true, 'default' => ''),
+                'paypal'    => array('type' => 'int(1)', 'notnull' => true, 'default' => '0'),
+                'sort_id'   => array('type' => 'int(4)', 'notnull' => true, 'default' => '0'),
+                'spez_field_1'  => array('type' => 'varchar(255)', 'notnull' => true),
+                'spez_field_2'  => array('type' => 'varchar(255)', 'notnull' => true),
+                'spez_field_3'  => array('type' => 'varchar(255)', 'notnull' => true),
+                'spez_field_4'  => array('type' => 'varchar(255)', 'notnull' => true),
+                'spez_field_5'  => array('type' => 'varchar(255)', 'notnull' => true),
+                'spez_field_6'  => array('type' => 'varchar(255)', 'notnull' => true),
+                'spez_field_7'  => array('type' => 'varchar(255)', 'notnull' => true),
+                'spez_field_8'  => array('type' => 'varchar(255)', 'notnull' => true),
+                'spez_field_9'  => array('type' => 'varchar(255)', 'notnull' => true),
+                'spez_field_10' => array('type' => 'varchar(255)', 'notnull' => true),
+            ),
+            array(
+                'description' => array('fields' => array('description'), 'type' => 'FULLTEXT'),
+                'title'       => array('fields' => array('description', 'title'), 'type' => 'FULLTEXT'),
+            ),
+            'MyISAM'
+        );
+
         //Update script for moving the folder
         $mediaPath       = ASCMS_DOCUMENT_ROOT . '/media';
         $sourceMediaPath = $mediaPath . '/market';
@@ -117,6 +166,27 @@ function _marketUpdate()
                 $_ARRAYLANG['TXT_UNABLE_TO_MOVE_DIRECTORY'],
                 $sourceMediaPath, $targetMediaPath
             ));
+            return false;
+        }
+
+        // migrate path to images and media
+        $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+        $attributes = array(
+            'content'          => 'module_market_mail',
+        );
+        try {
+            foreach ($attributes as $attribute => $table) {
+                foreach ($pathsToMigrate as $oldPath => $newPath) {
+                    \Cx\Lib\UpdateUtil::migratePath(
+                        '`' . DBPREFIX . $table . '`',
+                        '`' . $attribute . '`',
+                        $oldPath,
+                        $newPath
+                    );
+                }
+            }
+        } catch (\Cx\Lib\Update_DatabaseException $e) {
+            \DBG::log($e->getMessage());
             return false;
         }
     }

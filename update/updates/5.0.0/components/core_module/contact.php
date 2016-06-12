@@ -493,6 +493,29 @@ function _contactUpdate()
                     //'crm_customer_groups'    => array('type' => 'text', 'notnull' => false, 'after' => 'send_attachment'),
                 )
             );
+
+            // migrate path to images and media
+            $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+            $attributes = array(
+                'text'          => 'module_contact_form_lang',
+                'feedback'      => 'module_contact_form_lang',
+                'mailTemplaet'  => 'module_contact_form_lang',
+                'formvalue'     => 'module_contact_form_submit_data',
+
+            );
+            foreach ($attributes as $attribute => $table) {
+                foreach ($pathsToMigrate as $oldPath => $newPath) {
+                    $success = \Cx\Lib\UpdateUtil::migratePath(
+                        '`' . DBPREFIX . $table . '`',
+                        '`' . $attribute .  '`',
+                        $oldPath,
+                        $newPath
+                    );
+                    if (!$success) {
+
+                    }
+                }
+            }
         }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);

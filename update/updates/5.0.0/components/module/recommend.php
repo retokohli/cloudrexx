@@ -66,5 +66,21 @@ function _recommendUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    // migrate path to images and media
+    $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+    try {
+        foreach ($pathsToMigrate as $oldPath => $newPath) {
+            \Cx\Lib\UpdateUtil::migratePath(
+                '`' . DBPREFIX . 'module_recommend`',
+                '`value`',
+                $oldPath,
+                $newPath
+            );
+        }
+    } catch (\Cx\Lib\Update_DatabaseException $e) {
+        \DBG::log($e->getMessage());
+        return false;
+    }
+
     return true;
 }

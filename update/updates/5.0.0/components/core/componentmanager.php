@@ -39,7 +39,7 @@ function _updateComponent() {
         foreach ($arrComponents as $component) {
             Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."component` (`id`,
                                         `name`, `type`)
-                                    VALUES (" . $component['id']. ", " . $component['name'] . ", " . $component['type'] . ")");
+                                    VALUES (" . $component['id']. ", '" . $component['name'] . "', '" . $component['type'] . "')");
         }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -62,7 +62,368 @@ function _updateComponent() {
  */
 function getComponents()
 {
-    $arrComponents = array();
+    $arrComponents = array(
+        array(
+            'id'					=> 2,
+            'name'					=> 'Stats',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 3,
+            'name'					=> 'Gallery',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 4,
+            'name'					=> 'Newsletter',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 5,
+            'name'					=> 'Search',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 6,
+            'name'					=> 'Contact',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 7,
+            'name'					=> 'Block',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 8,
+            'name'					=> 'News',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 9,
+            'name'					=> 'Media1',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 10,
+            'name'					=> 'GuestBook',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 11,
+            'name'					=> 'Sitemap',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 12,
+            'name'					=> 'Directory',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 13,
+            'name'					=> 'Ids',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 14,
+            'name'					=> 'Error',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 15,
+            'name'					=> 'Home',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 16,
+            'name'					=> 'Shop',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 17,
+            'name'					=> 'Voting',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 18,
+            'name'					=> 'Login',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 19,
+            'name'					=> 'DocSys',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 20,
+            'name'					=> 'Forum',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 21,
+            'name'					=> 'Calendar',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 22,
+            'name'					=> 'Feed',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 23,
+            'name'					=> 'Access',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 24,
+            'name'					=> 'Media2',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 25,
+            'name'					=> 'Media3',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 26,
+            'name'					=> 'FileBrowser',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 27,
+            'name'					=> 'Recommend',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 30,
+            'name'					=> 'Livecam',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 31,
+            'name'					=> 'MemberDir',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 33,
+            'name'					=> 'Market',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 35,
+            'name'					=> 'Podcast',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 38,
+            'name'					=> 'Egov',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 39,
+            'name'					=> 'Media4',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 41,
+            'name'					=> 'Alias',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 44,
+            'name'					=> 'Imprint',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 45,
+            'name'					=> 'Agb',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 46,
+            'name'					=> 'Privacy',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 47,
+            'name'					=> 'Blog',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 48,
+            'name'					=> 'Data',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 49,
+            'name'					=> 'Ecard',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 52,
+            'name'					=> 'Upload',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 53,
+            'name'					=> 'Downloads',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 54,
+            'name'					=> 'U2u',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 56,
+            'name'					=> 'Knowledge',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 57,
+            'name'					=> 'Jobs',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 60,
+            'name'					=> 'MediaDir',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 61,
+            'name'					=> 'Captcha',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 63,
+            'name'					=> 'JsonData',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 66,
+            'name'					=> 'License',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 68,
+            'name'					=> 'FileSharing',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 69,
+            'name'					=> 'Crm',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 71,
+            'name'					=> 'FrontendEditing',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 72,
+            'name'					=> 'ContentManager',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 75,
+            'name'					=> 'ViewManager',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 76,
+            'name'					=> 'ComponentManager',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 77,
+            'name'					=> 'LanguageManager',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 78,
+            'name'					=> 'ContentWorkflow',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 80,
+            'name'					=> 'Config',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 84,
+            'name'					=> 'Security',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 85,
+            'name'					=> 'Csrf',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 86,
+            'name'					=> 'Session',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 88,
+            'name'					=> 'JavaScript',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 90,
+            'name'					=> 'Net',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 99,
+            'name'					=> 'Routing',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 100,
+            'name'					=> 'Support',
+            'type'					=> 'module',
+        ),
+        array(
+            'id'					=> 101,
+            'name'					=> 'Uploader',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 102,
+            'name'					=> 'MediaBrowser',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 103,
+            'name'					=> 'Cron',
+            'type'					=> 'core_module',
+        ),
+        array(
+            'id'					=> 105,
+            'name'					=> 'NetManager',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 106,
+            'name'					=> 'Wysiwyg',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 107,
+            'name'					=> 'User',
+            'type'					=> 'core',
+        ),
+        array(
+            'id'					=> 108,
+            'name'					=> 'Html',
+            'type'					=> 'core',
+        ),
+		array(
+			'id'					=> 109,
+			'name'					=> 'MediaSource',
+			'type'					=> 'core',
+		)
+    );
 
     return $arrComponents;
 }

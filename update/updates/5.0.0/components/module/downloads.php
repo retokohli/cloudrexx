@@ -413,6 +413,33 @@ function _downloadsUpdate()
             ));
             return false;
         }
+
+        // migrate path to images and media
+        $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+        $attributes = array(
+            'module_downloads_category'         => 'image',
+            'module_downloads_download'         => 'image',
+            'module_downloads_download_locale'  => 'source',
+        );
+        try {
+            foreach ($attributes as $table => $attribute) {
+                foreach ($pathsToMigrate as $oldPath => $newPath) {
+                    \Cx\Lib\UpdateUtil::migratePath(
+                        '`' . DBPREFIX . $table . '`',
+                        '`' . $attribute . '`',
+                        $oldPath,
+                        $newPath
+                    );
+                }
+            }
+        } catch (\Cx\Lib\Update_DatabaseException $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'],
+                'Digital Asset Management (Downloads)'
+            ));
+            return false;
+        }
     }
 
     return true;

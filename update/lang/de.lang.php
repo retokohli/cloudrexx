@@ -125,4 +125,5 @@ $_CORELANG = array(
     'TXT_UPDATE_THEME_FAILED'                    => 'Das CSS des Designes "%s" konnte nicht aktualisiert werden.',
     'TXT_UPDATE_COMPONENT_TABLE'                 => 'Beim Aktualisieren der Komponententabelle (%scomponent) ist ein Fehler aufgetreten.',
     'TXT_UPDATE_PAGE_LOG'                        => 'Beim Aktualisieren des Seitenverlaufs ist ein Fehler aufgetreten.',
+    'TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'           => 'Beim Aktualisieren der Bildpfade für die %s Komponente ist ein Fehler aufgetreten.',
 );

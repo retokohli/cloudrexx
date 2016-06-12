@@ -136,6 +136,34 @@ function _podcastUpdate() {
             ));
             return false;
         }
+
+        // migrate path to images and media
+        $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+        $attributes = array(
+            'source'    => 'module_podcast_medium',
+            'thumbnail' => 'module_podcast_medium',
+            'setvalue'  => 'module_podcast_settings',
+            'template'  => 'module_podcast_template',
+        );
+        try {
+            foreach ($attributes as $attribute => $table) {
+                foreach ($pathsToMigrate as $oldPath => $newPath) {
+                    \Cx\Lib\UpdateUtil::migratePath(
+                        '`' . DBPREFIX . $table .'`',
+                        '`' . $attribute . '`',
+                        $oldPath,
+                        $newPath
+                    );
+                }
+            }
+        } catch (\Cx\Lib\Update_DatabaseException $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'],
+                'Podcast (Podcast)'
+            ));
+            return false;
+        }
     }
 
     return true;

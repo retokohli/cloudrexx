@@ -956,7 +956,31 @@ NEWS;
                     'enable_tags'                    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'enable_related_news'),
                 )
             );
+
+            // migrate path to images and media
+            $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+            $attributes = array(
+                'text'  => 'module_news_locale',
+                'value' => 'module_news_settings',
+                'html'  => 'module_news_teaser_frame_templates',
+
+            );
+            foreach ($attributes as $attribute => $table) {
+                foreach ($pathsToMigrate as $oldPath => $newPath) {
+                    \Cx\Lib\UpdateUtil::migratePath(
+                        '`' . DBPREFIX . $table . '`',
+                        '`' . $attribute . '`',
+                        $oldPath,
+                        $newPath
+                    );
+                }
+            }
         } catch (\Cx\Lib\UpdateException $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'],
+                'News (News)'
+            ));
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
     }

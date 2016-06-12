@@ -140,5 +140,47 @@ function _livecamUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    // Try migrating the directory
+    try {
+        \Cx\Lib\UpdateUtil::migrateOldDirectory(ASCMS_DOCUMENT_ROOT . '/webcam',
+            ASCMS_DOCUMENT_ROOT . '/media/Webcam');
+    } catch (\Exception $e) {
+        \DBG::log($e->getMessage());
+        return false;
+    }
+
+    // migrate path to images and media
+    $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+    $attributes = array(
+        'currentImagePath', 'archivePath', 'thumbnailPath',
+    );
+    $query = 'SELECT `currentImagePath` FROM `' . DBPREFIX . 'module_livecam`';
+    // check if there are livecams from third party websites
+    $currentImagePaths = \Cx\Lib\UpdateUtil::sql($query);
+    while (!$currentImagePaths->EOF) {
+        // if there is a livecam from a third party website, unset currentImagePath
+        // from the $attributes array so we do not accidentally break this livecam
+        if (preg_match('#^(?:https?:)?//#i', $currentImagePaths->fields['currentImagePath'])) {
+            unset($attributes[0]);
+            break;
+        }
+        $currentImagePaths->MoveNext();
+    }
+    try {
+        foreach ($attributes as $attribute) {
+            foreach ($pathsToMigrate as $oldPath => $newPath) {
+                \Cx\Lib\UpdateUtil::migratePath(
+                    '`' . DBPREFIX . 'module_livecam`',
+                    '`' . $attribute . '`',
+                    $oldPath,
+                    $newPath
+                );
+            }
+        }
+    } catch (\Cx\Lib\Update_DatabaseException $e) {
+        \DBG::log($e->getMessage());
+        return false;
+    }
+
     return true;
 }

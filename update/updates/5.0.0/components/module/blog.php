@@ -212,6 +212,34 @@ function _blogUpdate() {
             ));
             return false;
         }
+
+        // Migrate media paths
+        $mediaPathToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+        $tablesToMigrate = array(
+            'icon'      => 'module_blog_networks',
+            'content'   => 'module_blog_messages_lang',
+            'image'     => 'module_blog_messages_lang',
+            'comment'   => 'module_blog_comments',
+        );
+        try {
+            foreach ($tablesToMigrate as $attribute => $table) {
+                foreach ($mediaPathToMigrate as $oldPath => $newPath) {
+                    \Cx\Lib\UpdateUtil::migratePath(
+                        '`' . DBPREFIX . $table . '`',
+                        '`' . $attribute . '`',
+                        $oldPath,
+                        $newPath
+                    );
+                }
+            }
+        } catch (\Cx\Lib\Update_DatabaseException $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'],
+                'Blog (Blog)'
+            ));
+            return false;
+        }
     }
 
     /**
