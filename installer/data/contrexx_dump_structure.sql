@@ -513,6 +513,13 @@ CREATE TABLE `contrexx_module_block_settings` (
   `value` varchar(100) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_block_targeting_option` (
+  `block_id` int(11) NOT NULL,
+  `filter` enum('include','exclude') NOT NULL DEFAULT 'include',
+  `type` enum('country') NOT NULL DEFAULT 'country',
+  `value` text NOT NULL,
+  PRIMARY KEY (`block_id`,`type`)
+) ENGINE=InnoDB;
 CREATE TABLE `contrexx_module_blog_categories` (
   `category_id` int(4) unsigned NOT NULL DEFAULT '0',
   `lang_id` int(2) unsigned NOT NULL DEFAULT '0',
@@ -687,7 +694,7 @@ CREATE TABLE `contrexx_module_calendar_event_field` (
   `event_id` int(11) NOT NULL DEFAULT '0',
   `lang_id` varchar(225) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
-  `teaser` text,
+  `teaser` text DEFAULT NULL,
   `description` mediumtext,
   `redirect` varchar(255) NOT NULL,
   KEY `lang_field` (`title`),
