@@ -43,6 +43,7 @@ namespace Cx\Core_Modules\Sync\Controller;
  * @author Michael Ritter <michael.ritter@cloudrexx.com>
  * @package cloudrexx
  * @subpackage core_modules_sync
+ * @todo In order to respect permission layer, this should not make direct use of doctrine (except for handling \Cx\Core_Modules\Sync\Model\Entity\... entities)
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Event\Model\Entity\EventListener {
     /**
@@ -270,11 +271,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $dlea = current($eventArgs);
         $entity = $dlea->getEntity();
         $entityClassName = get_class($entity);
-        $entityMetaData = $em->getClassMetadata($entityClassName);
-        $entityIndexData = array();
-        foreach ($entityMetaData->getIdentifierColumnNames() as $field) {
-            $entityIndexData[$field] = $entityMetaData->getFieldValue($entity, $field);
-        }
+        $entityIndexData = $this->getEntityIndexData($entity);
         
         $mappingRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\IdMapping');
         switch (substr($eventName, 6)) {
@@ -355,8 +352,100 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // push changes
         // @todo: This should write to a spooling table for asynchronous sync
         foreach ($this->syncs[$entityClassName] as $sync) {
-            $sync->push($eventType, $entityIndexData, $entity);
+            $this->pushSync($sync, $eventType, $entityIndexData, $entity);
         }
+    }
+    
+    protected function pushSync($sync, $eventType, $entityIndexData, $entity, $relationConfig = null) {
+        // @todo: This method should provide some kind of locking over multiple systems
+        $dataSource = $sync->getDataAccess()->getDataSource();
+        
+        // @todo: first calculate relations to be synced
+        foreach ($this->getDependendingFields($entity) as $field=>$fieldType) {
+            $foreignDataAccess = $this->getController('DataAccess')->getAccessTo($fieldType, $sync->getDataAccess());
+            
+            // all n:1 relations need to be synced according to config
+            $em = $this->cx->getDb()->getEntityManager();
+            $relationConfigRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Relation');
+            $relationConfig = $relationConfigRepo->findOneBy(array(
+                'relatedSync' => $sync,
+                'localFieldName' => $fieldType,
+                'parent' => $relationConfig,
+            ));
+            
+            //$foreignDataAccess = $relationConfig->getForeignDataAccess();
+            
+            // if this field's foreign entity is in config and has a default object
+            if (
+                $relationConfig &&
+                !$relationConfig->doSync() &&
+                $relationConfig->getDefaultEntityId()
+            ) {
+                // simply use the default object's ID for this field in sync
+                $em = $this->cx->getDb()->getEntityManager();
+                $foreignEntityRepo = $em->getRepository($fieldType);
+                $foreignEntity = $foreignEntityRepo->find($relationConfig->getDefaultEntityId());
+                $fieldSetMethodName = 'set'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
+                $entity->$fieldSetMethodName($foreignEntity);
+            } else if (
+                // @todo: and if foreignDataAccess is within same component!
+                !$relationConfig ||
+                $relationConfig->doSync()
+            ) {
+                // otherwise push the related entity first!
+                $fieldGetMethodName = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
+                $foreignEntity = $entity->$fieldGetMethodName();
+                $entityIndexData = $this->getEntityIndexData($foreignEntity);
+                $this->pushSync($sync, $eventType, $entityIndexData, $foreignEntity, $relationConfig);
+            } else {
+                throw new \Exception('Invalid config!');
+            }
+        }
+        
+        // push the entity
+        $sync->push($eventType, $entityIndexData, $entity);
+    }
+    
+    /**
+     * @todo: This method should be in DataSource model
+     */
+    protected function getEntityIndexData($entity) {
+        $em = $this->cx->getDb()->getEntityManager();
+        $entityClassName = get_class($entity);
+        $entityMetaData = $em->getClassMetadata($entityClassName);
+        $entityIndexData = array();
+        foreach ($entityMetaData->getIdentifierColumnNames() as $field) {
+            $entityIndexData[$field] = $entityMetaData->getFieldValue($entity, $field);
+        }
+        return $entityIndexData;
+    }
+    
+    /**
+     * Returns the fields this entity depends on (relations that must be satisfied)
+     * @todo: This method should be in DataSource model
+     */
+    protected function getDependendingFields($entity) {
+        $em = $this->cx->getDb()->getEntityManager();
+        $entityClassName = get_class($entity);
+        $entityMetaData = $em->getClassMetadata($entityClassName);
+        $associationMappings = $metaData->getAssociationMappings();
+        $dependingFields = array();
+        foreach ($associationMappings as $field => $associationMapping) {
+            if (
+                // @todo: we may use "TO_ONE" bitmask here (check newer doctrine versions and combined key support first)
+                !in_array(
+                    $associationMapping['type'],
+                    array(
+                        \Doctrine\ORM\Mapping\ClassMetadataInfo::ONE_TO_ONE,
+                        \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_ONE,
+                    )
+                )
+            ) {
+                continue;
+            }
+            $dependingFields[$field] = $associationMapping['targetEntity'];
+        }
+        return $dependingFields;
     }
 }
 
