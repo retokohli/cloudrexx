@@ -25,7 +25,7 @@
  * our trademarks remain entirely with us.
  */
 
-define('UPDATE_PATH', dirname(__FILE__));@include_once(UPDATE_PATH.'/../config/configuration.php');@header('content-type: text/html; charset='.(UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1'));?>
+define('UPDATE_PATH', dirname(__FILE__));@include_once(UPDATE_PATH.'/../config/configuration.php');@header('content-type: text/javascript; charset='.(UPDATE_UTF8 ? 'utf-8' : 'iso-8859-1'));?>
 
 var request_active = false;
 var getDebugInfo = false;
@@ -255,6 +255,7 @@ function setHtml(text, element)
 
 var similarPages = $J.parseJSON(cx.variables.get('similarPages', 'update/contentMigration'));
 var removePages  = new Array();
+var userGroupedPages = new Array();
 
 $J(document).ready(function() {
     $J("body").delegate(".page-grouping-title", "click", function() {
@@ -325,6 +326,11 @@ $J(document).ready(function() {
         var objNode = $J(this).parent();
         objNode.stop();
         delete similarPages[parseInt(objNode.data("id"))];
+        jQuery.each(userGroupedPages, function(idx, pageGroup) {
+            if(pageGroup.node == parseInt(objNode.data("id"))){
+                userGroupedPages.splice(idx,1);
+            }
+        });
 
         $J(this).nextAll().each(function() {
             if ($J(this).data("id")) {
@@ -401,9 +407,12 @@ $J(document).ready(function() {
 
         if (nodeId) {
             similarPages[nodeId] = new Array();
+            pageGroup = {'node':nodeId,'pages':new Array()};
             $J(".page-grouping-page.active").each(function() {
                 similarPages[nodeId].push(parseInt($J(this).data("id")));
+                pageGroup.pages.push({'lang':$J(this).data("lang"),'title':$J(this).text().trim()});
             });
+            userGroupedPages.push(pageGroup);
         }
 
         $J(".page-grouping-page.active").removeClass("active");
@@ -442,6 +451,44 @@ $J(document).ready(function() {
         $J(".page-grouping-grouped-scroll-y").animate({
             scrollTop: scrollTop
         }, 200);
+    });
+
+    $J("body").delegate(".page-grouping-button-import:not(.disabled)", "click", function() {
+        cx.ui.dialog({
+            width:         400,
+            height:        300,
+            modal:         true,
+            closeOnEscape: false,
+            dialogClass:   "content-migration-dialog",
+            title:         "Gruppierung importieren",
+            content:       '<textarea id="pageGroupFromUserInput"></textarea>',
+            buttons: {
+                "Importieren": function() {
+                    loadPageGroupingFromUserInput(JSON.parse(jQuery('#pageGroupFromUserInput').val()));
+                    $J(this).dialog("close");
+                },
+                "Close": function() {
+                    $J(this).dialog("close");
+                }
+            }
+        });
+    });
+
+    $J("body").delegate(".page-grouping-button-export:not(.disabled)", "click", function() {
+        cx.ui.dialog({
+            width:         400,
+            height:        300,
+            modal:         true,
+            closeOnEscape: false,
+            dialogClass:   "content-migration-dialog",
+            title:         "Gruppierung exportieren",
+            content:       '<textarea id="pageGroupFromUserInput">' + JSON.stringify(userGroupedPages) + '</textarea>',
+            buttons: {
+                "Close": function() {
+                    $J(this).dialog("close");
+                }
+            }
+        });
     });
 });
 
@@ -496,5 +543,34 @@ var checkTimeout = function() {
             }
             request_active = false;
         }
+    });
+}
+
+var loadPageGroupingFromUserInput = function(userReadPageGroupings) {
+    jQuery.each(userReadPageGroupings, function(idx, groupDefinition) {
+        var pageSelected = false;
+        jQuery.each(groupDefinition.pages, function(idx, pageDefinition) {
+            // find language box
+            lang = jQuery('.page-grouping-language[data-lang=' + pageDefinition.lang + ']');
+            if (!lang) {
+                return;
+            }
+
+            // find specific page
+            page = lang.find('.page-grouping-page:not(.grouped):contains(' + pageDefinition.title + '):first');
+            if (!page) {
+                return;
+            }
+
+            // select page
+            page.trigger('click');
+            pageSelected = true;
+        });
+        if (!pageSelected) {
+            return;
+        }
+
+        // group pages together
+        jQuery('.page-grouping-button-group').trigger('click');
     });
 }
