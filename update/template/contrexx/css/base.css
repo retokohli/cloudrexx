@@ -436,7 +436,9 @@ table.adminlist td {
 }
 
 .page-grouping-button-group,
-.page-grouping-button-delete {
+.page-grouping-button-delete,
+.page-grouping-button-import,
+.page-grouping-button-export {
     float: left;
     padding: 5px 12px 5px 12px;
     margin: 0 10px 0 0;
@@ -507,7 +509,8 @@ table.adminlist td {
     background-image: url(../images/icons/restore-active.png);
 }
 
-.page-grouping-grouped-scroll-x {
+.page-grouping-grouped-scroll-x,
+.page-grouping-options {
     display: none;
     float: left;
     width: 980px;
@@ -575,6 +578,11 @@ table.adminlist td {
 .removed,
 .inactive-language {
     display: none;
+}
+
+#pageGroupFromUserInput {
+    width: 95%;
+    height: 95%;
 }
 
 .inserted {
