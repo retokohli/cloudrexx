@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Module Session
  *
@@ -208,7 +208,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
         }
         return true;
     }
-    
+
     /**
      * Return true if the session is initialized and false otherwise.
      * 
@@ -290,7 +290,6 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                                       ON DUPLICATE KEY UPDATE
                                          `value` = "'. $serializedValue .'"';
                             \Env::get('db')->Execute($query);
-
                             $this->releaseLock($lockKey);
                         }
                     }
@@ -529,7 +528,6 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                     INSERT INTO `' . DBPREFIX . 'sessions` (`sessionid`, `remember_me`, `startdate`, `lastupdated`, `status`, `user_id`)
                     VALUES ("' . $aKey . '", ' . ($this->rememberMe ? 1 : 0) . ', "' . time() . '", "' . time() . '", "' . $this->status . '", ' . intval($this->userId) . ')
                 ');
-                
                 return '';
             }
         }
@@ -902,7 +900,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                 $value->parentId = intval($recursiveArrayAccess->id);
                 self::updateToDb($value);
             }
-        }        
+        }
     }
     
         /**
