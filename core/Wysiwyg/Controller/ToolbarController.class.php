@@ -329,6 +329,8 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
 
     /**
      * Load the removed button of the given toolbar ids
+     *
+     * This method loads the removed buttons of the default settings as well.
      * @param   array   $toolbarIds Array containing all ids of the toolbars
      *                              that shall be loaded
      * @return  array               Array containing the removed buttons of
@@ -339,6 +341,22 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         $pdo = $this->cx->getDb()->getPdoConnection();
         // Initiate an empty removedButtons array
         $removedButtons = array();
+        // Query to load the removed buttons which are specified in the settings
+        $defaultRemovedButtonsQuery = '
+            SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
+            WHERE `is_default` = 1
+            LIMIT 1';
+        $defaultRemovedButtonsRes = $pdo->query($defaultRemovedButtonsQuery);
+        // Check if a default selection has been made
+        if ($defaultRemovedButtonsRes) {
+            // Fetch the removed buttons
+            $defaultRemovedButtons = $defaultRemovedButtonsRes->fetch(\PDO::FETCH_ASSOC);
+            // Check if the removed buttons list is not empty
+            if (!empty($defaultRemovedButtons)) {
+                // Add the default removed buttons to the array of removed buttons
+                $removedButtons[] = $defaultRemovedButtons['removed_buttons'];
+            }
+        }
         // Loop through each toolbar id
         foreach ($toolbarIds as $toolbarId) {
             // Load the removed buttons from the database
@@ -487,7 +505,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         if ($isAccess && $defaultButtons) {
             $buttons = $defaultButtons['removed_buttons'];
         }
-        // Used to hide functions that are not allowed to be enable
+        // Used to hide functions that are not allowed to be enabled
         if ($buttonsOnly) {
             $buttons =  '\'' . $this->defaultRemovedButtons . '\'';
         } else {
