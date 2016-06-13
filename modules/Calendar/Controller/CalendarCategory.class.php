@@ -187,6 +187,8 @@ class CalendarCategory extends CalendarLibrary
             $categoryStatus = 1;
         }
         
+        $category = $this->getCategoryEntity($this->id, array('status' => $categoryStatus));
+        $this->cx->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($category, $this->em)));
         
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_category
                      SET status = '".intval($categoryStatus)."'
@@ -195,6 +197,7 @@ class CalendarCategory extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
         
         if ($objResult !== false) {
+            $this->cx->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($category, $this->em)));
             return true;
         } else {
             return false;
@@ -209,8 +212,10 @@ class CalendarCategory extends CalendarLibrary
      * @return boolean true if order updated successfully, false otherwise
      */
     function saveOrder($order) {
-        global $objDatabase, $_LANGID;    
+        global $objDatabase, $_LANGID;
                   
+        $category = $this->getCategoryEntity($this->id, array('pos' => $order));
+        $this->cx->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($category, $this->em)));
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_category
                      SET `pos` = '".intval($order)."'          
                    WHERE id = '".intval($this->id)."'";
@@ -218,6 +223,7 @@ class CalendarCategory extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);   
         
         if ($objResult !== false) {
+            $this->cx->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($category, $this->em)));
             return true;
         } else {
             return false;
@@ -239,16 +245,21 @@ class CalendarCategory extends CalendarLibrary
     	$arrNames = array();
         $arrNames = $data['name'];
         
-    	if(intval($this->id) == 0) {
+        $formData = array('categoryNames' => $arrNames);
+        $category = $this->getCategoryEntity($this->id, $formData);
+	if (intval($this->id) == 0) {
+            $this->cx->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($category, $this->em)));
     		$query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_category
     		                      (`pos`,`status`)
                            VALUES ('0','0')";
     		
 	        $objResult = $objDatabase->Execute($query);
 	        
-    		if($objResult === false) {
-                return false;
-            }
+ 		if ($objResult === false) {
+                    return false;
+                } else {
+                    $this->cx->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($category, $this->em)));
+                }
             
             $this->id = intval($objDatabase->Insert_ID());
     	}
@@ -306,7 +317,10 @@ class CalendarCategory extends CalendarLibrary
      */
     function delete(){
         global $objDatabase;
-        
+
+        $category = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Category')->findOneBy(array('id' => $this->id));
+        $this->cx->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($category, $this->em)));
+
         $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category
                         WHERE id = '".intval($this->id)."'";
         
@@ -332,6 +346,7 @@ class CalendarCategory extends CalendarLibrary
 	        } else {
                 return false;
 	        }
+            $this->cx->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($category, $this->em)));
         } else {
             return false;
         }
@@ -387,5 +402,44 @@ class CalendarCategory extends CalendarLibrary
         $count = count($objEventManager->eventList);
 
         return $count;
+    }
+
+    /**
+     * Get category entity
+     *
+     * @param integer $id       category id
+     * @param array   $formData category field values
+     *
+     * @return \Cx\Modules\Calendar\Model\Entity\Category
+     */
+    public function getCategoryEntity($id, $formData)
+    {
+        if (empty($id)) {
+            $category = new \Cx\Modules\Calendar\Model\Entity\Category();
+        } else {
+            $category = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Category')->findOneById($id);
+        }
+
+        foreach ($formData as $fieldName => $fieldValue) {
+            if ($fieldName == 'categoryNames' && is_array($fieldValue)) {
+                foreach ($fieldValue as $langId => $value) {
+                    if ($langId == 0) {
+                        continue;
+                    }
+                    $value = ($value == '') ? $fieldValue[0] : $value;
+                    if ($langId == $_LANGID) {
+                        $value = ($fieldValue[0] != $this->name) ? $fieldValue[0] : $value;
+                    }
+                    $categoryName = new \Cx\Modules\Calendar\Model\Entity\CategoryName();
+                    $categoryName->setLangId($langId);
+                    $categoryName->setName($value);
+                    $category->addCategoryName($categoryName);
+                }
+            } else {
+                $category->{'set'.ucfirst($fieldName)}($fieldValue);
+            }
+        }
+
+        return $category;
     }
 }

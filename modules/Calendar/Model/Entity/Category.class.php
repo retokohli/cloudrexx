@@ -71,6 +71,8 @@ class Category extends \Cx\Model\Base\EntityBase {
 
     public function __construct()
     {
+        $this->pos = 0;
+        $this->status = 0;
         $this->categoryNames = new \Doctrine\Common\Collections\ArrayCollection();
         $this->events = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -130,7 +132,7 @@ class Category extends \Cx\Model\Base\EntityBase {
      *
      * @param Cx\Modules\Calendar\Model\Entity\CategoryName $categoryNames
      */
-    public function addCategoryNames(\Cx\Modules\Calendar\Model\Entity\CategoryName $categoryNames)
+    public function addCategoryName(\Cx\Modules\Calendar\Model\Entity\CategoryName $categoryNames)
     {
         $this->categoryNames[] = $categoryNames;
     }

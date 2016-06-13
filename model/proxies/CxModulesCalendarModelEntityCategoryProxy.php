@@ -57,10 +57,10 @@ class CxModulesCalendarModelEntityCategoryProxy extends \Cx\Modules\Calendar\Mod
         return parent::getStatus();
     }
 
-    public function addCategoryNames(\Cx\Modules\Calendar\Model\Entity\CategoryName $categoryNames)
+    public function addCategoryName(\Cx\Modules\Calendar\Model\Entity\CategoryName $categoryNames)
     {
         $this->_load();
-        return parent::addCategoryNames($categoryNames);
+        return parent::addCategoryName($categoryNames);
     }
 
     public function getCategoryNames()

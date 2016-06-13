@@ -146,6 +146,10 @@ class CalendarLibrary
      */
     public $arrCommunityGroups = array();    
         
+    protected $cx;
+
+    protected $em;
+
     /**
      * map field key
      *
@@ -177,6 +181,8 @@ class CalendarLibrary
         $this->_objTpl = new \Cx\Core\Html\Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    
         
+        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->em = $this->cx->getDb()->getEntityManager();
         $this->_objTpl->setGlobalVariable(array(
             $this->moduleLangVar.'_MODULE_NAME'  => $this->moduleName,
             $this->moduleLangVar.'_CSRF'         => 'csrf='.\Cx\Core\Csrf\Controller\Csrf::code(),     
