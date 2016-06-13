@@ -201,7 +201,7 @@ function _downloadsUpdate()
         /************************************************
         * BUGFIX:   Set write access to the upload dir  *
         ************************************************/
-        if (\Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOWNLOADS_IMAGES_PATH)) {
+        if (file_exists(ASCMS_DOWNLOADS_IMAGES_PATH) && \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOWNLOADS_IMAGES_PATH)) {
             if ($mediaDir = @opendir(ASCMS_DOWNLOADS_IMAGES_PATH)) {
                 while($file = readdir($mediaDir)) {
                     if ($file != '.' && $file != '..') {

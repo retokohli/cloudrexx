@@ -99,6 +99,10 @@ function _ecardUpdate() {
 
 
         foreach ($arrImagePaths as $arrImagePath) {
+            if (!file_exists($arrImagePath[0])) {
+                continue;
+            }
+
             if (\Cx\Lib\FileSystem\FileSystem::makeWritable($arrImagePath[0])) {
                 if ($mediaDir = @opendir($arrImagePath[0])) {
                     while ($file = readdir($mediaDir)) {
