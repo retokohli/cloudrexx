@@ -131,23 +131,24 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $arrFields = array (
             'active'            => $_ARRAYLANG['TXT_ACCESS_ACTIVE'],
-            'frontend_lang_id'  => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' (frontend)',
-            'backend_lang_id'   => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' (backend)',
+            'frontend_lang_id'  => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' ('.$_CORELANG['TXT_LANGUAGE_FRONTEND'].')',
+            'backend_lang_id'   => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'] . ' ('.$_CORELANG['TXT_LANGUAGE_BACKEND'].')',
             'username'          => $_ARRAYLANG['TXT_ACCESS_USERNAME'],
             'email'             => $_ARRAYLANG['TXT_ACCESS_EMAIL'],
             'regdate'           => $_ARRAYLANG['TXT_ACCESS_REGISTERED_SINCE'],
         );
 
         // fetch profile attributes
-        $arrProfileFields = array_merge($objFWUser->objUser->objAttribute->getCoreAttributeIds(), $objFWUser->objUser->objAttribute->getCustomAttributeIds());
-        $getProfileAttributeNameFn = function($field) use ($objFWUser) {
-            return $objFWUser->objUser->objAttribute->getById($field)->getName();
-        };
-        $arrProfileFields = array_combine($arrProfileFields, array_map($getProfileAttributeNameFn, $arrProfileFields));
-        $arrFields += $arrProfileFields;
-
+        $arrProfileFields = array_merge(
+            $objFWUser->objUser->objAttribute->getCoreAttributeIds(),
+            $objFWUser->objUser->objAttribute->getCustomAttributeIds()
+        );
         foreach ($arrFields as $field) {
             print $this->_escapeCsvValue($field).$csvSeparator;
+        }
+        foreach ($arrProfileFields as $profileField) {
+            $arrFields[$profileField] = $objFWUser->objUser->objAttribute->getById($profileField)->getName();
+            print $this->_escapeCsvValue($arrFields[$profileField]).$csvSeparator;
         }
         print "\n";
 
