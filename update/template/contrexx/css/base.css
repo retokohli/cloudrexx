@@ -378,7 +378,8 @@ table.adminlist td {
     background: #FCFCFC;
 }
 
-.page-grouping-button {
+.page-grouping-button,
+.page-option-button {
     padding: 2px 10px 2px 10px;
     margin: 0 0 5px 0;
     color: #0A85C8;
@@ -405,7 +406,8 @@ table.adminlist td {
     background: none;
 }
 
-.page-grouping-button:hover {
+.page-grouping-button:hover,
+.page-option-button:hover {
     color: #FFFFFF;
     border: 1px solid #0A85C8;
     background: #0A85C8 url(../images/content/bg-blue-hover.png) 50% 50% repeat-x;
@@ -430,15 +432,16 @@ table.adminlist td {
     background: #FFFFFF url(../images/content/bg-green-active.png) 50% 50% repeat-x;
 }
 
-.page-grouping-buttons {
+.page-grouping-buttons,
+.page-option-buttons {
     float: left;
     margin: 0 10px 10px 0;
 }
 
 .page-grouping-button-group,
 .page-grouping-button-delete,
-.page-grouping-button-import,
-.page-grouping-button-export {
+.page-option-button-import,
+.page-option-button-export {
     float: left;
     padding: 5px 12px 5px 12px;
     margin: 0 10px 0 0;

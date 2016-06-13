@@ -263,16 +263,23 @@ $J(document).ready(function() {
         $J(this).next().slideToggle(200);
     });
 
-    $J("body").delegate(".page-grouping-page", "click", function() {
-        var hasClassActive = $J(this).hasClass("active");
-        $J(this).parent().children(".active").removeClass("active");
+    selectPage = function(event) {
+        if (event.type == undefined) {
+            page = event;
+        } else {
+            page = this;
+        }
+
+        var hasClassActive = $J(page).hasClass("active");
+        $J(page).parent().children(".active").removeClass("active");
         if (!hasClassActive) {
-            $J(this).addClass("active");
+            $J(page).addClass("active");
         }
 
         var addOrRemove = $J(".page-grouping-page.active").length ? false : true;
         $J(".page-grouping-buttons > .page-grouping-button").toggleClass("disabled", addOrRemove);
-    });
+    };
+    $J("body").delegate(".page-grouping-page", "click", selectPage);
 
     $J("body").delegate(".page-grouping-button-delete:not(.disabled)", "click", function() {
         $J(".page-grouping-buttons > .page-grouping-button").addClass("disabled");
@@ -350,7 +357,7 @@ $J(document).ready(function() {
         objNode.remove();
     });
 
-    $J("body").delegate(".page-grouping-button-group:not(.disabled)", "click", function() {
+    groupSelectedPages = function() {
         $J(".page-grouping-page.active").stop().addClass("grouped");
         $J(".page-grouping-buttons > .page-grouping-button").addClass("disabled");
 
@@ -451,9 +458,10 @@ $J(document).ready(function() {
         $J(".page-grouping-grouped-scroll-y").animate({
             scrollTop: scrollTop
         }, 200);
-    });
+    };
+    $J("body").delegate(".page-grouping-button-group:not(.disabled)", "click", groupSelectedPages);
 
-    $J("body").delegate(".page-grouping-button-import:not(.disabled)", "click", function() {
+    $J("body").delegate(".page-option-button-import:not(.disabled)", "click", function() {
         cx.ui.dialog({
             width:         400,
             height:        300,
@@ -474,7 +482,7 @@ $J(document).ready(function() {
         });
     });
 
-    $J("body").delegate(".page-grouping-button-export:not(.disabled)", "click", function() {
+    $J("body").delegate(".page-option-button-export:not(.disabled)", "click", function() {
         cx.ui.dialog({
             width:         400,
             height:        300,
@@ -547,30 +555,40 @@ var checkTimeout = function() {
 }
 
 var loadPageGroupingFromUserInput = function(userReadPageGroupings) {
+    userGroupedPages = new Array();
     jQuery.each(userReadPageGroupings, function(idx, groupDefinition) {
         var pageSelected = false;
+
+        // clear auto selection after page grouping
+        jQuery('.page-grouping-language .page-grouping-page:not(.grouped)').removeClass('active');
+
+        // select pages
         jQuery.each(groupDefinition.pages, function(idx, pageDefinition) {
             // find language box
             lang = jQuery('.page-grouping-language[data-lang=' + pageDefinition.lang + ']');
-            if (!lang) {
+            if (!lang.length) {
+                pageSelected = false;
                 return;
             }
 
             // find specific page
             page = lang.find('.page-grouping-page:not(.grouped):contains(' + pageDefinition.title + '):first');
-            if (!page) {
+            if (!page.length) {
+                pageSelected = false;
                 return;
             }
 
             // select page
-            page.trigger('click');
+            selectPage(page);
             pageSelected = true;
         });
         if (!pageSelected) {
+            // clear all page selections
+            jQuery('.page-grouping-language .page-grouping-page:not(.grouped)').removeClass('active');
             return;
         }
 
         // group pages together
-        jQuery('.page-grouping-button-group').trigger('click');
+        groupSelectedPages();
     });
 }
