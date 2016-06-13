@@ -214,14 +214,10 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         // Check if the toolbar configurator needs to be wrapped in a form tag
         if (!$isDefaultConfiguration) {
             $template->hideBlock('wysiwyg_toolbar_store_button');
-            $template->setVariable(array(
-                'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'  => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'],
-            ));
-        } else  {
-            $template->setVariable(array(
-                'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'  => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_DEFAULT_CONFIGURATOR'],
-            ));
         }
+        $template->setVariable(array(
+            'TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'  => $_ARRAYLANG['TXT_WYSIWYG_TOOLBAR_CONFIGURATOR'],
+        ));
 
         $this->getToolbarTranslations();
 
@@ -501,12 +497,20 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
     }
 
     /**
-     * Get the translations for the toolbar functions as json
-     * @return string   $translations   Toolbar function translations as json
+     * Get the translations for the toolbar and store it as a variable
+     * 
+     * This variable is available through the cx javascript framework. 
+     * @return void
      */
     protected function getToolbarTranslations() {
         // Get the init object to change to te proper language file
         $init = \Env::get('init');
+        $init->_initBackendLanguage();
+        // Check if current language is english or not
+        if ($init->getBackendLangId() === 2) {
+            // Current language is english no need to translate anything
+            return;
+        }
         // Initiate $translations as empty stdClass object
         $translations = new \stdClass();
         // Get the language file of the Wysiwyg component (this one btw.)
