@@ -5,7 +5,7 @@
  *
  * @link      http://www.cloudrexx.com
  * @copyright Cloudrexx AG 2007-2015
- * 
+ *
  * According to our dual licensing model, this program can be used either
  * under the terms of the GNU Affero General Public License, version 3,
  * or under a proprietary license.
@@ -24,7 +24,7 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
 /**
  * Module Session
  *
@@ -49,7 +49,7 @@ use \Cx\Core\Model\RecursiveArrayAccess as RecursiveArrayAccess;
  * @package     cloudrexx
  * @subpackage  core
  */
-class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface {
+class cmsSession extends RecursiveArrayAccess {
 
     /**
      * Instance of class for use in the singelton pattern.
@@ -183,7 +183,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
      * @param boolean $destroyCookie
      * @return boolean
      */
-    public function destroy($aKey = "", $destroyCookie = true)
+    public function cmsSessionDestroy($aKey = "", $destroyCookie = true)
     {
         if (empty($aKey)){
             session_destroy();
@@ -208,7 +208,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
         }
         return true;
     }
-    
+
     /**
      * Return true if the session is initialized and false otherwise.
      * 
@@ -250,7 +250,12 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
             $this->initSessionLifetime();
 
         if (session_set_save_handler(
-            $this, true))
+            array(& $this, 'cmsSessionOpen'),
+            array(& $this, 'cmsSessionClose'),
+            array(& $this, 'cmsSessionRead'),
+            array(& $this, 'cmsSessionWrite'),
+            array(& $this, 'cmsSessionDestroy'),
+            array(& $this, 'cmsSessionGc')))
         {
             session_start();
 
@@ -279,7 +284,6 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                                 continue;
                             }
                             $serializedValue = contrexx_input2db(serialize($sessionValue));
-
                             $query = 'INSERT INTO
                                             '. DBPREFIX .'session_variable
                                         SET
@@ -290,7 +294,6 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                                       ON DUPLICATE KEY UPDATE
                                          `value` = "'. $serializedValue .'"';
                             \Env::get('db')->Execute($query);
-
                             $this->releaseLock($lockKey);
                         }
                     }
@@ -492,9 +495,9 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
      *
      * @return bool
      */
-    function open($save_path, $session_id)
+    function cmsSessionOpen($save_path, $session_id)
     {
-        $this->gc(null);
+        $this->cmsSessionGc();
         return true;
     }
 
@@ -503,7 +506,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
      * 
      * @return boolean
      */
-    function close()
+    function cmsSessionClose()
     {
         return true;
     }
@@ -514,10 +517,11 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
      * @param string $aKey
      * @return string
      */
-    function read( $aKey )
+    function cmsSessionRead( $aKey )
     {
+
         $this->sessionid = $aKey;        
-        $this->sessionPath = \Env::get('cx')->getWebsiteTempWebPath() . '/' . $this->sessionPathPrefix . $this->sessionid;
+        $this->sessionPath = ASCMS_TEMP_WEB_PATH . '/' . $this->sessionPathPrefix . $this->sessionid;
         /** @var $objResult ADORecordSet */
         $objResult = \Env::get('db')->Execute('SELECT `user_id`, `status` FROM `' . DBPREFIX . 'sessions` WHERE `sessionid` = "' . $aKey . '"');
         if ($objResult !== false) {
@@ -529,7 +533,6 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                     INSERT INTO `' . DBPREFIX . 'sessions` (`sessionid`, `remember_me`, `startdate`, `lastupdated`, `status`, `user_id`)
                     VALUES ("' . $aKey . '", ' . ($this->rememberMe ? 1 : 0) . ', "' . time() . '", "' . time() . '", "' . $this->status . '", ' . intval($this->userId) . ')
                 ');
-                
                 return '';
             }
         }
@@ -545,7 +548,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
      *
      * @return bool
      */
-    function write($session_id, $session_data) {
+    function cmsSessionWrite($session_id, $session_data) {
         return true;
     }
 
@@ -562,7 +565,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
         if ($objResult) {
             while (!$objResult->EOF) {
                 if ($objResult->fields['sessionid'] != $this->sessionid) {
-                    $this->destroy($objResult->fields['sessionid'], false);
+                    $this->cmsSessionDestroy($objResult->fields['sessionid'], false);
                 }
                 $objResult->MoveNext();
             }
@@ -578,7 +581,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
      *
      * @return bool
      */
-    function gc($maxlifetime) {
+    function cmsSessionGc($maxlifetime) {
         // clear expired sessions that were once valid
         // note: those two queries might look obsolete when considering
         //       that the below three queries will have the same effect.
@@ -652,7 +655,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
             return false;
         }
 
-        return \Env::get('cx')->getWebsitePath() . $this->sessionPath;
+        return ASCMS_PATH . $this->sessionPath;
     }
 
     /**
@@ -725,6 +728,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
     public static function getLock($lockName, $lifeTime = 60)
     {
         $objLock = \Env::get('db')->Execute('SELECT GET_LOCK("' . $lockName . '", ' . $lifeTime . ')');
+
         /** @var $objLock ADORecordSet */
         if (!$objLock || $objLock->fields['GET_LOCK("' . $lockName . '", ' . $lifeTime . ')'] != 1) {
             die('Could not obtain session lock!');
@@ -902,7 +906,7 @@ class cmsSession extends RecursiveArrayAccess implements SessionHandlerInterface
                 $value->parentId = intval($recursiveArrayAccess->id);
                 self::updateToDb($value);
             }
-        }        
+        }
     }
     
         /**
