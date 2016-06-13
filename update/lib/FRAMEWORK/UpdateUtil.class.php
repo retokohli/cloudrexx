@@ -981,8 +981,8 @@ class UpdateUtil
      */
     public static function migratePath($table, $attribute, $oldPath, $newPath)
     {
-        self::regexpquote('table', $table);
-        self::regexpquote('attribute', $attribute);
+        //self::regexpquote('table', $table);
+        //self::regexpquote('attribute', $attribute);
         $query = 'UPDATE ' . $table .
                  ' SET ' . $attribute . ' = REPLACE(' . $attribute . ', \'' . $oldPath . '\', \'' . $newPath . '\')';
 

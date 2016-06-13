@@ -503,7 +503,7 @@ function _newsletterUpdate()
     $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
     $attributes = array(
         'module_newsletter'                 => 'content',
-        'module_newsletter_attachement'     => 'file_name',
+        'module_newsletter_attachment'     => 'file_name',
         'module_newsletter_settings'        => 'setvalue',
         'module_newsletter_template'        => 'html',
         'module_newsletter_confirm_mail'    => 'content',
@@ -689,7 +689,7 @@ In order to edit the email address please click the following link:
         SELECT
             `id`,
             `title`,
-            `setvalue`,
+            `content` as "setvalue",
             `recipients`
         FROM
             `' . DBPREFIX . 'module_newsletter_confirm_mail`
@@ -702,7 +702,7 @@ In order to edit the email address please click the following link:
             `setvalue`,
             ""
         FROM
-            `' . DBPREFIX . 'module_newsletter_settings WHERE `setname` = "reject_info_mail_text"`';
+            `' . DBPREFIX . 'module_newsletter_settings` WHERE `setname` = "reject_info_mail_text"';
     $mailTemplates = \Cx\Lib\UpdateUtil::sql($query);
     if (!$mailTemplates) {
         return;
@@ -880,7 +880,7 @@ function insertMailTemplate($key, $textId, $langId, $name, $title, $content, $ma
     $mailTitle   = str_replace($array_1, $array_2, $title);
     $mailContent = str_replace($array_1, $array_2, $content);
 
-    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES("'. $key .'", "Newsletter", '. $textId .', 0, 1)');
+    \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `' . DBPREFIX . 'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES("'. $key .'", "Newsletter", '. $textId .', 0, 1)');
     \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_bcc\', \'\')');
     \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_cc\', \'\')');
     \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_from\', \'[NEWSLETTER_SENDER_EMAIL]\')');

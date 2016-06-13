@@ -929,7 +929,7 @@ class FileSystem
      * @param   boolean   $force        Overwrites the destination if true
      * @return  boolean                 True on success, false otherwise
      */
-    static function move($from_path, $to_path, $force)
+    static function move($from_path, $to_path, $force = false)
     {
         self::path_relative_to_root($from_path);
         self::path_relative_to_root($to_path);

@@ -829,10 +829,10 @@ function _shopUpdate()
             // Contrexx 3.0.0 updates from here.
             // NOTE: All of these methods return false.
 
-            Attribute::errorHandler();
+            \Cx\Modules\Shop\Controller\Attribute::errorHandler();
 
 
-            Coupon::errorHandler();
+            \Cx\Modules\Shop\Controller\Coupon::errorHandler();
             // Prerequisites:
             //        ShopSettings::errorHandler();
 
@@ -841,14 +841,51 @@ function _shopUpdate()
             //        \Cx\Core\Setting\Controller\Setting::errorHandler();
 
 
-            Currency::errorHandler();
+            \Cx\Modules\Shop\Controller\Currency::errorHandler();
             // Prerequisites:
             //        Text::errorHandler();
 
             //Text::errorHandler(); // Called by Currency::errorHandler();Product::errorHandler();Payment::errorHandler();ShopCategory::errorHandler();
 
+            $selectUserProfileAttributes = null;
+            \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
+            $shopUserProfileAttributes = array('user_profile_attribute_notes', 'user_profile_attribute_customer_group_id');
+            foreach ($shopUserProfileAttributes as $userProfileAttribute) { 
+                $profileAttributeValue = \Cx\Core\Setting\Controller\Setting::getValue($userProfileAttribute,'Shop');
+                if (!$profileAttributeValue) {
+                    if (isset($_POST['shop'][$userProfileAttribute])) {
+                        // is POST value is empty, it means that the user wants the update system
+                        // to create a new user profile attribute, instead of using an existing one
+                        if (empty($_POST['shop'][$userProfileAttribute])) {
+                            continue;
+                        }
+                        if (!(\Cx\Core\Setting\Controller\Setting::set($userProfileAttribute, intval($_POST['shop'][$userProfileAttribute]))
+                           && \Cx\Core\Setting\Controller\Setting::update($userProfileAttribute))) {
+                            throw new \Cx\Lib\Update_DatabaseException(
+                               "Failed to update User_Profile_Attribute $userProfileAttribute setting");
+                        }
+                    } else {
+                        $attributeRadio = array('<input type="radio" name="shop['.$userProfileAttribute.']" value="0" id="shop-'.$userProfileAttribute.'-0" /><label for="shop-'.$userProfileAttribute.'-0">Create new attribute</label>');
+                        $customAttributeIds = \FWUser::getFWUserObject()->objUser->objAttribute->getCustomAttributeIds();
+                        foreach ($customAttributeIds as $attributeId) {
+                            $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute->getById($attributeId);
+                            $attributeRadio[] = '<input type="radio" name="shop['.$userProfileAttribute.']" value="'.$objAttribute->getId().'" id="shop-'.$userProfileAttribute.'-'.$objAttribute->getId().'" /><label for="shop-'.$userProfileAttribute.'-'.$objAttribute->getId().'">'.contrexx_raw2xhtml($objAttribute->getName()).'</label>';
+                        }
+                        $selectUserProfileAttributes .= '<div style="padding:10px;">';
+                        $selectUserProfileAttributes .= 'Select '.$userProfileAttribute.':<br />';
+                        $selectUserProfileAttributes .= join('<br />', $attributeRadio);
+                        $selectUserProfileAttributes .= '</div>';
+                    }
+                }
+            }
+            if ($selectUserProfileAttributes) {
+                setUpdateMsg('Select user profile attribute', 'title');
+                setUpdateMsg($selectUserProfileAttributes, 'msg');
+                setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_NEXT'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+                return false;
+            }
 
-            Product::errorHandler();
+            \Cx\Modules\Shop\Controller\Product::errorHandler();
             // Prerequisites:
             //        Text::errorHandler();
             //        Discount::errorHandler(); // Called by Customer::errorHandler();
@@ -875,12 +912,12 @@ function _shopUpdate()
             //        Country::errorHandler();
 
 
-            ShopMail::errorHandler();
+            \Cx\Modules\Shop\Controller\ShopMail::errorHandler();
             // Prerequisites:
             //        MailTemplate::errorHandler();
 
 
-            Payment::errorHandler();
+            \Cx\Modules\Shop\Controller\Payment::errorHandler();
             // Prerequisites:
             //        Text::errorHandler();
             //        Zones::errorHandler();
@@ -895,22 +932,22 @@ function _shopUpdate()
             //        \Cx\Core\Setting\Controller\Setting::errorHandler();
 
 
-            PaymentProcessing::errorHandler();
+            \Cx\Modules\Shop\Controller\PaymentProcessing::errorHandler();
 
 
-            Shipment::errorHandler();
+            \Cx\Modules\Shop\Controller\Shipment::errorHandler();
             // Prerequisites:
             //        Zones::errorHandler();
             // TODO: Check for and resolve recursion!
 
 
-            ShopCategory::errorHandler();
+            \Cx\Modules\Shop\Controller\ShopCategory::errorHandler();
             // Prerequisites:
             //        Text::errorHandler();
             //        ShopSettings::errorHandler();
 
 
-            Vat::errorHandler();
+            \Cx\Modules\Shop\Controller\Vat::errorHandler();
 
 
             // Update page templates

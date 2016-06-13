@@ -270,7 +270,7 @@ function _dataUpdate()
             foreach ($attributes as $attribute => $table) {
                 foreach ($pathsToMigrate as $oldPath => $newPath) {
                     \Cx\Lib\UpdateUtil::migratePath(
-                        '`' . DBPREFIX . 'module_data_messages_lang`',
+                        '`' . DBPREFIX . $table . '`',
                         '`' . $attribute . '`',
                         $oldPath,
                         $newPath

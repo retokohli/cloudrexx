@@ -106,7 +106,7 @@ function _marketUpdate()
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         \Cx\Lib\UpdateUtil::sql(
-            'INSERT IGNORE INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`)
+            'INSERT IGNORE INTO `'.DBPREFIX.'module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`)
              VALUES
                  (6, \'spez_field_6\', \'\', 1, 1, 0),
                  (7, \'spez_field_7\', \'\', 1, 1, 0),
@@ -115,7 +115,7 @@ function _marketUpdate()
                  (10, \'spez_field_10\', \'\', 1, 1, 0);
         ');
         \Cx\Lib\UpdateUtil::table(
-            DBPREFIX . 'module_market`',
+            DBPREFIX . 'module_market',
             array(
                 'id'        => array('type' => 'INT(9)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'name'      => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),

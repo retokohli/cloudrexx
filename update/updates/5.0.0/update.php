@@ -400,6 +400,7 @@ function executeContrexxUpdate() {
             if ($contentMigration->migrateStatistics()) {
                 $_SESSION['contrexx_update']['content_stats'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    setUpdateMsg(1, 'timeout');
                     return false;
                 }
             } else {
@@ -475,6 +476,7 @@ function executeContrexxUpdate() {
                 unset($_SESSION['contrexx_update']['pages']);
 
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    setUpdateMsg(1, 'timeout');
                     return false;
                 }
             } else if ($status === 'timeout') {
@@ -493,6 +495,7 @@ function executeContrexxUpdate() {
             if ($pageGrouping === true) {
                 $_SESSION['contrexx_update']['pages_grouped'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    setUpdateMsg(1, 'timeout');
                     return false;
                 }
             } else if ($pageGrouping === 'timeout') {
@@ -519,6 +522,7 @@ function executeContrexxUpdate() {
             if ($contentMigration->migrateAliases()) {
                 $_SESSION['contrexx_update']['aliases_migrated'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    setUpdateMsg(1, 'timeout');
                     return false;
                 }
             } else {
@@ -532,6 +536,7 @@ function executeContrexxUpdate() {
             if ($contentMigration->migrateBlocks()) {
                 $_SESSION['contrexx_update']['blocks_migrated'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    setUpdateMsg(1, 'timeout');
                     return false;
                 }
             } else {
@@ -545,6 +550,7 @@ function executeContrexxUpdate() {
             if ($contentMigration->dropOldTables()) {
                 $_SESSION['contrexx_update']['old_tables_dropped'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                    setUpdateMsg(1, 'timeout');
                     return false;
                 }
             }
@@ -2417,85 +2423,87 @@ function _migrateComponents($components, $objUpdate, $missedModules) {
         $dh = opendir(dirname(__FILE__).'/components/'.$dir);
         if ($dh) {
             while (($file = readdir($dh)) !== false) {
-                if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['migrateComponentsDone']))) {
-                    $fileInfo = pathinfo(dirname(__FILE__).'/components/'.$dir.'/'.$file);
+                if (in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['migrateComponentsDone']))) {
+                    continue;
+                }
 
-                    if ($fileInfo['extension'] == 'php') {
-                        // skip special components that are being executed individually
-                        if (preg_match('/('.join($specialComponents2skip, '|').')/', $fileInfo['filename'])) {
-                            \DBG::msg("skip special component: $file");
-                            continue;
-                        }
+                $fileInfo = pathinfo(dirname(__FILE__).'/components/'.$dir.'/'.$file);
 
-                        // skip all files that don't introduce changes for versions 3.0 and up
-                        if (
-                            !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0') &&
-                            !in_array($fileInfo['filename'], $genericMigrationScripts)
-                        ) {
-                            continue;
-                        }
-                        DBG::msg("--------- updating $file ------");
-
-                        if (!include_once(dirname(__FILE__).'/components/'.$dir.'/'.$file)) {
-                            setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
-                            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__).'/components/'.$dir.'/'.$file));
-                            return false;
-                        }
-
-                        if (!in_array($fileInfo['filename'], $missedModules)) {
-                            $function = '_'.$fileInfo['filename'].'Update';
-                            if (function_exists($function)) {
-                                DBG::msg("execute $function");
-                                $result = $function();
-                                if ($result === false) {
-                                    if (empty($objUpdate->arrStatusMsg['title'])) {
-                                        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
-                                    }
-                                    return false;
-                                } elseif ($result === 'timeout') {
-                                    return $result;
-                                }
-                            } else {
-                                setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
-                                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], '.'.$fileInfo['filename'], $file));
-                                return false;
-                            }
-                        } else {
-                            $function = '_'.$fileInfo['filename'].'Install';
-                            if (function_exists($function)) {
-                                DBG::msg("execute $function");
-                                $result = $function();
-                                if ($result === false) {
-                                    if (empty($objUpdate->arrStatusMsg['title'])) {
-                                        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
-                                    }
-                                    return false;
-                                } elseif ($result === 'timeout') {
-                                    return $result;
-                                } else {
-                                    // fetch module info from components/core/modules.php
-                                    $arrModule = getModuleInfo($fileInfo['filename']);
-                                    if ($arrModule) {
-                                        try {
-                                            \Cx\Lib\UpdateUtil::sql("INSERT INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$arrModule['id']." , '".$arrModule['name']."', '".$arrModule['description_variable']."', '".$arrModule['status']."', '".$arrModule['is_required']."', '".$arrModule['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
-                                        } catch (\Cx\Lib\UpdateException $e) {
-                                            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-                                        }
-                                    } else {
-                                        DBG::msg('unable to register module '.$fileInfo['filename']);
-                                    }
-                                }
-                            } else {
-                                setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
-                                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], '.'.$fileInfo['filename'], $file));
-                                return false;
-                            }
-                        }
+                if ($fileInfo['extension'] == 'php') {
+                    // skip special components that are being executed individually
+                    if (preg_match('/('.join($specialComponents2skip, '|').')/', $fileInfo['filename'])) {
+                        \DBG::msg("skip special component: $file");
+                        continue;
                     }
 
-                    $_SESSION['contrexx_update']['update']['migrateComponentsDone'][] = $file;
-                    return 'timeout';
+                    // skip all files that don't introduce changes for versions 3.0 and up
+                    if (
+                        !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0') &&
+                        !in_array($fileInfo['filename'], $genericMigrationScripts)
+                    ) {
+                        continue;
+                    }
+                    DBG::msg("--------- updating $file ------");
+
+                    if (!include_once(dirname(__FILE__).'/components/'.$dir.'/'.$file)) {
+                        setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
+                        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__).'/components/'.$dir.'/'.$file));
+                        return false;
+                    }
+
+                    if (!in_array($fileInfo['filename'], $missedModules)) {
+                        $function = '_'.$fileInfo['filename'].'Update';
+                        if (function_exists($function)) {
+                            DBG::msg("execute $function");
+                            $result = $function();
+                            if ($result === false) {
+                                if (empty($objUpdate->arrStatusMsg['title'])) {
+                                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
+                                }
+                                return false;
+                            } elseif ($result === 'timeout') {
+                                return $result;
+                            }
+                        } else {
+                            setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
+                            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], '.'.$fileInfo['filename'], $file));
+                            return false;
+                        }
+                    } else {
+                        $function = '_'.$fileInfo['filename'].'Install';
+                        if (function_exists($function)) {
+                            DBG::msg("execute $function");
+                            $result = $function();
+                            if ($result === false) {
+                                if (empty($objUpdate->arrStatusMsg['title'])) {
+                                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
+                                }
+                                return false;
+                            } elseif ($result === 'timeout') {
+                                return $result;
+                            } else {
+                                // fetch module info from components/core/modules.php
+                                $arrModule = getModuleInfo($fileInfo['filename']);
+                                if ($arrModule) {
+                                    try {
+                                        \Cx\Lib\UpdateUtil::sql("INSERT INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$arrModule['id']." , '".$arrModule['name']."', '".$arrModule['description_variable']."', '".$arrModule['status']."', '".$arrModule['is_required']."', '".$arrModule['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
+                                    } catch (\Cx\Lib\UpdateException $e) {
+                                        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+                                    }
+                                } else {
+                                    DBG::msg('unable to register module '.$fileInfo['filename']);
+                                }
+                            }
+                        } else {
+                            setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
+                            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], '.'.$fileInfo['filename'], $file));
+                            return false;
+                        }
+                    }
                 }
+
+                $_SESSION['contrexx_update']['update']['migrateComponentsDone'][] = $file;
+                return 'timeout';
             }
         } else {
             setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
@@ -2819,9 +2827,9 @@ function _migrateTemplateMediaPaths($themeRepository = null) {
     $mediaPaths = \Cx\Lib\UpdateUtil::getMigrationPaths();
     foreach ($availableTemplates as $template) {
         // check if current template-folder exists
-        if (is_dir(ASCMS_THEMES_PATH . $template['foldername'])) {
+        if (is_dir(ASCMS_THEMES_PATH . $template->getFoldername())) {
             // get all files inside of the current template
-            $files = getFolderStructure(ASCMS_THEMES_PATH . $template['foldername']);
+            $files = getFolderStructure(ASCMS_THEMES_PATH . $template->getFoldername());
             foreach ($files as $file) {
                 // get file info of the current file
                 $fileInfo = pathinfo($file);
