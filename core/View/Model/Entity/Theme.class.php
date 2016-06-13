@@ -173,6 +173,28 @@ class Theme extends \Cx\Model\Base\EntityBase
     }
     
     /**
+     * Get the absolute path of the given file
+     *
+     * @param string $file Path relative to the themes folder
+     *
+     * @return string Resolved file path (absolute to the filesystem)
+     */
+    public function getFilePath($file)
+    {
+        $cx       = \Cx\Core\Core\Controller\Cx::instanciate();
+        $filePath = '';
+        $relativeFilePath = '/' . $this->foldername . '/' . $file;
+
+        if (file_exists($cx->getWebsiteThemesPath() . $relativeFilePath)) {
+            $filePath = $cx->getWebsiteThemesPath() . $relativeFilePath;
+        } elseif (file_exists($cx->getCodeBaseThemesPath() . $relativeFilePath)) {
+            $filePath = $cx->getCodeBaseThemesPath() . $relativeFilePath;
+        }
+
+        return $filePath;
+    }
+
+    /**
      * @return string the extra description includes the names of end devices, where
      * the theme is set as default
      */

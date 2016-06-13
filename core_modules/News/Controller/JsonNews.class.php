@@ -38,6 +38,8 @@
 namespace Cx\Core_Modules\News\Controller;
 use \Cx\Core\Json\JsonAdapter;
 
+class JsonNewsException extends \Exception {};
+
 /**
  * JsonNews
  * Json controller for news module
@@ -72,6 +74,9 @@ class JsonNews implements JsonAdapter {
             'getNewsCategories',
             'getNewsArchiveList',
             'getTeaserFrame',
+            'getHeadlines',
+            'getTopNews',
+            'getRecentComments',
         );
     }
 
@@ -197,6 +202,114 @@ class JsonNews implements JsonAdapter {
 
         $newsTeaser = new Teasers();
         return array('content' => $newsTeaser->_getTeaserFrame($id, $templateId));
+    }
+
+    /**
+     * Parse News for the headlines files
+     *
+     * @param array $params User input array
+     *
+     * @return array
+     */
+    public function getHeadlines($params)
+    {
+        $headline = !empty($params['get']['headlineId']) ? contrexx_input2int($params['get']['headlineId']) : '';
+        try {
+            $theme   = $this->getThemeFromInput($params);
+            $content = $this->getContentFromThemeFile($theme, 'headlines'. $headline .'.html');
+        } catch (JsonNewsException $e) {
+            \DBG::log($e->getMessage());
+            return array('content' => '');
+        }
+
+        $category = !empty($params['get']['category']) ? contrexx_input2int($params['get']['category']) : 0;
+        $langId   = !empty($params['get']['langId']) ? contrexx_input2int($params['get']['langId']) : 0;
+
+        $newsHeadlines = new NewsHeadlines($content);
+        return array('content' => $newsHeadlines->getHomeHeadlines($category, $langId));
+    }
+
+    /**
+     * Parse Top news for the template
+     *
+     * @param array $params User input array
+     *
+     * @return array
+     */
+    public function getTopNews($params)
+    {
+        try {
+            $theme   = $this->getThemeFromInput($params);
+            $content = $this->getContentFromThemeFile($theme, 'top_news.html');
+        } catch (JsonNewsException $e) {
+            \DBG::log($e->getMessage());
+            return array('content' => '');
+        }
+
+        $newsTopNews = new NewsTop($content);
+        return array('content' => $newsTopNews->getHomeTopNews());
+    }
+
+    /**
+     * Parse the recent comments for the template
+     *
+     * @param array $params User input array
+     *
+     * @return array
+     */
+    public function getRecentComments($params)
+    {
+        try {
+            $theme   = $this->getThemeFromInput($params);
+            $content = $this->getContentFromThemeFile($theme, 'news_recent_comments.html');
+        } catch (JsonNewsException $e) {
+            \DBG::log($e->getMessage());
+            return array('content' => '');
+        }
+
+        $langId         = !empty($params['get']['langId']) ? contrexx_input2int($params['get']['langId']) : 0;
+        $recentComments = new NewsRecentComments($content);
+        return array('content' => $recentComments->getRecentNewsComments($langId));
+    }
+
+    /**
+     * Get theme from the user input
+     *
+     * @param array $params User input array
+     * @return \Cx\Core\View\Model\Entity\Theme Theme instance
+     * @throws JsonNewsException When theme id empty or theme does not exits in the system
+     */
+    protected function getThemeFromInput($params)
+    {
+        $themeId  = !empty($params['get']['template']) ? contrexx_input2int($params['get']['template']) : 0;
+        if (empty($themeId)) {
+            throw new JsonNewsException('The theme id is empty in the request');
+        }
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $theme           = $themeRepository->findById($themeId);
+        if (!$theme) {
+            throw new JsonNewsException('The theme id '. $themeId .' does not exists.');
+        }
+        return $theme;
+    }
+
+    /**
+     * Get the contents from the given theme file path
+     *
+     * @param \Cx\Core\View\Model\Entity\Theme $theme   Theme instance
+     * @param string                           $file    Relative file path
+     * @return string File content
+     * @throws JsonNewsException When file not exists in the theme
+     */
+    protected function getContentFromThemeFile(\Cx\Core\View\Model\Entity\Theme $theme, $file)
+    {
+        $filePath = $theme->getFilePath($file);
+        if (empty($filePath)) {
+            throw new JsonNewsException('The file => '. $file .' not exists in Theme => ' . $theme->getThemesname());
+        }
+
+        $content = file_get_contents($filePath);
+        return $content;
     }
 }
 

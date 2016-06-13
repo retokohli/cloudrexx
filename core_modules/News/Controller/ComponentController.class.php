@@ -143,7 +143,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $themesPages, $page_template, $objCache;
+        global $themesPages, $page_template, $objCache, $_LANGID;
         switch ($this->cx->getMode()) {
             case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
                 // Get Headlines
@@ -166,8 +166,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 if (preg_match('/\{CATEGORY_([0-9]+)\}/', trim($themesPages['headlines' . $visibleI]), $matches)) {
                                     $category = $matches[1];
                                 }
-                                $newsHeadlinesObj = new NewsHeadlines($themesPages['headlines' . $visibleI]);
-                                $homeHeadlines = $newsHeadlinesObj->getHomeHeadlines($category);
+                                $homeHeadlines = $objCache->getEsiContent(
+                                    'News',
+                                    'getHeadlines',
+                                    array(
+                                        'headlineId' => $visibleI,
+                                        'category'   => $category,
+                                        'template'   => \Env::get('init')->getCurrentThemeId(),
+                                        'langId'     => $_LANGID,
+                                    )
+                                );
                                 \Env::get('cx')->getPage()->setContent(str_replace($headlinesNewsPlaceholder, $homeHeadlines, \Env::get('cx')->getPage()->getContent()));
                                 $themesPages['index']   = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['index']);
                                 $themesPages['sidebar'] = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['sidebar']);
@@ -185,8 +193,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             || strpos($themesPages['sidebar'], $topNewsPlaceholder) !== false
                             || strpos($page_template, $topNewsPlaceholder) !== false)
                    ) {
-                        $newsTopObj = new NewsTop($themesPages['top_news']);
-                        $homeTopNews = $newsTopObj->getHomeTopNews();
+                        $homeTopNews = $objCache->getEsiContent(
+                            'News',
+                            'getTopNews',
+                            array(
+                                'template'   => \Env::get('init')->getCurrentThemeId(),
+                            )
+                        );
                         \Env::get('cx')->getPage()->setContent(str_replace($topNewsPlaceholder, $homeTopNews, \Env::get('cx')->getPage()->getContent()));
                         $themesPages['index']   = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['sidebar']);
@@ -241,9 +254,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                            || strpos($themesPages['sidebar'], $newsCommentsPlaceholder) !== false
                            || strpos($page_template, $newsCommentsPlaceholder) !== false)
                    ) {
-                        $newsLib = new NewsRecentComments($themesPages['news_recent_comments']);
-                        $newsComments = $newsLib->getRecentNewsComments();
-                            
+                        $newsComments = $objCache->getEsiContent(
+                            'News',
+                            'getRecentComments',
+                            array(
+                                'template' => \Env::get('init')->getCurrentThemeId(),
+                                'langId'   => $_LANGID,
+                            )
+                        );
                         \Env::get('cx')->getPage()->setContent(str_replace($newsCommentsPlaceholder, $newsComments, \Env::get('cx')->getPage()->getContent()));
                         $themesPages['index']   = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['index']);
                         $themesPages['sidebar'] = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['sidebar']);

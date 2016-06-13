@@ -79,12 +79,16 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
     }
 
 
-    function getHomeHeadlines($catId=0)
+    function getHomeHeadlines($catId = 0, $langId = 0)
     {
-        global $_CORELANG, $objDatabase, $_LANGID;
+        global $_CORELANG, $objDatabase;
 
         $i = 0;
         $catId= intval($catId);
+
+        if (empty($langId)) {
+            $langId = \Env::get('init')->getDefaultFrontendLangId();
+        }
 
         $this->_objTemplate->setTemplate($this->_pageContent,true,true);
 
@@ -115,7 +119,7 @@ class NewsHeadlines extends \Cx\Core_Modules\News\Controller\NewsLibrary
                   WHERE tblN.status=1".
                    ($catId > 0 ? " AND tblC.category_id=$catId" : '')."
                    AND tblN.teaser_only='0'
-                   AND tblL.lang_id=".$_LANGID."
+                   AND tblL.lang_id=".$langId."
                    AND tblL.is_active=1
                    AND (startdate<='".date('Y-m-d H:i:s')."' OR startdate='0000-00-00 00:00:00')
                    AND (enddate>='".date('Y-m-d H:i:s')."' OR enddate='0000-00-00 00:00:00')".
