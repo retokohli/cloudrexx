@@ -503,7 +503,7 @@ function _newsletterUpdate()
     $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
     $attributes = array(
         'module_newsletter'                 => 'content',
-        'module_newsletter_attachement'     => 'file_name',
+        'module_newsletter_attachment'     => 'file_name',
         'module_newsletter_settings'        => 'setvalue',
         'module_newsletter_template'        => 'html',
         'module_newsletter_confirm_mail'    => 'content',

@@ -499,7 +499,7 @@ function _contactUpdate()
             $attributes = array(
                 'text'          => 'module_contact_form_lang',
                 'feedback'      => 'module_contact_form_lang',
-                'mailTemplaet'  => 'module_contact_form_lang',
+                'mailTemplate'  => 'module_contact_form_lang',
                 'formvalue'     => 'module_contact_form_submit_data',
 
             );

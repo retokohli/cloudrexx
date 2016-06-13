@@ -998,7 +998,7 @@ function _accessUpdate()
         try {
             foreach ($pathsToMigrate as $oldPath => $newPath) {
                 \Cx\Lib\UpdateUtil::migratePath(
-                    '`' . DBPREFIX . 'contrexx_access_user_profile`',
+                    '`' . DBPREFIX . 'access_user_profile`',
                     '`picture`',
                     $oldPath,
                     $newPath
