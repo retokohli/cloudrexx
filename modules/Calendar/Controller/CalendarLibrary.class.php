@@ -145,9 +145,15 @@ class CalendarLibrary
      * @var array 
      */
     public $arrCommunityGroups = array();    
-        
+
+    /**
+     * @var \Cx\Core\Core\Controller\Cx
+     */
     protected $cx;
 
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
     protected $em;
 
     /**
@@ -181,14 +187,22 @@ class CalendarLibrary
         $this->_objTpl = new \Cx\Core\Html\Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    
         
-        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        $this->em = $this->cx->getDb()->getEntityManager();
         $this->_objTpl->setGlobalVariable(array(
             $this->moduleLangVar.'_MODULE_NAME'  => $this->moduleName,
             $this->moduleLangVar.'_CSRF'         => 'csrf='.\Cx\Core\Csrf\Controller\Csrf::code(),     
             $this->moduleLangVar.'_DATE_FORMAT'  => self::getDateFormat(1),
             $this->moduleLangVar.'_JAVASCRIPT'   => self::getJavascript(),
         ));
+
+        $this->init();
+    }
+
+    /**
+     * Initialize $cx and $em
+     */
+    public function init() {
+        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->em = $this->cx->getDb()->getEntityManager();
     }
 
     /**

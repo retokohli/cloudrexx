@@ -1847,11 +1847,11 @@ class Event extends \Cx\Model\Base\EntityBase {
     /**
      * Add eventFields
      *
-     * @param Cx\Modules\Calendar\Model\Entity\EventField $eventFields
+     * @param Cx\Modules\Calendar\Model\Entity\EventField $eventField
      */
-    public function addEventFields(\Cx\Modules\Calendar\Model\Entity\EventField $eventFields)
+    public function addEventField(\Cx\Modules\Calendar\Model\Entity\EventField $eventField)
     {
-        $this->eventFields[] = $eventFields;
+        $this->eventFields[] = $eventField;
     }
 
     /**

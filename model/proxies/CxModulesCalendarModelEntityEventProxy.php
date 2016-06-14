@@ -867,10 +867,10 @@ class CxModulesCalendarModelEntityEventProxy extends \Cx\Modules\Calendar\Model\
         return parent::getHostMediadirId();
     }
 
-    public function addEventFields(\Cx\Modules\Calendar\Model\Entity\EventField $eventFields)
+    public function addEventField(\Cx\Modules\Calendar\Model\Entity\EventField $eventField)
     {
         $this->_load();
-        return parent::addEventFields($eventFields);
+        return parent::addEventField($eventField);
     }
 
     public function getEventFields()
