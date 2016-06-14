@@ -618,7 +618,7 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_PLACE_LINK'                        => $eventId != 0 ? $objEvent->place_link : '', 
             $this->moduleLangVar.'_EVENT_PLACE_PHONE'                       => $eventId != 0 ? $objEvent->place_phone : '',
             $this->moduleLangVar.'_PLACE_MAP_SOURCE'                        => $eventId != 0 ? $objEvent->place_map : '',    
-            //$this->moduleLangVar.'_EVENT_MAP'                               => $objEvent->map == 1 ? 'checked="checked"' : '',    
+            $this->moduleLangVar.'_EVENT_MAP'                               => $objEvent->google == 1 ? 'checked="checked"' : '',    
             $this->moduleLangVar.'_EVENT_HOST_TYPE'                         => $this->arrSettings['placeDataHost'] == 3 ? ($eventId != 0 ? $objEvent->hostType : 1) : $this->arrSettings['placeDataHost'],
             $this->moduleLangVar.'_EVENT_HOST'                              => $eventId != 0 ? $objEvent->org_name : '',
             $this->moduleLangVar.'_EVENT_HOST_ADDRESS'                      => $eventId != 0 ? $objEvent->org_street : '',
