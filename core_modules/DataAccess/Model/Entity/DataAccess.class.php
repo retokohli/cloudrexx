@@ -82,6 +82,11 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     protected $dataAccessApiKeys;
 
     /**
+     * @var Cx\Core_Modules\Sync\Model\Entity\Relation
+     */
+    protected $relations;
+
+    /**
      * @var Cx\Core_Modules\Access\Model\Entity\Permission
      */
     protected $readPermission;
@@ -100,6 +105,7 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     {
         $this->syncs = new \Doctrine\Common\Collections\ArrayCollection();
         $this->dataAccessApiKeys = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->relations = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -230,6 +236,36 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     public function getDataAccessApiKeys()
     {
         return $this->dataAccessApiKeys;
+    }
+
+    /**
+     * Add relations
+     *
+     * @param Cx\Core_Modules\Sync\Model\Entity\Relation $relation
+     */
+    public function addRelation(\Cx\Core_Modules\Sync\Model\Entity\Relation $relation)
+    {
+        $this->relations[] = $relation;
+    }
+
+    /**
+     * Get relations
+     *
+     * @return Doctrine\Common\Collections\Collection $relations
+     */
+    public function getRelations()
+    {
+        return $this->relations;
+    }
+
+    /**
+     * Set Relations
+     *
+     * @param array $relations
+     */
+    public function setRelations($relations)
+    {
+        $this->relations[] = $relations;
     }
 
     /**

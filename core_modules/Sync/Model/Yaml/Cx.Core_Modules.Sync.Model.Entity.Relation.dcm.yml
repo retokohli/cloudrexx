@@ -23,9 +23,10 @@ Cx\Core_Modules\Sync\Model\Entity\Relation:
       type: integer
       gedmo:
         - treeLevel
-    foreignDataAccessId:
-      type: integer
-      column: foreign_data_access_id
+    localFieldName:
+      type: string
+      length: 50
+      column: local_field_name
     doSync:
       type: boolean
       column: do_sync
@@ -47,6 +48,14 @@ Cx\Core_Modules\Sync\Model\Entity\Relation:
       inversedBy: relations
       joinColumn:
         name: related_sync_id
+        referencedColumnName: id
+        nullable: false
+        cascade: [remove]
+    foreignDataAccess:
+      targetEntity: Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
+      inversedBy: relations
+      joinColumn:
+        name: foreign_data_access_id
         referencedColumnName: id
         nullable: false
         cascade: [remove]

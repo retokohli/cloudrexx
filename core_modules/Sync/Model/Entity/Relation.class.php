@@ -66,9 +66,9 @@ class Relation extends \Cx\Model\Base\EntityBase {
     protected $lvl;
 
     /**
-     * @var integer $foreignDataAccessId
+     * @var string $localFieldName
      */
-    protected $foreignDataAccessId;
+    protected $localFieldName;
 
     /**
      * @var integer $doSync
@@ -94,6 +94,11 @@ class Relation extends \Cx\Model\Base\EntityBase {
      * @var Cx\Core_Modules\Sync\Model\Entity\Sync
      */
     protected $relatedSync;
+
+    /**
+     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
+     */
+    protected $foreignDataAccess;
 
     public function __construct()
     {
@@ -171,23 +176,23 @@ class Relation extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set foreignDataAccessId
+     * Set localFieldName
      *
-     * @param integer $foreignDataAccessId
+     * @param string $localFieldName
      */
-    public function setForeignDataAccessId($foreignDataAccessId)
+    public function setLocalFieldName($localFieldName)
     {
-        $this->foreignDataAccessId = $foreignDataAccessId;
+        $this->localFieldName = $localFieldName;
     }
 
     /**
-     * Get foreignDataAccessId
+     * Get localFieldName
      *
-     * @return integer $foreignDataAccessId
+     * @return string $localFieldName
      */
-    public function getForeignDataAccessId()
+    public function getLocalFieldName()
     {
-        return $this->foreignDataAccessId;
+        return $this->localFieldName;
     }
 
     /**
@@ -241,6 +246,16 @@ class Relation extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set children
+     *
+     * @param array
+     */
+    public function setChildren($children)
+    {
+        $this->children = $children;
+    }
+
+    /**
      * Get children
      *
      * @return Doctrine\Common\Collections\Collection $children
@@ -288,5 +303,25 @@ class Relation extends \Cx\Model\Base\EntityBase {
     public function getRelatedSync()
     {
         return $this->relatedSync;
+    }
+
+    /**
+     * Set foreignDataAccess
+     *
+     * @param Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $foreignDataAccess
+     */
+    public function setForeignDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $foreignDataAccess)
+    {
+        $this->foreignDataAccess = $foreignDataAccess;
+    }
+
+    /**
+     * Get foreignDataAccess
+     *
+     * @return Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $foreignDataAccess
+     */
+    public function getForeignDataAccess()
+    {
+        return $this->foreignDataAccess;
     }
 }
