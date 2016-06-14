@@ -28,7 +28,7 @@
 
 function _shopUpdate()
 {
-    global $objDatabase, $_ARRAYLANG, $objUpdate, $_CONFIG;
+    global $objDatabase, $_ARRAYLANG, $objUpdate, $_CONFIG, $_CORELANG;
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         if (!defined('MODULE_INDEX')) define('MODULE_INDEX', '');
@@ -780,9 +780,8 @@ function _shopUpdate()
             Cx\Lib\UpdateUtil::table(
                 $table_name,
                 array(
-                    'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                    'zones_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                    'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                    'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'zones_id', 'primary' => true),
+                    'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
                 )
             );
 
@@ -853,23 +852,23 @@ function _shopUpdate()
             foreach ($shopUserProfileAttributes as $userProfileAttribute) { 
                 $profileAttributeValue = \Cx\Core\Setting\Controller\Setting::getValue($userProfileAttribute,'Shop');
                 if (!$profileAttributeValue) {
-                    if (isset($_POST['shop'][$userProfileAttribute])) {
+                    if (isset($_POST[$userProfileAttribute])) {
                         // is POST value is empty, it means that the user wants the update system
                         // to create a new user profile attribute, instead of using an existing one
-                        if (empty($_POST['shop'][$userProfileAttribute])) {
+                        if (empty($_POST[$userProfileAttribute])) {
                             continue;
                         }
-                        if (!(\Cx\Core\Setting\Controller\Setting::set($userProfileAttribute, intval($_POST['shop'][$userProfileAttribute]))
+                        if (!(\Cx\Core\Setting\Controller\Setting::set($userProfileAttribute, intval($_POST[$userProfileAttribute]))
                            && \Cx\Core\Setting\Controller\Setting::update($userProfileAttribute))) {
                             throw new \Cx\Lib\Update_DatabaseException(
                                "Failed to update User_Profile_Attribute $userProfileAttribute setting");
                         }
                     } else {
-                        $attributeRadio = array('<input type="radio" name="shop['.$userProfileAttribute.']" value="0" id="shop-'.$userProfileAttribute.'-0" /><label for="shop-'.$userProfileAttribute.'-0">Create new attribute</label>');
+                        $attributeRadio = array('<input type="radio" name="'.$userProfileAttribute.'" value="0" id="shop-'.$userProfileAttribute.'-0" /><label for="shop-'.$userProfileAttribute.'-0">Create new attribute</label>');
                         $customAttributeIds = \FWUser::getFWUserObject()->objUser->objAttribute->getCustomAttributeIds();
                         foreach ($customAttributeIds as $attributeId) {
                             $objAttribute = \FWUser::getFWUserObject()->objUser->objAttribute->getById($attributeId);
-                            $attributeRadio[] = '<input type="radio" name="shop['.$userProfileAttribute.']" value="'.$objAttribute->getId().'" id="shop-'.$userProfileAttribute.'-'.$objAttribute->getId().'" /><label for="shop-'.$userProfileAttribute.'-'.$objAttribute->getId().'">'.contrexx_raw2xhtml($objAttribute->getName()).'</label>';
+                            $attributeRadio[] = '<input type="radio" name="'.$userProfileAttribute.'" value="'.$objAttribute->getId().'" id="shop-'.$userProfileAttribute.'-'.$objAttribute->getId().'" /><label for="shop-'.$userProfileAttribute.'-'.$objAttribute->getId().'">'.contrexx_raw2xhtml($objAttribute->getName()).'</label>';
                         }
                         $selectUserProfileAttributes .= '<div style="padding:10px;">';
                         $selectUserProfileAttributes .= 'Select '.$userProfileAttribute.':<br />';
@@ -1432,7 +1431,7 @@ HTML;
                    (14,"external","paymill_iban","","https://www.paymill.com",1,"")
             ');
             Cx\Lib\UpdateUtil::sql('
-            INSERT IGNORE INTO `' . DBPREFIX . 'module_shop_rel_payment` (`zones_id`, `payment_id`)
+            INSERT IGNORE INTO `' . DBPREFIX . 'module_shop_rel_payment` (`zone_id`, `payment_id`)
             VALUES (1,16),
                    (1,17),
                    (1,18)

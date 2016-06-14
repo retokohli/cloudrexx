@@ -711,7 +711,9 @@ function executeContrexxUpdate() {
             return false;
         }
         if (!$result) {
-            setUpdateMsg('Die Komponenten konnten nicht migiert werden.');
+            if (empty($objUpdate->arrStatusMsg['msg'])) {
+                setUpdateMsg('Die Komponenten konnten nicht migiert werden.', 'msg');
+            }
             return false;
         }
 
@@ -1416,6 +1418,9 @@ function getConflictedModules($missedModules) {
 
     $conflictedModules = array();
     foreach ($missedModules as $module) {
+        if (!isset($potentialMissedTables[$module])) {
+            continue;
+        }
         foreach ($potentialMissedTables[$module] as $table) {
             if (\Cx\Lib\UpdateUtil::table_exist($table)) {
                 $result = \Cx\Lib\UpdateUtil::sql('SHOW TABLE STATUS WHERE `Name` = "'.$table.'"');
