@@ -1405,7 +1405,11 @@ class CalendarEvent extends CalendarLibrary
         );
 
         $eventFields = $this->getEventFieldsAsArray($data, $convertBBCode, $type);
-        $event       = $this->getEventEntity($id, $formData, $eventFields);
+        $formDatas   = array(
+            'fields'    => $formData,
+            'relation'  => array('eventFields' => $eventFields)
+        );
+        $event       = $this->getEventEntity($id, $formDatas);
         if ($id != 0) {
             $this->cx->getEvents()->triggerEvent(
                 'model/preUpdate',
@@ -1421,10 +1425,33 @@ class CalendarEvent extends CalendarLibrary
             
             if ($objResult !== false) {
                 $this->id = $id;
+                $eventFieldEntities = $event->getEventFields();
+                foreach ($eventFieldEntities as $eventFieldEntity)  {
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/preRemove',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $eventFieldEntity, $this->em
+                            )
+                        )
+                    );
+                }
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field
                                 WHERE event_id = '".$id."'";
 
                 $objResult = $objDatabase->Execute($query);
+                if ($objResult !== false) {
+                    foreach ($eventFieldEntities as $eventFieldEntity)  {
+                        $this->cx->getEvents()->triggerEvent(
+                            'model/postRemove',
+                            array(
+                                new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                    $eventFieldEntity, $this->em
+                                )
+                            )
+                        );
+                    }
+                }
 
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_event_host
                                 WHERE event_id = '".$id."'";
@@ -1492,6 +1519,17 @@ class CalendarEvent extends CalendarLibrary
         if ($id != 0) {
             if (!empty($eventFields)) {
                 foreach ($eventFields as $eventField) {
+                    $eventFieldEntity = $this->getEventFieldEntity(
+                        $event, $eventField
+                    );
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/prePersist',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $eventFieldEntity, $this->em
+                            )
+                        )
+                    );
                     $query =
                         'INSERT INTO ' . DBPREFIX . 'module_' . $this->moduleTablePrefix. '_event_field
                           SET `event_id`    = ' . $id . ',
@@ -1503,6 +1541,15 @@ class CalendarEvent extends CalendarLibrary
                     $objResult = $objDatabase->Execute($query);
                     if ($objResult === false) {
                         return false;
+                    } else {
+                        $this->cx->getEvents()->triggerEvent(
+                            'model/postPersist',
+                            array(
+                                new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                    $eventFieldEntity, $this->em
+                                )
+                            )
+                        );
                     }
                 }
             }
@@ -1719,11 +1766,32 @@ class CalendarEvent extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
 
         if ($objResult !== false) {
+            $eventFieldEntities = $event->getEventFields();
+            foreach ($eventFieldEntities as $eventFieldEntity)  {
+                $this->cx->getEvents()->triggerEvent(
+                    'model/preRemove',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $eventFieldEntity, $this->em
+                        )
+                    )
+                );
+            }
             $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field
                             WHERE event_id = '".intval($this->id)."'";
 
             $objResult = $objDatabase->Execute($query);
             if ($objResult !== false) {
+                foreach ($eventFieldEntities as $eventFieldEntity)  {
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/postRemove',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $eventFieldEntity, $this->em
+                            )
+                        )
+                    );
+                }
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_event_host
                                 WHERE event_id = '".intval($this->id)."'";
 
@@ -1846,7 +1914,9 @@ class CalendarEvent extends CalendarLibrary
             $status = 1;
         }
 
-        $event = $this->getEventEntity($this->id, array('status' => $status));
+        $event = $this->getEventEntity(
+            $this->id, array('fields' => array('status' => $status))
+        );
         $this->cx->getEvents()->triggerEvent(
             'model/preUpdate',
             array(new \Doctrine\ORM\Event\LifecycleEventArgs($event, $this->em))
@@ -1881,7 +1951,9 @@ class CalendarEvent extends CalendarLibrary
     {
         global $objDatabase;
 
-        $event = $this->getEventEntity($this->id, array('confirmed' => 1));
+        $event = $this->getEventEntity(
+            $this->id, array('fields' => array('confirmed' => 1))
+        );
         $this->cx->getEvents()->triggerEvent(
             'model/preUpdate',
             array(new \Doctrine\ORM\Event\LifecycleEventArgs($event, $this->em))
@@ -2343,13 +2415,12 @@ class CalendarEvent extends CalendarLibrary
     /**
      * Get event entity
      *
-     * @param integer $id          event id
-     * @param array   $formDatas   event form field values
-     * @param array   $eventFields event's field values
+     * @param integer $id        event id
+     * @param array   $formDatas event form field values
      *
      * @return \Cx\Modules\Calendar\Model\Entity\Event
      */
-    public function getEventEntity($id, $formDatas, $eventFields)
+    public function getEventEntity($id, $formDatas)
     {
         if (empty($id)) {
             $event = new \Cx\Modules\Calendar\Model\Entity\Event();
@@ -2360,10 +2431,14 @@ class CalendarEvent extends CalendarLibrary
                 ->findOneById($id);
         }
 
+        if (!$event) {
+            return null;
+        }
+
         $classMetaData = $this
             ->em
             ->getClassMetadata('Cx\Modules\Calendar\Model\Entity\Event');
-        foreach ($formDatas as $columnName => $columnValue) {
+        foreach ($formDatas['fields'] as $columnName => $columnValue) {
             $fieldName  = $classMetaData->getFieldName($columnName);
             if ($fieldName == 'catid') {
                 $fieldName   = 'category';
@@ -2384,22 +2459,41 @@ class CalendarEvent extends CalendarLibrary
             }
         }
 
-        if (empty($eventFields)) {
+        $relations = $formDatas['relation'];
+        if (empty($relations) || empty($relations['eventFields'])) {
             return $event;
         }
 
         //Add event fields
-        foreach ($eventFields as $eventFieldValues) {
-            $eventField = new \Cx\Modules\Calendar\Model\Entity\EventField();
-            foreach ($eventFieldValues as $fieldName => $fieldValue) {
-                $methodName = 'set'.ucfirst($fieldName);
-                if (method_exists($eventField, $methodName)) {
-                    $eventField->{$methodName}($fieldValue);
-                }
-            }
-            $event->addEventField($eventField);
+        foreach ($relations['eventFields'] as $eventFieldValues) {
+            $this->getEventFieldEntity($event, $eventFieldValues);
         }
 
         return $event;
+    }
+
+    /**
+     * Get event field entity
+     *
+     * @param \Cx\Modules\Calendar\Model\Entity\Event $event       event entity
+     * @param array                                   $fieldValues eventField's field values
+     *
+     * @return \Cx\Modules\Calendar\Model\Entity\EventField
+     */
+    public function getEventFieldEntity(
+        \Cx\Modules\Calendar\Model\Entity\Event &$event,
+        $fieldValues
+    ){
+        $eventField = new \Cx\Modules\Calendar\Model\Entity\EventField();
+        foreach ($fieldValues as $fieldName => $fieldValue) {
+            $methodName = 'set'.ucfirst($fieldName);
+            if (method_exists($eventField, $methodName)) {
+                $eventField->{$methodName}($fieldValue);
+            }
+        }
+        $event->addEventField($eventField);
+        $eventField->setEvent($event);
+
+        return $eventField;
     }
 }
