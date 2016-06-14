@@ -201,23 +201,25 @@ function _downloadsUpdate()
         /************************************************
         * BUGFIX:   Set write access to the upload dir  *
         ************************************************/
-        if (file_exists(ASCMS_DOWNLOADS_IMAGES_PATH) && \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOWNLOADS_IMAGES_PATH)) {
-            if ($mediaDir = @opendir(ASCMS_DOWNLOADS_IMAGES_PATH)) {
-                while($file = readdir($mediaDir)) {
-                    if ($file != '.' && $file != '..') {
-                        if (!\Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$file)) {
-                            setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_FILE'], ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$file, $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
-                            return false;
+        if (file_exists(ASCMS_DOWNLOADS_IMAGES_PATH)) {
+            if (\Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOWNLOADS_IMAGES_PATH)) {
+                if ($mediaDir = @opendir(ASCMS_DOWNLOADS_IMAGES_PATH)) {
+                    while($file = readdir($mediaDir)) {
+                        if ($file != '.' && $file != '..') {
+                            if (!\Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$file)) {
+                                setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_FILE'], ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$file, $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
+                                return false;
+                            }
                         }
                     }
+                } else {
+                    setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_DOWNLOADS_IMAGES_PATH.'/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
+                    return false;
                 }
             } else {
                 setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_DOWNLOADS_IMAGES_PATH.'/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
                 return false;
             }
-        } else {
-            setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_DIR_AND_CONTENT'], ASCMS_DOWNLOADS_IMAGES_PATH.'/', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
-            return false;
         }
 
 
