@@ -75,9 +75,15 @@ class Sync extends \Cx\Model\Base\EntityBase {
      */
     protected $relations;
 
+    /**
+     * @var Cx\Core_Modules\Sync\Model\Entity\HostEntity
+     */
+    protected $hostEntities;
+
     public function __construct()
     {
         $this->relations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->hostEntities = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -173,9 +179,6 @@ class Sync extends \Cx\Model\Base\EntityBase {
      */
     public function getDataAccess()
     {
-        $em = $this->cx->getDb()->getEntityManager();
-        $dataAccessRepo = $em->getRepository('Cx\Core_Modules\DataAccess\Model\Entity\DataAccess');
-        return $dataAccessRepo->find($this->dataAccess);
         return $this->dataAccess;
     }
 
@@ -197,6 +200,46 @@ class Sync extends \Cx\Model\Base\EntityBase {
     public function getRelations()
     {
         return $this->relations;
+    }
+
+    /**
+     * Set Relations
+     *
+     * @param array $relations
+     */
+    public function setRelations($relations)
+    {
+        $this->relations[] = $relations;
+    }
+
+    /**
+     * Add hostEntity
+     *
+     * @param Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntity
+     */
+    public function addHostEntity(\Cx\Core_Modules\Sync\Model\Entity\HostEntity $hostEntity)
+    {
+        $this->hostEntities[] = $hostEntity;
+    }
+
+    /**
+     * Get hostEntities
+     *
+     * @return Doctrine\Common\Collections\Collection $hostEntities
+     */
+    public function getHostEntities()
+    {
+        return $this->hostEntities;
+    }
+
+    /**
+     * Set hostEntities
+     *
+     * @param array $hostEntities
+     */
+    public function setHostEntities($hostEntities)
+    {
+        $this->hostEntities[] = $hostEntities;
     }
     
     /**

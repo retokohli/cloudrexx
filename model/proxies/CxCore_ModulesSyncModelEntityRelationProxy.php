@@ -69,16 +69,16 @@ class CxCore_ModulesSyncModelEntityRelationProxy extends \Cx\Core_Modules\Sync\M
         return parent::getLvl();
     }
 
-    public function setForeignDataAccessId($foreignDataAccessId)
+    public function setLocalFieldName($localFieldName)
     {
         $this->_load();
-        return parent::setForeignDataAccessId($foreignDataAccessId);
+        return parent::setLocalFieldName($localFieldName);
     }
 
-    public function getForeignDataAccessId()
+    public function getLocalFieldName()
     {
         $this->_load();
-        return parent::getForeignDataAccessId();
+        return parent::getLocalFieldName();
     }
 
     public function setDoSync($doSync)
@@ -111,6 +111,12 @@ class CxCore_ModulesSyncModelEntityRelationProxy extends \Cx\Core_Modules\Sync\M
         return parent::addChildren($children);
     }
 
+    public function setChildren($children)
+    {
+        $this->_load();
+        return parent::setChildren($children);
+    }
+
     public function getChildren()
     {
         $this->_load();
@@ -139,6 +145,18 @@ class CxCore_ModulesSyncModelEntityRelationProxy extends \Cx\Core_Modules\Sync\M
     {
         $this->_load();
         return parent::getRelatedSync();
+    }
+
+    public function setForeignDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $foreignDataAccess)
+    {
+        $this->_load();
+        return parent::setForeignDataAccess($foreignDataAccess);
+    }
+
+    public function getForeignDataAccess()
+    {
+        $this->_load();
+        return parent::getForeignDataAccess();
     }
 
     public function __get($name)
@@ -180,7 +198,7 @@ class CxCore_ModulesSyncModelEntityRelationProxy extends \Cx\Core_Modules\Sync\M
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'lft', 'rgt', 'lvl', 'foreignDataAccessId', 'doSync', 'defaultEntityId', 'children', 'parent', 'relatedSync');
+        return array('__isInitialized__', 'id', 'lft', 'rgt', 'lvl', 'localFieldName', 'doSync', 'defaultEntityId', 'children', 'parent', 'relatedSync', 'foreignDataAccess');
     }
 
     public function __clone()
