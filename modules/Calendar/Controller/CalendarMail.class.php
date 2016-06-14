@@ -325,9 +325,7 @@ class CalendarMail extends CalendarLibrary
             'contentHtml' => $content_html,
             'recipients'  => $recipients,
             'langId'      => $lang_id,
-            'actionId'    => $action_id,
-            'isDefault'   => 0,
-            'status'      => 0
+            'actionId'    => $action_id
         );
         $mail = $this->getMailEntity($this->id, $formData);
         if (intval($this->id) == 0) {
@@ -494,6 +492,10 @@ class CalendarMail extends CalendarLibrary
             $mail = new \Cx\Modules\Calendar\Model\Entity\Mail();
         } else {
             $mail = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Mail')->findOneById($id);
+        }
+
+        if (!$mail) {
+            return null;
         }
 
         foreach ($formDatas as $fieldName => $fieldValue) {

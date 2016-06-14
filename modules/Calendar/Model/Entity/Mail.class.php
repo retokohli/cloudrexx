@@ -94,6 +94,13 @@ class Mail extends \Cx\Model\Base\EntityBase {
      */
     protected $eventLangId;
 
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        $this->status    = 0;
+        $this->isDefault = 0;
+    }
 
     /**
      * Get id
