@@ -1197,7 +1197,7 @@ body #content a.button {
     text-shadow: 1px 1px #FFFFFF;
 }
 
-body #content input[type=button] {
+body #content > input[type=button] {
     margin-bottom: 12px;
     float: left;
     cursor: pointer;
