@@ -1855,6 +1855,16 @@ class Event extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set eventFields
+     *
+     * @param Doctrine\Common\Collections\Collection $eventFields
+     */
+    function setEventFields($eventFields)
+    {
+        $this->eventFields = $eventFields;
+    }
+
+    /**
      * Get eventFields
      *
      * @return Doctrine\Common\Collections\Collection $eventFields
@@ -1867,11 +1877,21 @@ class Event extends \Cx\Model\Base\EntityBase {
     /**
      * Add registrations
      *
-     * @param Cx\Modules\Calendar\Model\Entity\Registration $registrations
+     * @param Cx\Modules\Calendar\Model\Entity\Registration $registration
      */
-    public function addRegistrations(\Cx\Modules\Calendar\Model\Entity\Registration $registrations)
+    public function addRegistration(\Cx\Modules\Calendar\Model\Entity\Registration $registration)
     {
-        $this->registrations[] = $registrations;
+        $this->registrations[] = $registration;
+    }
+
+    /**
+     * Set registrations
+     *
+     * @param Doctrine\Common\Collections\Collection $registrations
+     */
+    function setRegistrations($registrations)
+    {
+        $this->registrations = $registrations;
     }
 
     /**
