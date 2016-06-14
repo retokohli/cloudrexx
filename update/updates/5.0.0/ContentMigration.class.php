@@ -274,7 +274,7 @@ class ContentMigration
             $arrSortedNodes = $this->getSortedNodes($objNodeResult, $visiblePageIDs);
 
             if (!empty($_SESSION['contrexx_update']['nodes'])) {
-                foreach ($_SESSION['contrexx_update']['nodes'] as $catId => $nodeId) {
+                foreach (\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['nodes']) as $catId => $nodeId) {
                     $node = $nodeRepo->find($nodeId);
                     if ($node) {
                         self::$em->remove($node);
@@ -303,7 +303,7 @@ class ContentMigration
         } else {
             if (!empty($_SESSION['contrexx_update']['nodes'])) {
                 \DBG::msg('Load nodes..');
-                foreach ($_SESSION['contrexx_update']['nodes'] as $catId => $nodeId) {
+                foreach (\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['nodes']) as $catId => $nodeId) {
                     $node = $nodeRepo->find($nodeId);
                     $this->nodeArr[$catId] = $node;
                 }
@@ -1087,7 +1087,7 @@ class ContentMigration
         if (empty($_SESSION['contrexx_update']['similar_pages'])) $_SESSION['contrexx_update']['similar_pages'] = $_POST['similarPages'];
         if (empty($_SESSION['contrexx_update']['remove_pages']))  $_SESSION['contrexx_update']['remove_pages'] = $_POST['removePages'];
 
-        $arrSimilarPages = $_SESSION['contrexx_update']['similar_pages'];
+        $arrSimilarPages = \ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['similar_pages']);
 
         $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
@@ -1147,8 +1147,8 @@ class ContentMigration
         }
         $_SESSION['contrexx_update']['page_to_remove'] = array_merge(\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['page_to_remove']), $pageToRemove);
         $_SESSION['contrexx_update']['node_to_remove'] = array_merge(\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['node_to_remove']), $nodeToRemove);
-        $pageToRemove = $_SESSION['contrexx_update']['page_to_remove'];
-        $nodeToRemove = $_SESSION['contrexx_update']['node_to_remove'];
+        $pageToRemove = \ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['page_to_remove']);
+        $nodeToRemove = \ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['node_to_remove']);
 
         // Prevent the system from trying to remove the same node more than once
         $pageToRemove = array_unique($pageToRemove);
