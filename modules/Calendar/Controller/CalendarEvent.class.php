@@ -337,12 +337,12 @@ class CalendarEvent extends CalendarLibrary
     public $availableLang;
     
     /**
-     * Event map status
+     * Event google status
      *
      * @access public
      * @var integer 
      */
-    public $map;
+    public $google;
     
     /**
      * Event invited group
@@ -891,7 +891,7 @@ class CalendarEvent extends CalendarLibrary
                 $this->status = intval($objResult->fields['status']);
                 $this->showDetailView = intval($objResult->fields['show_detail_view']);
                 $this->catId = intval($objResult->fields['catid']);
-                $this->map = intval($objResult->fields['google']);
+                $this->google = intval($objResult->fields['google']);
                 $this->seriesStatus = intval($objResult->fields['series_status']);
                 $this->independentSeries = intval($objResult->fields['independent_series']);
                      
@@ -1024,7 +1024,7 @@ class CalendarEvent extends CalendarLibrary
         $startDate = $this->getDbDateTimeFromIntern($this->getDateTime($startDate, intval($startHour), intval($startMin)))->format('Y-m-d H:i:s');
         $endDate   = $this->getDbDateTimeFromIntern($this->getDateTime($endDate, intval($endHour), intval($endMin)))->format('Y-m-d H:i:s');
 
-        $google        = isset($data['map'][$_LANGID]) ? intval($data['map'][$_LANGID]) : 0;
+        $google        = isset($data['google']) ? intval($data['google']) : 0;
         $allDay        = isset($data['all_day']) ? 1 : 0;
         $convertBBCode = ($objInit->mode == 'frontend' && empty($id));
         $showDetailView= isset($data['show-detail-view']) ? 1 : 0;
