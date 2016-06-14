@@ -26,7 +26,7 @@
  */
 
 /**
- * Sync
+ * Host
  *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
@@ -37,28 +37,24 @@
 namespace Cx\Core_Modules\Sync\Model\Entity;
 
 /**
- * Sync
+ * Host
  *
  * @copyright   Cloudrexx AG
  * @author      Project Team SS4U <info@cloudrexx.com>
  * @package     cloudrexx
  * @subpackage  coremodule_sync
  */
-class Sync extends \Cx\Model\Base\EntityBase {
+class Host extends \Cx\Model\Base\EntityBase
+{
     /**
      * @var integer $id
      */
     protected $id;
 
     /**
-     * @var string $toUri
+     * @var string $host
      */
-    protected $toUri;
-
-    /**
-     * @var string $apiKey
-     */
-    protected $apiKey;
+    protected $host;
 
     /**
      * @var boolean $active
@@ -66,14 +62,19 @@ class Sync extends \Cx\Model\Base\EntityBase {
     protected $active;
 
     /**
-     * @var Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
+     * @var string $apiKey
      */
-    protected $dataAccess;
+    protected $apiKey;
 
     /**
-     * @var Cx\Core_Modules\Sync\Model\Entity\Relation
+     * @var integer $apiVersion
      */
-    protected $relations;
+    protected $apiVersion;
+
+    /**
+     * @var string $urlTemplate
+     */
+    protected $urlTemplate;
 
     /**
      * @var Cx\Core_Modules\Sync\Model\Entity\HostEntity
@@ -82,7 +83,6 @@ class Sync extends \Cx\Model\Base\EntityBase {
 
     public function __construct()
     {
-        $this->relations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->hostEntities = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
@@ -97,39 +97,23 @@ class Sync extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set toUri
+     * Set host
      *
-     * @param string $toUri
+     * @param string $host
      */
-    public function setToUri($toUri) {
-        $this->toUri = $toUri;
+    public function setHost($host)
+    {
+        $this->host = $host;
     }
 
     /**
-     * Get toUri
+     * Get host
      *
-     * @return string
+     * @return string $host
      */
-    public function getToUri() {
-        return $this->toUri;
-    }
-
-    /**
-     * Set apiKey
-     *
-     * @param string $apiKey
-     */
-    public function setApiKey($apiKey) {
-        $this->apiKey = $apiKey;
-    }
-
-    /**
-     * Get apiKey
-     *
-     * @return string
-     */
-    public function getApiKey() {
-        return $this->apiKey;
+    public function getHost()
+    {
+        return $this->host;
     }
 
     /**
@@ -137,67 +121,79 @@ class Sync extends \Cx\Model\Base\EntityBase {
      *
      * @param boolean $active
      */
-    public function setActive($active) {
+    public function setActive($active)
+    {
         $this->active = $active;
     }
 
     /**
      * Get active
      *
-     * @return boolean
+     * @return boolean $active
      */
-    public function getActive() {
+    public function getActive()
+    {
         return $this->active;
     }
 
     /**
-     * Set dataAccess
+     * Set apiKey
      *
-     * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
+     * @param string $apiKey
      */
-    public function setDataAccess(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
+    public function setApiKey($apiKey)
     {
-        $this->dataAccess = $dataAccess;
+        $this->apiKey = $apiKey;
     }
 
     /**
-     * Get dataAccess
+     * Get apiKey
      *
-     * @return \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
+     * @return string $apiKey
      */
-    public function getDataAccess()
+    public function getApiKey()
     {
-        return $this->dataAccess;
+        return $this->apiKey;
     }
 
     /**
-     * Add relation
+     * Set apiVersion
      *
-     * @param Cx\Core_Modules\Sync\Model\Entity\Relation $relation
+     * @param integer $apiVersion
      */
-    public function addRelation(\Cx\Core_Modules\Sync\Model\Entity\Relation $relation)
+    public function setApiVersion($apiVersion)
     {
-        $this->relations[] = $relation;
+        $this->apiVersion = $apiVersion;
     }
 
     /**
-     * Get relations
+     * Get apiVersion
      *
-     * @return Doctrine\Common\Collections\Collection $relations
+     * @return integer $apiVersion
      */
-    public function getRelations()
+    public function getApiVersion()
     {
-        return $this->relations;
+        return $this->apiVersion;
     }
 
     /**
-     * Set Relations
+     * Set urlTemplate
      *
-     * @param array $relations
+     * @param string $urlTemplate
      */
-    public function setRelations($relations)
+    public function setUrlTemplate($urlTemplate)
     {
-        $this->relations[] = $relations;
+        $this->urlTemplate = $urlTemplate;
+    }
+
+    /**
+     * Get urlTemplate
+     *
+     * @return string $urlTemplate
+     */
+    public function getUrlTemplate()
+    {
+        return $this->urlTemplate;
     }
 
     /**
@@ -227,6 +223,6 @@ class Sync extends \Cx\Model\Base\EntityBase {
      */
     public function setHostEntities($hostEntities)
     {
-        $this->hostEntities[] = $hostEntities;
+        $this->hostEntities = $hostEntities;
     }
 }
