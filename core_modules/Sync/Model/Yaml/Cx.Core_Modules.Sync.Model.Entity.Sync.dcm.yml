@@ -22,6 +22,9 @@ Cx\Core_Modules\Sync\Model\Entity\Sync:
     relations:
       targetEntity: Cx\Core_Modules\Sync\Model\Entity\Relation
       mappedBy: relatedSync
+    hostEntities:
+      targetEntity: Cx\Core_Modules\Sync\Model\Entity\HostEntity
+      mappedBy: sync
   manyToOne: # owning side
     dataAccess:
       targetEntity: Cx\Core_Modules\DataAccess\Model\Entity\DataAccess
