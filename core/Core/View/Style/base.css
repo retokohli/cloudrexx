@@ -1197,12 +1197,6 @@ body #content a.button {
     text-shadow: 1px 1px #FFFFFF;
 }
 
-body #content > input[type=button] {
-    margin-bottom: 12px;
-    float: left;
-    cursor: pointer;
-}
-
 *+html body #content input[type=button],
 *+html body #navigation_wrapper input[type=button],
 *+html body #content a.button,
