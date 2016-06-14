@@ -327,11 +327,20 @@ class Registration extends \Cx\Model\Base\EntityBase {
     /**
      * Add registrationFormFieldValues
      *
-     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValues
+     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue
      */
-    public function addRegistrationFormFieldValues(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValues)
+    public function addRegistrationFormFieldValue(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue)
     {
-        $this->registrationFormFieldValues[] = $registrationFormFieldValues;
+        $this->registrationFormFieldValues[] = $registrationFormFieldValue;
+    }
+
+    /**
+     * set $registrationFormFieldValues
+     *
+     * @param type $registrationFormFieldValues
+     */
+    public function setRegistrationFormFieldValues($registrationFormFieldValues) {
+        $this->registrationFormFieldValues = $registrationFormFieldValues;
     }
 
     /**
