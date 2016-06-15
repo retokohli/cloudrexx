@@ -199,8 +199,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 print $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate())).$csvSeparator;
 
                 // profile attributes
-                foreach (array_keys($arrProfileFields) as $field) {
-                    $value = $objFWUser->objUser->getProfileAttribute($field);
+                foreach ($arrProfileFields as $field) {
+                    $value = $objUser->getProfileAttribute($field);
 
                     switch ($field) {
                         case 'gender':
@@ -222,12 +222,12 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         case 'title':
                         case 'country':
                             $title = '';
-                            $value = $objFWUser->objUser->objAttribute->getById($field . '_' . $value)->getName();
+                            $value = $objUser->objAttribute->getById($field . '_' . $value)->getName();
                             break; 
 
                         default:
-                            $objAttribute = $objFWUser->objUser->objAttribute->getById($field);
-                            if ($objAttribute->getType() == 'date') {
+                            $objAttribute = $objUser->objAttribute->getById($field);
+                            if (!empty($value) && $objAttribute->getType() == 'date') {
                                 $date = new \DateTime();
                                 $date ->setTimestamp($value);
                                 $value = $date->format(ASCMS_DATE_FORMAT_DATE);

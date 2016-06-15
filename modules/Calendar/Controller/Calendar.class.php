@@ -662,16 +662,22 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_PICTURE_THUMB'             => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
             $this->moduleLangVar.'_EVENT_ATTACHMENT'                => $objEvent->attach,
             $this->moduleLangVar.'_EVENT_CATEGORIES'                => $objCategoryManager->getCategoryDropdown(intval($objEvent->catId), 2),            
-            $this->moduleLangVar.'_EVENT_LINK'                      => $objEvent->link,
+            $this->moduleLangVar.'_EVENT_LINK'                      => $objEvent->link,            
+            $this->moduleLangVar.'_EVENT_PLACE'                     => $objEvent->place,
             $this->moduleLangVar.'_EVENT_STREET'                    => $objEvent->place_street,
             $this->moduleLangVar.'_EVENT_ZIP'                       => $objEvent->place_zip,
+            $this->moduleLangVar.'_EVENT_CITY'                      => $objEvent->place_city,
+            $this->moduleLangVar.'_EVENT_COUNTRY'                   => $objEvent->place_country,
             $this->moduleLangVar.'_EVENT_PLACE_WEBSITE'             => $objEvent->place_website,
             $this->moduleLangVar.'_EVENT_PLACE_MAP'                 => $objEvent->place_map,
             $this->moduleLangVar.'_EVENT_PLACE_LINK'                => $objEvent->place_link,
             $this->moduleLangVar.'_EVENT_PLACE_PHONE'               => $objEvent->place_phone,
-            $this->moduleLangVar.'_EVENT_MAP'                       => $objEvent->map == 1 ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_EVENT_MAP'                       => $objEvent->google == 1 ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_EVENT_HOST'                      => $objEvent->org_name,
             $this->moduleLangVar.'_EVENT_HOST_ADDRESS'              => $objEvent->org_street,
             $this->moduleLangVar.'_EVENT_HOST_ZIP'                  => $objEvent->org_zip,
+            $this->moduleLangVar.'_EVENT_HOST_CITY'                 => $objEvent->org_city,
+            $this->moduleLangVar.'_EVENT_HOST_COUNTRY'              => $objEvent->org_country,
             $this->moduleLangVar.'_EVENT_HOST_WEBSITE'              => $objEvent->org_website,
             $this->moduleLangVar.'_EVENT_HOST_LINK'                 => $objEvent->org_link,
             $this->moduleLangVar.'_EVENT_HOST_PHONE'                => $objEvent->org_phone,
@@ -749,7 +755,6 @@ UPLOADER;
             ));
             
             $this->_objTpl->parse('eventDescTab');
-
             //parse eventLingualFields
             foreach ($multiLingualFields as $inputField) {
                 $this->_objTpl->setVariable(
