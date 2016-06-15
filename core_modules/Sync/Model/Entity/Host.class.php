@@ -84,7 +84,7 @@ class Host extends \Cx\Model\Base\EntityBase
     /**
      * @var string Default template for URI
      */
-    protected $defaultUrlTemplate = '[[HOST]]/api/sync/[[API_VERSION]]/json/[[DATA_SOURCE]]/[[INDEX_DATA]]?apikey=[[API_KEY]]';
+    protected $defaultUrlTemplate = '[[HOST]]/api/sync/v[[API_VERSION]]/json/[[DATA_SOURCE]]/[[INDEX_DATA]]?apikey=[[API_KEY]]';
 
     public function __construct()
     {

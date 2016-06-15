@@ -258,7 +258,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
         foreach ($this->getHostEntities() as $hostEntity) {
             // is there a host we should sync this entity to?
             if (
-                $hostEntity->getHost->getActive() &&
+                $hostEntity->getHost()->getActive() &&
                 $hostEntity->getEntityId() != '*' &&
                 $hostEntity->getEntityId() != $entityIndexData
             ) {
@@ -312,7 +312,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
             var_dump($response->getStatus());
             echo '<hr />';
             echo '<pre>' . $response->getBody() . '</pre>';
-            die('Pushed to ' . $url . ' with method ' . $method . ', body was: ' . http_build_query($content));
+            echo 'Pushed to ' . $url . ' with method ' . $method . ', body was: ' . http_build_query($content);
         }
     }
 }

@@ -356,24 +356,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
     
-    protected function pushSync($sync, $eventType, $entityIndexData, $entity, $relationConfig = null) {
+    protected function pushSync($sync, $eventType, $entityIndexData, $entity, $prevRelationConfig = null) {
         // @todo: This method should provide some kind of locking over multiple systems
         $dataSource = $sync->getDataAccess()->getDataSource();
         
         // @todo: first calculate relations to be synced
         foreach ($this->getDependendingFields($entity) as $field=>$fieldType) {
-            $foreignDataAccess = $this->getController('DataAccess')->getAccessTo($fieldType, $sync->getDataAccess());
-            
             // all n:1 relations need to be synced according to config
             $em = $this->cx->getDb()->getEntityManager();
             $relationConfigRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Relation');
-            $relationConfig = $relationConfigRepo->findOneBy(array(
-                'relatedSync' => $sync,
-                'localFieldName' => $fieldType,
-                'parent' => $relationConfig,
-            ));
-            
-            //$foreignDataAccess = $relationConfig->getForeignDataAccess();
+            $relationConfig = $relationConfigRepo->findRelationByField(
+                $sync,
+                $field,
+                $prevRelationConfig
+            );
             
             // if this field's foreign entity is in config and has a default object
             if (
@@ -388,9 +384,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $fieldSetMethodName = 'set'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
                 $entity->$fieldSetMethodName($foreignEntity);
             } else if (
-                // @todo: and if foreignDataAccess is within same component!
                 !$relationConfig ||
-                $relationConfig->doSync()
+                (
+                    $relationConfig->doSync()
+                    // @todo: and if $relationConfig->getForeignDataAccess() is within same component!
+                )
             ) {
                 // otherwise push the related entity first!
                 $fieldGetMethodName = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
@@ -400,6 +398,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             } else {
                 throw new \Exception('Invalid config!');
             }
+        }
+        
+        // If doctrine supplied a proxy, there was no change to this entity
+        if (substr(get_class($entity), -5) == 'Proxy') {
+            return;
         }
         
         // push the entity
@@ -414,7 +417,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $entityClassName = get_class($entity);
         $entityMetaData = $em->getClassMetadata($entityClassName);
         $entityIndexData = array();
-        foreach ($entityMetaData->getIdentifierColumnNames() as $field) {
+        foreach ($entityMetaData->getIdentifierFieldNames() as $field) {
             $entityIndexData[$field] = $entityMetaData->getFieldValue($entity, $field);
         }
         return $entityIndexData;
@@ -428,7 +431,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $em = $this->cx->getDb()->getEntityManager();
         $entityClassName = get_class($entity);
         $entityMetaData = $em->getClassMetadata($entityClassName);
-        $associationMappings = $metaData->getAssociationMappings();
+        $associationMappings = $entityMetaData->getAssociationMappings();
         $dependingFields = array();
         foreach ($associationMappings as $field => $associationMapping) {
             if (
