@@ -128,7 +128,7 @@ class Category extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Add categoryNames
+     * Add categoryName
      *
      * @param Cx\Modules\Calendar\Model\Entity\CategoryName $categoryName
      */
@@ -148,6 +148,28 @@ class Category extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Get getCategoryNameByLangId
+     *
+     * @param integer $langId lang id
+     *
+     * @return null|\Cx\Modules\Calendar\Model\Entity\CategoryName
+     */
+    public function getCategoryNameByLangId($langId)
+    {
+        if (!$this->categoryNames) {
+            return null;
+        }
+
+        foreach ($this->categoryNames as $categoryName) {
+            if ($categoryName->getLangId() == $langId) {
+                return $categoryName;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Get categoryNames
      *
      * @return Doctrine\Common\Collections\Collection $categoryNames
@@ -158,7 +180,7 @@ class Category extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Add events
+     * Add event
      *
      * @param Cx\Modules\Calendar\Model\Entity\Event $event
      */

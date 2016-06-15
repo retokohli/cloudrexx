@@ -879,6 +879,12 @@ class CxModulesCalendarModelEntityEventProxy extends \Cx\Modules\Calendar\Model\
         return parent::setEventFields($eventFields);
     }
 
+    public function getEventFieldByLangId($langId)
+    {
+        $this->_load();
+        return parent::getEventFieldByLangId($langId);
+    }
+
     public function getEventFields()
     {
         $this->_load();

@@ -556,10 +556,7 @@ class CalendarRegistration extends CalendarLibrary
         global $objDatabase; 
 
         if (!empty($regId)) {
-            $registration = $this
-                ->em
-                ->getRepository('Cx\Modules\Calendar\Model\Entity\Registration')
-                ->findOneById($this->id);
+            $registration = $this->getRegistrationEntity($regId);
             $this->cx->getEvents()->triggerEvent(
                 'model/preRemove',
                 array(
@@ -603,18 +600,18 @@ class CalendarRegistration extends CalendarLibrary
                             )
                         );
                     }
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/postRemove',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $registration, $this->em
+                            )
+                        )
+                    );
                     return true;
                 } else {
                     return false;
                 }
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postRemove',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $registration, $this->em
-                        )
-                    )
-                );
             } else {
                 return false;
             }
@@ -641,6 +638,7 @@ class CalendarRegistration extends CalendarLibrary
                 ->getRepository('Cx\Modules\Calendar\Model\Entity\Registration')
                 ->findOneBy(array('id' => $regId, 'langId' => $_LANGID));
             $registration->setType($typeId);
+            $registration->setVirtual(true);
             $this->cx->getEvents()->triggerEvent(
                 'model/preUpdate',
                 array(
@@ -774,11 +772,15 @@ class CalendarRegistration extends CalendarLibrary
                 ->getRepository('Cx\Modules\Calendar\Model\Entity\Registration')
                 ->findOneById($id);
         }
+        $registration->setVirtual(true);
 
         if (!$registration) {
             return null;
         }
 
+        if (!$formDatas) {
+            return $registration;
+        }
         //Set registration field values
         foreach ($formDatas['fields'] as $fieldName => $fieldValue) {
             $methodName = 'set'.ucfirst($fieldName);
@@ -798,10 +800,18 @@ class CalendarRegistration extends CalendarLibrary
         $eventRepo = $this
             ->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
         //Set Registration event
-        if ($relations['event']) {
+        if (    $relations['event']
+            &&  (   (   $registration->getEvent()
+                    &&  ($registration->getEvent()->getId() != $relations['event'])
+                    )
+                || !($registration->getEvent())
+                )
+        ) {
             $event = $eventRepo->findOneById($relations['event']);
+            $event->setVirtual(true);
             if ($event) {
                 $registration->setEvent($event);
+                $event->addRegistration($registration);
             }
         }
 
@@ -826,17 +836,29 @@ class CalendarRegistration extends CalendarLibrary
      * @return \Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue
      */
     public function getFormFieldValueEntity(
-        \Cx\Modules\Calendar\Model\Entity\Registration &$registration,
+        \Cx\Modules\Calendar\Model\Entity\Registration $registration,
         $formFieldRepo,
         $fieldValues
     ){
-        $formFieldValue = new \Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue();
-        $formField      = $formFieldRepo->findOneById($fieldValues['fieldId']);
-        if ($formField) {
-            $formFieldValue->setRegistrationFormField($formField);
+        $formFieldValue = $registration->getRegistrationFormFieldValueByFieldId(
+            $fieldValues['fieldId']
+        );
+        if (!$formFieldValue) {
+            $formFieldValue = new \Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue();
+        }
+        $formFieldValue->setVirtual(true);
+        $formField = $formFieldValue->getRegistrationFormField();
+        if ($formField && $formField->getId() != $fieldValues['fieldId']) {
+            $formField = $formFieldRepo->findOneById($fieldValues['fieldId']);
+            $formField->setVirtual(true);
+            if ($formField) {
+                $formFieldValue->setRegistrationFormField($formField);
+                $formField->addRegistrationFormFieldValue($formFieldValue);
+            }
         }
         $formFieldValue->setValue($fieldValues['fieldValue']);
         $registration->addRegistrationFormFieldValue($formFieldValue);
+        $formFieldValue->setRegistration($registration);
 
         return $formFieldValue;
     }

@@ -1865,6 +1865,27 @@ class Event extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Get EventFieldByLangId
+     *
+     * @param integer $langId lang id
+     *
+     * @return null|\Cx\Modules\Calendar\Model\Entity\EventField
+     */
+    public function getEventFieldByLangId($langId)
+    {
+        if (!$this->eventFields) {
+            return null;
+        }
+
+        foreach ($this->eventFields as $eventField) {
+            if ($eventField->getLangId() == $langId) {
+                return $eventField;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get eventFields
      *
      * @return Doctrine\Common\Collections\Collection $eventFields

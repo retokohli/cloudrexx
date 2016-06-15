@@ -1751,10 +1751,7 @@ class CalendarEvent extends CalendarLibrary
     {
         global $objDatabase;
 
-        $event = $this
-            ->em
-            ->getRepository('Cx\Modules\Calendar\Model\Entity\Event')
-            ->findOneBy(array('id' => $this->id));
+        $event = $this->getEventEntity($this->id);
         $this->cx->getEvents()->triggerEvent(
             'model/preRemove',
             array(new \Doctrine\ORM\Event\LifecycleEventArgs($event, $this->em))
@@ -1792,6 +1789,14 @@ class CalendarEvent extends CalendarLibrary
                         )
                     );
                 }
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postRemove',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $event, $this->em
+                        )
+                    )
+                );
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_event_host
                                 WHERE event_id = '".intval($this->id)."'";
 
@@ -1804,14 +1809,6 @@ class CalendarEvent extends CalendarLibrary
             } else {
                 return false;
             }
-            $this->cx->getEvents()->triggerEvent(
-                'model/postRemove',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $event, $this->em
-                    )
-                )
-            );
         } else {
             return false;
         }
@@ -2430,9 +2427,14 @@ class CalendarEvent extends CalendarLibrary
                 ->getRepository('Cx\Modules\Calendar\Model\Entity\Event')
                 ->findOneById($id);
         }
+        $event->setVirtual(true);
 
         if (!$event) {
             return null;
+        }
+
+        if (!$formDatas) {
+            return $event;
         }
 
         $classMetaData = $this
@@ -2440,18 +2442,33 @@ class CalendarEvent extends CalendarLibrary
             ->getClassMetadata('Cx\Modules\Calendar\Model\Entity\Event');
         foreach ($formDatas['fields'] as $columnName => $columnValue) {
             $fieldName  = $classMetaData->getFieldName($columnName);
-            if ($fieldName == 'catid') {
+            if (    $fieldName == 'catid'
+                &&  (   (   $event->getCategory()
+                        &&  ($event->getCategory()->getId() != $columnValue)
+                        )
+                    || !($event->getCategory())
+                    )
+            ) {
                 $fieldName   = 'category';
                 $columnValue = $this
                     ->em
                     ->getRepository('Cx\Modules\Calendar\Model\Entity\Category')
                     ->findOneById($columnValue);
-            } elseif ($fieldName == 'registration_form') {
+                $columnValue->setVirtual(true);
+            } elseif (
+                    $fieldName == 'registration_form'
+                &&  (   (   $event->getRegistrationForm()
+                        &&  ($event->getRegistrationForm()->getId() != $columnValue)
+                        )
+                    || !($event->getRegistrationForm())
+                    )
+            ) {
                 $fieldName = 'registrationForm';
                 $columnValue = $this
                     ->em
                     ->getRepository('Cx\Modules\Calendar\Model\Entity\RegistrationForm')
                     ->findOneById($columnValue);
+                $columnValue->setVirtual(true);
             }
             $methodName = 'set'.ucfirst($fieldName);
             if (method_exists($event, $methodName)) {
@@ -2481,10 +2498,14 @@ class CalendarEvent extends CalendarLibrary
      * @return \Cx\Modules\Calendar\Model\Entity\EventField
      */
     public function getEventFieldEntity(
-        \Cx\Modules\Calendar\Model\Entity\Event &$event,
+        \Cx\Modules\Calendar\Model\Entity\Event $event,
         $fieldValues
     ){
-        $eventField = new \Cx\Modules\Calendar\Model\Entity\EventField();
+        $eventField = $event->getEventFieldByLangId($fieldValues['langId']);
+        if (!$eventField) {
+            $eventField = new \Cx\Modules\Calendar\Model\Entity\EventField();
+        }
+        $eventField->setVirtual(true);
         foreach ($fieldValues as $fieldName => $fieldValue) {
             $methodName = 'set'.ucfirst($fieldName);
             if (method_exists($eventField, $methodName)) {

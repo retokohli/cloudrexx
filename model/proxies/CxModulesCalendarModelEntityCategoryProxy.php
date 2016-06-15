@@ -69,6 +69,12 @@ class CxModulesCalendarModelEntityCategoryProxy extends \Cx\Modules\Calendar\Mod
         return parent::setCategoryNames($categoryNames);
     }
 
+    public function getCategoryNameByLangId($langId)
+    {
+        $this->_load();
+        return parent::getCategoryNameByLangId($langId);
+    }
+
     public function getCategoryNames()
     {
         $this->_load();

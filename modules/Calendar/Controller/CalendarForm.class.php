@@ -89,10 +89,11 @@ class CalendarForm extends CalendarLibrary
      * 
      * @param integer $id form id
      */
-    function __construct($id=null){
+    function __construct($id=null) {
         if($id != null) {
             self::get($id);
         }
+        $this->init();
     }
     
     /**
@@ -205,70 +206,127 @@ class CalendarForm extends CalendarLibrary
                    
         $objResultOldForm = $objDatabase->Execute($queryOldForm);
         
+        $classMetaDataForForm = $this
+            ->em
+            ->getClassMetadata('Cx\Modules\Calendar\Model\Entity\RegistrationForm');
+        $oldForm = $this->getFormEntity($this->id);
+        $form    = clone $oldForm;
+        $classMetaDataForForm->setFieldValue($form, 'id', 0);
         if ($objResultOldForm !== false) {
+            $this->cx->getEvents()->triggerEvent(
+                'model/prePersist',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em)
+                )
+            );
             $queryNewForm = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
                                   (`status`,`order`,`title`)  
                            VALUES ('0',
                                    '99',
                                    '".$objResultOldForm->fields['title']."')";
-            
+
             $objResultNewForm = $objDatabase->Execute($queryNewForm);
-            
-            if($objResultNewForm === false) {
+
+            if ($objResultNewForm === false) {
                 return false;
             }  else {
                 $newFormId = intval($objDatabase->Insert_ID());
-                
+
                 $queryOldFields = "SELECT id,type,required,`order`,`affiliation`   
                                      FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form_field
                                     WHERE form = '".intval($this->id)."'";
-                                    
-                $objResultOldFields = $objDatabase->Execute($queryOldFields); 
-                                        
+
+                $objResultOldFields = $objDatabase->Execute($queryOldFields);
+
                 if ($objResultOldFields !== false) {
                     while (!$objResultOldFields->EOF) {
+                        $newFormField = $form->getRegistrationFormFieldById(
+                            $objResultOldFields->fields['id']
+                        );
+                        $this->cx->getEvents()->triggerEvent(
+                            'model/prePersist',
+                            array(
+                                new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                    $newFormField, $this->em
+                                )
+                            )
+                        );
                         $queryNewField = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form_field
-                                                      (`form`,`type`,`required`,`order`,`affiliation` )  
+                                                      (`form`,`type`,`required`,`order`,`affiliation` )
                                                VALUES ('".$newFormId."',
                                                        '".$objResultOldFields->fields['type']."',
                                                        '".$objResultOldFields->fields['required']."',
                                                        '".$objResultOldFields->fields['order']."',
                                                        '".$objResultOldFields->fields['affiliation']."')";
-            
-                        $objResultNewField = $objDatabase->Execute($queryNewField);  
-                        $newFieldId = intval($objDatabase->Insert_ID());  
-                        
-                        $queryOldNames =  "SELECT `lang_id`,`name`,`default`   
+
+                        $objResultNewField = $objDatabase->Execute($queryNewField);
+                        $newFieldId = intval($objDatabase->Insert_ID());
+
+                        $queryOldNames =  "SELECT `lang_id`,`name`,`default`
                                              FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form_field_name
-                                            WHERE field_id = '".intval($objResultOldFields->fields['id'])."' AND form_id = '".intval($this->id)."'";           
-                                            
-                        $objResultOldNames = $objDatabase->Execute($queryOldNames); 
-                        
+                                            WHERE field_id = '".intval($objResultOldFields->fields['id'])."' AND form_id = '".intval($this->id)."'";
+
+                        $objResultOldNames = $objDatabase->Execute($queryOldNames);
+
                         if ($objResultOldNames !== false) {
                             while (!$objResultOldNames->EOF) {
-                                $queryNewName = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form_field_name  
-                                                              (`field_id`,`form_id`,`lang_id`,`name`,`default` )  
+                                $newFormFieldName = $newFormField->getRegistrationFormFieldNamesByLangId(
+                                    $objResultOldNames->fields['lang_id']
+                                );
+                                $this->cx->getEvents()->triggerEvent(
+                                    'model/prePersist',
+                                    array(
+                                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                            $newFormFieldName, $this->em
+                                        )
+                                    )
+                                );
+                                $queryNewName = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form_field_name
+                                                              (`field_id`,`form_id`,`lang_id`,`name`,`default` )
                                                        VALUES ('".$newFieldId."',
                                                                '".$newFormId."',
                                                                '".$objResultOldNames->fields['lang_id']."',
                                                                '".$objResultOldNames->fields['name']."',
-                                                               '".$objResultOldNames->fields['default']."')";        
-                    
-                                $objResultNewName = $objDatabase->Execute($queryNewName);  
-                                
+                                                               '".$objResultOldNames->fields['default']."')";
+
+                                $objResultNewName = $objDatabase->Execute($queryNewName);
+                                $this->cx->getEvents()->triggerEvent(
+                                    'model/postPersist',
+                                    array(
+                                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                            $newFormFieldName, $this->em
+                                        )
+                                    )
+                                );
                                 $objResultOldNames->MoveNext(); 
                             }
                         }
-                                  
+                        $this->cx->getEvents()->triggerEvent(
+                            'model/postPersist',
+                            array(
+                                new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                    $newFormField, $this->em
+                                )
+                            )
+                        );
                         $objResultOldFields->MoveNext();
                     }
                 }
+                $form = $this->getFormEntity($newFormId);
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postPersist',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $form, $this->em
+                        )
+                    )
+                );
             }
-        }                         
-            
+        }
+
         return $newFormId;
     }
-    
+
     /**
      * Save the form data's into database
      *      
@@ -276,50 +334,88 @@ class CalendarForm extends CalendarLibrary
      * 
      * @return boolean true on success false otherwise
      */
-    function save($data) {
-        global $objDatabase, $_LANGID; 
+    function save($data)
+    {
+        global $objDatabase;
         
-        if(empty($data['inputfield']) || empty($data['formTitle'])) {
+        if (empty($data['inputfield']) || empty($data['formTitle'])) {
             return false;
-        }                        
-        
-        if(intval($this->id) == 0) {  
+        }
+
+        $formTitle   = contrexx_addslashes($data['formTitle']);
+        $inputFields = $this->getInputFieldsAsArray($data);
+        $formData    = array(
+            'fields'    => array('title' => $formTitle),
+            'relation'  => array('inputFields' => $inputFields)
+        );
+        $form = $this->getFormEntity($this->id, $formData);
+        if (intval($this->id) == 0) {
+            $this->cx->getEvents()->triggerEvent(
+                'model/prePersist',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em)
+                )
+            );
             $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
-                                  (`status`,`order`,`title`)  
+                                  (`status`,`order`,`title`)
                            VALUES ('0',
                                    '99',
-                                   '".contrexx_addslashes($data['formTitle'])."')";
-            
+                                   '".$formTitle."')";
+
             $objResult = $objDatabase->Execute($query);
-            
-            if($objResult === false) {
+
+            if ($objResult === false) {
                 return false;
+            } else {
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postPersist',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $form, $this->em
+                        )
+                    )
+                );
             }
             
             $this->id = intval($objDatabase->Insert_ID());   
         } else {
-            $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form   
-                         SET `title` =  '".contrexx_addslashes($data['formTitle'])."'        
+            $this->cx->getEvents()->triggerEvent(
+                'model/preUpdate',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em)
+                )
+            );
+            $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
+                         SET `title` =  '".$formTitle."'
                        WHERE id = '".intval($this->id)."'";
-                        
-            $objResult = $objDatabase->Execute($query) ;   
-            
-            if($objResult === false) {
+
+            $objResult = $objDatabase->Execute($query);
+
+            if ($objResult === false) {
                 return false;
+            } else {
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postUpdate',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $form, $this->em
+                        )
+                    )
+                );
             }
         }
-                                 
-        if(intval($this->id) != 0) {  
-            if(!self::saveInputfields($data)) {
+
+        if (intval($this->id) != 0) {
+            if(!self::saveInputfields($form, $inputFields)) {
                 return false;   
             }
         } else {
-            return false; 
-        }      
-                      
+            return false;
+        }
+
         return true;
     }
-    
+
     /**
      * save the form input fields
      *      
@@ -327,11 +423,34 @@ class CalendarForm extends CalendarLibrary
      * 
      * @return boolean true on success false otherwise
      */
-    function saveInputfields($data) {
-        global $objDatabase, $_LANGID;    
-                
-        $this->getFrontendLanguages();
-        
+    function saveInputfields(
+        \Cx\Modules\Calendar\Model\Entity\RegistrationForm $form,
+        $data
+    ){
+        global $objDatabase;
+
+        $formFields = $form->getRegistrationFormFields();
+        foreach ($formFields as $formField) {
+            $formFieldNames = $formField->getRegistrationFormFieldNames();
+            foreach ($formFieldNames as $formFieldName) {
+                $this->cx->getEvents()->triggerEvent(
+                    'model/preRemove',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $formFieldName, $this->em
+                        )
+                    )
+                );
+            }
+            $this->cx->getEvents()->triggerEvent(
+                'model/preRemove',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $formField, $this->em
+                    )
+                )
+            );
+        }
         $query = '
             DELETE
                 fn.*, ff.*
@@ -346,26 +465,142 @@ class CalendarForm extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
+        } else {
+            foreach ($formFields as $formField) {
+                $formFieldNames = $formField->getRegistrationFormFieldNames();
+                foreach ($formFieldNames as $formFieldName) {
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/postRemove',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $formFieldName, $this->em
+                            )
+                        )
+                    );
+                }
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postRemove',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $formField, $this->em
+                        )
+                    )
+                );
+            }
         }
 
-        foreach ($data['inputfield'] as $intFieldId => $arrField) {
+        foreach ($data as $fieldId => $fieldValues) {
+            $formFieldEntity = $this->getFormFieldEntity($form, $fieldValues);
+            $this->cx->getEvents()->triggerEvent(
+                'model/prePersist',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $formFieldEntity, $this->em
+                    )
+                )
+            );
+            $fieldValue = $fieldValues['fields'];
             $query = '
                 INSERT INTO
                     `'. DBPREFIX .'module_'. $this->moduleTablePrefix .'_registration_form_field`
                 SET
-                    `id`          =  '. contrexx_input2int($intFieldId) .',
+                    `id`          =  '. contrexx_input2int($fieldId) .',
                     `form`        =  '. contrexx_input2int($this->id) .',
-                    `type`        = "'. contrexx_input2db($arrField['type']) .'",
-                    `required`    =  '. (isset($arrField['required']) ? 1 : 0) .',
-                    `order`       =  '. contrexx_input2int($arrField['order']) .',
-                    `affiliation` = "'. (isset($arrField['affiliation']) ? contrexx_input2db($arrField['affiliation']) : '') .'"
+                    `type`        = "'. $fieldValue['type'] .'",
+                    `required`    =  '. $fieldValue['required'] .',
+                    `order`       =  '. $fieldValue['order'] .',
+                    `affiliation` = "'. $fieldValue['affiliation'] .'"
             ';
+
             $objResult = $objDatabase->Execute($query);
 
             if ($objResult === false) {
                 continue;
             }
 
+            $this->cx->getEvents()->triggerEvent(
+                'model/postPersist',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $formFieldEntity, $this->em
+                    )
+                )
+            );
+
+            foreach ($fieldValues['formFieldNames'] as $fieldNameValues) {
+                $formFieldNameEntity = $formFieldEntity->getRegistrationFormFieldNamesByLangId(
+                    $fieldNameValues['langId']
+                );
+                if ($formFieldNameEntity) {
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/prePersist',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $formFieldNameEntity, $this->em
+                            )
+                        )
+                    );
+                }
+
+                $query = '
+                    INSERT INTO
+                        `' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_registration_form_field_name`
+                    SET
+                        `field_id` =  '. contrexx_input2int($fieldId) . ',
+                        `form_id`  =  '. $fieldNameValues['formId'] .',
+                        `lang_id`  =  '. $fieldNameValues['langId'] .',
+                        `name`     = "'. $fieldNameValues['name'] .'",
+                        `default`  = "'. $fieldNameValues['default'] .'"';
+
+                $objResult = $objDatabase->Execute($query);
+                if ($objResult !== false && $formFieldNameEntity) {
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/postPersist',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $formFieldNameEntity, $this->em
+                            )
+                        )
+                    );
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Get input fields as array
+     *
+     * @param array $data post data
+     *
+     * @return array the array of input fields
+     */
+    public function getInputFieldsAsArray($data)
+    {
+        global $_LANGID;
+
+        if (empty($data)) {
+            return null;
+        }
+
+        $this->getFrontendLanguages();
+
+        $inputFields = array();
+        foreach ($data['inputfield'] as $intFieldId => $arrField) {
+            $inputFields[$intFieldId] = array(
+                'fields'    => array(
+                    'id'          => contrexx_input2int($intFieldId),
+                    'type'        => contrexx_input2db($arrField['type']),
+                    'required'    => isset($arrField['required']) ? 1 : 0,
+                    'order'       => contrexx_input2int($arrField['order']),
+                    'affiliation' => isset($arrField['affiliation'])
+                    ? contrexx_input2db($arrField['affiliation']) : ''
+                ),
+                'formFieldNames'  => array()
+            );
+
+            $formFieldNames = array();
             foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                 if (empty($arrField['name'][0])) {
                     $arrField['name'][0] = '';
@@ -416,37 +651,45 @@ class CalendarForm extends CalendarLibrary
                 if (empty($strFieldDefaultValue)) {
                     $strFieldDefaultValue = $arrField['default_value'][0];
                 }
-                $query = '
-                    INSERT INTO
-                        `' . DBPREFIX . 'module_' . $this->moduleTablePrefix . '_registration_form_field_name`
-                    SET
-                        `field_id` =  '. contrexx_input2int($intFieldId) . ',
-                        `form_id`  =  '. contrexx_input2int($this->id) .',
-                        `lang_id`  =  '. contrexx_input2int($arrLang['id']) .',
-                        `name`     = "'. contrexx_input2db($strFieldName) .'",
-                        `default`  = "'. contrexx_input2db($strFieldDefaultValue) .'"';
-
-                $objResult = $objDatabase->Execute($query);
+                $formFieldNames[] = array(
+                    'formId'    => contrexx_input2int($this->id),
+                    'name'      => contrexx_input2db($strFieldName),
+                    'langId'    => contrexx_input2int($arrLang['id']),
+                    'default'   => contrexx_input2db($strFieldDefaultValue)
+                );
             }
+            $inputFields[$intFieldId]['formFieldNames'] = $formFieldNames;
         }
 
-        return true;
-    }        
-    
+        return $inputFields;
+    }
+
     /**
      * Delete the form
      *      
      * @return boolean true on success false otherwise
      */
-    function delete(){
+    function delete()
+    {
         global $objDatabase;
-        
+
+        $form = $this->getFormEntity($this->id);
+        $this->cx->getEvents()->triggerEvent(
+            'model/preRemove',
+            array(new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em))
+        );
         $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
                         WHERE id = '".intval($this->id)."'";
-        
+
         $objResult = $objDatabase->Execute($query);
-        
-        if ($objResult !== false) {      
+
+        if ($objResult !== false) {
+            $this->cx->getEvents()->triggerEvent(
+                'model/postRemove',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em)
+                )
+            );
             return true;
         } else {
             return false;
@@ -458,29 +701,38 @@ class CalendarForm extends CalendarLibrary
      * 
      * @return boolean true on success false otherwise
      */
-    function switchStatus(){
+    function switchStatus()
+    {
         global $objDatabase;
-        
-        if($this->status == 1) {
-            $formStatus = 0;
-        } else {
-            $formStatus = 1;
-        }
-        
-        
-        $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form   
+
+        $formStatus = ($this->status == 1) ? 0 : 1;
+        $form = $this->getFormEntity(
+            $this->id, array('fields' => array('status' => $formStatus))
+        );
+        $this->cx->getEvents()->triggerEvent(
+            'model/preUpdate',
+            array(new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em))
+        );
+
+        $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
                      SET status = '".intval($formStatus)."'
                    WHERE id = '".intval($this->id)."'";
-        
+
         $objResult = $objDatabase->Execute($query);
-        
+
         if ($objResult !== false) {
+            $this->cx->getEvents()->triggerEvent(
+                'model/postUpdate',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em)
+                )
+            );
             return true;
         } else {
             return false;
         }
     }
-             
+
     /**
      * Save the form sort order
      *      
@@ -488,16 +740,30 @@ class CalendarForm extends CalendarLibrary
      * 
      * @return boolean true on success false otherwise
      */
-    function saveOrder($order) {
-        global $objDatabase, $_LANGID;    
-                  
+    function saveOrder($order)
+    {
+        global $objDatabase;
+
+        $form = $this->getFormEntity(
+            $this->id, array('fields' => array('order' => $order))
+        );
+        $this->cx->getEvents()->triggerEvent(
+            'model/preUpdate',
+            array(new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em))
+        );
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
-                     SET `order` = '".intval($order)."'          
+                     SET `order` = '".intval($order)."'
                    WHERE id = '".intval($this->id)."'";
-                               
-        $objResult = $objDatabase->Execute($query);   
-        
+
+        $objResult = $objDatabase->Execute($query);
+
         if ($objResult !== false) {
+            $this->cx->getEvents()->triggerEvent(
+                'model/postUpdate',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em)
+                )
+            );
             return true;
         } else {
             return false;
@@ -520,10 +786,125 @@ class CalendarForm extends CalendarLibrary
         
         $objResult = $objDatabase->Execute($query);
         
-        if($objResult !== false) {
+        if ($objResult !== false) {
             return intval($objResult->fields['id']);
         } else {
         	return false;
         }
+    }
+
+    /**
+     * Set form entity
+     *
+     * @param integer $id        form id
+     * @param array   $formDatas form field values
+     *
+     * @return Cx\Modules\Calendar\Model\Entity\RegistrationForm
+     */
+    public function getFormEntity($id, $formDatas)
+    {
+        if (empty($id)) {
+            $form = new \Cx\Modules\Calendar\Model\Entity\RegistrationForm();
+        } else {
+            $form = $this
+                ->em
+                ->getRepository('Cx\Modules\Calendar\Model\Entity\RegistrationForm')
+                ->findOneById($id);
+        }
+        $form->setVirtual(true);
+
+        if (!$form) {
+            return null;
+        }
+
+        if (!$formDatas) {
+            return $form;
+        }
+        //Set form field values
+        foreach ($formDatas['fields'] as $fieldName => $fieldValue) {
+            $methodName = 'set'.ucfirst($fieldName);
+            if (method_exists($form, $methodName)) {
+                $form->{$methodName}($fieldValue);
+            }
+        }
+
+        $relations = $formDatas['relation'];
+        if (!$relations || !$relations['inputFields']) {
+            return $form;
+        }
+
+        //Set form input fields
+        foreach ($relations['inputFields'] as $fieldValues) {
+            $this->getFormFieldEntity($form, $fieldValues);
+        }
+
+        return $form;
+    }
+
+    /**
+     * Get form field entity
+     *
+     * @param \Cx\Modules\Calendar\Model\Entity\RegistrationForm $form     form entity
+     * @param array                                              $formData form field values
+     *
+     * @return \Cx\Modules\Calendar\Model\Entity\RegistrationFormField
+     */
+    public function getFormFieldEntity(
+        \Cx\Modules\Calendar\Model\Entity\RegistrationForm $form,
+        $formData
+    ){
+        //Set form field values
+        $fieldValue = $formData['fields'];
+        $formField = $form->getRegistrationFormFieldById($fieldValue['id']);
+        if (!$formField) {
+            $formField = new \Cx\Modules\Calendar\Model\Entity\RegistrationFormField();
+        }
+        $formField->setVirtual(true);
+        $formField->setType($fieldValue['type']);
+        $formField->setOrder($fieldValue['order']);
+        $formField->setRequired($fieldValue['required']);
+        $formField->setAffiliation($fieldValue['affiliation']);
+        $form->addRegistrationFormField($formField);
+        $formField->setRegistrationForm($form);
+
+        if (!$formData['formFieldNames']) {
+            return $formField;
+        }
+
+        //Set formFieldName entity
+        foreach ($formData['formFieldNames'] as $fieldNameValues) {
+            $this->getFormFieldNameEntity($formField, $fieldNameValues);
+        }
+
+        return $formField;
+    }
+
+    /**
+     * Get formFieldName entity
+     *
+     * @param \Cx\Modules\Calendar\Model\Entity\RegistrationFormField $formField formField entity
+     * @param array                                                   $formData  formFieldValue field values
+     *
+     * @return \Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName
+     */
+    public function getFormFieldNameEntity(
+        \Cx\Modules\Calendar\Model\Entity\RegistrationFormField $formField,
+        $formData
+    ) {
+        $formFieldName = $formField->getRegistrationFormFieldNamesByLangId(
+            $formData['langId']
+        );
+        if (!$formFieldName) {
+            $formFieldName = new \Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName();
+        }
+        $formFieldName->setVirtual(true);
+        $formFieldName->setName($formData['name']);
+        $formFieldName->setLangId($formData['langId']);
+        $formFieldName->setFormId($formData['formId']);
+        $formFieldName->setDefault($formData['default']);
+        $formField->addRegistrationFormFieldName($formFieldName);
+        $formFieldName->setRegistrationFormField($formField);
+
+        return $formFieldName;
     }
 }

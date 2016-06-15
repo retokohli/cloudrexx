@@ -176,7 +176,7 @@ class CalendarMail extends CalendarLibrary
     {
         global $objDatabase;
 
-        $mail = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Mail')->findOneById($this->id);
+        $mail = $this->getMailEntity($this->id);
         $this->cx->getEvents()->triggerEvent(
             'model/preRemove',
             array(new \Doctrine\ORM\Event\LifecycleEventArgs($mail, $this->em))
@@ -214,6 +214,7 @@ class CalendarMail extends CalendarLibrary
             ->em->getRepository('Cx\Modules\Calendar\Model\Entity\Mail')
             ->findOneBy(array('actionId' => $this->action_id));
         $mailByAction->setIsDefault(0);
+        $mailByAction->setVirtual(true);
         $this->cx->getEvents()->triggerEvent(
             'model/preUpdate',
             array(
@@ -491,13 +492,20 @@ class CalendarMail extends CalendarLibrary
         if (empty($id)) {
             $mail = new \Cx\Modules\Calendar\Model\Entity\Mail();
         } else {
-            $mail = $this->em->getRepository('Cx\Modules\Calendar\Model\Entity\Mail')->findOneById($id);
+            $mail = $this
+                ->em
+                ->getRepository('Cx\Modules\Calendar\Model\Entity\Mail')
+                ->findOneById($id);
         }
+        $mail->setVirtual(true);
 
         if (!$mail) {
             return null;
         }
 
+        if (!$formDatas) {
+            return $mail;
+        }
         foreach ($formDatas as $fieldName => $fieldValue) {
             $methodName = 'set'.ucfirst($fieldName);
             if (method_exists($mail, $methodName)) {
