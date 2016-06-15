@@ -1,7 +1,13 @@
-image: php:5.6
+image: linode/lamp
 
 pipelines:
   default:
+    - step:
+        script:
+          - wget "http://contrexxlabs.com/setup.sh"
+    - step:
+        script:
+          - printf 'example_user\nAdmin2015\nexampleDB\n1' | ./meta/setup.sh -b=$BITBUCKET_BRANCH
     - step:
         script:
           - ./cx wb test
