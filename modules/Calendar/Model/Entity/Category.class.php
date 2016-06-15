@@ -71,6 +71,8 @@ class Category extends \Cx\Model\Base\EntityBase {
 
     public function __construct()
     {
+        $this->pos = 0;
+        $this->status = 0;
         $this->categoryNames = new \Doctrine\Common\Collections\ArrayCollection();
         $this->events = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -128,11 +130,21 @@ class Category extends \Cx\Model\Base\EntityBase {
     /**
      * Add categoryNames
      *
-     * @param Cx\Modules\Calendar\Model\Entity\CategoryName $categoryNames
+     * @param Cx\Modules\Calendar\Model\Entity\CategoryName $categoryName
      */
-    public function addCategoryNames(\Cx\Modules\Calendar\Model\Entity\CategoryName $categoryNames)
+    public function addCategoryName(\Cx\Modules\Calendar\Model\Entity\CategoryName $categoryName)
     {
-        $this->categoryNames[] = $categoryNames;
+        $this->categoryNames[] = $categoryName;
+    }
+
+    /**
+     * Set categoryNames
+     *
+     * @param Doctrine\Common\Collections\Collection $categoryNames
+     */
+    public function setCategoryNames($categoryNames)
+    {
+        $this->categoryNames = $categoryNames;
     }
 
     /**
@@ -148,11 +160,21 @@ class Category extends \Cx\Model\Base\EntityBase {
     /**
      * Add events
      *
-     * @param Cx\Modules\Calendar\Model\Entity\Event $events
+     * @param Cx\Modules\Calendar\Model\Entity\Event $event
      */
-    public function addEvents(\Cx\Modules\Calendar\Model\Entity\Event $events)
+    public function addEvent(\Cx\Modules\Calendar\Model\Entity\Event $event)
     {
-        $this->events[] = $events;
+        $this->events[] = $event;
+    }
+
+    /**
+     * Set events
+     *
+     * @param Doctrine\Common\Collections\Collection $events
+     */
+    public function setEvents($events)
+    {
+        $this->events = $events;
     }
 
     /**

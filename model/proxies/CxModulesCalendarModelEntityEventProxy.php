@@ -867,10 +867,16 @@ class CxModulesCalendarModelEntityEventProxy extends \Cx\Modules\Calendar\Model\
         return parent::getHostMediadirId();
     }
 
-    public function addEventFields(\Cx\Modules\Calendar\Model\Entity\EventField $eventFields)
+    public function addEventField(\Cx\Modules\Calendar\Model\Entity\EventField $eventField)
     {
         $this->_load();
-        return parent::addEventFields($eventFields);
+        return parent::addEventField($eventField);
+    }
+
+    public function setEventFields($eventFields)
+    {
+        $this->_load();
+        return parent::setEventFields($eventFields);
     }
 
     public function getEventFields()
@@ -879,10 +885,16 @@ class CxModulesCalendarModelEntityEventProxy extends \Cx\Modules\Calendar\Model\
         return parent::getEventFields();
     }
 
-    public function addRegistrations(\Cx\Modules\Calendar\Model\Entity\Registration $registrations)
+    public function addRegistration(\Cx\Modules\Calendar\Model\Entity\Registration $registration)
     {
         $this->_load();
-        return parent::addRegistrations($registrations);
+        return parent::addRegistration($registration);
+    }
+
+    public function setRegistrations($registrations)
+    {
+        $this->_load();
+        return parent::setRegistrations($registrations);
     }
 
     public function getRegistrations()
