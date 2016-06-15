@@ -742,8 +742,9 @@ class CalendarEventManager extends CalendarLibrary
             if (($this->arrSettings['placeData'] == 1) && $objEvent->place == '' && $objEvent->place_street == '' && $objEvent->place_zip == '' && $objEvent->place_city == '' && $objEvent->place_country == '' && $objEvent->place_website == '' && $objEvent->place_phone == '') {
                 $objTpl->hideBlock('calendarEventAddress');  
             } else {
-                /* if($objEvent->map == 1) { 
-                    $googleCoordinates = self::_getCoorinates($objEvent->place_street, $objEvent->place_zip, $objEvent->place_city);
+                if($objEvent->google) { 
+// TODO: implement with new Google Maps Embed API. see https://developers.google.com/maps/documentation/embed/guide
+                    /*$googleCoordinates = self::_getCoorinates($objEvent->place_street, $objEvent->place_zip, $objEvent->place_city);
                     if($googleCoordinates != false) {
                         $lat = $googleCoordinates[0];
                         $lon = $googleCoordinates[1];  
@@ -759,12 +760,12 @@ class CalendarEventManager extends CalendarLibrary
                         $objGoogleMap->addMapMarker($objEvent->id, $lon, $lat, "<b>".$objEvent->place."</b><br />".$objEvent->place_street."<br />".$objEvent->place_zip." ".$objEvent->place_city."<br />".$objEvent->place_country,true, null, true, $strValueClick, null, null);   
                         
                         $googleMap = $objGoogleMap->getMap();
-                    } else {
-                        $googleMap = '<a href="http://maps.google.ch/maps?q='.$objEvent->place_street.'+'.$objEvent->place_zip.'+'.$objEvent->place_city.'&z=15" target="_blank">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>';
-                    }
+                    } else {*/
+                    //}
+                    $googleMapLink = '<a href="http://maps.google.ch/maps?q='.$objEvent->place_street.'+'.$objEvent->place_zip.'+'.$objEvent->place_city.'&z=15" target="_blank">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>';
                 } else {
-                    $googleMap = '';
-                } */
+                    $googleMapLink = '';
+                }
                 
                 
                 //place map
@@ -802,7 +803,7 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_LOCATION_MAP_LINK'        => $hasPlaceMap ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
                     $this->moduleLangVar.'_EVENT_LOCATION_MAP_THUMBNAIL'   => $hasPlaceMap ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->place_map.'" /></a>' : "",
                     $this->moduleLangVar.'_EVENT_LOCATION_MAP_SOURCE'      => $hasPlaceMap ? $objEvent->place_map : '',
-                    //$this->moduleLangVar.'_EVENT_MAP'             => $googleMap,
+                    $this->moduleLangVar.'_EVENT_LOCATION_GOOGLE_MAP_LINK' => $googleMapLink,
                 ));
                 
                 if ($objTpl->blockExists('calendarEventAddressWebsite')) {
