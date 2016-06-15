@@ -527,9 +527,11 @@ EOF;
         
         $locationType = $this->arrSettings['placeData'] == 3 ? ($eventId != 0 ? $objEvent->locationType : 1) : $this->arrSettings['placeData'];
         $hostType     = $this->arrSettings['placeDataHost'] == 3 ? ($eventId != 0 ? $objEvent->hostType : 1) : $this->arrSettings['placeDataHost'];
+        $activeLangs  = implode(',', \FWLanguage::getIdArray());
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
-              
+var defaultLang = '$_LANGID';
+var activeLang = [$activeLangs];
 cx.ready(function() {
     var options = {
         dateFormat: '$dateFormat',        
@@ -649,6 +651,8 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_PLACE_DATA_FROM_MEDIADIR' => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR'],
             'TXT_'.$this->moduleLangVar.'_PREV'                     => $_ARRAYLANG['TXT_CALENDAR_PREV'],
             'TXT_'.$this->moduleLangVar.'_NEXT'                     => $_ARRAYLANG['TXT_CALENDAR_NEXT'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_MORE'               => $_ARRAYLANG['TXT_CALENDAR_MORE'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_MINIMIZE'           => $_ARRAYLANG['TXT_CALENDAR_MINIMIZE'],
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
@@ -658,22 +662,16 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_PICTURE_THUMB'             => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
             $this->moduleLangVar.'_EVENT_ATTACHMENT'                => $objEvent->attach,
             $this->moduleLangVar.'_EVENT_CATEGORIES'                => $objCategoryManager->getCategoryDropdown(intval($objEvent->catId), 2),            
-            $this->moduleLangVar.'_EVENT_LINK'                      => $objEvent->link,            
-            $this->moduleLangVar.'_EVENT_PLACE'                     => $objEvent->place,
+            $this->moduleLangVar.'_EVENT_LINK'                      => $objEvent->link,
             $this->moduleLangVar.'_EVENT_STREET'                    => $objEvent->place_street,
             $this->moduleLangVar.'_EVENT_ZIP'                       => $objEvent->place_zip,
-            $this->moduleLangVar.'_EVENT_CITY'                      => $objEvent->place_city,
-            $this->moduleLangVar.'_EVENT_COUNTRY'                   => $objEvent->place_country,
             $this->moduleLangVar.'_EVENT_PLACE_WEBSITE'             => $objEvent->place_website,
             $this->moduleLangVar.'_EVENT_PLACE_MAP'                 => $objEvent->place_map,
             $this->moduleLangVar.'_EVENT_PLACE_LINK'                => $objEvent->place_link,
             $this->moduleLangVar.'_EVENT_PLACE_PHONE'               => $objEvent->place_phone,
             $this->moduleLangVar.'_EVENT_MAP'                       => $objEvent->map == 1 ? 'checked="checked"' : '',
-            $this->moduleLangVar.'_EVENT_HOST'                      => $objEvent->org_name,
             $this->moduleLangVar.'_EVENT_HOST_ADDRESS'              => $objEvent->org_street,
             $this->moduleLangVar.'_EVENT_HOST_ZIP'                  => $objEvent->org_zip,
-            $this->moduleLangVar.'_EVENT_HOST_CITY'                 => $objEvent->org_city,
-            $this->moduleLangVar.'_EVENT_HOST_COUNTRY'              => $objEvent->org_country,
             $this->moduleLangVar.'_EVENT_HOST_WEBSITE'              => $objEvent->org_website,
             $this->moduleLangVar.'_EVENT_HOST_LINK'                 => $objEvent->org_link,
             $this->moduleLangVar.'_EVENT_HOST_PHONE'                => $objEvent->org_phone,
@@ -687,7 +685,22 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_ALL_DAY'                   => $eventId != 0 && $objEvent->all_day ? 'checked="checked"' : '',
             $this->moduleLangVar.'_HIDE_ON_SINGLE_LANG'             => count($this->arrFrontendLanguages) == 1 ? "display: none;" : "",
         ));
-        
+        $multiLingualFields = array(
+            'place',
+            'place_city',
+            'place_country',
+            'org_name',
+            'org_city',
+            'org_country',
+        );
+        $isOneActiveLanguage = count($this->arrFrontendLanguages) == 1;
+        foreach ($multiLingualFields as $inputField) {
+            if ($isOneActiveLanguage) {
+                $this->_objTpl->hideBlock('calendar_event_'. $inputField .'_expand');
+            } else {
+                $this->_objTpl->touchBlock('calendar_event_'. $inputField .'_expand');
+            }
+        }
         foreach ($this->arrFrontendLanguages as $arrLang) {
             //parse globals
             $this->_objTpl->setGlobalVariable(array(
@@ -736,6 +749,20 @@ UPLOADER;
             ));
             
             $this->_objTpl->parse('eventDescTab');
+
+            //parse eventLingualFields
+            foreach ($multiLingualFields as $inputField) {
+                $this->_objTpl->setVariable(
+                    $this->moduleLangVar.'_EVENT_'. strtoupper($inputField) .'_DEFAULT',
+                    $eventId != 0 ? $objEvent->{$inputField} : ''
+                );
+                $this->_objTpl->setVariable(array(
+                    $this->moduleLangVar.'_EVENT_VALUE' => !empty($objEvent->arrData[$inputField][$arrLang['id']])
+                                                          ? $objEvent->arrData[$inputField][$arrLang['id']]
+                                                          : ($eventId != 0 ? $objEvent->{$inputField} : ''),
+                ));
+                $this->_objTpl->parse('calendar_event_'. $inputField);
+            }
                         
             $langChecked = $langChecked ? 'checked="checked"' : '';
             	
