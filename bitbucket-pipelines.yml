@@ -4,10 +4,10 @@ pipelines:
   default:
     - step:
         script:
-          - wget "http://contrexxlabs.com/setup.sh"
+          - wget "https://www.cloudrexx.com/de/index.php?section=downloads&cmd=7&download=519"
     - step:
         script:
           - printf 'example_user\nAdmin2015\nexampleDB\n1' | ./meta/setup.sh -b=$BITBUCKET_BRANCH
     - step:
         script:
-          - ./cx wb test
+          - ./cx wb test 2>&1
