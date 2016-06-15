@@ -4,7 +4,7 @@ pipelines:
   default:
     - step:
         script:
-          - wget "https://www.cloudrexx.com/de/index.php?section=downloads&cmd=7&download=519"
+          - curl "https://www.cloudrexx.com/de/index.php?section=downloads&cmd=7&download=519" > setup.sh
     - step:
         script:
           - printf 'example_user\nAdmin2015\nexampleDB\n1' | ./meta/setup.sh -b=$BITBUCKET_BRANCH
