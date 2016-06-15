@@ -1631,6 +1631,16 @@ INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_
 INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_permission`, `data_source_id`, `name`, `field_list`, `access_condition`, `allowed_output_methods`) VALUES (8, NULL, NULL, 8, 'calendar-registrationformfield', 'a:0:{}', 'a:0:{}', 'a:0:{}');
 INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_permission`, `data_source_id`, `name`, `field_list`, `access_condition`, `allowed_output_methods`) VALUES (9, NULL, NULL, 9, 'calendar-registrationformname', 'a:0:{}', 'a:0:{}', 'a:0:{}');
 INSERT INTO `contrexx_core_module_data_access` (`id`, `read_permission`, `write_permission`, `data_source_id`, `name`, `field_list`, `access_condition`, `allowed_output_methods`) VALUES (10, NULL, NULL, 10, 'calendar-registrationformvalue', 'a:0:{}', 'a:0:{}', 'a:0:{}');
+INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (1, 1, '', '', 0);
+INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (2, 2, '', '', 0);
+INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (3, 3, '', '', 0);
+INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (4, 4, '', '', 0);
+INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (5, 5, '', '', 0);
+INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (6, 6, '', '', 0);
+INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (7, 7, '', '', 0);
+INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (8, 8, '', '', 0);
+INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (9, 9, '', '', 0);
+INSERT INTO `contrexx_core_module_sync` (`id`, `data_access_id`, `to_uri`, `api_key`, `active`) VALUES (10, 10, '', '', 0);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('core','numof_countries_per_page_backend','country','text','30','',101);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','address','config','text','MaxMuster AG\r\nFirmenstrasse 1\r\n4321 Irgendwo','',20);
 INSERT INTO `contrexx_core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ('Shop','company','config','text','MaxMuster AG','',19);
