@@ -250,53 +250,69 @@ class Sync extends \Cx\Model\Base\EntityBase {
      * @throws   HTTP_Request2_Exception
      */
     public function push($eventType, $entityIndexData, $entity) {
+        // is this synchronization active?
         if (!$this->getActive()) {
             return;
         }
         
-        $url = $this->getToUri($entityIndexData);
-        $method = strtoupper($eventType);
-        $content = array();
-        $metaData = $this->cx->getDb()->getEntityManager()->getClassMetadata(get_class($entity));
-        $primaryKeyNames = $metaData->getIdentifierFieldNames(); // get the name of primary key in database table
-        foreach ($metaData->getColumnNames() as $column) {
-            $field = $metaData->getFieldName($column);
-            if (in_array($field, $primaryKeyNames)) {
+        foreach ($this->getHostEntities() as $hostEntity) {
+            // is there a host we should sync this entity to?
+            if (
+                $hostEntity->getHost->getActive() &&
+                $hostEntity->getEntityId() != '*' &&
+                $hostEntity->getEntityId() != $entityIndexData
+            ) {
                 continue;
             }
-            $content[$field] = $metaData->getFieldValue($entity, $field);
-            if (is_object($content[$field]) && get_class($content[$field]) == 'DateTime') {
-                $content[$field] = $content[$field]->format(DATE_ATOM);
-            }
-        }
-        $associationMappings = $metaData->getAssociationMappings();
-        $classMethods = get_class_methods($entity);
-        foreach ($associationMappings as $field => $associationMapping) {
-            if (   $metaData->isSingleValuedAssociation($field)
-                && in_array('set'.ucfirst($field), $classMethods)
-            ) {
-                if ($metaData->getFieldValue($entity, $field)) {
-                    $content[$field] = (string) $metaData->getFieldValue($entity, $field);
+            
+            // now we really push
+            $url = $hostEntity->getHost()->getToUri(
+                $this->getDataAccess()->getName(),
+                $entityIndexData
+            );
+            $method = strtoupper($eventType);
+            $content = array();
+            $metaData = $this->cx->getDb()->getEntityManager()->getClassMetadata(get_class($entity));
+            $primaryKeyNames = $metaData->getIdentifierFieldNames(); // get the name of primary key in database table
+            foreach ($metaData->getColumnNames() as $column) {
+                $field = $metaData->getFieldName($column);
+                if (in_array($field, $primaryKeyNames)) {
                     continue;
                 }
-                $content[$field]= new $associationMapping['targetEntity']();
-            } elseif ($metaData->isCollectionValuedAssociation($field)) {
-                $content[$field]= new $associationMapping['targetEntity']();
+                $content[$field] = $metaData->getFieldValue($entity, $field);
+                if (is_object($content[$field]) && get_class($content[$field]) == 'DateTime') {
+                    $content[$field] = $content[$field]->format(DATE_ATOM);
+                }
             }
+            $associationMappings = $metaData->getAssociationMappings();
+            $classMethods = get_class_methods($entity);
+            foreach ($associationMappings as $field => $associationMapping) {
+                if (   $metaData->isSingleValuedAssociation($field)
+                    && in_array('set'.ucfirst($field), $classMethods)
+                ) {
+                    if ($metaData->getFieldValue($entity, $field)) {
+                        $content[$field] = (string) $metaData->getFieldValue($entity, $field);
+                        continue;
+                    }
+                    $content[$field]= new $associationMapping['targetEntity']();
+                } elseif ($metaData->isCollectionValuedAssociation($field)) {
+                    $content[$field]= new $associationMapping['targetEntity']();
+                }
+            }
+            
+            $config = array(
+            );
+            $request = new \HTTP_Request2($url, $method, $config);
+            $refUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+            $refUrl->setMode('backend');
+            $request->setHeader('Referrer', $refUrl->toString());
+            $request->setBody(http_build_query($content, null, '&'));
+            
+            $response = $request->send();
+            var_dump($response->getStatus());
+            echo '<hr />';
+            echo '<pre>' . $response->getBody() . '</pre>';
+            die('Pushed to ' . $url . ' with method ' . $method . ', body was: ' . http_build_query($content));
         }
-        
-        $config = array(
-        );
-        $request = new \HTTP_Request2($url, $method, $config);
-        $refUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
-        $refUrl->setMode('backend');
-        $request->setHeader('Referrer', $refUrl->toString());
-        $request->setBody(http_build_query($content, null, '&'));
-        
-        $response = $request->send();
-        var_dump($response->getStatus());
-        echo '<hr />';
-        echo '<pre>' . $response->getBody() . '</pre>';
-        die('Pushed to ' . $url . ' with method ' . $method . ', body was: ' . http_build_query($content));
     }
 }

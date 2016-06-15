@@ -80,6 +80,11 @@ class Host extends \Cx\Model\Base\EntityBase
      * @var Cx\Core_Modules\Sync\Model\Entity\HostEntity
      */
     protected $hostEntities;
+    
+    /**
+     * @var string Default template for URI
+     */
+    protected $defaultUrlTemplate = '[[HOST]]/api/sync/[[API_VERSION]]/json/[[DATA_SOURCE]]/[[INDEX_DATA]]?apikey=[[API_KEY]]';
 
     public function __construct()
     {
@@ -183,6 +188,9 @@ class Host extends \Cx\Model\Base\EntityBase
      */
     public function setUrlTemplate($urlTemplate)
     {
+        if ($urlTemplate == $this->defaultUrlTemplate) {
+            $urlTemplate = null;
+        }
         $this->urlTemplate = $urlTemplate;
     }
 
@@ -193,6 +201,9 @@ class Host extends \Cx\Model\Base\EntityBase
      */
     public function getUrlTemplate()
     {
+        if (empty($this->urlTemplate)) {
+            return $this->defaultUrlTemplate;
+        }
         return $this->urlTemplate;
     }
 
@@ -224,5 +235,25 @@ class Host extends \Cx\Model\Base\EntityBase
     public function setHostEntities($hostEntities)
     {
         $this->hostEntities = $hostEntities;
+    }
+    
+    /**
+     * Returns the URL for pushing data to this host
+     * @param string $dataSourceName DataSource name to get the URL for
+     * @param array $entityIndexData (optional) Field=>Value-type array with entity index data
+     * @return string URL to push to
+     */
+    public function getToUri($dataSourceName, $entityIndexData = array()) {
+        $indexData = implode('/', $entityIndexData);
+        
+        //<domain>(/<offset>)/api/sync/<apiVersion>/<outputModule>/<dataSource>/<parameters>[(?apikey=<apikey>(&<options>))|?<options>]
+        //<domain>(/<offset>)/api/sync/<apiVersion>/<outputModule>/[[DATA_SOURCE]]/[[INDEX_DATA]][(?apikey=[[API_KEY]](&<options>))|?<options>]
+        $uri = $this->getUrlTemplate();
+        $uri = str_replace('[[HOST]]', $this->getHost(), $uri);
+        $uri = str_replace('[[API_VERSION]]', $this->getApiVersion(), $uri);
+        $uri = str_replace('[[DATA_SOURCE]]', $dataSourceName, $uri);
+        $uri = str_replace('[[API_KEY]]', $this->getApiKey(), $uri);
+        $uri = str_replace('[[INDEX_DATA]]', $indexData, $uri);
+        return $uri;
     }
 }
