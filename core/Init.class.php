@@ -784,6 +784,9 @@ class InitCMS
         if(!isset($_ARRAYLANG))
             $_ARRAYLANG = array();
 
+        if(!isset($_CORELANG))
+            $_CORELANG = array();
+
         if ($this->mode == 'backend') {
             $langId = $this->backendLangId;
         } else {
@@ -811,7 +814,8 @@ class InitCMS
                 $this->loadLangFile($path);
             }
             //...and overwrite with actual language where translated.
-            if($langId != 2) { //don't do it for english, already loaded.
+            //...but only if $langId is set (otherwise it will overwrite English by the default language
+            if($langId && $langId != 2) { //don't do it for english, already loaded.
                 $path = $this->getLangFilePath($module, $langId);
                 if (!empty($path)) {
                     $this->loadLangFile($path);
@@ -873,7 +877,7 @@ class InitCMS
 
         // set custom init state
         $this->mode = $mode;
-        $this->frontentLangId = $languageId;
+        $this->frontendLangId = $languageId;
         $this->backendLangId = $languageId;
 
         // load language data

@@ -65,48 +65,64 @@ class OptionSetFileStorage implements Storable
      */
     public function retrieve($name)
     {
-        $file = file_get_contents(
-            \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
-                ->getFilePath(
-                    $this->path
-                    . '/' . $name . '/options/Options.yml'
-                )
+        $file = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(
+            $this->path
+            . '/' . $name . '/options/Options.yml'
         );
-        if ($file) {
-            try {
-                $yaml = new Parser();
-                $data = $yaml->parse($file);
-            } catch (ParserException $e) {
-                preg_match(
-                    "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
-                );
-                throw new ParserException($e->getMessage(), $matches['line']);
-            }
-        } else {
+        if (!$file) {
             throw new ParserException(
                 "File" . $this->path
                 . '/' . $name . '/options/Options.yml not found'
             );
         }
-        $file = file_get_contents(
-            \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
-                ->getFilePath(
-                    $this->path
-                    . '/' . $name . '/options/Groups.yml'
-                )
+
+        $content = file_get_contents($file);
+        if (!$content) {
+            throw new ParserException(
+                "File" . $this->path
+                . '/' . $name . '/options/Options.yml not found'
+            );
+        }
+
+        try {
+            $yaml = new Parser();
+            $data =  $yaml->parse($content);
+        } catch (ParserException $e) {
+            preg_match(
+                "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
+            );
+            throw new ParserException($e->getMessage(), $matches['line']);
+        }
+        $file = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(
+            $this->path
+            . '/' . $name . '/options/Groups.yml'
         );
-        if ($file) {
-            try {
-                $yaml = new Parser();
-                $data['groups'] = $yaml->parse($file);
-            } catch (ParserException $e) {
-                preg_match(
-                    "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
-                );
-                throw new ParserException($e->getMessage(), $matches['line']);
-            }
+        if (!$file) {
+            throw new ParserException(
+                "File" . $this->path
+                . '/' . $name . '/options/Groups.yml not found'
+            );
+        }
+
+        $content = file_get_contents($file);
+        if (!$content) {
+            throw new ParserException(
+                "File" . $this->path
+                . '/' . $name . '/options/Groups.yml not found'
+            );
+        }
+
+        try {
+            $yaml = new Parser();
+            $data['groups'] =  $yaml->parse($content);
+        } catch (ParserException $e) {
+            preg_match(
+                "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
+            );
+            throw new ParserException($e->getMessage(), $matches['line']);
         }
         return $data;
+
     }
 
     /**
