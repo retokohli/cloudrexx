@@ -29,7 +29,9 @@
 function _calendarUpdate()
 {
     global $objDatabase, $objUpdate, $_CONFIG, $_ARRAYLANG;
-
+// customizing BPW: simulate Trunk of v3.1
+$coreCmsVersion = $_CONFIG['coreCmsVersion'];
+$_CONFIG['coreCmsVersion'] = '3.1.9';
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         try {
             \Cx\Lib\UpdateUtil::table(
@@ -551,6 +553,71 @@ function _calendarUpdate()
         }
     }
 
+
+// BPW CHANGES
+    try {
+        \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `value` = 2 WHERE `value` = 0 AND `name` IN ( 'headlinesStatus', 'publicationStatus', 'countCategoryEntries', 'confirmFrontendEvents', 'paymentStatus', 'paymentBillStatus', 'paymentYellowpayStatus', 'showClockDetail', 'showStartDateDetail', 'showEndDateDetail', 'showStartTimeDetail', 'showEndTimeDetail', 'showClockList', 'showStartDateList', 'showEndDateList', 'showStartTimeList', 'showEndTimeList', 'showEventsOnlyInActiveLanguage')");
+        \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `options` = 'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE' WHERE `name` IN ( 'headlinesStatus', 'publicationStatus', 'countCategoryEntries', 'confirmFrontendEvents', 'paymentStatus', 'paymentBillStatus', 'paymentYellowpayStatus', 'showClockDetail', 'showStartDateDetail', 'showEndDateDetail', 'showStartTimeDetail', 'showEndTimeDetail', 'showClockList', 'showStartDateList', 'showEndDateList', 'showStartTimeList', 'showEndTimeList', 'showEventsOnlyInActiveLanguage')");
+
+        \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `value` = 2 WHERE `value` = 0 AND `name` IN ( 'paymentTestserver' )");
+        \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `options` = 'TXT_CALENDAR_YES,TXT_CALENDAR_NO' WHERE `name` IN ( 'paymentTestserver' )");
+
+        \Cx\Lib\UpdateUtil::sql("DELETE FROM ".DBPREFIX."module_calendar_settings WHERE `name` = 'useDatepicker'");
+
+        \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `section_id` = 19, `type` = 3, `special` = '', `value` = 1, `options` = 'TXT_CALENDAR_PLACE_DATA_DEFAULT,TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR,TXT_CALENDAR_PLACE_DATA_FROM_BOTH' WHERE `name` IN ( 'placeData' )");
+        \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `order` = 9 WHERE `name` IN ( 'maxSeriesEndsYear' )");
+        \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `order` = 10 WHERE `name` IN ( 'showEventsOnlyInActiveLanguage' )");
+        \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `section_id` = 18 WHERE `name` IN ( 'confirmFrontendEvents' , 'addEventsFrontend')");
+
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES(60, 16, 'listViewPreview', 'TXT_CALENDAR_SHOW_PREVIEW', '0', '', 7, '', 'listPreview', 10)");
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES(61, 17, 'detailViewPreview', 'TXT_CALENDAR_SHOW_PREVIEW', '0', '', 7, '', 'detailPreview', 10)");
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES(62, 19, 'placeDataForm', '', '0', '', 5, '', 'getPlaceDataDorpdown', 8)");
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES(63, 19, 'placeDataHost', 'TXT_CALENDAR_PLACE_DATA_HOST', '1', 'TXT_CALENDAR_PLACE_DATA_STATUS_INFO', 3, 'TXT_CALENDAR_PLACE_DATA_DEFAULT,TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR,TXT_CALENDAR_PLACE_DATA_FROM_BOTH', '', 9)");
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES(64, 19, 'placeDataHostForm', '', '0', '', 5, '', 'getPlaceDataDorpdown', 10)");
+
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_calendar_settings_section` (`id`, `parent`, `order`, `name`, `title`) VALUES(18, 1, 3, 'frontend_submission', 'TXT_CALENDAR_FRONTEND_SUBMISSION')");
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_calendar_settings_section` (`id`, `parent`, `order`, `name`, `title`) VALUES(19, 1, 4, 'location_host', 'TXT_CALENDAR_EVENT_LOCATION')");
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX . 'module_calendar_registration_form_field',
+            array(
+                'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'form' => array('type' => 'INT(11)', 'after' => 'id'),
+                'type' => array('type' => 'ENUM(\'inputtext\',\'textarea\',\'select\',\'radio\',\'checkbox\',\'mail\',\'seating\',\'agb\',\'salutation\',\'firstname\',\'lastname\',\'selectBillingAddress\',\'fieldset\')', 'after' => 'form'),
+                'required' => array('type' => 'INT(1)', 'after' => 'type'),
+                'order' => array('type' => 'INT(3)', 'after' => 'required'),
+                'affiliation' => array('type' => 'VARCHAR(45)', 'after' => 'order')
+            )
+        );
+
+        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_calendar_registration_form_field` SET `type` = 'fieldset' WHERE `type` = 'title'");
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX . 'module_calendar_registration',
+            array(
+                'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'event_id' => array('type' => 'INT(7)', 'after' => 'id'),
+                'date' => array('type' => 'INT(15)', 'after' => 'event_id'),
+                'host_name' => array('type' => 'VARCHAR(255)', 'after' => 'date'),
+                'ip_address' => array('type' => 'VARCHAR(15)', 'after' => 'host_name'),
+                'type' => array('type' => 'INT(1)', 'after' => 'ip_address'),
+                'key' => array('type' => 'VARCHAR(45)', 'after' => 'type'),
+                'user_id' => array('type' => 'INT(7)', 'after' => 'key'),
+                'lang_id' => array('type' => 'INT(11)', 'after' => 'user_id'),
+                'export' => array('type' => 'INT(11)', 'after' => 'lang_id'),
+                'payment_method' => array('type' => 'INT(11)', 'after' => 'export'),
+                'paid' => array('type' => 'INT(11)', 'after' => 'payment_method', 'renamefrom' = 'payed')
+            )
+        );
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+// END: BPW CHANGES
+
+
+
+// customizing BPW: restore actual system version
+$_CONFIG['coreCmsVersion'] = $coreCmsVersion;
     return true;
 }
 
