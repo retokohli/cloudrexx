@@ -207,6 +207,27 @@ FORUM;
             ));
             return false;
         }
+
+        // migrate path to images and media
+        $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
+        try {
+            foreach ($pathsToMigrate as $oldPath => $newPath) {
+                \Cx\Lib\UpdateUtil::migratePath(
+                    '`' . DBPREFIX . 'module_forum_categories_lang`',
+                    '`description`',
+                    $oldPath,
+                    $newPath
+                );
+            }
+        } catch (\Cx\Lib\Update_DatabaseException $e) {
+            \DBG::log($e->getMessage());
+            setUpdateMsg(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_TO_MIGRATE_MEDIA_PATH'],
+                'Forum (Forum)'
+            ));
+            return false;
+        }
+
     }
 
     return true;

@@ -102,6 +102,10 @@ function _podcastUpdate() {
     }
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+
+// TODO: ask user to confirm this change
+        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_podcast_template` SET `template` = '<iframe width=\"[[MEDIUM_WIDTH]]\" height=\"[[MEDIUM_HEIGHT]]\" src=\"[[MEDIUM_URL]]\" frameborder=\"0\" allowfullscreen></iframe>' WHERE `description` = 'YouTube Video'");
+
         // Update the thumbnail path from images/podcast into images/Podcast
         \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_podcast_medium`
                                  SET `thumbnail` = REPLACE(`thumbnail`, 'images/podcast', 'images/Podcast')

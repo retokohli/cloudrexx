@@ -1237,8 +1237,8 @@ CREATE TABLE `contrexx_module_crm_success_rate` (
 ) ENGINE=MyISAM ;
 CREATE TABLE `contrexx_module_crm_task` (
   `id` int(2) NOT NULL AUTO_INCREMENT,
-  `task_id` varchar(10) NOT NULL,
-  `task_title` varchar(255) NOT NULL,
+  `task_id` varchar(10) BINARY NOT NULL,
+  `task_title` varchar(255) BINARY NOT NULL,
   `task_type_id` int(2) NOT NULL,
   `customer_id` int(2) NOT NULL,
   `due_date` datetime NOT NULL,

@@ -105,6 +105,9 @@ function _marketUpdate()
     }
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES ('12', 'confirmFrontend', '1', 'TXT_MARKET_SET_CONFIRM_IN_FRONTEND', '2')");
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES ('13', 'useTerms', '0', 'TXT_MARKET_SET_USE_TERMS', '2')");
+
         \Cx\Lib\UpdateUtil::sql(
             'INSERT IGNORE INTO `'.DBPREFIX.'module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`)
              VALUES

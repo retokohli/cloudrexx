@@ -384,21 +384,25 @@ function _downloadsUpdate()
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         try{
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_downloads_settings` (`id`, `name`, `value`) VALUES (16,'use_attr_metakeys','1')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_downloads_settings` (`id`, `name`, `value`) VALUES (17,'downloads_sorting_order','newestToOldest')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_downloads_settings` (`id`, `name`, `value`) VALUES (18,'categories_sorting_order','alphabetic')");
+
             \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."module_downloads_download` CHANGE `version` `version` VARCHAR(255) NOT NULL DEFAULT ''");
+
+            //following queries for changing the path from images/downloads into images/Downloads
+            \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_downloads_download`
+                                     SET `image` = REPLACE(`image`, 'images/downloads', 'images/Downloads')
+                                     WHERE `image` LIKE ('".ASCMS_PATH_OFFSET."/images/downloads%')");
+            \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_downloads_category`
+                                     SET `image` = REPLACE(`image`, 'images/downloads', 'images/Downloads')
+                                     WHERE `image` LIKE ('".ASCMS_PATH_OFFSET."/images/downloads%')");
+            \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_downloads_download_locale`
+                                     SET `source` = REPLACE(`source`, 'images/downloads', 'images/Downloads')
+                                     WHERE `source` LIKE ('".ASCMS_PATH_OFFSET."/images/downloads%')");
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-
-        //following queries for changing the path from images/downloads into images/Downloads
-        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_downloads_download`
-                                 SET `image` = REPLACE(`image`, 'images/downloads', 'images/Downloads')
-                                 WHERE `image` LIKE ('".ASCMS_PATH_OFFSET."/images/downloads%')");
-        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_downloads_category`
-                                 SET `image` = REPLACE(`image`, 'images/downloads', 'images/Downloads')
-                                 WHERE `image` LIKE ('".ASCMS_PATH_OFFSET."/images/downloads%')");
-        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_downloads_download_locale`
-                                 SET `source` = REPLACE(`source`, 'images/downloads', 'images/Downloads')
-                                 WHERE `source` LIKE ('".ASCMS_PATH_OFFSET."/images/downloads%')");
 
         //Update script for moving the folder
         $imagePath       = ASCMS_DOCUMENT_ROOT . '/images';
@@ -420,8 +424,10 @@ function _downloadsUpdate()
         $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
         $attributes = array(
             'module_downloads_category'         => 'image',
+            'module_downloads_category_locale'  => 'description',
             'module_downloads_download'         => 'image',
             'module_downloads_download_locale'  => 'source',
+            'module_downloads_download_locale'  => 'description',
         );
         try {
             foreach ($attributes as $table => $attribute) {
