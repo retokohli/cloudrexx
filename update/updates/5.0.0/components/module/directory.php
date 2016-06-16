@@ -322,7 +322,8 @@ function _directoryUpdate() {
         'spez_field_28' => 'module_directory_dir',
         'spez_field_29' => 'module_directory_dir',
         'content'       => 'module_directory_mail',
-
+        'description'   => 'module_directory_categories',
+        'description'   => 'module_directory_levels',
     );
     // migrate path to images and media
     $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();

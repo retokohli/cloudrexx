@@ -624,3 +624,10 @@ table.adminlist td {
     z-index: 9999;
     color: #25556d;
 }
+.processStatusBar {
+    background-color: #0873bb;
+    display: block;
+    height: 13px;
+    position: relative;
+    top: -13px;
+}

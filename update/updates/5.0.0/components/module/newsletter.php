@@ -575,11 +575,11 @@ In order to confirm the newsletter subscription please click on the following li
 
 [NEWSLETTER_CONFIRM_CODE]
 
-In order to prevent our newsletter ending up in your span folder,please add this email\'s sender address to your contacts.
+To prevent our newsletter from ending up in your spam folder, please add this email\'s sender address to your contact list.
 
-Should you have received this mail without wanting it we would like to apologize. You will not receive any further mails from us.
+In case you did not request to sign up to this newsletter by yourself, please ignore this email. You may not receive any further emails from us.
 
-–
+--
 This is an automatically generated message.
 [NEWSLETTER_CURRENT_DATE]',
             ),
@@ -609,9 +609,7 @@ Dies ist eine automatisch generierte Nachricht.
 Your subscription to this newsletter was successfully registered.
 You will receive our newsletter messages.
 
-
-
-–
+--
 This is an automatically generated message.
 [NEWSLETTER_CURRENT_DATE]',
             ),
@@ -643,13 +641,13 @@ Dies ist eine automatisch generierte Nachricht.
                 2 => 'The following changes were made to the newsletter system:
 
 Action:     [NEWSLETTER_NOTIFICATION_ACTION]
-Sex:        [NEWSLETTER_USER_SEX]
+Gender:     [NEWSLETTER_USER_SEX]
 Salutation: [NEWSLETTER_USER_TITLE]
 Firstname:  [NEWSLETTER_USER_FIRSTNAME]
 Lastname:   [NEWSLETTER_USER_LASTNAME]
 Email:      [NEWSLETTER_USER_EMAIL]
 
-–
+--
 This is an automatically generated message.
 [NEWSLETTER_CURRENT_DATE]',
             ),
@@ -662,20 +660,28 @@ This is an automatically generated message.
                 2 => 'Undeliverable mail notification',
             ),
             'subject' => array(
-                1 => '[NEWSLETTER_SUBJECT]',
-                2 => '[NEWSLETTER_SUBJECT]',
+                1 => '[NEWSLETTER_SUBJECT] - Benachrichtigung über unzustellbare E-Mail',
+                2 => '[NEWSLETTER_SUBJECT] - Undeliverable email notification',
             ),
             'content' => array(
                 1 => 'Der Newsletter konnte an folgende E-Mail-Adresse nicht versendet werden:
 [NEWSLETTER_USER_EMAIL]
 
 Um die E-Mail Adresse zu bearbeiten,klicken Sie bitte auf den folgenden Link:
-[NEWSLETTER_USER_EDIT_LINK]',
+[NEWSLETTER_USER_EDIT_LINK]
+
+--
+Dies ist eine automatisch generierte Nachricht.
+[NEWSLETTER_CURRENT_DATE]',
                 2 => 'Sending the newsletter to the following email address has failed:
 [NEWSLETTER_USER_EMAIL]
 
 In order to edit the email address please click the following link:
-[NEWSLETTER_USER_EDIT_LINK]',
+[NEWSLETTER_USER_EDIT_LINK]
+
+--
+This is an automatically generated message.
+[NEWSLETTER_CURRENT_DATE]',
             ),
             'key' => 'notify_undelivered_email',
             'text_id' => 27,
@@ -719,11 +725,6 @@ In order to edit the email address please click the following link:
         $key    = $mailTemplateReplacement['key'];
         $textId = $mailTemplateReplacement['text_id'];
 
-        $toAddr = $mailTemplates->fields['id'] == 3 ? '[NEWSLETTER_NOTIFICATION_RECIPIENT]' : '[NEWSLETTER_USER_EMAIL]';
-        $mailTo =   !empty($mailTemplates->fields['recipients'])
-                  ? $mailTemplates->fields['recipients'] . ',' . $toAddr
-                  : $toAddr;
-
         foreach ($languages as $lang) {
             $langId = $lang['id'];
             $name   =  isset($mailTemplateReplacement['name'][$langId])
@@ -744,7 +745,7 @@ In order to edit the email address please click the following link:
                           ? $mailTemplateReplacement['content'][$langId]
                           : $mailTemplateReplacement['content'][1];
             }
-            insertMailTemplate($key, $textId, $langId, $name, $title, $content, $mailTo);
+            insertMailTemplate($key, $textId, $langId, $name, $title, $content);
         }
 
         $mailTemplates->MoveNext();
@@ -758,16 +759,24 @@ In order to edit the email address please click the following link:
                 2 => 'Notify user about subscribing to the same newsletter list again',
             ),
             'subject' => array(
-                1 => '[NEWSLETTER_DOMAIN_URL] - Anmeldung Newsletter',
+                1 => '[NEWSLETTER_DOMAIN_URL] - Anmeldung zum Newsletter',
                 2 => '[NEWSLETTER_DOMAIN_URL] - Newsletter subscription',
             ),
             'content' => array(
-                1 => 'Guten Tag [NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME],
+                1 => '[NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME]
 
-Sie sind bereits Abonnent des gewählten Newsletters.',
-                2 => 'Hi [NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME],
+Sie sind bereits Abonnent des gewählten Newsletters.
 
-You have already subscribed to this newsletter list.',
+--
+Dies ist eine automatisch generierte Nachricht.
+[NEWSLETTER_CURRENT_DATE]',
+                2 => '[NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME]
+
+You have already subscribed to this newsletter list.
+
+--
+This is an automatically generated message.
+[NEWSLETTER_CURRENT_DATE]',
             ),
             'key' => 'notify_subscription_list_same',
             'text_id' => 28,
@@ -778,20 +787,30 @@ You have already subscribed to this newsletter list.',
                 2 => 'Notify user about the additional newsletter list subscription',
             ),
             'subject' => array(
-                1 => '[NEWSLETTER_DOMAIN_URL] - Newsletter subscription',
-                2 => '[NEWSLETTER_DOMAIN_URL] - Anmeldung Newsletter',
+                1 => '[NEWSLETTER_DOMAIN_URL] - Anmeldung zum Newsletter',
+                2 => '[NEWSLETTER_DOMAIN_URL] - Newsletter subscription',
             ),
             'content' => array(
-                1 => 'Guten Tag [NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME],
+                1 => '[NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME]
+
 Sie haben sich erfolgreich in den/die folgende(n) Newsletter eingetragen:
 [[NEWSLETTER_LISTS]
    [NEWSLETTER_LIST]
-[NEWSLETTER_LISTS]]',
-                2 => 'Hi [NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME],
+[NEWSLETTER_LISTS]]
+
+--
+Dies ist eine automatisch generierte Nachricht.
+[NEWSLETTER_CURRENT_DATE]',
+                2 => '[NEWSLETTER_USER_TITLE] [NEWSLETTER_USER_LASTNAME]
+
 You have successfully registered to the following newsletter list(s):
 [[NEWSLETTER_LISTS]
     [NEWSLETTER_LIST]
-[NEWSLETTER_LISTS]]',
+[NEWSLETTER_LISTS]]
+
+--
+This is an automatically generated message.
+[NEWSLETTER_CURRENT_DATE]',
             ),
             'key' => 'notify_subscription_list_additional',
             'text_id' => 29,
@@ -844,9 +863,8 @@ You have successfully registered to the following newsletter list(s):
  * @param string  $name     Mail template name
  * @param string  $title    Mail template title
  * @param string  $content  Mail template content
- * @param string  $mailTo   To address field
  */
-function insertMailTemplate($key, $textId, $langId, $name, $title, $content, $mailTo)
+function insertMailTemplate($key, $textId, $langId, $name, $title, $content)
 {
 
     //replase placeholder
@@ -883,13 +901,13 @@ function insertMailTemplate($key, $textId, $langId, $name, $title, $content, $ma
     \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `' . DBPREFIX . 'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES("'. $key .'", "Newsletter", '. $textId .', 0, 1)');
     \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_bcc\', \'\')');
     \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_cc\', \'\')');
-    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_from\', \'[NEWSLETTER_SENDER_EMAIL]\')');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_from\', \'\')');
     \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_message\', "'. $mailContent .'")');
     \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_name\', "'. $name . '")');
-    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_reply\', \'[NEWSLETTER_REPLY_TO]\')');
-    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_sender\', \'[NEWSLETTER_SENDER_NAME]\')');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_reply\', \'\')');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_sender\', \'\')');
     \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_subject\', "'. $mailTitle .'")');
-    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_to\', "'. $mailTo .'")');
+    \Cx\Lib\UpdateUtil::sql('INSERT INTO `' . DBPREFIX . 'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES('. $textId .', '. $langId .', \'Newsletter\', \'core_mail_template_to\', \'\')');
 
 }
 

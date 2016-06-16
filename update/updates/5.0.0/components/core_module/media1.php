@@ -65,7 +65,11 @@ function _media1Update()
                            array("media1_frontend_managable","off"),
                            array("media2_frontend_managable","off"),
                            array("media3_frontend_managable","off"),
-                           array("media4_frontend_managable","off")
+                           array("media4_frontend_managable","off"),
+                           array("media1_frontend_search","off"),
+                           array("media2_frontend_search","off"),
+                           array("media3_frontend_search","off"),
+                           array("media4_frontend_search","off"),
                            );
 
         for($i = 0; $i < count($arrValues); $i++) {

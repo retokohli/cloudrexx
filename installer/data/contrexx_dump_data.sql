@@ -3671,6 +3671,8 @@ INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES 
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (14,'updated_file_time_limit','604800');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (15,'associate_user_to_groups','');
 INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (16,'use_attr_metakeys','1');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (17,'downloads_sorting_order','newestToOldest');
+INSERT INTO `contrexx_module_downloads_settings` (`id`, `name`, `value`) VALUES (18,'categories_sorting_order','alphabetic');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('emailText','[[ECARD_SENDER_NAME]] hat Ihnen eine E-Card geschickt.<br />\r\nSie können diese während den nächsten [[ECARD_VALID_DAYS]] Tagen unter [[ECARD_URL]] abrufen.');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxCharacters','100');
 INSERT INTO `contrexx_module_ecard_settings` (`setting_name`, `setting_value`) VALUES ('maxHeight','300');
@@ -4008,6 +4010,8 @@ INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `descripti
 INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (9,'maxdayStatus','0','TXT_MARKET_SET_MAXDAYS_ON',2);
 INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (10,'searchPrice','100,200,500,1000,2000,5000','TXT_MARKET_SET_EXP_SEARCH_PRICE',3);
 INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (11,'codeMode','1','TXT_MARKET_SET_CODE_MODE',2);
+INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (12,'confirmFrontend','0','TXT_MARKET_SET_CONFIRM_IN_FRONTEND','2');
+INSERT INTO `contrexx_module_market_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (13,'useTerms','0','TXT_MARKET_SET_USE_TERMS','2');
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (1,'spez_field_1','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (2,'spez_field_2','',1,1,0);
 INSERT INTO `contrexx_module_market_spez_fields` (`id`, `name`, `value`, `type`, `lang_id`, `active`) VALUES (3,'spez_field_3','',1,1,0);
@@ -4021,6 +4025,10 @@ INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media1_f
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media2_frontend_managable','off');
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media3_frontend_managable','off');
 INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media4_frontend_managable','off');
+INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media1_frontend_search','off');
+INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media2_frontend_search','off');
+INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media3_frontend_search','off');
+INSERT INTO `contrexx_module_media_settings` (`name`, `value`) VALUES ('media4_frontend_search','off');
 INSERT INTO `contrexx_module_mediadir_categories` (`id`, `parent_id`, `order`, `show_subcategories`, `show_entries`, `picture`, `active`) VALUES (177,0,0,0,1,'',1);
 INSERT INTO `contrexx_module_mediadir_categories` (`id`, `parent_id`, `order`, `show_subcategories`, `show_entries`, `picture`, `active`) VALUES (178,0,0,0,1,'',1);
 INSERT INTO `contrexx_module_mediadir_categories` (`id`, `parent_id`, `order`, `show_subcategories`, `show_entries`, `picture`, `active`) VALUES (179,0,0,0,1,'',1);
@@ -4634,6 +4642,7 @@ INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('news_use_
 INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('recent_news_message_limit','5');
 INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('use_related_news','0');
 INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('news_use_tags','0');
+INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('use_previous_next_news_link','0');
 INSERT INTO `contrexx_module_news_settings_locale` (`name`, `lang_id`, `value`) VALUES ('news_feed_description',1,'Informationen rund um Cloudrexx');
 INSERT INTO `contrexx_module_news_settings_locale` (`name`, `lang_id`, `value`) VALUES ('news_feed_description',2,'Informationen rund um Cloudrexx');
 INSERT INTO `contrexx_module_news_settings_locale` (`name`, `lang_id`, `value`) VALUES ('news_feed_description',3,'Informationen rund um Cloudrexx');

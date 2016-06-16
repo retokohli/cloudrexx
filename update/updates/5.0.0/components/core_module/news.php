@@ -479,8 +479,8 @@ function _newsUpdate() {
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_news_tags',
                 array(
-                    'id'           => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'auto_increment' => true),
-                    'tag'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'id'),
+                    'id'           => array('type' => 'INT(11)', 'notnull' => true, 'primary' => true, 'auto_increment' => true),
+                    'tag'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'after' => 'id', 'binary' => true),
                     'viewed_count' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'tag'),
                 ),
                 array(
@@ -923,6 +923,14 @@ NEWS;
 
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        \Cx\Lib\UpdateUtil::sql(
+            'INSERT INTO `'.DBPREFIX.'module_news_settings` (`name`, `value`)
+            VALUES  ("use_related_news", "0"),
+                    ("news_use_tags", "0"),
+                    ("use_previous_next_news_link", "0")
+            ON DUPLICATE KEY UPDATE `name` = `name`'
+        );
+
         try {
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_news',
@@ -960,10 +968,11 @@ NEWS;
             // migrate path to images and media
             $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
             $attributes = array(
-                'text'  => 'module_news_locale',
-                'value' => 'module_news_settings',
-                'html'  => 'module_news_teaser_frame_templates',
-
+                'title'         => 'module_news_locale',
+                'text'          => 'module_news_locale',
+                'teaser_text'   => 'module_news_locale',
+                'value'         => 'module_news_settings',
+                'html'          => 'module_news_teaser_frame_templates',
             );
             foreach ($attributes as $attribute => $table) {
                 foreach ($pathsToMigrate as $oldPath => $newPath) {

@@ -1097,6 +1097,7 @@ class ContentMigration
 
         foreach ($arrSimilarPages as $nodeId => $arrPageIds) {
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                \DBG::msg('Timeout reached');
                 $_SESSION['contrexx_update']['node_to_remove'] = array_merge(\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['node_to_remove']), $nodeToRemove);
                 return 'timeout';
             }
@@ -1125,6 +1126,9 @@ class ContentMigration
             unset($_SESSION['contrexx_update']['similar_pages'][$nodeId]);
         }
 
+        \DBG::msg('Page Grouping done');
+        \DBG::msg('Remove pages');
+
         $arrRemovePages = $_SESSION['contrexx_update']['remove_pages'];
         $pageToRemove   = array();
 
@@ -1132,6 +1136,7 @@ class ContentMigration
 
         foreach ($arrRemovePages as $pageId) {
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                \DBG::msg('Timeout reached');
                 $_SESSION['contrexx_update']['page_to_remove'] = array_merge(\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['page_to_remove']), $pageToRemove);
                 $_SESSION['contrexx_update']['node_to_remove'] = array_merge(\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['node_to_remove']), $nodeToRemove);
                 return 'timeout';
@@ -1145,6 +1150,9 @@ class ContentMigration
 
             unset($_SESSION['contrexx_update']['remove_pages'][$pageId]);
         }
+
+        \DBG::msg('Pages to remove collected');
+
         $_SESSION['contrexx_update']['page_to_remove'] = array_merge(\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['page_to_remove']), $pageToRemove);
         $_SESSION['contrexx_update']['node_to_remove'] = array_merge(\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['node_to_remove']), $nodeToRemove);
         $pageToRemove = \ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['page_to_remove']);
@@ -1154,6 +1162,7 @@ class ContentMigration
         $pageToRemove = array_unique($pageToRemove);
         foreach ($pageToRemove as $index => $pageId) {
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                \DBG::msg('Timeout reached');
                 return 'timeout';
             }
 
@@ -1170,6 +1179,7 @@ class ContentMigration
 
         foreach ($nodeToRemove as $index => $nodeId) {
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                \DBG::msg('Timeout reached');
                 return 'timeout';
             }
 
@@ -1181,6 +1191,8 @@ class ContentMigration
 
             unset($_SESSION['contrexx_update']['node_to_remove'][$index]);
         }
+
+        \DBG::msg('Pages removed');
 
         return true;
     }

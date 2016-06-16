@@ -463,14 +463,6 @@ function _mediadirUpdate()
                 }
             }
 
-            //mediadir_inputfield_types
-            $arrValues = array(array(1,'text',1,1,1,0,''),array(2,'textarea',1,1,1,0,''),array(3,'dropdown',1,0,1,0,''),array(4,'radio',1,0,1,0,''),array(5,'checkbox',1,0,0,0,''),array(7,'file',1,0,0,0,''),array(8,'image',1,0,0,0,''),array(9,'gallery',0,0,0,0,'not yet developed'),array(10,'podcast',0,0,0,0,'not yet developed'),array(11,'classification',1,0,1,0,''),array(12,'link',1,0,0,0,''),array(13,'link_group',1,0,0,0,''),array(14,'rss',0,0,0,0,'not yet developed'),array(15,'google_map',1,0,0,0,''),array(16,'add_step',0,0,0,0,''),array(17,'field_group',0,0,0,0,'not yet developed'),array(18,'label',0,0,0,0,'not yet developed'),array(19,'wysiwyg',1,1,0,0,''),array(20,'mail',1,0,0,0,''),array(21,'google_weather',1,0,0,0,''),array(22,'relation',0,0,0,0,'developed for OSEC (unstable)'),array(23,'relation_group',0,0,0,0,'developed for OSEC (unstable)'),array(24,'accounts',0,0,0,0,'developed for OSEC (unstable)'),array(25,'country',1,0,0,0,''),array(26,'product_attributes',0,0,1,0,''),array(27,'downloads',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(28,'responsibles',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(29,'references',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(30,'title',0,0,0,0,'developed for CADexchange.ch (unstable)'));
-            foreach($arrValues as $arrValue) {
-                if(\Cx\Lib\UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_inputfield_types WHERE name="'.$arrValue[1].'"')->EOF) {
-                    \Cx\Lib\UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_inputfield_types VALUES('.$arrValue[0].',"'.$arrValue[1].'",'.$arrValue[2].','.$arrValue[3].','.$arrValue[4].','.$arrValue[5].',"'.$arrValue[6].'")');
-                }
-            }
-
             //mediadir_mail_actions
             $arrValues = array(array(1,'newEntry','admin',0),array(2,'entryAdded','author',1),array(3,'entryConfirmed','author',1),array(4,'entryVoted','author',1),array(5,'entryDeleted','author',1),array(6,'entryEdited','author',1),array(8,'newComment','author',1),array(9,'notificationDisplayduration','admin',0));
             foreach($arrValues as $arrValue) {
@@ -577,29 +569,47 @@ Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] ge
     }
 
 
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.2')) {
-        try {
-            \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_mediadir_inputfield_types` set `active`=1, `comment`=\'\' WHERE `name` = \'wysiwyg\'');
-        } catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
-    }
-
-
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         try {
             // add new options
             \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_mediadir_settings` (`name`, `value`) VALUES ('showLatestEntriesInOverview', '1'");
             \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_mediadir_settings` (`name`, `value`) VALUES ('showLatestEntriesInWebdesignTmpl', '1'");
 
-            //update class name
-            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_inputfield_types` SET `name` = 'linkGroup' WHERE `name` = 'link_group'");
-            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_inputfield_types` SET `name` = 'googleMap' WHERE `name` = 'google_map'");
-            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_inputfield_types` SET `name` = 'addStep' WHERE `name` = 'add_step'");
-            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_inputfield_types` SET `name` = 'fieldGroup' WHERE `name` = 'field_group'");
-            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_inputfield_types` SET `name` = 'productAttributes' WHERE `name` = 'product_attributes'");
-            \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_inputfield_types` SET `name` = 'googleWeather' WHERE `name` = 'google_weather'");
-    //following queries for changing the path from images/mediadir into images/MediaDir
+
+            // update inputfield_types
+            \Cx\Lib\UpdateUtil::sql("TRUNCATE `".DBPREFIX."module_mediadir_inputfield_types`");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('1', 'text', '1', '1', '1', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('2', 'textarea', '1', '1', '1', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('3', 'dropdown', '1', '0', '1', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('4', 'radio', '1', '0', '1', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('5', 'checkbox', '1', '0', '1', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('7', 'file', '1', '1', '0', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('8', 'image', '1', '1', '0', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('9', 'gallery', '0', '0', '0', '0', 'not yet developed')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('10', 'podcast', '0', '0', '0', '0', 'not yet developed')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('11', 'classification', '1', '0', '1', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('12', 'link', '1', '1', '0', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('13', 'linkGroup', '1', '1', '0', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('14', 'rss', '0', '0', '0', '0', 'not yet developed')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('15', 'googleMap', '1', '0', '0', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('16', 'addStep', '0', '0', '0', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('17', 'fieldGroup', '0', '0', '0', '0', 'not yet developed')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('18', 'label', '0', '0', '0', '0', 'not yet developed')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('19', 'wysiwyg', '1', '1', '0', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('20', 'mail', '1', '1', '0', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('21', 'googleWeather', '1', '0', '0', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('22', 'relation', '0', '0', '0', '0', 'developed for OSEC (unstable)')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('23', 'relation_group', '0', '0', '0', '0', 'developed for OSEC (unstable)')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('24', 'accounts', '0', '0', '0', '0', 'developed for OSEC (unstable)')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('25', 'country', '1', '0', '0', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('26', 'productAttributes', '0', '0', '1', '0', '')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('27', 'downloads', '0', '1', '0', '1', 'developed for CADexchange.ch (unstable)')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('28', 'responsibles', '0', '1', '0', '1', 'developed for CADexchange.ch (unstable)')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('29', 'references', '0', '1', '0', '1', 'developed for CADexchange.ch (unstable)')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('30', 'title', '0', '0', '0', '0', 'developed for CADexchange.ch (unstable)')");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_mediadir_inputfield_types` (`id`, `name`, `active`, `multi_lang`, `exp_search`, `dynamic`, `comment`) VALUES ('31', 'range', '1', '0', '1', '0', '')");
+
+            //following queries for changing the path from images/mediadir into images/MediaDir
             \Cx\Lib\UpdateUtil::sql("UPDATE `" . DBPREFIX . "module_mediadir_categories`
                                      SET `picture` = REPLACE(`picture`, 'images/mediadir', 'images/MediaDir')
                                      WHERE `picture` LIKE ('" . ASCMS_PATH_OFFSET . "/images/mediadir%')");
