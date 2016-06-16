@@ -30,3 +30,6 @@ div.toolbarModifier > ul > li > ul {
 .editorfunctions .content {
     padding: 0;
 }
+div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p {
+    font-size: 16px;
+}

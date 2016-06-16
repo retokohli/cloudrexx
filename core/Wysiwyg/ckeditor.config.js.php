@@ -126,7 +126,8 @@ CKEDITOR.editorConfig = function( config )
         ['Cut','Copy','Paste','-','Scayt'],
         ['Undo','Redo']
     ];
-    config.extraPlugins = 'codemirror';
+    config.extraPlugins = 'codemirror'; /*sourcearea,*/
+//    config.plugins = 'basicstyles,blockquote,dialogui,dialog,clipboard,panel,floatpanel,menu,contextmenu,resize,button,toolbar,elementspath,enterkey,entities,popup,filebrowser,floatingspace,listblock,richcombo,format,horizontalrule,htmlwriter,wysiwygarea,image,indent,indentlist,fakeobjects,link,list,magicline,maximize,pastetext,pastefromword,removeformat,showborders,sourcearea,specialchar,menubutton,scayt,stylescombo,tab,table,tabletools,undo,wsc,codemirror,panelbutton,colorbutton,div,find,flash,iframe,justify,liststyle,newpage,preview,selectall,showblocks,smiley,tableresize,templates,bbcode';
     
     //Set the CSS Stuff
     config.contentsCss = cx.variables.get('css', 'wysiwyg');
@@ -189,9 +190,9 @@ CKEDITOR.on('instanceReady',function(){
             if (cx.jQuery(selector).find('[type="checkbox"]').prop('checked')){
                 cx.jQuery(selector).children('label').click();
             }
-        };
+        }
     }
-    var translationsDefault = {"mode": "modus", "document": "dokument", "doctools": "dokumenten werkzeuge"};
+
     if (cx.variables.get('language') == 'de') {
         var translations = cx.variables.get('toolbarTranslations', 'toolbarConfigurator');
         cx.jQuery('div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p > span').each(function() {
@@ -268,7 +269,7 @@ cx.bind("loadingEnd", function(myArgs) {
                     var config = {
                         customConfig: cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'),
                         toolbar: 'Full',
-                        skin: 'moono',
+                        skin: 'moono'
                     };
                     CKEDITOR.replace('page[content]', config);
                 }
@@ -302,4 +303,4 @@ Array.prototype.equals = function (array) {
         }
     }
     return true;
-}
+};
