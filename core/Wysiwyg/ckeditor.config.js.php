@@ -98,36 +98,14 @@ CKEDITOR.editorConfig = function( config )
     
     config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','Wysiwyg')? 'true' : 'false' ?>;
 
-    config.toolbar_Full = config.toolbar_Small = <?php echo $wysiwyg->getFullToolbar() ?>;
+    config.toolbar_Full = config.toolbar_Small = <?php echo $wysiwyg->getToolbar() ?>;
 
-    config.toolbar_BBCode = [
-        ['Source','-','NewPage'],
-        ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
-        ['Bold','Italic','Underline','Link','Unlink','SpecialChar'],
-    ];
+    config.toolbar_BBCode = <?php echo $wysiwyg->getToolbar('bbcode') ?>;
 
-    config.toolbar_FrontendEditingContent = [
-        ['Publish','Save','Templates'],
-        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
-        ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
-        ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
-        ['NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'],
-        '/',
-        ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-        ['Link','Unlink','Anchor'],
-        ['Image','Flash','Table','HorizontalRule','SpecialChar'],
-        ['Format'],
-        ['TextColor','BGColor'],
-        ['ShowBlocks']
-    ];
+    config.toolbar_FrontendEditingContent = <?php echo $wysiwyg->getToolbar('frontendEditingContent') ?>;
 
-    config.toolbar_FrontendEditingTitle = [
-        ['Publish','Save'],
-        ['Cut','Copy','Paste','-','Scayt'],
-        ['Undo','Redo']
-    ];
-    config.extraPlugins = 'codemirror'; /*sourcearea,*/
-//    config.plugins = 'basicstyles,blockquote,dialogui,dialog,clipboard,panel,floatpanel,menu,contextmenu,resize,button,toolbar,elementspath,enterkey,entities,popup,filebrowser,floatingspace,listblock,richcombo,format,horizontalrule,htmlwriter,wysiwygarea,image,indent,indentlist,fakeobjects,link,list,magicline,maximize,pastetext,pastefromword,removeformat,showborders,sourcearea,specialchar,menubutton,scayt,stylescombo,tab,table,tabletools,undo,wsc,codemirror,panelbutton,colorbutton,div,find,flash,iframe,justify,liststyle,newpage,preview,selectall,showblocks,smiley,tableresize,templates,bbcode';
+    config.toolbar_FrontendEditingTitle = <?php echo $wysiwyg->getToolbar('frontendEditingTitle') ?>;
+    config.extraPlugins = 'codemirror';
     
     //Set the CSS Stuff
     config.contentsCss = cx.variables.get('css', 'wysiwyg');
@@ -182,6 +160,7 @@ CKEDITOR.on('instanceReady',function(){
     removedButtons = removedButtons.split(',');
     // Verify that there are any buttons to be removed
     if (removedButtons.length) {
+        var emptyGroups = [], isHidden = false;
         // Loop through all the buttons
         for(button of removedButtons) {
             var selector = '[data-name="' + button + '"]';
@@ -191,16 +170,41 @@ CKEDITOR.on('instanceReady',function(){
                 cx.jQuery(selector).children('label').click();
             }
         }
+        for(button of removedButtons) {
+            // Loop through all buttons in the current subgroup
+            cx.jQuery('[data-name="' + button + '"]').parent('ul').find('li').each(function() {
+                isHidden = cx.jQuery(this).is(':hidden');
+                // Check if a button isn't hidden
+                if (!isHidden) {
+                    // Exit immediatly if a button is not hidden to avoid hiding
+                    // it due to the next button being hidden
+                    return false;
+                }
+            });
+            // Check if every button in the subgroup is hidden
+            if (isHidden) {
+                // Add the current subgroup to the emptyGroups array
+                var subgroup = cx.jQuery('[data-name="' + button + '"]').parent().parent();
+                emptyGroups.push(subgroup);
+            }
+        }
+        if (emptyGroups.length) {
+            for(emptyButtonGroup of emptyGroups) {
+                cx.jQuery(emptyButtonGroup).hide();
+            }
+        }
     }
 
     if (cx.variables.get('language') == 'de') {
         var translations = cx.variables.get('toolbarTranslations', 'toolbarConfigurator');
-        cx.jQuery('div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p > span').each(function() {
-            if (translations.hasOwnProperty(cx.jQuery(this).text())) {
-                var translation = cx.jQuery(this).text();
-                cx.jQuery(this).text(translations[translation]);
+        cx.jQuery('div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p > span').each(
+            function() {
+                if (translations.hasOwnProperty(cx.jQuery(this).text())) {
+                    var translation = cx.jQuery(this).text();
+                    cx.jQuery(this).text(translations[translation]);
+                }
             }
-        });
+        );
     }
 });
 

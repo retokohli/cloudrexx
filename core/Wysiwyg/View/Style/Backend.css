@@ -35,3 +35,7 @@ div.toolbarModifier > ul > li > ul {
 div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p {
     font-size: 16px;
 }
+div.toolbarModifier > ul > li[data-type="group"]:hover,
+div.toolbarModifier > ul > li[data-type="separator"]:hover {
+    background: none;
+}

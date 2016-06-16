@@ -196,11 +196,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $this->cx->getEvents()->addEventListener('mediasource.load', $eventListener);
     }
 
-    public function getFullToolbar() {
+    /**
+     * Get the Toolbar of the given type
+     *
+     * Returns the toolbar of the desired based on the restricted of functions 
+     * according to user group and default setting
+     * @param string    $type   Type of desired Toolbar (one of the following:
+     *                          small, full, frontendEditingContent,
+     *                          frontendEditingTitle or bbcode)
+     * @return string           Toolbar of the desired type based on the
+     *                          restrictions according to user group and default
+     *                          setting
+     */
+    public function getToolbar($type = 'Full') {
         $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController(
             $this->cx
         );
-        return $toolbarController->getToolbar('Full');
+        return $toolbarController->getToolbar($type);
     }
 
     /**
