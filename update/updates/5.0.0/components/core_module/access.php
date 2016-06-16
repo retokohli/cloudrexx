@@ -978,6 +978,42 @@ function _accessUpdate()
     	return false;
     }*/
 
+// BPW FIX
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX . 'access_user_profile',
+                array(
+                    'user_id' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+                    'gender' => array('type' => 'ENUM(\'gender_undefined\',\'gender_female\',\'gender_male\')', 'notnull' => true, 'default' => 'gender_undefined', 'after' => 'user_id'),
+                    'title' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'gender'),
+                    'firstname' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'title'),
+                    'lastname' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'firstname'),
+                    'company' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'lastname'),
+                    'address' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'company'),
+                    'city' => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'address'),
+                    'zip' => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => '', 'after' => 'city'),
+                    'country' => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'zip'),
+                    'phone_office' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'country'),
+                    'phone_private' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'phone_office'),
+                    'phone_mobile' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'phone_private'),
+                    'phone_fax' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'phone_mobile'),
+                    'birthday' => array('type' => 'VARCHAR(11)', 'notnull' => false, 'after' => 'phone_fax'),
+                    'website' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'birthday'),
+                    'profession' => array('type' => 'VARCHAR(150)', 'notnull' => true, 'default' => '', 'after' => 'website'),
+                    'interests' => array('type' => 'text', 'after' => 'profession'),
+                    'signature' => array('type' => 'text', 'after' => 'interests'),
+                    'picture' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'signature')
+                ),
+                array(
+                    'profile' => array('fields' => array('firstname' => 100, 'lastname' => 100, 'company' => 50))
+                ),
+                'InnoDB'
+            );
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+// END: BPW FIX
+
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         try {
             \Cx\Lib\UpdateUtil::sql("INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('user_account_verification', '1', '1') ON DUPLICATE KEY UPDATE `key` = `key`");
