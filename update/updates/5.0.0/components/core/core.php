@@ -237,7 +237,7 @@ function _coreUpdate()
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'settings_thumbnail',
                 array(
-                    'id'   => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'id'   => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                     'name' => array('type' => 'VARCHAR(100)', 'notnull' => true),
                     'size' => array('type' => 'INT(11)', 'notnull' => true),
                 ),
@@ -258,7 +258,7 @@ function _coreUpdate()
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'syslog',
                 array(
-                    'id'        => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'id'        => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                     'timestamp' => array('type' => 'datetime', 'notnull' => true),
                     'severity'  => array('type' => 'ENUM(\'INFO\',\'WARNING\',\'FATAL\')', 'notnull' => true),
                     'message'   => array('type' => 'VARCHAR(255)', 'notnull' => true),
@@ -1794,6 +1794,14 @@ function _coreUpdate()
                     (71, 'FrontendEditing', 'core_module'),
                     (72, 'ContentManager', 'core')
             ");
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        try {
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX . 'backups');
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }

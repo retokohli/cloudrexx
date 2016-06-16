@@ -357,6 +357,31 @@ function _crmUpdate() {
     }
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
+        try {
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_crm_task',
+                array(
+                    'id'                 => array('type' => 'INT(2)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'task_id'            => array('type' => 'VARCHAR(10)', 'binary' => true, 'notnull' => true, 'after' => 'id'),
+                    'task_title'         => array('type' => 'VARCHAR(255)', 'binary' => true, 'notnull' => true, 'after' => 'task_id'),
+                    'task_type_id'       => array('type' => 'INT(2)', 'notnull' => true, 'after' => 'task_title'),
+                    'customer_id'        => array('type' => 'INT(2)', 'notnull' => true, 'after' => 'task_type_id'),
+                    'due_date'           => array('type' => 'datetime', 'notnull' => true, 'after' => 'customer_id'),
+                    'assigned_to'        => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'due_date'),
+                    'description'        => array('type' => 'text', 'notnull' => true, 'after' => 'assigned_to'),
+                    'task_status'        => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'description'),
+                    'added_by'           => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'task_status'),
+                    'added_date_time'    => array('type' => 'datetime', 'notnull' => true, 'after' => 'added_by')
+                ),
+                array(
+                    'customer_id'        => array('fields' => array('customer_id'))
+                ),
+                'MyISAM'
+            );
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+
         // migrate path to images and media
         $pathsToMigrate = \Cx\Lib\UpdateUtil::getMigrationPaths();
         $attributes = array(
