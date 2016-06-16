@@ -384,6 +384,42 @@ $_CONFIG['coreCmsVersion'] = '3.1.9';
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '5.0.0')) {
         try {
             \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_calendar_event_field',
+                array(
+                    'event_id' => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
+                    'lang_id' => array('type' => 'VARCHAR(225)', 'notnull' => false, 'after' => 'event_id'),
+                    'title' => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'lang_id'),
+                    'teaser' => array('type' => 'text', 'notnull' => false, 'after' => 'title'),
+                    'description' => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'teaser'),
+                    'redirect' => array('type' => 'VARCHAR(255)', 'after' => 'description'),
+                    'place' => array('type' => 'VARCHAR(255)', 'after' => 'redirect'),
+                    'place_city' => array('type' => 'VARCHAR(255)', 'after' => 'place'),
+                    'place_country' => array('type' => 'VARCHAR(255)', 'after' => 'place_city'),
+                    'org_name' => array('type' => 'VARCHAR(255)', 'after' => 'place_country'),
+                    'org_city' => array('type' => 'VARCHAR(255)', 'after' => 'org_name'),
+                    'org_country' => array('type' => 'VARCHAR(255)', 'after' => 'org_city')
+                ),
+                array(
+                    'lang_field' => array('fields' => array('title')),
+                    'event_id'   => array('fields' => array('event_id')),
+                    'eventIndex' => array('fields' => array('title', 'teaser', 'description'), 'type' => 'FULLTEXT')
+                ),
+                'MyISAM'
+            );
+
+            \Cx\Lib\UpdateUtil::sql(
+                'UPDATE `'.DBPREFIX.'module_calendar_event_field` AS field 
+                    INNER JOIN `'.DBPREFIX.'module_calendar_event` AS event
+                    ON event.id = field.event_id
+                    SET field.`place`           = event.`place`,
+                        field.`place_city`      = event.`place_city`,
+                        field.`place_country`   = event.`place_country`,
+                        field.`org_name`        = event.`org_name`,
+                        field.`org_city`        = event.`org_city`,
+                        field.`org_country`     = event.`org_country`)'
+            );
+
+            \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_calendar_event',
                 array(
                     'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -444,23 +480,23 @@ $_CONFIG['coreCmsVersion'] = '3.1.9';
                     'author'                             => array('type' => 'VARCHAR(255)', 'after' => 'show_detail_view'),
                     'all_day'                            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'author'),
                     'location_type'                      => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'all_day'),
-                    'place'                              => array('type' => 'VARCHAR(255)', 'after' => 'location_type'),
-                    'place_id'                           => array('type' => 'INT(11)', 'after' => 'place'),
+                    //'place'                              => array('type' => 'VARCHAR(255)', 'after' => 'location_type'),
+                    'place_id'                           => array('type' => 'INT(11)', 'after' => 'location_type'),
                     'place_street'                       => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_id'),
                     'place_zip'                          => array('type' => 'VARCHAR(10)', 'notnull' => false, 'after' => 'place_street'),
-                    'place_city'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_zip'),
-                    'place_country'                      => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_city'),
-                    'place_website'                      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'place_country'),
+                    //'place_city'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_zip'),
+                    //'place_country'                      => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_city'),
+                    'place_website'                      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'place_zip'),
                     'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_website'),
                     'place_phone'                        => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'place_link'),
                     'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_phone'),
                     'host_type'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'place_map'),
-                    'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'host_type'),
-                    'org_street'                         => array('type' => 'VARCHAR(255)', 'after' => 'org_name'),
+                    //'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'host_type'),
+                    'org_street'                         => array('type' => 'VARCHAR(255)', 'after' => 'host_type'),
                     'org_zip'                            => array('type' => 'VARCHAR(10)', 'after' => 'org_street'),
-                    'org_city'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_zip'),
-                    'org_country'                        => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
-                    'org_website'                        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'org_country'),
+                    //'org_city'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_zip'),
+                    //'org_country'                        => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
+                    'org_website'                        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'org_zip'),
                     'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_website'),
                     'org_phone'                          => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'org_link'),
                     'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_phone'),
@@ -468,23 +504,6 @@ $_CONFIG['coreCmsVersion'] = '3.1.9';
                 ),
                 array(
                     'fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1' => array('fields' => array('catid'))
-                )
-            );
-
-            \Cx\Lib\UpdateUtil::table(
-                DBPREFIX.'module_calendar_event_field',
-                array(
-                    'event_id' => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
-                    'lang_id' => array('type' => 'VARCHAR(225)', 'notnull' => false, 'after' => 'event_id'),
-                    'title' => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'lang_id'),
-                    'teaser' => array('type' => 'text', 'notnull' => false, 'after' => 'title'),
-                    'description' => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'teaser'),
-                    'redirect' => array('type' => 'VARCHAR(255)', 'after' => 'description')
-                ),
-                array(
-                    'lang_field' => array('fields' => array('title')),
-                    'fk_contrexx_module_calendar_note_field_contrexx_module_calend1' => array('fields' => array('event_id')),
-                    'eventIndex' => array('fields' => array('title', 'teaser', 'description'), 'type' => 'FULLTEXT')
                 )
             );
 
