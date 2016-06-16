@@ -76,8 +76,9 @@
 			var result = newHeight + newMarginTop + newMarginBottom;
 
 			editorContainer.setStyle( 'display', displayStyle );
-
-			editor.container.getAscendant( 'div' ).setStyle( 'height', result + 'px' );
+			if (parseInt(result) !== 0) {
+				editor.container.getAscendant('div').setStyle('height', result + 'px');
+			}
 		}
 
 		var toolbarModifier = new ToolbarConfigurator.ToolbarModifier( 'editor-basic' );

@@ -830,6 +830,16 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
             }
         }
+        // Parse toolbar configurator
+        $cx = \Env::get('cx');
+        $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($cx);
+        $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate('/core/Wysiwyg/');
+        $this->_objTpl->setGlobalVariable('ACCESS_WYSIWYG_TAB_NR', $tabNr);
+        $this->_objTpl->setVariable(array(
+            'TXT_ACCESS_TOOLBARCONFIGURATOR'    => $_ARRAYLANG['TXT_ACCESS_TOOLBARCONFIGURATOR'],
+            'ACCESS_PERMISSION_WYSIWYG_TOOLBAR' => $toolbarConfigurator->get(),
+        ));
+
         if ($tabNr > 1) {
             $this->_objTpl->parse('access_permission_tabs_menu');
         } else {
@@ -846,10 +856,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         ));
         $mediaBrowser->setCallback('SetUrl');
 
-        // Parse toolbarconfigurator
-        $cx = \Env::get('cx');
-        $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($cx);
-        $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate('/core/Wysiwyg/');
+        // Parse toolbar configurator
+        $this->_objTpl->parse('access_permission_tab_wysiwyg');
 
         $this->attachJavaScriptFunction('accessSetWebpage');
         $this->attachJavaScriptFunction('accessSelectAllGroups');
@@ -861,7 +869,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_MEDIA_BROWSER_BUTTON'   => $mediaBrowser->getXHtml($_ARRAYLANG['TXT_ACCESS_BROWSE']),
             'TXT_ACCESS_GENERAL'            => $_ARRAYLANG['TXT_ACCESS_GENERAL'],
             'TXT_ACCESS_PERMISSIONS'        => $_ARRAYLANG['TXT_ACCESS_PERMISSIONS'],
-            'TXT_ACCESS_TOOLBARCONFIGURATOR'=> $_ARRAYLANG['TXT_ACCESS_TOOLBARCONFIGURATOR'],
             'TXT_ACCESS_NAME'               => $_ARRAYLANG['TXT_ACCESS_NAME'],
             'TXT_ACCESS_DESCRIPTION'        => $_ARRAYLANG['TXT_ACCESS_DESCRIPTION'],
             'TXT_ACCESS_STATUS'             => $_ARRAYLANG['TXT_ACCESS_STATUS'],
@@ -893,7 +900,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_PROTECT_PAGE_TXT'           => $objGroup->getType() == 'backend' ? $_ARRAYLANG['TXT_ACCESS_CONFIRM_LOCK_PAGE'] : $_ARRAYLANG['TXT_ACCESS_CONFIRM_PROTECT_PAGE'],
             'ACCESS_UNPROTECT_PAGE_TXT'         => $objGroup->getType() == 'backend' ? $_ARRAYLANG['TXT_ACCESS_CONFIRM_UNLOCK_PAGE'] : $_ARRAYLANG['TXT_ACCESS_CONFIRM_UNPROTECT_PAGE'],
             'ACCESS_JAVASCRIPT_FUNCTIONS'       => $this->getJavaScriptCode(),
-            'ACCESS_GROUP_WYSIWYG_TOOLBAR'      => $toolbarConfigurator->get(),
         ));
         $this->_objTpl->parse('module_access_group_modify');
     }
