@@ -177,6 +177,7 @@ class CalendarMail extends CalendarLibrary
         global $objDatabase;
 
         $mail = $this->getMailEntity($this->id);
+        //Trigger preRemove event for Mail Entity
         $this->cx->getEvents()->triggerEvent(
             'model/preRemove',
             array(new \Doctrine\ORM\Event\LifecycleEventArgs($mail, $this->em))
@@ -187,6 +188,7 @@ class CalendarMail extends CalendarLibrary
 
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
+            //Trigger postRemove event for Mail Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/postRemove',
                 array(
@@ -215,6 +217,7 @@ class CalendarMail extends CalendarLibrary
             ->findOneBy(array('actionId' => $this->action_id));
         $mailByAction->setIsDefault(0);
         $mailByAction->setVirtual(true);
+        //Trigger preUpdate event for Mail Entity
         $this->cx->getEvents()->triggerEvent(
             'model/preUpdate',
             array(
@@ -229,6 +232,7 @@ class CalendarMail extends CalendarLibrary
 
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
+            //Trigger postUpdate event for Mail Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/postUpdate',
                 array(
@@ -240,6 +244,7 @@ class CalendarMail extends CalendarLibrary
         }
 
         $mail = $this->getMailEntity($this->id, array('isDefault' => 1));
+        //Trigger preUpdate event for Mail Entity
         $this->cx->getEvents()->triggerEvent(
             'model/preUpdate',
             array(new \Doctrine\ORM\Event\LifecycleEventArgs($mail, $this->em))
@@ -251,6 +256,7 @@ class CalendarMail extends CalendarLibrary
 
         $objMail = $objDatabase->Execute($query);
         if ($objMail !== false) {
+            //Trigger postUpdate event for Mail Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/postUpdate',
                 array(
@@ -277,6 +283,7 @@ class CalendarMail extends CalendarLibrary
         $mailStatus = ($this->status == 1) ? 0 : 1;
 
         $mail = $this->getMailEntity($this->id, array('status' => $mailStatus));
+        //Trigger preUpdate event for Mail Entity
         $this->cx->getEvents()->triggerEvent(
             'model/preUpdate',
             array(new \Doctrine\ORM\Event\LifecycleEventArgs($mail, $this->em))
@@ -288,6 +295,7 @@ class CalendarMail extends CalendarLibrary
 
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
+            //Trigger postUpdate event for Mail Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/postUpdate',
                 array(
@@ -330,6 +338,7 @@ class CalendarMail extends CalendarLibrary
         );
         $mail = $this->getMailEntity($this->id, $formData);
         if (intval($this->id) == 0) {
+            //Trigger prePersist event for Mail Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/prePersist',
                 array(
@@ -342,6 +351,7 @@ class CalendarMail extends CalendarLibrary
                                   (`title`,`content_text`,`content_html`,`recipients`,`lang_id`,`action_id`,`status`) 
                            VALUES ('".$title."','".$content_text."','".$content_html."','".$recipients."','".$lang_id."','".$action_id."','0')";
         } else {
+            //Trigger preUpdate event for Mail Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/preUpdate',
                 array(
@@ -363,6 +373,7 @@ class CalendarMail extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
             if (!$this->id) {
+                //Trigger postPersist event for Mail Entity
                 $this->cx->getEvents()->triggerEvent(
                     'model/postPersist',
                     array(
@@ -372,6 +383,7 @@ class CalendarMail extends CalendarLibrary
                     )
                 );
             } else {
+                //Trigger postUpdate event for Mail Entity
                 $this->cx->getEvents()->triggerEvent(
                     'model/postUpdate',
                     array(

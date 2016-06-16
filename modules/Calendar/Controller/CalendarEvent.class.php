@@ -1410,7 +1410,9 @@ class CalendarEvent extends CalendarLibrary
             'relation'  => array('eventFields' => $eventFields)
         );
         $event       = $this->getEventEntity($id, $formDatas);
+        $eId         = $id;
         if ($id != 0) {
+            //Trigger preUpdate event for Event Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/preUpdate',
                 array(
@@ -1427,6 +1429,7 @@ class CalendarEvent extends CalendarLibrary
                 $this->id = $id;
                 $eventFieldEntities = $event->getEventFields();
                 foreach ($eventFieldEntities as $eventFieldEntity)  {
+                    //Trigger preRemove event for EventField Entity
                     $this->cx->getEvents()->triggerEvent(
                         'model/preRemove',
                         array(
@@ -1442,6 +1445,7 @@ class CalendarEvent extends CalendarLibrary
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult !== false) {
                     foreach ($eventFieldEntities as $eventFieldEntity)  {
+                        //Trigger postRemove event for EventField Entity
                         $this->cx->getEvents()->triggerEvent(
                             'model/postRemove',
                             array(
@@ -1457,14 +1461,6 @@ class CalendarEvent extends CalendarLibrary
                                 WHERE event_id = '".$id."'";
 
                 $objResult = $objDatabase->Execute($query);
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postUpdate',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $event, $this->em
-                        )
-                    )
-                );
             } else {
                 return false;
             }
@@ -1489,6 +1485,7 @@ class CalendarEvent extends CalendarLibrary
             $event->setStatus($status);
             $event->setConfirmed($confirmed);
             $event->setAuthor($author);
+            //Trigger prePersist event for Event Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/prePersist',
                 array(
@@ -1502,15 +1499,8 @@ class CalendarEvent extends CalendarLibrary
 
             if ($objResult !== false) {
                 $id = intval($objDatabase->Insert_ID());
+                $event = $this->getEventEntity($id);
                 $this->id = $id;
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postPersist',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $event, $this->em
-                        )
-                    )
-                );
             } else {
                 return false; 
             }
@@ -1522,6 +1512,7 @@ class CalendarEvent extends CalendarLibrary
                     $eventFieldEntity = $this->getEventFieldEntity(
                         $event, $eventField
                     );
+                    //Trigger prePersist event for EventField Entity
                     $this->cx->getEvents()->triggerEvent(
                         'model/prePersist',
                         array(
@@ -1542,6 +1533,7 @@ class CalendarEvent extends CalendarLibrary
                     if ($objResult === false) {
                         return false;
                     } else {
+                        //Trigger postPersist event for EventField Entity
                         $this->cx->getEvents()->triggerEvent(
                             'model/postPersist',
                             array(
@@ -1552,6 +1544,27 @@ class CalendarEvent extends CalendarLibrary
                         );
                     }
                 }
+            }
+            if ($eId == 0) {
+                //Trigger postPersist event for Event Entity
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postPersist',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $event, $this->em
+                        )
+                    )
+                );
+            } else {
+                //Trigger postUpdate event for Event Entity
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postUpdate',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $event, $this->em
+                        )
+                    )
+                );
             }
 
             if (!empty($related_hosts)) {
@@ -1752,6 +1765,7 @@ class CalendarEvent extends CalendarLibrary
         global $objDatabase;
 
         $event = $this->getEventEntity($this->id);
+        //Trigger preRemove event for Event Entity
         $this->cx->getEvents()->triggerEvent(
             'model/preRemove',
             array(new \Doctrine\ORM\Event\LifecycleEventArgs($event, $this->em))
@@ -1765,6 +1779,7 @@ class CalendarEvent extends CalendarLibrary
         if ($objResult !== false) {
             $eventFieldEntities = $event->getEventFields();
             foreach ($eventFieldEntities as $eventFieldEntity)  {
+                //Trigger preRemove event for EventField Entity
                 $this->cx->getEvents()->triggerEvent(
                     'model/preRemove',
                     array(
@@ -1780,6 +1795,7 @@ class CalendarEvent extends CalendarLibrary
             $objResult = $objDatabase->Execute($query);
             if ($objResult !== false) {
                 foreach ($eventFieldEntities as $eventFieldEntity)  {
+                    //Trigger postRemove event for EventField Entity
                     $this->cx->getEvents()->triggerEvent(
                         'model/postRemove',
                         array(
@@ -1789,6 +1805,7 @@ class CalendarEvent extends CalendarLibrary
                         )
                     );
                 }
+                //Trigger postRemove event for Event Entity
                 $this->cx->getEvents()->triggerEvent(
                     'model/postRemove',
                     array(
@@ -1914,6 +1931,7 @@ class CalendarEvent extends CalendarLibrary
         $event = $this->getEventEntity(
             $this->id, array('fields' => array('status' => $status))
         );
+        //Trigger preUpdate event for Event Entity
         $this->cx->getEvents()->triggerEvent(
             'model/preUpdate',
             array(new \Doctrine\ORM\Event\LifecycleEventArgs($event, $this->em))
@@ -1925,6 +1943,7 @@ class CalendarEvent extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
 
         if ($objResult !== false) {
+            //Trigger postUpdate event for Event Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/postUpdate',
                 array(
@@ -1951,6 +1970,7 @@ class CalendarEvent extends CalendarLibrary
         $event = $this->getEventEntity(
             $this->id, array('fields' => array('confirmed' => 1))
         );
+        //Trigger preUpdate event for Event Entity
         $this->cx->getEvents()->triggerEvent(
             'model/preUpdate',
             array(new \Doctrine\ORM\Event\LifecycleEventArgs($event, $this->em))
@@ -1962,6 +1982,7 @@ class CalendarEvent extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
 
         if ($objResult !== false) {
+            //Trigger postUpdate event for Event Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/postUpdate',
                 array(
@@ -2446,7 +2467,9 @@ class CalendarEvent extends CalendarLibrary
                 &&  (   (   $event->getCategory()
                         &&  ($event->getCategory()->getId() != $columnValue)
                         )
-                    || !($event->getCategory())
+                    || (    !($event->getCategory())
+                        &&  $columnValue
+                       )
                     )
             ) {
                 $fieldName   = 'category';
@@ -2460,7 +2483,9 @@ class CalendarEvent extends CalendarLibrary
                 &&  (   (   $event->getRegistrationForm()
                         &&  ($event->getRegistrationForm()->getId() != $columnValue)
                         )
-                    || !($event->getRegistrationForm())
+                    || (    !($event->getRegistrationForm())
+                        &&  $columnValue
+                       )
                     )
             ) {
                 $fieldName = 'registrationForm';
@@ -2501,9 +2526,11 @@ class CalendarEvent extends CalendarLibrary
         \Cx\Modules\Calendar\Model\Entity\Event $event,
         $fieldValues
     ){
-        $eventField = $event->getEventFieldByLangId($fieldValues['langId']);
+        $isNewEntity = false;
+        $eventField  = $event->getEventFieldByLangId($fieldValues['langId']);
         if (!$eventField) {
-            $eventField = new \Cx\Modules\Calendar\Model\Entity\EventField();
+            $isNewEntity = true;
+            $eventField  = new \Cx\Modules\Calendar\Model\Entity\EventField();
         }
         $eventField->setVirtual(true);
         foreach ($fieldValues as $fieldName => $fieldValue) {
@@ -2512,8 +2539,11 @@ class CalendarEvent extends CalendarLibrary
                 $eventField->{$methodName}($fieldValue);
             }
         }
-        $event->addEventField($eventField);
-        $eventField->setEvent($event);
+
+        if ($isNewEntity) {
+            $event->addEventField($eventField);
+            $eventField->setEvent($event);
+        }
 
         return $eventField;
     }

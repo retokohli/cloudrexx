@@ -187,6 +187,7 @@ class CalendarCategory extends CalendarLibrary
         $category = $this->getCategoryEntity(
             $this->id, array('status' => $categoryStatus)
         );
+        //Trigger preUpdate event for Category Entity
         $this->cx->getEvents()->triggerEvent(
             'model/preUpdate',
             array(
@@ -201,6 +202,7 @@ class CalendarCategory extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
         
         if ($objResult !== false) {
+            //Trigger postUpdate event for Category Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/postUpdate',
                 array(
@@ -227,6 +229,7 @@ class CalendarCategory extends CalendarLibrary
         global $objDatabase;
                   
         $category = $this->getCategoryEntity($this->id, array('pos' => $order));
+        //Trigger preUpdate event for Category Entity
         $this->cx->getEvents()->triggerEvent(
             'model/preUpdate',
             array(
@@ -240,6 +243,7 @@ class CalendarCategory extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);   
         
         if ($objResult !== false) {
+            //Trigger postUpdate event for Category Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/postUpdate',
                 array(
@@ -270,9 +274,11 @@ class CalendarCategory extends CalendarLibrary
     	$arrNames = array();
         $arrNames = $data['name'];
 
+        $id       = $this->id;
         $formData = array('categoryNames' => $arrNames);
         $category = $this->getCategoryEntity($this->id, $formData);
 	if (intval($this->id) == 0) {
+            //Trigger event prePersist for Category Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/prePersist',
                 array(
@@ -293,16 +299,20 @@ class CalendarCategory extends CalendarLibrary
 
             $this->id = intval($objDatabase->Insert_ID());
 	} else {
+            //Trigger event preUpdate for Category Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/preUpdate',
                 array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs($category, $this->em)
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $category, $this->em
+                    )
                 )
             );
         }
 
         $categoryNames = $category->getCategoryNames();
         foreach ($categoryNames as $categoryName) {
+            //Trigger event preRemove for CategoryName Entity
             $this->cx->getEvents()->triggerEvent(
                 'model/preRemove',
                 array(
@@ -320,6 +330,7 @@ class CalendarCategory extends CalendarLibrary
 
         if ($objResult !== false) {
             foreach ($categoryNames as $categoryName) {
+                //Trigger event postRemove for CategoryName Entity
                 $this->cx->getEvents()->triggerEvent(
                     'model/postRemove',
                     array(
@@ -329,6 +340,7 @@ class CalendarCategory extends CalendarLibrary
                     )
                 );
             }
+            $category = $this->getCategoryEntity($this->id);
             foreach ($arrNames as $langId => $categoryName) {
                 if ($langId != 0) {
                     $categoryName = ($categoryName == '') ? $arrNames[0] : $categoryName;
@@ -343,6 +355,7 @@ class CalendarCategory extends CalendarLibrary
                     $categoryNameEntity = $this->getCategoryNameEntity(
                         $category, $formData
                     );
+                    //Trigger event prePersist for CategoryName Entity
                     $this->cx->getEvents()->triggerEvent(
                         'model/prePersist',
                         array(
@@ -358,6 +371,7 @@ class CalendarCategory extends CalendarLibrary
 
                     $objResult = $objDatabase->Execute($query);
                     if ($objResult !== false) {
+                        //Trigger event postPersist for CategoryName Entity
                         $this->cx->getEvents()->triggerEvent(
                             'model/postPersist',
                             array(
@@ -371,7 +385,8 @@ class CalendarCategory extends CalendarLibrary
             }
 
             if ($objResult !== false) {
-                if ($this->id == 0) {
+                if ($id == 0) {
+                    //Trigger event postPersist for Category Entity
                     $this->cx->getEvents()->triggerEvent(
                         'model/postPersist',
                         array(
@@ -381,6 +396,7 @@ class CalendarCategory extends CalendarLibrary
                         )
                     );
                 } else {
+                    //Trigger event postUpdate for Category Entity
                     $this->cx->getEvents()->triggerEvent(
                         'model/postUpdate',
                         array(
@@ -423,6 +439,7 @@ class CalendarCategory extends CalendarLibrary
         global $objDatabase;
 
         $category = $this->getCategoryEntity($this->id);
+        //Trigger preRemove event for Category Entity
         $this->cx->getEvents()->triggerEvent(
             'model/preRemove',
             array(
@@ -438,6 +455,7 @@ class CalendarCategory extends CalendarLibrary
         if ($objResult !== false) {
             $categoryNames = $category->getCategoryNames();
             foreach ($categoryNames as $categoryName) {
+                //Trigger preRemove event for CategoryName Entity
                 $this->cx->getEvents()->triggerEvent(
                     'model/preRemove',
                     array(
@@ -454,6 +472,7 @@ class CalendarCategory extends CalendarLibrary
 
             if ($objResult !== false) {
                 foreach ($categoryNames as $categoryName) {
+                    //Trigger postRemove event for CategoryName Entity
                     $this->cx->getEvents()->triggerEvent(
                         'model/postRemove',
                         array(
@@ -463,6 +482,7 @@ class CalendarCategory extends CalendarLibrary
                         )
                     );
                 }
+                //Trigger postRemove event for Category Entity
                 $this->cx->getEvents()->triggerEvent(
                     'model/postRemove',
                     array(
@@ -602,8 +622,10 @@ class CalendarCategory extends CalendarLibrary
         \Cx\Modules\Calendar\Model\Entity\Category $category,
         $fieldValues
     ){
+        $isNewEntity  = false;
         $categoryName = $category->getCategoryNameByLangId($fieldValues['langId']);
         if (!$categoryName) {
+            $isNewEntity  = true;
             $categoryName = new \Cx\Modules\Calendar\Model\Entity\CategoryName();
         }
         $categoryName->setVirtual(true);
@@ -613,8 +635,11 @@ class CalendarCategory extends CalendarLibrary
                 $categoryName->{$methodName}($fieldValue);
             }
         }
-        $category->addCategoryName($categoryName);
-        $categoryName->setCategory($category);
+
+        if ($isNewEntity) {
+            $category->addCategoryName($categoryName);
+            $categoryName->setCategory($category);
+        }
 
         return $categoryName;
     }

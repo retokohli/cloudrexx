@@ -6,16 +6,18 @@ Cx\Modules\Calendar\Model\Entity\EventField:
       columns: [ title ]
     contrexx_module_calendar_event_id_ibfk:
       columns: [ event_id ]
-  id:
+  fields:
     eventId:
+      id: true
       type: integer
       column: event_id
-  fields:
+      associationKey: true
     title:
       type: string
       length: 255
       nullable: true
     langId:
+      id: true
       type: integer
       column: lang_id
     teaser:
