@@ -50,7 +50,7 @@ namespace Cx\Core\Wysiwyg\Controller;
  */
 class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
     /**
-     * This is the default toolbar for either full or small as json
+     * This is the default toolbar for either full or small
      * @var array $defaultFull
      * @access protected
      */
@@ -69,9 +69,45 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         array('Maximize'),
         array('Div','CreateDiv'),
     );
-    protected $defaultFrontendEditingContent;
-    protected $defaultFrontendEditingTitle;
-    protected $defaultBbcode;
+    /**
+     * This is the default toolbar for Bbcode
+     * @var array $defaultBbcode
+     * @access protected
+     */
+    protected $defaultBbcode = array(
+        array('Source','-','NewPage'),
+        array('Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'),
+        array('Bold','Italic','Underline','Link','Unlink','SpecialChar'),
+    );
+    /**
+     * This is the default toolbar for frontend editing contend
+     * @var array $defaultFrontendEditingContent
+     * @access protected
+     */
+    protected $defaultFrontendEditingContent = array(
+        array('Publish','Save','Templates'),
+        array('Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'),
+        array('Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'),
+        array('Bold','Italic','Underline','Strike','-','Subscript','Superscript'),
+        array('NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'),
+        '/',
+        array('JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'),
+        array('Link','Unlink','Anchor'),
+        array('Image','Flash','Table','HorizontalRule','SpecialChar'),
+        array('Format'),
+        array('TextColor','BGColor'),
+        array('ShowBlocks')
+    );
+    /**
+     * This is the default toolbar for frontend editing title
+     * @var array $defaultFrontendEditingTitle
+     * @access protected
+     */
+    protected $defaultFrontendEditingTitle = array(
+        array('Publish','Save'),
+        array('Cut','Copy','Paste','-','Scayt'),
+        array('Undo','Redo')
+    );
     /**
      * These are the buttons that are removed by default and are not accessible
      * @var string
@@ -105,6 +141,7 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
     public function getAsOldSyntax($removedButtons, $type) {
         // create array of removed buttons from comma separated functions
         $removedButtons = explode(',', $removedButtons);
+        $type = lcfirst($type);
         // load old syntax of given type
         switch ($type) {
             case 'frontendEditingContent':
@@ -125,6 +162,10 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         // remove the buttons which shall be removed
         foreach (array_keys($oldSyntax) as $key) {
             foreach ($removedButtons as $toRemove) {
+                // Skip toolbar breakpoints
+                if ($oldSyntax[$key] == '/') {
+                    continue;
+                }
                 if (in_array($toRemove, $oldSyntax[$key])) {
                     $keyToRemove = array_search($toRemove, $oldSyntax[$key]);
                     unset($oldSyntax[$key][$keyToRemove]);
@@ -229,45 +270,12 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
      *
      * Type must be one of the following: Small, Full, FrontendEditingContent,
      * FrontendEditingTitle or Bbcode
-     * @param $type
-     * @return string
+     * @param $type     string  Type of toolbar (Small, Full,
+     *                          FrontendEditingContent, FrontendEditingTitle or
+     *                          Bbcode)
+     * @return string   string  The toolbar with the restricted scope of functions
      */
     public function getToolbar($type) {
-        $pdo = $this->cx->getDb()->getPdoConnection();
-        if (in_array(lcfirst($type), $this->types)) {
-            $functionName = 'get' . ucfirst($type) . 'Toolbar';
-            // Call the function to merge the toolbars
-            return call_user_func_array(
-                array($this, $functionName),
-                array($pdo)
-            );
-        } else {
-            $functionsResult = $pdo->query("
-                SELECT `available_functions`
-                  FROM `" . DBPREFIX . "core_wysiwyg_toolbar`
-                WHERE `is_default` = 1
-                LIMIT 1"
-            );
-            // Assure that the query did not fail
-            if ($functionsResult === false) {
-                // In case of failure return the default full
-                return $this->defaultFull;
-            }
-            // Verify that we could fetch the data
-            $availableFunctions = $functionsResult->fetch(\PDO::FETCH_ASSOC);
-            if ($availableFunctions === false) {
-                // In case of failure return the default full
-                return $this->defaultFull;
-            }
-            return $availableFunctions['available_functions'];
-        }
-    }
-
-    /**
-     * Get the toolbar of the type full
-     * @return string $mergedToolbar    The merged toolbar of all assigned user
-     */
-    protected function getFullToolbar() {
         // Get all the toolbar ids of every user group assigned to the user
         $toolbarIds = $this->getToolbarIdsOfUserGroup();
         // Make sure that we do not have any redundant toolbar ids
@@ -276,8 +284,8 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         $removedButtons = $this->loadRemovedButtons($toolbarIds);
         // return the merged toolbars
         $mergedButtons = $this->mergeRemovedButtons($removedButtons);
-        $fullToolbar = $this->getAsOldSyntax($mergedButtons, 'full');
-        return $fullToolbar;
+        $toolbar = $this->getAsOldSyntax($mergedButtons, $type);
+        return $toolbar;
     }
 
     /**

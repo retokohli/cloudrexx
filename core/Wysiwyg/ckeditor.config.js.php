@@ -98,34 +98,13 @@ CKEDITOR.editorConfig = function( config )
     
     config.templates_replaceContent = <?php echo \Cx\Core\Setting\Controller\Setting::getValue('replaceActualContents','Wysiwyg')? 'true' : 'false' ?>;
 
-    config.toolbar_Full = config.toolbar_Small = <?php echo $wysiwyg->getFullToolbar() ?>;
+    config.toolbar_Full = config.toolbar_Small = <?php echo $wysiwyg->getToolbar() ?>;
 
-    config.toolbar_BBCode = [
-        ['Source','-','NewPage'],
-        ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
-        ['Bold','Italic','Underline','Link','Unlink','SpecialChar'],
-    ];
+    config.toolbar_BBCode = <?php echo $wysiwyg->getToolbar('bbcode') ?>;
 
-    config.toolbar_FrontendEditingContent = [
-        ['Publish','Save','Templates'],
-        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
-        ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
-        ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
-        ['NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'],
-        '/',
-        ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-        ['Link','Unlink','Anchor'],
-        ['Image','Flash','Table','HorizontalRule','SpecialChar'],
-        ['Format'],
-        ['TextColor','BGColor'],
-        ['ShowBlocks']
-    ];
+    config.toolbar_FrontendEditingContent = <?php echo $wysiwyg->getToolbar('frontendEditingContent') ?>;
 
-    config.toolbar_FrontendEditingTitle = [
-        ['Publish','Save'],
-        ['Cut','Copy','Paste','-','Scayt'],
-        ['Undo','Redo']
-    ];
+    config.toolbar_FrontendEditingTitle = <?php echo $wysiwyg->getToolbar('frontendEditingTitle') ?>;
     config.extraPlugins = 'codemirror';
     
     //Set the CSS Stuff
