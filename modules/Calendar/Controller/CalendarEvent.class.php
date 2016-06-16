@@ -1096,6 +1096,38 @@ class CalendarEvent extends CalendarLibrary
                 $showTimeTypeDetail  = 0;
             }
         }
+
+        //backward compatibility, multilingual fields might be empty
+        if (empty($data['event_place'])) {
+            $data['event_place'] = array(
+                isset($data['place']) ? $data['place'] : ''
+            );
+        }
+        if (empty($data['event_place_city'])) {
+            $data['event_place_city'] = array(
+                isset($data['city']) ? $data['city'] : ''
+            );
+        }
+        if (empty($data['event_place_country'])) {
+            $data['event_place_country'] = array(
+                isset($data['country']) ? $data['country'] : ''
+            );
+        }
+        if (empty($data['event_org_name'])) {
+            $data['event_org_name'] = array(
+                isset($data['organizerName']) ? $data['organizerName'] : ''
+            );
+        }
+        if (empty($data['event_org_city'])) {
+            $data['event_org_city'] = array(
+                isset($data['organizerCity']) ? $data['organizerCity'] : ''
+            );
+        }
+        if (empty($data['event_org_country'])) {
+            $data['event_org_country'] = array(
+                isset($data['organizerCountry']) ? $data['organizerCountry'] : ''
+            );
+        }
                 
         $access                    = isset($data['access']) ? intval($data['access']) : 0;
         $priority                  = isset($data['priority']) ? intval($data['priority']) : 0;

@@ -527,11 +527,16 @@ EOF;
         
         $locationType = $this->arrSettings['placeData'] == 3 ? ($eventId != 0 ? $objEvent->locationType : 1) : $this->arrSettings['placeData'];
         $hostType     = $this->arrSettings['placeDataHost'] == 3 ? ($eventId != 0 ? $objEvent->hostType : 1) : $this->arrSettings['placeDataHost'];
-        $activeLangs  = implode(',', \FWLanguage::getIdArray());
+
+        \ContrexxJavascript::getInstance()->setVariable(array(
+            'language_id' => \FWLanguage::getDefaultLangId(),
+            'active_lang' => implode(',', \FWLanguage::getIdArray()),
+        ), 'calendar');
+
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
-var defaultLang = '$_LANGID';
-var activeLang = [$activeLangs];
+var defaultLang = cx.variables.get('language_id', 'calendar');
+var activeLang = [cx.variables.get('active_lang', 'calendar')];
 cx.ready(function() {
     var options = {
         dateFormat: '$dateFormat',        
@@ -651,8 +656,8 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_PLACE_DATA_FROM_MEDIADIR' => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR'],
             'TXT_'.$this->moduleLangVar.'_PREV'                     => $_ARRAYLANG['TXT_CALENDAR_PREV'],
             'TXT_'.$this->moduleLangVar.'_NEXT'                     => $_ARRAYLANG['TXT_CALENDAR_NEXT'],
-            'TXT_'.$this->moduleLangVar.'_EVENT_MORE'               => $_ARRAYLANG['TXT_CALENDAR_MORE'],
-            'TXT_'.$this->moduleLangVar.'_EVENT_MINIMIZE'           => $_ARRAYLANG['TXT_CALENDAR_MINIMIZE'],
+            'TXT_'.$this->moduleLangVar.'_MORE'                     => $_ARRAYLANG['TXT_CALENDAR_MORE'],
+            'TXT_'.$this->moduleLangVar.'_MINIMIZE'                 => $_ARRAYLANG['TXT_CALENDAR_MINIMIZE'],
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',

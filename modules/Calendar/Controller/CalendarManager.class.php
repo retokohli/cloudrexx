@@ -358,6 +358,11 @@ class CalendarManager extends CalendarLibrary
         $this->_objTpl->loadTemplateFile('module_calendar_modify_event.html');
         \JS::registerJS("modules/{$this->moduleName}/View/Script/jquery.pagination.js");
         
+        \ContrexxJavascript::getInstance()->setVariable(array(
+            'language_id' => \FWLanguage::getDefaultLangId(),
+            'active_lang' => implode(',', \FWLanguage::getIdArray()),
+        ), 'calendar');
+
         $this->getSettings();
         $this->getFrontendLanguages();
         if(isset($_POST['submitModifyEvent']) || isset($_POST['save_and_publish'])) {
@@ -574,8 +579,8 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_EVENT_REGISTRATION_INTERNAL'      => $_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_INTERNAL'],
             'TXT_'.$this->moduleLangVar.'_EVENT_REGISTRATION_EXTERNAL'      => $_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_EXTERNAL'],
             'TXT_'.$this->moduleLangVar.'_EVENT_REGISTRATION_FULL_BOOKED'   => $_ARRAYLANG['TXT_CALENDAR_EVENT_REGISTRATION_FULL_BOOKED'],
-            'TXT_'.$this->moduleLangVar.'_EVENT_MORE'                       => $_ARRAYLANG['TXT_CALENDAR_MORE'],
-            'TXT_'.$this->moduleLangVar.'_EVENT_MINIMIZE'                   => $_ARRAYLANG['TXT_CALENDAR_MINIMIZE'],
+            'TXT_'.$this->moduleLangVar.'_MORE'                             => $_ARRAYLANG['TXT_CALENDAR_MORE'],
+            'TXT_'.$this->moduleLangVar.'_MINIMIZE'                         => $_ARRAYLANG['TXT_CALENDAR_MINIMIZE'],
 
             //show media browser button
             $this->moduleLangVar.'_EVENT_REDIRECT_BROWSE_BUTTON'            => self::showMediaBrowserButton('eventRedirect', 'sitestructure'),
@@ -644,7 +649,6 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_REGISTRATION_EXTERNAL_LINK'        => !empty($eventId) ? $objEvent->registrationExternalLink : '',
             $this->moduleLangVar.'_EVENT_REGISTRATION_EXTERNAL_FULL_BOOKED' => !empty($eventId)
                                                                               ? ($objEvent->registrationExternalFullyBooked ? 'checked="checked"' : '') : '',
-            $this->moduleLangVar.'_EVENT_ACTIVE_LANGUAGES'                  => implode(',', \FWLanguage::getIdArray()),
         ));
 
         // parse invitation E-mail template
