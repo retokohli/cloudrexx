@@ -17,7 +17,8 @@ div.toolbarModifier ul[data-type="table-body"] > li[data-type="separator"] {
     display: none;
 }
 div.toolbarModifier ul[data-type="table-header"] > li[data-type="header"] > ul li > p:last-child {
-    padding: 5px 0 5px 5px;
+    font-size: 16px;
+    padding: 10px 0 5px 5px;
 }
 div.toolbarModifier > ul > li > ul,
 div.toolbarModifier > ul > li,
@@ -32,4 +33,8 @@ div.toolbarModifier > ul > li > ul {
 }
 div.toolbarModifier ul[data-type="table-body"] > li[data-type="group"] > ul > li[data-type="subgroup"] > p {
     font-size: 16px;
+}
+div.toolbarModifier > ul > li[data-type="group"]:hover,
+div.toolbarModifier > ul > li[data-type="separator"]:hover {
+    background: none;
 }
