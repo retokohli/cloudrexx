@@ -32,9 +32,9 @@
                 parent.removeClass('error');
                 jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').val(textvalue);
                 parent.removeClass('saving');
-                parent.addClass('saved');
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').addClass('saved');
                 setTimeout(function(){
-                    parent.removeClass('saved');
+                    jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').removeClass('saved');
                 }, 2000);
                 return true;
             }

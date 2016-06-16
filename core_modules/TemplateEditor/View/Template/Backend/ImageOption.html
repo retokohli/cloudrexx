@@ -66,9 +66,11 @@
             }
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev().attr('src', data);
             parent.removeClass('saving');
-            parent.addClass('saved');
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').addClass('saved');
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev('img').addClass('saved');
             setTimeout(function(){
-                parent.removeClass('saved');
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').removeClass('saved');
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').prev('img').removeClass('saved');
             }, 2000);
             return true;
         })

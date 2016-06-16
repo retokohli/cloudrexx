@@ -44,9 +44,9 @@
             }
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').nextAll('.error-box:first').slideUp();
             jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saving');
-            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().addClass('saved');
+            jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').addClass('saved');
             setTimeout(function () {
-                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').parent().removeClass('saved');
+                jQuery('#{TEMPLATEEDITOR_OPTION_NAME}').removeClass('saved');
             }, 2000);
             return true;
         })

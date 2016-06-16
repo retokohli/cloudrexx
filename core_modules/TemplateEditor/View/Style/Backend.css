@@ -204,14 +204,7 @@ p.groupName.open, .option.series.open {
     overflow: hidden;
 }
 
-#content .option.saved input,
-#content .option.saved textarea,
-#content .option .image.saved input,
-#content .option .elements.saved input,
-#content .option .image.saved img,
-#content .option .element.saved img,
-#content .option .element.saved input,
-#content .option .element.saved textarea {
+#content .option .saved {
     border: 1px solid #00C755;
 }
 
@@ -295,9 +288,7 @@ p.groupName.open, .option.series.open {
 #content .element.combined > .remove-element {
     display: none;
 }
-#content .option.saved:after,
-#content .option .image.saved:after,
-#content .option .element.saved:after  {
+#content .option .saved:after {
     opacity: 1;
 }
 
