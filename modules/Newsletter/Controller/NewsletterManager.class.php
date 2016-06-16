@@ -2335,15 +2335,10 @@ class NewsletterManager extends NewsletterLib
             'TXT_NEWSLETTER_USER_EMAIL'          => $_ARRAYLANG['TXT_EMAIL'],
             'TXT_NEWSLETTER_DOMAIN_URL'          => $_ARRAYLANG['TXT_NEWSLETTER_URL'],
             'TXT_NEWSLETTER_CURRENT_DATE'        => $_ARRAYLANG['TXT_DATE'],
-            'TXT_NEWSLETTER_SENDER_EMAIL'        => $_ARRAYLANG['TXT_NEWSLETTER_SENDER_EMAIL'],
-            'TXT_NEWSLETTER_SENDER_NAME'         => $_ARRAYLANG['TXT_NEWSLETTER_SENDER_NAME'],
-            'TXT_NEWSLETTER_REPLY_TO'            => $_ARRAYLANG['TXT_NEWSLETTER_REPLY_TO'],
             'TXT_NEWSLETTER_CONFIRM_CODE'        => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_CODE'],
             'TXT_NEWSLETTER_NOTIFICATION_ACTION' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_ACTION'],
-            'TXT_NEWSLETTER_NOTIFICATION_RECIPIENT' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_RECIPIENT'],
             'TXT_NEWSLETTER_SUBJECT'             => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
             'TXT_NEWSLETTER_USER_EDIT_LINK'      => $_ARRAYLANG['TXT_NEWSLETTER_USER_EDIT_LINK'],
-            'TXT_NEWSLETTER_LOGGED_USER_EMAIL'   => $_ARRAYLANG['TXT_NEWSLETTER_LOGGED_USER_EMAIL'],
         ));
         return $objTemplate->get();
     }
@@ -3149,6 +3144,10 @@ class NewsletterManager extends NewsletterLib
             'key'          => 'notify_undelivered_email',
             'section'      => 'Newsletter',
             'lang_id'      => BACKEND_LANG_ID,
+            'to'           => $loggedUserMail,
+            'from'         => $newsletterValues['sender_email'],
+            'sender'       => $newsletterValues['sender_name'],
+            'reply'        => $newsletterValues['return_path'],
             'substitution' => array(
                 'NEWSLETTER_USER_SEX'       => $newsletterUserData['sex'],
                 'NEWSLETTER_USER_TITLE'     => $newsletterUserData['title'],
@@ -3157,12 +3156,8 @@ class NewsletterManager extends NewsletterLib
                 'NEWSLETTER_USER_EMAIL'     => $newsletterUserData['email'],
                 'NEWSLETTER_DOMAIN_URL'     => $_CONFIG['domainUrl'],
                 'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
-                'NEWSLETTER_SENDER_EMAIL'   => $newsletterValues['sender_email'],
-                'NEWSLETTER_SENDER_NAME'    => $newsletterValues['sender_name'],
-                'NEWSLETTER_REPLY_TO'       => $newsletterValues['return_path'],
                 'NEWSLETTER_SUBJECT'        => $newsletterValues['subject'],
                 'NEWSLETTER_USER_EDIT_LINK' => $this->getUserEditLink($userID, $type),
-                'NEWSLETTER_LOGGED_USER_EMAIL' => $loggedUserMail,
             ),
         );
         \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate);

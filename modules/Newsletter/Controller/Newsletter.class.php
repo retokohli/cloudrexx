@@ -163,6 +163,10 @@ class Newsletter extends NewsletterLib
                     'key'          => 'confirm_email',
                     'section'      => 'Newsletter',
                     'lang_id'      => FRONTEND_LANG_ID,
+                    'to'           => $userEmail,
+                    'from'         => $arrSettings['sender_mail']['setvalue'],
+                    'sender'       => $arrSettings['sender_name']['setvalue'],
+                    'reply'        => $arrSettings['reply_mail']['setvalue'],
                     'substitution' => array(
                         'NEWSLETTER_USER_SEX'       => $userSex,
                         'NEWSLETTER_USER_TITLE'     => $userTitle,
@@ -171,9 +175,6 @@ class Newsletter extends NewsletterLib
                         'NEWSLETTER_USER_EMAIL'     => $userEmail,
                         'NEWSLETTER_DOMAIN_URL'     => $url,
                         'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
-                        'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
-                        'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
-                        'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue']
                     ),
                 );
                 \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate);
@@ -754,6 +755,10 @@ class Newsletter extends NewsletterLib
             'key'          => 'activation_email',
             'section'      => 'Newsletter',
             'lang_id'      => FRONTEND_LANG_ID,
+            'to'           => $recipientEmail,
+            'from'         => $arrSettings['sender_mail']['setvalue'],
+            'sender'       => $arrSettings['sender_name']['setvalue'],
+            'reply'        => $arrSettings['reply_mail']['setvalue'],
             'substitution' => array(
                 'NEWSLETTER_USER_SEX'       => $recipientSexTxt,
                 'NEWSLETTER_USER_TITLE'     => $recipientTitleTxt,
@@ -763,9 +768,6 @@ class Newsletter extends NewsletterLib
                 'NEWSLETTER_CONFIRM_CODE'   => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Newsletter&cmd=confirm&email='. urlencode($recipientEmail),
                 'NEWSLETTER_DOMAIN_URL'     => $url,
                 'NEWSLETTER_CURRENT_DATE'   => $now,
-                'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
-                'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
-                'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue']
             ),
         );
         if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
@@ -824,6 +826,10 @@ class Newsletter extends NewsletterLib
             'key'          => $newsletterKey,
             'section'      => 'Newsletter',
             'lang_id'      => FRONTEND_LANG_ID,
+            'to'           => $recipientEmail,
+            'from'         => $arrSettings['sender_mail']['setvalue'],
+            'sender'       => $arrSettings['sender_name']['setvalue'],
+            'reply'        => $arrSettings['reply_mail']['setvalue'],
             'substitution' => array(
                 'NEWSLETTER_USER_SEX'       => $recipientSex,
                 'NEWSLETTER_USER_TITLE'     => $recipientTitle,
@@ -832,9 +838,6 @@ class Newsletter extends NewsletterLib
                 'NEWSLETTER_USER_EMAIL'     => $recipientEmail,
                 'NEWSLETTER_DOMAIN_URL'     => $_CONFIG['domainUrl'],
                 'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
-                'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
-                'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
-                'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue'],
             ),
         );
         $arrMailTemplate['substitution'] = $substitution + $arrMailTemplate['substitution'];
@@ -907,9 +910,12 @@ class Newsletter extends NewsletterLib
                 'key'          => 'notification_email',
                 'section'      => 'Newsletter',
                 'lang_id'      => FRONTEND_LANG_ID,
+                'to'           => implode(',', $notifyMails),
+                'from'         => $arrSettings['sender_mail']['setvalue'],
+                'sender'       => $arrSettings['sender_name']['setvalue'],
+                'reply'        => $arrSettings['reply_mail']['setvalue'],
                 'substitution' => array(
                     'NEWSLETTER_NOTIFICATION_ACTION'    => $txtAction,
-                    'NEWSLETTER_NOTIFICATION_RECIPIENT' => implode(',', $notifyMails),
                     'NEWSLETTER_USER_SEX'       => $arrRecipient['sex'],
                     'NEWSLETTER_USER_TITLE'     => $arrRecipientTitle,
                     'NEWSLETTER_USER_FIRSTNAME' => $arrRecipient['firstname'],
@@ -917,9 +923,6 @@ class Newsletter extends NewsletterLib
                     'NEWSLETTER_USER_EMAIL'     => $arrRecipient['email'],
                     'NEWSLETTER_DOMAIN_URL'     => $_CONFIG['domainUrl'],
                     'NEWSLETTER_CURRENT_DATE'   => date(ASCMS_DATE_FORMAT),
-                    'NEWSLETTER_SENDER_EMAIL'   => $arrSettings['sender_mail']['setvalue'],
-                    'NEWSLETTER_SENDER_NAME'    => $arrSettings['sender_name']['setvalue'],
-                    'NEWSLETTER_REPLY_TO'       => $arrSettings['reply_mail']['setvalue'],
                 ),
             );
             if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
