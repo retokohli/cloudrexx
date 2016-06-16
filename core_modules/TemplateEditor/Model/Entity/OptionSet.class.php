@@ -194,41 +194,44 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     {
         global $_LANGID;
         foreach ($this->getOptionsOrderedByGroups() as $key => $group) {
-            foreach ($group as $option) {
-                $subTemplate = $option->renderOptionField();
-                $optionName = str_replace( // replace 'Option' so we get the net name
-                    'Option',
-                    '',
-                    end( // last value of the array is the class name
-                        explode('\\', $option->getType()) // get array for class namespace
-                    )
-                );
-                $seriesClass = ($option->isSeries()) ? 'series' : '';
+            // empty groups should not be parsed
+            if ($group) {
+                foreach ($group as $option) {
+                    $subTemplate = $option->renderOptionField();
+                    $optionName = str_replace( // replace 'Option' so we get the net name
+                        'Option',
+                        '',
+                        end( // last value of the array is the class name
+                            explode('\\', $option->getType()) // get array for class namespace
+                        )
+                    );
+                    $seriesClass = ($option->isSeries()) ? 'series' : '';
+                    $template->setVariable(array(
+                        'TEMPLATEEDITOR_OPTION' => $subTemplate->get(),
+                        'TEMPLATEEDITOR_OPTION_TYPE' => strtolower($optionName),
+                        'TEMPLATEEDITOR_OPTION_SERIES_CLASS' => $seriesClass,
+                    ));
+                    $template->parse('option');
+                }
+                // find the groupTranslation
+                $group = $this->groups[$key];
+                // if no translations exists, groupName will be shown
+                $groupTranslation = $group->getName();
+                $translations = $group->getTranslations();
+                if (isset($translations[$_LANGID])) {
+                    $groupTranslation = $translations[$_LANGID];
+                } else if (isset($translations[2])) {
+                    // if name is not defined in the wished language, try to load
+                    // it in english
+                    $groupTranslation = $translations[2];
+                }
                 $template->setVariable(array(
-                    'TEMPLATEEDITOR_OPTION' => $subTemplate->get(),
-                    'TEMPLATEEDITOR_OPTION_TYPE' => strtolower($optionName),
-                    'TEMPLATEEDITOR_OPTION_SERIES_CLASS' => $seriesClass,
+                    'TEMPLATEEDITOR_GROUP_NAME' => $this->groups[$key]->getName(),
+                    'TEMPLATEEDITOR_GROUP_COLOR' => $this->groups[$key]->getColor(),
+                    'TEMPLATEEDITOR_GROUP_TRANSLATION' => $groupTranslation,
                 ));
-                $template->parse('option');
+                $template->parse('group');
             }
-            // find the groupTranslation
-            $group = $this->groups[$key];
-            // if no translations exists, groupName will be shown
-            $groupTranslation = $group->getName();
-            $translations = $group->getTranslations();
-            if (isset($translations[$_LANGID])) {
-                $groupTranslation = $translations[$_LANGID];
-            } else if (isset($translations[2])) {
-                // if name is not defined in the wished language, try to load
-                // it in english
-                $groupTranslation = $translations[2];
-            }
-            $template->setVariable(array(
-                'TEMPLATEEDITOR_GROUP_NAME' => $this->groups[$key]->getName(),
-                'TEMPLATEEDITOR_GROUP_COLOR' => $this->groups[$key]->getColor(),
-                'TEMPLATEEDITOR_GROUP_TRANSLATION' => $groupTranslation,
-            ));
-            $template->parse('group');
         }
     }
 
