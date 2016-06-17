@@ -634,6 +634,69 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
             }
             $objGroup->setDynamicPermissionIds($arrCurrentAccessIds);
+            // Get Cx object from Environment variable
+            $cx = \Env::get('cx');
+            // Load entity manager
+            $pdo = $cx->getDb()->getPdoConnection();
+            // Instantiate a new Toolbarcontroller
+            $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($cx);
+            $newButtons = $_POST['removedButtons'];
+            // Get the new toolbar as an array
+            $newFunctions = json_decode($toolbarController->getAsOldSyntax($newButtons, 'full'));
+            // Get the assigned toolbar id of the current group
+            $toolbarIdRes = $pdo->query('
+                SELECT `toolbar` FROM `' . DBPREFIX . 'access_user_groups`
+                WHERE `group_id` = ' . intval($objGroup->getId()) . '
+                LIMIT 1');
+            // Assure that the statement did not fail
+            if ($toolbarIdRes !== false) {
+                // Fetch the data
+                $toolbarId = $toolbarIdRes->fetch(\PDO::FETCH_ASSOC);
+                $toolbarId = $toolbarId['toolbar'];
+                // Ensure that the group has a toolbar assigned
+                if (!empty($toolbarId)) {
+                    // Load toolbar
+                    $toolbarFunctionRes = $pdo->query('
+                        SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
+                        WHERE `id` = ' . intval($toolbarId) . '
+                        LIMIT 1');
+                    // Assure that the statement did not fail
+                    if ($toolbarFunctionRes !== false) {
+                        // Fetch the data
+                        $currentButtons = $toolbarFunctionRes->fetch(\PDO::FETCH_ASSOC);
+                        // Get the current toolbar as an array
+                        $currentButtons = $currentButtons['removed_buttons'];
+                        // Prepare the two removed buttons list for commparison
+                        $currentButtons = explode(',', $currentButtons);
+                        $newButtonsArr = explode(',', $newButtons);
+                        // Check if the toolbar has been changed
+                        if (count($currentButtons) !== count($newButtonsArr)) {
+                            // The toolbar has been modified
+                            $query = '
+                                UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`
+                                SET `available_functions` = \'' . json_encode($newFunctions) . '\',
+                                    `removed_buttons` = \'' . contrexx_input2db($newButtons) . '\'
+                                WHERE `id` = ' . intval($toolbarId);
+                            $pdo->exec($query);
+                        }
+                    }
+                } else {
+                    // Group has currently no special toolbar assigned
+                    // Store as a new toolbar
+                    $query = 'INSERT INTO `' . DBPREFIX . 'core_wysiwyg_toolbar`(
+                            `available_functions`, `removed_buttons`)
+                          VALUES (\'' . json_encode($newFunctions) . '\',
+                            \'' . contrexx_input2db($_POST['removedButtons']) . '\')';
+                    $pdo->exec($query);
+                    // Get the id of the new toolbar
+                    $toolbarId = $pdo->lastInsertId();
+                    // Set the toolbar id of the current group to the new id
+                    $query = 'UPDATE `' . DBPREFIX . 'access_user_groups`
+                          SET `toolbar` = ' . intval($toolbarId) . '
+                          WHERE `group_id` = ' . intval($objGroup->getId());
+                    $pdo->exec($query);
+                }
+            }
 
             if (isset($_POST['access_save_group'])) {
                 if ($objGroup->store()) {
@@ -808,6 +871,16 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 }
             }
         }
+        // Parse toolbar configurator
+        $cx = \Env::get('cx');
+        $toolbarController = new \Cx\Core\Wysiwyg\Controller\ToolbarController($cx);
+        $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate('/core/Wysiwyg/');
+        $this->_objTpl->setGlobalVariable('ACCESS_WYSIWYG_TAB_NR', $tabNr);
+        $this->_objTpl->setVariable(array(
+            'TXT_ACCESS_TOOLBARCONFIGURATOR'    => $_ARRAYLANG['TXT_ACCESS_TOOLBARCONFIGURATOR'],
+            'ACCESS_PERMISSION_WYSIWYG_TOOLBAR' => $toolbarConfigurator->get(),
+        ));
+
         if ($tabNr > 1) {
             $this->_objTpl->parse('access_permission_tabs_menu');
         } else {
@@ -823,7 +896,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                     'style'            => 'display: none;'
         ));
         $mediaBrowser->setCallback('SetUrl');
-        
+
+        // Parse toolbar configurator
+        $this->_objTpl->parse('access_permission_tab_wysiwyg');
+
         $this->attachJavaScriptFunction('accessSetWebpage');
         $this->attachJavaScriptFunction('accessSelectAllGroups');
         $this->attachJavaScriptFunction('accessDeselectAllGroups');
