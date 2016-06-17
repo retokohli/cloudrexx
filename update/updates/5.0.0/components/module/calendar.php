@@ -420,7 +420,7 @@ function _calendarUpdate()
                         field.`place_country`   = event.`place_country`,
                         field.`org_name`        = event.`org_name`,
                         field.`org_city`        = event.`org_city`,
-                        field.`org_country`     = event.`org_country`)'
+                        field.`org_country`     = event.`org_country`'
             );
 
                 \Cx\Lib\UpdateUtil::table(
