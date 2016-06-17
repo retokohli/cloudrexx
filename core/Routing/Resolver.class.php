@@ -70,6 +70,11 @@ class Resolver {
     protected $page = null;
 
     /**
+     * @var Cx\Core\ContentManager\Model\Entity\Page
+     */
+    protected $urlPage = null;
+
+    /**
      * Doctrine Cx\Core\ContentManager\Model\Repository\PageRepository
      */
     protected $pageRepo = null;
