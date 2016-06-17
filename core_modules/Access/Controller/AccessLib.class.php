@@ -88,6 +88,10 @@ class AccessLib
 
     private $arrAccountAttributes;
 
+    /**
+     * Static Access id to manage the users(add/edit)
+     */
+    const ACCESS_MANAGE_USER_STATIC_ID = 202;
 
     /**
      * This library can be used to parse/generate the HTML code of a user's

@@ -311,6 +311,7 @@ $_ARRAYLANG['TXT_UPLOAD_MEDIA_FILES'] = "Upload media files";
 $_ARRAYLANG['TXT_DELETE_USERS'] = "Delete Users";
 $_ARRAYLANG['TXT_ADD_USERS'] = "Add Users";
 $_ARRAYLANG['TXT_EDIT_USERINFOS'] = "Edit my user information";
+$_ARRAYLANG['TXT_CORE_MODULE_ACCESS_MANAGE_USERS'] = "Manage users";
 $_ARRAYLANG['TXT_DELETE_GROUPS'] = "Delete Groups";
 $_ARRAYLANG['TXT_ADD_GROUPS'] = "Add Groups";
 $_ARRAYLANG['TXT_EDIT_GROUPS'] = "Edit Groups";

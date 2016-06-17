@@ -86,7 +86,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             /*' <a href="index.php?cmd=Access" title="'.
               $_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'" class="'.($this->act == '' ? 'active' : '').'">'.
               $_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'</a>'.*/
-            (\Permission::checkAccess(18, 'static', true)
+            (   \Permission::checkAccess(18, 'static', true)
+             || \Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true)
               ? '<a href="index.php?cmd=Access&amp;act=user" title="'.
               $_ARRAYLANG['TXT_ACCESS_USERS'].'" class="'.(($this->act == '' || $this->act == 'user') ? 'active' : '').'">'.
               $_ARRAYLANG['TXT_ACCESS_USERS'].'</a>' : '').
@@ -291,7 +292,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $this->_exportUsers($_GET['groupId'], $_GET['langId']);
             break;
             case 'user':
-                if (\Permission::checkAccess(18, 'static', true) || (isset($_REQUEST['id']) && $_REQUEST['id'] == $objFWUser->objUser->getId() && \Permission::checkAccess(31, 'static', true))) {
+                if (   \Permission::checkAccess(18, 'static', true)
+                    || \Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true)
+                    || (isset($_REQUEST['id']) && $_REQUEST['id'] == $objFWUser->objUser->getId() && \Permission::checkAccess(31, 'static', true))
+                ) {
                     $this->user();
                 } else {
                     header('Location: index.php?cmd=noaccess');
@@ -1310,7 +1314,12 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $arrSettings = \User_Setting::getSettings();
 
             // only administrators are allowed to change a users account. or users may be allowed to change their own account
-            if (!\Permission::hasAllAccess() && ($objUser->getId() != $objFWUser->objUser->getId() || !\Permission::checkAccess(31, 'static', true))) {
+            if (   !\Permission::hasAllAccess()
+                && (   $objUser->getId() != $objFWUser->objUser->getId()
+                    || !\Permission::checkAccess(31, 'static', true)
+                   )
+                && !\Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true)
+            ) {
                 \Permission::noAccess();
             }
 
