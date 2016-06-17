@@ -1024,7 +1024,6 @@ function executeContrexxUpdate() {
     if (!in_array('mediaPaths', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         \DBG::msg('update: migrate media paths for content and blocks');
         $mediaPathContentDone = _migrateMediaPaths('page');
-        $mediaPathBlockDone = _migrateMediaPaths('block');
         $mediaPathTemplateDone = _migrateTemplateMediaPaths();
         if ($mediaPathContentDone === false || $mediaPathBlockDone === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -2796,24 +2795,15 @@ function _migrateMediaPaths($where = 'page') {
     $mediaPaths = \Cx\Lib\UpdateUtil::getMigrationPaths();
     foreach($mediaPaths as $oldPath => $newPath) {
         try {
-            if ($where == 'block') {
-                \Cx\Lib\UpdateUtil::migratePath(
-                    '`' . DBPREFIX . 'module_block_rel_lang_content`',
-                    '`content`',
-                    $oldPath,
-                    $newPath
-                );
-            } else {
-                \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(
-                    array(),
-                    $oldPath,
-                    function() use ($newPath) {
-                        return $newPath;
-                    },
-                    array('content', 'target'),
-                    '5.0.0'
-                );
-            }
+            \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(
+                array(),
+                '/'.preg_quote($oldPath, '/').'/',
+                function() use ($newPath) {
+                    return $newPath;
+                },
+                array('content', 'target'),
+                '5.0.0'
+            );
         } catch (\Cx\Lib\UpdateException $e) {
             \DBG::log('Update::_migrateMediaPaths(): Failed to migrate to new path ' . $newPath);
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
