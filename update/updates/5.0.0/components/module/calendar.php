@@ -29,6 +29,7 @@
 function _calendarUpdate()
 {
     global $objDatabase, $objUpdate, $_CONFIG, $_ARRAYLANG;
+
 // customizing BPW: simulate Trunk of v3.1
 $coreCmsVersion = $_CONFIG['coreCmsVersion'];
 $_CONFIG['coreCmsVersion'] = '3.1.9';
@@ -407,17 +408,18 @@ $_CONFIG['coreCmsVersion'] = '3.1.9';
                 'MyISAM'
             );
 
-            \Cx\Lib\UpdateUtil::sql(
-                'UPDATE `'.DBPREFIX.'module_calendar_event_field` AS field 
-                    INNER JOIN `'.DBPREFIX.'module_calendar_event` AS event
-                    ON event.id = field.event_id
-                    SET field.`place`           = event.`place`,
-                        field.`place_city`      = event.`place_city`,
-                        field.`place_country`   = event.`place_country`,
-                        field.`org_name`        = event.`org_name`,
-                        field.`org_city`        = event.`org_city`,
-                        field.`org_country`     = event.`org_country`)'
-            );
+                \Cx\Lib\UpdateUtil::sql(
+                    'UPDATE `'.DBPREFIX.'module_calendar_event_field` AS field 
+                        INNER JOIN `'.DBPREFIX.'module_calendar_event` AS event
+                        ON event.id = field.event_id
+                        SET
+                            # BWP CUSTOMIZING field.`place`           = event.`place`,
+                            # BWP CUSTOMIZING field.`place_city`      = event.`place_city`,
+                            # BWP CUSTOMIZING field.`place_country`   = event.`place_country`,
+                            field.`org_name`        = event.`org_name`,
+                            field.`org_city`        = event.`org_city`,
+                            field.`org_country`     = event.`org_country`'
+                );
 
             \Cx\Lib\UpdateUtil::table(
                 DBPREFIX.'module_calendar_event',
@@ -572,9 +574,24 @@ $_CONFIG['coreCmsVersion'] = '3.1.9';
         }
     }
 
-
 // BPW CHANGES
     try {
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_calendar_mail_action` VALUES (4, 'notificationNewEntryFE', 'admin', 0)");
+		\Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'module_calendar_mail` (`title`, `content_text`, `content_html`, `recipients`, `lang_id`, `action_id`, `is_default`, `status`) VALUES (\'[[URL]] - Neuer Termin: [[TITLE]]\', \'Hallo [[FIRSTNAME]] [[LASTNAME]] \\r\\n\\r\\nUnter [[URL]] finden Sie den neuen Event \\\\\\\"[[TITLE]]\\\\\\\".\\r\\nDetails: [[LINK_EVENT]]\\r\\n\\r\\n\\r\\n--\\r\\nDiese Nachricht wurde automatisch generiert\\r\\n[[DATE]]\', \'Hallo [[FIRSTNAME]] [[LASTNAME]]<br />\\r\\n<br />\\r\\nUnter <a title=\\\"[[URL]]\\\" href=\\\"http://[[URL]]\\\">[[URL]]</a> finden Sie den neuen Event <a title=\\\"Event Details\\\" href=\\\"[[LINK_EVENT]]\\\">&quot;[[TITLE]]&quot;</a>. <br />\\r\\n<br />\\r\\n<br />\\r\\n--<br />\\r\\n<em>Diese Nachricht wurde automatisch generiert</em><br />\\r\\n<em>[[DATE]]</em>\', \'\', \'1\', \'4\', \'1\', \'0\')');
+
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_calendar_category_name',
+            array(
+                'cat_id' => array('type' => 'INT(11)'),
+                'lang_id' => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cat_id'),
+                'name' => array('type' => 'VARCHAR(225)', 'notnull' => false, 'after' => 'lang_id')
+            ),
+            array(
+                'fk_contrexx_module_calendar_category_names_contrexx_module_ca1' => array('fields' => array('cat_id'))
+            ),
+            'MyISAM'
+        );
+
         \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `value` = 2 WHERE `value` = 0 AND `name` IN ( 'headlinesStatus', 'publicationStatus', 'countCategoryEntries', 'confirmFrontendEvents', 'paymentStatus', 'paymentBillStatus', 'paymentYellowpayStatus', 'showClockDetail', 'showStartDateDetail', 'showEndDateDetail', 'showStartTimeDetail', 'showEndTimeDetail', 'showClockList', 'showStartDateList', 'showEndDateList', 'showStartTimeList', 'showEndTimeList', 'showEventsOnlyInActiveLanguage')");
         \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `options` = 'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE' WHERE `name` IN ( 'headlinesStatus', 'publicationStatus', 'countCategoryEntries', 'confirmFrontendEvents', 'paymentStatus', 'paymentBillStatus', 'paymentYellowpayStatus', 'showClockDetail', 'showStartDateDetail', 'showEndDateDetail', 'showStartTimeDetail', 'showEndTimeDetail', 'showClockList', 'showStartDateList', 'showEndDateList', 'showStartTimeList', 'showEndTimeList', 'showEventsOnlyInActiveLanguage')");
 
@@ -587,6 +604,9 @@ $_CONFIG['coreCmsVersion'] = '3.1.9';
         \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `order` = 9 WHERE `name` IN ( 'maxSeriesEndsYear' )");
         \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `order` = 10 WHERE `name` IN ( 'showEventsOnlyInActiveLanguage' )");
         \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `section_id` = 18 WHERE `name` IN ( 'confirmFrontendEvents' , 'addEventsFrontend')");
+
+        \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `order` = 8 WHERE `name` IN ( 'showStartTimeDetail', 'showStartTimeList' )");
+        \Cx\Lib\UpdateUtil::sql("UPDATE ".DBPREFIX."module_calendar_settings SET `order` = 9 WHERE `name` IN ( 'showEndTimeDetail', 'showEndTimeList' )");
 
         \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES(60, 16, 'listViewPreview', 'TXT_CALENDAR_SHOW_PREVIEW', '0', '', 7, '', 'listPreview', 10)");
         \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES(61, 17, 'detailViewPreview', 'TXT_CALENDAR_SHOW_PREVIEW', '0', '', 7, '', 'detailPreview', 10)");
@@ -625,9 +645,31 @@ $_CONFIG['coreCmsVersion'] = '3.1.9';
                 'lang_id' => array('type' => 'INT(11)', 'after' => 'user_id'),
                 'export' => array('type' => 'INT(11)', 'after' => 'lang_id'),
                 'payment_method' => array('type' => 'INT(11)', 'after' => 'export'),
-                'paid' => array('type' => 'INT(11)', 'after' => 'payment_method', 'renamefrom' = 'payed')
+                'paid' => array('type' => 'INT(11)', 'after' => 'payment_method', 'renamefrom' => 'payed')
             )
         );
+
+        if (\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_calendar_OLD')) {
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_calendar_OLD');
+        }
+        if (\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_calendar_categories_OLD')) {
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_calendar_categories_OLD');
+        }
+        if (\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_calendar_form_data_OLD')) {
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_calendar_form_data_OLD');
+        }
+        if (\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_calendar_form_fields_OLD')) {
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_calendar_form_fields_OLD');
+        }
+        if (\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_calendar_registrations_OLD')) {
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_calendar_registrations_OLD');
+        }
+        if (\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_calendar_settings_OLD')) {
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_calendar_settings_OLD');
+        }
+        if (\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_calendar_style_OLD')) {
+            \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_calendar_style_OLD');
+        }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
