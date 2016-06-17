@@ -251,8 +251,8 @@ function _accessUpdate()
                     'birthday' => array('type' => 'VARCHAR(11)', 'notnull' => false, 'after' => 'phone_fax'),
                     'website' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'birthday'),
                     'profession' => array('type' => 'VARCHAR(150)', 'notnull' => true, 'default' => '', 'after' => 'website'),
-                    'interests' => array('type' => 'text', 'after' => 'profession'),
-                    'signature' => array('type' => 'text', 'after' => 'interests'),
+                    'interests' => array('type' => 'text', 'after' => 'profession', 'notnull' => false),
+                    'signature' => array('type' => 'text', 'after' => 'interests', 'notnull' => false),
                     'picture' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'signature')
                 ),
                 array(

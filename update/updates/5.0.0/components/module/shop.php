@@ -377,7 +377,7 @@ function _shopUpdate()
                     )
                 );
             }
-            $table_name = DBPREFIX . 'module_shop_lsv';
+            /*$table_name = DBPREFIX . 'module_shop_lsv';
             if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
                 Cx\Lib\UpdateUtil::table($table_name,
                     array(
@@ -391,7 +391,7 @@ function _shopUpdate()
                         'order_id' => array('fields' => array('order_id'), 'type' => 'UNIQUE'),
                     )
                 );
-            }
+            }*/
             $table_name = DBPREFIX . 'module_shop_shipment_cost';
             if (Cx\Lib\UpdateUtil::table_exist($table_name)
                 && Cx\Lib\UpdateUtil::column_exist($table_name, 'price_free')
@@ -1429,6 +1429,7 @@ HTML;
             VALUES (12,"external","paymill_cc","","https://www.paymill.com",1,""),
                    (13,"external","paymill_elv","","https://www.paymill.com",1,""),
                    (14,"external","paymill_iban","","https://www.paymill.com",1,"")
+                   (15,"external","payrexx","Payrexx is a payment gateway solution developed in Switzerland.","https://www.payrexx.com",1,"")
             ');
             Cx\Lib\UpdateUtil::sql('
             INSERT IGNORE INTO `' . DBPREFIX . 'module_shop_rel_payment` (`zone_id`, `payment_id`)
