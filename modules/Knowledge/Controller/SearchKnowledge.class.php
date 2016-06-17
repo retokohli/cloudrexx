@@ -82,7 +82,7 @@ class SearchKnowledge extends SearchInterface  {
         if ($this->isAllLangsActive) {
             $additionalSelectField = ', content.lang';
         } else {
-            $additionalWhere = 'lang = ".FRONTEND_LANG_ID." AND';
+            $additionalWhere = 'lang = '.FRONTEND_LANG_ID.' AND';
         }
 
         $query = "  SELECT articles.id as id" . $additionalSelectField . ", content.question as title, MATCH (content.answer, content.question) AGAINST ('%".$this->term."%' IN BOOLEAN MODE) as Relevance
@@ -114,7 +114,7 @@ class SearchKnowledge extends SearchInterface  {
         if ($this->isAllLangsActive) {
             $additionalSelectField = ', content.lang';
         } else {
-            $additionalWhere = 'lang = ".FRONTEND_LANG_ID." AND';
+            $additionalWhere = 'lang = '.FRONTEND_LANG_ID.' AND';
         }
 
         $query = "  SELECT categories.id as id" . $additionalSelectField . ", content.name as title, MATCH (content.name) AGAINST ('".htmlentities($this->term, ENT_QUOTES, CONTREXX_CHARSET)."' IN BOOLEAN MODE) as Relevance
