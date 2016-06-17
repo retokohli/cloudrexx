@@ -152,4 +152,25 @@ class KnowledgeLibrary {
 
 		return $arrReturn;
 	}
+	
+	/**
+	 * Tells whether the allLangs setting is active or not
+	 * @return boolean True if setting is enabled
+	 * @todo implement
+	 */
+	public function isAllLangsActive() {
+	    return false;
+	}
+	
+	/**
+	 * Returns lang ID based on allLangs setting
+	 * @return int|null lang ID
+	 */
+	public function getLangId() {
+	    if ($this->isAllLangsActive()) {
+	        return null;
+	    }
+	    global $_LANGID;
+	    return $_LANGID;
+	}
 }
