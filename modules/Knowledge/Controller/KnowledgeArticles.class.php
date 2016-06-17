@@ -63,7 +63,7 @@ class KnowledgeArticles
     /**
      * Save the base query
      */
-    public function __construct()
+    public function __construct($showAllLangs = false)
     {
         $this->basequery = "SELECT  articles.id as id,
                             articles.active as active,
@@ -80,8 +80,7 @@ class KnowledgeArticles
                     INNER JOIN `".DBPREFIX."module_knowledge_article_content`
                     AS content ON articles.id = content.article";
         
-        $lib = new \Cx\Modules\Knowledge\Controller\KnowledgeLibrary();
-        $this->isAllLangsActive = $lib->isAllLangsActive();
+        $this->isAllLangsActive = $showAllLangs;
     }
 
     /**

@@ -79,8 +79,8 @@ class KnowledgeLibrary {
      */
 	public function __construct() {
 		$this->categories = new KnowledgeCategory();
-		$this->articles = new KnowledgeArticles();
 		$this->settings = new KnowledgeSettings();
+		$this->articles = new KnowledgeArticles($this->isAllLangsActive());
 		$this->tags = new KnowledgeTags();
 		
 		$this->_arrLanguages 	= $this->createLanguageArray();
@@ -156,10 +156,9 @@ class KnowledgeLibrary {
 	/**
 	 * Tells whether the allLangs setting is active or not
 	 * @return boolean True if setting is enabled
-	 * @todo implement
 	 */
 	public function isAllLangsActive() {
-	    return false;
+	    return $this->settings->get("show_all_langs") == 1;
 	}
 	
 	/**
