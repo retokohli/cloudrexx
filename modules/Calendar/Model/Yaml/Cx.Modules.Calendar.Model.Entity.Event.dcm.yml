@@ -163,9 +163,6 @@ Cx\Modules\Calendar\Model\Entity\Event:
     locationType:
       type: boolean
       column: location_type
-    place:
-      type: string
-      length: 255
     placeId:
       type: integer
       column: place_id
@@ -179,16 +176,6 @@ Cx\Modules\Calendar\Model\Entity\Event:
       length: 10
       nullable: true
       column: place_zip
-    placeCity:
-      type: string
-      length: 255
-      nullable: true
-      column: place_city
-    placeCountry:
-      type: string
-      length: 255
-      nullable: true
-      column: place_country
     placeLink:
       type: string
       length: 255
@@ -200,10 +187,6 @@ Cx\Modules\Calendar\Model\Entity\Event:
     hostType:
       type: boolean
       column: host_type
-    orgName:
-      type: string
-      length: 255
-      column: org_name
     orgStreet:
       type: string
       length: 255
@@ -212,14 +195,6 @@ Cx\Modules\Calendar\Model\Entity\Event:
       type: string
       length: 10
       column: org_zip
-    orgCity:
-      type: string
-      length: 255
-      column: org_city
-    orgCountry:
-      type: string
-      length: 255
-      column: org_country
     orgLink:
       type: string
       length: 255

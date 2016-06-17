@@ -75,6 +75,36 @@ class EventField extends \Cx\Model\Base\EntityBase {
     protected $redirect;
 
     /**
+     * @var string $place
+     */
+    protected $place;
+
+    /**
+     * @var string $placeCity
+     */
+    protected $placeCity;
+
+    /**
+     * @var string $placeCountry
+     */
+    protected $placeCountry;
+
+    /**
+     * @var string $orgName
+     */
+    protected $orgName;
+
+    /**
+     * @var string $orgCity
+     */
+    protected $orgCity;
+
+    /**
+     * @var string $orgCountry
+     */
+    protected $orgCountry;
+
+    /**
      * @var Cx\Modules\Calendar\Model\Entity\Event
      */
     protected $event;
@@ -198,6 +228,126 @@ class EventField extends \Cx\Model\Base\EntityBase {
     public function getRedirect()
     {
         return $this->redirect;
+    }
+
+    /**
+     * Set place
+     *
+     * @param string $place
+     */
+    public function setPlace($place)
+    {
+        $this->place = $place;
+    }
+
+    /**
+     * Get place
+     *
+     * @return string $place
+     */
+    public function getPlace()
+    {
+        return $this->place;
+    }
+
+    /**
+     * Set placeCity
+     *
+     * @param string $placeCity
+     */
+    public function setPlaceCity($placeCity)
+    {
+        $this->placeCity = $placeCity;
+    }
+
+    /**
+     * Get placeCity
+     *
+     * @return string $placeCity
+     */
+    public function getPlaceCity()
+    {
+        return $this->placeCity;
+    }
+
+    /**
+     * Set placeCountry
+     *
+     * @param string $placeCountry
+     */
+    public function setPlaceCountry($placeCountry)
+    {
+        $this->placeCountry = $placeCountry;
+    }
+
+    /**
+     * Get placeCountry
+     *
+     * @return string $placeCountry
+     */
+    public function getPlaceCountry()
+    {
+        return $this->placeCountry;
+    }
+
+    /**
+     * Set orgName
+     *
+     * @param string $orgName
+     */
+    public function setOrgName($orgName)
+    {
+        $this->orgName = $orgName;
+    }
+
+    /**
+     * Get orgName
+     *
+     * @return string $orgName
+     */
+    public function getOrgName()
+    {
+        return $this->orgName;
+    }
+
+    /**
+     * Set orgCity
+     *
+     * @param string $orgCity
+     */
+    public function setOrgCity($orgCity)
+    {
+        $this->orgCity = $orgCity;
+    }
+
+    /**
+     * Get orgCity
+     *
+     * @return string $orgCity
+     */
+    public function getOrgCity()
+    {
+        return $this->orgCity;
+    }
+
+    /**
+     * Set orgCountry
+     *
+     * @param string $orgCountry
+     */
+    public function setOrgCountry($orgCountry)
+    {
+        $this->orgCountry = $orgCountry;
+    }
+
+    /**
+     * Get orgCountry
+     *
+     * @return string $orgCountry
+     */
+    public function getOrgCountry()
+    {
+        return $this->orgCountry;
     }
 
     /**
