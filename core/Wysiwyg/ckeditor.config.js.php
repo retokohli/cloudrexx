@@ -160,7 +160,7 @@ CKEDITOR.on('instanceReady',function(){
     removedButtons = removedButtons.split(',');
     // Verify that there are any buttons to be removed
     if (removedButtons.length) {
-        var emptyGroups = [], isHidden = false;
+        var emptyGroups = [], hasStyles = false;
         // Loop through all the buttons
         for(button of removedButtons) {
             var selector = '[data-name="' + button + '"]';
@@ -173,16 +173,16 @@ CKEDITOR.on('instanceReady',function(){
         for(button of removedButtons) {
             // Loop through all buttons in the current subgroup
             cx.jQuery('[data-name="' + button + '"]').parent('ul').find('li').each(function() {
-                isHidden = cx.jQuery(this).is(':hidden');
+                hasStyles = cx.jQuery(this).attr('style');
                 // Check if a button isn't hidden
-                if (!isHidden) {
+                if (!hasStyles) {
                     // Exit immediatly if a button is not hidden to avoid hiding
                     // it due to the next button being hidden
                     return false;
                 }
             });
             // Check if every button in the subgroup is hidden
-            if (isHidden) {
+            if (hasStyles) {
                 // Add the current subgroup to the emptyGroups array
                 var subgroup = cx.jQuery('[data-name="' + button + '"]').parent().parent();
                 emptyGroups.push(subgroup);
@@ -190,7 +190,7 @@ CKEDITOR.on('instanceReady',function(){
         }
         if (emptyGroups.length) {
             for(emptyButtonGroup of emptyGroups) {
-                cx.jQuery(emptyButtonGroup).hide();
+                cx.jQuery(emptyButtonGroup).addClass('empty');
             }
         }
     }
