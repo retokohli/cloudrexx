@@ -3199,23 +3199,36 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public static function getServerWebsiteList()
     {
-        $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue(
+            'mode',
+            'MultiSite'
+        );
         if ($mode !== self::MODE_WEBSITE) {
             return '';
         }
 
-        $ownerId     = \FWUser::getFWUserObject()->objUser->getId();
-        if ($ownerId != \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite')) {
+        $ownerId       = \FWUser::getFWUserObject()->objUser->getId();
+        $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue(
+            'websiteUserId',
+            'MultiSite'
+        );
+        if ($ownerId != $websiteUserId) {
             return '';
         }
 
-        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
+        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue(
+            'websiteName',
+            'MultiSite'
+        );
         $response    = JsonMultiSiteController::executeCommandOnMyServiceServer(
             'getServerWebsiteList',
             array('websiteName' => $websiteName)
         );
 
-        if (!$response || $response->status === 'error' || empty($response->data->websiteList)) {
+        if (    !$response
+            ||  $response->status === 'error'
+            ||  empty($response->data->websiteList)
+        ) {
             return '';
         }
 

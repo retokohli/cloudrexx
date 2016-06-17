@@ -1055,18 +1055,21 @@ class Website extends \Cx\Model\Base\EntityBase {
             $server     = \Cx\Core_Modules\MultiSite\Controller\ComponentController::WEBSITE_MODE_SERVER;
             if (\Cx\Core\Setting\Controller\Setting::getValue('website_mode','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('website_mode', 'standalone', 11,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, $standalone.':'.$standalone.','.$client.':'.$client.','.$server.':'.$server, 'website')){
-                    throw new MultiSiteException("Failed to add Setting entry for website mode");
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, $standalone.':'.$standalone.','.$client.':'.$client.','.$server.':'.$server, 'website')
+            ) {
+                throw new MultiSiteException('Failed to add Setting entry for website mode');
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('website_server','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('website_server', '', 12,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\Cx\\Core_Modules\\MultiSite\\Controller\\ComponentController::getServerWebsiteList()}', 'website')){
-                    throw new MultiSiteException("Failed to add Setting entry for website server");
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, '{src:\\Cx\\Core_Modules\\MultiSite\\Controller\\ComponentController::getServerWebsiteList()}', 'website')
+            ) {
+                throw new MultiSiteException('Failed to add Setting entry for website server');
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('website_shared_folder','MultiSite') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('website_shared_folder', $this->cx->getWebsiteImagesWebPath(), 13,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'website')){
-                    throw new MultiSiteException("Failed to add Setting entry for website shared folder");
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, '', 'website')
+            ) {
+                throw new MultiSiteException('Failed to add Setting entry for website shared folder');
             }
 
         } catch (\Exception $e) {
@@ -2071,7 +2074,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      * @param string $mode
      */
-    public function setMode($mode) {
+    public function setMode($mode)
+    {
         $this->mode = $mode;
     }
 
@@ -2080,7 +2084,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      * @return string $mode
      */
-    public function getMode() {
+    public function getMode()
+    {
         return $this->mode;
     }
 
@@ -2089,7 +2094,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      * @param \Cx\Core_Modules\MultiSite\Model\Entity\Website|null $serverWebsite
      */
-    public function setServerWebsite($serverWebsite) {
+    public function setServerWebsite($serverWebsite)
+    {
         $this->serverWebsite = $serverWebsite;
     }
 
@@ -2098,7 +2104,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      * @return \Cx\Core_Modules\MultiSite\Model\Entity\Website $serverWebsite
      */
-    public function getServerWebsite() {
+    public function getServerWebsite()
+    {
         return $this->serverWebsite;
     }
 }

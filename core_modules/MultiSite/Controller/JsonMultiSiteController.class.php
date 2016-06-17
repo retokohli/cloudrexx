@@ -1781,18 +1781,34 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
     {
         global $_ARRAYLANG;
 
-        if (empty($params['post']) || (empty($params['post']['websiteId']) && empty($params['post']['websiteName']))) {
-            \DBG::msg('JsonMultiSiteController::setWebsiteDetails() failed: Insufficient arguments supplied: ' . var_export($params, true));
-            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']);
+        if (   empty($params['post'])
+            || (   empty($params['post']['websiteId'])
+                && empty($params['post']['websiteName'])
+               )
+        ) {
+            \DBG::msg(
+                'JsonMultiSiteController::setWebsiteDetails() failed:
+                Insufficient arguments supplied: ' . var_export($params, true)
+            );
+            throw new MultiSiteJsonException(
+                $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']
+            );
         }
 
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite') == ComponentController::MODE_WEBSITE) {
-            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']);
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue(
+            'mode','MultiSite'
+        );
+        if ($mode == ComponentController::MODE_WEBSITE) {
+            throw new MultiSiteJsonException(
+                $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']
+            );
         }
 
         try {
             $em      = $this->cx->getDb()->getEntityManager();
-            $webRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $webRepo = $em->getRepository(
+                'Cx\Core_Modules\MultiSite\Model\Entity\Website'
+            );
             //find the websites by ID/NAME
             $websiteName = contrexx_input2db($params['post']['websiteName']);
             $websiteId   = contrexx_input2db($params['post']['websiteId']);
@@ -1803,24 +1819,39 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             $websites = $webRepo->findWebsitesByCriteria($arguments);
             $website  = current($websites);
             if (!$website) {
-                \DBG::log('JsonMultiSiteController::setWebsiteDetails() failed: Website by ID/NAME not found.');
-                throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']);
+                \DBG::log(
+                    'JsonMultiSiteController::setWebsiteDetails() failed:
+                    Website by ID/NAME not found.'
+                );
+                throw new MultiSiteJsonException(
+                    $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']
+                );
             }
 
             //Set the website status
             if (isset($params['post']['status'])) {
-                $website->setStatus(contrexx_input2db($params['post']['status']));
+                $website->setStatus(
+                    contrexx_input2db($params['post']['status'])
+                );
             }
             //Set the website codebase
             if (isset($params['post']['codeBase'])) {
-                $website->setCodeBase(contrexx_input2db($params['post']['codeBase']));
+                $website->setCodeBase(
+                    contrexx_input2db($params['post']['codeBase'])
+                );
             }
             //Set the website owner
-            if (isset($params['post']['userId']) && isset($params['post']['email'])) {
-                $owner = $em->getRepository('Cx\Core\User\Model\Entity\User')->findOneById(contrexx_input2db($params['post']['userId']));
+            if (   isset($params['post']['userId'])
+                && isset($params['post']['email'])
+            ) {
+                $owner = $em
+                    ->getRepository('Cx\Core\User\Model\Entity\User')
+                    ->findOneById(contrexx_input2db($params['post']['userId']));
                 if (!$owner) {
                     $userDetails = $this->createUser($params);
-                    $owner = $em->getRepository('Cx\Core\User\Model\Entity\User')->findOneById($userDetails['userId']);
+                    $owner = $em
+                        ->getRepository('Cx\Core\User\Model\Entity\User')
+                        ->findOneById($userDetails['userId']);
                 }
                 $website->setOwner($owner);
             }
@@ -1830,10 +1861,19 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                 &&  isset($params['post']['mode'])
                 &&  $params['post']['mode'] == ComponentController::WEBSITE_MODE_CLIENT
             ) {
-                $serverWebsite = $webRepo->findOneById(contrexx_input2db($params['post']['serverWebsiteId']));
+                $serverWebsite = $webRepo
+                    ->findOneById(
+                        contrexx_input2db($params['post']['serverWebsiteId'])
+                    );
                 if (!$serverWebsite) {
-                    \DBG::log('JsonMultiSiteController::setWebsiteDetails() failed: server Website by ID ' . $params['post']['serverWebsiteId'] . ' not found.');
-                    throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']);
+                    \DBG::log(
+                        'JsonMultiSiteController::setWebsiteDetails() failed:
+                        server Website by ID ' .
+                        $params['post']['serverWebsiteId'] . ' not found.'
+                    );
+                    throw new MultiSiteJsonException(
+                        $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']
+                    );
                 }
             }
             if (isset($params['post']['mode'])) {
@@ -1846,7 +1886,9 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             return true;
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
-            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']);
+            throw new MultiSiteJsonException(
+                $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']
+            );
         }
     }
 
@@ -2211,53 +2253,108 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
     }
 
     /**
-     * This method will be used by the Website Service/Website to execute commands on the Website Manager
+     * This method will be used by the Website Service/Website
+     * to execute commands on the Website Manager
      * Fetch connection data to Manager and pass it to the method executeCommand()
      */
-    public static function executeCommandOnManager($command, $params = array(), $files = array(), $async = false)
-    {
+    public static function executeCommandOnManager(
+        $command,
+        $params = array(),
+        $files = array(),
+        $async = false
+    ) {
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue(
+            'mode','MultiSite'
+        );
         try {
-            switch (\Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite')) {
+            switch ($mode) {
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
-                    \DBG::msg(__METHOD__. " ($command): executing locally on manager (not going to execute through JsonData adapter)");
+                    \DBG::msg(
+                        __METHOD__ . ' (' . $command . '): executing locally on
+                        manager (not going to execute through JsonData adapter)'
+                    );
                     $config = \Env::get('config');
-                    $params['auth'] = json_encode(array('sender' => $config['domainUrl']));
+                    $params['auth'] = json_encode(
+                        array('sender' => $config['domainUrl'])
+                    );
 
                     // Get JsonMultiSiteController object
-                    $componentRepo    = \Cx\Core\Core\Controller\Cx::instanciate()->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
-                    $component        = $componentRepo->findOneBy(array('name' => 'MultiSite'));
-                    $objJsonMultiSite = $component->getController('JsonMultiSite');
-                    $result = $objJsonMultiSite->$command(array('post' => $params));
+                    $em = \Cx\Core\Core\Controller\Cx::instanciate()
+                        ->getDb()->getEntityManager();
+                    $componentRepo = $em
+                        ->getRepository(
+                            'Cx\Core\Core\Model\Entity\SystemComponent'
+                        );
+                    $component = $componentRepo
+                        ->findOneBy(array('name' => 'MultiSite'));
+                    $objJsonMultiSite = $component
+                        ->getController('JsonMultiSite');
+                    $result = $objJsonMultiSite
+                        ->$command(array('post' => $params));
                     // Convert $result (which is an array) into an object
                     // as JsonData->getJson (called by self::executeCommand())
                     // would do/return that.
-                    return json_decode(json_encode(array('status' => 'success', 'data' => $result)));
+                    return json_decode(
+                        json_encode(
+                            array('status' => 'success', 'data' => $result)
+                        )
+                    );
                     break;
                 case ComponentController::MODE_SERVICE:
-                    $host = \Cx\Core\Setting\Controller\Setting::getValue('managerHostname','MultiSite');
-                    $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId','MultiSite');
-                    $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey','MultiSite');
+                    $host = \Cx\Core\Setting\Controller\Setting::getValue(
+                        'managerHostname','MultiSite'
+                    );
+                    $installationId = \Cx\Core\Setting\Controller\Setting::getValue(
+                        'managerInstallationId','MultiSite'
+                    );
+                    $secretKey = \Cx\Core\Setting\Controller\Setting::getValue(
+                        'managerSecretKey','MultiSite'
+                    );
                     $httpAuth = array(
-                        'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthMethod','MultiSite'),
-                        'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthUsername','MultiSite'),
-                        'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword','MultiSite'),
+                        'httpAuthMethod'   => \Cx\Core\Setting\Controller\Setting::getValue(
+                            'managerHttpAuthMethod','MultiSite'
+                        ),
+                        'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue(
+                            'managerHttpAuthUsername','MultiSite'
+                        ),
+                        'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue(
+                            'managerHttpAuthPassword','MultiSite'
+                        ),
                     );
                     break;
                 case ComponentController::MODE_WEBSITE:
-                    $params  = array('command' => $command, 'params' => $params);
+                    $params  = array(
+                        'command' => $command,
+                        'params' => $params
+                    );
                     $command = 'executeOnManager';
-                    $host = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname','MultiSite');
-                    $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId','MultiSite');
-                    $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey','MultiSite');
+                    $host = \Cx\Core\Setting\Controller\Setting::getValue(
+                        'serviceHostname','MultiSite'
+                    );
+                    $installationId = \Cx\Core\Setting\Controller\Setting::getValue(
+                        'serviceInstallationId','MultiSite'
+                    );
+                    $secretKey = \Cx\Core\Setting\Controller\Setting::getValue(
+                        'serviceSecretKey','MultiSite'
+                    );
                     $httpAuth = array(
-                        'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod','MultiSite'),
-                        'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername','MultiSite'),
-                        'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword','MultiSite'),
+                        'httpAuthMethod'   => \Cx\Core\Setting\Controller\Setting::getValue(
+                            'serviceHttpAuthMethod','MultiSite'
+                        ),
+                        'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue(
+                            'serviceHttpAuthUsername','MultiSite'
+                        ),
+                        'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue(
+                            'serviceHttpAuthPassword','MultiSite'
+                        )
                     );
                     break;
             }
-            return self::executeCommand($host, $command, $params, $secretKey, $installationId, $httpAuth, $files, $async);
+            return self::executeCommand(
+                $host, $command, $params, $secretKey, $installationId,
+                $httpAuth, $files, $async
+            );
         } catch (\Exception $e) {
             throw new MultiSiteJsonException($e->getMessage());
         }
@@ -7243,39 +7340,74 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
      * @return array JsonData-response
      * @throws MultiSiteJsonException
      */
-    public function getServerWebsiteList($params) {
+    public function getServerWebsiteList($params)
+    {
         global $_ARRAYLANG;
 
         if (empty($params['post']) || empty($params['post']['websiteName'])) {
-            \DBG::msg('JsonMultiSiteController::getWebsiteList() failed: Insufficient arguments supplied: ' . var_export($params, true));
-            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']);
+            \DBG::msg(
+                'JsonMultiSiteController::getWebsiteList() failed:
+                Insufficient arguments supplied: ' . var_export($params, true));
+            throw new MultiSiteJsonException(
+                $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']
+            );
         }
 
-        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite'), array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
-            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']);
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue(
+            'mode', 'MultiSite'
+        );
+        $availableModes = array(
+            ComponentController::MODE_SERVICE,
+            ComponentController::MODE_HYBRID
+        );
+        if (!in_array($mode, $availableModes)) {
+            throw new MultiSiteJsonException(
+                $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']
+            );
         }
 
         $authenticationValue = json_decode($params['post']['auth'], true);
         if (empty($authenticationValue) || !is_array($authenticationValue)) {
-            throw new MultiSiteJsonException(__METHOD__ . ' failed: Insufficient mapping information supplied.');
+            throw new MultiSiteJsonException(
+                __METHOD__ . ' failed: Insufficient mapping information supplied.'
+            );
         }
 
         try {
-            $domainRepo       = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
-            $objWebsiteDomain = $domainRepo->findOneBy(array('name' => contrexx_input2db($authenticationValue['sender'])));
+            $em = $this->cx->getDb()->getEntityManager();
+            $domainRepo = $em
+                ->getRepository(
+                    'Cx\Core_Modules\MultiSite\Model\Entity\Domain'
+                );
+            $objWebsiteDomain = $domainRepo
+                ->findOneBy(
+                    array(
+                        'name' => contrexx_input2db(
+                            $authenticationValue['sender']
+                        )
+                    )
+                );
             if (!$objWebsiteDomain) {
-                throw new MultiSiteJsonException(__METHOD__ . ' failed: Unknown Domain: ' . $authenticationValue['sender']);
+                throw new MultiSiteJsonException(
+                    __METHOD__ . ' failed: Unknown Domain: ' .
+                    $authenticationValue['sender']
+                );
             }
 
             $website = $objWebsiteDomain->getWebsite();
             if (!$website) {
-                throw new MultiSiteJsonException(__METHOD__ . ' failed: Unknown Website: ' . $authenticationValue['sender']);
+                throw new MultiSiteJsonException(
+                    __METHOD__ . ' failed: Unknown Website: ' .
+                    $authenticationValue['sender']
+                );
             }
 
-            $em = $this->cx->getDb()->getEntityManager();
             $ownerId     = $website->getOwner()->getId();
             $websiteName = contrexx_input2db($params['post']['websiteName']);
-            $websiteRepository = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $websiteRepository = $em
+                ->getRepository(
+                    'Cx\Core_Modules\MultiSite\Model\Entity\Website'
+                );
             $args = array(
                 'user.id'        => $ownerId,
                 'neq'            => array(array('website.name', $websiteName)),
@@ -7294,7 +7426,9 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             return array('websiteList' => $websiteList);
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
-            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']);
+            throw new MultiSiteJsonException(
+                $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']
+            );
         }
     }
 
@@ -7311,28 +7445,50 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         global $_ARRAYLANG;
 
         if (empty($params['post']) || empty($params['post']['websiteName'])) {
-            \DBG::msg('JsonMultiSiteController::checkServerWebsiteAccessedByClient() failed: Insufficient arguments supplied: ' . var_export($params, true));
-            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHECK_SERVER_ACCESSED_BY_CLIENT_ERROR']);
+            \DBG::msg('JsonMultiSiteController::checkServerWebsiteAccessedByClient()
+                failed: Insufficient arguments supplied: ' .
+                var_export($params, true)
+            );
+            throw new MultiSiteJsonException(
+                $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHECK_SERVER_ACCESSED_BY_CLIENT_ERROR']
+            );
         }
 
-        if (!in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode', 'MultiSite'), array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
-            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHECK_SERVER_ACCESSED_BY_CLIENT_ERROR']);
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue(
+            'mode', 'MultiSite'
+        );
+        $availableModes = array(
+            ComponentController::MODE_SERVICE,
+            ComponentController::MODE_HYBRID
+        );
+        if (!in_array($mode, $availableModes)) {
+            throw new MultiSiteJsonException(
+                $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHECK_SERVER_ACCESSED_BY_CLIENT_ERROR']
+            );
         }
 
         try {
             $em = $this->cx->getDb()->getEntityManager();
             $websiteName = contrexx_input2db($params['post']['websiteName']);
-            $websiteRepository = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $websiteRepository = $em
+                ->getRepository(
+                    'Cx\Core_Modules\MultiSite\Model\Entity\Website'
+                );
             $args = array(
                 'serverWebsite.name' => $websiteName,
                 'website.status'     => \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE,
                 'website.mode'       => ComponentController::WEBSITE_MODE_CLIENT
             );
             $websites = $websiteRepository->findWebsitesByCriteria($args);
-            return array('status' => 'success', 'isServerAccessByclient' => count($websites) ? true : false);
+            return array(
+                'status' => 'success',
+                'isServerAccessByclient' => count($websites) ? true : false
+            );
         } catch (\Exception $e) {
             \DBG::log($e->getMessage());
-            throw new MultiSiteJsonException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHECK_SERVER_ACCESSED_BY_CLIENT_ERROR']);
+            throw new MultiSiteJsonException(
+                $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_CHECK_SERVER_ACCESSED_BY_CLIENT_ERROR']
+            );
         }
     }
 }
