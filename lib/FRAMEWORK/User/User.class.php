@@ -544,7 +544,7 @@ class User extends User_Profile
         $objFWUser = FWUser::getFWUserObject();
         if ($deleteOwnAccount || $this->id != $objFWUser->objUser->getId()) {
             if (!$this->isLastAdmin()) {
-                \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
+                //\Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
                 if ($objDatabase->Execute(
                 'DELETE tblU, tblP, tblG, tblA, tblN
                 FROM `'.DBPREFIX.'access_users` AS tblU
@@ -554,7 +554,7 @@ class User extends User_Profile
                 LEFT JOIN `'.DBPREFIX.'access_user_network` AS tblN ON tblN.`user_id` = tblU.`id`
                 WHERE tblU.`id` = '.$this->id) !== false
             ) {
-                \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
+                //\Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
                 return true;
                 } else {
                     $this->error_msg[] = sprintf($_CORELANG['TXT_ACCESS_USER_DELETE_FAILED'], $this->username);
@@ -1715,7 +1715,7 @@ class User extends User_Profile
         
         if ($this->id) {
             // update existing account
-            \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+            //\Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             $this->updateUser($userChangeStatus);
         } else {
             // add new account
@@ -1724,7 +1724,7 @@ class User extends User_Profile
                 $this->setPassword($generatedPassword);
             }
             
-            \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+            //\Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             $this->createUser();
             
             if(!\FWValidator::isEmpty($generatedPassword)) {
@@ -1750,10 +1750,10 @@ class User extends User_Profile
         if (!empty($callPostUpdateEvent)) {
             // only trigger postUpdate event in case an actual change on the user object has been flushed to the database
             if ($userChangeStatus) {
-                \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+                //\Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             }
         } else {
-            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
+            //\Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         }
         
         return true;
