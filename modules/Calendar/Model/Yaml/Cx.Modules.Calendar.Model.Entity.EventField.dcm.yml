@@ -29,6 +29,31 @@ Cx\Modules\Calendar\Model\Entity\EventField:
     redirect:
       type: string
       length: 255
+    place:
+      type: string
+      length: 255
+    placeCity:
+      type: string
+      length: 255
+      nullable: true
+      column: place_city
+    placeCountry:
+      type: string
+      length: 255
+      nullable: true
+      column: place_country
+    orgName:
+      type: string
+      length: 255
+      column: org_name
+    orgCity:
+      type: string
+      length: 255
+      column: org_city
+    orgCountry:
+      type: string
+      length: 255
+      column: org_country
   manyToOne:
     event:
       targetEntity: Cx\Modules\Calendar\Model\Entity\Event

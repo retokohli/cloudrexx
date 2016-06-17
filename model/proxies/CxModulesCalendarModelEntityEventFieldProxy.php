@@ -99,6 +99,78 @@ class CxModulesCalendarModelEntityEventFieldProxy extends \Cx\Modules\Calendar\M
         return parent::getRedirect();
     }
 
+    public function setPlace($place)
+    {
+        $this->_load();
+        return parent::setPlace($place);
+    }
+
+    public function getPlace()
+    {
+        $this->_load();
+        return parent::getPlace();
+    }
+
+    public function setPlaceCity($placeCity)
+    {
+        $this->_load();
+        return parent::setPlaceCity($placeCity);
+    }
+
+    public function getPlaceCity()
+    {
+        $this->_load();
+        return parent::getPlaceCity();
+    }
+
+    public function setPlaceCountry($placeCountry)
+    {
+        $this->_load();
+        return parent::setPlaceCountry($placeCountry);
+    }
+
+    public function getPlaceCountry()
+    {
+        $this->_load();
+        return parent::getPlaceCountry();
+    }
+
+    public function setOrgName($orgName)
+    {
+        $this->_load();
+        return parent::setOrgName($orgName);
+    }
+
+    public function getOrgName()
+    {
+        $this->_load();
+        return parent::getOrgName();
+    }
+
+    public function setOrgCity($orgCity)
+    {
+        $this->_load();
+        return parent::setOrgCity($orgCity);
+    }
+
+    public function getOrgCity()
+    {
+        $this->_load();
+        return parent::getOrgCity();
+    }
+
+    public function setOrgCountry($orgCountry)
+    {
+        $this->_load();
+        return parent::setOrgCountry($orgCountry);
+    }
+
+    public function getOrgCountry()
+    {
+        $this->_load();
+        return parent::getOrgCountry();
+    }
+
     public function setEvent(\Cx\Modules\Calendar\Model\Entity\Event $event)
     {
         $this->_load();
@@ -150,7 +222,7 @@ class CxModulesCalendarModelEntityEventFieldProxy extends \Cx\Modules\Calendar\M
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'eventId', 'title', 'langId', 'teaser', 'description', 'redirect', 'event');
+        return array('__isInitialized__', 'eventId', 'title', 'langId', 'teaser', 'description', 'redirect', 'place', 'placeCity', 'placeCountry', 'orgName', 'orgCity', 'orgCountry', 'event');
     }
 
     public function __clone()
