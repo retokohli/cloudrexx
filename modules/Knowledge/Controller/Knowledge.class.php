@@ -574,8 +574,8 @@ class Knowledge extends KnowledgeLibrary
                             "TXT_TAGS" => $_ARRAYLANG['TXT_KNOWLEDGE_TAGS'],
                             "MAX_RATING" => $this->settings->get("max_rating"),
                             "LOCKED" => $this->checkLocking($articleid),
-                            "DATE_CREATED" => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
-                            "DATE_UPDATED" => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated'])
+                            "DATE_CREATED" => date(ASCMS_DATE_FORMAT_DATE, $article['date_created']),
+                            "DATE_UPDATED" => date(ASCMS_DATE_FORMAT_DATE, $article['date_updated'])
                         ));
 
                         try {
@@ -687,8 +687,8 @@ class Knowledge extends KnowledgeLibrary
                                 "LOCKED" => $this->checkLocking($articleKey),
                                 "HITS" => $article['hits'],
 
-                                "DATE_CREATED" => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
-                                "DATE_UPDATED" => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated'])
+                                "DATE_CREATED" => date(ASCMS_DATE_FORMAT_DATE, $article['date_created']),
+                                "DATE_UPDATED" => date(ASCMS_DATE_FORMAT_DATE, $article['date_updated'])
                             ));
 
                             try {
