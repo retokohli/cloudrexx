@@ -1,20 +1,23 @@
 Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName:
   type: entity
   table: module_calendar_registration_form_field_name
-  id:
+  fields:
     fieldId:
+      id: true
       type: integer
       column: field_id
+      associationKey: true
     formId:
+      id: true
       type: integer
       column: form_id
-  fields:
+    langId:
+      id: true
+      type: integer
+      column: lang_id
     name:
       type: string
       length: 255
-    langId:
-      type: integer
-      column: lang_id
     default:
       type: text
   manyToOne:

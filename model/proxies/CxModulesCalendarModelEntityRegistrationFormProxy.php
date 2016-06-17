@@ -93,6 +93,12 @@ class CxModulesCalendarModelEntityRegistrationFormProxy extends \Cx\Modules\Cale
         return parent::addRegistrationFormField($registrationFormField);
     }
 
+    public function getRegistrationFormFieldById($id)
+    {
+        $this->_load();
+        return parent::getRegistrationFormFieldById($id);
+    }
+
     public function setRegistrationFormFields($registrationFormFields)
     {
         $this->_load();

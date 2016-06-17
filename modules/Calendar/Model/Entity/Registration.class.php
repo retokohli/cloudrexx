@@ -344,6 +344,28 @@ class Registration extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Get RegistrationFormFieldValueByFieldId
+     *
+     * @param integer $fieldId field id
+     *
+     * @return null|\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue
+     */
+    public function getRegistrationFormFieldValueByFieldId($fieldId)
+    {
+        if (!$fieldId) {
+            return null;
+        }
+
+        foreach ($this->registrationFormFieldValues as $formFieldValue) {
+            $formField = $formFieldValue->getRegistrationFormField();
+            if ($formField && ($formField->getId() == $fieldId)) {
+                return $formFieldValue;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get registrationFormFieldValues
      *
      * @return Doctrine\Common\Collections\Collection $registrationFormFieldValues

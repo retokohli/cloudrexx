@@ -219,6 +219,10 @@ class RegistrationFormField extends \Cx\Model\Base\EntityBase {
      */
     public function getRegistrationFormFieldNamesByLangId($langId)
     {
+        if (!$langId) {
+            return null;
+        }
+
         foreach ($this->registrationFormFieldNames as $formFieldName) {
             if ($formFieldName->getLangId() == $langId) {
                 return $formFieldName;

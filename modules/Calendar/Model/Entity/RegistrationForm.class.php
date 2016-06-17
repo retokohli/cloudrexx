@@ -193,6 +193,27 @@ class RegistrationForm extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Get RegistrationFormFieldById
+     *
+     * @param integer $id id
+     *
+     * @return null|\Cx\Modules\Calendar\Model\Entity\RegistrationFormField
+     */
+    public function getRegistrationFormFieldById($id)
+    {
+        if (!$id) {
+            return null;
+        }
+
+        foreach ($this->registrationFormFields as $formField) {
+            if ($formField->getId() == $id) {
+                return $formField;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Set RegistrationFormFields
      *
      * @param Doctrine\Common\Collections\Collection $registrationFormFields
