@@ -349,21 +349,24 @@ class ToolbarController { // extends \Cx\Core\Core\Model\Entity\SystemComponentB
         $pdo = $this->cx->getDb()->getPdoConnection();
         // Initiate an empty removedButtons array
         $removedButtons = array();
-        // Query to load the removed buttons which are specified in the settings
-        $defaultRemovedButtonsQuery = '
+        if (empty($toolbarIds)) {
+            // Query to load the removed buttons which are specified in the settings
+            $defaultRemovedButtonsQuery = '
             SELECT `removed_buttons` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
             WHERE `is_default` = 1
             LIMIT 1';
-        $defaultRemovedButtonsRes = $pdo->query($defaultRemovedButtonsQuery);
-        // Check if a default selection has been made
-        if ($defaultRemovedButtonsRes) {
-            // Fetch the removed buttons
-            $defaultRemovedButtons = $defaultRemovedButtonsRes->fetch(\PDO::FETCH_ASSOC);
-            // Check if the removed buttons list is not empty
-            if (!empty($defaultRemovedButtons)) {
-                // Add the default removed buttons to the array of removed buttons
-                $removedButtons[] = $defaultRemovedButtons['removed_buttons'];
+            $defaultRemovedButtonsRes = $pdo->query($defaultRemovedButtonsQuery);
+            // Check if a default selection has been made
+            if ($defaultRemovedButtonsRes) {
+                // Fetch the removed buttons
+                $defaultRemovedButtons = $defaultRemovedButtonsRes->fetch(\PDO::FETCH_ASSOC);
+                // Check if the removed buttons list is not empty
+                if (!empty($defaultRemovedButtons)) {
+                    // Add the default removed buttons to the array of removed buttons
+                    $removedButtons[] = $defaultRemovedButtons['removed_buttons'];
+                }
             }
+            return $removedButtons;
         }
         // Loop through each toolbar id
         foreach ($toolbarIds as $toolbarId) {
