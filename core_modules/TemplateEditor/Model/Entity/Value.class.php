@@ -32,7 +32,6 @@
  */
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
-use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
 
 /**
  * Class Value
@@ -42,7 +41,7 @@ use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class Value implements YamlSerializable
+class Value implements \Cx\Core_Modules\TemplateEditor\Model\YamlSerializable
 {
     /**
      * Option name

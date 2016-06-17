@@ -27,8 +27,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
-use Cx\Core\Html\Sigma;
-
 /**
  * class SelectOption
  *
@@ -77,7 +75,7 @@ class SelectOption extends Option
     /**
      * Render the option field in the backend.
      *
-     * @return Sigma    the template
+     * @return \Cx\Core\Html\Sigma    the template
      */
     public function renderOptionField()
     {
@@ -106,7 +104,7 @@ class SelectOption extends Option
     /**
      * Render the option in the frontend.
      *
-     * @param Sigma $template
+     * @param \Cx\Core\Html\Sigma $template
      */
     public function renderTheme($template)
     {

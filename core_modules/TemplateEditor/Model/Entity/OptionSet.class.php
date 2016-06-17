@@ -28,14 +28,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
-use Cx\Core\Core\Controller\Cx;
-use Cx\Core\View\Model\Entity\Theme;
-use Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException;
-use Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository;
-use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
-use Cx\Core\Html\Sigma;
-use Symfony\Component\Yaml\ParserException;
-
 /**
  * Class ThemeOptionNotFoundException
  *
@@ -56,7 +48,8 @@ class ThemeOptionNotFoundException extends \Exception
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
+class OptionSet extends \Cx\Model\Base\EntityBase
+    implements \Cx\Core_Modules\TemplateEditor\Model\YamlSerializable
 {
 
     /**
@@ -84,12 +77,12 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     /**
      * The associated theme to the option set.
      *
-     * @var Theme
+     * @var \Cx\Core\View\Model\Entity\Theme
      */
     protected $theme;
 
     /**
-     * @var PresetRepository
+     * @var \Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository
      */
     protected $presetRepository;
 
@@ -106,7 +99,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     protected $appliedPreset;
 
     /**
-     * @param Theme $theme
+     * @param \Cx\Core\View\Model\Entity\Theme $theme
      * @param       $data
      */
     public function __construct($theme, $data)
@@ -147,7 +140,10 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
             new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
                 $theme->getPath()
             );
-        $this->presetRepository = new PresetRepository($presetStorage);
+        $this->presetRepository =
+            new \Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository(
+                $presetStorage
+            );
 
         if (!isset($data['activePreset'])) {
             $data['activePreset'] = 'Default';
@@ -157,9 +153,11 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
             $this->activePreset = $this->presetRepository->getByName(
                 $activePreset
             );
-        } catch (PresetRepositoryException $e) {
+        } catch (
+            \Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException $e
+        ) {
             $this->activePreset = $this->presetRepository->getByName('Default');
-        } catch (ParserException $e) {
+        } catch (\Symfony\Component\Yaml\ParserException $e) {
             $this->activePreset = $this->presetRepository->getByName('Default');
         }
 
@@ -188,7 +186,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     /**
      * Call the renderBackend method on all child options.
      *
-     * @param Sigma $template
+     * @param \Cx\Core\Html\Sigma $template
      */
     public function renderOptions($template)
     {
@@ -238,7 +236,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     /**
      * Call the renderFrontend method on all child options.
      *
-     * @param Sigma $template
+     * @param \Cx\Core\Html\Sigma $template
      */
     public function renderTheme($template)
     {
@@ -346,7 +344,7 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     /**
      * Get the presetrepository
      *
-     * @return PresetRepository
+     * @return \Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository
      */
     public function getPresetRepository()
     {
@@ -416,8 +414,10 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
             ) {
                 continue;
             }
-            if ($this->cx->getMode() == Cx::MODE_BACKEND
-                || (
+            if (
+                $this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+                ||
+                (
                     $this->cx->getUser()->getFWUserObject()->objUser->login()
                     && isset($_GET['templateEditor'])
                 )

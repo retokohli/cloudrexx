@@ -37,13 +37,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Controller;
 
-use Cx\Core\Core\Controller\Cx;
-use Cx\Core\Core\Model\Entity\SystemComponentController;
-use Cx\Core\View\Model\Repository\ThemeRepository;
-use Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage;
-use Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException;
-use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
-
 /**
  * Class BackendController
  *
@@ -52,7 +45,8 @@ use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class ComponentController extends SystemComponentController
+class ComponentController
+    extends \Cx\Core\Core\Model\Entity\SystemComponentController
 {
 
     /**
@@ -76,15 +70,20 @@ class ComponentController extends SystemComponentController
      * @param \Cx\Core\Html\Sigma $template The main template
      */
     public function preFinalize(\Cx\Core\Html\Sigma $template) {
-        if ($this->cx->getMode() != Cx::MODE_FRONTEND) {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             return;
         }
         try {
-            $fileStorage = new OptionSetFileStorage(
-                $this->cx->getWebsiteThemesPath()
-            );
-            $themeOptionRepository = new OptionSetRepository($fileStorage);
-            $themeRepository = new ThemeRepository();
+            $fileStorage =
+                new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+                    $this->cx->getWebsiteThemesPath()
+                );
+            $themeOptionRepository =
+                new \Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository(
+                    $fileStorage
+                );
+            $themeRepository =
+                new \Cx\Core\View\Model\Repository\ThemeRepository();
             $themeID = isset($_GET['preview']) ? $_GET['preview']
                 : null;
             $theme = $themeID ? $themeRepository->findById(
@@ -102,7 +101,9 @@ class ComponentController extends SystemComponentController
                 );
             }
             $themeOptions->renderTheme($template);
-        } catch (PresetRepositoryException $e) {
+        } catch (
+            \Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException $e
+        ) {
 
         }
         catch (\Symfony\Component\Yaml\ParserException $e) {

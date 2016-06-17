@@ -28,10 +28,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Repository;
 
-use Cx\Core\View\Model\Entity\Theme;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet;
-use Cx\Core_Modules\TemplateEditor\Model\Storable;
-
 /**
  * Class ThemeOptionsRepository
  *
@@ -44,33 +40,38 @@ class OptionSetRepository
 {
 
     /**
-     * @var Storable
+     * @var \Cx\Core_Modules\TemplateEditor\Model\Storable
      */
     protected $storage;
 
     /**
-     * @param Storable $storage
+     * @param \Cx\Core_Modules\TemplateEditor\Model\Storable $storage
      */
-    public function __construct(Storable $storage)
+    public function __construct(
+        \Cx\Core_Modules\TemplateEditor\Model\Storable $storage
+    )
     {
         $this->storage = $storage;
     }
 
     /**
-     * @param Theme $theme
+     * @param \Cx\Core\View\Model\Entity\Theme $theme
      *
-     * @return OptionSet
+     * @return \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet
      */
-    public function get(Theme $theme)
+    public function get(\Cx\Core\View\Model\Entity\Theme $theme)
     {
         $componentData = $this->storage->retrieve($theme->getFoldername());
-        return new OptionSet($theme, $componentData);
+        return new \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet(
+            $theme,
+            $componentData
+        );
     }
 
     /**
      * Save a ThemeOptions entity to the component.yml file.
      *
-     * @param OptionSet $entity
+     * @param \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet $entity
      *
      * @return bool
      */

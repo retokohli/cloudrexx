@@ -28,9 +28,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
-use Cx\Core\Html\Sigma;
-use Cx\Core_Modules\TemplateEditor\Model\YamlSerializable;
-
 /**
  * Class OptionValueNotValidException
  *
@@ -52,7 +49,7 @@ class OptionValueNotValidException extends \Exception
  * @subpackage  core_module_templateeditor
  */
 abstract class Option extends \Cx\Model\Base\EntityBase
-    implements YamlSerializable
+    implements \Cx\Core_Modules\TemplateEditor\Model\YamlSerializable
 {
 
     /**
@@ -152,14 +149,14 @@ abstract class Option extends \Cx\Model\Base\EntityBase
      *      }
      *      ["subBlockName2"] => array(...)
      *   }
-     * @return Sigma
+     * @return \Cx\Core\Html\Sigma
      */
     public function renderOptionField(
         $optionProperties = array(),
         $globalVariables = array(),
         $subTemplateBlocks = array()
     ) {
-        $subTemplate = new Sigma();
+        $subTemplate = new \Cx\Core\Html\Sigma();
         // load subTemplate file for the given option if not customized
         // pattern for html file is: {optionName}Option.html
         if (!isset($this->optionTemplate)) {
@@ -200,7 +197,7 @@ abstract class Option extends \Cx\Model\Base\EntityBase
     /**
      * Render the option in the frontend.
      *
-     * @param Sigma $template The frontend template.
+     * @param \Cx\Core\Html\Sigma $template The frontend template.
      */
     public abstract function renderTheme($template);
 

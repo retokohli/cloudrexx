@@ -37,20 +37,6 @@
 
 namespace Cx\Core_Modules\TemplateEditor\Controller;
 
-
-use Cx\Core\Html\Sigma;
-use Cx\Core\View\Model\Entity\Theme;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet;
-use Cx\Core_Modules\TemplateEditor\Model\Entity\Preset;
-use Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage;
-use Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage;
-use Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException;
-use Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository;
-use Cx\Core\Core\Model\Entity\SystemComponentBackendController;
-use Cx\Core\Routing\Url;
-use Cx\Core\View\Model\Repository\ThemeRepository;
-use Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository;
-
 /**
  * Class BackendController
  *
@@ -59,29 +45,30 @@ use Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository;
  * @package     contrexx
  * @subpackage  core_module_templateeditor
  */
-class BackendController extends SystemComponentBackendController
+class BackendController
+    extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController
 {
     /**
-     * @var ThemeRepository
+     * @var \Cx\Core\View\Model\Repository\ThemeRepository
      */
     protected $themeRepository;
     /**
-     * @var OptionSetRepository
+     * @var \Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository
      */
     protected $themeOptionRepository;
 
     /**
-     * @var OptionSet
+     * @var \Cx\Core_Modules\TemplateEditor\Model\Entity\OptionSet
      */
     protected $themeOptions;
 
     /**
-     * @var Theme
+     * @var \Cx\Core\View\Model\Entity\Theme
      */
     protected $theme;
 
     /**
-     * @var PresetRepository
+     * @var \Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository
      */
     protected $presetRepository;
 
@@ -104,14 +91,19 @@ class BackendController extends SystemComponentBackendController
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
     {
         \Permission::checkAccess(47, 'static');
-        $fileStorage                 = new OptionSetFileStorage(
-            $this->cx->getWebsiteThemesPath()
-        );
-        $themeOptionRepository       = new OptionSetRepository($fileStorage);
+        $fileStorage =
+            new \Cx\Core_Modules\TemplateEditor\Model\OptionSetFileStorage(
+                $this->cx->getWebsiteThemesPath()
+            );
+        $themeOptionRepository =
+            new \Cx\Core_Modules\TemplateEditor\Model\Repository\OptionSetRepository(
+                $fileStorage
+            );
         $this->themeOptionRepository = $themeOptionRepository;
-        $this->themeRepository       = new ThemeRepository();
-        $themeID                     = isset($_GET['tid']) ? $_GET['tid'] : 1;
-        $this->theme                 = $this->themeRepository->findById(
+        $this->themeRepository =
+            new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $themeID = isset($_GET['tid']) ? $_GET['tid'] : 1;
+        $this->theme = $this->themeRepository->findById(
             $themeID
         );
 
@@ -121,10 +113,10 @@ class BackendController extends SystemComponentBackendController
         if (!$_SESSION['TemplateEditor'][$themeID]) {
             $_SESSION['TemplateEditor'][$themeID] = array();
         }
-        if (isset($_GET['preset'])
-            && Preset::isValidPresetName(
-                $_GET['preset']
-            )
+        if (
+            isset($_GET['preset'])
+            && \Cx\Core_Modules\TemplateEditor\Model\Entity\Preset::
+                isValidPresetName($_GET['preset'])
         ) {
             if ($_SESSION['TemplateEditor'][$this->theme->getId(
                 )]['activePreset'] != $_GET['preset']
@@ -137,12 +129,13 @@ class BackendController extends SystemComponentBackendController
         }
 
 
-        $this->presetRepository = new PresetRepository(
-            new PresetFileStorage(
-                $this->cx->getWebsiteThemesPath() . '/'
-                . $this->theme->getFoldername()
-            )
-        );
+        $this->presetRepository =
+            new \Cx\Core_Modules\TemplateEditor\Model\Repository\PresetRepository(
+                new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
+                    $this->cx->getWebsiteThemesPath() . '/'
+                    . $this->theme->getFoldername()
+                )
+            );
         try {
             $this->themeOptions = $this->themeOptionRepository->get(
                 $this->theme
@@ -163,7 +156,9 @@ class BackendController extends SystemComponentBackendController
                         ['activePreset']
                     )
                 );
-            } catch (PresetRepositoryException $e) {
+            } catch (
+                \Cx\Core_Modules\TemplateEditor\Model\PresetRepositoryException $e
+            ) {
                 // If something fails fallback to the default preset.
                 $_SESSION['TemplateEditor']
                     [$themeID]['activePreset'] = 'Default';
@@ -183,11 +178,11 @@ class BackendController extends SystemComponentBackendController
     /**
      * Creates the main overview for this component.
      *
-     * @param $template
+     * @param \Cx\Core\Html\Sigma $template
      *
      * @throws \Cx\Core\Routing\UrlException
      */
-    public function showOverview(Sigma $template)
+    public function showOverview(\Cx\Core\Html\Sigma $template)
     {
         global $_ARRAYLANG, $_CONFIG;
         \JS::registerJS('core_modules/TemplateEditor/View/Script/spectrum.js');
@@ -197,7 +192,7 @@ class BackendController extends SystemComponentBackendController
             . '/TemplateEditor/View/Template/Backend/Default.html'
         );
         /**
-         * @var $themes Theme[]
+         * @var $themes \Cx\Core\View\Model\Entity\Theme[]
          */
         $themes = $this->themeRepository->findAll();
         foreach ($themes as $theme) {
@@ -297,13 +292,14 @@ class BackendController extends SystemComponentBackendController
         }
         $template->setVariable(
             array(
-                'TEMPLATEEDITOR_IFRAME_URL' => Url::fromModuleAndCmd(
-                    'home', '', null,
-                    array(
-                        'preview' => $this->theme->getId(),
-                        'templateEditor' => 1
-                    )
-                ),
+                'TEMPLATEEDITOR_IFRAME_URL' =>
+                    \Cx\Core\Routing\Url::fromModuleAndCmd(
+                        'home', '', null,
+                        array(
+                            'preview' => $this->theme->getId(),
+                            'templateEditor' => 1
+                        )
+                    ),
                 'TEMPLATEEDITOR_BACKURL' => './index.php?cmd=ViewManager'
             )
         );
@@ -334,7 +330,7 @@ class BackendController extends SystemComponentBackendController
                 'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_BACK' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_BACK'],
                 'TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_STOP' => $_ARRAYLANG['TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_STOP'],
                 'themeid' => $this->theme->getId(),
-                'iframeUrl' => Url::fromModuleAndCmd(
+                'iframeUrl' => \Cx\Core\Routing\Url::fromModuleAndCmd(
                     'home', '', null,
                     array(
                         'preview' => $this->theme->getId(),
