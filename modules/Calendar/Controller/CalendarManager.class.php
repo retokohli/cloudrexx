@@ -909,15 +909,15 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_SELECTED_HOSTS'      => $selectetHosts,
         ));                
         
-        /*if($this->arrSettings['publicationStatus'] == 1 && !empty($objHostManager->hostList)) { 
+        if($this->arrSettings['publicationStatus'] == 1 && !empty($objHostManager->hostList)) { 
             $onsubmitPublications = "selectAll(document.formModifyEvent.elements['selectedHosts[]']);"; 
             $this->_objTpl->touchBlock('eventPublicateMenu');            
             $this->_objTpl->touchBlock('eventPublicateTab');
-        } else { */
+        } else { 
             $onsubmitPublications = "";   
             $this->_objTpl->hideBlock('eventPublicateMenu');               
             $this->_objTpl->hideBlock('eventPublicateTab');
-        /* } */   
+        }
         
         //parse ivited groups   
         $this->getCommunityGroups();       
