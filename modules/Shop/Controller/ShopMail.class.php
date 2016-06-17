@@ -222,7 +222,7 @@ class ShopMail
                     }
                     if (isset($arrKey[$id])) {
                         // System templates get their default key
-                        $arrTemplate['key'] = $arrKey[$id].'_backup_by_update';
+                        $arrTemplate['key'] = uniqid().'_'.$arrKey[$id].'_backup_by_update';
                         // Clear the protected flag, so the old templates
                         // may be removed at will
                         $arrTemplate['protected'] = false;
