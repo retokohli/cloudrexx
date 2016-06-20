@@ -1540,6 +1540,7 @@ class CalendarEvent extends CalendarLibrary
         if ($id != 0) {
             if (!empty($eventFields)) {
                 foreach ($eventFields as $eventField) {
+                    $eventField['eventId'] = $id;
                     $eventFieldEntity = $this->getEventFieldEntity(
                         $event, $eventField
                     );
