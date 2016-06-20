@@ -995,7 +995,7 @@ UPLOADER;
                 if(isset($_POST['submitRegistration']) && $captchaCheck) {
                     $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration(intval($_POST['form']));
 
-                    if($objRegistration->save($_POST)) {
+                    if($objRegistration->save($_POST, $objEvent)) {
                         if ($objRegistration->saveIn == 2) {
                             $status = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED_WAITLIST'];
                         } else if ($objRegistration->saveIn == 0) {

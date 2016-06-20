@@ -170,6 +170,21 @@ class CalendarRegistration extends CalendarLibrary
     private $form;
     
     /**
+     * Registration type Normal registration
+     */
+    const REGISTRATION_TYPE_REGISTRATION = 1;
+
+    /**
+     * Registration type waiting list
+     */
+    const REGISTRATION_TYPE_WAITLIST = 2;
+
+    /**
+     * Registration type cancellation
+     */
+    const REGISTRATION_TYPE_CANCELLATION = 0;
+
+    /**
      * Constructor for registration class
      * 
      * Loads the form object from CalendarForm class
@@ -257,7 +272,7 @@ class CalendarRegistration extends CalendarLibrary
      * 
      * @return boolean true if the registration saved, false otherwise
      */
-    function save($data) {
+    function save($data, CalendarEvent $event) {
         global $objDatabase, $objInit, $_LANGID;
         
         /* foreach ($this->form->inputfields as $key => $arrInputfield) {
@@ -294,37 +309,65 @@ class CalendarRegistration extends CalendarLibrary
             /* } */
         }
         
-        $regId = intval($data['regid']);
-        $eventId = intval($data['id']);
-        $formId = intval($data['form']);
-        $eventDate = intval($data['date']);
-        $userId = intval($data['userid']);
-        
-        $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
+        $regId     = intval($data['regid']);
+        $eventId   = $event->id;
+        $formId    = intval($data['form']);
+        $eventDate = $event->startDate->getTimestamp();
+        $userId    = intval($data['userid']);
 
         if (   $objInit->mode == \Cx\Core\Core\Controller\Cx::MODE_BACKEND
-            && $objEvent->seriesStatus
-            && $objEvent->independentSeries
+            && $event->seriesStatus
+            && $event->independentSeries
         ) {
             $eventDate = isset($data['registrationEventDate']) ? contrexx_input2int($data['registrationEventDate']) : $eventDate;
+
+            $endDate = new \DateTime();
+            $endDate->modify('+10 years');
+
+            $eventManager = new CalendarEventManager(null, $endDate);
+            $eventManager->getEvent($event, $eventDate, false);
+            $event = $eventManager->eventList[0];
+            if (empty($event)) {
+                return false;
+            }
         }
 
-        $query = '
+        $seatingOption = $objDatabase->Execute('
             SELECT
-                `id`
+                `ff`.`id` AS `id`,
+                `fn`.`default` AS `seating_option`
             FROM
-                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field`
+                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form` AS `f`
+            INNER JOIN
+                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field` AS `ff`
+            ON
+                `f`.`id` = `ff`.`form`
+            INNER JOIN
+                `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name` AS `fn`
+            ON
+                `ff`.`id` = `fn`.`field_id`
             WHERE
-                `form` = '. $formId .'
+                `f`.`id` = '. contrexx_input2int($formId) .'
             AND
-                `type` = "seating"
-            LIMIT 1
-        ';
-        $objResult = $objDatabase->Execute($query);
-        
-        $numSeating = intval($data['registrationField'][$objResult->fields['id']]);
-        $type       =   empty($regId) && intval($objEvent->getFreePlaces() - $numSeating) < 0
-                      ? 2 : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
+                `ff`.`type` = "seating"
+            ORDER BY CASE `fn`.lang_id
+                WHEN '. $_LANGID .' THEN 1
+                ELSE 2
+                END
+        ');
+
+        $numSeating = 1;
+        if ($seatingOption && $seatingOption->RecordCount() > 0) {
+            $seatingOptionArray = explode(',', $seatingOption->fields['seating_option']);
+            $selectedSeat       = contrexx_input2int(
+                $data['registrationField'][$seatingOption->fields['id']]
+            );
+            $numSeating         = !empty($seatingOptionArray[$selectedSeat])
+                                 ? $seatingOptionArray[$selectedSeat] : 1;
+        }
+        $type = empty($regId) && intval($event->getFreePlaces() - $numSeating) < 0
+               ? self::REGISTRATION_TYPE_WAITLIST
+               : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
         $this->saveIn = intval($type);
         $paymentMethod = intval($data['paymentMethod']);
         $paid = intval($data['paid']);
@@ -410,10 +453,18 @@ class CalendarRegistration extends CalendarLibrary
         
         if ($objInit->mode == 'frontend') {
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
-            
-            $templateId     = $objEvent->emailTemplate[FRONTEND_LANG_ID];
-            $objMailManager->sendMail(intval($_REQUEST['id']), \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_CONFIRM_REG, $this->id, $templateId);
-            
+
+            $templateId     = $event->emailTemplate[FRONTEND_LANG_ID];
+            if ($type != self::REGISTRATION_TYPE_WAITLIST) {
+                // Do not send confirmation mail, incase registration type is in waiting list
+                $objMailManager->sendMail(
+                    $eventId,
+                    \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_CONFIRM_REG,
+                    $this->id,
+                    $templateId
+                );
+            }
+
             $objMailManager->sendMail(intval($_REQUEST['id']), \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_ALERT_REG, $this->id);
         }
         

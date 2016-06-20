@@ -116,7 +116,7 @@ class CalendarManager extends CalendarLibrary
             case 'modify_registration':
             case 'add_registration':    
                 \Permission::checkAccess(182, 'static');
-                $this->modifyRegistration(intval($_GET['event_id']), intval($_GET['reg_id']));
+                $this->modifyRegistration(intval($_GET['event_id']), intval($_GET['regid']));
                 break;
             case 'get_exception_dates':
                 $this->getExeceptionDates();
@@ -1680,9 +1680,10 @@ class CalendarManager extends CalendarLibrary
         
         $this->_objTpl->loadTemplateFile('module_calendar_modify_registration.html');
         
+        $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
         if (isset($_POST['submitModifyRegistration'])) {
         	$objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration(intval($_POST['form']));
-	        if ($objRegistration->save($_POST)) {                    
+	        if ($objRegistration->save($_POST, $objEvent)) {
                     switch ($_POST['registrationType']) {
                         case 0:
                             $tpl = 'd';
@@ -1706,8 +1707,7 @@ class CalendarManager extends CalendarLibrary
         $objFWUser       = \FWUser::getFWUserObject();     
         $objUser         = $objFWUser->objUser;
         $userId          = intval($objUser->getId());
-        $objEvent        = new \Cx\Modules\Calendar\Controller\CalendarEvent($eventId);
-        
+
         if ($regId != 0) {
             $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_EVENT_EDIT_REGISTRATION'];
             $objRegistration = new \Cx\Modules\Calendar\Controller\CalendarRegistration($objEvent->registrationForm, $regId);

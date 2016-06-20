@@ -534,27 +534,35 @@ class CalendarEventManager extends CalendarLibrary
     /**
      * Get the event using calendar event class and assign it into $this->eventList
      * 
-     * @param integer $eventId        Event id
+     * @param mixed   $event         \Cx\Modules\Calendar\Controller\CalendarEvent
+     *                                or Event id
      * @param integer $eventStartDate Unix timestamp of start date
-     * 
+     * @param boolean $checkMode      Flag to identify whether mode has to be checked or not
+     *
      * @return null
      */
-    function getEvent($eventId, $eventStartDate) {
+    function getEvent($event, $eventStartDate, $checkMode = true) {
         global $objInit;
-        
-        $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($eventId));
-        
+
+        if ($event instanceof \Cx\Modules\Calendar\Controller\CalendarEvent) {
+            $objEvent = $event;
+        } else {
+            $objEvent = new \Cx\Modules\Calendar\Controller\CalendarEvent(intval($event));
+        }
+
         $this->eventList[] = $objEvent;
-        
-        if($objEvent->seriesStatus == 1 && $objInit->mode == 'frontend') {
-            self::_setNextSeriesElement($objEvent); 
+
+        if (   $objEvent->seriesStatus == 1
+            && (!$checkMode || $objInit->mode == 'frontend')
+        ) {
+            self::_setNextSeriesElement($objEvent);
         }
         foreach ($this->eventList as $tmpKey => $tmpObjEvent) {
             if (!$tmpObjEvent->startDate || $tmpObjEvent->startDate->getTimestamp() != $eventStartDate) {
                 unset($this->eventList[$tmpKey]);
             }
         }
-        
+
         sort($this->eventList);
     }
     
