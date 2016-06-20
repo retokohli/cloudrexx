@@ -541,6 +541,8 @@ class CalendarForm extends CalendarLibrary
                 ->getRepository('Cx\Modules\Calendar\Model\Entity\RegistrationFormField')
                 ->findOneById($fieldId);
             foreach ($fieldValues['formFieldNames'] as $fieldNameValues) {
+                $fieldNameValues['formId']  = $this->id;
+                $fieldNameValues['fieldId'] = $fieldId;
                 $formFieldNameEntity = $this->getFormFieldNameEntity(
                     $formFieldEntity, $fieldNameValues
                 );
@@ -677,6 +679,7 @@ class CalendarForm extends CalendarLibrary
                     $strFieldDefaultValue = $arrField['default_value'][0];
                 }
                 $formFieldNames[] = array(
+                    'fieldId'   => $intFieldId,
                     'formId'    => contrexx_input2int($this->id),
                     'name'      => contrexx_input2db($strFieldName),
                     'langId'    => contrexx_input2int($arrLang['id']),
@@ -936,10 +939,13 @@ class CalendarForm extends CalendarLibrary
             $formFieldName = new \Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName();
         }
         $formFieldName->setVirtual(true);
-        $formFieldName->setName($formData['name']);
-        $formFieldName->setLangId($formData['langId']);
-        $formFieldName->setFormId($formData['formId']);
-        $formFieldName->setDefault($formData['default']);
+        //Set FormFieldName field values
+        foreach ($formData as $fieldName => $fieldValue) {
+            $methodName = 'set'.ucfirst($fieldName);
+            if (method_exists($formFieldName, $methodName)) {
+                $formFieldName->{$methodName}($fieldValue);
+            }
+        }
 
         if ($isNewEntity) {
             $formField->addRegistrationFormFieldName($formFieldName);

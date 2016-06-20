@@ -447,8 +447,9 @@ class CalendarRegistration extends CalendarLibrary
             ->getRepository('Cx\Modules\Calendar\Model\Entity\RegistrationFormField');
         foreach ($formFieldValues  as $formFieldId => $formFieldValue) {
             $formData = array(
+                'regId'      => $this->id,
                 'fieldId'    => $formFieldId,
-                'fieldValue' => $formFieldValue
+                'value'      => $formFieldValue
             );
             $formFieldValueEntity = $this->getFormFieldValueEntity(
                 $registration, $formFieldRepo, $formData
@@ -840,7 +841,11 @@ class CalendarRegistration extends CalendarLibrary
         //Set Registration formfield values
         if ($relations['formFieldValues']) {
             foreach ($relations['formFieldValues'] as $fieldId => $fieldValue) {
-                $formData = array('fieldId' => $fieldId, 'fieldValue' => $fieldValue);
+                $formData = array(
+                    'regId'   => $id,
+                    'fieldId' => $fieldId,
+                    'value'   => $fieldValue
+                );
                 $this->getFormFieldValueEntity($registration, $formFieldRepo, $formData);
             }
         }
@@ -884,7 +889,15 @@ class CalendarRegistration extends CalendarLibrary
                 $formField->addRegistrationFormFieldValue($formFieldValue);
             }
         }
-        $formFieldValue->setValue($fieldValues['fieldValue']);
+
+        //Set FormFieldValue field values
+        foreach ($fieldValues as $fieldName => $fieldValue) {
+            $methodName = 'set'.ucfirst($fieldName);
+            if (method_exists($formFieldValue, $methodName)) {
+                $formFieldValue->{$methodName}($fieldValue);
+            }
+        }
+
         if ($isNewEntity) {
             $registration->addRegistrationFormFieldValue($formFieldValue);
             $formFieldValue->setRegistration($registration);
