@@ -703,6 +703,7 @@ class CalendarEvent extends CalendarLibrary
         $this->uploadImgWebPath = \Env::get('cx')->getWebsiteImagesWebPath().'/'.$this->moduleName.'/';
         
         $this->getSettings();
+        $this->init();
     }
         
     /**
@@ -782,29 +783,28 @@ class CalendarEvent extends CalendarLibrary
                          event.series_pattern_exceptions AS series_pattern_exceptions,
                          event.all_day,
                          event.location_type AS location_type,
-                         event.place AS place, 
+                         field.place AS place,
                          event.place_street AS place_street, 
                          event.place_zip AS place_zip, 
-                         event.place_city AS place_city, 
-                         event.place_country AS place_country, 
+                         field.place_city AS place_city,
+                         field.place_country AS place_country,
                          event.place_website AS place_website, 
                          event.place_link AS place_link, 
                          event.place_phone AS place_phone, 
                          event.place_map AS place_map, 
                          event.host_type AS host_type,
-                         event.org_name AS org_name, 
+                         field.org_name AS org_name,
                          event.org_street AS org_street, 
                          event.org_zip AS org_zip, 
-                         event.org_city AS org_city, 
-                         event.org_country AS org_country, 
+                         field.org_city AS org_city,
+                         field.org_country AS org_country,
                          event.org_website AS org_website, 
                          event.org_link AS org_link, 
                          event.org_phone AS org_phone, 
                          event.org_email AS org_email, 
                          field.title AS title,
                          field.teaser AS teaser,
-                         field.description AS description,
-                         event.place AS place
+                         field.description AS description
                     FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event AS event,
                          ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field AS field
                    WHERE event.id = '".intval($eventId)."'  
@@ -964,7 +964,13 @@ class CalendarEvent extends CalendarLibrary
             $query = "SELECT field.title AS title,
                              field.teaser AS teaser,
                              field.description AS description,
-                             field.redirect AS redirect                                 
+                             field.redirect AS redirect,
+                             field.place AS place,
+                             field.place_city AS place_city,
+                             field.place_country AS place_country,
+                             field.org_name AS org_name,
+                             field.org_city AS org_city,
+                             field.org_country AS org_country
                         FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field AS field
                        WHERE field.event_id = '".intval($this->id)."'
                          AND field.lang_id = '".intval($langId)."'
@@ -978,6 +984,12 @@ class CalendarEvent extends CalendarLibrary
                         $this->arrData['teaser'][$langId] = htmlentities(stripslashes($objResult->fields['teaser']), ENT_QUOTES, CONTREXX_CHARSET);                        
                         $this->arrData['description'][$langId] = stripslashes($objResult->fields['description']);
                         $this->arrData['redirect'][$langId] = htmlentities(stripslashes($objResult->fields['redirect']), ENT_QUOTES, CONTREXX_CHARSET);                         
+                        $this->arrData['place'][$langId] = contrexx_raw2xhtml($objResult->fields['place']);
+                        $this->arrData['place_city'][$langId] = contrexx_raw2xhtml($objResult->fields['place_city']);
+                        $this->arrData['place_country'][$langId] = contrexx_raw2xhtml($objResult->fields['place_country']);
+                        $this->arrData['org_name'][$langId] = contrexx_raw2xhtml($objResult->fields['org_name']);
+                        $this->arrData['org_city'][$langId] = contrexx_raw2xhtml($objResult->fields['org_city']);
+                        $this->arrData['org_country'][$langId] = contrexx_raw2xhtml($objResult->fields['org_country']);
                         $objResult->MoveNext();
                 }
             }
@@ -1085,6 +1097,38 @@ class CalendarEvent extends CalendarLibrary
                 $showTimeTypeDetail  = 0;
             }
         }
+
+        //backward compatibility, multilingual fields might be empty
+        if (empty($data['event_place'])) {
+            $data['event_place'] = array(
+                isset($data['place']) ? $data['place'] : ''
+            );
+        }
+        if (empty($data['event_place_city'])) {
+            $data['event_place_city'] = array(
+                isset($data['city']) ? $data['city'] : ''
+            );
+        }
+        if (empty($data['event_place_country'])) {
+            $data['event_place_country'] = array(
+                isset($data['country']) ? $data['country'] : ''
+            );
+        }
+        if (empty($data['event_org_name'])) {
+            $data['event_org_name'] = array(
+                isset($data['organizerName']) ? $data['organizerName'] : ''
+            );
+        }
+        if (empty($data['event_org_city'])) {
+            $data['event_org_city'] = array(
+                isset($data['organizerCity']) ? $data['organizerCity'] : ''
+            );
+        }
+        if (empty($data['event_org_country'])) {
+            $data['event_org_country'] = array(
+                isset($data['organizerCountry']) ? $data['organizerCountry'] : ''
+            );
+        }
                 
         $access                    = isset($data['access']) ? intval($data['access']) : 0;
         $priority                  = isset($data['priority']) ? intval($data['priority']) : 0;
@@ -1113,11 +1157,8 @@ class CalendarEvent extends CalendarLibrary
         $related_hosts             = isset($data['selectedHosts']) ? $data['selectedHosts'] : '';        
         $locationType              = isset($data['eventLocationType']) ? (int) $data['eventLocationType'] : $this->arrSettings['placeData'];
         $hostType                  = isset($data['eventHostType']) ? (int) $data['eventHostType'] : $this->arrSettings['placeDataHost'];
-        $place                     = isset($data['place']) ? contrexx_input2db(contrexx_strip_tags($data['place'])) : '';
         $street                    = isset($data['street']) ? contrexx_input2db(contrexx_strip_tags($data['street'])) : '';
         $zip                       = isset($data['zip']) ? contrexx_input2db(contrexx_strip_tags($data['zip'])) : '';
-        $city                      = isset($data['city']) ? contrexx_input2db(contrexx_strip_tags($data['city'])) : '';
-        $country                   = isset($data['country']) ? contrexx_input2db(contrexx_strip_tags($data['country'])) : '';
         $placeWebsite              = isset($data['placeWebsite']) ? contrexx_input2db($data['placeWebsite']) : '';
         $placeLink                 = isset($data['placeLink']) ? contrexx_input2db($data['placeLink']) : '';
         $placePhone                = isset($data['placePhone']) ? contrexx_input2db($data['placePhone']) : '';
@@ -1148,11 +1189,8 @@ class CalendarEvent extends CalendarLibrary
             }
         }
 
-        $orgName   = isset($data['organizerName']) ? contrexx_input2db($data['organizerName']) : '';
         $orgStreet = isset($data['organizerStreet']) ? contrexx_input2db($data['organizerStreet']) : '';
         $orgZip    = isset($data['organizerZip']) ? contrexx_input2db($data['organizerZip']) : '';
-        $orgCity   = isset($data['organizerCity']) ? contrexx_input2db($data['organizerCity']) : '';
-        $orgCountry= isset($data['organizerCountry']) ? contrexx_input2db($data['organizerCountry']) : '';
         $orgWebsite= isset($data['organizerWebsite']) ? contrexx_input2db($data['organizerWebsite']) : '';
         $orgLink   = isset($data['organizerLink']) ? contrexx_input2db($data['organizerLink']) : '';
         $orgPhone  = isset($data['organizerPhone']) ? contrexx_input2db($data['organizerPhone']) : '';
@@ -1381,44 +1419,79 @@ class CalendarEvent extends CalendarLibrary
             'all_day'                       => $allDay,
             'location_type'                 => $locationType,
             'host_type'                     => $hostType,
-            'place'                         => $place,
             'place_id'                      => 0,
             'place_street'                  => $street,
             'place_zip'                     => $zip,
-            'place_city'                    => $city,
-            'place_country'                 => $country,
             'place_website'                 => $placeWebsite,
             'place_link'                    => $placeLink,
             'place_phone'                   => $placePhone,
             'place_map'                     => $placeMap,
-            'org_name'                      => $orgName,
             'org_street'                    => $orgStreet,
             'org_zip'                       => $orgZip,
-            'org_city'                      => $orgCity,
-            'org_country'                   => $orgCountry,
             'org_website'                   => $orgWebsite,
             'org_link'                      => $orgLink,
             'org_phone'                     => $orgPhone,
             'org_email'                     => $orgEmail,
             'invitation_sent'               => $update_invitation_sent ? 1 : 0,
         );
-        
-        if ($id != 0) {            
+
+        $eventFields = $this->getEventFieldsAsArray($data, $convertBBCode, $type);
+        $formDatas   = array(
+            'fields'    => $formData,
+            'relation'  => array('eventFields' => $eventFields)
+        );
+        $event       = $this->getEventEntity($id, $formDatas);
+        $eId         = $id;
+        if ($id != 0) {
+            //Trigger preUpdate event for Event Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/preUpdate',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $event, $this->em
+                    )
+                )
+            );
             $query = \SQL::update("module_{$this->moduleTablePrefix}_event", $formData) ." WHERE id = '$id'";
         
             $objResult = $objDatabase->Execute($query);
             
             if ($objResult !== false) {
                 $this->id = $id;
+                $eventFieldEntities = $event->getEventFields();
+                foreach ($eventFieldEntities as $eventFieldEntity)  {
+                    //Trigger preRemove event for EventField Entity
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/preRemove',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $eventFieldEntity, $this->em
+                            )
+                        )
+                    );
+                }
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field
-                                WHERE event_id = '".$id."'";    
-                                
-                $objResult = $objDatabase->Execute($query);   
-                
+                                WHERE event_id = '".$id."'";
+
+                $objResult = $objDatabase->Execute($query);
+                if ($objResult !== false) {
+                    foreach ($eventFieldEntities as $eventFieldEntity)  {
+                        //Trigger postRemove event for EventField Entity
+                        $this->cx->getEvents()->triggerEvent(
+                            'model/postRemove',
+                            array(
+                                new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                    $eventFieldEntity, $this->em
+                                )
+                            )
+                        );
+                    }
+                }
+
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_event_host
-                                WHERE event_id = '".$id."'";    
-                                
-                $objResult = $objDatabase->Execute($query); 
+                                WHERE event_id = '".$id."'";
+
+                $objResult = $objDatabase->Execute($query);
             } else {
                 return false;
             }
@@ -1439,68 +1512,200 @@ class CalendarEvent extends CalendarLibrary
             $formData['status']    = $status;
             $formData['confirmed'] = $confirmed;
             $formData['author']    = $author;
-            
+
+            $event->setStatus($status);
+            $event->setConfirmed($confirmed);
+            $event->setAuthor($author);
+            //Trigger prePersist event for Event Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/prePersist',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $event, $this->em
+                    )
+                )
+            );
             $query = \SQL::insert("module_{$this->moduleTablePrefix}_event", $formData);
-            
-            $objResult = $objDatabase->Execute($query); 
-            
-            if ($objResult !== false) {           
+            $objResult = $objDatabase->Execute($query);
+
+            if ($objResult !== false) {
                 $id = intval($objDatabase->Insert_ID());
+                $event = $this->getEventEntity($id);
                 $this->id = $id;
             } else {
                 return false; 
             }
         }
         
-        if($id != 0) {
-            foreach ($data['showIn'] as $key => $langId) {
-                $title = contrexx_addslashes(contrexx_strip_tags($data['title'][$langId]));
-                $teaser = contrexx_addslashes(contrexx_strip_tags($data['teaser'][$langId]));
-                $description = contrexx_addslashes($data['description'][$langId]);
-                if ($convertBBCode) {
-                    $description = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForDb($data['description'][$langId], true);
-                }
-                $redirect = contrexx_addslashes($data['calendar-redirect'][$langId]);
-
-                if($type == 0) {
-                    $redirect = '';
-                } else {
-                    $description = '';
-                }
-
-                $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field
-                            (`event_id`,`lang_id`,`title`, `teaser`, `description`,`redirect`)
-                          VALUES
-                            ('".intval($id)."','".intval($langId)."','".$title."','".$teaser."','".$description."','".$redirect."')";
-
-                $objResult = $objDatabase->Execute($query); 
-
-                if ($objResult === false) {
-                    return false;
+        if ($id != 0) {
+            if (!empty($eventFields)) {
+                foreach ($eventFields as $eventField) {
+                    $eventField['eventId'] = $id;
+                    $eventFieldEntity = $this->getEventFieldEntity(
+                        $event, $eventField
+                    );
+                    //Trigger prePersist event for EventField Entity
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/prePersist',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $eventFieldEntity, $this->em
+                            )
+                        )
+                    );
+                    $query =
+                        'INSERT INTO ' . DBPREFIX . 'module_' . $this->moduleTablePrefix. '_event_field
+                          SET `event_id`      = ' . $id . ',
+                              `lang_id`       = ' . $eventField['langId'] . ',
+                              `title`         = "' . $eventField['title'] . '",
+                              `teaser`        = "' . $eventField['teaser'] . '",
+                              `description`   = "' . $eventField['description'] . '",
+                              `redirect`      = "' . $eventField['redirect'] . '",
+                              `place`         = "' . $eventField['place'] . '",
+                              `place_city`    = "' . $eventField['placeCity'] . '",
+                              `place_country` = "' . $eventField['placeCountry'] . '",
+                              `org_name`      = "' . $eventField['orgName'] . '",
+                              `org_city`      = "' . $eventField['orgCity'] . '",
+                              `org_country`   = "' . $eventField['orgCountry'] . '"
+                            ';
+                    $objResult = $objDatabase->Execute($query);
+                    if ($objResult === false) {
+                        return false;
+                    } else {
+                        //Trigger postPersist event for EventField Entity
+                        $this->cx->getEvents()->triggerEvent(
+                            'model/postPersist',
+                            array(
+                                new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                    $eventFieldEntity, $this->em
+                                )
+                            )
+                        );
+                    }
                 }
             }
-            
-            if(!empty($related_hosts)) {
+            if ($eId == 0) {
+                //Trigger postPersist event for Event Entity
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postPersist',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $event, $this->em
+                        )
+                    )
+                );
+            } else {
+                //Trigger postUpdate event for Event Entity
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postUpdate',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $event, $this->em
+                        )
+                    )
+                );
+            }
+
+            if (!empty($related_hosts)) {
                 foreach ($related_hosts as $key => $hostId) {
                     $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_event_host
                                       (`host_id`,`event_id`) 
                                VALUES ('".intval($hostId)."','".intval($id)."')";
-                               
+
                     $objResult = $objDatabase->Execute($query); 
                 }
             }
-        }   
-            
-        if($send_invitation == 1) {    
-             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();    
-             foreach ($invitationTemplate as $templateId) {
-                 $objMailManager->sendMail(intval($id), \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $templateId);
-             }
         }
-        
+
+        if ($send_invitation == 1) {
+            $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();    
+            foreach ($invitationTemplate as $templateId) {
+                $objMailManager->sendMail(intval($id), \Cx\Modules\Calendar\Controller\CalendarMailManager::MAIL_INVITATION, null, $templateId);
+            }
+        }
+
         return true;
     }
-    
+
+    /**
+     * Get event fields as array
+     *
+     * @param array   $data          post data
+     * @param boolean $convertBBCode convert description into BBcode
+     * @param integer $eventType     event type id
+     *
+     * @return array the array of event fields
+     */
+    public function getEventFieldsAsArray($data, $convertBBCode, $eventType)
+    {
+        if (empty($data)) {
+            return null;
+        }
+
+        $eventFields = array();
+        foreach ($data['showIn'] as $key => $langId) {
+            $title  = contrexx_addslashes(contrexx_strip_tags($data['title'][$langId]));
+            $teaser = contrexx_addslashes(contrexx_strip_tags($data['teaser'][$langId]));
+            $description = contrexx_addslashes($data['description'][$langId]);
+            if ($convertBBCode) {
+                $description = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForDb($data['description'][$langId], true);
+            }
+            $redirect = contrexx_addslashes($data['calendar-redirect'][$langId]);
+
+            if ($eventType == 0) {
+                $redirect = '';
+            } else {
+                $description = '';
+            }
+            if (!empty($data['event_place'][$langId])) {
+                $place = contrexx_input2db($data['event_place'][$langId]);
+            } else {
+                $place = contrexx_input2db($data['event_place'][0]);
+            }
+            if (!empty($data['event_place_city'][$langId])) {
+                $placeCity = contrexx_input2db($data['event_place_city'][$langId]);
+            } else {
+                $placeCity = contrexx_input2db($data['event_place_city'][0]);
+            }
+            if (!empty($data['event_place_country'][$langId])) {
+                $placeCountry = contrexx_input2db($data['event_place_country'][$langId]);
+            } else {
+                $placeCountry = contrexx_input2db($data['event_place_country'][0]);
+            }
+            if (!empty($data['event_org_name'][$langId])) {
+                $orgName = contrexx_input2db($data['event_org_name'][$langId]);
+            } else {
+                $orgName = contrexx_input2db($data['event_org_name'][0]);
+            }
+            if (!empty($data['event_org_city'][$langId])) {
+                $orgCity = contrexx_input2db($data['event_org_city'][$langId]);
+            } else {
+                $orgCity = contrexx_input2db($data['event_org_city'][0]);
+            }
+            if (!empty($data['event_org_country'][$langId])) {
+                $orgCountry = contrexx_input2db($data['event_org_country'][$langId]);
+            } else {
+                $orgCountry = contrexx_input2db($data['event_org_country'][0]);
+            }
+
+            $eventFields[] = array(
+                'langId'       => $langId,
+                'title'        => $title,
+                'teaser'       => $teaser,
+                'description'  => $description,
+                'redirect'     => $redirect,
+                'place'        => $place,
+                'placeCity'    => $placeCity,
+                'placeCountry' => $placeCountry,
+                'orgName'      => $orgName,
+                'orgCity'      => $orgCity,
+                'orgCountry'   => $orgCountry
+            );
+        }
+
+        return $eventFields;
+    }
+
     function loadEventFromPost($data)
     {
         list($startDate, $strStartTime) = explode(' ', $data['startDate']);
@@ -1631,25 +1836,65 @@ class CalendarEvent extends CalendarLibrary
      *      
      * @return boolean true if deleted successfully, false otherwise
      */
-    function delete(){
+    function delete()
+    {
         global $objDatabase;
-        
+
+        $event = $this->getEventEntity($this->id);
+        //Trigger preRemove event for Event Entity
+        $this->cx->getEvents()->triggerEvent(
+            'model/preRemove',
+            array(new \Doctrine\ORM\Event\LifecycleEventArgs($event, $this->em))
+        );
+
         $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event
                    WHERE id = '".intval($this->id)."'";
-        
+
         $objResult = $objDatabase->Execute($query);
-        
+
         if ($objResult !== false) {
+            $eventFieldEntities = $event->getEventFields();
+            foreach ($eventFieldEntities as $eventFieldEntity)  {
+                //Trigger preRemove event for EventField Entity
+                $this->cx->getEvents()->triggerEvent(
+                    'model/preRemove',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $eventFieldEntity, $this->em
+                        )
+                    )
+                );
+            }
             $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field
                             WHERE event_id = '".intval($this->id)."'";
-        
+
             $objResult = $objDatabase->Execute($query);
             if ($objResult !== false) {
+                foreach ($eventFieldEntities as $eventFieldEntity)  {
+                    //Trigger postRemove event for EventField Entity
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/postRemove',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $eventFieldEntity, $this->em
+                            )
+                        )
+                    );
+                }
+                //Trigger postRemove event for Event Entity
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postRemove',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $event, $this->em
+                        )
+                    )
+                );
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_event_host
-                                WHERE event_id = '".intval($this->id)."'";    
-                                
-                $objResult = $objDatabase->Execute($query); 
-                if ($objResult !== false) {   
+                                WHERE event_id = '".intval($this->id)."'";
+
+                $objResult = $objDatabase->Execute($query);
+                if ($objResult !== false) {
                     return true;
                 } else {
                     return false;
@@ -1661,7 +1906,7 @@ class CalendarEvent extends CalendarLibrary
             return false;
         }
     }
-    
+
     /**
      * Export the Event with calendar and stop excuting script
      *      
@@ -1749,22 +1994,40 @@ class CalendarEvent extends CalendarLibrary
      *      
      * @return boolean true if status updated, false otherwise
      */
-    function switchStatus(){
+    function switchStatus()
+    {
         global $objDatabase;
-        
-        if($this->status == 1) {
+
+        if ($this->status == 1) {
             $status = 0;
         } else {
             $status = 1;
         }
-             
+
+        $event = $this->getEventEntity(
+            $this->id, array('fields' => array('status' => $status))
+        );
+        //Trigger preUpdate event for Event Entity
+        $this->cx->getEvents()->triggerEvent(
+            'model/preUpdate',
+            array(new \Doctrine\ORM\Event\LifecycleEventArgs($event, $this->em))
+        );
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_event AS event
                      SET event.status = '".intval($status)."'
                    WHERE event.id = '".intval($this->id)."'";
-        
+
         $objResult = $objDatabase->Execute($query);
-        
+
         if ($objResult !== false) {
+            //Trigger postUpdate event for Event Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/postUpdate',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $event, $this->em
+                    )
+                )
+            );
             return true;
         } else {
             return false;
@@ -1776,16 +2039,34 @@ class CalendarEvent extends CalendarLibrary
      *      
      * @return boolean true if event confirmed, false otherwise
      */
-    function confirm(){
-        global $objDatabase;    
-             
+    function confirm()
+    {
+        global $objDatabase;
+
+        $event = $this->getEventEntity(
+            $this->id, array('fields' => array('confirmed' => 1))
+        );
+        //Trigger preUpdate event for Event Entity
+        $this->cx->getEvents()->triggerEvent(
+            'model/preUpdate',
+            array(new \Doctrine\ORM\Event\LifecycleEventArgs($event, $this->em))
+        );
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_event AS event
                      SET event.confirmed = '1'
                    WHERE event.id = '".intval($this->id)."'";
-        
+
         $objResult = $objDatabase->Execute($query);
-        
+
         if ($objResult !== false) {
+            //Trigger postUpdate event for Event Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/postUpdate',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $event, $this->em
+                    )
+                )
+            );
             return true;
         } else {
             return false;
@@ -1873,7 +2154,7 @@ class CalendarEvent extends CalendarLibrary
                          field.`title` AS `title`,
                          field.`teaser` AS `teaser`,
                          field.`description` AS content,
-                         event.`place` AS place,
+                         field.`place` AS place,
                          MATCH (field.`title`, field.`teaser`, field.`description`) AGAINST ('%$term%') AS `score`
                     FROM ".DBPREFIX."module_calendar_event AS event,
                          ".DBPREFIX."module_calendar_event_field AS field
@@ -2223,5 +2504,123 @@ class CalendarEvent extends CalendarLibrary
             $this->registrationCalculated = false;
             $this->resetRegistrationCount();
         }
+    }
+
+    /**
+     * Get event entity
+     *
+     * @param integer $id        event id
+     * @param array   $formDatas event form field values
+     *
+     * @return \Cx\Modules\Calendar\Model\Entity\Event
+     */
+    public function getEventEntity($id, $formDatas)
+    {
+        if (empty($id)) {
+            $event = new \Cx\Modules\Calendar\Model\Entity\Event();
+        } else {
+            $event = $this
+                ->em
+                ->getRepository('Cx\Modules\Calendar\Model\Entity\Event')
+                ->findOneById($id);
+        }
+        $event->setVirtual(true);
+
+        if (!$event) {
+            return null;
+        }
+
+        if (!$formDatas) {
+            return $event;
+        }
+
+        $classMetaData = $this
+            ->em
+            ->getClassMetadata('Cx\Modules\Calendar\Model\Entity\Event');
+        foreach ($formDatas['fields'] as $columnName => $columnValue) {
+            $fieldName  = $classMetaData->getFieldName($columnName);
+            if (    $fieldName == 'catid'
+                &&  (   (   $event->getCategory()
+                        &&  ($event->getCategory()->getId() != $columnValue)
+                        )
+                    || (    !($event->getCategory())
+                        &&  $columnValue
+                       )
+                    )
+            ) {
+                $fieldName   = 'category';
+                $columnValue = $this
+                    ->em
+                    ->getRepository('Cx\Modules\Calendar\Model\Entity\Category')
+                    ->findOneById($columnValue);
+                $columnValue->setVirtual(true);
+            } elseif (
+                    $fieldName == 'registration_form'
+                &&  (   (   $event->getRegistrationForm()
+                        &&  ($event->getRegistrationForm()->getId() != $columnValue)
+                        )
+                    || (    !($event->getRegistrationForm())
+                        &&  $columnValue
+                       )
+                    )
+            ) {
+                $fieldName = 'registrationForm';
+                $columnValue = $this
+                    ->em
+                    ->getRepository('Cx\Modules\Calendar\Model\Entity\RegistrationForm')
+                    ->findOneById($columnValue);
+                $columnValue->setVirtual(true);
+            }
+            $methodName = 'set'.ucfirst($fieldName);
+            if (method_exists($event, $methodName)) {
+                $event->{$methodName}($columnValue);
+            }
+        }
+
+        $relations = $formDatas['relation'];
+        if (empty($relations) || empty($relations['eventFields'])) {
+            return $event;
+        }
+
+        //Add event fields
+        foreach ($relations['eventFields'] as $eventFieldValues) {
+            $this->getEventFieldEntity($event, $eventFieldValues);
+        }
+
+        return $event;
+    }
+
+    /**
+     * Get event field entity
+     *
+     * @param \Cx\Modules\Calendar\Model\Entity\Event $event       event entity
+     * @param array                                   $fieldValues eventField's field values
+     *
+     * @return \Cx\Modules\Calendar\Model\Entity\EventField
+     */
+    public function getEventFieldEntity(
+        \Cx\Modules\Calendar\Model\Entity\Event $event,
+        $fieldValues
+    ){
+        $isNewEntity = false;
+        $eventField  = $event->getEventFieldByLangId($fieldValues['langId']);
+        if (!$eventField) {
+            $isNewEntity = true;
+            $eventField  = new \Cx\Modules\Calendar\Model\Entity\EventField();
+        }
+        $eventField->setVirtual(true);
+        foreach ($fieldValues as $fieldName => $fieldValue) {
+            $methodName = 'set'.ucfirst($fieldName);
+            if (method_exists($eventField, $methodName)) {
+                $eventField->{$methodName}($fieldValue);
+            }
+        }
+
+        if ($isNewEntity) {
+            $event->addEventField($eventField);
+            $eventField->setEvent($event);
+        }
+
+        return $eventField;
     }
 }

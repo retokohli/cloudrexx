@@ -181,13 +181,23 @@ class RegistrationFormField extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Add registrationFormFieldNames
+     * Add registrationFormFieldName
      *
-     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName $registrationFormFieldNames
+     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName $registrationFormFieldName
      */
-    public function addRegistrationFormFieldNames(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName $registrationFormFieldNames)
+    public function addRegistrationFormFieldName(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName $registrationFormFieldName)
     {
-        $this->registrationFormFieldNames[] = $registrationFormFieldNames;
+        $this->registrationFormFieldNames[] = $registrationFormFieldName;
+    }
+
+    /**
+     * Set registrationFormFieldNames
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection $registrationFormFieldNames
+     */
+    public function setRegistrationFormFieldNames($registrationFormFieldNames)
+    {
+        $this->registrationFormFieldNames = $registrationFormFieldNames;
     }
 
     /**
@@ -201,13 +211,45 @@ class RegistrationFormField extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Add registrationFormFieldValues
+     * Get registrationFormFieldNames by langId
      *
-     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValues
+     * @param integer $langId lang id
+     *
+     * @return null|Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName
      */
-    public function addRegistrationFormFieldValues(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValues)
+    public function getRegistrationFormFieldNamesByLangId($langId)
     {
-        $this->registrationFormFieldValues[] = $registrationFormFieldValues;
+        if (!$langId) {
+            return null;
+        }
+
+        foreach ($this->registrationFormFieldNames as $formFieldName) {
+            if ($formFieldName->getLangId() == $langId) {
+                return $formFieldName;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Add registrationFormFieldValue
+     *
+     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue
+     */
+    public function addRegistrationFormFieldValue(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue)
+    {
+        $this->registrationFormFieldValues[] = $registrationFormFieldValue;
+    }
+
+    /**
+     * Set registrationFormFieldValues
+     *
+     * @param Doctrine\Common\Collections\Collection $registrationFormFieldValues
+     */
+    public function setRegistrationFormFieldValues($registrationFormFieldValues)
+    {
+        $this->registrationFormFieldValues = $registrationFormFieldValues;
     }
 
     /**

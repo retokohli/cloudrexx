@@ -153,10 +153,22 @@ class CxModulesCalendarModelEntityRegistrationProxy extends \Cx\Modules\Calendar
         return parent::getPaid();
     }
 
-    public function addRegistrationFormFieldValues(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValues)
+    public function addRegistrationFormFieldValue(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue)
     {
         $this->_load();
-        return parent::addRegistrationFormFieldValues($registrationFormFieldValues);
+        return parent::addRegistrationFormFieldValue($registrationFormFieldValue);
+    }
+
+    public function setRegistrationFormFieldValues($registrationFormFieldValues)
+    {
+        $this->_load();
+        return parent::setRegistrationFormFieldValues($registrationFormFieldValues);
+    }
+
+    public function getRegistrationFormFieldValueByFieldId($fieldId)
+    {
+        $this->_load();
+        return parent::getRegistrationFormFieldValueByFieldId($fieldId);
     }
 
     public function getRegistrationFormFieldValues()

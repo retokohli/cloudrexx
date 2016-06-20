@@ -310,11 +310,6 @@ class Event extends \Cx\Model\Base\EntityBase {
     protected $locationType;
 
     /**
-     * @var string $place
-     */
-    protected $place;
-
-    /**
      * @var integer $placeId
      */
     protected $placeId;
@@ -328,16 +323,6 @@ class Event extends \Cx\Model\Base\EntityBase {
      * @var string $placeZip
      */
     protected $placeZip;
-
-    /**
-     * @var string $placeCity
-     */
-    protected $placeCity;
-
-    /**
-     * @var string $placeCountry
-     */
-    protected $placeCountry;
 
     /**
      * @var string $placeLink
@@ -368,16 +353,6 @@ class Event extends \Cx\Model\Base\EntityBase {
      * @var string $orgZip
      */
     protected $orgZip;
-
-    /**
-     * @var string $orgCity
-     */
-    protected $orgCity;
-
-    /**
-     * @var string $orgCountry
-     */
-    protected $orgCountry;
 
     /**
      * @var string $orgLink
@@ -1505,26 +1480,6 @@ class Event extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set place
-     *
-     * @param string $place
-     */
-    public function setPlace($place)
-    {
-        $this->place = $place;
-    }
-
-    /**
-     * Get place
-     *
-     * @return string $place
-     */
-    public function getPlace()
-    {
-        return $this->place;
-    }
-
-    /**
      * Set placeId
      *
      * @param integer $placeId
@@ -1582,46 +1537,6 @@ class Event extends \Cx\Model\Base\EntityBase {
     public function getPlaceZip()
     {
         return $this->placeZip;
-    }
-
-    /**
-     * Set placeCity
-     *
-     * @param string $placeCity
-     */
-    public function setPlaceCity($placeCity)
-    {
-        $this->placeCity = $placeCity;
-    }
-
-    /**
-     * Get placeCity
-     *
-     * @return string $placeCity
-     */
-    public function getPlaceCity()
-    {
-        return $this->placeCity;
-    }
-
-    /**
-     * Set placeCountry
-     *
-     * @param string $placeCountry
-     */
-    public function setPlaceCountry($placeCountry)
-    {
-        $this->placeCountry = $placeCountry;
-    }
-
-    /**
-     * Get placeCountry
-     *
-     * @return string $placeCountry
-     */
-    public function getPlaceCountry()
-    {
-        return $this->placeCountry;
     }
 
     /**
@@ -1685,26 +1600,6 @@ class Event extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set orgName
-     *
-     * @param string $orgName
-     */
-    public function setOrgName($orgName)
-    {
-        $this->orgName = $orgName;
-    }
-
-    /**
-     * Get orgName
-     *
-     * @return string $orgName
-     */
-    public function getOrgName()
-    {
-        return $this->orgName;
-    }
-
-    /**
      * Set orgStreet
      *
      * @param string $orgStreet
@@ -1742,46 +1637,6 @@ class Event extends \Cx\Model\Base\EntityBase {
     public function getOrgZip()
     {
         return $this->orgZip;
-    }
-
-    /**
-     * Set orgCity
-     *
-     * @param string $orgCity
-     */
-    public function setOrgCity($orgCity)
-    {
-        $this->orgCity = $orgCity;
-    }
-
-    /**
-     * Get orgCity
-     *
-     * @return string $orgCity
-     */
-    public function getOrgCity()
-    {
-        return $this->orgCity;
-    }
-
-    /**
-     * Set orgCountry
-     *
-     * @param string $orgCountry
-     */
-    public function setOrgCountry($orgCountry)
-    {
-        $this->orgCountry = $orgCountry;
-    }
-
-    /**
-     * Get orgCountry
-     *
-     * @return string $orgCountry
-     */
-    public function getOrgCountry()
-    {
-        return $this->orgCountry;
     }
 
     /**
@@ -1847,11 +1702,42 @@ class Event extends \Cx\Model\Base\EntityBase {
     /**
      * Add eventFields
      *
-     * @param Cx\Modules\Calendar\Model\Entity\EventField $eventFields
+     * @param Cx\Modules\Calendar\Model\Entity\EventField $eventField
      */
-    public function addEventFields(\Cx\Modules\Calendar\Model\Entity\EventField $eventFields)
+    public function addEventField(\Cx\Modules\Calendar\Model\Entity\EventField $eventField)
     {
-        $this->eventFields[] = $eventFields;
+        $this->eventFields[] = $eventField;
+    }
+
+    /**
+     * Set eventFields
+     *
+     * @param Doctrine\Common\Collections\Collection $eventFields
+     */
+    function setEventFields($eventFields)
+    {
+        $this->eventFields = $eventFields;
+    }
+
+    /**
+     * Get EventFieldByLangId
+     *
+     * @param integer $langId lang id
+     *
+     * @return null|\Cx\Modules\Calendar\Model\Entity\EventField
+     */
+    public function getEventFieldByLangId($langId)
+    {
+        if (!$this->eventFields) {
+            return null;
+        }
+
+        foreach ($this->eventFields as $eventField) {
+            if ($eventField->getLangId() == $langId) {
+                return $eventField;
+            }
+        }
+        return null;
     }
 
     /**
@@ -1867,11 +1753,21 @@ class Event extends \Cx\Model\Base\EntityBase {
     /**
      * Add registrations
      *
-     * @param Cx\Modules\Calendar\Model\Entity\Registration $registrations
+     * @param Cx\Modules\Calendar\Model\Entity\Registration $registration
      */
-    public function addRegistrations(\Cx\Modules\Calendar\Model\Entity\Registration $registrations)
+    public function addRegistration(\Cx\Modules\Calendar\Model\Entity\Registration $registration)
     {
-        $this->registrations[] = $registrations;
+        $this->registrations[] = $registration;
+    }
+
+    /**
+     * Set registrations
+     *
+     * @param Doctrine\Common\Collections\Collection $registrations
+     */
+    function setRegistrations($registrations)
+    {
+        $this->registrations = $registrations;
     }
 
     /**

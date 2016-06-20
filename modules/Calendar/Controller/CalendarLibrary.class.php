@@ -145,7 +145,17 @@ class CalendarLibrary
      * @var array 
      */
     public $arrCommunityGroups = array();    
-        
+
+    /**
+     * @var \Cx\Core\Core\Controller\Cx
+     */
+    protected $cx;
+
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    protected $em;
+
     /**
      * map field key
      *
@@ -183,6 +193,16 @@ class CalendarLibrary
             $this->moduleLangVar.'_DATE_FORMAT'  => self::getDateFormat(1),
             $this->moduleLangVar.'_JAVASCRIPT'   => self::getJavascript(),
         ));
+
+        $this->init();
+    }
+
+    /**
+     * Initialize $cx and $em
+     */
+    public function init() {
+        $this->cx = \Cx\Core\Core\Controller\Cx::instanciate();
+        $this->em = $this->cx->getDb()->getEntityManager();
     }
 
     /**

@@ -81,10 +81,16 @@ class CxModulesCalendarModelEntityRegistrationFormFieldProxy extends \Cx\Modules
         return parent::getAffiliation();
     }
 
-    public function addRegistrationFormFieldNames(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName $registrationFormFieldNames)
+    public function addRegistrationFormFieldName(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldName $registrationFormFieldName)
     {
         $this->_load();
-        return parent::addRegistrationFormFieldNames($registrationFormFieldNames);
+        return parent::addRegistrationFormFieldName($registrationFormFieldName);
+    }
+
+    public function setRegistrationFormFieldNames($registrationFormFieldNames)
+    {
+        $this->_load();
+        return parent::setRegistrationFormFieldNames($registrationFormFieldNames);
     }
 
     public function getRegistrationFormFieldNames()
@@ -93,10 +99,22 @@ class CxModulesCalendarModelEntityRegistrationFormFieldProxy extends \Cx\Modules
         return parent::getRegistrationFormFieldNames();
     }
 
-    public function addRegistrationFormFieldValues(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValues)
+    public function getRegistrationFormFieldNamesByLangId($langId)
     {
         $this->_load();
-        return parent::addRegistrationFormFieldValues($registrationFormFieldValues);
+        return parent::getRegistrationFormFieldNamesByLangId($langId);
+    }
+
+    public function addRegistrationFormFieldValue(\Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue $registrationFormFieldValue)
+    {
+        $this->_load();
+        return parent::addRegistrationFormFieldValue($registrationFormFieldValue);
+    }
+
+    public function setRegistrationFormFieldValues($registrationFormFieldValues)
+    {
+        $this->_load();
+        return parent::setRegistrationFormFieldValues($registrationFormFieldValues);
     }
 
     public function getRegistrationFormFieldValues()

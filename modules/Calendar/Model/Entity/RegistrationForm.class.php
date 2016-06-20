@@ -76,6 +76,8 @@ class RegistrationForm extends \Cx\Model\Base\EntityBase {
 
     public function __construct()
     {
+        $this->status = 0;
+        $this->order  = 99;
         $this->events = new \Doctrine\Common\Collections\ArrayCollection();
         $this->registrationFormFields = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -151,13 +153,23 @@ class RegistrationForm extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Add events
+     * Add event
      *
-     * @param Cx\Modules\Calendar\Model\Entity\Event $events
+     * @param Cx\Modules\Calendar\Model\Entity\Event $event
      */
-    public function addEvents(\Cx\Modules\Calendar\Model\Entity\Event $events)
+    public function addEvent(\Cx\Modules\Calendar\Model\Entity\Event $event)
     {
-        $this->events[] = $events;
+        $this->events[] = $event;
+    }
+
+    /**
+     * set events
+     *
+     * @param Doctrine\Common\Collections\Collection $events
+     */
+    public function setEvents($events)
+    {
+        $this->events = $events;
     }
 
     /**
@@ -171,13 +183,43 @@ class RegistrationForm extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Add registrationFormFields
+     * Add registrationFormField
      *
-     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormField $registrationFormFields
+     * @param Cx\Modules\Calendar\Model\Entity\RegistrationFormField $registrationFormField
      */
-    public function addRegistrationFormFields(\Cx\Modules\Calendar\Model\Entity\RegistrationFormField $registrationFormFields)
+    public function addRegistrationFormField(\Cx\Modules\Calendar\Model\Entity\RegistrationFormField $registrationFormField)
     {
-        $this->registrationFormFields[] = $registrationFormFields;
+        $this->registrationFormFields[] = $registrationFormField;
+    }
+
+    /**
+     * Get RegistrationFormFieldById
+     *
+     * @param integer $id id
+     *
+     * @return null|\Cx\Modules\Calendar\Model\Entity\RegistrationFormField
+     */
+    public function getRegistrationFormFieldById($id)
+    {
+        if (!$id) {
+            return null;
+        }
+
+        foreach ($this->registrationFormFields as $formField) {
+            if ($formField->getId() == $id) {
+                return $formField;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Set RegistrationFormFields
+     *
+     * @param Doctrine\Common\Collections\Collection $registrationFormFields
+     */
+    public function setRegistrationFormFields($registrationFormFields) {
+        $this->registrationFormFields = $registrationFormFields;
     }
 
     /**

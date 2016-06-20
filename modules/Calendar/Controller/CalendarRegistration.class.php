@@ -182,9 +182,10 @@ class CalendarRegistration extends CalendarLibrary
         $objForm = new \Cx\Modules\Calendar\Controller\CalendarForm(intval($formId));
         $this->form = $objForm;     
         
-        if($id != null) {
+        if ($id != null) {
             self::get($id);
-        }        
+        }
+        $this->init();
     }
     
     /**
@@ -257,7 +258,8 @@ class CalendarRegistration extends CalendarLibrary
      * 
      * @return boolean true if the registration saved, false otherwise
      */
-    function save($data) {
+    function save($data)
+    {
         global $objDatabase, $objInit, $_LANGID;
         
         /* foreach ($this->form->inputfields as $key => $arrInputfield) {
@@ -331,20 +333,59 @@ class CalendarRegistration extends CalendarLibrary
         $hostName = 0;
         $ipAddress = 0;
         $key = $this->generateKey();
-        
+
+        $formFieldValues = $this->getRegistrationFormFieldValueAsArray($data);
+        $formData = array(
+            'fields' => array(
+                'date'          => $eventDate,
+                'hostName'      => $hostName,
+                'ipAddress'     => $ipAddress,
+                'type'          => $type,
+                'key'           => $key,
+                'userId'        => $userId,
+                'langId'        => $_LANGID,
+                'paymentMethod' => $paymentMethod,
+                'paid'          => $paid
+            ),
+            'relation' => array(
+                'event'           => $eventId,
+                'formFieldValues' => $formFieldValues
+            )
+        );
+        $registration = $this->getRegistrationEntity($regId, $formData);
         if ($regId == 0) {
+            $registration->setExport(0);
+            //Trigger prePersist event for Registration Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/prePersist',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $registration, $this->em
+                    )
+                )
+            );
             $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration
                                   (`event_id`,`date`,`host_name`,`ip_address`,`type`,`key`,`user_id`,`lang_id`,`export`,`payment_method`,`paid`)
                            VALUES ("'.$eventId.'","'.$eventDate.'","'.$hostName.'","'.$ipAddress.'","'.$type.'","'.$key.'","'.$userId.'","'.$_LANGID.'",0,"'.$paymentMethod.'","'.$paid.'")';
             
             $objResult = $objDatabase->Execute($query);
             
-            if($objResult !== false) {
+            if ($objResult !== false) {
                 $this->id = $objDatabase->Insert_ID();
+                $registration = $this->getRegistrationEntity($this->id);
             } else {
                 return false;
             }
         } else {
+            //Trigger preUpdate event for Registration Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/preUpdate',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $registration, $this->em
+                    )
+                )
+            );
             $query = 'UPDATE `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
                          SET `event_id` = '.$eventId.',
                              `date` = '.$eventDate.',
@@ -359,14 +400,26 @@ class CalendarRegistration extends CalendarLibrary
                        WHERE `id` = '.$regId;
             
             $objResult = $objDatabase->Execute($query);
-            
-            if($objResult === false) {
+
+            if ($objResult === false) {
                 return false;
             }
         }
-        
+
         if ($regId != 0) {
             $this->id = $regId;
+            $formFieldValueEntities = $registration->getRegistrationFormFieldValues();
+            foreach ($formFieldValueEntities as $formFieldValueEntity) {
+                //Trigger preRemove event for RegistrationFormFieldValue Entity
+                $this->cx->getEvents()->triggerEvent(
+                    'model/preRemove',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $formFieldValueEntity, $this->em
+                        )
+                    )
+                );
+            }
             $deleteQuery = 'DELETE FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value
                             WHERE `reg_id` = '.$this->id;
             
@@ -374,40 +427,84 @@ class CalendarRegistration extends CalendarLibrary
             
             if ($objDeleteResult === false) {
                 return false;
+            } else {
+                foreach ($formFieldValueEntities as $formFieldValueEntity) {
+                    //Trigger postRemove event for RegistrationFormFieldValue Entity
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/postRemove',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $formFieldValueEntity, $this->em
+                            )
+                        )
+                    );
+                }
             }
         }
 
-        foreach ($this->form->inputfields as $key => $arrInputfield) {
-            $value = $data['registrationField'][$arrInputfield['id']];
-            $id    = $arrInputfield['id'];
-            
-            if(is_array($value)) {   
-                $subvalue = array();
-                foreach ($value as $key => $element) {
-                    if(!empty($data['registrationFieldAdditional'][$id][$element-1])) {
-                        $subvalue[] = $element.'[['.$data['registrationFieldAdditional'][$id][$element-1].']]';
-                    } else {
-                        $subvalue[] = $element;
-                    } 
-                }
-                $value = join(",", $subvalue);
-            } else {                                                                   
-                if(isset($data['registrationFieldAdditional'][$id][$value-1])) {
-                    $value = $value."[[".$data['registrationFieldAdditional'][$id][$value-1]."]]";
-                }
-            }
-            
-            $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value
-                                  (`reg_id`, `field_id`, `value`) 
-                           VALUES ('.$this->id.', '.$id.', "'.  contrexx_input2db($value).'")';
+        $formFieldRepo = $this
+            ->em
+            ->getRepository('Cx\Modules\Calendar\Model\Entity\RegistrationFormField');
+        foreach ($formFieldValues  as $formFieldId => $formFieldValue) {
+            $formData = array(
+                'fieldId'    => $formFieldId,
+                'fieldValue' => $formFieldValue
+            );
+            $formFieldValueEntity = $this->getFormFieldValueEntity(
+                $registration, $formFieldRepo, $formData
+            );
+            //Trigger prePersist event for RegistrationFormFieldValue Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/prePersist',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $formFieldValueEntity, $this->em
+                    )
+                )
+            );
 
+            $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value
+                        (`reg_id`, `field_id`, `value`)
+                        VALUES (' . $this->id . ', ' . $formFieldId . ', "' . $formFieldValue . '")';
             $objResult = $objDatabase->Execute($query);
-            
+
             if ($objResult === false) {
                 return false;
+            } else {
+                //Trigger postPersist event for RegistrationFormFieldValue Entity
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postPersist',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $formFieldValueEntity, $this->em
+                        )
+                    )
+                );
             }
         }
-        
+
+        if ($regId == 0) {
+            //Trigger postPersist event for Registration Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/postPersist',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $registration, $this->em
+                    )
+                )
+            );
+        } else {
+            //Trigger postUpdate event for Registration Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/postUpdate',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $registration, $this->em
+                    )
+                )
+            );
+        }
+
         if ($objInit->mode == 'frontend') {
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
             
@@ -419,7 +516,46 @@ class CalendarRegistration extends CalendarLibrary
         
         return true;
     }
-    
+
+    /**
+     * Get registration form field value as array
+     *
+     * @param array $data post data
+     *
+     * @return array the array of field values
+     */
+    public function getRegistrationFormFieldValueAsArray($data)
+    {
+        if (empty($data)) {
+            return null;
+        }
+
+        $formFieldValues = array();
+        foreach ($this->form->inputfields as $key => $arrInputfield) {
+            $value = $data['registrationField'][$arrInputfield['id']];
+            $id    = $arrInputfield['id'];
+
+            if (is_array($value)) {
+                $subvalue = array();
+                foreach ($value as $key => $element) {
+                    $additionalField = $data['registrationFieldAdditional'][$id][$element-1];
+                    $subvalue[] = !empty($additionalField)
+                        ? $element . '[[' . $additionalField . ']]' : $element;
+                }
+                $value = join(',', $subvalue);
+            } else {
+                $additionalField = $data['registrationFieldAdditional'][$id][$value-1];
+                if (isset($additionalField)) {
+                    $value = $value . '[[' . $additionalField . ']]';
+                }
+            }
+
+            $formFieldValues[$id] = contrexx_input2db($value);
+        }
+
+        return $formFieldValues;
+    }
+
     /**
      * Delete the registration
      *      
@@ -427,16 +563,40 @@ class CalendarRegistration extends CalendarLibrary
      * 
      * @return boolean true if data deleted, false otherwise
      */
-    function delete($regId) {
+    function delete($regId)
+    {
         global $objDatabase; 
-        
+
         if (!empty($regId)) {
+            $registration = $this->getRegistrationEntity($regId);
+            //Trigger preRemove event for Registration Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/preRemove',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $registration, $this->em
+                    )
+                )
+            );
+
             $query = '
                 DELETE FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
                 WHERE `id` = '.intval($regId);
             $objResult = $objDatabase->Execute($query);
             
             if ($objResult !== false) {
+                $formFieldValueEntities = $registration->getRegistrationFormFieldValues();
+                foreach ($formFieldValueEntities as $formFieldValueEntity) {
+                    //Trigger preRemove event for RegistrationFormFieldValue Entity
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/preRemove',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $formFieldValueEntity, $this->em
+                            )
+                        )
+                    );
+                }
                 $query = '
                     DELETE FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value`
                     WHERE `reg_id` = '.intval($regId)
@@ -444,6 +604,26 @@ class CalendarRegistration extends CalendarLibrary
                 $objResult = $objDatabase->Execute($query);
                 
                 if ($objResult !== false) {
+                    foreach ($formFieldValueEntities as $formFieldValueEntity) {
+                        //Trigger postRemove event for RegistrationFormFieldValue Entity
+                        $this->cx->getEvents()->triggerEvent(
+                            'model/postRemove',
+                            array(
+                                new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                    $formFieldValueEntity, $this->em
+                                )
+                            )
+                        );
+                    }
+                    //Trigger postRemove event for Registration Entity
+                    $this->cx->getEvents()->triggerEvent(
+                        'model/postRemove',
+                        array(
+                            new \Doctrine\ORM\Event\LifecycleEventArgs(
+                                $registration, $this->em
+                            )
+                        )
+                    );
                     return true;
                 } else {
                     return false;
@@ -464,10 +644,26 @@ class CalendarRegistration extends CalendarLibrary
      * 
      * @return boolean true if registration updated, false otherwise
      */
-    function move($regId, $typeId) {
-        global $objDatabase, $_LANGID; 
-        
+    function move($regId, $typeId)
+    {
+        global $objDatabase, $_LANGID;
+
         if (!empty($regId)) {
+            $registration = $this
+                ->em
+                ->getRepository('Cx\Modules\Calendar\Model\Entity\Registration')
+                ->findOneBy(array('id' => $regId, 'langId' => $_LANGID));
+            $registration->setType($typeId);
+            $registration->setVirtual(true);
+            //Trigger preUpdate event for Registration Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/preUpdate',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $registration, $this->em
+                    )
+                )
+            );
             $query = '
                 UPDATE `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
                 SET `type` = '.$typeId.'
@@ -475,8 +671,17 @@ class CalendarRegistration extends CalendarLibrary
                 AND `lang_id` = '.$_LANGID
             ;
             $objResult = $objDatabase->Execute($query);
-            
+
             if ($objResult !== false) {
+                //Trigger postUpdate event for Registration Entity
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postUpdate',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $registration, $this->em
+                        )
+                    )
+                );
                 return true;
             } else {
                 return false;
@@ -491,16 +696,38 @@ class CalendarRegistration extends CalendarLibrary
      *      
      * @return boolean true if date updated sucessfully, false otherwise
      */
-    function tagExport() { 
+    function tagExport()
+    {
         global $objDatabase, $_LANGID;
-        
-        $now = time();
-        
-        if(intval($this->id) != 0) {
+
+       $now = time();
+
+        if (intval($this->id) != 0) {
+            $registration = $this->getRegistrationEntity(
+                $this->id, array('fields' => array('export' => $now))
+            );
+            //Trigger preUpdate event for Registration Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/preUpdate',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $registration, $this->em
+                    )
+                )
+            );
             $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration SET `export` = '".intval($now)."' WHERE `id` = '".intval($this->id)."'";              
             $objResult = $objDatabase->Execute($query);     
             if($objResult !== false) {
                 $this->firstExport = $now;
+                //Trigger postUpdate event for Registration Entity
+                $this->cx->getEvents()->triggerEvent(
+                    'model/postUpdate',
+                    array(
+                        new \Doctrine\ORM\Event\LifecycleEventArgs(
+                            $registration, $this->em
+                        )
+                    )
+                );
                 return true;  
             } else {
                 return false;
@@ -515,12 +742,154 @@ class CalendarRegistration extends CalendarLibrary
      * 
      * @return null
      */
-    function setPaid($payStatus = 0) {
+    function setPaid($payStatus = 0)
+    {
         global $objDatabase;
+
+        $registration = $this->getRegistrationEntity(
+            $this->id, array('fields' => array('paid' => $payStatus))
+        );
+        //Trigger preUpdate event for Registration Entity
+        $this->cx->getEvents()->triggerEvent(
+            'model/preUpdate',
+            array(
+                new \Doctrine\ORM\Event\LifecycleEventArgs(
+                    $registration, $this->em
+                )
+            )
+        );
         $query = '
                     UPDATE `'.DBPREFIX.'module_calendar_registration` AS `r`
                     SET `paid` = ? WHERE `id` = ?
                 ';
         $objResult = $objDatabase->Execute($query, array($payStatus, $this->id));
+        if ($objResult !== false) {
+            //Trigger postUpdate event for Registration Entity
+            $this->cx->getEvents()->triggerEvent(
+                'model/postUpdate',
+                array(
+                    new \Doctrine\ORM\Event\LifecycleEventArgs(
+                        $registration, $this->em
+                    )
+                )
+            );
+        }
+    }
+
+    /**
+     * Get registration entity
+     *
+     * @param integer $id        registration id
+     * @param array   $formDatas registration field values
+     *
+     * @return \Cx\Modules\Calendar\Model\Entity\Registration
+     */
+    public function getRegistrationEntity($id, $formDatas)
+    {
+        if (empty($id)) {
+            $registration = new \Cx\Modules\Calendar\Model\Entity\Registration();
+        } else {
+            $registration = $this
+                ->em
+                ->getRepository('Cx\Modules\Calendar\Model\Entity\Registration')
+                ->findOneById($id);
+        }
+        $registration->setVirtual(true);
+
+        if (!$registration) {
+            return null;
+        }
+
+        if (!$formDatas) {
+            return $registration;
+        }
+        //Set registration field values
+        foreach ($formDatas['fields'] as $fieldName => $fieldValue) {
+            $methodName = 'set'.ucfirst($fieldName);
+            if (method_exists($registration, $methodName)) {
+                $registration->{$methodName}($fieldValue);
+            }
+        }
+
+        $relations = $formDatas['relation'];
+        if (!$relations) {
+            return $registration;
+        }
+
+        $formFieldRepo = $this
+            ->em
+            ->getRepository('Cx\Modules\Calendar\Model\Entity\RegistrationFormField');
+        $eventRepo = $this
+            ->em->getRepository('Cx\Modules\Calendar\Model\Entity\Event');
+        //Set Registration event
+        if (    $relations['event']
+            &&  (   (   $registration->getEvent()
+                    &&  ($registration->getEvent()->getId() != $relations['event'])
+                    )
+                || (!($registration->getEvent()) && $relations['event'])
+                )
+        ) {
+            $event = $eventRepo->findOneById($relations['event']);
+            $event->setVirtual(true);
+            if ($event) {
+                $registration->setEvent($event);
+                $event->addRegistration($registration);
+            }
+        }
+
+        //Set Registration formfield values
+        if ($relations['formFieldValues']) {
+            foreach ($relations['formFieldValues'] as $fieldId => $fieldValue) {
+                $formData = array('fieldId' => $fieldId, 'fieldValue' => $fieldValue);
+                $this->getFormFieldValueEntity($registration, $formFieldRepo, $formData);
+            }
+        }
+
+        return $registration;
+    }
+
+    /**
+     * Get form field value entity
+     *
+     * @param \Cx\Modules\Calendar\Model\Entity\Registration $registration  registration entity
+     * @param object                                         $formFieldRepo formfield repository
+     * @param array                                          $fieldValues   field values
+     *
+     * @return \Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue
+     */
+    public function getFormFieldValueEntity(
+        \Cx\Modules\Calendar\Model\Entity\Registration $registration,
+        $formFieldRepo,
+        $fieldValues
+    ){
+        $isNewEntity    = false;
+        $formFieldValue = $registration->getRegistrationFormFieldValueByFieldId(
+            $fieldValues['fieldId']
+        );
+        if (!$formFieldValue) {
+            $isNewEntity    = true;
+            $formFieldValue = new \Cx\Modules\Calendar\Model\Entity\RegistrationFormFieldValue();
+        }
+        $formFieldValue->setVirtual(true);
+        $formField = $formFieldValue->getRegistrationFormField();
+        if (    (   $formField
+                &&  ($formField->getId() != $fieldValues['fieldId'])
+                )
+            ||  (!$formField && $fieldValues['fieldId'])
+        ) {
+            $formField = $formFieldRepo->findOneById($fieldValues['fieldId']);
+            $formField->setVirtual(true);
+            if ($formField) {
+                $formFieldValue->setRegistrationFormField($formField);
+                $formField->addRegistrationFormFieldValue($formFieldValue);
+            }
+        }
+        $formFieldValue->setValue($fieldValues['fieldValue']);
+        if ($isNewEntity) {
+            $registration->addRegistrationFormFieldValue($formFieldValue);
+            $formFieldValue->setRegistration($registration);
+        }
+
+        return $formFieldValue;
     }
 }

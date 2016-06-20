@@ -69,10 +69,16 @@ class CxModulesCalendarModelEntityRegistrationFormProxy extends \Cx\Modules\Cale
         return parent::getTitle();
     }
 
-    public function addEvents(\Cx\Modules\Calendar\Model\Entity\Event $events)
+    public function addEvent(\Cx\Modules\Calendar\Model\Entity\Event $event)
     {
         $this->_load();
-        return parent::addEvents($events);
+        return parent::addEvent($event);
+    }
+
+    public function setEvents($events)
+    {
+        $this->_load();
+        return parent::setEvents($events);
     }
 
     public function getEvents()
@@ -81,10 +87,22 @@ class CxModulesCalendarModelEntityRegistrationFormProxy extends \Cx\Modules\Cale
         return parent::getEvents();
     }
 
-    public function addRegistrationFormFields(\Cx\Modules\Calendar\Model\Entity\RegistrationFormField $registrationFormFields)
+    public function addRegistrationFormField(\Cx\Modules\Calendar\Model\Entity\RegistrationFormField $registrationFormField)
     {
         $this->_load();
-        return parent::addRegistrationFormFields($registrationFormFields);
+        return parent::addRegistrationFormField($registrationFormField);
+    }
+
+    public function getRegistrationFormFieldById($id)
+    {
+        $this->_load();
+        return parent::getRegistrationFormFieldById($id);
+    }
+
+    public function setRegistrationFormFields($registrationFormFields)
+    {
+        $this->_load();
+        return parent::setRegistrationFormFields($registrationFormFields);
     }
 
     public function getRegistrationFormFields()
