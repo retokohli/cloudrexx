@@ -284,7 +284,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $primaryKeyNames = $metaData->getIdentifierFieldNames();
         foreach ($primaryKeyNames as $fieldName) {
             $this->replaceKey($foreignHost, $entityType, $fieldName, $dataArguments);
-            unset($dataArguments[$fieldName]);
         }
         $associationMappings = $metaData->getAssociationMappings();
         foreach ($associationMappings as $fieldName => $associationMapping) {
@@ -319,7 +318,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // if yes:
         if (count($mapping) && current($mapping)) {
             // replace ID by our ID
-            $fieldData[$fieldName] = current($mapping)->getLocalId();
+            if ($fieldName == 'id') {
+                unset($fieldData[$fieldName]);
+            } else {
+                $fieldData[$fieldName] = current($mapping)->getLocalId();
+            }
             
         // if no:
         } else {
