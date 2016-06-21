@@ -349,6 +349,7 @@ class CalendarCategory extends CalendarLibrary
                     }
 
                     $formData = array(
+                        'catId'  => intval($this->id),
                         'name'   => contrexx_addslashes(contrexx_strip_tags($categoryName)),
                         'langId' => intval($langId)
                     );
@@ -597,9 +598,14 @@ class CalendarCategory extends CalendarLibrary
                     }
                     $value = ($value == '') ? $fieldValue[0] : $value;
                     if ($langId == $_LANGID) {
-                        $value = ($fieldValue[0] != $this->name) ? $fieldValue[0] : $value;
+                        $value = ($fieldValue[0] != $this->name)
+                            ? $fieldValue[0] : $value;
                     }
-                    $formData = array('name' => $value, 'langId' => $langId);
+                    $formData = array(
+                        'catId'  => $id,
+                        'name'   => $value,
+                        'langId' => $langId
+                    );
                     $this->getCategoryNameEntity($category, $formData);
                 }
             } else {
