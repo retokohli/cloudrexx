@@ -41,6 +41,16 @@ use Cx\Core\Core\Controller\Cx;
 use Cx\Model\Base\EntityBase;
 
 /**
+ * Class MediaSourceManagerException
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Thomas Däppen <thomas.daeppen@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core_mediasource
+ */
+class MediaSourceManagerException extends \Exception {}
+
+/**
  * Class MediaSourceManager
  *
  * @copyright   Cloudrexx AG
@@ -193,11 +203,11 @@ class MediaSourceManager extends EntityBase
      * @param $name string
      *
      * @return MediaSource
-     * @throws MediaSourceException
+     * @throws MediaSourceManagerException
      */
     public function getMediaType($name) {
         if(!isset($this->mediaTypes[$name])){
-            throw new MediaSourceException("No such mediatype available");
+            throw new MediaSourceManagerException("No such mediatype available");
         }
         return $this->mediaTypes[$name];
     }
@@ -250,7 +260,11 @@ class MediaSourceManager extends EntityBase
         // Shift off the first element of the array to get the media type.
         $mediaType  = array_shift($pathArray);
         $strPath    = '/' . join('/', $pathArray);
-        $mediaSourceFile = $this->getMediaType($mediaType)->getFileSystem()->getFileFromPath($strPath);
+        try {
+            $mediaSourceFile = $this->getMediaType($mediaType)->getFileSystem()->getFileFromPath($strPath);
+        } catch (MediaSourceManagerException $e) {
+            return false;
+        }
         if (!$mediaSourceFile) {
             return false;
         }
