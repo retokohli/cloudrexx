@@ -11,6 +11,7 @@ Cx\Modules\Calendar\Model\Entity\RegistrationForm:
       type: integer
     order:
       type: integer
+      column: `order`
     title:
       type: string
       length: 255
