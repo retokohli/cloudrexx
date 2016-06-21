@@ -199,8 +199,8 @@ class ViewManager
         global $objTemplate, $_ARRAYLANG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION","
-            <a href='index.php?cmd=ViewManager' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_OVERVIEW']."</a>
-            <a href='index.php?cmd=ViewManager&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_TEMPLATES']."</a>
+            <a href='index.php?cmd=ViewManager' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VIEWMANAGER_OVERVIEW']."</a>
+            <a href='index.php?cmd=ViewManager&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_VIEWMANAGER_TEMPLATE_EDITOR']."</a>
             <a href='index.php?cmd=ViewManager&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_SETTINGS']."</a>"
         );
 
@@ -358,7 +358,7 @@ class ViewManager
         ));
 
         $supportForTemplateEditor = false;
-        $optionsFile = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($theme->getFoldername(). '/options/options.yml');
+        $optionsFile = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($theme->getFoldername(). '/options/options.yml', $this->fileSystem);
         if ($this->fileSystem->fileExists($optionsFile)) {
             $supportForTemplateEditor = true;
         }
@@ -484,7 +484,7 @@ class ViewManager
         }
 
         if ($selectedFile == null) {
-            $selectedFile     = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($theme->getFoldername() . '/index.html');
+            $selectedFile     = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($theme->getFoldername() . '/index.html', $this->fileSystem);
             $themesPage       = '/index.html';
             $isComponentFile  = false;
         }
@@ -550,7 +550,7 @@ CODE;
             'TXT_MANAGE_FILES'                => $_ARRAYLANG['TXT_MANAGE_FILES'],
             'TXT_SELECT_THEME'                => $_ARRAYLANG['TXT_SELECT_THEME'],
             'TXT_THEME_NAME'                  => $_ARRAYLANG['TXT_THEME_NAME'],
-            'TXT_DESIGN_OVERVIEW'             => $_ARRAYLANG['TXT_DESIGN_OVERVIEW'],
+            'TXT_VIEWMANAGER_OVERVIEW'        => $_ARRAYLANG['TXT_VIEWMANAGER_OVERVIEW'],
             'TXT_MODE'                        => $_ARRAYLANG['TXT_MODE'],
             'TXT_THEMES_EDIT'                 => $_ARRAYLANG['TXT_SETTINGS_MODFIY'],
             'TXT_THEMES_CREATE'               => $_ARRAYLANG['TXT_CREATE'],
@@ -1082,18 +1082,18 @@ CODE;
         //clean up tmp folder
         $this->_cleantmp();
 
-        $themeFolder = $theme->getFoldername();
-
-        if (!$this->fileSystem->fileExists($themeFolder)) {
+        $themeFolderPath = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($theme->getFoldername(), $this->fileSystem);
+        if (!$this->fileSystem->fileExists($themeFolderPath)) {
             $this->strErrMessage = $_ARRAYLANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
             return false;
         }
 
-        $archive    = new \PclZip($this->_archiveTempPath . $themeFolder . '.zip');
-        $themeFiles = $this->getThemesFiles($theme);
+        $themeFolder = $theme->getFoldername();
+        $archive     = new \PclZip($this->_archiveTempPath . $themeFolder . '.zip');
+        $themeFiles  = $this->getThemesFiles($theme);
 
         \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
-        $this->createZipFolder($archive, $themeFiles, '');
+        $this->createZipFolder($archive, $themeFiles, '/' . $themeFolder);
         \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath . $themeFolder . '.zip');
         return $this->_archiveTempPath . $themeFolder . '.zip';
     }
@@ -1110,16 +1110,17 @@ CODE;
         global $_ARRAYLANG;
         foreach ($themeFilesArray as $folderName => $fileName) {
             if (is_array($fileName)) {
-                $this->createZipFolder($fileName, $folder . '/' . $folderName, $archive);
+                $this->createZipFolder($archive, $fileName, $folder . '/' . $folderName);
                 continue;
             }
             $relativePath = $folder . '/' . $fileName;
             if (self::isFileTypeComponent($relativePath)) {
                 $relativePath = self::getComponentFilePath($relativePath, false);
             }
-            $localFile  = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($relativePath);
-            $filePath   = $this->fileSystem->getFullPath($localFile);
-            $removePath = preg_replace('/'. $relativePath .'$/', '', $filePath);
+
+            $localFile  = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($relativePath, $this->fileSystem);
+            $filePath   = $localFile->getFileSystem()->getFullPath($localFile);
+            $removePath = preg_replace('/'. preg_quote($relativePath, '/') .'$/', '', $filePath);
 
             if ($archive->add($filePath, PCLZIP_OPT_REMOVE_PATH, $removePath) == 0) {
                 \DBG::log($_ARRAYLANG['TXT_THEME_ARCHIVE_ERROR'] .' ' . $archive->errorInfo(true));
@@ -1397,8 +1398,8 @@ CODE;
                     }
                     break;
                 case (!empty($copyFromTheme) && empty($createFromDatabase)):
-                    $fromThemeFolder = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile('/'. $copyFromTheme);
-                    $toThemeFolder   = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile('/'. $dirName);
+                    $fromThemeFolder = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile('/'. $copyFromTheme, $this->fileSystem);
+                    $toThemeFolder   = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile('/'. $dirName, $this->fileSystem);
                     if (!$this->fileSystem->copyFolder($fromThemeFolder, $toThemeFolder)) {
                         \Message::add($_ARRAYLANG['TXT_MSG_ERROR_NEW_DIR'], \Message::CLASS_ERROR);
                         $this->newdir();
@@ -1671,7 +1672,7 @@ CODE;
         if (!$isComponentFile) {
             $relativeFilePath = '/' .$theme->getFoldername() . $relativeFilePath;
         }
-        $localFile = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($relativeFilePath);
+        $localFile = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($relativeFilePath, $this->fileSystem);
         $localFile->setApplicationTemplateFile($isComponentFile);
 
         return $this->fileSystem->isFile($localFile) ? $localFile : null;
@@ -2016,7 +2017,7 @@ CODE;
             if ($block == 'theme') {
                 $filePath = $theme->getFolderName() . $filePath;
             }
-            $localFile = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($filePath);
+            $localFile = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($filePath, $this->fileSystem);
             $localFile->setApplicationTemplateFile($isApplicationTab);
 
             $permissionClass = $isComponentFile || $this->fileSystem->isReadOnly($localFile) ? 'protected' : '';

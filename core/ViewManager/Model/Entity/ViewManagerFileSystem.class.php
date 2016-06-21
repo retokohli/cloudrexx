@@ -56,17 +56,15 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
                 = new \Cx\Core\MediaSource\Model\Entity\LocalFileSystem($this->cx->getCodeBaseThemesPath());
         }
 
+// TODO: move initialization into MultiSite component
         //Initialize the server website path and its themes path
         //if the current website mode is set as client and server website repository is set
         $websiteMode     = \Cx\Core\Setting\Controller\Setting::getValue('website_mode','MultiSite');
-        $serverWebsiteId = \Cx\Core\Setting\Controller\Setting::getValue('website_server','MultiSite');
-        if ($websiteMode == \Cx\Core_Modules\MultiSite\Controller\ComponentController::WEBSITE_MODE_CLIENT && !empty($serverWebsiteId)) {
-            $response = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSiteController::executeCommandOnMyServiceServer('getServerWebsitePath', array('websiteId' => $serverWebsiteId));
-            if ($response && $response->status == 'success' && !empty($response->data->serverWebsitePath)) {
-                $serverWebsitePath = $response->data->serverWebsitePath;
-                $this->serverWebsiteFileSystem
-                    = new \Cx\Core\MediaSource\Model\Entity\LocalFileSystem($serverWebsitePath->documentRootPath . \Cx\Core\Core\Controller\Cx::FOLDER_NAME_THEMES);
-            }
+        $serverWebsite = \Cx\Core\Setting\Controller\Setting::getValue('website_server','MultiSite');
+        if ($websiteMode == \Cx\Core_Modules\MultiSite\Controller\ComponentController::WEBSITE_MODE_CLIENT && !empty($serverWebsite)) {
+// TODO: properly set path where the websites are located
+            $this->serverWebsiteFileSystem
+                = new \Cx\Core\MediaSource\Model\Entity\LocalFileSystem('/var/www/websites/' . $serverWebsite . \Cx\Core\Core\Controller\Cx::FOLDER_NAME_THEMES);
         }
     }
 
@@ -198,14 +196,14 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
             } else {
                 $basePath = $this->cx->getCodeBaseDocumentRootPath();
             }
-        } elseif (file_exists($this->getRootPath() . '/' . $file->__toString())) {
+        } elseif (file_exists($this->getRootPath() . $file->__toString())) {
             $basePath = $this->getRootPath();
-        } elseif ($this->serverWebsiteFileSystem && file_exists($this->serverWebsiteFileSystem->getRootPath() . '/' . $file->__toString())) {
+        } elseif ($this->serverWebsiteFileSystem && file_exists($this->serverWebsiteFileSystem->getRootPath() . $file->__toString())) {
             $basePath = $this->serverWebsiteFileSystem->getRootPath();
-        } elseif ($this->codeBaseFileSystem && file_exists($this->codeBaseFileSystem->getRootPath() . '/' . $file->__toString())) {
+        } elseif ($this->codeBaseFileSystem && file_exists($this->codeBaseFileSystem->getRootPath() . $file->__toString())) {
             $basePath = $this->codeBaseFileSystem->getRootPath();
         }
-        return $basePath . '/' . $file->__toString();
+        return $basePath . $file->__toString();
     }
 
     /**
@@ -217,7 +215,7 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
      */
     public function isReadOnly(\Cx\Core\MediaSource\Model\Entity\File $file)
     {
-        if (file_exists($this->getRootPath() . '/' . $file->__toString())) {
+        if (file_exists($this->getRootPath() . $file->__toString())) {
             return false;
         }
         return true;
@@ -232,17 +230,17 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
      */
     public function isResettable(\Cx\Core\MediaSource\Model\Entity\File $file)
     {
-        $isFileExistsInWebsite = file_exists($this->getRootPath() . '/' . $file->__toString());
+        $isFileExistsInWebsite = file_exists($this->getRootPath() . $file->__toString());
         if (   $this->serverWebsiteFileSystem
             && $isFileExistsInWebsite
-            && file_exists($this->serverWebsiteFileSystem->getRootPath() . '/' . $file->__toString())
+            && file_exists($this->serverWebsiteFileSystem->getRootPath() . $file->__toString())
         ) {
             return true;
         }
         if (   $this->cx->getWebsiteThemesPath() != $this->cx->getCodeBaseThemesPath()
             && $this->codeBaseFileSystem
             && $isFileExistsInWebsite
-            && file_exists($this->codeBaseFileSystem->getRootPath() . '/' . $file->__toString())
+            && file_exists($this->codeBaseFileSystem->getRootPath() . $file->__toString())
         ) {
             return true;
         }
@@ -271,11 +269,11 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
     {
         if (
                $this->codeBaseFileSystem
-            && file_exists($this->codeBaseFileSystem->getRootPath() . '/' . $fromFile->__toString())
+            && file_exists($this->codeBaseFileSystem->getRootPath() . $fromFile->__toString())
         ) {
             if (!\Cx\Lib\FileSystem\FileSystem::copy_folder(
-                    $this->codeBaseFileSystem->getRootPath() . '/' . $fromFile->__toString(),
-                    $this->getRootPath() . '/' . $toFile->__toString(), true
+                    $this->codeBaseFileSystem->getRootPath() . $fromFile->__toString(),
+                    $this->getRootPath() . $toFile->__toString(), true
                 )
             ) {
                 return false;
@@ -283,25 +281,35 @@ class ViewManagerFileSystem extends \Cx\Core\MediaSource\Model\Entity\LocalFileS
         }
         if (
                $this->serverWebsiteFileSystem
-            && file_exists($this->serverWebsiteFileSystem->getRootPath() . '/' . $fromFile->__toString())
+            && file_exists($this->serverWebsiteFileSystem->getRootPath() . $fromFile->__toString())
         ) {
             if (!\Cx\Lib\FileSystem\FileSystem::copy_folder(
-                    $this->serverWebsiteFileSystem->getRootPath() . '/' . $fromFile->__toString(),
-                    $this->getRootPath() . '/' . $toFile->__toString(), true
+                    $this->serverWebsiteFileSystem->getRootPath() . $fromFile->__toString(),
+                    $this->getRootPath() . $toFile->__toString(), true
                 )
             ) {
                 return false;
             }
         }
-        if (file_exists($this->getRootPath() . '/' . $fromFile->__toString())) {
+        if (file_exists($this->getRootPath() . $fromFile->__toString())) {
             if (!\Cx\Lib\FileSystem\FileSystem::copy_folder(
-                    $this->getRootPath() . '/' . $fromFile->__toString(),
-                    $this->getRootPath() . '/' . $toFile->__toString(), true
+                    $this->getRootPath() . $fromFile->__toString(),
+                    $this->getRootPath() . $toFile->__toString(), true
                 )
             ) {
                 return false;
             }
         }
         return true;
+    }
+
+    public function getFileFromPath($filepath) {
+        $fileinfo = pathinfo($filepath);
+        $path = dirname($filepath);
+        $files = $this->getFileList($fileinfo['dirname']);
+        if (!isset($files[$fileinfo['basename']])) {
+            return false;
+        }
+        return new ViewManagerFile($filepath, $this);
     }
 }

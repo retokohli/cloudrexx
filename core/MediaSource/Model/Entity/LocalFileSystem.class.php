@@ -39,6 +39,10 @@ use Cx\Model\Base\EntityBase;
 class LocalFileSystem extends EntityBase implements FileSystem
 {
 
+    /**
+     * The path of the file system.
+     * Without ending directory separator.
+     */
     private $rootPath;
 
     function __construct($path) {
@@ -59,6 +63,9 @@ class LocalFileSystem extends EntityBase implements FileSystem
         return new self($path);
     }
 
+    /**
+     * @todo    Option $recursive does not work. It always acts as recursive is set to TRUE
+     */
     public function getFileList($directory, $recursive = false, $readonly = false) {
 
         $dirPath = rtrim($this->rootPath . '/' . $directory,'/');
@@ -489,4 +496,13 @@ class LocalFileSystem extends EntityBase implements FileSystem
         $this->rootPath = $rootPath;
     }
 
+    public function getFileFromPath($filepath) {
+        $fileinfo = pathinfo($filepath);
+        $path = dirname($filepath);
+        $files = $this->getFileList($fileinfo['dirname']);
+        if (!isset($files[$fileinfo['basename']])) {
+            return false;
+        }
+        return new LocalFile($filepath, $this);
+    }
 }

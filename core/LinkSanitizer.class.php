@@ -180,14 +180,14 @@ class LinkSanitizer {
      * @return  bool     true if the file exists, otherwise false
      */
     private function fileExists($filePath) {
-        if (file_exists($filePath)) {
+        if (file_exists(\Env::get('ClassLoader')->getFilePath($filePath))) {
             return true;
         }
 
         $arrUrl = parse_url($filePath);
         if (!empty($arrUrl['path'])
             && substr($arrUrl['path'], -4) !== '.php'
-            && file_exists($arrUrl['path'])) {
+            && file_exists(\Env::get('ClassLoader')->getFilePath($arrUrl['path']))) {
             return true;
         }
 

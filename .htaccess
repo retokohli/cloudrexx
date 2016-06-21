@@ -56,8 +56,8 @@
     #            document root of the Contrexx installation. I.e.: /var/www
     RewriteCond %{ENV:REDIRECT_END} !1
     RewriteCond %{REQUEST_URI} ^/(themes)/
-    RewriteCond %PATH_DOCUMENT_ROOT%${websiteDomainThemeMap:%{HTTP_HOST}}%{REQUEST_URI} -f
-    RewriteRule (.*) ${websiteDomainThemeMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
+    RewriteCond %PATH_DOCUMENT_ROOT%${websiteDomainServerMap:%{HTTP_HOST}}%{REQUEST_URI} -f
+    RewriteRule (.*) ${websiteDomainServerMap:%{HTTP_HOST}|}/$1 [L,QSA,E=END:1]
 
     # MultiSite: Try to map the request of a the webdesign template file to
     #            the website's Code Base.

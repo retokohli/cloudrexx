@@ -375,13 +375,13 @@ class Theme extends \Cx\Model\Base\EntityBase
         if (empty($filePath)) {
             return '';
         }
-        $file = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($filePath);
+        $fileSystem = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getMediaSourceManager()
+            ->getMediaType('themes')
+            ->getFileSystem();
+        $file = new \Cx\Core\ViewManager\Model\Entity\ViewManagerFile($filePath, $fileSystem);
 
-        return \Cx\Core\Core\Controller\Cx::instanciate()
-                    ->getMediaSourceManager()
-                    ->getMediaType('themes')
-                    ->getFileSystem()
-                    ->getFullPath($file);
+        return $fileSystem->getFullPath($file);
     }
 
     /**
