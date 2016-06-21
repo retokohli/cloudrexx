@@ -700,17 +700,18 @@ class InitCMS
         $templateFiles = array();
         $folder = $customTemplateForTheme->getFoldername();
         $cx = \Cx\Core\Core\Controller\Cx::instanciate();
-        if (file_exists($cx->getCodeBaseThemesPath().'/'.$folder)) {
-            $templateFiles = scandir($cx->getCodeBaseThemesPath().'/'.$folder);
-        }
-        if (file_exists($cx->getWebsiteThemesPath().'/'.$folder)) {
-            $templateFiles = array_unique(array_merge($templateFiles, scandir($cx->getWebsiteThemesPath().'/'.$folder)));
-        }
+        $templateFiles = $cx->getMediaSourceManager()->getMediaType('themes')->getFileSystem()->getFileList($folder);
 
-        foreach ($templateFiles as $f){
+        foreach ($templateFiles as $fileName => $fileInfo){
             $match = null;
-            if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
-                array_push($result, $f);
+
+            // skip subdirectories
+            if ($fileInfo['datainfo']['type'] != 'file') {
+                continue;
+            }
+
+            if (preg_match('/^(content|home)_(.+).html$/', $fileName, $match)) {
+                array_push($result, $fileName);
             }
         }
 

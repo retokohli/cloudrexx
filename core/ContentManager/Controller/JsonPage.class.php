@@ -1274,7 +1274,7 @@ class JsonPage implements JsonAdapter {
             }
             $themeFolderName  = $theme->getFoldername();
             $moduleFolderName = contrexx_isCoreModule($application) ? 'core_modules' : 'modules';
-            $themePath        = ASCMS_THEMES_PATH.'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$section.'/Template/Frontend';
+            $themePath        = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(\Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteThemesPath().'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$section.'/Template/Frontend');
             if (file_exists($themePath)) {
                 $templateFiles    = $this->readDirs($themePath);
                 foreach ($templateFiles As $templateFile) {
