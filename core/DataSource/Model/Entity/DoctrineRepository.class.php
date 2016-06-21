@@ -170,7 +170,21 @@ class DoctrineRepository extends DataSource {
         
         $em->persist($entity);
         $em->flush();
-        return $entityClassMetadata->getSingleIdReflectionProperty()->getValue($entity);
+        return $this->getEntityIndexData($entity);
+    }
+    
+    /**
+     * @todo: This method should be elsewhere
+     */
+    protected function getEntityIndexData($entity) {
+        $em = $this->cx->getDb()->getEntityManager();
+        $entityClassName = get_class($entity);
+        $entityMetaData = $em->getClassMetadata($entityClassName);
+        $entityIndexData = array();
+        foreach ($entityMetaData->getIdentifierFieldNames() as $field) {
+            $entityIndexData[$field] = $entityMetaData->getFieldValue($entity, $field);
+        }
+        return $entityIndexData;
     }
     
     /**
@@ -238,12 +252,12 @@ class DoctrineRepository extends DataSource {
     protected function setEntityData($entity, $data) {
         $em = $this->cx->getDb()->getEntityManager();
         $entityClassMetadata = $em->getClassMetadata(get_class($entity));
-        $primaryKeyName = $entityClassMetadata->getSingleIdentifierFieldName(); //get primary key name
+        $primaryKeyNames = $entityClassMetadata->getIdentifierFieldNames(); //get primary key name
         $entityColumnNames = $entityClassMetadata->getColumnNames(); //get the names of all fields
         
         foreach($entityColumnNames as $column) {
             $name = $entityClassMetadata->getFieldName($column);
-            if ($name == $primaryKeyName || !isset($data[$name])) {
+            if (/*in_array($name, $primaryKeyNames) ||*/ !isset($data[$name])) {
                 continue;
             }
             
@@ -272,6 +286,9 @@ class DoctrineRepository extends DataSource {
                 $targetEntity = $targetRepo->findOneBy(array(
                     $associationMapping['joinColumns'][0]['referencedColumnName'] => $data[$field],
                 ));
+                if (!$targetEntity) {
+                    throw new \Exception('Entity not found (' . $associationMapping['targetEntity'] . ' with ID ' . $data[$field] . ')');
+                }
                 $setMethod = 'set'.ucfirst($field);
                 $entity->$setMethod($targetEntity);
             }
