@@ -91,6 +91,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $syncRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Sync');
         $syncs = $syncRepo->findAll();
         foreach ($syncs as $sync) {
+            if (!$sync->getActive()) {
+                continue;
+            }
             // get entity class name
             $entityClassName = $sync->getDataAccess()->getDataSource()->getIdentifier();
             if (!isset($this->syncs[$entityClassName])) {
