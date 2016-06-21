@@ -156,16 +156,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if (empty($arguments[1])) {
                 throw new \InvalidArgumentException('Not enough arguments');
             }
+            $em = $this->cx->getDb()->getEntityManager();
             $dataSource = $this->getDataSource($arguments[1]);
-            
             $elementId = array();
             if (isset($arguments[2])) {
                 $argumentKeys = array_keys($arguments);
-                for ($i = 2; $i < count($arguments); $i++) {
-                    if (!is_numeric($argumentKeys[$i])) {
+                $metaData = $em->getClassMetadata($dataSource->getIdentifier());
+                $primaryKeyNames = $metaData->getIdentifierFieldNames();
+                for ($i = 0; $i < count($arguments) - 2; $i++) {
+                    if (!is_numeric($argumentKeys[$i + 2])) {
                         break;
                     }
-                    $elementId[] = $arguments[$i];
+                    $elementId[$primaryKeyNames[$i]] = $arguments[$i + 2];
                 }
             }
             
@@ -206,7 +208,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
             }
             
-            $em = $this->cx->getDb()->getEntityManager();
             $dataAccessRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\DataAccess');
             $dataAccess = $dataAccessRepo->getAccess($outputModule, $dataSource, $method, $apiKey);
             if (!$dataAccess) {
