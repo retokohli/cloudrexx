@@ -322,13 +322,13 @@ class CalendarMailManager extends CalendarLibrary {
 
                     $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $userNick, $userFirstname, $userLastname, $domain, $date);
 
-                    $mailTitle       = str_replace($placeholder, $replaceContent, $mailTitle);                                                                           
-                    $mailContentText = str_replace($placeholder, $replaceContent, $mailContentText);                                                                           
+                    $mailTitle       = str_replace($placeholder, array_map('contrexx_xhtml2raw', $replaceContent), $mailTitle);                                                                           
+                    $mailContentText = str_replace($placeholder, array_map('contrexx_xhtml2raw', $replaceContent), $mailContentText);                                                                           
                     $mailContentHtml = str_replace($placeholder, $replaceContent, $mailContentHtml);
 
                     if (!empty($regId)) {
-                        $mailTitle       = str_replace($regSearch, $regReplace, $mailTitle);                                                                           
-                        $mailContentText = str_replace($regSearch, $regReplace, $mailContentText);                                                                           
+                        $mailTitle       = str_replace($regSearch, array_map('contrexx_xhtml2raw', $regReplace), $mailTitle);                                                                           
+                        $mailContentText = str_replace($regSearch, array_map('contrexx_xhtml2raw', $regReplace), $mailContentText);                                                                           
                         $mailContentHtml = str_replace($regSearch, $regReplace, $mailContentHtml);
 
                         $mailContentText = str_replace('[[REGISTRATION_DATA]]', $registrationDataText, $mailContentText);                                                                           
