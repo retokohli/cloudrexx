@@ -365,8 +365,8 @@ CREATE TABLE `contrexx_core_module_sync_id_mapping` (
   `id` int(11) AUTO_INCREMENT NOT NULL,
   `foreign_host` varchar(255) NOT NULL,
   `entity_type` varchar(255) NOT NULL,
-  `foreign_id` int(11) NOT NULL,
-  `local_id` int(11) NOT NULL,
+  `foreign_id` varchar(255) NOT NULL,
+  `local_id` varchar(255) NOT NULL,
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB;
 CREATE TABLE `contrexx_core_module_sync` (
