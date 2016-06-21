@@ -1338,83 +1338,22 @@ class Order
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $order_id = intval($order_id);
-        if (empty($order_id)) return false;
-        $arrItemId = self::getItemIdArray($order_id);
-        if (!empty($arrItemId)) {
-            foreach ($arrItemId as $item_id) {
-                // Delete files uploaded with the order
-                $query = "
-                    SELECT `option_name`
-                      FROM `".DBPREFIX."module_shop".MODULE_INDEX."_order_attributes`
-                     WHERE `item_id`=$item_id";
-                $objResult = $objDatabase->Execute($query);
-                if (!$objResult) {
-                    return self::errorHandler();
-                }
-                while (!$objResult->EOF) {
-                    $path =
-                        Order::UPLOAD_FOLDER.
-                        $objResult->fields['option_name'];
-                    if (\File::exists($path)) {
-                        if (!\File::delete_file($path)) {
-                            \Message::error(sprintf(
-                                $_ARRAYLANG['TXT_SHOP_ERROR_DELETING_FILE'], $path));
-                        }
-                    }
-                    $objResult->MoveNext();
-                }
-                $query = "
-                    DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_order_attributes`
-                     WHERE `item_id`=$item_id";
-                if (!$objDatabase->Execute($query)) {
-                    return \Message::error(
-                        $_ARRAYLANG['TXT_SHOP_ERROR_DELETING_ORDER_ATTRIBUTES']);
-                }
-            }
+        $order_id = contrexx_input2int($order_id);
+        if (empty($order_id)) {
+            return false;
         }
-        $query = "
-            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_order_items`
-             WHERE `order_id`=$order_id";
+        $objUser = \FWUser::getFWUserObject()->objUser;
+        $query = '
+            UPDATE
+                `' . DBPREFIX . 'module_shop' . MODULE_INDEX . '_orders`
+            SET
+                `status` = '. Order::STATUS_DELETED .',
+                `modified_by` = "' . contrexx_raw2db($objUser->getUsername()) . '",
+                `modified_on` = "' . date('Y-m-d H:i:s') . '"
+            WHERE
+                `id`='. $order_id;
         if (!$objDatabase->Execute($query)) {
-            return \Message::error(
-                $_ARRAYLANG['TXT_SHOP_ERROR_DELETING_ORDER_ITEMS']);
-        }
-        $query = "
-            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_lsv`
-             WHERE `order_id`=$order_id";
-        if (!$objDatabase->Execute($query)) {
-            return \Message::error(
-                $_ARRAYLANG['TXT_SHOP_ERROR_DELETING_ORDER_LSV']);
-        }
-        // Remove accounts autocreated for downloads
-// TODO: TEST!
-        $objOrder = self::getById($order_id);
-        if ($objOrder) {
-            $customer_id = $objOrder->customer_id();
-            $objCustomer = Customer::getById($customer_id);
-            if ($objCustomer) {
-                $customer_email =
-                    Orders::usernamePrefix."_${order_id}_%-".
-                    $objCustomer->email();
-                $objUser = \FWUser::getFWUserObject()->objUser->getUsers(
-                    array('email' => $customer_email));
-                if ($objUser) {
-                    while (!$objUser->EOF) {
-                        if (!$objUser->delete()) {
-                            return false;
-                        }
-                        $objUser->next();
-                    }
-                }
-            }
-        }
-        $query = "
-            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_orders`
-             WHERE `id`=$order_id";
-        if (!$objDatabase->Execute($query)) {
-            return \Message::error(
-                $_ARRAYLANG['TXT_SHOP_ERROR_DELETING_ORDER']);
+            return \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_DELETING_ORDER']);
         }
         return true;
     }
