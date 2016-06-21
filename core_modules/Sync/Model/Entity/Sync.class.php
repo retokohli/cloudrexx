@@ -277,7 +277,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
             foreach ($metaData->getColumnNames() as $column) {
                 $field = $metaData->getFieldName($column);
                 if (in_array($field, $primaryKeyNames)) {
-                    continue;
+                    //continue;
                 }
                 $content[$field] = $metaData->getFieldValue($entity, $field);
                 if (is_object($content[$field]) && get_class($content[$field]) == 'DateTime') {
@@ -291,7 +291,9 @@ class Sync extends \Cx\Model\Base\EntityBase {
                     && in_array('set'.ucfirst($field), $classMethods)
                 ) {
                     if ($metaData->getFieldValue($entity, $field)) {
-                        $content[$field] = (string) $metaData->getFieldValue($entity, $field);
+                        $foreignEntity = $metaData->getFieldValue($entity, $field);
+                        $indexData = $this->getComponentController()->getEntityIndexData($foreignEntity);
+                        $content[$field] = implode('/', $indexData);
                         continue;
                     }
                     $content[$field]= new $associationMapping['targetEntity']();

@@ -61,6 +61,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     protected $doPush = true;
     
+    protected $alreadySyncedEntities = array();
+    
     /**
      * Returns all Controller class names for this component (except this)
      * 
@@ -197,6 +199,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             throw new \BadMethodCallException('Unsupported API version: "' . $apiVersion . '"');
         }
         
+        $elementId = array();
+        $argumentKeys = array_keys($arguments);
+        for ($i = 2; $i < count($arguments); $i++) {
+            if (!is_numeric($argumentKeys[$i])) {
+                break;
+            }
+            $elementId[] = $arguments[$i];
+        }
+        $this->currentInsertId = $elementId;
+    
+        $em = $this->cx->getDb()->getEntityManager();
+        $dataAccessRepo = $em->getRepository('Cx\Core_Modules\DataAccess\Model\Entity\DataAccess');
+        $dataAccess = $dataAccessRepo->findOneBy(array('name' => $arguments[1]));
+        if (!$dataAccess || !$dataAccess->getDataSource()) {
+            throw new \Exception('No such DataSource: ' . $name);
+        }
+        $entityType = $dataAccess->getDataSource()->getIdentifier();
+        $foreignHost = $_SERVER['HTTP_REFERRER'];
+        
         // if an existing element is altered (delete, put, patch)
         // replace ID using mapping table
         if (in_array($method, array('put', 'patch', 'delete'))) {
@@ -204,25 +225,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // API would produce a 404 here
                 throw new \BadMethodCallException('No element given');
             }
-            $elementId = $arguments[2];
-            $this->currentInsertId = $elementId;
             
             // get mapping table entry
-            $em = $this->cx->getDb()->getEntityManager();
-            $dataAccessRepo = $em->getRepository('Cx\Core_Modules\DataAccess\Model\Entity\DataAccess');
-            $dataAccess = $dataAccessRepo->findOneBy(array('name' => $arguments[1]));
-            if (!$dataAccess || !$dataAccess->getDataSource()) {
-                throw new \Exception('No such DataSource: ' . $name);
-            }
-            $entityType = $dataAccess->getDataSource()->getIdentifier();
-            $foreignHost = $_SERVER['HTTP_REFERRER'];
-            
-            $mappingRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\IdMapping');
+            //\DBG::activate(DBG_DB);
+            $qb = $em->createQueryBuilder();
+            $qb->select('m')
+                ->from($this->getNamespace() . '\Model\Entity\IdMapping', 'm')
+                ->andWhere($qb->expr()->eq('m.foreignHost', '?1'))
+                ->setParameter(1, $foreignHost)
+                ->andWhere($qb->expr()->eq('m.entityType', '?2'))
+                ->setParameter(2, $entityType)
+                ->andWhere($qb->expr()->like('m.foreignId', $qb->expr()->literal(serialize($elementId))));
+            $mapping = $qb->getQuery()->getResult();
+            /*$mappingRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\IdMapping');
             $mapping = $mappingRepo->findOneBy(array(
                 'foreignHost' => $foreignHost,
                 'entityType' => $entityType,
                 'foreignId' => $elementId,
-            ));
+            ));*/
+            //\DBG::deactivate();
             
             if (!$mapping) {
                 // remote is trying to push changes to an entity that does not yet exist here
@@ -243,21 +264,72 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     // - tell api it's a POST request
                     // - make sure our eventlistener thinks it's a POST request
                     $this->cx->getRequest()->setHttpRequestMethod('post');
+                    $method = 'post';
                 }
             } else {
-                $arguments[2] = $mapping->getLocalId();
+                // set ID of the the entity to our local ID
+                $mapping = current($mapping);
+                foreach ($mapping->getLocalId() as $i=>$id) {
+                    $arguments[$i + 2] = $id;
+                }
             }
             
             // on put/patch: if the ID of the element changes we need to check
-            // if the ID is a relation. If so: we need to update here as well
+            // if the ID is a relation. If so: we need to update there as well
             // if not, we should ignore the change
         }
         
+        // foreach ID and foreign key
+        $metaData = $em->getClassMetadata($entityType);
+        $primaryKeyNames = $metaData->getIdentifierFieldNames();
+        foreach ($primaryKeyNames as $fieldName) {
+            $this->replaceKey($foreignHost, $entityType, $fieldName, $dataArguments);
+            unset($dataArguments[$fieldName]);
+        }
+        $associationMappings = $metaData->getAssociationMappings();
+        foreach ($associationMappings as $fieldName => $associationMapping) {
+            if (!isset($associationMapping['targetEntity'])) {
+                continue;
+            }
+            $this->replaceKey($foreignHost, $associationMapping['targetEntity'], $fieldName, $dataArguments);
+        }
+        
+        // Route to API
         $this->getComponent('DataAccess')->executeCommand(
             $apiVersion,
             $arguments,
             $dataArguments
         );
+    }
+    
+    protected function replaceKey($foreignHost, $entityType, $fieldName, &$fieldData) {
+        $em = $this->cx->getDb()->getEntityManager();
+        
+        // see if we have mapping table entry
+        $qb = $em->createQueryBuilder();
+        $qb->select('m')
+            ->from($this->getNamespace() . '\Model\Entity\IdMapping', 'm')
+            ->andWhere($qb->expr()->eq('m.foreignHost', '?1'))
+            ->setParameter(1, $foreignHost)
+            ->andWhere($qb->expr()->eq('m.entityType', '?2'))
+            ->setParameter(2, $entityType)
+            ->andWhere($qb->expr()->like('m.foreignId', $qb->expr()->literal(serialize(array($fieldData[$fieldName])))));
+        $mapping = $qb->getQuery()->getResult();
+
+        // if yes:
+        if (count($mapping) && current($mapping)) {
+            // replace ID by our ID
+            $fieldData[$fieldName] = current($mapping)->getLocalId();
+            
+        // if no:
+        } else {
+            // if auto-increment (assuming all 'id' fields are auto-incremented)
+            if ($fieldName == 'id') {
+                unset($fieldData[$fieldName]);
+            }
+            // else
+                // use provided key -> do nothing
+        }
     }
     
     /**
@@ -359,6 +431,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     protected function pushSync($sync, $eventType, $entityIndexData, $entity, $prevRelationConfig = null) {
         // @todo: This method should provide some kind of locking over multiple systems
         $dataSource = $sync->getDataAccess()->getDataSource();
+        $origSync = $sync;
+        if ($prevRelationConfig) {
+            $origSync = $prevRelationConfig->getSync();
+        } else {
+            //$this->alreadySyncedEntities = array();
+        }
+        
+        /*if (isset($this->alreadySyncedEntities[$dataSource->getIdentifier()])) {
+            if (in_array($entityIndexData, $this->alreadySyncedEntities[$dataSource->getIdentifier()])) {
+                echo 'Entity of type ' . $dataSource->getIdentifier() . ' already synced<br />';
+            }
+        }*/
         
         // @todo: first calculate relations to be synced
         foreach ($this->getDependendingFields($entity) as $field=>$fieldType) {
@@ -385,16 +469,25 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $entity->$fieldSetMethodName($foreignEntity);
             } else if (
                 !$relationConfig ||
-                (
-                    $relationConfig->doSync()
-                    // @todo: and if $relationConfig->getForeignDataAccess() is within same component!
-                )
+                $relationConfig->doSync()
+                // @todo: and if $relationConfig->getForeignDataAccess() is within same component!
             ) {
                 // otherwise push the related entity first!
                 $fieldGetMethodName = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
                 $foreignEntity = $entity->$fieldGetMethodName();
-                $entityIndexData = $this->getEntityIndexData($foreignEntity);
-                $this->pushSync($sync, $eventType, $entityIndexData, $foreignEntity, $relationConfig);
+                $foreignEntityIndexData = $this->getEntityIndexData($foreignEntity);
+                
+                // @todo: this might fail in real-life since there could be more than one DA per DS and Sy per DA
+                $dataSourceRepo = $em->getRepository('Cx\Core\DataSource\Model\Entity\DataSource');
+                $dataAccessRepo = $em->getRepository('Cx\Core_Modules\DataAccess\Model\Entity\DataAccess');
+                $syncRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Sync');
+                $foreignDataSource = $dataSourceRepo->findOneBy(array(
+                    'identifier' => $fieldType,
+                ));
+                
+                $foreignSync = $foreignDataSource->getDataAccesses()->first()->getSyncs()->first();
+                
+                $this->pushSync($foreignSync, 'put', $foreignEntityIndexData, $foreignEntity, $relationConfig);
             } else {
                 throw new \Exception('Invalid config!');
             }
@@ -405,6 +498,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
         
+        if (!isset($this->alreadySyncedEntities[$dataSource->getIdentifier()])) {
+            $this->alreadySyncedEntities[$dataSource->getIdentifier()] = array();
+        }
+        $this->alreadySyncedEntities[$dataSource->getIdentifier()][] = $entityIndexData;
+        
         // push the entity
         $sync->push($eventType, $entityIndexData, $entity);
     }
@@ -412,8 +510,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * @todo: This method should be in DataSource model
      */
-    protected function getEntityIndexData($entity) {
+    public function getEntityIndexData($entity) {
         $em = $this->cx->getDb()->getEntityManager();
+        if (substr(get_class($entity), -5, 5) == 'Proxy') {
+            return $em->getUnitOfWork()->getEntityIdentifier($entity);
+        }
         $entityClassName = get_class($entity);
         $entityMetaData = $em->getClassMetadata($entityClassName);
         $entityIndexData = array();
