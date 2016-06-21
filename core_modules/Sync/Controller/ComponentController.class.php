@@ -363,7 +363,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $em->flush();
                 
                 // local side code
-                $this->spoolSync('delete', $entityClassName, $entityIndexData);
+                $this->spoolSync('delete', $entityClassName, $entityIndexData, $entity);
                 break;
             // entity was added
             case \Doctrine\ORM\Events::postPersist:
@@ -409,11 +409,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param string $eventType One of "post", "put", "delete"
      * @param string $entityClassName Classname of the entity to update
      * @param array $entityIndexData Field=>value-type array with primary key data
-     * @param \Cx\Model\Base\EntityBase $entity (optional) Entity for "post" and "put"
+     * @param \Cx\Model\Base\EntityBase $entity Changed entity
      * @todo: Push relations first
      * @todo: This does not spool yet, instead it writes changes instantly
      */
-    public function spoolSync($eventType, $entityClassName, $entityIndexData, $entity = null) {
+    public function spoolSync($eventType, $entityClassName, $entityIndexData, $entity) {
         // suppress push on incoming changes (allows two-way sync)
         if (!$this->doPush) {
             return;
