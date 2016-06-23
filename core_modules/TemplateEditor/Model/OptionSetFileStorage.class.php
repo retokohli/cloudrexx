@@ -65,35 +65,44 @@ class OptionSetFileStorage implements Storable
      */
     public function retrieve($name)
     {
-        $file = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(
-            $this->path
-            . '/' . $name . '/options/options.yml'
-        );
+        $optionSetFilePath = $this->path . '/' . $name . '/options';
+        $optionSetOptionsFile = $optionSetFilePath. '/options.yml';
+        $optionSetGroupsFile = $optionSetFilePath. '/Groups.yml';
+        $data = $this->retrieveFile($optionSetOptionsFile);
+        $data['groups'] = $this->retrieveFile($optionSetGroupsFile);
+        return $data;
+    }
+
+    /**
+     * @param  String $fileName  the file to load including its path
+     * @return array             the data from the file
+     * @throws ParserException   thrown if the file is not found or empty
+     */
+    protected function retrieveFile($fileName){
+        $file = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
+            ->getFilePath($fileName);
         if (!$file) {
             throw new ParserException(
-                "File" . $this->path
-                . '/' . $name . '/options/options.yml not found'
+                "File" . $fileName . 'not found'
             );
         }
-        $file = file_get_contents(
-            \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
-                ->getFilePath(
-                    $this->path
-                    . '/' . $name . '/options/Groups.yml'
-                )
-        );
-        if ($file) {
-            try {
-                $yaml = new Parser();
-                $data['groups'] = $yaml->parse($file);
-            } catch (ParserException $e) {
-                preg_match(
-                    "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
-                );
-                throw new ParserException($e->getMessage(), $matches['line']);
-            }
+
+        $content = file_get_contents($file);
+        if (!$content) {
+            throw new ParserException(
+                "File" . $fileName . 'is empty'
+            );
         }
-        return $data;
+
+        try {
+            $yaml = new Parser();
+            return $yaml->parse($content);
+        } catch (ParserException $e) {
+            preg_match(
+                "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
+            );
+            throw new ParserException($e->getMessage(), $matches['line']);
+        }
     }
 
     /**
