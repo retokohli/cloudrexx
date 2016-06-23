@@ -63,6 +63,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     
     protected $alreadySyncedEntities = array();
     
+    protected $removeIds = array();
+    
     /**
      * Returns all Controller class names for this component (except this)
      * 
@@ -81,6 +83,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function registerEvents() {
         $doctrineEvents = array(
+            \Doctrine\ORM\Events::preRemove,
             \Doctrine\ORM\Events::postRemove,
             \Doctrine\ORM\Events::postPersist,
             \Doctrine\ORM\Events::postUpdate,
@@ -195,7 +198,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function sync($command, $arguments, $dataArguments) {
         $method = strtolower($_SERVER['REQUEST_METHOD']);
-        
         $apiVersion = array_shift($arguments); // shift api version
         
         if (!in_array($apiVersion, $this->supportedApiVersions)) {
@@ -221,79 +223,88 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $entityType = $dataAccess->getDataSource()->getIdentifier();
         $foreignHost = $_SERVER['HTTP_REFERRER'];
         
-        // if an existing element is altered (delete, put, patch)
-        // replace ID using mapping table
-        if (in_array($method, array('put', 'patch', 'delete'))) {
-            if (!isset($arguments[2])) {
-                // API would produce a 404 here
-                throw new \BadMethodCallException('No element given');
-            }
-            
-            // get mapping table entry
-            //\DBG::activate(DBG_DB);
-            $qb = $em->createQueryBuilder();
-            $qb->select('m')
-                ->from($this->getNamespace() . '\Model\Entity\IdMapping', 'm')
-                ->andWhere($qb->expr()->eq('m.foreignHost', '?1'))
-                ->setParameter(1, $foreignHost)
-                ->andWhere($qb->expr()->eq('m.entityType', '?2'))
-                ->setParameter(2, $entityType)
-                ->andWhere($qb->expr()->like('m.foreignId', $qb->expr()->literal(serialize($elementId))));
-            $mapping = $qb->getQuery()->getResult();
-            /*$mappingRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\IdMapping');
-            $mapping = $mappingRepo->findOneBy(array(
-                'foreignHost' => $foreignHost,
-                'entityType' => $entityType,
-                'foreignId' => $elementId,
-            ));*/
-            //\DBG::deactivate();
-            
-            if (!$mapping) {
-                // remote is trying to push changes to an entity that does not yet exist here
-                // let's self-heal:
-                if ($method == 'delete') {
-                    // pretend everything is ok
-                    $response = new \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse();
-                    $response->setStatus(
-                        \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_OK
-                    );
-                    $response->setData(array());
-                    
-                    $response->send($this->getComponent('DataSource')->getController('JsonOutputController'));
-                    return;
-                } else {
-                    // pretent it's a new element
-                    // in order to do so we need to:
-                    // - tell api it's a POST request
-                    // - make sure our eventlistener thinks it's a POST request
-                    $this->cx->getRequest()->setHttpRequestMethod('post');
-                    $method = 'post';
-                }
+        if (!isset($arguments[2])) {
+            // API would produce a 404 here
+            throw new \BadMethodCallException('No element given');
+        }
+        
+        $mapping = $this->getIdMapping($entityType, $foreignHost, $elementId);
+        
+        if (!$mapping) {
+            // remote is trying to push changes to an entity that does not yet exist here
+            // let's self-heal:
+            if ($method == 'delete') {
+                // pretend everything is ok
+                $response = new \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse();
+                $response->setStatus(
+                    \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_OK
+                );
+                $response->setData(array());
+                
+                $response->send($this->getComponent('DataAccess')->getController('JsonOutput'));
+                return;
             } else {
-                // set ID of the the entity to our local ID
-                $mapping = current($mapping);
-                foreach ($mapping->getLocalId() as $i=>$id) {
-                    $arguments[$i + 2] = $id;
-                }
+                // pretent it's a new element
+                // in order to do so we need to:
+                // - tell api it's a POST request
+                // - make sure our eventlistener thinks it's a POST request
+                $this->cx->getRequest()->setHttpRequestMethod('post');
+                $method = 'post';
             }
-            
-            // on put/patch: if the ID of the element changes we need to check
-            // if the ID is a relation. If so: we need to update there as well
-            // if not, we should ignore the change
+        } else if ($method == 'post') {
+            // if a new entity should be created that we already have,
+            // this POST request has been made twice and can be dropped.
+            // We simply pretend everything went fine:
+            $response = new \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse();
+            $response->setStatus(
+                \Cx\Core_Modules\DataAccess\Model\Entity\ApiResponse::STATUS_OK
+            );
+            $entityRepository = $em->getRepository($entityType);
+            $entity = $entityRepository->findOneBy($mapping->getLocalId());
+            if (!$entity) {
+                // we have a mapping for a non-existing entity. This shouldn't
+                // happen. Let's self-heal:
+                $em->remove($mapping);
+                $em->flush();
+            } else {
+                $response->setData($this->getEntityIndexData($entity));
+                $response->send($this->getComponent('DataAccess')->getController('JsonOutput'));
+                return;
+            }
         }
         
         // foreach ID and foreign key
         $metaData = $em->getClassMetadata($entityType);
         $primaryKeyNames = $metaData->getIdentifierFieldNames();
+        $foreignId = array();
         foreach ($primaryKeyNames as $fieldName) {
-            $this->replaceKey($foreignHost, $entityType, $fieldName, $dataArguments);
+            $foreignId[] = $dataArguments[$fieldName];
+        }
+        $primaryKeyColumnNames = array();
+        foreach ($primaryKeyNames as $fieldName) {
+            $this->replaceKey($foreignHost, $entityType, $fieldName, $dataArguments, $foreignId);
+            $fieldMapping = $metaData->getFieldMapping($fieldName);
+            $primaryKeyColumnNames[$fieldMapping['columnName']] = $fieldName;
         }
         $associationMappings = $metaData->getAssociationMappings();
         foreach ($associationMappings as $fieldName => $associationMapping) {
             if (!isset($associationMapping['targetEntity'])) {
                 continue;
             }
-            $this->replaceKey($foreignHost, $associationMapping['targetEntity'], $fieldName, $dataArguments);
+            $replacement = $this->replaceKey($foreignHost, $associationMapping['targetEntity'], $fieldName, $dataArguments);
+            
+            $joinColumn = current($associationMapping['joinColumns']);
+            if ($replacement && isset($primaryKeyColumnNames[$joinColumn['name']])) {
+                $dataArguments[$primaryKeyColumnNames[$joinColumn['name']]] = $replacement;
+            }
+        }
+        $i = 2;
+        foreach ($primaryKeyNames as $fieldName) {
+            $arguments[$i] = $dataArguments[$fieldName];
+            $i++;
+        }
+        if (isset($dataArguments['id'])) {
+            unset($dataArguments['id']);
         }
         
         // Route to API
@@ -304,28 +315,24 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         );
     }
     
-    protected function replaceKey($foreignHost, $entityType, $fieldName, &$fieldData) {
+    protected function replaceKey($foreignHost, $entityType, $fieldName, &$fieldData, $foreignId = array()) {
+        if (!count($foreignId)) {
+            $foreignId = array($fieldData[$fieldName]);
+        }
+        
         $em = $this->cx->getDb()->getEntityManager();
         
-        // see if we have mapping table entry
-        $qb = $em->createQueryBuilder();
-        $qb->select('m')
-            ->from($this->getNamespace() . '\Model\Entity\IdMapping', 'm')
-            ->andWhere($qb->expr()->eq('m.foreignHost', '?1'))
-            ->setParameter(1, $foreignHost)
-            ->andWhere($qb->expr()->eq('m.entityType', '?2'))
-            ->setParameter(2, $entityType)
-            ->andWhere($qb->expr()->like('m.foreignId', $qb->expr()->literal(serialize(array($fieldData[$fieldName])))));
-        $mapping = $qb->getQuery()->getResult();
+        $mapping = $this->getIdMapping($entityType, $foreignHost, $foreignId);
 
         // if yes:
-        if (count($mapping) && current($mapping)) {
+        //if (count($mapping) && current($mapping)) {
+        if ($mapping) {
             // replace ID by our ID
-            if ($fieldName == 'id') {
-                unset($fieldData[$fieldName]);
-            } else {
-                $fieldData[$fieldName] = current($mapping)->getLocalId();
-            }
+            //$localId = current($mapping)->getLocalId();
+            $localId = $mapping->getLocalId();
+            $newValue = isset($localId[$fieldName]) ? $localId[$fieldName] : current($localId);
+            $fieldData[$fieldName] = $newValue;
+            return $newValue;
             
         // if no:
         } else {
@@ -351,19 +358,31 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $entityClassName = get_class($entity);
         $entityIndexData = $this->getEntityIndexData($entity);
         
-        $mappingRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\IdMapping');
+        // We don't want to loop!
+        if ($entityClassName == 'Cx\Core_Modules\Sync\Model\Entity\IdMapping') {
+            return;
+        }
+        
         switch (substr($eventName, 6)) {
             // entity was dropped
+            case \Doctrine\ORM\Events::preRemove:
+                if (!isset($this->removeIds[$entityClassName])) {
+                    $this->removeIds[$entityClassName] = array();
+                }
+                $this->removeIds[$entityClassName][] = $entityIndexData;
+                break;
             case \Doctrine\ORM\Events::postRemove:
                 // remote side code
-                $mappings = $mappingRepo->findBy(array(
-                    'entityType' => $entityClassName,
-                    'localId' => $entityIndexData,
-                ));
-                foreach ($mappings as $mapping) {
-                    $em->remove($mapping);
+                if (isset($this->removeIds[$entityClassName])) {
+                    foreach ($this->removeIds[$entityClassName] as $i=>$indexData) {
+                        $mappings = $this->getIdMapping($entityClassName, '', '', $indexData, true);
+                        foreach ($mappings as $mapping) {
+                            $em->remove($mapping);
+                        }
+                        $em->flush();
+                        unset($this->removeIds[$entityClassName][$i]);
+                    }
                 }
-                $em->flush();
                 
                 // local side code
                 $this->spoolSync('delete', $entityClassName, $entityIndexData, $entity);
@@ -371,12 +390,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             // entity was added
             case \Doctrine\ORM\Events::postPersist:
                 // remote side code
-                if (!$this->doPush && get_class($entity) != 'Cx\Core_Modules\Sync\Model\Entity\IdMapping') {
+                if (!$this->doPush) {
                     $mapping = new \Cx\Core_Modules\Sync\Model\Entity\IdMapping();
                     $mapping->setForeignHost($_SERVER['HTTP_REFERRER']);
                     $mapping->setEntityType($entityClassName);
                     $mapping->setForeignId($this->currentInsertId);
-                    $mapping->setLocalId(current($entityIndexData));
+                    $mapping->setLocalId($entityIndexData);
                     $em->persist($mapping);
                     $em->flush();
                 }
@@ -525,7 +544,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $entityMetaData = $em->getClassMetadata($entityClassName);
         $entityIndexData = array();
         foreach ($entityMetaData->getIdentifierFieldNames() as $field) {
-            $entityIndexData[$field] = $entityMetaData->getFieldValue($entity, $field);
+            $entityIndexData[$field] = ''.$entityMetaData->getFieldValue($entity, $field);
         }
         return $entityIndexData;
     }
@@ -556,6 +575,34 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $dependingFields[$field] = $associationMapping['targetEntity'];
         }
         return $dependingFields;
+    }
+    
+    protected function getIdMapping($entityType, $foreignHost = '', $foreignId = '', $localId = '', $allowMultiple = false) {
+        $em = $this->cx->getDb()->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('m')
+            ->from($this->getNamespace() . '\Model\Entity\IdMapping', 'm')
+            ->andWhere($qb->expr()->eq('m.entityType', '?1'))
+            ->setParameter(1, $entityType);
+        if (!empty($foreignHost)) {
+            $qb->andWhere($qb->expr()->eq('m.foreignHost', '?2'))
+                ->setParameter(2, $foreignHost);
+        }
+        if (!empty($foreignId)) {
+            $qb->andWhere($qb->expr()->like('m.foreignId', $qb->expr()->literal(serialize($foreignId))));
+        }
+        if (!empty($localId)) {
+            $qb->andWhere($qb->expr()->like('m.localId', $qb->expr()->literal(serialize($localId))));
+        }
+        $mapping = null;
+        try {
+            if ($allowMultiple) {
+                $mapping = $qb->getQuery()->getResult();
+            } else {
+                $mapping = $qb->getQuery()->getSingleResult();
+            }
+        } catch (\Doctrine\ORM\NoResultException $e) {}
+        return $mapping;
     }
 }
 
