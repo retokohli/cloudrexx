@@ -65,64 +65,44 @@ class OptionSetFileStorage implements Storable
      */
     public function retrieve($name)
     {
-        $file = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(
-            $this->path
-            . '/' . $name . '/options/Options.yml'
-        );
-        if (!$file) {
-            throw new ParserException(
-                "File" . $this->path
-                . '/' . $name . '/options/Options.yml not found'
-            );
-        }
-
-        $content = file_get_contents($file);
-        if (!$content) {
-            throw new ParserException(
-                "File" . $this->path
-                . '/' . $name . '/options/Options.yml not found'
-            );
-        }
-
-        try {
-            $yaml = new Parser();
-            $data =  $yaml->parse($content);
-        } catch (ParserException $e) {
-            preg_match(
-                "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
-            );
-            throw new ParserException($e->getMessage(), $matches['line']);
-        }
-        $file = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(
-            $this->path
-            . '/' . $name . '/options/Groups.yml'
-        );
-        if (!$file) {
-            throw new ParserException(
-                "File" . $this->path
-                . '/' . $name . '/options/Groups.yml not found'
-            );
-        }
-
-        $content = file_get_contents($file);
-        if (!$content) {
-            throw new ParserException(
-                "File" . $this->path
-                . '/' . $name . '/options/Groups.yml not found'
-            );
-        }
-
-        try {
-            $yaml = new Parser();
-            $data['groups'] =  $yaml->parse($content);
-        } catch (ParserException $e) {
-            preg_match(
-                "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
-            );
-            throw new ParserException($e->getMessage(), $matches['line']);
-        }
+        $optionSetFilePath = $this->path . '/' . $name . '/options';
+        $optionSetOptionsFile = $optionSetFilePath. '/options.yml';
+        $optionSetGroupsFile = $optionSetFilePath. '/Groups.yml';
+        $data = $this->retrieveFile($optionSetOptionsFile);
+        $data['groups'] = $this->retrieveFile($optionSetGroupsFile);
         return $data;
+    }
 
+    /**
+     * @param  String $fileName  the file to load including its path
+     * @return array             the data from the file
+     * @throws ParserException   thrown if the file is not found or empty
+     */
+    protected function retrieveFile($fileName){
+        $file = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
+            ->getFilePath($fileName);
+        if (!$file) {
+            throw new ParserException(
+                "File" . $fileName . 'not found'
+            );
+        }
+
+        $content = file_get_contents($file);
+        if (!$content) {
+            throw new ParserException(
+                "File" . $fileName . 'is empty'
+            );
+        }
+
+        try {
+            $yaml = new Parser();
+            return $yaml->parse($content);
+        } catch (ParserException $e) {
+            preg_match(
+                "/line (?P<line>[0-9]+)/", $e->getMessage(), $matches
+            );
+            throw new ParserException($e->getMessage(), $matches['line']);
+        }
     }
 
     /**
@@ -137,7 +117,7 @@ class OptionSetFileStorage implements Storable
         mkdir($this->path . '/' . $name . '/options');
         return file_put_contents(
             $this->path
-            . '/' . $name . '/options/Options.yml',
+            . '/' . $name . '/options/options.yml',
             Yaml::dump($data->yamlSerialize(), 6)
         );
     }
