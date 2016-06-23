@@ -282,12 +282,16 @@ class DoctrineRepository extends DataSource {
             if (   $entityClassMetadata->isSingleValuedAssociation($field)
                 && in_array('set'.ucfirst($field), $classMethods)
             ) {
+                $foreignId = $data[$field];
+                if (is_array($foreignId)) {
+                    $foreignId = current($foreignId);
+                }
                 $targetRepo = $em->getRepository($associationMapping['targetEntity']);
                 $targetEntity = $targetRepo->findOneBy(array(
-                    $associationMapping['joinColumns'][0]['referencedColumnName'] => $data[$field],
+                    $associationMapping['joinColumns'][0]['referencedColumnName'] => $foreignId,
                 ));
                 if (!$targetEntity) {
-                    throw new \Exception('Entity not found (' . $associationMapping['targetEntity'] . ' with ID ' . $data[$field] . ')');
+                    throw new \Exception('Entity not found (' . $associationMapping['targetEntity'] . ' with ID ' . $foreignId . ')');
                 }
                 $setMethod = 'set'.ucfirst($field);
                 $entity->$setMethod($targetEntity);
