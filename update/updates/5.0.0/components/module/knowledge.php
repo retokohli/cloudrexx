@@ -178,6 +178,10 @@ function _knowledgeUpdate()
         array(
             'name'  => 'best_rated_amount',
             'value' => '5'
+        ),
+        array(
+            'name'  => 'show_all_lang',
+            'value' => '1'
         )
     );
     foreach ($arrSettings as $arrSetting) {
