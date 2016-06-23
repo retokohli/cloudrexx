@@ -1428,7 +1428,7 @@ HTML;
             INSERT IGNORE INTO `' . DBPREFIX . 'module_shop_payment_processors` (`id`, `type`, `name`, `description`, `company_url`, `status`, `picture`)
             VALUES (12,"external","paymill_cc","","https://www.paymill.com",1,""),
                    (13,"external","paymill_elv","","https://www.paymill.com",1,""),
-                   (14,"external","paymill_iban","","https://www.paymill.com",1,"")
+                   (14,"external","paymill_iban","","https://www.paymill.com",1,""),
                    (15,"external","payrexx","Payrexx is a payment gateway solution developed in Switzerland.","https://www.payrexx.com",1,"")
             ');
             Cx\Lib\UpdateUtil::sql('

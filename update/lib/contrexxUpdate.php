@@ -331,10 +331,10 @@ $J(document).ready(function() {
         }, 3000, function() {
             $J(this).removeClass("inserted").css("background-color", "")
         });
-        var scrollTop = objRestoredPage.position().top - 112.5;
+        /*var scrollTop = objRestoredPage.position().top - 112.5;
         $J(".page-grouping-language[data-lang=" + $J(this).parent().data("lang") + "]").children(".page-grouping-pages-scroll").animate({
             scrollTop: scrollTop
-        }, 200);
+        }, 200);*/
 
         $J(this).parent().remove();
         if (!$J(".page-grouping-removed-pages").children().length) {
@@ -362,10 +362,10 @@ $J(document).ready(function() {
                 }, 2000, "swing", function() {
                     $J(this).removeClass("inserted").css("background-color", "");
                 });
-                var scrollTop = objUngroupedPage.position().top - 112.5;
+                /*var scrollTop = objUngroupedPage.position().top - 112.5;
                 $J(".page-grouping-language[data-lang=" + $J(this).data("lang") + "]").children(".page-grouping-pages-scroll").animate({
                     scrollTop: scrollTop
-                }, 200);
+                }, 200);*/
             }
         });
 
@@ -469,10 +469,10 @@ $J(document).ready(function() {
         }, 3000, function() {
             $J(this).removeClass("inserted").css("background-color", "");
         });
-        var scrollTop = objInsertedNode.position().top - 112;
+        /*var scrollTop = objInsertedNode.position().top - 112;
         $J(".page-grouping-grouped-scroll-y").animate({
             scrollTop: scrollTop
-        }, 200);
+        }, 200);*/
     };
     $J("body").delegate(".page-grouping-button-group:not(.disabled)", "click", groupSelectedPages);
 

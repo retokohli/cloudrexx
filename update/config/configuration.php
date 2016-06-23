@@ -27,7 +27,7 @@
 
 define('UPDATE_PATH', dirname(dirname(__FILE__)));
 define('UPDATE_TIME', time());
-define('UPDATE_TIMEOUT_TIME', UPDATE_TIME + 55);
+define('UPDATE_TIMEOUT_TIME', UPDATE_TIME + 600);
 define('UPDATE_LIB', UPDATE_PATH.'/lib');
 define('UPDATE_CORE', UPDATE_PATH.'/core');
 define('UPDATE_TPL', 'template/contrexx');
