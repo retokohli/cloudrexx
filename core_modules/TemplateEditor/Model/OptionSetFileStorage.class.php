@@ -61,7 +61,7 @@ class OptionSetFileStorage implements Storable
     public function retrieve($name)
     {
         $optionSetFilePath = $this->path . '/' . $name . '/options';
-        $optionSetOptionsFile = $optionSetFilePath. '/options.yml';
+        $optionSetOptionsFile = $optionSetFilePath. '/Options.yml';
         $optionSetGroupsFile = $optionSetFilePath. '/Groups.yml';
         $data = $this->retrieveFile($optionSetOptionsFile);
         $data['groups'] = $this->retrieveFile($optionSetGroupsFile);
@@ -114,7 +114,7 @@ class OptionSetFileStorage implements Storable
         mkdir($this->path . '/' . $name . '/options');
         return file_put_contents(
             $this->path
-            . '/' . $name . '/options/options.yml',
+            . '/' . $name . '/options/Options.yml',
             \Symfony\Component\Yaml\Yaml::dump($data->yamlSerialize(), 6)
         );
     }
