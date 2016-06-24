@@ -1444,13 +1444,9 @@ class CalendarEvent extends CalendarLibrary
         $eId         = $id;
         if ($id != 0) {
             //Trigger preUpdate event for Event Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/preUpdate',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $event, $this->em
-                    )
-                )
+            $this->triggerEvent(
+                'model/preUpdate', $event,
+                array('relations' => array('oneToMany' => 'getEventFields')), true
             );
             $query = \SQL::update("module_{$this->moduleTablePrefix}_event", $formData) ." WHERE id = '$id'";
         
@@ -1461,14 +1457,7 @@ class CalendarEvent extends CalendarLibrary
                 $eventFieldEntities = $event->getEventFields();
                 foreach ($eventFieldEntities as $eventFieldEntity)  {
                     //Trigger preRemove event for EventField Entity
-                    $this->cx->getEvents()->triggerEvent(
-                        'model/preRemove',
-                        array(
-                            new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                $eventFieldEntity, $this->em
-                            )
-                        )
-                    );
+                    $this->triggerEvent('model/preRemove', $eventFieldEntity);
                 }
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field
                                 WHERE event_id = '".$id."'";
@@ -1477,14 +1466,7 @@ class CalendarEvent extends CalendarLibrary
                 if ($objResult !== false) {
                     foreach ($eventFieldEntities as $eventFieldEntity)  {
                         //Trigger postRemove event for EventField Entity
-                        $this->cx->getEvents()->triggerEvent(
-                            'model/postRemove',
-                            array(
-                                new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                    $eventFieldEntity, $this->em
-                                )
-                            )
-                        );
+                        $this->triggerEvent('model/postRemove', $eventFieldEntity);
                     }
                 }
 
@@ -1517,13 +1499,9 @@ class CalendarEvent extends CalendarLibrary
             $event->setConfirmed($confirmed);
             $event->setAuthor($author);
             //Trigger prePersist event for Event Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/prePersist',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $event, $this->em
-                    )
-                )
+            $this->triggerEvent(
+                'model/prePersist', $event,
+                array('relations' => array('oneToMany' => 'getEventFields')), true
             );
             $query = \SQL::insert("module_{$this->moduleTablePrefix}_event", $formData);
             $objResult = $objDatabase->Execute($query);
@@ -1545,13 +1523,9 @@ class CalendarEvent extends CalendarLibrary
                         $event, $eventField
                     );
                     //Trigger prePersist event for EventField Entity
-                    $this->cx->getEvents()->triggerEvent(
-                        'model/prePersist',
-                        array(
-                            new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                $eventFieldEntity, $this->em
-                            )
-                        )
+                    $this->triggerEvent(
+                        'model/prePersist', $eventFieldEntity,
+                        array('relations' => array('manyToOne' => 'getEvent')), true
                     );
                     $query =
                         'INSERT INTO ' . DBPREFIX . 'module_' . $this->moduleTablePrefix. '_event_field
@@ -1573,37 +1547,16 @@ class CalendarEvent extends CalendarLibrary
                         return false;
                     } else {
                         //Trigger postPersist event for EventField Entity
-                        $this->cx->getEvents()->triggerEvent(
-                            'model/postPersist',
-                            array(
-                                new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                    $eventFieldEntity, $this->em
-                                )
-                            )
-                        );
+                        $this->triggerEvent('model/postPersist', $eventFieldEntity);
                     }
                 }
             }
             if ($eId == 0) {
                 //Trigger postPersist event for Event Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postPersist',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $event, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/postPersist', $event, null, true);
             } else {
                 //Trigger postUpdate event for Event Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postUpdate',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $event, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/postUpdate', $event);
             }
 
             if (!empty($related_hosts)) {
@@ -1842,9 +1795,9 @@ class CalendarEvent extends CalendarLibrary
 
         $event = $this->getEventEntity($this->id);
         //Trigger preRemove event for Event Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preRemove',
-            array(new \Doctrine\ORM\Event\LifecycleEventArgs($event, $this->em))
+        $this->triggerEvent(
+            'model/preRemove', $event,
+            array('relations' => array('oneToMany' => 'getEventFields')), true
         );
 
         $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event
@@ -1856,14 +1809,7 @@ class CalendarEvent extends CalendarLibrary
             $eventFieldEntities = $event->getEventFields();
             foreach ($eventFieldEntities as $eventFieldEntity)  {
                 //Trigger preRemove event for EventField Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/preRemove',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $eventFieldEntity, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/preRemove', $eventFieldEntity);
             }
             $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field
                             WHERE event_id = '".intval($this->id)."'";
@@ -1872,24 +1818,10 @@ class CalendarEvent extends CalendarLibrary
             if ($objResult !== false) {
                 foreach ($eventFieldEntities as $eventFieldEntity)  {
                     //Trigger postRemove event for EventField Entity
-                    $this->cx->getEvents()->triggerEvent(
-                        'model/postRemove',
-                        array(
-                            new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                $eventFieldEntity, $this->em
-                            )
-                        )
-                    );
+                    $this->triggerEvent('model/postRemove', $eventFieldEntity);
                 }
                 //Trigger postRemove event for Event Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postRemove',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $event, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/postRemove', $event);
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_event_host
                                 WHERE event_id = '".intval($this->id)."'";
 
@@ -2008,9 +1940,9 @@ class CalendarEvent extends CalendarLibrary
             $this->id, array('fields' => array('status' => $status))
         );
         //Trigger preUpdate event for Event Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preUpdate',
-            array(new \Doctrine\ORM\Event\LifecycleEventArgs($event, $this->em))
+        $this->triggerEvent(
+            'model/preUpdate', $event,
+            array('relations' => array('oneToMany' => 'getEventFields')), true
         );
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_event AS event
                      SET event.status = '".intval($status)."'
@@ -2020,14 +1952,7 @@ class CalendarEvent extends CalendarLibrary
 
         if ($objResult !== false) {
             //Trigger postUpdate event for Event Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/postUpdate',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $event, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/postUpdate', $event);
             return true;
         } else {
             return false;
@@ -2047,9 +1972,9 @@ class CalendarEvent extends CalendarLibrary
             $this->id, array('fields' => array('confirmed' => 1))
         );
         //Trigger preUpdate event for Event Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preUpdate',
-            array(new \Doctrine\ORM\Event\LifecycleEventArgs($event, $this->em))
+        $this->triggerEvent(
+            'model/preUpdate', $event,
+            array('relations' => array('oneToMany' => 'getEventFields')), true
         );
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_event AS event
                      SET event.confirmed = '1'
@@ -2059,14 +1984,7 @@ class CalendarEvent extends CalendarLibrary
 
         if ($objResult !== false) {
             //Trigger postUpdate event for Event Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/postUpdate',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $event, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/postUpdate', $event);
             return true;
         } else {
             return false;
