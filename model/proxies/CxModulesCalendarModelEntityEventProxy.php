@@ -795,6 +795,30 @@ class CxModulesCalendarModelEntityEventProxy extends \Cx\Modules\Calendar\Model\
         return parent::getHostMediadirId();
     }
 
+    public function setRegistrationExternalLink($registrationExternalLink)
+    {
+        $this->_load();
+        return parent::setRegistrationExternalLink($registrationExternalLink);
+    }
+
+    public function getRegistrationExternalLink()
+    {
+        $this->_load();
+        return parent::getRegistrationExternalLink();
+    }
+
+    public function setRegistrationExternalFullyBooked($registrationExternalFullyBooked)
+    {
+        $this->_load();
+        return parent::setRegistrationExternalFullyBooked($registrationExternalFullyBooked);
+    }
+
+    public function getRegistrationExternalFullyBooked()
+    {
+        $this->_load();
+        return parent::getRegistrationExternalFullyBooked();
+    }
+
     public function addEventField(\Cx\Modules\Calendar\Model\Entity\EventField $eventField)
     {
         $this->_load();
@@ -900,7 +924,7 @@ class CxModulesCalendarModelEntityEventProxy extends \Cx\Modules\Calendar\Model\
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'type', 'startDate', 'endDate', 'useCustomDateDisplay', 'showStartDateList', 'showEndDateList', 'showStartTimeList', 'showEndTimeList', 'showTimeTypeList', 'showStartDateDetail', 'showEndDateDetail', 'showStartTimeDetail', 'showEndTimeDetail', 'showTimeTypeDetail', 'google', 'access', 'priority', 'price', 'link', 'pic', 'attach', 'placeMediadirId', 'showIn', 'invitedGroups', 'invitedMails', 'invitationSent', 'invitationEmailTemplate', 'registration', 'registrationNum', 'registrationNotification', 'emailTemplate', 'ticketSales', 'numSeating', 'seriesStatus', 'seriesType', 'seriesPatternCount', 'seriesPatternWeekday', 'seriesPatternDay', 'seriesPatternWeek', 'seriesPatternMonth', 'seriesPatternType', 'seriesPatternDouranceType', 'seriesPatternEnd', 'seriesPatternEndDate', 'seriesPatternBegin', 'seriesPatternExceptions', 'status', 'confirmed', 'showDetailView', 'author', 'allDay', 'locationType', 'placeId', 'placeStreet', 'placeZip', 'placeLink', 'placeMap', 'hostType', 'orgStreet', 'orgZip', 'orgLink', 'orgEmail', 'hostMediadirId', 'eventFields', 'registrations', 'category', 'registrationForm');
+        return array('__isInitialized__', 'id', 'type', 'startDate', 'endDate', 'useCustomDateDisplay', 'showStartDateList', 'showEndDateList', 'showStartTimeList', 'showEndTimeList', 'showTimeTypeList', 'showStartDateDetail', 'showEndDateDetail', 'showStartTimeDetail', 'showEndTimeDetail', 'showTimeTypeDetail', 'google', 'access', 'priority', 'price', 'link', 'pic', 'attach', 'placeMediadirId', 'showIn', 'invitedGroups', 'invitedMails', 'invitationSent', 'invitationEmailTemplate', 'registration', 'registrationNum', 'registrationNotification', 'emailTemplate', 'ticketSales', 'numSeating', 'seriesStatus', 'seriesType', 'seriesPatternCount', 'seriesPatternWeekday', 'seriesPatternDay', 'seriesPatternWeek', 'seriesPatternMonth', 'seriesPatternType', 'seriesPatternDouranceType', 'seriesPatternEnd', 'seriesPatternEndDate', 'seriesPatternBegin', 'seriesPatternExceptions', 'status', 'confirmed', 'showDetailView', 'author', 'allDay', 'locationType', 'placeId', 'placeStreet', 'placeZip', 'placeLink', 'placeMap', 'hostType', 'orgStreet', 'orgZip', 'orgLink', 'orgEmail', 'hostMediadirId', 'registrationExternalLink', 'registrationExternalFullyBooked', 'eventFields', 'registrations', 'category', 'registrationForm');
     }
 
     public function __clone()

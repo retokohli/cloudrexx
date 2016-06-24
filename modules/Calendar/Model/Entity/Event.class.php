@@ -370,6 +370,16 @@ class Event extends \Cx\Model\Base\EntityBase {
     protected $hostMediadirId;
 
     /**
+     * @var string $registrationExternalLink
+     */
+    protected $registrationExternalLink;
+
+    /**
+     * @var boolean $registrationExternalFullyBooked
+     */
+    protected $registrationExternalFullyBooked;
+
+    /**
      * @var Cx\Modules\Calendar\Model\Entity\EventField
      */
     protected $eventFields;
@@ -1697,6 +1707,46 @@ class Event extends \Cx\Model\Base\EntityBase {
     public function getHostMediadirId()
     {
         return $this->hostMediadirId;
+    }
+
+    /**
+     * Set registrationExternalLink
+     *
+     * @param string $registrationExternalLink
+     */
+    public function setRegistrationExternalLink($registrationExternalLink)
+    {
+        $this->registrationExternalLink = $registrationExternalLink;
+    }
+
+    /**
+     * Get registrationExternalLink
+     *
+     * @return string $registrationExternalLink
+     */
+    public function getRegistrationExternalLink()
+    {
+        return $this->registrationExternalLink;
+    }
+
+    /**
+     * Set registrationExternalFullyBooked
+     *
+     * @param string $registrationExternalFullyBooked
+     */
+    public function setRegistrationExternalFullyBooked($registrationExternalFullyBooked)
+    {
+        $this->registrationExternalFullyBooked = $registrationExternalFullyBooked;
+    }
+
+    /**
+     * Get registrationExternalFullyBooked
+     *
+     * @return string $registrationExternalFullyBooked
+     */
+    public function getRegistrationExternalFullyBooked()
+    {
+        return $this->registrationExternalFullyBooked;
     }
 
     /**
