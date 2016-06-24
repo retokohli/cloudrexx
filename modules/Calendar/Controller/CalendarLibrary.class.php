@@ -880,4 +880,127 @@ EOF;
         return $this->getComponent('DateTime')
                     ->intern2db($dateTimeInDbTimezone);
     }
+
+    /**
+     * Trigger the event
+     *
+     * @param string  $eventName trigger event name
+     * @param object  $entity    entity object
+     * @param array   $relations entity relations
+     * @param boolean $isDetach  is detachable entity
+     *
+     * @return null
+     */
+    public function triggerEvent(
+        $eventName,
+        $entity,
+        $relations = array(),
+        $isDetach = false
+    ) {
+        if (empty($eventName) || !$entity) {
+            return null;
+        }
+
+        if ($isDetach) {
+            if (!empty($relations) && $relations['relations']) {
+                $this->detachJoinedEntity(
+                    $entity, $relations['relations'],
+                    $relations['joinEntityRelations']
+                );
+            }
+            $this->em->detach($entity);
+        }
+
+        $this->cx->getEvents()->triggerEvent(
+            $eventName,
+            array(
+                new \Doctrine\ORM\Event\LifecycleEventArgs(
+                    $entity, $this->em
+                )
+            )
+        );
+    }
+
+    /**
+     * Detach the entity
+     *
+     * @param object $entity             entity object
+     * @param string $methodName         method name
+     * @param array  $relation           relationship array
+     * @param array  $joinEntityRelation joined entity's relationship array
+     *
+     * @return null
+     */
+    public function detachEntity(
+        $entity,
+        $methodName,
+        $relation,
+        $joinEntityRelation
+    ) {
+        if (!$entity || empty($methodName) || empty($relation)) {
+            return null;
+        }
+
+        if (!method_exists($entity, $methodName) || !($entity->$methodName())) {
+            return null;
+        }
+
+        if ($relation == 'oneToMany') {
+            foreach ($entity->$methodName() as $subEntity) {
+                if ($joinEntityRelation[$methodName]) {
+                    $this->detachJoinedEntity(
+                        $subEntity,
+                        $joinEntityRelation[$methodName],
+                        $joinEntityRelation
+                    );
+                }
+                $this->em->detach($subEntity);
+            }
+        } else if ($relation == 'manyToOne') {
+            if ($joinEntityRelation[$methodName]) {
+                $this->detachJoinedEntity(
+                    $entity->$methodName(),
+                    $joinEntityRelation[$methodName],
+                    $joinEntityRelation
+                );
+            }
+            $this->em->detach($entity->$methodName());
+        }
+    }
+
+    /**
+     * Detach the jointed entity
+     *
+     * @param object $entity             entity object
+     * @param array  $relations          relationship array
+     * @param array  $joinEntityRelation joined entity's relationship array
+     *
+     * @return null
+     */
+    public function detachJoinedEntity(
+        $entity,
+        $relations,
+        $joinEntityRelation
+    ) {
+        if (!$entity || empty($relations)) {
+            return null;
+        }
+
+        foreach ($relations as $relation => $methodName) {
+            if (!is_array($methodName)) {
+                $this->detachEntity(
+                    $entity, $methodName,
+                    $relation, $joinEntityRelation
+                );
+                continue;
+            }
+
+            foreach ($methodName as $functionName) {
+                $this->detachEntity(
+                    $entity, $functionName,
+                    $relation, $joinEntityRelation
+                );
+            }
+        }
+    }
 }

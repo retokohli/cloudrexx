@@ -178,10 +178,7 @@ class CalendarMail extends CalendarLibrary
 
         $mail = $this->getMailEntity($this->id);
         //Trigger preRemove event for Mail Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preRemove',
-            array(new \Doctrine\ORM\Event\LifecycleEventArgs($mail, $this->em))
-        );
+        $this->triggerEvent('model/preRemove', $mail, null, true);
 
         $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_mail
                    WHERE id = '".intval($this->id)."'";
@@ -189,14 +186,7 @@ class CalendarMail extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
             //Trigger postRemove event for Mail Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/postRemove',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $mail, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/postRemove', $mail);
             return true;
         } else {
             return false;
@@ -218,14 +208,7 @@ class CalendarMail extends CalendarLibrary
         $mailByAction->setIsDefault(0);
         $mailByAction->setVirtual(true);
         //Trigger preUpdate event for Mail Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preUpdate',
-            array(
-                new \Doctrine\ORM\Event\LifecycleEventArgs(
-                    $mailByAction, $this->em
-                )
-            )
-        );
+        $this->triggerEvent('model/preUpdate', $mailByAction, null, true);
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_mail
                      SET is_default = '0'
                    WHERE action_id = '".intval($this->action_id)."'";
@@ -233,22 +216,12 @@ class CalendarMail extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
             //Trigger postUpdate event for Mail Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/postUpdate',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $mailByAction, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/postUpdate', $mailByAction);
         }
 
         $mail = $this->getMailEntity($this->id, array('isDefault' => 1));
         //Trigger preUpdate event for Mail Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preUpdate',
-            array(new \Doctrine\ORM\Event\LifecycleEventArgs($mail, $this->em))
-        );
+        $this->triggerEvent('model/preUpdate', $mail, null, true);
 
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_mail
                      SET is_default = '1'
@@ -257,14 +230,7 @@ class CalendarMail extends CalendarLibrary
         $objMail = $objDatabase->Execute($query);
         if ($objMail !== false) {
             //Trigger postUpdate event for Mail Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/postUpdate',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $mail, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/postUpdate', $mail);
             return true;
         } else {
             return false;
@@ -284,10 +250,7 @@ class CalendarMail extends CalendarLibrary
 
         $mail = $this->getMailEntity($this->id, array('status' => $mailStatus));
         //Trigger preUpdate event for Mail Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preUpdate',
-            array(new \Doctrine\ORM\Event\LifecycleEventArgs($mail, $this->em))
-        );
+        $this->triggerEvent('model/preUpdate', $mail, null, true);
 
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_mail
                      SET status = '".intval($mailStatus)."'
@@ -296,14 +259,7 @@ class CalendarMail extends CalendarLibrary
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
             //Trigger postUpdate event for Mail Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/postUpdate',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $mail, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/postUpdate', $mail);
             return true;
         } else {
             return false;
@@ -339,27 +295,13 @@ class CalendarMail extends CalendarLibrary
         $mail = $this->getMailEntity($this->id, $formData);
         if (intval($this->id) == 0) {
             //Trigger prePersist event for Mail Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/prePersist',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $mail, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/prePersist', $mail, null, true);
             $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_mail
                                   (`title`,`content_text`,`content_html`,`recipients`,`lang_id`,`action_id`,`status`) 
                            VALUES ('".$title."','".$content_text."','".$content_html."','".$recipients."','".$lang_id."','".$action_id."','0')";
         } else {
             //Trigger preUpdate event for Mail Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/preUpdate',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $mail, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/preUpdate', $mail, null, true);
             $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_mail
                          SET `title` = '".$title."',
                              `content_text` = '".$content_text."',
@@ -374,24 +316,10 @@ class CalendarMail extends CalendarLibrary
         if ($objResult !== false) {
             if (!$this->id) {
                 //Trigger postPersist event for Mail Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postPersist',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $mail, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/postPersist', $mail);
             } else {
                 //Trigger postUpdate event for Mail Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postUpdate',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $mail, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/postUpdate', $mail);
             }
             return true;
         } else {
