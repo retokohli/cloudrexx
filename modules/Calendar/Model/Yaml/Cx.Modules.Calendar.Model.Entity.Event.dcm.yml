@@ -206,6 +206,12 @@ Cx\Modules\Calendar\Model\Entity\Event:
     hostMediadirId:
       type: integer
       column: host_mediadir_id
+    registrationExternalLink:
+      type: text
+      column: registration_external_link
+    registrationExternalFullyBooked:
+      type: boolean
+      column: registration_external_fully_booked
   oneToMany:
     eventFields:
       targetEntity: Cx\Modules\Calendar\Model\Entity\EventField
