@@ -265,6 +265,8 @@ class Sync extends \Cx\Model\Base\EntityBase {
                 continue;
             }
             
+            ob_start();
+            
             // now we really push
             $url = $hostEntity->getHost()->getToUri(
                 $this->getDataAccess()->getName(),
@@ -312,9 +314,20 @@ class Sync extends \Cx\Model\Base\EntityBase {
             
             $response = $request->send();
             var_dump($response->getStatus());
-            echo '<hr />';
             echo '<pre>' . $response->getBody() . '</pre>';
             echo 'Pushed to ' . $url . ' with method ' . $method . ', body was: ' . http_build_query($content);
+            $logContents = ob_get_contents();
+            ob_end_clean();
+            
+            $severity = 'INFO';
+            if ($response->getStatus() != 200) {
+                $severity = 'FATAL';
+            }
+            $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
+               'severity' => $severity,
+               'message' => 'Sent ' . strtoupper($method) . ' to ' . $url,
+               'data' => $logContents,
+            ));
         }
     }
 }
