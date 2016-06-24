@@ -229,6 +229,49 @@ class Sync extends \Cx\Model\Base\EntityBase {
      */
     public function getHostEntities()
     {
+        // Customizing for old Calendar sync config:
+        //if we're syncing Events:
+        if (
+            $this->getDataAccess()->getDataSource()->getIdentifier() !=
+            'Cx\\Modules\\Calendar\\Model\\Entity\\Event'
+        ) {
+            return $this->hostEntities;
+        }
+        
+        //load all contrexx_module_calendar_rel_event_host joined to contrexx_module_calendar_host
+        global $objDatabase;
+        $query = '
+            SELECT
+                `host`.`url`,
+                `host_entity`.`event_id`
+            FROM
+                `' . DBPREFIX . 'module_calendar_rel_event_host` AS `host_entity`
+            JOIN
+                `' . DBPREFIX . 'module_calendar_host` AS `host`
+            ON
+                `host_entity`.`host_id` = `host`.`id`
+            WHERE
+                `host`.`status` = 0
+        ';
+        $results = $objDatabase->Execute($query);
+        if (!$results || $results->EOF) {
+            return $this->hostEntities;
+        }
+        while (!$results->EOF) {
+            $host = $hostRepo->findOneBy(array(
+                'host' => $results->fields['url'],
+            ));
+            $hostEntity = new \Cx\Core_Modules\Sync\Model\Entity\HostEntity();
+            $hostEntity->setVirtual(true);
+            $hostEntity->setSync($this);
+            $hostEntity->setHost($host);
+            $hostEntity->setEntityId($results->fields['event_id']);
+            $this->hostEntities[] = $hostEntity;
+            
+            $results->moveNext();
+        }
+        // end customizing
+        
         return $this->hostEntities;
     }
 
@@ -254,6 +297,44 @@ class Sync extends \Cx\Model\Base\EntityBase {
         if (!$this->getActive()) {
             return;
         }
+        
+        // customizing for current calendar:
+        if (
+            $this->getDataAccess()->getDataSource()->getIdentifier() ==
+            'Cx\\Modules\\Calendar\\Model\\Entity\\Event'
+        ) {
+            // set registration to "extern" and registration uri to our host:
+            $entity->setRegistration(
+                \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL
+            );
+            
+            $event = new \Cx\Modules\Calendar\Controller\CalendarEvent($entity->getId());
+            $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Calendar', 'detail', '', array(
+                'id' => $entity->getId(),
+                'date' => $event->startDate->getTimestamp(),
+            ));
+            $entity->setRegistrationExternalLink($url->toString());
+            
+            // from CalendarEventManager:
+            $fullyBooked = true;
+            if (
+                (
+                    $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL &&
+                    !$event->registrationExternalFullyBooked
+                ) ||
+                (
+                    $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_INTERNAL &&
+                    (
+                        empty($event->numSubscriber) ||
+                        !\FWValidator::isEmpty($event->getFreePlaces())
+                    )
+                )
+            ) {
+                $fullyBooked = false;
+            }
+            $entity->setRegistrationExternalFullyBooked($fullyBooked);
+        }
+        // end customizing
         
         foreach ($this->getHostEntities() as $hostEntity) {
             // is there a host we should sync this entity to?
