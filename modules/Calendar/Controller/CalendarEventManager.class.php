@@ -597,8 +597,13 @@ class CalendarEventManager extends CalendarLibrary
         if($objInit->mode == 'frontend' && ($eventId != null && $eventStartDate != null)) {   
             $objEvent = $this->eventList[0];
             
-            if(empty($objEvent)) {
-                \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
+            if (empty($objEvent)) {
+                \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+                return;
+            }
+
+            if (!$objEvent->status) {
+                \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
                 return;   
             }
             
