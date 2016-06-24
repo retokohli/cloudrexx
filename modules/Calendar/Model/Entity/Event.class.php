@@ -272,7 +272,7 @@ class Event extends \Cx\Model\Base\EntityBase {
     /**
      * @var integer $seriesPatternBegin
      */
-    protected $seriesPatternBegin;
+    protected $seriesPatternBegin = 0;
 
     /**
      * @var text $seriesPatternExceptions

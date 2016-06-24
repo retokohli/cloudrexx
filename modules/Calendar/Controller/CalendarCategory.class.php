@@ -188,11 +188,9 @@ class CalendarCategory extends CalendarLibrary
             $this->id, array('status' => $categoryStatus)
         );
         //Trigger preUpdate event for Category Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preUpdate',
-            array(
-                new \Doctrine\ORM\Event\LifecycleEventArgs($category, $this->em)
-            )
+        $this->triggerEvent(
+            'model/preUpdate', $category,
+            array('relations' => array('oneToMany' => 'getCategoryNames')), true
         );
         
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_category
@@ -203,14 +201,7 @@ class CalendarCategory extends CalendarLibrary
         
         if ($objResult !== false) {
             //Trigger postUpdate event for Category Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/postUpdate',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $category, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/postUpdate', $category);
             return true;
         } else {
             return false;
@@ -230,11 +221,9 @@ class CalendarCategory extends CalendarLibrary
                   
         $category = $this->getCategoryEntity($this->id, array('pos' => $order));
         //Trigger preUpdate event for Category Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preUpdate',
-            array(
-                new \Doctrine\ORM\Event\LifecycleEventArgs($category, $this->em)
-            )
+        $this->triggerEvent(
+            'model/preUpdate', $category,
+            array('relations' => array('oneToMany' => 'getCategoryNames')), true
         );
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_category
                      SET `pos` = '".intval($order)."'          
@@ -244,14 +233,7 @@ class CalendarCategory extends CalendarLibrary
         
         if ($objResult !== false) {
             //Trigger postUpdate event for Category Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/postUpdate',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $category, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/postUpdate', $category);
             return true;
         } else {
             return false;
@@ -279,13 +261,11 @@ class CalendarCategory extends CalendarLibrary
         $category = $this->getCategoryEntity($this->id, $formData);
 	if (intval($this->id) == 0) {
             //Trigger event prePersist for Category Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/prePersist',
+            $this->triggerEvent(
+                'model/prePersist', $category,
                 array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $category, $this->em
-                    )
-                )
+                    'relations' => array('oneToMany' => 'getCategoryNames')
+                ), true
             );
             $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_category
                                   (`pos`,`status`)
@@ -300,27 +280,18 @@ class CalendarCategory extends CalendarLibrary
             $this->id = intval($objDatabase->Insert_ID());
 	} else {
             //Trigger event preUpdate for Category Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/preUpdate',
+            $this->triggerEvent(
+                'model/preUpdate', $category,
                 array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $category, $this->em
-                    )
-                )
+                    'relations' => array('oneToMany' => 'getCategoryNames')
+                ), true
             );
         }
 
         $categoryNames = $category->getCategoryNames();
         foreach ($categoryNames as $categoryName) {
             //Trigger event preRemove for CategoryName Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/preRemove',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $categoryName, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/preRemove', $categoryName);
         }
     	//names
     	$query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
@@ -331,14 +302,7 @@ class CalendarCategory extends CalendarLibrary
         if ($objResult !== false) {
             foreach ($categoryNames as $categoryName) {
                 //Trigger event postRemove for CategoryName Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postRemove',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $categoryName, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/postRemove', $categoryName);
             }
             $category = $this->getCategoryEntity($this->id);
             foreach ($arrNames as $langId => $categoryName) {
@@ -357,13 +321,11 @@ class CalendarCategory extends CalendarLibrary
                         $category, $formData
                     );
                     //Trigger event prePersist for CategoryName Entity
-                    $this->cx->getEvents()->triggerEvent(
-                        'model/prePersist',
+                    $this->triggerEvent(
+                        'model/prePersist', $categoryNameEntity,
                         array(
-                            new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                $categoryNameEntity, $this->em
-                            )
-                        )
+                            'relations' => array('manyToOne' => 'getCategory')
+                        ), true
                     );
 
                     $query = "INSERT INTO " . DBPREFIX . "module_" . $this->moduleTablePrefix . "_category_name
@@ -373,14 +335,7 @@ class CalendarCategory extends CalendarLibrary
                     $objResult = $objDatabase->Execute($query);
                     if ($objResult !== false) {
                         //Trigger event postPersist for CategoryName Entity
-                        $this->cx->getEvents()->triggerEvent(
-                            'model/postPersist',
-                            array(
-                                new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                    $categoryNameEntity, $this->em
-                                )
-                            )
-                        );
+                        $this->triggerEvent('model/postPersist', $categoryNameEntity);
                     }
                 }
             }
@@ -388,24 +343,10 @@ class CalendarCategory extends CalendarLibrary
             if ($objResult !== false) {
                 if ($id == 0) {
                     //Trigger event postPersist for Category Entity
-                    $this->cx->getEvents()->triggerEvent(
-                        'model/postPersist',
-                        array(
-                            new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                $category, $this->em
-                            )
-                        )
-                    );
+                    $this->triggerEvent('model/postPersist', $category, null, true);
                 } else {
                     //Trigger event postUpdate for Category Entity
-                    $this->cx->getEvents()->triggerEvent(
-                        'model/postUpdate',
-                        array(
-                            new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                $category, $this->em
-                            )
-                        )
-                    );
+                    $this->triggerEvent('model/postUpdate', $category);
                 }
 
                 //hosts
@@ -441,11 +382,11 @@ class CalendarCategory extends CalendarLibrary
 
         $category = $this->getCategoryEntity($this->id);
         //Trigger preRemove event for Category Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preRemove',
+        $this->triggerEvent(
+            'model/preRemove', $category,
             array(
-                new \Doctrine\ORM\Event\LifecycleEventArgs($category, $this->em)
-            )
+                'relations' => array('oneToMany' => 'getCategoryNames')
+            ), true
         );
 
         $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category
@@ -457,14 +398,7 @@ class CalendarCategory extends CalendarLibrary
             $categoryNames = $category->getCategoryNames();
             foreach ($categoryNames as $categoryName) {
                 //Trigger preRemove event for CategoryName Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/preRemove',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $categoryName, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/preRemove', $categoryName);
             }
             $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_category_name
                             WHERE cat_id = '".intval($this->id)."'";
@@ -474,24 +408,10 @@ class CalendarCategory extends CalendarLibrary
             if ($objResult !== false) {
                 foreach ($categoryNames as $categoryName) {
                     //Trigger postRemove event for CategoryName Entity
-                    $this->cx->getEvents()->triggerEvent(
-                        'model/postRemove',
-                        array(
-                            new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                $categoryName, $this->em
-                            )
-                        )
-                    );
+                    $this->triggerEvent('model/postRemove', $categoryName);
                 }
                 //Trigger postRemove event for Category Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postRemove',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $category, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/postRemove', $category);
                 $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_host
                              SET cat_id = '0'
                        WHERE cat_id = '".intval($this->id)."'";

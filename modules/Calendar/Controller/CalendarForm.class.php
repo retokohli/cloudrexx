@@ -214,11 +214,27 @@ class CalendarForm extends CalendarLibrary
         $classMetaDataForForm->setFieldValue($form, 'id', 0);
         if ($objResultOldForm !== false) {
            //Trigger prePersist event for Form Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/prePersist',
+           $this->triggerEvent(
+                'model/prePersist', $form,
                 array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em)
-                )
+                    'relations' => array(
+                        'oneToMany' => array(
+                            'getEvents', 'getRegistrationFormFields'
+                        )
+                    ),
+                    'joinEntityRelations' => array(
+                        'getRegistrationFormFields' => array(
+                            'oneToMany' => array(
+                                'getRegistrationFormFieldNames',
+                                'getRegistrationFormFieldValues'
+                            ),
+                            'manyToOne' => 'getRegistrationForm'
+                        ),
+                        'getRegistrationFormFieldNames' => array(
+                            'manyToOne' => 'getRegistrationFormField'
+                        )
+                    )
+                ), true
             );
             $queryNewForm = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
                                   (`status`,`order`,`title`)  
@@ -245,14 +261,22 @@ class CalendarForm extends CalendarLibrary
                             $objResultOldFields->fields['id']
                         );
                         //Trigger prePersist event for FormField Entity
-                        $this->cx->getEvents()->triggerEvent(
-                            'model/prePersist',
+                        $this->triggerEvent(
+                            'model/prePersist', $newFormField,
                             array(
-                                new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                    $newFormField, $this->em
+                                'relations' => array(
+                                    'oneToMany' => array(
+                                        'getRegistrationFormFieldNames',
+                                        'getRegistrationFormFieldValues'
+                                    ),
+                                    'manyToOne' => 'getRegistrationForm'
+                                ),
+                                'joinEntityRelations' => array(
+                                    'getRegistrationFormFieldNames' => array(
+                                        'manyToOne' => 'getRegistrationFormField'
+                                    )
                                 )
-                            )
-                        );
+                            ), true);
                         $queryNewField = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form_field
                                                       (`form`,`type`,`required`,`order`,`affiliation` )
                                                VALUES ('".$newFormId."',
@@ -276,13 +300,13 @@ class CalendarForm extends CalendarLibrary
                                     $objResultOldNames->fields['lang_id']
                                 );
                                 //Trigger prePersist event for FormFieldName Entity
-                                $this->cx->getEvents()->triggerEvent(
-                                    'model/prePersist',
+                                $this->triggerEvent(
+                                    'model/prePersist', $newFormFieldName,
                                     array(
-                                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                            $newFormFieldName, $this->em
+                                        'relations' => array(
+                                            'manyToOne' => 'getRegistrationFormField'
                                         )
-                                    )
+                                    ), true
                                 );
                                 $queryNewName = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form_field_name
                                                               (`field_id`,`form_id`,`lang_id`,`name`,`default` )
@@ -294,39 +318,18 @@ class CalendarForm extends CalendarLibrary
 
                                 $objResultNewName = $objDatabase->Execute($queryNewName);
                                 //Trigger postPersist event for FormFieldName Entity
-                                $this->cx->getEvents()->triggerEvent(
-                                    'model/postPersist',
-                                    array(
-                                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                            $newFormFieldName, $this->em
-                                        )
-                                    )
-                                );
+                                $this->triggerEvent('model/postPersist', $newFormFieldName);
                                 $objResultOldNames->MoveNext(); 
                             }
                         }
                         //Trigger postPersist event for FormField Entity
-                        $this->cx->getEvents()->triggerEvent(
-                            'model/postPersist',
-                            array(
-                                new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                    $newFormField, $this->em
-                                )
-                            )
-                        );
+                        $this->triggerEvent('model/postPersist', $newFormField);
                         $objResultOldFields->MoveNext();
                     }
                 }
                 $form = $this->getFormEntity($newFormId);
                 //Trigger postPersist event for Form Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postPersist',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $form, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/postPersist', $form);
             }
         }
 
@@ -358,11 +361,27 @@ class CalendarForm extends CalendarLibrary
         $form = $this->getFormEntity($this->id, $formData);
         if (intval($this->id) == 0) {
             //Trigger prePersist event for Form Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/prePersist',
+            $this->triggerEvent(
+                'model/prePersist', $form,
                 array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em)
-                )
+                    'relations' => array(
+                        'oneToMany' => array(
+                            'getEvents', 'getRegistrationFormFields'
+                        )
+                    ),
+                    'joinEntityRelations' => array(
+                        'getRegistrationFormFields' => array(
+                            'oneToMany' => array(
+                                'getRegistrationFormFieldNames',
+                                'getRegistrationFormFieldValues'
+                            ),
+                            'manyToOne' => 'getRegistrationForm'
+                        ),
+                        'getRegistrationFormFieldNames' => array(
+                            'manyToOne' => 'getRegistrationFormField'
+                        )
+                    )
+                ), true
             );
             $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
                                   (`status`,`order`,`title`)
@@ -380,11 +399,27 @@ class CalendarForm extends CalendarLibrary
             $form = $this->getFormEntity($this->id);
         } else {
             //Trigger preUpdate event for Form Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/preUpdate',
+            $this->triggerEvent(
+                'model/preUpdate', $form,
                 array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em)
-                )
+                    'relations' => array(
+                        'oneToMany' => array(
+                            'getEvents', 'getRegistrationFormFields'
+                        )
+                    ),
+                    'joinEntityRelations' => array(
+                        'getRegistrationFormFields' => array(
+                            'oneToMany' => array(
+                                'getRegistrationFormFieldNames',
+                                'getRegistrationFormFieldValues'
+                            ),
+                            'manyToOne' => 'getRegistrationForm'
+                        ),
+                        'getRegistrationFormFieldNames' => array(
+                            'manyToOne' => 'getRegistrationFormField'
+                        )
+                    )
+                ), true
             );
             $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
                          SET `title` =  '".$formTitle."'
@@ -403,24 +438,10 @@ class CalendarForm extends CalendarLibrary
             }
             if ($id == 0) {
                 //Trigger postPersist event for Form Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postPersist',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $form, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/postPersist', $form, null, true);
             } else {
                 //Trigger postUpdate event for Form Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postUpdate',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $form, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/postUpdate', $form);
             }
         } else {
             return false;
@@ -447,24 +468,10 @@ class CalendarForm extends CalendarLibrary
             $formFieldNames = $formField->getRegistrationFormFieldNames();
             foreach ($formFieldNames as $formFieldName) {
                 //Trigger preRemove event for FormFieldName Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/preRemove',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $formFieldName, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/preRemove', $formFieldName);
             }
             //Trigger preRemove event for FormField Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/preRemove',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $formField, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/preRemove', $formField);
         }
         $query = '
             DELETE
@@ -485,37 +492,32 @@ class CalendarForm extends CalendarLibrary
                 $formFieldNames = $formField->getRegistrationFormFieldNames();
                 foreach ($formFieldNames as $formFieldName) {
                     //Trigger postRemove event for FormFieldName Entity
-                    $this->cx->getEvents()->triggerEvent(
-                        'model/postRemove',
-                        array(
-                            new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                $formFieldName, $this->em
-                            )
-                        )
-                    );
+                    $this->triggerEvent('model/postRemove', $formFieldName);
                 }
                 //Trigger postRemove event for FormField Entity
-                $this->cx->getEvents()->triggerEvent(
-                    'model/postRemove',
-                    array(
-                        new \Doctrine\ORM\Event\LifecycleEventArgs(
-                            $formField, $this->em
-                        )
-                    )
-                );
+                $this->triggerEvent('model/postRemove', $formField);
             }
         }
 
         foreach ($data as $fieldId => $fieldValues) {
             $formFieldEntity = $this->getFormFieldEntity($form, $fieldValues);
             //Trigger prePersist event for FormField Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/prePersist',
+            $this->triggerEvent(
+                'model/prePersist', $formFieldEntity,
                 array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $formFieldEntity, $this->em
+                    'relations' => array(
+                        'oneToMany' => array(
+                            'getRegistrationFormFieldNames',
+                            'getRegistrationFormFieldValues'
+                        ),
+                        'manyToOne' => 'getRegistrationForm'
+                    ),
+                    'joinEntityRelations' => array(
+                        'getRegistrationFormFieldNames' => array(
+                            'manyToOne' => 'getRegistrationFormField'
+                        )
                     )
-                )
+                ), true
             );
             $fieldValue = $fieldValues['fields'];
             $query = '
@@ -548,13 +550,13 @@ class CalendarForm extends CalendarLibrary
                 );
                 if ($formFieldNameEntity) {
                     //Trigger prePersist event for FormFieldName Entity
-                    $this->cx->getEvents()->triggerEvent(
-                        'model/prePersist',
+                    $this->triggerEvent(
+                        'model/prePersist', $formFieldNameEntity,
                         array(
-                            new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                $formFieldNameEntity, $this->em
+                            'relations' => array(
+                                'manyToOne' => 'getRegistrationFormField'
                             )
-                        )
+                        ), true
                     );
                 }
 
@@ -571,25 +573,11 @@ class CalendarForm extends CalendarLibrary
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult !== false && $formFieldNameEntity) {
                     //Trigger postPersist event for FormFieldName Entity
-                    $this->cx->getEvents()->triggerEvent(
-                        'model/postPersist',
-                        array(
-                            new \Doctrine\ORM\Event\LifecycleEventArgs(
-                                $formFieldNameEntity, $this->em
-                            )
-                        )
-                    );
+                    $this->triggerEvent('model/postPersist', $formFieldNameEntity);
                 }
             }
             //Trigger postPersist event for FormField Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/postPersist',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs(
-                        $formFieldEntity, $this->em
-                    )
-                )
-            );
+            $this->triggerEvent('model/postPersist', $formFieldEntity);
 
         }
 
@@ -703,9 +691,27 @@ class CalendarForm extends CalendarLibrary
 
         $form = $this->getFormEntity($this->id);
         //Trigger preRemove event for Form Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preRemove',
-            array(new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em))
+        $this->triggerEvent(
+            'model/preRemove', $form,
+            array(
+                'relations' => array(
+                    'oneToMany' => array(
+                        'getEvents', 'getRegistrationFormFields'
+                    )
+                ),
+                'joinEntityRelations' => array(
+                    'getRegistrationFormFields' => array(
+                        'oneToMany' => array(
+                            'getRegistrationFormFieldNames',
+                            'getRegistrationFormFieldValues'
+                        ),
+                        'manyToOne' => 'getRegistrationForm'
+                    ),
+                    'getRegistrationFormFieldNames' => array(
+                        'manyToOne' => 'getRegistrationFormField'
+                    )
+                )
+            ), true
         );
         $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
                         WHERE id = '".intval($this->id)."'";
@@ -714,12 +720,7 @@ class CalendarForm extends CalendarLibrary
 
         if ($objResult !== false) {
             //Trigger postRemove event for Form Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/postRemove',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em)
-                )
-            );
+            $this->triggerEvent('model/postRemove', $form);
             return true;
         } else {
             return false;
@@ -740,9 +741,27 @@ class CalendarForm extends CalendarLibrary
             $this->id, array('fields' => array('status' => $formStatus))
         );
         //Trigger preUpdate event for Form Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preUpdate',
-            array(new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em))
+        $this->triggerEvent(
+            'model/preUpdate', $form,
+            array(
+                'relations' => array(
+                    'oneToMany' => array(
+                        'getEvents', 'getRegistrationFormFields'
+                    )
+                ),
+                'joinEntityRelations' => array(
+                    'getRegistrationFormFields' => array(
+                        'oneToMany' => array(
+                            'getRegistrationFormFieldNames',
+                            'getRegistrationFormFieldValues'
+                        ),
+                        'manyToOne' => 'getRegistrationForm'
+                    ),
+                    'getRegistrationFormFieldNames' => array(
+                        'manyToOne' => 'getRegistrationFormField'
+                    )
+                )
+            ), true
         );
 
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
@@ -753,12 +772,7 @@ class CalendarForm extends CalendarLibrary
 
         if ($objResult !== false) {
             //Trigger postUpdate event for Form Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/postUpdate',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em)
-                )
-            );
+            $this->triggerEvent('model/postUpdate', $form);
             return true;
         } else {
             return false;
@@ -780,9 +794,27 @@ class CalendarForm extends CalendarLibrary
             $this->id, array('fields' => array('order' => $order))
         );
         //Trigger preUpdate event for Form Entity
-        $this->cx->getEvents()->triggerEvent(
-            'model/preUpdate',
-            array(new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em))
+        $this->triggerEvent(
+            'model/preUpdate', $form,
+            array(
+                'relations' => array(
+                    'oneToMany' => array(
+                        'getEvents', 'getRegistrationFormFields'
+                    )
+                ),
+                'joinEntityRelations' => array(
+                    'getRegistrationFormFields' => array(
+                        'oneToMany' => array(
+                            'getRegistrationFormFieldNames',
+                            'getRegistrationFormFieldValues'
+                        ),
+                        'manyToOne' => 'getRegistrationForm'
+                    ),
+                    'getRegistrationFormFieldNames' => array(
+                        'manyToOne' => 'getRegistrationFormField'
+                    )
+                )
+            ), true
         );
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_registration_form
                      SET `order` = '".intval($order)."'
@@ -792,12 +824,7 @@ class CalendarForm extends CalendarLibrary
 
         if ($objResult !== false) {
             //Trigger postUpdate event for Form Entity
-            $this->cx->getEvents()->triggerEvent(
-                'model/postUpdate',
-                array(
-                    new \Doctrine\ORM\Event\LifecycleEventArgs($form, $this->em)
-                )
-            );
+            $this->triggerEvent('model/postUpdate', $form);
             return true;
         } else {
             return false;
