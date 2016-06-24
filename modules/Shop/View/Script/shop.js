@@ -312,7 +312,7 @@ function productOptionsUploaderCallback(data) {
             return;
         }
         var optionsPrice = 0;
-        $jq('.product-option-field').each(function () {
+        $form.find('.product-option-field').each(function () {
             switch ($jq(this).prop("tagName")) {
                 case 'SELECT':
                     $jq(this).find('option:selected').each(function () {
