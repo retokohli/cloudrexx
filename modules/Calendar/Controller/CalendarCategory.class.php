@@ -306,7 +306,6 @@ class CalendarCategory extends CalendarLibrary
                 //Trigger event postRemove for CategoryName Entity
                 $this->triggerEvent('model/postRemove', $categoryName);
             }
-            $this->triggerEvent('model/postFlush');
             $category = $this->getCategoryEntity($this->id);
             foreach ($arrNames as $langId => $categoryName) {
                 if ($langId != 0) {
@@ -341,8 +340,8 @@ class CalendarCategory extends CalendarLibrary
                         $this->triggerEvent('model/postPersist', $categoryNameEntity);
                     }
                 }
-                $this->triggerEvent('model/postFlush');
             }
+            $this->triggerEvent('model/postFlush');
 
             if ($objResult !== false) {
                 if ($id == 0) {
