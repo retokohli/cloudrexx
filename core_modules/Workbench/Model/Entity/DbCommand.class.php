@@ -231,7 +231,7 @@ class DbCommand extends Command {
             new \Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand(),
             new \Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand(),
             new \Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand(),
+            new \Cx\Core_Modules\Workbench\Model\Entity\GenerateRepositoriesCommand(),
             new \Doctrine\ORM\Tools\Console\Command\GenerateEntitiesCommand(),
             new \Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand(),
             new \Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand(),
