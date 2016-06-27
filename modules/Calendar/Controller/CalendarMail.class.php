@@ -187,6 +187,7 @@ class CalendarMail extends CalendarLibrary
         if ($objResult !== false) {
             //Trigger postRemove event for Mail Entity
             $this->triggerEvent('model/postRemove', $mail);
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;
@@ -217,6 +218,7 @@ class CalendarMail extends CalendarLibrary
         if ($objResult !== false) {
             //Trigger postUpdate event for Mail Entity
             $this->triggerEvent('model/postUpdate', $mailByAction);
+            $this->triggerEvent('model/postFlush');
         }
 
         $mail = $this->getMailEntity($this->id, array('isDefault' => 1));
@@ -231,6 +233,7 @@ class CalendarMail extends CalendarLibrary
         if ($objMail !== false) {
             //Trigger postUpdate event for Mail Entity
             $this->triggerEvent('model/postUpdate', $mail);
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;
@@ -260,6 +263,7 @@ class CalendarMail extends CalendarLibrary
         if ($objResult !== false) {
             //Trigger postUpdate event for Mail Entity
             $this->triggerEvent('model/postUpdate', $mail);
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;
@@ -321,6 +325,7 @@ class CalendarMail extends CalendarLibrary
                 //Trigger postUpdate event for Mail Entity
                 $this->triggerEvent('model/postUpdate', $mail);
             }
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;

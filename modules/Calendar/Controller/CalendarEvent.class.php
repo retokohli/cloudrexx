@@ -1468,6 +1468,7 @@ class CalendarEvent extends CalendarLibrary
                         //Trigger postRemove event for EventField Entity
                         $this->triggerEvent('model/postRemove', $eventFieldEntity);
                     }
+                    $this->triggerEvent('model/postFlush');
                 }
 
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_event_host
@@ -1545,10 +1546,10 @@ class CalendarEvent extends CalendarLibrary
                     $objResult = $objDatabase->Execute($query);
                     if ($objResult === false) {
                         return false;
-                    } else {
-                        //Trigger postPersist event for EventField Entity
-                        $this->triggerEvent('model/postPersist', $eventFieldEntity);
                     }
+                    //Trigger postPersist event for EventField Entity
+                    $this->triggerEvent('model/postPersist', $eventFieldEntity);
+                    $this->triggerEvent('model/postFlush');
                 }
             }
             if ($eId == 0) {
@@ -1558,6 +1559,7 @@ class CalendarEvent extends CalendarLibrary
                 //Trigger postUpdate event for Event Entity
                 $this->triggerEvent('model/postUpdate', $event);
             }
+            $this->triggerEvent('model/postFlush');
 
             if (!empty($related_hosts)) {
                 foreach ($related_hosts as $key => $hostId) {
@@ -1822,6 +1824,7 @@ class CalendarEvent extends CalendarLibrary
                 }
                 //Trigger postRemove event for Event Entity
                 $this->triggerEvent('model/postRemove', $event);
+                $this->triggerEvent('model/postFlush');
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_event_host
                                 WHERE event_id = '".intval($this->id)."'";
 
@@ -1953,6 +1956,7 @@ class CalendarEvent extends CalendarLibrary
         if ($objResult !== false) {
             //Trigger postUpdate event for Event Entity
             $this->triggerEvent('model/postUpdate', $event);
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;
@@ -1985,6 +1989,7 @@ class CalendarEvent extends CalendarLibrary
         if ($objResult !== false) {
             //Trigger postUpdate event for Event Entity
             $this->triggerEvent('model/postUpdate', $event);
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;
