@@ -232,7 +232,7 @@ class DbCommand extends Command {
             new \Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand(),
             new \Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand(),
             new \Cx\Core_Modules\Workbench\Model\Entity\GenerateRepositoriesCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\GenerateEntitiesCommand(),
+            new \Cx\Core_Modules\Workbench\Model\Entity\GenerateEntitiesCommand(),
             new \Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand(),
             new \Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand(),
             new \Doctrine\ORM\Tools\Console\Command\RunDqlCommand(),
