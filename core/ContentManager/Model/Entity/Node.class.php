@@ -208,6 +208,16 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->children[] = $children;
     }
 
+    /**
+     * Set children
+     *
+     * @param array $children
+     */
+    public function setChildren($children)
+    {
+        $this->children = $children;
+    }
+
     public function addParsedChild(\Cx\Core\ContentManager\Model\Entity\Node $child)
     {
         $this->children[] = $child;
@@ -238,6 +248,16 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     public function addPage(\Cx\Core\ContentManager\Model\Entity\Page $page)
     {
         $this->pages[] = $page;
+    }
+
+    /**
+     * Set pages
+     *
+     * @param array $page
+     */
+    public function setPages($page)
+    {
+        $this->pages = $page;
     }
 
     /**

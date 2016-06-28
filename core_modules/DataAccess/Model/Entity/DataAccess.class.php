@@ -229,6 +229,16 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set dataAccessApiKeys
+     *
+     * @param array $dataAccessApiKeys
+     */
+    public function setDataAccessApiKeys($dataAccessApiKeys)
+    {
+        $this->dataAccessApiKeys = $dataAccessApiKeys;
+    }
+
+    /**
      * Get dataAccessApiKeys
      *
      * @return Doctrine\Common\Collections\Collection $dataAccessApiKeys
@@ -246,6 +256,16 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     public function addRelation(\Cx\Core_Modules\Sync\Model\Entity\Relation $relation)
     {
         $this->relations[] = $relation;
+    }
+
+    /**
+     * Set relations
+     *
+     * @param array $relation
+     */
+    public function setRelation($relation)
+    {
+        $this->relations = $relation;
     }
 
     /**
@@ -316,6 +336,16 @@ class DataAccess extends \Cx\Model\Base\EntityBase {
     public function addSync(\Cx\Core_Modules\Sync\Model\Entity\Sync $sync)
     {
         $this->syncs[] = $sync;
+    }
+
+    /**
+     * Set Sync
+     *
+     * @param array $sync
+     */
+    public function setSync($sync)
+    {
+        $this->syncs = $sync;
     }
 
     /**

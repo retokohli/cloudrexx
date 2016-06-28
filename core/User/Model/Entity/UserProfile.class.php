@@ -578,6 +578,16 @@ class UserProfile extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set userAttribute
+     *
+     * @param array $userAttribute
+     */
+    public function setUserAttribute($userAttribute)
+    {
+        $this->userAttribute = $userAttribute;
+    }
+
+    /**
      * Get userAttribute
      *
      * @return Doctrine\Common\Collections\Collection $userAttribute

@@ -675,6 +675,16 @@ class User extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set group
+     *
+     * @param array $group
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
+    }
+
+    /**
      * Get group
      *
      * @return Doctrine\Common\Collections\Collection $group

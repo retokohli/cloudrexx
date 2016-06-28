@@ -197,7 +197,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
      */
     public function setRelations($relations)
     {
-        $this->relations[] = $relations;
+        $this->relations = $relations;
     }
 
     /**
@@ -227,6 +227,6 @@ class Sync extends \Cx\Model\Base\EntityBase {
      */
     public function setHostEntities($hostEntities)
     {
-        $this->hostEntities[] = $hostEntities;
+        $this->hostEntities = $hostEntities;
     }
 }

@@ -107,6 +107,16 @@ class ApiKey extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set dataAccessApiKeys
+     *
+     * @param array $dataAccessApiKeys
+     */
+    public function setDataAccessApiKeys($dataAccessApiKeys)
+    {
+        $this->dataAccessApiKeys = $dataAccessApiKeys;
+    }
+
+    /**
      * Get dataAccessApiKeys
      *
      * @return Doctrine\Common\Collections\Collection $dataAccessApiKeys

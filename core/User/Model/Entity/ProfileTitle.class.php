@@ -118,6 +118,16 @@ class ProfileTitle extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set userProfile
+     *
+     * @param array $userProfile
+     */
+    public function setUserProfile($userProfile)
+    {
+        $this->userProfile = $userProfile;
+    }
+
+    /**
      * Get userProfile
      *
      * @return Doctrine\Common\Collections\Collection $userProfile

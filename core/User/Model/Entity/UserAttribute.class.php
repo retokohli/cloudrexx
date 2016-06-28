@@ -215,6 +215,16 @@ class UserAttribute extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set parent
+     *
+     * @param array $parent
+     */
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
+    }
+
+    /**
      * Get parent
      *
      * @return Doctrine\Common\Collections\Collection $parent
@@ -232,6 +242,16 @@ class UserAttribute extends \Cx\Model\Base\EntityBase {
     public function addUserAttributeName(\Cx\Core\User\Model\Entity\UserAttributeName $userAttributeName)
     {
         $this->userAttributeName[] = $userAttributeName;
+    }
+
+    /**
+     * Set userAttributeName
+     *
+     * @param array $userAttributeName
+     */
+    public function setUserAttributeName($userAttributeName)
+    {
+        $this->userAttributeName = $userAttributeName;
     }
 
     /**
@@ -292,6 +312,16 @@ class UserAttribute extends \Cx\Model\Base\EntityBase {
     public function addUserProfile(\Cx\Core\User\Model\Entity\UserProfile $userProfile)
     {
         $this->userProfile[] = $userProfile;
+    }
+
+    /**
+     * Set userProfile
+     *
+     * @param array $userProfile
+     */
+    public function setUserProfile($userProfile)
+    {
+        $this->userProfile = $userProfile;
     }
 
     /**

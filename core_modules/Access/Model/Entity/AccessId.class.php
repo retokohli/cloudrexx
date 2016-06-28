@@ -136,6 +136,16 @@ class AccessId extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set contrexxAccessUserAttribute
+     *
+     * @param array $contrexxAccessUserAttribute
+     */
+    public function setContrexxAccessUserAttribute($contrexxAccessUserAttribute)
+    {
+        $this->contrexxAccessUserAttribute = $contrexxAccessUserAttribute;
+    }
+
+    /**
      * Get contrexxAccessUserAttribute
      *
      * @return Doctrine\Common\Collections\Collection $contrexxAccessUserAttribute
@@ -153,6 +163,16 @@ class AccessId extends \Cx\Model\Base\EntityBase {
     public function addCoreAttribute(\Cx\Core\User\Model\Entity\CoreAttribute $coreAttribute)
     {
         $this->coreAttribute[] = $coreAttribute;
+    }
+
+    /**
+     * Set coreAttribute
+     *
+     * @param array $coreAttribute
+     */
+    public function setCoreAttribute($coreAttribute)
+    {
+        $this->coreAttribute = $coreAttribute;
     }
 
     /**
@@ -176,6 +196,16 @@ class AccessId extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set group2
+     *
+     * @param array $group2
+     */
+    public function setGroup2($group2)
+    {
+        $this->group2 = $group2;
+    }
+
+    /**
      * Get group2
      *
      * @return Doctrine\Common\Collections\Collection $group2
@@ -193,6 +223,16 @@ class AccessId extends \Cx\Model\Base\EntityBase {
     public function addGroup(\Cx\Core\User\Model\Entity\Group $group)
     {
         $this->group[] = $group;
+    }
+
+    /**
+     * Set group
+     *
+     * @param array  $group
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
     }
 
     /**

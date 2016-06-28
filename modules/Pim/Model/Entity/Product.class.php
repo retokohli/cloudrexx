@@ -463,6 +463,16 @@ class Product extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set subscriptions
+     *
+     * @param array $subscriptions
+     */
+    public function setSubscriptions($subscriptions)
+    {
+        $this->subscriptions = $subscriptions;
+    }
+
+    /**
      * Get subscriptions
      *
      * @return Doctrine\Common\Collections\Collection $subscriptions
@@ -482,6 +492,16 @@ class Product extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set prices
+     *
+     * @param array $prices
+     */
+    public function setPrices($prices)
+    {
+        $this->prices = $prices;
+    }
+
+    /**
      * Get prices
      *
      * @return \Doctrine\Common\Collections\Collection $prices
@@ -494,11 +514,21 @@ class Product extends \Cx\Model\Base\EntityBase {
     /**
      * Add upgrade product to the existing upgrades
      * 
-     * @param type $upgrade
+     * @param \Cx\Modules\Pim\Model\Entity\Product $upgrades
      */
     public function addUpgrades(Product $upgrades)
     {
         $this->upgrades[] = $upgrades;
+    }
+
+    /**
+     * Add upgrade product to the existing upgrades
+     *
+     * @param array $upgrades
+     */
+    public function setUpgrades($upgrades)
+    {
+        $this->upgrades = $upgrades;
     }
 
     /**

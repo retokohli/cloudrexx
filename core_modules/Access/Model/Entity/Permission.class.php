@@ -255,13 +255,23 @@ class Permission extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set the read data access
+     * Add the read data access
      *
      * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
      */
-    public function setReadDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
+    public function addReadDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
     {
         $this->readDataAccesses[] = $dataAccess;
+    }
+
+    /**
+     * Set the read data access
+     *
+     * @param array $dataAccess
+     */
+    public function setReadDataAccesses($dataAccess)
+    {
+        $this->readDataAccesses = $dataAccess;
     }
 
     /**
@@ -275,13 +285,23 @@ class Permission extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set the write data access
+     * Add the write data access
      *
      * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess
      */
-    public function setWriteDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
+    public function addWriteDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccess)
     {
         $this->writeDataAccesses[] = $dataAccess;
+    }
+
+    /**
+     * Set the write data access
+     *
+     * @param array $dataAccess
+     */
+    public function setWriteDataAccesses($dataAccess)
+    {
+        $this->writeDataAccesses = $dataAccess;
     }
 
     /**

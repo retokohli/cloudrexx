@@ -205,6 +205,16 @@ class Group extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set user
+     *
+     * @param array $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
+    /**
      * Get user
      *
      * @return Doctrine\Common\Collections\Collection $user
@@ -225,6 +235,16 @@ class Group extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set accessId2
+     *
+     * @param array $accessId2
+     */
+    public function setAccessId2($accessId2)
+    {
+        $this->accessId2 = $accessId2;
+    }
+
+    /**
      * Get accessId2
      *
      * @return Doctrine\Common\Collections\Collection $accessId2
@@ -242,6 +262,16 @@ class Group extends \Cx\Model\Base\EntityBase {
     public function addAccessId(\Cx\Core_Modules\Access\Model\Entity\AccessId $accessId)
     {
         $this->accessId[] = $accessId;
+    }
+
+    /**
+     * Set accessId
+     *
+     * @param array $accessId
+     */
+    public function setAccessId($accessId)
+    {
+        $this->accessId = $accessId;
     }
 
     /**

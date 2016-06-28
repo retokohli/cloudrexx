@@ -133,13 +133,23 @@ abstract class DataSource extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set the data access
+     * Add the data access
      *
      * @param \Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses
      */
-    public function setDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses)
+    public function addDataAccesses(\Cx\Core_Modules\DataAccess\Model\Entity\DataAccess $dataAccesses)
     {
         $this->dataAccesses[] = $dataAccesses;
+    }
+
+    /**
+     * Set the data access
+     *
+     * @param array $dataAccesses
+     */
+    public function setDataAccesses($dataAccesses)
+    {
+        $this->dataAccesses = $dataAccesses;
     }
 
     /**
