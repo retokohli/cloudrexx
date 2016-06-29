@@ -232,6 +232,7 @@ Cx\Modules\Calendar\Model\Entity\Event:
     eventFields:
       targetEntity: Cx\Modules\Calendar\Model\Entity\EventField
       mappedBy: event
+      cascade: [persist, remove]
     registrations:
       targetEntity: Cx\Modules\Calendar\Model\Entity\Registration
       mappedBy: event
