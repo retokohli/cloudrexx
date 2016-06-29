@@ -320,6 +320,11 @@ class Event extends \Cx\Model\Base\EntityBase {
     protected $placeStreet;
 
     /**
+     * @var string $placeWebsite
+     */
+    protected $placeWebsite;
+
+    /**
      * @var string $placeZip
      */
     protected $placeZip;
@@ -328,6 +333,11 @@ class Event extends \Cx\Model\Base\EntityBase {
      * @var string $placeLink
      */
     protected $placeLink;
+
+    /**
+     * @var string $placePhone
+     */
+    protected $placePhone;
 
     /**
      * @var string $placeMap
@@ -350,6 +360,11 @@ class Event extends \Cx\Model\Base\EntityBase {
     protected $orgStreet;
 
     /**
+     * @var string $orgWebsite
+     */
+    protected $orgWebsite;
+
+    /**
      * @var string $orgZip
      */
     protected $orgZip;
@@ -358,6 +373,11 @@ class Event extends \Cx\Model\Base\EntityBase {
      * @var string $orgLink
      */
     protected $orgLink;
+
+    /**
+     * @var string $orgPhone
+     */
+    protected $orgPhone;
 
     /**
      * @var string $orgEmail
@@ -1550,6 +1570,26 @@ class Event extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set placeWebsite
+     *
+     * @param string $placeWebsite
+     */
+    public function setPlaceWebsite($placeWebsite)
+    {
+        $this->placeWebsite = $placeWebsite;
+    }
+
+    /**
+     * Get placeWebsite
+     *
+     * @return string $placeWebsite
+     */
+    public function getPlaceWebsite()
+    {
+        return $this->placeWebsite;
+    }
+
+    /**
      * Set placeLink
      *
      * @param string $placeLink
@@ -1567,6 +1607,26 @@ class Event extends \Cx\Model\Base\EntityBase {
     public function getPlaceLink()
     {
         return $this->placeLink;
+    }
+
+    /**
+     * Get placePhone
+     *
+     * @return string $placePhone
+     */
+    public function getPlacePhone()
+    {
+        return $this->placePhone;
+    }
+
+    /**
+     * Set placePhone
+     *
+     * @param string $placePhone
+     */
+    public function setPlacePhone($placePhone)
+    {
+        $this->placePhone = $placePhone;
     }
 
     /**
@@ -1650,6 +1710,26 @@ class Event extends \Cx\Model\Base\EntityBase {
     }
 
     /**
+     * Set orgWebsite
+     *
+     * @param string $orgWebsite
+     */
+    public function setOrgWebsite($orgWebsite)
+    {
+        $this->orgWebsite = $orgWebsite;
+    }
+
+    /**
+     * Get orgWebsite
+     *
+     * @return string $orgWebsite
+     */
+    public function getOrgWebsite()
+    {
+        return $this->orgWebsite;
+    }
+
+    /**
      * Set orgLink
      *
      * @param string $orgLink
@@ -1667,6 +1747,26 @@ class Event extends \Cx\Model\Base\EntityBase {
     public function getOrgLink()
     {
         return $this->orgLink;
+    }
+
+    /**
+     * Get orgPhone
+     *
+     * @return string $orgPhone
+     */
+    public function getOrgPhone()
+    {
+        return $this->orgPhone;
+    }
+
+    /**
+     * Set orgPhone
+     *
+     * @param string $orgPhone
+     */
+    public function setOrgPhone($orgPhone)
+    {
+        $this->orgPhone = $orgPhone;
     }
 
     /**
