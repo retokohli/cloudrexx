@@ -1157,12 +1157,12 @@ class CalendarEvent extends CalendarLibrary
         $related_hosts             = isset($data['selectedHosts']) ? $data['selectedHosts'] : '';        
         $locationType              = isset($data['eventLocationType']) ? (int) $data['eventLocationType'] : $this->arrSettings['placeData'];
         $hostType                  = isset($data['eventHostType']) ? (int) $data['eventHostType'] : $this->arrSettings['placeDataHost'];
-        $street                    = isset($data['street']) ? contrexx_input2db(contrexx_strip_tags($data['street'])) : '';
-        $zip                       = isset($data['zip']) ? contrexx_input2db(contrexx_strip_tags($data['zip'])) : '';
-        $placeWebsite              = isset($data['placeWebsite']) ? contrexx_input2db($data['placeWebsite']) : '';
-        $placeLink                 = isset($data['placeLink']) ? contrexx_input2db($data['placeLink']) : '';
-        $placePhone                = isset($data['placePhone']) ? contrexx_input2db($data['placePhone']) : '';
-        $placeMap                  = isset($data['placeMap']) ? contrexx_input2db($data['placeMap']) : '';
+        $street                    = isset($data['street']) ? contrexx_input2raw(contrexx_strip_tags($data['street'])) : '';
+        $zip                       = isset($data['zip']) ? contrexx_input2raw(contrexx_strip_tags($data['zip'])) : '';
+        $placeWebsite              = isset($data['placeWebsite']) ? contrexx_input2raw($data['placeWebsite']) : '';
+        $placeLink                 = isset($data['placeLink']) ? contrexx_input2raw($data['placeLink']) : '';
+        $placePhone                = isset($data['placePhone']) ? contrexx_input2raw($data['placePhone']) : '';
+        $placeMap                  = isset($data['placeMap']) ? contrexx_input2raw($data['placeMap']) : '';
         $update_invitation_sent    = ($send_invitation == 1);
         
         if (!empty($placeWebsite)) {
@@ -1189,12 +1189,12 @@ class CalendarEvent extends CalendarLibrary
             }
         }
 
-        $orgStreet = isset($data['organizerStreet']) ? contrexx_input2db($data['organizerStreet']) : '';
-        $orgZip    = isset($data['organizerZip']) ? contrexx_input2db($data['organizerZip']) : '';
-        $orgWebsite= isset($data['organizerWebsite']) ? contrexx_input2db($data['organizerWebsite']) : '';
-        $orgLink   = isset($data['organizerLink']) ? contrexx_input2db($data['organizerLink']) : '';
-        $orgPhone  = isset($data['organizerPhone']) ? contrexx_input2db($data['organizerPhone']) : '';
-        $orgEmail  = isset($data['organizerEmail']) ? contrexx_input2db($data['organizerEmail']) : '';
+        $orgStreet = isset($data['organizerStreet']) ? contrexx_input2raw($data['organizerStreet']) : '';
+        $orgZip    = isset($data['organizerZip']) ? contrexx_input2raw($data['organizerZip']) : '';
+        $orgWebsite= isset($data['organizerWebsite']) ? contrexx_input2raw($data['organizerWebsite']) : '';
+        $orgLink   = isset($data['organizerLink']) ? contrexx_input2raw($data['organizerLink']) : '';
+        $orgPhone  = isset($data['organizerPhone']) ? contrexx_input2raw($data['organizerPhone']) : '';
+        $orgEmail  = isset($data['organizerEmail']) ? contrexx_input2raw($data['organizerEmail']) : '';
 
         if (!empty($orgWebsite)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $orgWebsite)) {
@@ -1448,7 +1448,7 @@ class CalendarEvent extends CalendarLibrary
                 'model/preUpdate', $event,
                 array('relations' => array('oneToMany' => 'getEventFields')), true
             );
-            $query = \SQL::update("module_{$this->moduleTablePrefix}_event", $formData) ." WHERE id = '$id'";
+            $query = \SQL::update("module_{$this->moduleTablePrefix}_event", $formData, array('escape' => true)) ." WHERE id = '$id'";
         
             $objResult = $objDatabase->Execute($query);
             
@@ -1532,16 +1532,16 @@ class CalendarEvent extends CalendarLibrary
                         'INSERT INTO ' . DBPREFIX . 'module_' . $this->moduleTablePrefix. '_event_field
                           SET `event_id`      = ' . $id . ',
                               `lang_id`       = ' . $eventField['langId'] . ',
-                              `title`         = "' . $eventField['title'] . '",
-                              `teaser`        = "' . $eventField['teaser'] . '",
-                              `description`   = "' . $eventField['description'] . '",
-                              `redirect`      = "' . $eventField['redirect'] . '",
-                              `place`         = "' . $eventField['place'] . '",
-                              `place_city`    = "' . $eventField['placeCity'] . '",
-                              `place_country` = "' . $eventField['placeCountry'] . '",
-                              `org_name`      = "' . $eventField['orgName'] . '",
-                              `org_city`      = "' . $eventField['orgCity'] . '",
-                              `org_country`   = "' . $eventField['orgCountry'] . '"
+                              `title`         = "' . contrexx_addslashes($eventField['title']) . '",
+                              `teaser`        = "' . contrexx_addslashes($eventField['teaser']) . '",
+                              `description`   = "' . contrexx_addslashes($eventField['description']) . '",
+                              `redirect`      = "' . contrexx_addslashes($eventField['redirect']) . '",
+                              `place`         = "' . contrexx_raw2db($eventField['place']) . '",
+                              `place_city`    = "' . contrexx_raw2db($eventField['placeCity']) . '",
+                              `place_country` = "' . contrexx_raw2db($eventField['placeCountry']) . '",
+                              `org_name`      = "' . contrexx_raw2db($eventField['orgName']) . '",
+                              `org_city`      = "' . contrexx_raw2db($eventField['orgCity']) . '",
+                              `org_country`   = "' . contrexx_raw2db($eventField['orgCountry']) . '"
                             ';
                     $objResult = $objDatabase->Execute($query);
                     if ($objResult === false) {
@@ -1600,13 +1600,13 @@ class CalendarEvent extends CalendarLibrary
 
         $eventFields = array();
         foreach ($data['showIn'] as $key => $langId) {
-            $title  = contrexx_addslashes(contrexx_strip_tags($data['title'][$langId]));
-            $teaser = contrexx_addslashes(contrexx_strip_tags($data['teaser'][$langId]));
-            $description = contrexx_addslashes($data['description'][$langId]);
+            $title  = contrexx_strip_tags($data['title'][$langId]);
+            $teaser = contrexx_strip_tags($data['teaser'][$langId]);
+            $description = $data['description'][$langId];
             if ($convertBBCode) {
                 $description = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForDb($data['description'][$langId], true);
             }
-            $redirect = contrexx_addslashes($data['calendar-redirect'][$langId]);
+            $redirect = $data['calendar-redirect'][$langId];
 
             if ($eventType == 0) {
                 $redirect = '';
@@ -1614,34 +1614,34 @@ class CalendarEvent extends CalendarLibrary
                 $description = '';
             }
             if (!empty($data['event_place'][$langId])) {
-                $place = contrexx_input2db($data['event_place'][$langId]);
+                $place = contrexx_input2raw($data['event_place'][$langId]);
             } else {
-                $place = contrexx_input2db($data['event_place'][0]);
+                $place = contrexx_input2raw($data['event_place'][0]);
             }
             if (!empty($data['event_place_city'][$langId])) {
-                $placeCity = contrexx_input2db($data['event_place_city'][$langId]);
+                $placeCity = contrexx_input2raw($data['event_place_city'][$langId]);
             } else {
-                $placeCity = contrexx_input2db($data['event_place_city'][0]);
+                $placeCity = contrexx_input2raw($data['event_place_city'][0]);
             }
             if (!empty($data['event_place_country'][$langId])) {
-                $placeCountry = contrexx_input2db($data['event_place_country'][$langId]);
+                $placeCountry = contrexx_input2raw($data['event_place_country'][$langId]);
             } else {
-                $placeCountry = contrexx_input2db($data['event_place_country'][0]);
+                $placeCountry = contrexx_input2raw($data['event_place_country'][0]);
             }
             if (!empty($data['event_org_name'][$langId])) {
-                $orgName = contrexx_input2db($data['event_org_name'][$langId]);
+                $orgName = contrexx_input2raw($data['event_org_name'][$langId]);
             } else {
-                $orgName = contrexx_input2db($data['event_org_name'][0]);
+                $orgName = contrexx_input2raw($data['event_org_name'][0]);
             }
             if (!empty($data['event_org_city'][$langId])) {
-                $orgCity = contrexx_input2db($data['event_org_city'][$langId]);
+                $orgCity = contrexx_input2raw($data['event_org_city'][$langId]);
             } else {
-                $orgCity = contrexx_input2db($data['event_org_city'][0]);
+                $orgCity = contrexx_input2raw($data['event_org_city'][0]);
             }
             if (!empty($data['event_org_country'][$langId])) {
-                $orgCountry = contrexx_input2db($data['event_org_country'][$langId]);
+                $orgCountry = contrexx_input2raw($data['event_org_country'][$langId]);
             } else {
-                $orgCountry = contrexx_input2db($data['event_org_country'][0]);
+                $orgCountry = contrexx_input2raw($data['event_org_country'][0]);
             }
 
             $eventFields[] = array(
