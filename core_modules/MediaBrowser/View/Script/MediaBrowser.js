@@ -81,9 +81,9 @@
             /**
              * Sorting and searching
              */
-            $scope.sorting = 'cleansize';
+            $scope.sorting = 'name';
             $scope.searchString = '';
-            $scope.reverse = false;
+            $scope.reverse = true;
             $scope.sources = [];
             $scope.fileCallBack = '';
             $scope.files = [];
