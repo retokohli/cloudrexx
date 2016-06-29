@@ -2087,7 +2087,7 @@ class CalendarEvent extends CalendarLibrary
                        AND (   field.title LIKE ('%$term%')
                             OR field.teaser LIKE ('%$term%')
                             OR field.description LIKE ('%$term%')
-                            OR event.place LIKE ('%$term%')
+                            OR field.place LIKE ('%$term%')
                            )";
         
         return $query;
