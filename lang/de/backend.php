@@ -310,6 +310,7 @@ $_ARRAYLANG['TXT_UPLOAD_MEDIA_FILES'] = "Media Dateien hochladen";
 $_ARRAYLANG['TXT_DELETE_USERS'] = "Benutzer löschen";
 $_ARRAYLANG['TXT_ADD_USERS'] = "Benutzer hinzufügen";
 $_ARRAYLANG['TXT_EDIT_USERINFOS'] = "Eigene Benutzerdaten editieren";
+$_ARRAYLANG['TXT_CORE_MODULE_ACCESS_MANAGE_USERS'] = "Benutzer verwalten";
 $_ARRAYLANG['TXT_DELETE_GROUPS'] = "Gruppen löschen";
 $_ARRAYLANG['TXT_ADD_GROUPS'] = "Gruppen erstellen";
 $_ARRAYLANG['TXT_EDIT_GROUPS'] = "Gruppen editieren";
