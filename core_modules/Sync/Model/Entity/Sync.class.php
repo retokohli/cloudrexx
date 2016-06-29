@@ -79,6 +79,8 @@ class Sync extends \Cx\Model\Base\EntityBase {
      * @var Cx\Core_Modules\Sync\Model\Entity\HostEntity
      */
     protected $hostEntities;
+    
+    protected $oldHostEntities = array();
 
     public function __construct()
     {
@@ -152,6 +154,10 @@ class Sync extends \Cx\Model\Base\EntityBase {
     public function setActive($active) {
         $this->active = $active;
     }
+    
+    public function setTempActive($tempActive) {
+        $this->tempActive = $tempActive;
+    }
 
     /**
      * Get active
@@ -159,7 +165,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
      * @return boolean
      */
     public function getActive() {
-        return $this->active;
+        return $this->active || $this->tempActive;
     }
 
     /**
@@ -231,6 +237,109 @@ class Sync extends \Cx\Model\Base\EntityBase {
     {
         return $this->hostEntities;
     }
+    
+    // Customizing for old Calendar sync config:
+    public function getHostEntitiesIncludingLegacy() {
+        $hostEntities = array();
+        
+        foreach ($this->getHostEntities() as $hostEntity) {
+            $hostEntities[] = array(
+                'entityId' => $hostEntity->getEntityId(),
+                'host' => $hostEntity->getHost(),
+            );
+        }
+        
+        //if we're syncing Events:
+        if (
+            $this->getDataAccess()->getDataSource()->getIdentifier() !=
+            'Cx\\Modules\\Calendar\\Model\\Entity\\Event'
+        ) {
+            return $hostEntities;
+        }
+        
+        //load all contrexx_module_calendar_rel_event_host joined to contrexx_module_calendar_host
+        global $objDatabase;
+        $query = '
+            SELECT
+                `host`.`uri`,
+                `host_entity`.`event_id`
+            FROM
+                `' . DBPREFIX . 'module_calendar_rel_event_host` AS `host_entity`
+            JOIN
+                `' . DBPREFIX . 'module_calendar_host` AS `host`
+            ON
+                `host_entity`.`host_id` = `host`.`id`
+            WHERE
+                `host`.`status` = 0
+        ';
+        $results = $objDatabase->Execute($query);
+        if (!$results || $results->EOF) {
+            return $hostEntities;
+        }
+        $em = $this->cx->getDb()->getEntityManager();
+        $hostRepo = $em->getRepository('Cx\Core_Modules\Sync\Model\Entity\Host');
+        while (!$results->EOF) {
+            $host = $hostRepo->findOneBy(array(
+                'host' => $results->fields['uri'],
+            ));
+            if (!$host) {
+                $results->moveNext();
+                continue;
+            }
+            $hostEntities[] = array(
+                'entityId' => $results->fields['event_id'],
+                'host' => $host,
+            );
+            
+            $results->moveNext();
+        }
+        return $hostEntities;
+    }
+    
+    public function setOldHostEntitiesIncludingLegacy($hostEntities) {
+        $this->oldHostEntities = $hostEntities;
+    }
+    
+    public function getOldHostEntitiesIncludingLegacy() {
+        return $this->oldHostEntities;
+    }
+    // end customizing
+    
+    protected function isEntityInHostEntity($entityIndexData, $hostEntity) {
+        // is there a host we should sync this entity to?
+        if (!$hostEntity['host']->getActive()) {
+            return false;
+        }
+        if (
+            $hostEntity['entityId'] != '*' &&
+            $hostEntity['entityId'] != current($entityIndexData)
+        ) {
+            return false;
+        }
+        return true;
+    }
+    
+    public function getRemovedHosts($entityIndexData) {
+        $removedHosts = array();
+        
+        foreach ($this->oldHostEntities as $oldHostEntity) {
+            // if oldHostEntity was not or still is in hostEntities
+            if (!$this->isEntityInHostEntity($entityIndexData, $oldHostEntity)) {
+                continue;
+            }
+            foreach ($this->getHostEntitiesIncludingLegacy() as $hostEntity) {
+                if ($this->isEntityInHostEntity($entityIndexData, $hostEntity)) {
+                    continue;
+                }
+                if (in_array($oldHostEntity['host'], $removedHosts)) {
+                    continue;
+                }
+                // else we should remove the entity from this host
+                $removedHosts[] = $oldHostEntity['host'];
+            }
+        }
+        return $removedHosts;
+    }
 
     /**
      * Set hostEntities
@@ -255,24 +364,57 @@ class Sync extends \Cx\Model\Base\EntityBase {
             return;
         }
         
-        foreach ($this->getHostEntities() as $hostEntity) {
+        // customizing for current calendar:
+        if (
+            $this->getDataAccess()->getDataSource()->getIdentifier() ==
+            'Cx\\Modules\\Calendar\\Model\\Entity\\Event'
+        ) {
+            // set registration to "extern" and registration uri to our host:
+            $entity->setRegistration(
+                \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL
+            );
+            
+            $event = new \Cx\Modules\Calendar\Controller\CalendarEvent($entity->getId());
+            $url = \Cx\Core\Routing\Url::fromModuleAndCmd('Calendar', 'detail', '', array(
+                'id' => $entity->getId(),
+                'date' => '',//$event->startDate->getTimestamp(),
+            ));
+            $entity->setRegistrationExternalLink($url->toString());
+            
+            // from CalendarEventManager:
+            $fullyBooked = true;
+            if (
+                (
+                    $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL &&
+                    !$event->registrationExternalFullyBooked
+                ) ||
+                (
+                    $event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_INTERNAL &&
+                    (
+                        empty($event->numSubscriber) ||
+                        !\FWValidator::isEmpty($event->getFreePlaces())
+                    )
+                )
+            ) {
+                $fullyBooked = false;
+            }
+            $entity->setRegistrationExternalFullyBooked($fullyBooked);
+        }
+        // end customizing
+        
+        foreach ($this->getHostEntitiesIncludingLegacy() as $hostEntity) {
             // is there a host we should sync this entity to?
             if (
-                $hostEntity->getHost()->getActive() &&
-                $hostEntity->getEntityId() != '*' &&
-                $hostEntity->getEntityId() != $entityIndexData
+                $hostEntity['host']->getActive() &&
+                $hostEntity['entityId'] != '*' &&
+                $hostEntity['entityId'] != current($entityIndexData)
             ) {
                 continue;
             }
             
-            ob_start();
+            //\DBG::deactivate();\DBG::activate(DBG_PHP);
             
             // now we really push
-            $url = $hostEntity->getHost()->getToUri(
-                $this->getDataAccess()->getName(),
-                $entityIndexData
-            );
-            $method = strtoupper($eventType);
             $content = array();
             $metaData = $this->cx->getDb()->getEntityManager()->getClassMetadata(get_class($entity));
             $primaryKeyNames = $metaData->getIdentifierFieldNames(); // get the name of primary key in database table
@@ -304,30 +446,43 @@ class Sync extends \Cx\Model\Base\EntityBase {
                 }
             }
             
-            $config = array(
-            );
-            $request = new \HTTP_Request2($url, $method, $config);
-            $refUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
-            $refUrl->setMode('backend');
-            $request->setHeader('Referrer', $refUrl->toString());
-            $request->setBody(http_build_query($content, null, '&'));
-            
-            $response = $request->send();
-            var_dump($response->getStatus());
-            echo '<pre>' . $response->getBody() . '</pre>';
-            echo 'Pushed to ' . $url . ' with method ' . $method . ', body was: ' . http_build_query($content);
-            $logContents = ob_get_contents();
-            ob_end_clean();
-            
-            $severity = 'INFO';
-            if ($response->getStatus() != 200) {
-                $severity = 'FATAL';
-            }
-            $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
-               'severity' => $severity,
-               'message' => 'Sent ' . strtoupper($method) . ' to ' . $url,
-               'data' => $logContents,
-            ));
+            $this->sendRequest($hostEntity['host'], $content, $entityIndexData, $eventType);
         }
+    }
+    
+    public function sendRequest($host, $content, $entityIndexData, $eventType) {
+        ob_start();
+        
+        $method = strtoupper($eventType);
+        $url = $host->getToUri(
+            $this->getDataAccess()->getName(),
+            $entityIndexData
+        );
+        
+        $config = array(
+        );
+        $request = new \HTTP_Request2($url, $method, $config);
+        $refUrl = \Cx\Core\Routing\Url::fromDocumentRoot();
+        $refUrl->setMode('backend');
+        $request->setHeader('Referrer', $refUrl->toString());
+        $request->setBody(http_build_query($content, null, '&'));
+        
+        $response = $request->send();
+        var_dump($response->getStatus());
+        echo '<pre>' . $response->getBody() . '</pre>';
+        echo 'Pushed to ' . $url . ' with method ' . $method . ', body was: ' . http_build_query($content);
+        $logContents = ob_get_contents();
+        ob_end_clean();
+        
+        $severity = 'INFO';
+        if ($response->getStatus() != 200) {
+            $severity = 'FATAL';
+        }
+        $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
+           'severity' => $severity,
+           'message' => 'Sent ' . strtoupper($method) . ' to ' . $url,
+           'data' => $logContents,
+        ));
+        return $logContents;
     }
 }
