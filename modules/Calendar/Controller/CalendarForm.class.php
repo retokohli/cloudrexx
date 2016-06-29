@@ -330,6 +330,7 @@ class CalendarForm extends CalendarLibrary
                 $form = $this->getFormEntity($newFormId);
                 //Trigger postPersist event for Form Entity
                 $this->triggerEvent('model/postPersist', $form);
+                $this->triggerEvent('model/postFlush');
             }
         }
 
@@ -443,6 +444,7 @@ class CalendarForm extends CalendarLibrary
                 //Trigger postUpdate event for Form Entity
                 $this->triggerEvent('model/postUpdate', $form);
             }
+            $this->triggerEvent('model/postFlush');
         } else {
             return false;
         }
@@ -497,6 +499,7 @@ class CalendarForm extends CalendarLibrary
                 //Trigger postRemove event for FormField Entity
                 $this->triggerEvent('model/postRemove', $formField);
             }
+            $this->triggerEvent('model/postFlush');
         }
 
         foreach ($data as $fieldId => $fieldValues) {
@@ -578,8 +581,8 @@ class CalendarForm extends CalendarLibrary
             }
             //Trigger postPersist event for FormField Entity
             $this->triggerEvent('model/postPersist', $formFieldEntity);
-
         }
+        $this->triggerEvent('model/postFlush');
 
         return true;
     }
@@ -721,6 +724,7 @@ class CalendarForm extends CalendarLibrary
         if ($objResult !== false) {
             //Trigger postRemove event for Form Entity
             $this->triggerEvent('model/postRemove', $form);
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;
@@ -773,6 +777,7 @@ class CalendarForm extends CalendarLibrary
         if ($objResult !== false) {
             //Trigger postUpdate event for Form Entity
             $this->triggerEvent('model/postUpdate', $form);
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;
@@ -825,6 +830,7 @@ class CalendarForm extends CalendarLibrary
         if ($objResult !== false) {
             //Trigger postUpdate event for Form Entity
             $this->triggerEvent('model/postUpdate', $form);
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;

@@ -436,12 +436,12 @@ class CalendarRegistration extends CalendarLibrary
             
             if ($objDeleteResult === false) {
                 return false;
-            } else {
-                foreach ($formFieldValueEntities as $formFieldValueEntity) {
-                    //Trigger postRemove event for RegistrationFormFieldValue Entity
-                    $this->triggerEvent('model/postRemove', $formFieldValueEntity);
-                }
             }
+            foreach ($formFieldValueEntities as $formFieldValueEntity) {
+                //Trigger postRemove event for RegistrationFormFieldValue Entity
+                $this->triggerEvent('model/postRemove', $formFieldValueEntity);
+            }
+            $this->triggerEvent('model/postFlush');
         }
 
         $formFieldRepo = $this
@@ -476,10 +476,10 @@ class CalendarRegistration extends CalendarLibrary
 
             if ($objResult === false) {
                 return false;
-            } else {
-                //Trigger postPersist event for RegistrationFormFieldValue Entity
-                $this->triggerEvent('model/postPersist', $formFieldValueEntity);
             }
+            //Trigger postPersist event for RegistrationFormFieldValue Entity
+            $this->triggerEvent('model/postPersist', $formFieldValueEntity);
+            $this->triggerEvent('model/postFlush');
         }
 
         if ($regId == 0) {
@@ -489,6 +489,7 @@ class CalendarRegistration extends CalendarLibrary
             //Trigger postUpdate event for Registration Entity
             $this->triggerEvent('model/postUpdate', $registration);
         }
+        $this->triggerEvent('model/postFlush');
 
         if ($objInit->mode == 'frontend') {
             $objMailManager = new \Cx\Modules\Calendar\Controller\CalendarMailManager();
@@ -606,6 +607,7 @@ class CalendarRegistration extends CalendarLibrary
                     }
                     //Trigger postRemove event for Registration Entity
                     $this->triggerEvent('model/postRemove', $registration);
+                    $this->triggerEvent('model/postFlush');
                     return true;
                 } else {
                     return false;
@@ -665,6 +667,7 @@ class CalendarRegistration extends CalendarLibrary
             if ($objResult !== false) {
                 //Trigger postUpdate event for Registration Entity
                 $this->triggerEvent('model/postUpdate', $registration);
+                $this->triggerEvent('model/postFlush');
                 return true;
             } else {
                 return false;
@@ -712,6 +715,7 @@ class CalendarRegistration extends CalendarLibrary
                 $this->firstExport = $now;
                 //Trigger postUpdate event for Registration Entity
                 $this->triggerEvent('model/postUpdate', $registration);
+                $this->triggerEvent('model/postFlush');
                 return true;  
             } else {
                 return false;
@@ -758,6 +762,7 @@ class CalendarRegistration extends CalendarLibrary
         if ($objResult !== false) {
             //Trigger postUpdate event for Registration Entity
             $this->triggerEvent('model/postUpdate', $registration);
+            $this->triggerEvent('model/postFlush');
         }
     }
 

@@ -176,10 +176,18 @@ Cx\Modules\Calendar\Model\Entity\Event:
       length: 10
       nullable: true
       column: place_zip
+    placeWebsite:
+      type: string
+      length: 255
+      column: place_website
     placeLink:
       type: string
       length: 255
       column: place_link
+    placePhone:
+      type: string
+      length: 20
+      column: place_phone
     placeMap:
       type: string
       length: 255
@@ -195,10 +203,18 @@ Cx\Modules\Calendar\Model\Entity\Event:
       type: string
       length: 10
       column: org_zip
+    orgWebsite:
+      type: string
+      length: 255
+      column: org_website
     orgLink:
       type: string
       length: 255
       column: org_link
+    orgPhone:
+      type: string
+      length: 20
+      column: org_phone
     orgEmail:
       type: string
       length: 255
@@ -216,6 +232,7 @@ Cx\Modules\Calendar\Model\Entity\Event:
     eventFields:
       targetEntity: Cx\Modules\Calendar\Model\Entity\EventField
       mappedBy: event
+      cascade: [persist, remove]
     registrations:
       targetEntity: Cx\Modules\Calendar\Model\Entity\Registration
       mappedBy: event

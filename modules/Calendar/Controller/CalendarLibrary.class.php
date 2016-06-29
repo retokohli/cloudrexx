@@ -897,7 +897,21 @@ EOF;
         $relations = array(),
         $isDetach = false
     ) {
-        if (empty($eventName) || !$entity) {
+        if (empty($eventName)) {
+            return null;
+        }
+
+        if ($eventName == 'model/postFlush') {
+            $this->cx->getEvents()->triggerEvent(
+                $eventName,
+                array(
+                    new \Doctrine\ORM\Event\PostFlushEventArgs($this->em)
+                )
+            );
+            return;
+        }
+
+        if (!$entity) {
             return null;
         }
 

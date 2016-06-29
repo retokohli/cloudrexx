@@ -202,6 +202,7 @@ class CalendarCategory extends CalendarLibrary
         if ($objResult !== false) {
             //Trigger postUpdate event for Category Entity
             $this->triggerEvent('model/postUpdate', $category);
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;
@@ -234,6 +235,7 @@ class CalendarCategory extends CalendarLibrary
         if ($objResult !== false) {
             //Trigger postUpdate event for Category Entity
             $this->triggerEvent('model/postUpdate', $category);
+            $this->triggerEvent('model/postFlush');
             return true;
         } else {
             return false;
@@ -339,6 +341,7 @@ class CalendarCategory extends CalendarLibrary
                     }
                 }
             }
+            $this->triggerEvent('model/postFlush');
 
             if ($objResult !== false) {
                 if ($id == 0) {
@@ -348,6 +351,7 @@ class CalendarCategory extends CalendarLibrary
                     //Trigger event postUpdate for Category Entity
                     $this->triggerEvent('model/postUpdate', $category);
                 }
+                $this->triggerEvent('model/postFlush');
 
                 //hosts
                 foreach ($arrHosts as $key => $hostId) {
@@ -412,6 +416,7 @@ class CalendarCategory extends CalendarLibrary
                 }
                 //Trigger postRemove event for Category Entity
                 $this->triggerEvent('model/postRemove', $category);
+                $this->triggerEvent('model/postFlush');
                 $query = "UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_host
                              SET cat_id = '0'
                        WHERE cat_id = '".intval($this->id)."'";
