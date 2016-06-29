@@ -1552,14 +1552,6 @@ class CalendarEvent extends CalendarLibrary
                     $this->triggerEvent('model/postFlush');
                 }
             }
-            if ($eId == 0) {
-                //Trigger postPersist event for Event Entity
-                $this->triggerEvent('model/postPersist', $event, null, true);
-            } else {
-                //Trigger postUpdate event for Event Entity
-                $this->triggerEvent('model/postUpdate', $event);
-            }
-            $this->triggerEvent('model/postFlush');
 
             if (!empty($related_hosts)) {
                 foreach ($related_hosts as $key => $hostId) {
@@ -1570,6 +1562,15 @@ class CalendarEvent extends CalendarLibrary
                     $objResult = $objDatabase->Execute($query); 
                 }
             }
+            
+            if ($eId == 0) {
+                //Trigger postPersist event for Event Entity
+                $this->triggerEvent('model/postPersist', $event, null, true);
+            } else {
+                //Trigger postUpdate event for Event Entity
+                $this->triggerEvent('model/postUpdate', $event);
+            }
+            $this->triggerEvent('model/postFlush');
         }
 
         if ($send_invitation == 1) {
@@ -1824,11 +1825,11 @@ class CalendarEvent extends CalendarLibrary
                 }
                 //Trigger postRemove event for Event Entity
                 $this->triggerEvent('model/postRemove', $event);
-                $this->triggerEvent('model/postFlush');
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_event_host
                                 WHERE event_id = '".intval($this->id)."'";
 
                 $objResult = $objDatabase->Execute($query);
+                $this->triggerEvent('model/postFlush');
                 if ($objResult !== false) {
                     return true;
                 } else {
