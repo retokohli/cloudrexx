@@ -2060,7 +2060,8 @@ cx.cm.updateActionMenus = function(args) {
  *     publishing: {
  *         locked: true|false,
  *         published: true|false,
- *         hasDraft: no|yes|waiting
+ *         hasDraft: no|yes|waiting,
+ *         scheduled: true|false
  *     },
  *     visibility: {
  *         visible: true|false,
@@ -2165,6 +2166,9 @@ cx.cm.updateTreeEntry = function(newStatus) {
         default:
             break;
     }
+    if (newStatus.publishing.scheduled) {
+        publishing.addClass("scheduled")
+    }
     if (!newStatus.existing) {
         publishing.addClass("inexistent");
     }
@@ -2222,7 +2226,8 @@ cx.cm.updateTreeEntries = function(newStatuses) {
  *     publishing: {
  *         locked: true|false,
  *         published: true|false,
- *         hasDraft: no|yes|waiting
+ *         hasDraft: no|yes|waiting,
+ *         scheduled: true|false
  *     },
  *     visibility: {
  *         visible: true|false,
@@ -2250,7 +2255,8 @@ cx.cm.getPageStatus = function(nodeId, lang) {
             publishing: {
                 locked: false,
                 published: false,
-                hasDraft: "no"
+                hasDraft: "no",
+                scheduled: false
             },
             visibility: {
                 visible: false,
@@ -2277,6 +2283,11 @@ cx.cm.getPageStatus = function(nodeId, lang) {
         } else {
             hasDraft = "yes";
         }
+    }
+
+    var scheduled = false;
+    if (publishing.hasClass("scheduled")) {
+        scheduled = true;
     }
 
     var type = "standard";
@@ -2307,7 +2318,8 @@ cx.cm.getPageStatus = function(nodeId, lang) {
         publishing: {
             locked: publishing.hasClass("locked"),
             published: !publishing.hasClass("unpublished"),
-            hasDraft: hasDraft
+            hasDraft: hasDraft,
+            scheduled: scheduled
         },
         visibility: {
             visible: !visibility.hasClass("invisible") && !visibility.hasClass("inactive"),

@@ -522,8 +522,8 @@ li.jstree-closed, li.jstree-leaf {
 
 #site-tree .publishing,
 #page_history .publishing {
-    width: 13px;
-    height: 14px;
+    width: 18px;
+    height: 16px;
     background-image: url('../Media/PublishingUnlocked.png');
     background-position: -34px -5px;
     margin-top: 8px;
@@ -533,45 +533,73 @@ li.jstree-closed, li.jstree-leaf {
     background-image: url('../Media/PublishingLocked.png');
     background-position: -33px -4px;
 }
+#site-tree .publishing.scheduled,
+#page_history .publishing.scheduled {
+    background-image: url('../Media/PublishingScheduledUnlocked.png');
+}
+#site-tree .publishing.locked.scheduled,
+#page_history .publishing.locked.scheduled {
+    background-image: url('../Media/PublishingScheduledLocked.png');
+}
 #site-tree .publishing.draft,
-#page_history .publishing.draft {
+#page_history .publishing.draft,
+#site-tree .publishing.draft.scheduled,
+#page_history .publishing.draft.scheduled {
     background-position: -34px -34px;
 }
 #site-tree .publishing.draft.locked,
-#page_history .publishing.draft.locked {
+#page_history .publishing.draft.locked,
+#site-tree .publishing.draft.locked.scheduled,
+#page_history .publishing.draft.locked.scheduled {
     background-position: -33px -33px;
 }
 #site-tree .publishing.draft.waiting,
-#page_history .publishing.draft.waiting {
+#page_history .publishing.draft.waiting,
+#site-tree .publishing.draft.waiting.scheduled,
+#page_history .publishing.draft.waiting.scheduled{
     background-position: -34px -63px;
 }
 #site-tree .publishing.draft.waiting.locked,
-#page_history .publishing.draft.waiting.locked {
+#page_history .publishing.draft.waiting.locked,
+#site-tree .publishing.draft.waiting.locked.scheduled,
+#page_history .publishing.draft.waiting.locked.scheduled{
     background-position: -33px -62px;
 }
 #site-tree .publishing.unpublished,
-#page_history .publishing.unpublished {
+#page_history .publishing.unpublished,
+#site-tree .publishing.unpublished.scheduled,
+#page_history .publishing.unpublished.scheduled {
     background-position: -5px -5px;
 }
 #site-tree .publishing.unpublished.locked,
-#page_history .publishing.unpublished.locked {
+#page_history .publishing.unpublished.locked,
+#site-tree .publishing.unpublished.locked.scheduled,
+#page_history .publishing.unpublished.locked.scheduled {
     background-position: -4px -4px;
 }
 #site-tree .publishing.unpublished.draft,
-#page_history .publishing.unpublished.draft {
+#page_history .publishing.unpublished.draft,
+#site-tree .publishing.unpublished.draft.scheduled,
+#page_history .publishing.unpublished.draft.scheduled {
     background-position: -5px -34px;
 }
 #site-tree .publishing.unpublished.draft.locked,
-#page_history .publishing.unpublished.draft.locked {
+#page_history .publishing.unpublished.draft.locked,
+#site-tree .publishing.unpublished.draft.locked.scheduled,
+#page_history .publishing.unpublished.draft.locked.scheduled {
     background-position: -4px -33px;
 }
 #site-tree .publishing.unpublished.draft.waiting,
-#page_history .publishing.unpublished.draft.waiting {
-    background-position: -5px -63px; 
+#page_history .publishing.unpublished.draft.waiting,
+#site-tree .publishing.unpublished.draft.waiting.scheduled,
+#page_history .publishing.unpublished.draft.waiting.scheduled {
+    background-position: -5px -63px;
 }
 #site-tree .publishing.unpublished.draft.waiting.locked,
-#page_history .publishing.unpublished.draft.waiting.locked {
-    background-position: -4px -62px; 
+#page_history .publishing.unpublished.draft.waiting.locked,
+#site-tree .publishing.unpublished.draft.waiting.locked.scheduled,
+#page_history .publishing.unpublished.draft.waiting.locked.scheduled {
+    background-position: -4px -62px;
 }
 
 

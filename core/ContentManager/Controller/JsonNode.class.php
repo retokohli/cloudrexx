@@ -513,7 +513,8 @@ class JsonNode implements JsonAdapter {
                     ),
                 );
 
-                $editingStatus = $page->getEditingStatus();
+                $editingStatus         = $page->getEditingStatus();
+                $isScheduledPublishing = !empty($page->getStart()) || !empty($page->getEnd());
                 if ($page->isActive()) {
                     if ($editingStatus == 'hasDraft') {
                         $publishingStatus = 'published draft';
@@ -535,7 +536,9 @@ class JsonNode implements JsonAdapter {
                         !\Permission::checkAccess($page->getBackendAccessId(), 'dynamic', true)) {
                     $publishingStatus .= ' locked';
                 }
-                
+                $publishingStatus .= $page->isActive(true) && $isScheduledPublishing
+                                    ? ' scheduled' : '';
+
                 $metadata[$page->getId()] = array(
                     'visibility' => $page->getStatus(),
                     'publishing' => $publishingStatus,
