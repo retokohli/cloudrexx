@@ -1329,18 +1329,22 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     }
                 } else if (cx.jQuery(event.target).is('ins.page') ||
                         cx.jQuery(event.target).is('ins.publishing')) {
+                    var nodeId = cx.jQuery(event.target).closest("li").attr("id").split("_")[1];
                     if (cx.jQuery(event.target).is('ins.page')) {
                         action = "hide";
                         if (cx.jQuery(event.target).hasClass('invisible')) {
                             action = "show";
                         }
                     } else {
+                        if (cx.jQuery(event.target).hasClass('scheduled')) {
+                            cx.cm.loadPage(this.id, nodeId, false, 'more');
+                            return;
+                        }
                         action = "deactivate";
                         if (cx.jQuery(event.target).hasClass('unpublished')) {
                             action = "activate";
                         }
                     }
-                    var nodeId = cx.jQuery(event.target).closest("li").attr("id").split("_")[1];
                     cx.cm.performAction(action, this.id, nodeId);
                 }
             });
@@ -1585,7 +1589,13 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     var arrStatuses = new Array();
                     var arrTipMessage = new Array();
                     
-                    if (objTrigger.hasClass('unpublished')) {
+                    if (objTrigger.hasClass('scheduled')) {
+                        if (objTrigger.hasClass('unpublished')) {
+                            arrStatuses.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_SCHEDULED_DEACTIVE', 'contentmanager/lang/tooltip'));
+                        } else {
+                            arrStatuses.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_SCHEDULED_ACTIVE', 'contentmanager/lang/tooltip'));
+                        }
+                    } else if (objTrigger.hasClass('unpublished')) {
                         arrStatuses.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_UNPUBLISHED', 'contentmanager/lang/tooltip'));
                     } else {
                         arrStatuses.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_PUBLISHED', 'contentmanager/lang/tooltip'));
