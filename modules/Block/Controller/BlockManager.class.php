@@ -308,11 +308,15 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
 
         $rowNr = 0;
         foreach ($arrBlocks as $blockId => $arrBlock) {
-            if ($arrBlock['active'] ==  '1') {
-                $status = '<a href="index.php?cmd=Block&amp;act=deactivate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'"><img src="../core/Core/View/Media/icons/led_green.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'" /></a>';
-            } else {
-                $status = '<a href="index.php?cmd=Block&amp;act=activate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'"><img src="../core/Core/View/Media/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'" /></a>';
-            }
+            list($statusName, $action) = $this->getBlockStatusAndAction($arrBlock);
+            $placeholderName = 'TXT_BLOCK_OVERVIEW_'.  strtoupper($statusName).'_TOOLTIP';
+            $this->_objTpl->setVariable(array(
+                'TXT_BLOCK_OVERVIEW_STATUS_TOOLTIP' => $_ARRAYLANG[$placeholderName],
+                'BLOCK_OVERVIEW_BLOCK_ID'           => $blockId,
+                'BLOCK_OVERVIEW_PAGE_ACTION'        => $action,
+                'BLOCK_OVERVIEW_IMG_STATUS_CLASS'   => str_replace('_', '-', $statusName)
+            ));
+            $this->_objTpl->parse('block_overview_status');
 
             $blockPlaceholder = $this->blockNamePrefix . $blockId;
 
@@ -393,13 +397,43 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                 'BLOCK_MODIFY'                => sprintf($_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
                 'BLOCK_COPY'                  => sprintf($_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
                 'BLOCK_DELETE'                => sprintf($_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
-                'BLOCK_STATUS'                => $status,
                 'BLOCK_LANGUAGES_NAME'        => $langString,
             ));
             $this->_objTpl->parse('blockBlockList');
 
             $rowNr ++;
         }
+    }
+
+    /**
+     * Get the block status and its action based on the scheduled publishing
+     *
+     * @param array $arrBlock array of Block details
+     *
+     * @return array array of block status and its action
+     */
+    public function getBlockStatusAndAction($arrBlock)
+    {
+        if (empty($arrBlock['active'])) {
+            return array('inactive_status', 'activate');
+        }
+
+        if (empty($arrBlock['start']) && empty($arrBlock['end'])) {
+            return array('active_status', 'deactivate');
+        }
+
+        $currentDate = new \DateTime();
+        $startDate   = clone $currentDate;
+        $startDate->setTimestamp($arrBlock['start']);
+        $endDate = clone $startDate;
+        $endDate->setTimestamp($arrBlock['end']);
+        if (    $currentDate->getTimestamp() > $startDate->getTimestamp()
+            &&  $currentDate->getTimestamp() < $endDate->getTimestamp()
+        ) {
+            return array('active_scheduled_publishing_status', 'modify&show=additionalTab');
+        }
+
+        return array('inactive_scheduled_publishing_status', 'modify&show=additionalTab');
     }
 
     /**
@@ -765,6 +799,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
 
         $targetingStatus = isset($_POST['targeting_status']) ? contrexx_input2int($_POST['targeting_status']) : 0;
         $targeting       = array();
+        $showAdditionalTab = isset($_GET['show']) && ($_GET['show'] == 'additionalTab');
         foreach ($this->availableTargeting as $targetingType) {
             $targetingArr = isset($_POST['targeting'][$targetingType]) ? $_POST['targeting'][$targetingType] : array();
             if (empty($targetingArr)) {
@@ -899,6 +934,10 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                                                     ? 'selected="selected"' : '',
             'BLOCK_TARGETING_COUNTRY_EXCLUDE'   => !empty($targeting['country']) && $targeting['country']['filter'] == 'exclude'
                                                     ? 'selected="selected"' : '',
+            'BLOCK_MODIFY_BASIC_TAB_CLASS'      => $showAdditionalTab ? '' : 'active',
+            'BLOCK_MODIFY_ADDITIONAL_TAB_CLASS' => $showAdditionalTab ? 'active' : '',
+            'BLOCK_MODIFY_BASIC_DIV_DISPLAY'    => $showAdditionalTab ? 'display: none' : 'display: block;',
+            'BLOCK_MODIFY_ADDITIONAL_DIV_DISPLAY' => $showAdditionalTab ? 'display: block' : 'display: none;'
         ));
         
         if (!empty($targeting['country']) && !empty($targeting['country']['value'])) {
