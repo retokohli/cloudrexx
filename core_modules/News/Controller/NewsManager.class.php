@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * Cloudrexx
  *
@@ -581,7 +582,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $selectedInterfaceLanguage = key($news['lang']);
                 }     
                 
-                $this->parseNewsStatusIcon($this->_objTpl, $newsId, $news);
+                $this->parseNewsStatusIcon($this->_objTpl, $newsId, $news, 'archive');
                 ($messageNr % 2) ? $class = 'row2' : $class = 'row1';
                 $messageNr++;
 
@@ -677,7 +678,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                  n.validated AS validated,
                  n.typeid AS typeid,
                  n.frontend_access_id,
-                 n.userid
+                 n.userid,
+                 n.startdate,
+                 n.enddate
                  FROM ".DBPREFIX."module_news AS n
                  WHERE n.validated='0'";
         $objResult = $objDatabase->Execute($query);        
@@ -706,7 +709,9 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                   'status'             => $objResult->fields['status'],
                   'validated'          => $objResult->fields['validated'],
                   'frontend_access_id' => $objResult->fields['frontend_access_id'],
-                  'userid'             => $objResult->fields['userid']
+                  'userid'             => $objResult->fields['userid'],
+                  'startdate'          => $objResult->fields['startdate'],
+                  'enddate'            => $objResult->fields['enddate']
                 );
 
                 $objLangResult = $objDatabase->Execute('SELECT nl.title as title,
@@ -766,11 +771,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                 ($validatorNr % 2) ? $class = 'row2' : $class = 'row1';
                 $validatorNr++;
 
-                $statusPicture = 'status_red.gif';
-                if ($news['status']==1) {
-                    $statusPicture = 'status_green.gif';
-                }
-
+                $this->parseNewsStatusIcon($this->_objTpl, $newsId, $news, 'unvalidate');
                 if ($news['userid'] && ($objUser = $objFWUser->objUser->getUser($news['userid']))) {
                     $author = contrexx_raw2xhtml($objUser->getUsername());
                 } else {
@@ -806,7 +807,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     'NEWS_CLASS'            => $class,
                     'NEWS_CATEGORY'         => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['catname']),
                     'NEWS_STATUS'           => $news['status'],
-                    'NEWS_STATUS_PICTURE'   => $statusPicture,
                     'NEWS_LANGUAGES'        => $langString,
                 ));
 
@@ -835,9 +835,12 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
      * @param \Cx\Core\Html\Sigma $objTpl    template object
      * @param integer             $newsId    id of the news
      * @param array               $arrNews   array of news details
+     * @param string              $blockName name of the block
      */
-    public function parseNewsStatusIcon(\Cx\Core\Html\Sigma $objTpl, $newsId, $arrNews)
-    {
+    public function parseNewsStatusIcon(
+        \Cx\Core\Html\Sigma $objTpl, $newsId,
+        $arrNews, $blockName
+    ) {
         global $_ARRAYLANG;
 
         $statusName = 'inactive_status';
@@ -864,12 +867,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         $placeholderName = 'TXT_NEWS_OVERVIEW_'.  strtoupper($statusName).'_TOOLTIP';
         $objTpl->setVariable(array(
-            'NEWS_OVERVIEW_ARCHIVE_ACTION' => $action,
-            'NEWS_OVERVIEW_ARCHIVE_ID'     => $newsId,
-            'TXT_NEWS_OVERVIEW_ARCHIVE_STATUS_TOOLTIP'=> $_ARRAYLANG[$placeholderName],
-            'NEWS_OVERVIEW_IMG_ARCHIVE_STATUS_CLASS'  => str_replace('_', '-', $statusName)
+            'NEWS_OVERVIEW_' .  strtoupper($blockName) . '_ACTION' => $action,
+            'NEWS_OVERVIEW_' .  strtoupper($blockName) . '_ID'     => $newsId,
+            'TXT_NEWS_OVERVIEW_' .  strtoupper($blockName) . '_STATUS_TOOLTIP'=>
+                $_ARRAYLANG[$placeholderName],
+            'NEWS_OVERVIEW_IMG_' .  strtoupper($blockName) . '_STATUS_CLASS'  =>
+                str_replace('_', '-', $statusName)
         ));
-        $objTpl->parse('news_overview_archive_status');
+        $objTpl->parse('news_overview_' . strtolower($blockName) . '_status');
     }
 
     /**
