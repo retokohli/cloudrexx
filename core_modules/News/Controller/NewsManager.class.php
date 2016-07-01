@@ -499,7 +499,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
 
         // set archive list
         $query = '
-            SELECT `id`, `date`, `changelog`, `status`, `validated`, `typeid`, `frontend_access_id`, `userid`
+            SELECT `id`, `date`, `changelog`, `status`, `startdate`, `enddate`,
+                   `validated`, `typeid`, `frontend_access_id`, `userid`
               FROM `' . DBPREFIX . 'module_news`
              WHERE `validated` = "1"
                ' . $whereCategory . '
@@ -544,6 +545,8 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                       'validated'          => $objResult->fields['validated'],
                       'frontend_access_id' => $objResult->fields['frontend_access_id'],
                       'userid'             => $objResult->fields['userid'],
+                      'startdate'          => $objResult->fields['startdate'],
+                      'enddate'            => $objResult->fields['enddate'],
                       'catIds'             => $newsCategoryIds
                     );
                     while (!$objLangResult->EOF) {
@@ -567,7 +570,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         $count = count($arrNews);
         if ($count<1) {
             $this->_objTpl->hideBlock('newstable');
-        } else {        
+        } else {
             foreach ($arrNews as $newsId => $news) {
 
                 if (isset($news['lang'][FRONTEND_LANG_ID])) {
@@ -578,11 +581,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     $selectedInterfaceLanguage = key($news['lang']);
                 }     
                 
-                $statusPicture = 'status_red.gif';
-                if ($news['status']==1) {
-                    $statusPicture = 'status_green.gif';
-                }
-
+                $this->parseNewsStatusIcon($this->_objTpl, $newsId, $news);
                 ($messageNr % 2) ? $class = 'row2' : $class = 'row1';
                 $messageNr++;
 
@@ -647,7 +646,6 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
                     'NEWS_CLASS'             => $class,
                     'NEWS_CATEGORY'          => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['catname']),
                     'NEWS_STATUS'            => $news['status'],
-                    'NEWS_STATUS_PICTURE'    => $statusPicture,
                     'NEWS_LANGUAGES'         => $langString,
 // TODO: Not in use yet. From r8465@branches/contrexx_2_1
 //                        'NEWS_FACEBOOK_SHARE_BUTTON'  => $socialNetworkTemplater->getFacebookShareButton()
@@ -831,6 +829,48 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         }
     }
 
+    /**
+     * Parse the news status icon
+     *
+     * @param \Cx\Core\Html\Sigma $objTpl    template object
+     * @param integer             $newsId    id of the news
+     * @param array               $arrNews   array of news details
+     */
+    public function parseNewsStatusIcon(\Cx\Core\Html\Sigma $objTpl, $newsId, $arrNews)
+    {
+        global $_ARRAYLANG;
+
+        $statusName = 'inactive_status';
+        $action     = 'invertStatus';
+        $newsStatus = ($arrNews['status'] == 1);
+        $isNewsPublishing = !(   $arrNews['startdate'] == '0000-00-00 00:00:00'
+                             && $arrNews['enddate'] == '0000-00-00 00:00:00'
+                            );
+
+        if ($newsStatus && !$isNewsPublishing) {
+            $statusName = 'active_status';
+        }
+
+        if ($newsStatus && $isNewsPublishing) {
+            $action = 'edit&show=additionalTab';
+            if (    time() > strtotime($arrNews['startdate'])
+                &&  time() < strtotime($arrNews['enddate'])
+            ) {
+                $statusName = 'active_scheduled_publishing_status';
+            } else {
+                $statusName = 'inactive_scheduled_publishing_status';
+            }
+        }
+
+        $placeholderName = 'TXT_NEWS_OVERVIEW_'.  strtoupper($statusName).'_TOOLTIP';
+        $objTpl->setVariable(array(
+            'NEWS_OVERVIEW_ARCHIVE_ACTION' => $action,
+            'NEWS_OVERVIEW_ARCHIVE_ID'     => $newsId,
+            'TXT_NEWS_OVERVIEW_ARCHIVE_STATUS_TOOLTIP'=> $_ARRAYLANG[$placeholderName],
+            'NEWS_OVERVIEW_IMG_ARCHIVE_STATUS_CLASS'  => str_replace('_', '-', $statusName)
+        ));
+        $objTpl->parse('news_overview_archive_status');
+    }
 
     /**
      * Takes a date in the format dd.mm.yyyy hh:mm and returns it's representation as mktime()-timestamp.
@@ -1503,7 +1543,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
           $catrow = 'row1';
 
         }
-
+        $showAdditionalTab = isset($_GET['show']) && ($_GET['show'] == 'additionalTab');
         $this->_objTpl->setGlobalVariable(array(
             'TXT_CATEGORY_SELECT'           => $_ARRAYLANG['TXT_CATEGORY_SELECT'],
             'TXT_COPY'                      => $_ARRAYLANG['TXT_NEWS_COPY'],
@@ -1567,6 +1607,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
             'TXT_NEWS_TAGS'             => $_ARRAYLANG['TXT_NEWS_TAGS'],
             'TXT_NEWS_TAGS_ENABLE'      => $_ARRAYLANG['TXT_NEWS_TAGS_ENABLE'],
             'NEWS_TAG_ID'               => $newsTagId,
+            'NEWS_MODIFY_SHOW_ADDITIONAL_TAB' => $showAdditionalTab
         ));
 
         $newsid = intval($_REQUEST['newsId']);
