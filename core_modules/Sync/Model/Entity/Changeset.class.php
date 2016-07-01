@@ -72,6 +72,18 @@ class Changeset extends \Cx\Model\Base\EntityBase
             $this->calculateRelations($field, $fieldType, $entity, $em, $eventType, $subEventType, $sync, $host);
         }
         
+        // foreach cascade (delete/persist)+
+        // cascaded removals need to happen before the origin removal
+        // cascaded persists need to happen after the origin persist
+        if ($eventType == 'delete') {
+            $subEventType = 'delete';
+            foreach ($this->getComponentController()->getCascadingFields($entity, $eventType) as $field=>$fieldType) {
+                // recurse
+                //echo 'Calculating cascades for ' . $entityClassName . '.' . $field . '<br />';
+                $this->calculateRelations($field, $fieldType, $entity, $em, $eventType, $subEventType, $sync, $host);
+            }
+        }
+        
         // If doctrine supplied a proxy, there was no change to this entity
         if (substr(get_class($entity), -5) == 'Proxy') {
             //return;
@@ -90,6 +102,7 @@ class Changeset extends \Cx\Model\Base\EntityBase
         
         // foreach cascade (delete/persist)
         if ($eventType == 'delete') {
+            return;
             $subEventType = 'delete';
         }
         foreach ($this->getComponentController()->getCascadingFields($entity, $eventType) as $field=>$fieldType) {
