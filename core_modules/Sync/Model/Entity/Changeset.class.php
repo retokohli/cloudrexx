@@ -50,11 +50,11 @@ class Changeset extends \Cx\Model\Base\EntityBase
     
     protected $spool = array();
     
-    public function __construct($entityIndexData, $entityClassName, $entity, $eventType, $sync) {
-        $this->calculate($entityIndexData, $entityClassName, $entity, $eventType, $sync);
+    public function __construct($entityIndexData, $entityClassName, $entity, $eventType, $sync, $host) {
+        $this->calculate($entityIndexData, $entityClassName, $entity, $eventType, $sync, $host);
     }
     
-    public function calculate($entityIndexData, $entityClassName, $entity, $eventType, $sync) {
+    public function calculate($entityIndexData, $entityClassName, $entity, $eventType, $sync, $host) {
         // do not add the same entity twice in the same changeset
         $entityIdentifier = $entityClassName . implode('/', $entityIndexData);
         if (in_array($entityIdentifier, $this->calculatedEntities)) {
@@ -69,7 +69,7 @@ class Changeset extends \Cx\Model\Base\EntityBase
         foreach ($this->getComponentController()->getDependendingFields($entity) as $field=>$fieldType) {
             // recurse
             //echo 'Calculating relations for ' . $entityClassName . '.' . $field . '<br />';
-            $this->calculateRelation($field, $fieldType, $entity, $em, $eventType, $subEventType, $sync);
+            $this->calculateRelations($field, $fieldType, $entity, $em, $eventType, $subEventType, $sync, $host);
         }
         
         // If doctrine supplied a proxy, there was no change to this entity
@@ -78,12 +78,14 @@ class Changeset extends \Cx\Model\Base\EntityBase
         }
         
         // add to pre-spool
-        $this->spool[] = array(
-            'sync' => $sync,
-            'eventType' => $eventType,
-            'entityIndexData' => $entityIndexData,
-            'entity' => $entity,
-            'entityIdentifier' => $entityIdentifier,
+        //echo 'Pre-spooling change<br />';
+        $this->spool[] = new Change(
+            $sync,
+            $host,
+            $eventType,
+            $entityIndexData,
+            $entityIdentifier,
+            $entity
         );
         
         // foreach cascade (delete/persist)
@@ -93,13 +95,13 @@ class Changeset extends \Cx\Model\Base\EntityBase
         foreach ($this->getComponentController()->getCascadingFields($entity, $eventType) as $field=>$fieldType) {
             // recurse
             //echo 'Calculating cascades for ' . $entityClassName . '.' . $field . '<br />';
-            $this->calculateRelation($field, $fieldType, $entity, $em, $eventType, $subEventType, $sync);
+            $this->calculateRelations($field, $fieldType, $entity, $em, $eventType, $subEventType, $sync, $host);
         }
         
         //$this->simplify();
     }
     
-    protected function calculateRelation($field, $fieldType, $entity, $em, $eventType, $subEventType, $sync) {
+    protected function calculateRelations($field, $fieldType, $entity, $em, $eventType, $subEventType, $sync, $host) {
         // @todo: this does not take relation config into account!
         $fieldGetMethodName = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
         $foreignEntities = $entity->$fieldGetMethodName();
@@ -135,7 +137,7 @@ class Changeset extends \Cx\Model\Base\EntityBase
                 //echo 'Entity not configured to cascade<br />';
                 continue; // if cascading isn't configured
             }
-            $this->calculate($foreignEntityIndexData, $foreignEntityClassName, $foreignEntity, $subEventType, $foreignSync);
+            $this->calculate($foreignEntityIndexData, $foreignEntityClassName, $foreignEntity, $subEventType, $foreignSync, $host);
         }
     }
     

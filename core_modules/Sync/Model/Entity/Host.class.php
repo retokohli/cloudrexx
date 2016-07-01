@@ -80,6 +80,11 @@ class Host extends \Cx\Model\Base\EntityBase
      * @var Cx\Core_Modules\Sync\Model\Entity\HostEntity
      */
     protected $hostEntities;
+
+    /**
+     * @var Cx\Core_Modules\Sync\Model\Entity\Change
+     */
+    protected $changes;
     
     /**
      * @var string Default template for URI
@@ -89,6 +94,7 @@ class Host extends \Cx\Model\Base\EntityBase
     public function __construct()
     {
         $this->hostEntities = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->changes = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -236,6 +242,36 @@ class Host extends \Cx\Model\Base\EntityBase
     {
         $this->hostEntities = $hostEntities;
     }
+
+    /**
+     * Add Change
+     *
+     * @param Cx\Core_Modules\Sync\Model\Entity\Change $change
+     */
+    public function addChange(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
+    {
+        $this->changes[] = $change;
+    }
+
+    /**
+     * Get changes
+     *
+     * @return Doctrine\Common\Collections\Collection $changes
+     */
+    public function getChanges()
+    {
+        return $this->changes;
+    }
+
+    /**
+     * Set changes
+     *
+     * @param array $changes
+     */
+    public function setChanges($changes)
+    {
+        $this->changes = $changes;
+    }
     
     /**
      * Returns the URL for pushing data to this host
@@ -295,20 +331,18 @@ class Host extends \Cx\Model\Base\EntityBase
         }
         
         // calculate changeset
-        $changeset = new \Cx\Core_Modules\Sync\Model\Entity\Changeset($entityIndexData, $entityClassName, $entity, $eventType, $sync);
+        $changeset = new \Cx\Core_Modules\Sync\Model\Entity\Changeset($entityIndexData, $entityClassName, $entity, $eventType, $sync, $this);
         
         // spool!
         $spooler->addChangeset($this, $changeset);
     }
     
-    public function push($changeset) {
-        foreach ($changeset->getChanges() as $change) {
-            $content = array();
-            if ($change['eventType'] != 'delete') {
-                $content = $this->calculateContent($change['entity']);
-            }
-            $this->sendRequest($content, $change['entityIndexData'], $change['eventType'], $change['sync']);
+    public function addContentsToChangeset($change) {
+        // delete needs no content
+        if ($change->getEventType() == 'delete') {
+            return;
         }
+        $change->setContents($this->calculateContent($change->getEntity()));
     }
     
     protected function calculateContent($entity) {
@@ -427,9 +461,16 @@ class Host extends \Cx\Model\Base\EntityBase
         return $input;
     }
     
+    public function sendChange($change) {
+        return $this->sendRequest(
+            $change->getContents(),
+            $change->getEntityIndexData(),
+            $change->getEventType(),
+            $change->getSync()
+        );
+    }
+    
     protected function sendRequest($content, $entityIndexData, $eventType, $sync) {
-        ob_start();
-        
         $method = strtoupper($eventType);
         $url = $this->getToUri(
             $sync->getDataAccess()->getName(),
@@ -446,21 +487,10 @@ class Host extends \Cx\Model\Base\EntityBase
         
         $response = $request->send();
         var_dump($response->getStatus());
-        echo '<pre>' . $response->getBody() . '</pre>';
-        echo 'Pushed to ' . $url . ' with method ' . $method . ', body was: ' . http_build_query($content);
-        $logContents = ob_get_contents();
-        ob_end_clean();
+        echo 'Pushed to ' . $url . ' with method ' . $method . ', body was: ' . http_build_query($content) . "\n";
+        echo '<pre>' . $response->getBody() . "</pre>\n\n";
         
-        $severity = 'INFO';
-        if ($response->getStatus() != 200) {
-            $severity = 'FATAL';
-        }
-        $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
-           'severity' => $severity,
-           'message' => 'Sent ' . strtoupper($method) . ' to ' . $url,
-           'data' => $logContents,
-        ));
-        return $logContents;
+        return $response->getStatus() == 200;
     }
 }
 

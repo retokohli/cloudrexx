@@ -79,6 +79,11 @@ class Sync extends \Cx\Model\Base\EntityBase {
      * @var Cx\Core_Modules\Sync\Model\Entity\HostEntity
      */
     protected $hostEntities;
+
+    /**
+     * @var Cx\Core_Modules\Sync\Model\Entity\Change
+     */
+    protected $changes;
     
     protected $oldHostEntities = array();
 
@@ -86,6 +91,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
     {
         $this->relations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->hostEntities = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->changes = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -349,6 +355,36 @@ class Sync extends \Cx\Model\Base\EntityBase {
     public function setHostEntities($hostEntities)
     {
         $this->hostEntities[] = $hostEntities;
+    }
+
+    /**
+     * Add change
+     *
+     * @param Cx\Core_Modules\Sync\Model\Entity\Change $change
+     */
+    public function addChange(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
+    {
+        $this->changes[] = $change;
+    }
+
+    /**
+     * Get changes
+     *
+     * @return Doctrine\Common\Collections\Collection $changes
+     */
+    public function getChanges()
+    {
+        return $this->changes;
+    }
+
+    /**
+     * Set Changes
+     *
+     * @param array $changes
+     */
+    public function setChanges($changes)
+    {
+        $this->changes[] = $changes;
     }
     
     /**

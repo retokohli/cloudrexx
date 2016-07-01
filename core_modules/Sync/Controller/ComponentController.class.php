@@ -183,9 +183,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         try {
             switch ($command) {
                 case 'sync':
-                    // do not push changes made during this request
+                    // do not calculate new changes made during this request
                     $this->doPush = false;
+                    
+                    // local side code
+                    if (count($arguments) == 1 && $arguments[0] == 'push') {
+                        $this->pushChanges();
+                        break;
+                    }
+                    
+                    // remote side code
                     $this->sync($command, $arguments, $dataArguments);
+                    break;
             }
         } catch (\Exception $e) {
             // This should only be used if API cannot handle the request at all.
@@ -193,6 +202,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             http_response_code(400); // BAD REQUEST
             echo 'Exception of type "' . get_class($e) . '" with message "' . $e->getMessage() . '"';
         }
+    }
+    
+    public function postFinalize() {
+        $em = $this->cx->getDb()->getEntityManager();
+        $changeRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Change');
+        if (!$changeRepo->findOneBy(array())) {
+            // no changes
+            return;
+        }
+        // execute `./cx sync push` asynchronously
+        $this->getComponent('Core')->execAsync(
+            'sync',
+            array(
+                'push',
+            )
+        );
     }
     
     /**
@@ -372,7 +397,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
             
             // We don't want to loop!
-            if ($entityClassName == 'Cx\Core_Modules\Sync\Model\Entity\IdMapping') {
+            if (
+                substr($entityClassName, 0, strlen($this->getNamespace())) == $this->getNamespace() ||
+                $entityClassName == 'Cx\Core_Modules\SysLog\Model\Entity\Log'
+            ) {
                 return;
             }
         }
@@ -389,8 +417,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 foreach ($this->syncs as $syncEntityClassName=>$syncs) {
                     foreach ($syncs as $sync) {
                         $sync->setOldHostEntitiesIncludingLegacy($sync->getHostEntitiesIncludingLegacy());
-                        }
                     }
+                }
                 break;
                 
             case \Doctrine\ORM\Events::postRemove:
@@ -471,7 +499,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @todo: This does not spool yet, instead it writes changes instantly
      */
     public function spoolSync($eventType, $entityClassName, $entityIndexData, $entity) {
-        if (!$this->spooler) {
+        if (!isset($this->spooler)) {
             $this->spooler = new \Cx\Core_Modules\Sync\Model\Entity\Spooler();
         }
         
@@ -518,238 +546,53 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         foreach ($hosts as $host) {
             $host->handleModelChange($entityIndexData, $entityClassName, $entity, $eventType, $this->spooler, $sync);
         }
-        return;
-        
-        
-        // @todo: This method should provide some kind of locking over multiple systems
-        $dataSource = $sync->getDataAccess()->getDataSource();
-        $origSync = $sync;
-        if ($prevRelationConfig) {
-            $origSync = $prevRelationConfig->getSync();
-        } else {
-            //$this->alreadySyncedEntities = array();
-        }
-        
-        /*if (isset($this->alreadySyncedEntities[$dataSource->getIdentifier()])) {
-            if (in_array($entityIndexData, $this->alreadySyncedEntities[$dataSource->getIdentifier()])) {
-                echo 'Entity of type ' . $dataSource->getIdentifier() . ' already synced<br />';
-            }
-        }*/
-        
-        // if there's no active host, we don't need to sync anyway
-        /*$activeHost = $recursive;
-        if (!$activeHost) {
-            foreach ($sync->getHostEntitiesIncludingLegacy() as $hostEntity) {
-                if (!$hostEntity['host']->getActive()) {
-                    continue;
-                }
-                if (
-                    $hostEntity['entityId'] != '*' &&
-                    $hostEntity['entityId'] != current($entityIndexData)
-                ) {
-                    continue;
-                }
-                $activeHost = true;
-                break;
-            }
-        }
-        if (!$activeHost) {
-            return;
-        }*/
-        
-        $entityClassName = get_class($entity);
-        if ($entityClassName == 'Doctrine\ORM\PersistentCollection') {
-            $entityClassName = $entity->getTypeClass()->name;
-        }
-        $entityIdentifier = $entityClassName . implode('/', $entityIndexData);
-        if (in_array($entityIdentifier, $this->pushedEntities)) {
-            return;
-        }
-        //echo 'Spooling sync "' . $eventType . '" for ' . $entityIdentifier . '<br />';
-        $this->pushedEntities[] = $entityIdentifier;
-        
-        // @todo: first calculate relations to be synced
-        foreach ($this->getDependendingFields($entity) as $field=>$fieldType) {
-            // all n:1 relations need to be synced according to config
-            $em = $this->cx->getDb()->getEntityManager();
-            $relationConfigRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Relation');
-            $relationConfig = $relationConfigRepo->findRelationByField(
-                $sync,
-                $field,
-                $prevRelationConfig
-            );
-            
-            // if this field's foreign entity is in config and has a default object
-            if (
-                $relationConfig &&
-                !$relationConfig->doSync() &&
-                $relationConfig->getDefaultEntityId()
-            ) {
-                // simply use the default object's ID for this field in sync
-                $em = $this->cx->getDb()->getEntityManager();
-                $foreignEntityRepo = $em->getRepository($fieldType);
-                $foreignEntity = $foreignEntityRepo->find($relationConfig->getDefaultEntityId());
-                $fieldSetMethodName = 'set'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
-                $entity->$fieldSetMethodName($foreignEntity);
-            } else if (
-                !$relationConfig ||
-                $relationConfig->doSync()
-                // @todo: and if $relationConfig->getForeignDataAccess() is within same component!
-            ) {
-                // otherwise push the related entity first!
-                $fieldGetMethodName = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
-                $foreignEntities = $entity->$fieldGetMethodName();
-                if (get_class($foreignEntities) != 'Doctrine\ORM\PersistentCollection') {
-                    $foreignEntities = array($foreignEntities);
-                }
-                foreach ($foreignEntities as $foreignEntity) {
-                    $foreignEntityIndexData = $this->getEntityIndexData($foreignEntity);
-                    $foreignEntityClassName = get_class($foreignEntity);
-                    if ($foreignEntityClassName == 'Doctrine\ORM\PersistentCollection') {
-                        $foreignEntityClassName = $foreignEntity->getTypeClass()->name;
-                    }
-                    $foreignEntityIdentifier = $foreignEntityClassName . implode('/', $foreignEntityIndexData);
-                    if (in_array($foreignEntityIdentifier, $this->pushedEntities)) {
-                        continue;
-                    }
-                    
-                    // @todo: this might fail in real-life since there could be more than one DA per DS and Sy per DA
-                    $dataSourceRepo = $em->getRepository('Cx\Core\DataSource\Model\Entity\DataSource');
-                    $dataAccessRepo = $em->getRepository('Cx\Core_Modules\DataAccess\Model\Entity\DataAccess');
-                    $syncRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Sync');
-                    $foreignDataSource = $dataSourceRepo->findOneBy(array(
-                        'identifier' => $fieldType,
-                    ));
-                    
-                    $foreignSync = $foreignDataSource->getDataAccesses()->first()->getSyncs()->first();
-                    $foreignSync->setVirtual(true);
-                    $foreignSync->setActive(true);
-                    
-                    if ($eventType == 'delete') {
-                        continue; // for now. we should check if cascading is configured
-                    }
-                    $this->pushSync($foreignSync, 'put', $foreignEntityIndexData, $foreignEntity, $relationConfig);
-                }
-            } else {
-                throw new \Exception('Invalid config!');
-            }
-        }
-        
-        // If doctrine supplied a proxy, there was no change to this entity
-        if (substr(get_class($entity), -5) == 'Proxy') {
-            return;
-        }
-        
-        if (!isset($this->alreadySyncedEntities[$dataSource->getIdentifier()])) {
-            $this->alreadySyncedEntities[$dataSource->getIdentifier()] = array();
-        }
-        $this->alreadySyncedEntities[$dataSource->getIdentifier()][] = $entityIndexData;
-        
-        // push the entity
-        // @todo: we could summarize the requests here and only spool one push
-        // per entity identifier. But we'd need to push them in correct order!
-        $this->spooledPushes[] = array(
-            'sync' => $sync,
-            'eventType' => $eventType,
-            'entityIndexData' => $entityIndexData,
-            'entity' => $entity,
-            'entityIdentifier' => $entityIdentifier,
-        );
-        
-        // @todo: then calculate relations to be synced
-        foreach ($this->getDependancyFields($entity) as $field=>$fieldType) {
-            // all n:1 relations need to be synced according to config
-            $em = $this->cx->getDb()->getEntityManager();
-            $relationConfigRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Relation');
-            $relationConfig = $relationConfigRepo->findRelationByField(
-                $sync,
-                $field,
-                $prevRelationConfig
-            );
-            
-            // if this field's foreign entity is in config and has a default object
-            if (
-                $relationConfig &&
-                !$relationConfig->doSync() &&
-                $relationConfig->getDefaultEntityId()
-            ) {
-                // simply use the default object's ID for this field in sync
-                $em = $this->cx->getDb()->getEntityManager();
-                $foreignEntityRepo = $em->getRepository($fieldType);
-                $foreignEntity = $foreignEntityRepo->find($relationConfig->getDefaultEntityId());
-                $fieldSetMethodName = 'set'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
-                $entity->$fieldSetMethodName($foreignEntity);
-            } else if (
-                !$relationConfig ||
-                $relationConfig->doSync()
-                // @todo: and if $relationConfig->getForeignDataAccess() is within same component!
-            ) {
-                // otherwise push the related entity first!
-                $fieldGetMethodName = 'get'.preg_replace('/_([a-z])/', '\1', ucfirst($field));
-                $foreignEntities = $entity->$fieldGetMethodName();
-                if (get_class($foreignEntities) != 'Doctrine\ORM\PersistentCollection') {
-                    $foreignEntities = array($foreignEntities);
-                }
-                foreach ($foreignEntities as $foreignEntity) {
-                    $foreignEntityIndexData = $this->getEntityIndexData($foreignEntity);
-                    $foreignEntityClassName = get_class($foreignEntity);
-                    if ($foreignEntityClassName == 'Doctrine\ORM\PersistentCollection') {
-                        $foreignEntityClassName = $foreignEntity->getTypeClass()->name;
-                    }
-                    $foreignEntityIdentifier = $foreignEntityClassName . implode('/', $foreignEntityIndexData);
-                    if (in_array($foreignEntityIdentifier, $this->pushedEntities)) {
-                        continue;
-                    }
-                    
-                    // @todo: this might fail in real-life since there could be more than one DA per DS and Sy per DA
-                    $dataSourceRepo = $em->getRepository('Cx\Core\DataSource\Model\Entity\DataSource');
-                    $dataAccessRepo = $em->getRepository('Cx\Core_Modules\DataAccess\Model\Entity\DataAccess');
-                    $syncRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Sync');
-                    $foreignDataSource = $dataSourceRepo->findOneBy(array(
-                        'identifier' => $fieldType,
-                    ));
-                    
-                    $foreignSync = $foreignDataSource->getDataAccesses()->first()->getSyncs()->first();
-                    $foreignSync->setVirtual(true);
-                    $foreignSync->setActive(true);
-                    
-                    if ($eventType == 'delete') {
-                        continue; // for now. we should check if cascading is configured
-                    }
-                    $this->pushSync($foreignSync, 'put', $foreignEntityIndexData, $foreignEntity, $relationConfig);
-                }
-            } else {
-                throw new \Exception('Invalid config!');
-            }
-        }
     }
         
     protected function unspool() {
-        if ($this->unspooling || !$this->spooler) {
+        if ($this->unspooling || !isset($this->spooler)) {
             return;
         }
         $this->unspooling = true;
-        //echo 'Unspooling (' . count($this->spooler->getSpool()) . ')<br />';
-        //\DBG::deactivate();\DBG::activate(DBG_PHP);
-        foreach ($this->spooler->getSpool() as $i=>$spool) {
-            $spool['host']->push($spool['changeset']);
-            //echo 'Executing sync "' . $spool['eventType'] . '" #' . $i . ' for ' . $spool['entityIdentifier'] . '<br />';
-            /*$spool['sync']->push(
-                $spool['eventType'],
-                $spool['entityIndexData'],
-                $spool['entity']
-            );*/
+        $em = $this->cx->getDb()->getEntityManager();
+        foreach ($this->spooler->getSpool() as $i=>$change) {
+            $change->getHost()->addContentsToChangeset($change);
+            $em->persist($change);
         }
-        /*foreach ($this->spooledPushes as $i=>$spool) {
-            echo 'Checking spool #' . $i . ' for host removal<br />';
-            foreach ($spool['sync']->getRemovedHosts($spool['entityIndexData']) as $removedHost) {
-                echo 'Executing sync "delete" to host ' . $removedHost->getHost() . '<br />';
-                $spool['sync']->sendRequest($removedHost, array(), $spool['entityIndexData'], 'delete');
-            }
-        }
-        $this->spooledPushes = array();*/
+        $em->flush();
         $this->spooler = new \Cx\Core_Modules\Sync\Model\Entity\Spooler();
         $this->unspooling = false;
+    }
+    
+    protected function pushChanges() {
+        $em = $this->cx->getDb()->getEntityManager();
+        $changeRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Change');
+        ob_start();
+        
+        echo 'Pushing ' . count($changeRepo->findAll()) . ' changes<br />';
+        $i = 0;
+        $severity = 'INFO';
+        foreach ($changeRepo->findAll() as $change) {
+            if (!$change->getHost()->sendChange($change)) {
+                $severity = 'WARNING';
+                break;
+            }
+            $i++;
+            $em->remove($change);
+        }
+        $logContents = ob_get_contents();
+        ob_end_clean();
+        echo $logContents;
+        
+        if ($severity == 'INFO' && $i == 0) {
+            return;
+        }
+        
+        $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
+           'severity' => $severity,
+           'message' => 'Sent ' . $i . ' change(s)',
+           'data' => $logContents,
+        ));
+        $em->flush();
     }
     
     /**
@@ -853,4 +696,3 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return $mapping;
     }
 }
-
