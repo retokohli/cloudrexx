@@ -39,10 +39,11 @@ class CxCore_ModulesSyncModelEntitySyncProxy extends \Cx\Core_Modules\Sync\Model
         return parent::setToUri($toUri);
     }
 
-    public function getToUri()
+    public function getToUri($entityIndexData = array (
+))
     {
         $this->_load();
-        return parent::getToUri();
+        return parent::getToUri($entityIndexData);
     }
 
     public function setApiKey($apiKey)
@@ -61,6 +62,12 @@ class CxCore_ModulesSyncModelEntitySyncProxy extends \Cx\Core_Modules\Sync\Model
     {
         $this->_load();
         return parent::setActive($active);
+    }
+
+    public function setTempActive($tempActive)
+    {
+        $this->_load();
+        return parent::setTempActive($tempActive);
     }
 
     public function getActive()
@@ -111,10 +118,64 @@ class CxCore_ModulesSyncModelEntitySyncProxy extends \Cx\Core_Modules\Sync\Model
         return parent::getHostEntities();
     }
 
+    public function getHostEntitiesIncludingLegacy()
+    {
+        $this->_load();
+        return parent::getHostEntitiesIncludingLegacy();
+    }
+
+    public function setOldHostEntitiesIncludingLegacy($hostEntities)
+    {
+        $this->_load();
+        return parent::setOldHostEntitiesIncludingLegacy($hostEntities);
+    }
+
+    public function getOldHostEntitiesIncludingLegacy()
+    {
+        $this->_load();
+        return parent::getOldHostEntitiesIncludingLegacy();
+    }
+
+    public function getRemovedHosts($entityIndexData)
+    {
+        $this->_load();
+        return parent::getRemovedHosts($entityIndexData);
+    }
+
     public function setHostEntities($hostEntities)
     {
         $this->_load();
         return parent::setHostEntities($hostEntities);
+    }
+
+    public function addChange(\Cx\Core_Modules\Sync\Model\Entity\Change $change)
+    {
+        $this->_load();
+        return parent::addChange($change);
+    }
+
+    public function getChanges()
+    {
+        $this->_load();
+        return parent::getChanges();
+    }
+
+    public function setChanges($changes)
+    {
+        $this->_load();
+        return parent::setChanges($changes);
+    }
+
+    public function push($eventType, $entityIndexData, $entity)
+    {
+        $this->_load();
+        return parent::push($eventType, $entityIndexData, $entity);
+    }
+
+    public function sendRequest($host, $content, $entityIndexData, $eventType)
+    {
+        $this->_load();
+        return parent::sendRequest($host, $content, $entityIndexData, $eventType);
     }
 
     public function __get($name)
@@ -156,7 +217,7 @@ class CxCore_ModulesSyncModelEntitySyncProxy extends \Cx\Core_Modules\Sync\Model
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'relations', 'hostEntities', 'dataAccess');
+        return array('__isInitialized__', 'id', 'toUri', 'apiKey', 'active', 'relations', 'hostEntities', 'changes', 'dataAccess');
     }
 
     public function __clone()

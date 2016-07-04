@@ -207,7 +207,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function postFinalize() {
         $em = $this->cx->getDb()->getEntityManager();
         $changeRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Change');
-        if (!$changeRepo->findOneBy(array())) {
+        // do not trigger another instance if we're already syncing
+        if ($changeRepo->findOneBy(array('status' => 1))) {
             // no changes
             return;
         }
@@ -567,17 +568,33 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $em = $this->cx->getDb()->getEntityManager();
         $changeRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Change');
         ob_start();
-        
+                    
         echo 'Pushing ' . count($changeRepo->findAll()) . ' changes<br />';
         $i = 0;
         $severity = 'INFO';
-        foreach ($changeRepo->findAll() as $change) {
+
+        // ensure we get the latest data from the spooling table
+        $em->clear();
+        while ($change = $changeRepo->findOneBy(array())) {
+            if ($change->getStatus() == 1) {
+                echo 'Another instance is already syncing, abort!';
+                break;
+                    }
+            // 1 => in progress
+            $change->setStatus(1);
+            $em->flush();
+        
             if (!$change->getHost()->sendChange($change)) {
+                // 2 => failed
+                $change->setStatus(2);
                 $severity = 'WARNING';
                 break;
-            }
+        }
+        
             $i++;
             $em->remove($change);
+            $em->flush();
+            $em->clear();
         }
         $logContents = ob_get_contents();
         ob_end_clean();

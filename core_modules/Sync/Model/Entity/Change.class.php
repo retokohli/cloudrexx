@@ -60,6 +60,11 @@ class Change extends \Cx\Model\Base\EntityBase {
      * @var \Cx\Core_Modules\Sync\Model\Entity\Host
      */
     protected $host;
+
+    /**
+     * @var int
+     */
+    protected $status;
     
     /**
      * @var string One of "delete", "put", "post"
@@ -98,6 +103,7 @@ class Change extends \Cx\Model\Base\EntityBase {
     public function __construct($sync, $host, $eventType, $entityIndexData, $entityIdentifier, $entityOrContents) {
         $this->sync = $sync;
         $this->host = $host;
+        $this->status = 0;
         $this->eventType = $eventType;
         $this->entityIndexData = $entityIndexData;
         $this->entityIdentifier = $entityIdentifier;
@@ -154,6 +160,14 @@ class Change extends \Cx\Model\Base\EntityBase {
      */
     public function getHost() {
         return $this->host;
+    }
+
+    public function setStatus($status) {
+        $this->status = $status;
+    }
+    
+    public function getStatus() {
+        return $this->status;
     }
     
     /**
