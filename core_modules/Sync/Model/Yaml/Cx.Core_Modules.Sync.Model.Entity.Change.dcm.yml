@@ -7,6 +7,8 @@ Cx\Core_Modules\Sync\Model\Entity\Change:
       generator:
         strategy: AUTO
   fields:
+    status:
+      type: integer
     eventType:
       type: string
       length: 6
