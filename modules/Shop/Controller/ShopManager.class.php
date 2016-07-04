@@ -3255,14 +3255,17 @@ if ($test === NULL) {
         $arrLanguages = array(FRONTEND_LANG_ID => $arrLanguages[FRONTEND_LANG_ID]);
         $i = 0;
         foreach ($arrProducts as $objProduct) {
-            $productStatus = '';
-            $productStatusValue = '';
-            $productStatusPicture = 'status_red.gif';
+            $productStatus = 'inactive';
             if ($objProduct->active()) {
-                $productStatus = \Html::ATTRIBUTE_CHECKED;
-                $productStatusValue = 1;
-                $productStatusPicture = 'status_green.gif';
+                $hasScheduledPublishing =   $objProduct->date_start() != '0000-00-00 00:00:00'
+                                         || $objProduct->date_end() != '0000-00-00 00:00:00';
+                $productStatus = 'active';
+                if ($hasScheduledPublishing) {
+                    $productStatus =  $objProduct->getActiveByScheduledPublishing()
+                                    ? 'scheduled active' : 'scheduled inactive';
+                }
             }
+
             $discount_active = '';
             $specialOfferValue = '';
             if ($objProduct->discount_active()) {
@@ -3287,9 +3290,7 @@ if ($test === NULL) {
                 'SHOP_PRODUCT_DISTRIBUTION' => $objProduct->distribution(),
                 'SHOP_PRODUCT_STOCK' => $objProduct->stock(),
                 'SHOP_PRODUCT_SHORT_DESC' => $objProduct->short(),
-                'SHOP_PRODUCT_STATUS' => $productStatus,
-                'SHOP_PRODUCT_STATUS_PICTURE' => $productStatusPicture,
-                'SHOP_ACTIVE_VALUE_OLD' => $productStatusValue,
+                'SHOP_PRODUCT_STATUS_CLASS' => $productStatus,
                 'SHOP_SORT_ORDER' => $objProduct->ord(),
 //                'SHOP_DISTRIBUTION_MENU' => Distribution::getDistributionMenu($objProduct->distribution(), "distribution[".$objProduct->id()."]"),
 //                'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($objProduct->weight()),

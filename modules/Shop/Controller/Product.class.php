@@ -623,6 +623,37 @@ class Product
     }
 
     /**
+     * Get the status of the product based on the scheduled publishing
+     *
+     * @return boolean TRUE|FALSE True when product is active by scheduled publishing
+     */
+    public function getActiveByScheduledPublishing()
+    {
+        $start = null;
+        if ($this->date_start() != '0000-00-00 00:00:00') {
+            $start = \DateTime::createFromFormat(
+                ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
+                $this->date_start()
+            );
+        }
+        $end = null;
+        if ($this->date_end() != '0000-00-00 00:00:00') {
+            $end = \DateTime::createFromFormat(
+                ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
+                $this->date_end()
+            );
+        }
+        if (   (!empty($start) && empty($end) && ($start->getTimestamp() > time()))
+            || (empty($start) && !empty($end) && ($end->getTimestamp() < time()))
+            || (!empty($start) && !empty($end) && !($start->getTimestamp() < time() && $end->getTimestamp() > time()))
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * The Manufacturer ID
      * @param   integer   $manufacturer     The optional Manufacturer ID
      * @return  integer                     The Manufacturer ID
