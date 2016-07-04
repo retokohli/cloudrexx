@@ -350,22 +350,22 @@ class Host extends \Cx\Model\Base\EntityBase
         if (
             get_class($entity) == 'Cx\\Modules\\Calendar\\Model\\Entity\\Event'
         ) {
-            // set registration to "extern" and registration uri to our host:
-            $entity->setRegistration(
-                \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL
-            );
-            
             $event = new \Cx\Modules\Calendar\Controller\CalendarEvent($entity->getId());
-            /*$url = \Cx\Core\Routing\Url::fromModuleAndCmd('Calendar', 'register', '', array(
-                'id' => $entity->getId(),
-                'date' => $event->startDate->getTimestamp(),
-            ));
-            $entity->setRegistrationExternalLink($url->toString());*/
-            $url = 'http://bpw.ch/?section=Calendar&cmd=register&id=' . $entity->getId() . '&date=' . $event->startDate->getTimestamp();
-            $entity->setRegistrationExternalLink($url);
-            
-            // from CalendarEventManager:
             if ($event->registration == \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_INTERNAL) {
+                // set registration to "extern" and registration uri to our host:
+                $entity->setRegistration(
+                    \Cx\Modules\Calendar\Controller\CalendarEvent::EVENT_REGISTRATION_EXTERNAL
+                );
+                
+                /*$url = \Cx\Core\Routing\Url::fromModuleAndCmd('Calendar', 'register', '', array(
+                    'id' => $entity->getId(),
+                    'date' => $event->startDate->getTimestamp(),
+                ));
+                $entity->setRegistrationExternalLink($url->toString());*/
+                $url = 'http://bpw.ch/?section=Calendar&cmd=register&id=' . $entity->getId() . '&date=' . $event->startDate->getTimestamp();
+                $entity->setRegistrationExternalLink($url);
+                
+                // from CalendarEventManager:
                 $fullyBooked = true;
                 if (
                     (
