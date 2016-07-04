@@ -305,6 +305,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $response->send($this->getComponent('DataAccess')->getController('JsonOutput'));
                 return;
             }
+        } else if ($method == 'put') {
+            $entityRepository = $em->getRepository($entityType);
+            $entity = $entityRepository->findOneBy($mapping->getLocalId());
+            if (!$entity) {
+                // we have a mapping for a non-existing entity. This shouldn't
+                // happen. Let's self-heal:
+                $em->remove($mapping);
+                $em->flush();
+            }
         }
         
         // foreach ID and foreign key
