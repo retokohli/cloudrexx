@@ -427,8 +427,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 foreach ($this->syncs as $syncEntityClassName=>$syncs) {
                     foreach ($syncs as $sync) {
                         $sync->setOldHostEntitiesIncludingLegacy($sync->getHostEntitiesIncludingLegacy());
+                        }
                     }
-                }
                 break;
                 
             case \Doctrine\ORM\Events::postRemove:
@@ -489,10 +489,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         unset($this->removeIds[$entityClassName][$i]);
                     }
                 }
-                $em->flush();
                 
                 // local side code
                 $this->unspool();
+                $em->flush();
                 break;
             default:
                 return;
@@ -538,7 +538,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         $hosts = array();
-        foreach ($sync->getHostEntitiesIncludingLegacy() as $hostEntity) {
+        foreach ($sync->getHostEntitiesIncludingLegacy(false) as $hostEntity) {
             if (in_array($hostEntity['host'], $hosts)) {
                 continue;
             }
@@ -556,23 +556,23 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         foreach ($hosts as $host) {
             $host->handleModelChange($entityIndexData, $entityClassName, $entity, $eventType, $this->spooler, $sync);
         }
-    }
+        }
         
     protected function unspool() {
         if ($this->unspooling || !isset($this->spooler)) {
             return;
         }
         $this->unspooling = true;
-        $em = $this->cx->getDb()->getEntityManager();
+            $em = $this->cx->getDb()->getEntityManager();
         foreach ($this->spooler->getSpool() as $i=>$change) {
             $change->getHost()->addContentsToChangeset($change);
             $em->persist($change);
-        }
-        $em->flush();
+                }
+        //$em->flush();
         $this->spooler = new \Cx\Core_Modules\Sync\Model\Entity\Spooler();
         $this->unspooling = false;
-    }
-    
+                    }
+                    
     protected function pushChanges() {
         $em = $this->cx->getDb()->getEntityManager();
         $changeRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Change');

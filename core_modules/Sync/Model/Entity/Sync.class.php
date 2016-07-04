@@ -245,7 +245,10 @@ class Sync extends \Cx\Model\Base\EntityBase {
     }
     
     // Customizing for old Calendar sync config:
-    public function getHostEntitiesIncludingLegacy() {
+    public function getHostEntitiesIncludingLegacy($cached = true) {
+        if ($cached && isset($this->cachedHostEntities)) {
+            return $this->cachedHostEntities;
+        }
         $hostEntities = array();
         
         foreach ($this->getHostEntities() as $hostEntity) {
@@ -299,6 +302,7 @@ class Sync extends \Cx\Model\Base\EntityBase {
             
             $results->moveNext();
         }
+        $this->cachedHostEntities = $hostEntities;
         return $hostEntities;
     }
     
