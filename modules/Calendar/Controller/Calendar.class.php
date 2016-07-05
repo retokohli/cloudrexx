@@ -930,7 +930,7 @@ UPLOADER;
             return;
         }
 
-        i f(!$objEvent->status) {
+        if(!$objEvent->status) {
             \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
             return;   
         }
