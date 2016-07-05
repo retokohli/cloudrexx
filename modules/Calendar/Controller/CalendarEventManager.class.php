@@ -1712,6 +1712,12 @@ class CalendarEventManager extends CalendarLibrary
                 break;
         }
         
+        $objCloneEvent->registrationExternalLink = str_replace(
+            '[[SERIES_ELEMENT_STARTDATE]]',
+            $objCloneEvent->startDate->getTimestamp(),
+            $objCloneEvent->registrationExternalLink
+        );
+        
         if (   $isAllowedEvent
             && !$this->isDateExists($objCloneEvent->startDate, $objCloneEvent->seriesData['seriesPatternExceptions'])
             && self::_addToEventList($objCloneEvent)
