@@ -347,8 +347,13 @@ class Counter
 			$this->arrClient['ip'] = preg_replace('/[0-9a-fA-F]+$/', '*', $this->arrClient['ip']);
 			$this->arrClient['host'] = preg_replace('/^[a-zA-Z0-9-_]+\./', '*.', $this->arrClient['host']);
 		}
-		
-        $this->md5Id = md5($this->arrClient['ip'].$this->arrClient['useragent'].$this->arrClient['language'].$this->arrProxy['ip'].$this->arrProxy['host']);
+
+        $accessController = $this->cx->getComponentControllerByName('Access');
+        $this->md5Id = $accessController->hash(
+            $this->arrClient['ip'] . $this->arrClient['useragent'] .
+            $this->arrClient['language'] . $this->arrProxy['ip'] .
+            $this->arrProxy['host']
+        );
     }
 
     /**

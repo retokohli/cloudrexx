@@ -1904,6 +1904,7 @@ namespace Cx\Core\Core\Controller {
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
             $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request->getUrl(), $this->template);
             $metarobots = $this->resolvedPage->getMetarobots();
+            $accessController = $this->getComponentControllerByName('Access');
             $this->template->setVariable(array(
                 'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
                 'TITLE'                          => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
@@ -1945,7 +1946,7 @@ namespace Cx\Core\Core\Controller {
                 'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl()),
                 'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl(), true),
                 'ACTIVE_LANGUAGE_NAME'           => \Env::get('init')->getFrontendLangName(),
-                'RANDOM'                         => md5(microtime()),
+                'RANDOM'                         => $accessController->hash(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
                 'LOGIN_URL'                      => '<a href="' . \Env::get('init')->getUriBy('section', 'Login') . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
@@ -3264,6 +3265,33 @@ namespace Cx\Core\Core\Controller {
                 $this->mediaSourceManager = new \Cx\Core\MediaSource\Model\Entity\MediaSourceManager($this);
             }
             return $this->mediaSourceManager;
+        }
+
+        /**
+         * Get component controller object by given component name
+         *
+         * @param string $componentName component name
+         *
+         * @return \Cx\Core\Core\Controller\SystemComponentController
+         */
+        public function getComponentControllerByName($componentName)
+        {
+            if (empty($componentName)) {
+                return null;
+            }
+
+            $componentRepo = $this
+                ->getDb()->getEntityManager()
+                ->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+            $component = $componentRepo->findOneBy(
+                array('name' => $componentName)
+            );
+
+            if (!$component) {
+                return null;
+            }
+
+            return $component;
         }
     }
 }

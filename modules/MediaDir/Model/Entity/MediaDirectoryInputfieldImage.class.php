@@ -349,7 +349,11 @@ INPUT;
         $randomSum      = rand(10, 99);
         // encode filename
         if ($this->arrSettings['settingsEncryptFilenames'] == 1) {
-            $imageName = md5($randomSum.$imageBasename).$imageExtension;
+            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getComponentControllerByName('Access');
+            $imageName = $accessController->hash(
+                $randomSum . $imageBasename
+            ) . $imageExtension;
         }
         // check filename
         if (file_exists($this->imagePath.'images/'.$imageName)) {

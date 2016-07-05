@@ -259,7 +259,9 @@ class Ecard
         $this->_objTpl->setTemplate($this->pageContent);
 
         // Initialize variables
-        $code = substr(md5(rand()), 1, 10);
+        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponentControllerByName('Access');
+        $code = substr($accessController->hash(rand()), 1, 10);
         $url = \Cx\Core\Routing\Url::fromModuleAndCmd(
             'Ecard',
             'show',

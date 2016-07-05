@@ -415,7 +415,11 @@ EOF;
 
         //encode filename
         if ($this->arrSettings['settingsEncryptFilenames'] == 1) {
-            $fileName = md5($randomSum.$fileBasename).$fileExtension;
+            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getComponentControllerByName('Access');
+            $fileName = $accessController->hash(
+                $randomSum . $fileBasename
+            ) . $fileExtension;
         }
 
         //check filename

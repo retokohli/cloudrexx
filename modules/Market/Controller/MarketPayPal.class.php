@@ -93,7 +93,12 @@ class MarketPayPal
 		$currency_code = "EUR";
 		$amount = $this->getPrice($orderId);
 
-		$sum = md5("contrexx".$_SERVER['HTTP_HOST'].intval($amount).$orderid);
+                $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+                    ->getComponentControllerByName('Access');
+		$sum = $accessController->hash(
+                    'contrexx' . $_SERVER['HTTP_HOST'] .
+                    intval($amount) . $orderid
+                );
 		$host = ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET;
 		$return = $host. "/index.php?section=Market&cmd=paypal_successfull&id=$orderId";
 		$cancel_return = $host."/index.php?section=Market&amp;paypal_error&amp;id=$orderId";

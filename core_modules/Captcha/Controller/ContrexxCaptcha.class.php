@@ -286,9 +286,11 @@ class ContrexxCaptcha implements CaptchaInterface {
         else {
             $url .= '/index.php?section=Captcha';
         }
-        
+
         //add no cache param
-        $url .= '&amp;nc='.md5(''.time());
+        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponentControllerByName('Access');
+        $url .= '&amp;nc=' . $accessController->hash(time());
         return $url;
     }
 

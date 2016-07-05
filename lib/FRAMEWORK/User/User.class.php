@@ -472,11 +472,13 @@ class User extends User_Profile
     {
         global $objDatabase;
 
+        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponentControllerByName('Access');
         $query = '
             SELECT 1
               FROM `'.DBPREFIX.'access_users`
              WHERE `id` = '.$this->id.'
-               AND `password` = "'.md5($password).'"
+               AND `password` = "' . $accessController->hash($password).'"
         ';
         $objResult = $objDatabase->Execute($query);
 
@@ -1450,7 +1452,11 @@ class User extends User_Profile
             return;
         }
 
-        $this->restore_key = md5($this->email.$this->regdate.time());
+        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponentControllerByName('Access');
+        $this->restore_key = $accessController->hash(
+            $this->email . $this->regdate . time()
+        );
         $this->restore_key_time = time() + 3600;
     }
 
@@ -1670,7 +1676,11 @@ class User extends User_Profile
     {
         $arrSettings = User_Setting::getSettings();
         if ($arrSettings['user_activation']['status']) {
-            $this->restore_key = md5($this->username.$this->password.time());
+            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getComponentControllerByName('Access');
+            $this->restore_key = $accessController->hash(
+                $this->username . $this->password . time()
+            );
             $this->restore_key_time = $arrSettings['user_activation_timeout']['status'] ? time() + $arrSettings['user_activation_timeout']['value'] * 3600 : 0;
         }
         return $this->store();
@@ -2453,7 +2463,9 @@ class User extends User_Profile
                 $this->error_msg[] = $_CORELANG['TXT_ACCESS_PASSWORD_NOT_CONFIRMED'];
                 return false;
             }
-            $this->password = md5($password);
+            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getComponentControllerByName('Access');
+            $this->password = $accessController->hash($password);
             return true;
         }
         if (isset($_CONFIG['passwordComplexity']) && $_CONFIG['passwordComplexity'] == 'on') {

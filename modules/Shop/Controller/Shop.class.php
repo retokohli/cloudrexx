@@ -410,7 +410,9 @@ die("Failed to get Customer for ID $customer_id");
     {
         global $_ARRAYLANG, $themesPages;
         static $content = array();
-        $templateHash = md5($template);
+        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponentControllerByName('Access');
+        $templateHash = $accessController->hash($template);
 
         if (!$use_cache) $content[$templateHash] = NULL;
         // Note: This is valid only as long as the content is the same every
@@ -3869,7 +3871,9 @@ die("Shop::processRedirect(): This method is obsolete!");
                 return \Message::error($_ARRAYLANG['TXT_SHOP_ENTER_CURRENT_PASSWORD']);
             }
             $password_old = contrexx_input2raw($_POST['shopCurrentPassword']);
-            if (md5($password_old) != self::$objCustomer->password()) {
+            $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+                ->getComponentControllerByName('Access');
+            if ($accessController->hash($password_old) != self::$objCustomer->password()) {
                 return \Message::error($_ARRAYLANG['TXT_SHOP_WRONG_CURRENT_PASSWORD']);
             }
             $password = contrexx_input2raw($_POST['shopNewPassword']);

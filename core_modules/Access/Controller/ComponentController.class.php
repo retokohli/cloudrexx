@@ -294,4 +294,48 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // make all language data of Access component globally available
         $template->setVariable(\Env::get('init')->getComponentSpecificLanguageData($this->getName()));
     }
+
+    /**
+     * Do something after system initialization
+     *
+     * @param \Cx\Core\Core\Controller\Cx $cx
+     */
+    public function postInit(\Cx\Core\Core\Controller\Cx $cx)
+    {
+        $hashSalt = \Cx\Core\Setting\Controller\Setting::getValue(
+            'hashSalt',
+            'Config'
+        );
+
+        if (empty($hashSalt)) {
+            //update the hashSalt
+            \Cx\Core\Setting\Controller\Setting::init('Config', 'core','Yaml');
+            \Cx\Core\Setting\Controller\Setting::set(
+                'hashSalt',
+                \User::make_password()
+            );
+            \Cx\Core\Setting\Controller\Setting::update('hashSalt');
+        }
+    }
+
+    /**
+     * get the hash for given string
+     *
+     * @param string $string input string
+     *
+     * @return string md5 sum for hashSalt and input string
+     */
+    public function hash($string)
+    {
+        if (empty($string)) {
+            return null;
+        }
+
+        $hashSalt = \Cx\Core\Setting\Controller\Setting::getValue(
+            'hashSalt',
+            'Config'
+        );
+
+        return md5($hashSalt . $string);
+    }
 }

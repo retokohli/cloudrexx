@@ -2191,7 +2191,13 @@ $this->arrRows[2] = '';
         }
         $this->arrClient['language'] = htmlspecialchars($_SERVER['HTTP_ACCEPT_LANGUAGE'], ENT_QUOTES, CONTREXX_CHARSET);
         $this->_getProxyInformations();
-        $client = md5($this->arrClient['ip'].$this->arrClient['useragent'].$this->arrClient['language'].$this->arrProxy['ip'].$this->arrProxy['host']);
+        $accessController = \Cx\Core\Core\Controller\Cx::instanciate()
+            ->getComponentControllerByName('Access');
+        $client = $accessController->hash(
+            $this->arrClient['ip'] . $this->arrClient['useragent'] .
+            $this->arrClient['language'] . $this->arrProxy['ip'] .
+            $this->arrProxy['host']
+        );
         $time = time();
         $voteNEW = intval($_GET['vote']);
         $id = intval($_GET['id']);
