@@ -195,6 +195,10 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
         global $_LANGID;
         foreach ($this->getOptionsOrderedByGroups() as $key => $group) {
             foreach ($group as $option) {
+                // empty groups should not be parsed
+                if (!$group) {
+                    continue;
+                }
                 $subTemplate = $option->renderOptionField();
                 $optionName = str_replace( // replace 'Option' so we get the net name
                     'Option',
