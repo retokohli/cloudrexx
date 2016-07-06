@@ -191,20 +191,21 @@ class JsonController extends \Cx\Core\Core\Model\Entity\Controller
         $suffixes = array('_combinedId', '_seriesId');
         foreach($suffixes as $suffix) {
             $position = strpos($name, $suffix);
-            if ($position !== false) {
-                $value = $data;
-                if ($data['value'] && $data['value']['action'] == 'remove') {
-                    // remove action does not need second value field in array,
-                    // because we delete the complete element and not only part
-                    // and attribute of it
-                    $value = $data['value'];
-                }
-                $data = array(
-                    'id' => substr($name, $position + strlen($suffix)),
-                    'value' => $value,
-                );
-                $name = substr($name, 0, $position);
+            if ($position === false) {
+                continue;
             }
+            $value = $data;
+            if ($data['value'] && $data['value']['action'] == 'remove') {
+                // remove action does not need second value field in array,
+                // because we delete the complete element and not only part
+                // and attribute of it
+                $value = $data['value'];
+            }
+            $data = array(
+                'id' => substr($name, $position + strlen($suffix)),
+                'value' => $value,
+            );
+            $name = substr($name, 0, $position);
         }
         $data = $themeOptions->handleChanges(
             $name, $data
