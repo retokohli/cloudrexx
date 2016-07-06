@@ -387,9 +387,9 @@ class OptionSet extends \Cx\Model\Base\EntityBase
                 );
             }
         }
-        if (isset($data['groups'])) {
-            $this->initializeGroups($data['groups']['groups']);
-        }
+        $specifiedGroups = (isset($data['groups']['groups']))
+            ? $data['groups']['groups'] : array();
+        $this->initializeGroups($specifiedGroups);
         foreach ($data['options'] as $option) {
             $optionType = $option['type'];
             if ($option['series']) {
@@ -480,16 +480,23 @@ class OptionSet extends \Cx\Model\Base\EntityBase
      * @param array $groups groups from Groups.yml
      */
     protected function initializeGroups($groups) {
+        global $_LANGID, $_ARRAYLANG;
         if (!isset($groups)) {
             $groups = array();
         }
+        if (empty($groups)) {
+            $placeholder = 'TXT_CORE_MODULE_TEMPLATEEDITOR_OPTIONS';
+        } else {
+            $placeholder = 'TXT_CORE_MODULE_TEMPLATEEDITOR_FURTHER_OPTIONS';
+        }
+
+        $translation = array(
+            $_LANGID => $_ARRAYLANG[$placeholder]
+        );
         $groups[] = array(
             "name" => "others_group",
             "color" => '#fff',
-            "translation" => array(
-                1 => "andere Optionen",
-                2 => "other options" ,
-            ),
+            "translation" => $translation,
         );
         foreach ($groups as $key => $group) {
             $this->groups[$group['name']] = new Group(

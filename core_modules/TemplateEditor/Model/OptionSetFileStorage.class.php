@@ -64,19 +64,24 @@ class OptionSetFileStorage implements Storable
         $optionSetOptionsFile = $optionSetFilePath. '/Options.yml';
         $optionSetGroupsFile = $optionSetFilePath. '/Groups.yml';
         $data = $this->retrieveFile($optionSetOptionsFile);
-        $data['groups'] = $this->retrieveFile($optionSetGroupsFile);
+        $data['groups'] = $this->retrieveFile($optionSetGroupsFile, true);
         return $data;
     }
 
     /**
-     * @param  String $fileName  the file to load including its path
-     * @return array             the data from the file
+     * @param  String   $fileName   the file to load including its path
+     * @param  Boolean  $isOptional if true, no exception will be thrown if the
+     *                                  file is not found
+     * @return array                the data from the file
      * @throws \Symfony\Component\Yaml\ParserException thrown if the file is not found or empty
      */
-    protected function retrieveFile($fileName){
+    protected function retrieveFile($fileName, $isOptional = false){
         $file = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
             ->getFilePath($fileName);
         if (!$file) {
+            if ($isOptional) {
+                return;
+            }
             throw new \Symfony\Component\Yaml\ParserException(
                 "File" . $fileName . 'not found'
             );
@@ -84,6 +89,9 @@ class OptionSetFileStorage implements Storable
 
         $content = file_get_contents($file);
         if (!$content) {
+            if ($isOptional) {
+                return;
+            }
             throw new \Symfony\Component\Yaml\ParserException(
                 "File" . $fileName . 'is empty'
             );
