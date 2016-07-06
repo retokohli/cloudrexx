@@ -78,12 +78,12 @@ p.groupName {
     border-bottom: 1px solid grey;
     font-weight: bold;
     background-position: 95%;
-    background-image: url('/cadmin/../core/Core/View/Media/icons/open.gif');
+    background-image: url('/cadmin/../core/Core/View/Media/icons/Expand.gif');
     background-repeat: no-repeat;
 }
 
 p.groupName.open, .option.series.open {
-    background-image: url('/cadmin/../core/Core/View/Media/icons/close.gif');
+    background-image: url('/cadmin/../core/Core/View/Media/icons/Collapse.gif');
 }
 
 #content .option.text.error input {
@@ -361,7 +361,7 @@ p.groupName.open, .option.series.open {
 
 .option.series {
     background-position: 95% 9px;
-    background-image: url('/cadmin/../core/Core/View/Media/icons/open.gif');
+    background-image: url('/cadmin/../core/Core/View/Media/icons/Expand.gif');
     background-repeat: no-repeat;
     background-size: 12px;
     padding: 0;

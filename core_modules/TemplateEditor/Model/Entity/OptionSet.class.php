@@ -123,8 +123,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                     && isset($optionArray['name'])
                     && isset($optionArray['specific'])
                 ) {
-                    $groupName = ($optionArray['group']) ? $optionArray['group'] : 'others_group';
-                    $group = ($this->groups[$groupName]) ?
+                    $groupName = (isset($optionArray['group'])) ? $optionArray['group'] : 'others_group';
+                    $group = (isset($this->groups[$groupName])) ?
                         $this->groups[$groupName] : $this->groups['others_group'];
                     $type = $optionArray['type'];
                     $option = new $type(
@@ -193,8 +193,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     public function renderOptions($template)
     {
         global $_LANGID;
-        foreach ($this->getOptionsOrderedByGroups() as $key => $group) {
-            foreach ($group as $option) {
+        foreach ($this->getOptionsOrderedByGroups() as $key => $options) {
+            foreach ($options as $option) {
                 $subTemplate = $option->renderOptionField();
                 $optionName = str_replace( // replace 'Option' so we get the net name
                     'Option',
@@ -212,10 +212,10 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                 $template->parse('option');
             }
             // find the groupTranslation
-            $group = $this->groups[$key];
+            $options = $this->groups[$key];
             // if no translations exists, groupName will be shown
-            $groupTranslation = $group->getName();
-            $translations = $group->getTranslations();
+            $groupTranslation = $options->getName();
+            $translations = $options->getTranslations();
             if (isset($translations[$_LANGID])) {
                 $groupTranslation = $translations[$_LANGID];
             } else if (isset($translations[2])) {
