@@ -25,6 +25,14 @@
  * our trademarks remain entirely with us.
  */
 
+/**
+ * Specify the groups in which the options should be arranged
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Adrian Berger <adrian.berger@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core_modules_template_editor
+ */
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
