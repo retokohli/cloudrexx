@@ -24,7 +24,15 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
- 
+
+/**
+ * CombinedOption is used to join multiple single options into one option
+ *
+ * @copyright   Cloudrexx AG
+ * @author      Adrian Berger <adrian.berger@cloudrexx.com>
+ * @package     cloudrexx
+ * @subpackage  core_modules_template_editor
+ */
 
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
