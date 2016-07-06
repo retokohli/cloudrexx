@@ -249,7 +249,7 @@ jQuery(function(){
                 intro: cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_VIEW_OPTION","TemplateEditor")
             },
             {
-                element: '.option-list > .option',
+                element: '.option-list',
                 intro: cx.variables.get("TXT_CORE_MODULE_TEMPLATEEDITOR_INTRO_VIEW_OPTION_LIST","TemplateEditor"),
                 position: 'right'
             },
