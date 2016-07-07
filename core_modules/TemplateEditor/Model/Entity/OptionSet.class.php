@@ -390,9 +390,9 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                 );
             }
         }
-        if (isset($data['groups'])) {
-            $this->initializeGroups($data['groups']['groups']);
-        }
+        $specifiedGroups = isset($data['groups']['groups'])
+            ? $data['groups']['groups'] : array();
+        $this->initializeGroups($specifiedGroups);
         foreach ($data['options'] as $option) {
             $optionType = $option['type'];
             if ($option['series']) {
