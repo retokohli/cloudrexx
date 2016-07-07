@@ -33,7 +33,6 @@
  * @package     cloudrexx
  * @subpackage  core_modules_template_editor
  */
-
 namespace Cx\Core_Modules\TemplateEditor\Model\Entity;
 
 /**

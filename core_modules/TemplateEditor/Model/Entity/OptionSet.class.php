@@ -116,8 +116,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase
                     && isset($optionArray['name'])
                     && isset($optionArray['specific'])
                 ) {
-                    $groupName = (isset($optionArray['group'])) ? $optionArray['group'] : 'others_group';
-                    $group = (isset($this->groups[$groupName])) ?
+                    $groupName = isset($optionArray['group']) ? $optionArray['group'] : 'others_group';
+                    $group = isset($this->groups[$groupName]) ?
                         $this->groups[$groupName] : $this->groups['others_group'];
                     $type = $optionArray['type'];
                     $option = new $type(
@@ -228,7 +228,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase
             $template->setVariable(array(
                 'TEMPLATEEDITOR_GROUP_NAME' => $this->groups[$key]->getName(),
                 'TEMPLATEEDITOR_GROUP_COLOR' => $this->groups[$key]->getColor(),
-                'TEMPLATEEDITOR_GROUP_TRANSLATION' => $groupTranslation,
+                'TEMPLATEEDITOR_GROUP_TRANSLATION' =>
+                    contrexx_raw2xhtml($groupTranslation),
             ));
             $template->parse('group');
         }
@@ -387,9 +388,9 @@ class OptionSet extends \Cx\Model\Base\EntityBase
                 );
             }
         }
-        if (isset($data['groups'])) {
-            $this->initializeGroups($data['groups']['groups']);
-        }
+        $specifiedGroups = isset($data['groups']['groups'])
+            ? $data['groups']['groups'] : array();
+        $this->initializeGroups($specifiedGroups);
         foreach ($data['options'] as $option) {
             $optionType = $option['type'];
             if ($option['series']) {
