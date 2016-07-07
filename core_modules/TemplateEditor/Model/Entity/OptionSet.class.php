@@ -123,8 +123,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                     && isset($optionArray['name'])
                     && isset($optionArray['specific'])
                 ) {
-                    $groupName = (isset($optionArray['group'])) ? $optionArray['group'] : 'others_group';
-                    $group = (isset($this->groups[$groupName])) ?
+                    $groupName = isset($optionArray['group']) ? $optionArray['group'] : 'others_group';
+                    $group = isset($this->groups[$groupName]) ?
                         $this->groups[$groupName] : $this->groups['others_group'];
                     $type = $optionArray['type'];
                     $option = new $type(
@@ -212,10 +212,10 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                 $template->parse('option');
             }
             // find the groupTranslation
-            $options = $this->groups[$key];
+            $group = $this->groups[$key];
             // if no translations exists, groupName will be shown
-            $groupTranslation = $options->getName();
-            $translations = $options->getTranslations();
+            $groupTranslation = $group->getName();
+            $translations = $group->getTranslations();
             if (isset($translations[$_LANGID])) {
                 $groupTranslation = $translations[$_LANGID];
             } else if (isset($translations[2])) {
@@ -226,7 +226,8 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
             $template->setVariable(array(
                 'TEMPLATEEDITOR_GROUP_NAME' => $this->groups[$key]->getName(),
                 'TEMPLATEEDITOR_GROUP_COLOR' => $this->groups[$key]->getColor(),
-                'TEMPLATEEDITOR_GROUP_TRANSLATION' => $groupTranslation,
+                'TEMPLATEEDITOR_GROUP_TRANSLATION' =>
+                    contrexx_raw2xhtml($groupTranslation),
             ));
             $template->parse('group');
         }
