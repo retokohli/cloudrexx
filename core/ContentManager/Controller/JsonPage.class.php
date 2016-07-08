@@ -647,6 +647,7 @@ class JsonPage implements JsonAdapter {
             'version'=> $version,
             'node'   => $page->getNode()->getId(),
             'lang'   => \FWLanguage::getLanguageCodeById($page->getLang()),
+            'page'   => $this->getPageArray($page),
         );
     }
 
@@ -1108,7 +1109,22 @@ class JsonPage implements JsonAdapter {
         } catch (\Cx\Core\ContentManager\Model\Entity\PageException $e) {
             $parentPath = '';
         }
-        
+
+        $hasDraft = 'no';
+        if ($page->getEditingStatus() == 'hasDraft') {
+            $hasDraft = 'yes';
+        } elseif ($page->getEditingStatus() == 'hasDraftWaiting') {
+            $hasDraft = 'waiting';
+        }
+        $isLocked =    $page->isBackendProtected()
+                    && !\Permission::checkAccess($page->getBackendAccessId(), 'dynamic', true);
+        $publishing = array(
+            'locked'    => $isLocked,
+            'published' => $page->isActive() ? true : false,
+            'hasDraft'  => $hasDraft,
+            'scheduled' => $page->isActive(true) && $scheduled_publishing,
+        );
+
         $pageArray = array(
             // Editor Meta
             'id' => $page->getId(),
@@ -1153,6 +1169,7 @@ class JsonPage implements JsonAdapter {
             'parentPath' => $parentPath,
             'assignedBlocks' => $this->getBlocks($page),
             'historyId' => $page->getVersion()->getVersion(),
+            'publishing' => $publishing,
                 /* 'display'       =>  $page->getDisplay(),
                   'active'        =>  $page->getActive(),
                   'updatedAt'     =>  $page->getUpdatedAt(), */

@@ -648,12 +648,11 @@ cx.cm = function(target) {
                     return;
                 }
                 var page = cx.cm.getPageStatus(cx.cm.getNodeId(cx.jQuery("#pageId").val()), cx.cm.getCurrentLang());
-                if (publishAllowed) {
-                    page.publishing.published = true;
-                    page.publishing.hasDraft = "no";
-                } else {
-                    page.publishing.hasDraft = "waiting";
-                }
+
+                var updatedPage = response.data.page;
+                page.publishing.published = updatedPage.publishing.published;
+                page.publishing.hasDraft  = updatedPage.publishing.hasDraft;
+                page.publishing.scheduled = updatedPage.publishing.scheduled;
                 switch (cx.jQuery("[name=\"page[type]\"]:checked").attr("value")) {
                     case "content":
                         page.visibility.type = "standard";
@@ -737,7 +736,11 @@ cx.cm = function(target) {
                     return;
                 }
                 var page = cx.cm.getPageStatus(cx.cm.getNodeId(cx.jQuery("#pageId").val()), cx.cm.getCurrentLang());
-                page.publishing.hasDraft = "yes";
+
+                var updatedPage = response.data.page;
+                page.publishing.published = updatedPage.publishing.published;
+                page.publishing.hasDraft  = updatedPage.publishing.hasDraft;
+                page.publishing.scheduled = updatedPage.publishing.scheduled;
                 switch (cx.jQuery("[name=\"page[type]\"]:checked").attr("value")) {
                     case "content":
                         page.visibility.type = "standard";
@@ -1929,17 +1932,8 @@ cx.cm.performAction = function(action, pageId, nodeId) {
                     page.visibility.visible = false;
                     break;
                 case "publish":
-                    if (publishAllowed) {
-                        page.publishing.published = true;
-                    } else {
-                        page.publishing.hasDraft = "waiting";
-                    }
-                    break;
                 case "activate":
-                    page.publishing.published = true;
-                    break;
                 case "deactivate":
-                    page.publishing.published = false;
                     break;
                 case "copy":
                     cx.cm.createJsTree();
@@ -1955,6 +1949,10 @@ cx.cm.performAction = function(action, pageId, nodeId) {
                     alert("Unknown action \"" + action + "\"");
                     return;
             }
+            var updatedPage = json.data.page;
+            page.publishing.published = updatedPage.publishing.published;
+            page.publishing.hasDraft  = updatedPage.publishing.hasDraft;
+            page.publishing.scheduled = updatedPage.publishing.scheduled;
             cx.cm.updateTreeEntry(page);
             cx.trigger("loadingEnd", "contentmanager", {});
         }
