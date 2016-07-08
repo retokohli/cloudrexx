@@ -535,7 +535,7 @@ li.jstree-closed, li.jstree-leaf {
 }
 #site-tree .publishing.scheduled,
 #page_history .publishing.scheduled {
-    background-image: url('../Media/PublishingScheduledUnlocked.png');
+    background-image: url('../../../Core/View/Media/icons/status_schedule_publish.png');
 }
 #site-tree .publishing.locked.scheduled,
 #page_history .publishing.locked.scheduled {
