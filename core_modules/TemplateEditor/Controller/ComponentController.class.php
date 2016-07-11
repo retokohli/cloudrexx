@@ -74,6 +74,7 @@ class ComponentController extends SystemComponentController
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
      *
      * @param \Cx\Core\Html\Sigma $template The main template
+     * @todo    Implement proper exception handling
      */
     public function preFinalize(\Cx\Core\Html\Sigma $template) {
         if ($this->cx->getMode() != Cx::MODE_FRONTEND) {
@@ -105,7 +106,7 @@ class ComponentController extends SystemComponentController
         } catch (PresetRepositoryException $e) {
 
         }
-        catch (\Symfony\Component\Yaml\ParserException $e) {
+        catch (\Exception $e) {
 
         }
     }

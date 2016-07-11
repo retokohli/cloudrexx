@@ -100,6 +100,7 @@ class BackendController extends SystemComponentBackendController
      * 
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
      * @param array               $cmd      CMD separated by slashes
+     * @todo    Implement proper exception handling
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
     {
@@ -173,7 +174,7 @@ class BackendController extends SystemComponentBackendController
                     )
                 );
             }
-        } catch (\Symfony\Component\Yaml\ParserException $e) {
+        } catch (\Exception $e) {
 
         }
 
