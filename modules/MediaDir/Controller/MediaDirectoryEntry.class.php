@@ -369,9 +369,20 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                                 $start = $arrEntry['entryDurationStart'];
                                 $end = $arrEntry['entryDurationEnd'];
                                 $entryStatusClass = 'scheduled active';
-                                if (   !empty($start)
-                                    && !empty($end)
-                                    && !($start < $intToday && $end > $intToday)
+                                if (   (   !empty($start)
+                                        && empty($end)
+                                        && ($start > $intToday)
+                                       )
+                                    || (   empty($start)
+                                        && !empty($end)
+                                        && ($end < $intToday)
+                                       )
+                                    || (   !empty($start)
+                                        && !empty($end)
+                                        && !(  $start < $intToday
+                                            && $end > $intToday
+                                            )
+                                       )
                                 ) {
                                     $entryStatusClass = 'scheduled inactive';
                                 }

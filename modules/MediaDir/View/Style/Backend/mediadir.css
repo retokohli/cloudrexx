@@ -19,3 +19,7 @@
 .entry_status.scheduled.inactive {
     background-position: -6px -5px;
 }
+#search_mediadir {
+    padding: 0;
+    width: auto;
+}
