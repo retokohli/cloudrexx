@@ -1811,9 +1811,17 @@ namespace Cx\Core\Core\Controller {
                 }
 
                 // load custom application template from page's theme
-                $themePath = \Env::get('cx')->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$customAppTemplate;
+                $themePath = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(\Env::get('cx')->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$customAppTemplate);
                 if (file_exists($themePath)) {
                     return file_get_contents($themePath);
+                }
+
+                // load default application template from page's theme
+                if ($customAppTemplate != $cmd.'.html') {
+                    $themePath = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(\Env::get('cx')->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$cmd.'.html');
+                    if (file_exists($themePath)) {
+                        return file_get_contents($themePath);
+                    }
                 }
 
                 // load default application template from component
