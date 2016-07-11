@@ -1810,22 +1810,23 @@ namespace Cx\Core\Core\Controller {
                     $themeFolderName = $themeRepo->getDefaultTheme($themeType, $page->getLang())->getFoldername();
                 }
 
+                $cx = \Cx\Core\Core\Controller\Cx::instanciate();
                 // load custom application template from page's theme
-                $themePath = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(\Env::get('cx')->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$customAppTemplate);
+                $themePath = $cx->getClassLoader()->getFilePath($cx->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$customAppTemplate);
                 if (file_exists($themePath)) {
                     return file_get_contents($themePath);
                 }
 
                 // load default application template from page's theme
                 if ($customAppTemplate != $cmd.'.html') {
-                    $themePath = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(\Env::get('cx')->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$cmd.'.html');
+                    $themePath = $cx->getClassLoader()->getFilePath($cx->getWebsiteThemesPath() .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$component.'/Template/Frontend/'.$cmd.'.html');
                     if (file_exists($themePath)) {
                         return file_get_contents($themePath);
                     }
                 }
 
                 // load default application template from component
-                $modulePath = \Env::get('ClassLoader')->getFilePath(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/'.$moduleFolderName.'/'.$component.'/View/Template/Frontend/'.$cmd.'.html');
+                $modulePath = $cx->getClassLoader()->getFilePath($cx->getCodeBaseDocumentRootPath() . '/'.$moduleFolderName.'/'.$component.'/View/Template/Frontend/'.$cmd.'.html');
                 if (file_exists($modulePath)) {
                     return file_get_contents($modulePath);
                 }
