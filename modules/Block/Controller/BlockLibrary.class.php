@@ -697,6 +697,7 @@ class BlockLibrary
         if ($objRs !== false) {
             if ($objRs->RecordCount()) {
                 $content = $objRs->fields['content'];
+                \Env::get('cx')->parseGlobalPlaceholders($content);
                 \LinkGenerator::parseTemplate($content);
                 
                 $em = \Env::get('cx')->getDb()->getEntityManager();
