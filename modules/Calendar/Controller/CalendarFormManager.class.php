@@ -423,6 +423,7 @@ class CalendarFormManager extends CalendarLibrary
                             $inputfield .= '</select>'; 
                             break;
                          case 'radio': 
+                            $inputfield .= '<div>';
                             foreach($options as $key => $name)  { 
                                 $checked =  ($key+1 == $value) || (empty($_POST) && $key == 0) ? 'checked="checked"' : '';     
                                 
@@ -432,6 +433,7 @@ class CalendarFormManager extends CalendarLibrary
 
                                 $inputfield .= '<input type="radio" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].']" value="'.intval($key+1).'" '.$checked.'/>&nbsp;'.$name.'<br />';  
                             }
+                            $inputfield .= '</div>';
                             break;
                          case 'checkbox':       
                             foreach($options as $key => $name)  {    
