@@ -61,24 +61,34 @@ function entriesDoAction(formId, objSelect)
 
 var switchState = function(id, obj, action, type)
 {
+    if (type == 'entry' && cx.jQuery(obj).hasClass( "scheduled" )) {
+      window.location.replace('index.php?cmd={MODULE_NAME}&{CSRF}&act=modify_entry&id=' + id + '#specialFields');
+      return;
+    }
     cx.jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'switchState', id : id, state : action, type : type}).success(function() {
+        cx.jQuery(obj).removeClass('inactive');
+        cx.jQuery(obj).removeClass('active');
+        var path = null;
         if (action) {
             if (type == 'entry') {
-                path = '../core/Core/View/Media/icons/status_green.gif';
+                cx.jQuery(obj).addClass('active');
+                cx.jQuery(obj).closest('td').find('span.tooltip-message').text('{TXT_MEDIADIR_OVERVIEW_ACTIVE}');
             } else {
                 path = "../core/Core/View/Media/icons/folder_on.gif";
             }
             action = 0;
         } else {
             if (type == 'entry') {
-                path = '../core/Core/View/Media/icons/status_red.gif';
+                cx.jQuery(obj).addClass('inactive');
+                cx.jQuery(obj).closest('td').find('span.tooltip-message').text('{TXT_MEDIADIR_OVERVIEW_INACTIVE}');
             } else {
                 path = "../core/Core/View/Media/icons/folder_off.gif";
             }
             action = 1;
         }
-
-        cx.jQuery(obj).children('img:first').attr('src', path);
+        if (path != null) {
+            cx.jQuery(obj).children('img:first').attr('src', path);
+        }
         cx.jQuery(obj).attr('onclick', 'switchState('+id+', this, '+action+', \''+type+'\')');
     });
 }
@@ -282,7 +292,11 @@ var searchEntries = function (event) {
                 <!-- BEGIN mediadirLatestList -->
                     <tr class="{MEDIADIR_ROW_CLASS}">
                         <td valign="top"><input type="checkbox" name="entriesFormSelected[]" value="{MEDIADIR_ENTRY_ID}" /></td>
-                        <td valign="middle" style="text-align: center;"><a href="javascript: void(0);" onclick="switchState({MEDIADIR_ENTRY_ID}, this, {MEDIADIR_ENTRY_SWITCH_STATUS}, 'entry')"><img src="{MEDIADIR_ENTRY_STATUS}" border="0" alt="" title="" /></td>
+                        <td valign="middle" style="text-align: center;">
+                            <a class = "entry_status {MEDIADIR_ENTRY_STATUS_CLASS}" href="javascript: void(0);" onclick="switchState({MEDIADIR_ENTRY_ID}, this, {MEDIADIR_ENTRY_SWITCH_STATUS}, 'entry')"></a>
+                            <span class="icon-info tooltip-trigger"></span>
+                            <span class="tooltip-message">{MEDIADIR_ENTRY_STATUS_TOOLTIP}</span>
+                        </td>
                         <td valign="top"><b><a href="index.php?cmd={MODULE_NAME}&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_EDIT}">{MEDIADIR_ENTRY_FIELD_1_POS}</a></b></td>
                         <td valign="top">{MEDIADIR_ENTRY_FORM}</td>
                         <td valign="top" nowrap="nowrap">{MEDIADIR_ENTRY_VALIDATE_DATE}</td>

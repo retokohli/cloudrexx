@@ -1,0 +1,21 @@
+.entry_status {
+    width: 18px;
+    height: 16px;
+    margin-top: 3px;
+    display: inline-block;
+}
+.entry_status.active {
+    background: url('/core/Core/View/Media/icons/led_green.gif') no-repeat;
+}
+.entry_status.inactive {
+    background: url('/core/Core/View/Media/icons/led_red.gif') no-repeat;
+}
+.entry_status.scheduled {
+    background: url('/core/Core/View/Media/icons/status_schedule_publish.png') no-repeat;
+}
+.entry_status.scheduled.active {
+    background-position: -34px -5px;
+}
+.entry_status.scheduled.inactive {
+    background-position: -6px -5px;
+}

@@ -145,6 +145,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
+        \JS::registerCSS(substr(ASCMS_MODULE_FOLDER.'/MediaDir/View/Style/Backend/mediadir.css', 1));
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_overview.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'];
         $act = isset($_GET['act']) ? $_GET['act'] : '';
@@ -242,6 +243,8 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             $this->moduleLangVar.'_LEVELS_DROPDOWN_OPTIONS' => $levelDropdown,
             $this->moduleLangVar.'_FORMS_DROPDOWN_OPTIONS' => $formDropdown,
             'TXT_'.$this->moduleLangVar.'_FORM' => $_ARRAYLANG['TXT_MEDIADIR_FORM'],
+            'TXT_'.$this->moduleLangVar.'_OVERVIEW_ACTIVE'   => $_ARRAYLANG['TXT_MEDIADIR_ACTIVE'],
+            'TXT_'.$this->moduleLangVar.'_OVERVIEW_INACTIVE' => $_ARRAYLANG['TXT_MEDIADIR_INACTIVE'],
         ));
 
         if(count($objForms->arrForms) > 1) {
@@ -1105,6 +1108,7 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
 
+        \JS::registerCSS(substr(ASCMS_MODULE_FOLDER.'/MediaDir/View/Style/Backend/mediadir.css', 1));
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleNameLC.'_manage_entries.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_MANAGE_ENTRIES'];
 
@@ -1184,6 +1188,8 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
             $this->moduleLangVar.'_LEVELS_DROPDOWN_OPTIONS' => $levelDropdown,
             $this->moduleLangVar.'_FORMS_DROPDOWN_OPTIONS' => $formDropdown,
             'TXT_'.$this->moduleLangVar.'_FORM' => $_ARRAYLANG['TXT_MEDIADIR_FORM'],
+            'TXT_'.$this->moduleLangVar.'_OVERVIEW_ACTIVE'   => $_ARRAYLANG['TXT_MEDIADIR_ACTIVE'],
+            'TXT_'.$this->moduleLangVar.'_OVERVIEW_INACTIVE' => $_ARRAYLANG['TXT_MEDIADIR_INACTIVE'],
         ));
 
         //get seting values
