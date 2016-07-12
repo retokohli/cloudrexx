@@ -1948,7 +1948,7 @@ die("Failed to update the Cart!");
                           case Attribute::TYPE_MENU_OPTIONAL:
                             $selectValues .=
                                 '<option value="'.$option_id.'" '.
-                                ($arrOption['price'] != 0 && $arrOption['price'] > 0 ? 'data-price="'. $arrOption['price'] .'" ' : '')
+                                ($arrOption['price'] != 0 ? 'data-price="'. $arrOption['price'] .'" ' : '')
                                 .($selected ? 'selected="selected"' : '').
                                 ' >'.$arrOption['value'].$option_price.
                                 "</option>\n";
@@ -1959,7 +1959,7 @@ die("Failed to update the Cart!");
                                 $attribute_id.']" id="productOption-'.
                                 $product_id.'-'.$attribute_id.'-'.$domId.
                                 '" value="'.$option_id.'"'.
-                                ($arrOption['price'] != 0 && $arrOption['price'] > 0 ? ' data-price="'. $arrOption['price'] .'"' : '').
+                                ($arrOption['price'] != 0 ? ' data-price="'. $arrOption['price'] .'"' : '').
                                 ($selected ? ' checked="checked"' : '').
                                 ' /><label for="productOption-'.
                                 $product_id.'-'.$attribute_id.'-'.$domId.
@@ -1972,7 +1972,7 @@ die("Failed to update the Cart!");
                                 $attribute_id.']['.$i.']" id="productOption-'.
                                 $product_id.'-'.$attribute_id.'-'.$domId.
                                 '" value="'.$option_id.'"'.
-                                ($arrOption['price'] != 0 && $arrOption['price'] > 0 ? ' data-price="'. $arrOption['price'] .'" ' : '').
+                                ($arrOption['price'] != 0 ? ' data-price="'. $arrOption['price'] .'" ' : '').
                                 ($selected ? ' checked="checked"' : '').
                                 ' /><label for="productOption-'.
                                 $product_id.'-'.$attribute_id.'-'.$domId.
@@ -1983,7 +1983,7 @@ die("Failed to update the Cart!");
                             $selectValues .=
                                 '<option value="'.$option_id.'"'.
                                 ($selected ? ' selected="selected"' : '').
-                                ($arrOption['price'] != 0 && $arrOption['price'] > 0 ? ' data-price="'. $arrOption['price'] .'" ' : '').
+                                ($arrOption['price'] != 0 ? ' data-price="'. $arrOption['price'] .'" ' : '').
                                 ' >'.$arrOption['value'].$option_price.
                                 "</option>\n";
                             break;
