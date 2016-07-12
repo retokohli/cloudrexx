@@ -224,9 +224,9 @@ class FWUser extends User_Setting
 
         $pathOffset = ASCMS_PATH_OFFSET;
 
-        $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
-        $offset = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath();
-        $redirect = $baseUrl = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, array())->toString();
+        $requestUrl = clone \Cx\Core\Core\Controller\Cx::instanciate()->getRequest()->getUrl();
+        $requestUrl->setPath('');
+        $redirect = $baseUrl = $requestUrl->toString();
 
         $rawUrl   = trim(self::getRawUrL(urldecode($redirectUrl), $baseUrl));
 
