@@ -605,8 +605,13 @@ class CalendarEventManager extends CalendarLibrary
         if($objInit->mode == 'frontend' && ($eventId != null && $eventStartDate != null)) {   
             $objEvent = $this->eventList[0];
             
-            if(empty($objEvent)) {
-                \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
+            if (empty($objEvent)) {
+                \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+                return;
+            }
+
+            if (!$objEvent->status) {
+                \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
                 return;   
             }
             
@@ -1714,6 +1719,12 @@ class CalendarEventManager extends CalendarLibrary
                 }
                 break;
         }
+        
+        $objCloneEvent->registrationExternalLink = str_replace(
+            '[[SERIES_ELEMENT_STARTDATE]]',
+            $objCloneEvent->startDate->getTimestamp(),
+            $objCloneEvent->registrationExternalLink
+        );
         
         if (   $isAllowedEvent
             && !$this->isDateExists($objCloneEvent->startDate, $objCloneEvent->seriesData['seriesPatternExceptions'])

@@ -930,9 +930,14 @@ UPLOADER;
 
         $objEvent = $this->objEventManager->eventList[0];
 
-        if(empty($objEvent)) {
-            \Cx\Core\Csrf\Controller\Csrf::redirect("index.php?section=".$this->moduleName);
+        if (empty($objEvent)) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
             return;
+        }
+
+        if(!$objEvent->status) {
+            \Cx\Core\Csrf\Controller\Csrf::redirect(\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, ''));
+            return;   
         }
 
         if($objEvent->access == 1 && !\FWUser::getFWUserObject()->objUser->login()){
