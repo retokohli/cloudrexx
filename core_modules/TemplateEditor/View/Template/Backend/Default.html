@@ -83,11 +83,20 @@
         </div>
 
         <div class="option-list">
-        <!-- BEGIN option -->
-        <div class="option {TEMPLATEEDITOR_OPTION_TYPE} {TEMPLATEEDITOR_OPTION_SERIES_CLASS}">
-            {TEMPLATEEDITOR_OPTION}
-        </div>
-        <!-- END option -->
+            <!-- BEGIN group -->
+            <div id="{TEMPLATEEDITOR_GROUP_NAME}" style="background: {TEMPLATEEDITOR_GROUP_COLOR}" class="optionGroup">
+                <p class="groupName">
+                    {TEMPLATEEDITOR_GROUP_TRANSLATION}
+                </p>
+                <div class="optionsInGroup">
+                    <!-- BEGIN option -->
+                    <div class="option {TEMPLATEEDITOR_OPTION_TYPE} {TEMPLATEEDITOR_OPTION_SERIES_CLASS}">
+                        {TEMPLATEEDITOR_OPTION}
+                    </div>
+                    <!-- END option -->
+                </div>
+            </div>
+            <!-- END group -->
         </div>
         <!-- BEGIN no_options -->
         <div class="option">

@@ -20,6 +20,7 @@ DlcInfo:
       specific:
         textvalue: 'Awesome Cat Blog'
       type: Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption
+      group: example_group_1
       translation:
         1: Haupttitel
         2: 'Main Title'
@@ -28,6 +29,7 @@ DlcInfo:
       specific:
         textvalue: 'My blog with everything about cats.'
       type: Cx\Core_Modules\TemplateEditor\Model\Entity\TextOption
+      group: example_group_2
       translation:
         1: Haupttitel
         2: 'Main Title'
@@ -37,6 +39,7 @@ DlcInfo:
         color: '#34495e'
         choice: ['#1ABC9C', '#16A085', '#2ECC71', '#27AE60', '#3498DB', '#2980B9', '#9B59B6', '#8E44AD', '#34495E', '#2C3E50', '#F1C40F', '#F39C12', '#E67E22', '#D35400', '#E74C3C', '#C0392B', '#ECF0F1', '#BDC3C7', '#95A5A6', '#7F8C8D']
       type: Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption
+      group: example_group_3
       translation:
         1: Hauptfarbe
         2: 'Main Color'
@@ -46,6 +49,7 @@ DlcInfo:
         color: '#2c3e50'
         choice: ['#1ABC9C', '#16A085', '#2ECC71', '#27AE60', '#3498DB', '#2980B9', '#9B59B6', '#8E44AD', '#34495E', '#2C3E50', '#F1C40F', '#F39C12', '#E67E22', '#D35400', '#E74C3C', '#C0392B', '#ECF0F1', '#BDC3C7', '#95A5A6', '#7F8C8D']
       type: Cx\Core_Modules\TemplateEditor\Model\Entity\ColorOption
+      group: example_group_2
       translation:
         1: Sekundärfarbe
         2: 'Secondary color'
@@ -54,6 +58,7 @@ DlcInfo:
       specific:
         active: true
       type: Cx\Core_Modules\TemplateEditor\Model\Entity\AreaOption
+      group: example_group_1
       translation:
         1: 'News anzeigen'
         2: 'Show News'
@@ -65,3 +70,22 @@ DlcInfo:
       translation:
         1: 'Sidebar Bild'
         2: 'Sidebar picture'
+  groups:
+    -
+      name: example_group_1
+      color: #fff
+      translation:
+        1: 'Gruppe 1'
+        2: 'group 1'
+    -
+      name: example_group_2
+      color: #555
+      translation:
+        1: 'Gruppe 2'
+        2: 'group 2'
+    -
+      name: example_group_3
+      color: #000
+      translation:
+        1: 'Gruppe 3'
+        2: 'group 3'

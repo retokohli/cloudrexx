@@ -46,10 +46,6 @@ body {
     width: calc(50% - 20px);
 }
 
-.option-list .option.color.series {
-    width: calc(100% - 20px);
-}
-
 .option-list .option.color .element {
     width: calc(50% - 2px);
     display: inline-block;
@@ -63,6 +59,31 @@ body {
     width: 100%;
     background: #fff;
     margin-top: 5px;
+}
+
+.optionsInGroup {
+    overflow: auto;
+    display: none;
+}
+
+.optionGroup {
+    width: 100%;
+}
+
+p.groupName {
+    display: block;
+    width: calc(100% - 20px);
+    margin: 0;
+    padding: 10px;
+    border-bottom: 1px solid grey;
+    font-weight: bold;
+    background-position: 95%;
+    background-image: url('/cadmin/../core/Core/View/Media/icons/Expand.gif');
+    background-repeat: no-repeat;
+}
+
+p.groupName.open, .option.series.open {
+    background-image: url('/cadmin/../core/Core/View/Media/icons/Collapse.gif');
 }
 
 #content .option.text.error input {
@@ -336,6 +357,27 @@ body {
 #content .option #image_series .element .remove-element {
     top: initial;
     bottom: 31px;
+}
+
+.option.series {
+    background-position: 95% 9px;
+    background-image: url('/cadmin/../core/Core/View/Media/icons/Expand.gif');
+    background-repeat: no-repeat;
+    background-size: 12px;
+    padding: 0;
+    width: 100%;
+}
+
+.option.series.open > label {
+    border-bottom: 1px dotted grey;
+}
+
+.option.series > label, .option.series > div {
+    padding: 10px;
+}
+
+.series-list {
+    display: none;
 }
 
 .series-list .elements img,
@@ -850,6 +892,7 @@ span.introjs-helperNumberLayer {
 }
 .option-list {
     float: left;
+    width: 100%;
 }
 
 #content button.button.help {

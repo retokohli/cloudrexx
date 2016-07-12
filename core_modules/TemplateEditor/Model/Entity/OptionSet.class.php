@@ -65,12 +65,17 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     protected $options;
 
     /**
+     * @var Group[]
+     */
+    protected $groups;
+
+    /**
      * @var $name
      */
     protected $name;
 
     /**
-     * Unmodified data of options.yml
+     * Unmodified data of Options.yml
      *
      * @var array
      */
@@ -111,12 +116,16 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
         // try to initialize the options, so we do not need to load the from
         // $this->data every time
         if (isset($data['DlcInfo']) && isset($data['DlcInfo']['options'])) {
+            $this->initializeGroups($data['DlcInfo']['groups']);
             foreach ($data['DlcInfo']['options'] as $optionArray) {
                 if (
                     isset($optionArray['type'])
                     && isset($optionArray['name'])
                     && isset($optionArray['specific'])
                 ) {
+                    $groupName = isset($optionArray['group']) ? $optionArray['group'] : 'others_group';
+                    $group = isset($this->groups[$groupName]) ?
+                        $this->groups[$groupName] : $this->groups['others_group'];
                     $type = $optionArray['type'];
                     $option = new $type(
                         $optionArray['name'],
@@ -124,18 +133,20 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                             $optionArray['translations'] : array(),
                         $optionArray['specific'],
                         $optionArray['type'],
+                        $group,
                         ($optionArray['series']) ?
                             $optionArray['series'] : false
                     );
                     $this->setOption($optionArray['name'], $option);
+                    $group->addOption($option);
                 }
             }
         }
         $this->theme = $theme;
         $presetStorage =
             new \Cx\Core_Modules\TemplateEditor\Model\PresetFileStorage(
-            $this->cx->getWebsiteThemesPath() . '/' . $theme->getFoldername()
-        );
+                $theme->getPath()
+            );
         $this->presetRepository = new PresetRepository($presetStorage);
 
         if (!isset($data['activePreset'])) {
@@ -181,22 +192,44 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
      */
     public function renderOptions($template)
     {
-        foreach ($this->options as $option) {
-            $subTemplate = $option->renderOptionField();
-            $optionName = str_replace( // replace 'Option' so we get the net name
-                'Option',
-                '',
-                end( // last value of the array is the class name
-                    explode('\\', $option->getType()) // get array for class namespace
-                )
-            );
-            $seriesClass = ($option->isSeries()) ? 'series' : '';
+        global $_LANGID;
+        foreach ($this->getOptionsOrderedByGroups() as $key => $options) {
+            foreach ($options as $option) {
+                $subTemplate = $option->renderOptionField();
+                $optionName = str_replace( // replace 'Option' so we get the net name
+                    'Option',
+                    '',
+                    end( // last value of the array is the class name
+                        explode('\\', $option->getType()) // get array for class namespace
+                    )
+                );
+                $seriesClass = ($option->isSeries()) ? 'series' : '';
+                $template->setVariable(array(
+                    'TEMPLATEEDITOR_OPTION' => $subTemplate->get(),
+                    'TEMPLATEEDITOR_OPTION_TYPE' => strtolower($optionName),
+                    'TEMPLATEEDITOR_OPTION_SERIES_CLASS' => $seriesClass,
+                ));
+                $template->parse('option');
+            }
+            // find the groupTranslation
+            $group = $this->groups[$key];
+            // if no translations exists, groupName will be shown
+            $groupTranslation = $group->getName();
+            $translations = $group->getTranslations();
+            if (isset($translations[$_LANGID])) {
+                $groupTranslation = $translations[$_LANGID];
+            } else if (isset($translations[2])) {
+                // if name is not defined in the wished language, try to load
+                // it in english
+                $groupTranslation = $translations[2];
+            }
             $template->setVariable(array(
-                'TEMPLATEEDITOR_OPTION'      => $subTemplate->get(),
-                'TEMPLATEEDITOR_OPTION_TYPE' => strtolower($optionName),
-                'TEMPLATEEDITOR_OPTION_SERIES_CLASS' => $seriesClass,
+                'TEMPLATEEDITOR_GROUP_NAME' => $this->groups[$key]->getName(),
+                'TEMPLATEEDITOR_GROUP_COLOR' => $this->groups[$key]->getColor(),
+                'TEMPLATEEDITOR_GROUP_TRANSLATION' =>
+                    contrexx_raw2xhtml($groupTranslation),
             ));
-            $template->parse('option');
+            $template->parse('group');
         }
     }
 
@@ -353,8 +386,9 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                 );
             }
         }
-
-//        $this->options = array();
+        if (isset($data['groups'])) {
+            $this->initializeGroups($data['groups']['groups']);
+        }
         foreach ($data['options'] as $option) {
             $optionType = $option['type'];
             if ($option['series']) {
@@ -396,14 +430,19 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
                     );
                 }
             }
+            $groupName = ($option['group']) ? $option['group'] : 'others_group';
+            $group = ($this->groups[$groupName]) ?
+                $this->groups[$groupName] : $this->groups['others_group'];
             $this->options[$option['name']]
                 = new $optionType(
                 $option['name'],
                 $option['translation'],
                 $option['specific'],
                 $option['type'],
+                $group,
                 $option['series']
             );
+            $group->addOption($this->options[$option['name']]);
         }
     }
 
@@ -415,6 +454,48 @@ class OptionSet extends \Cx\Model\Base\EntityBase implements YamlSerializable
     public function setActivePreset(Preset $preset)
     {
         $this->activePreset = $preset;
+    }
+
+    /**
+     * Get the options ordered by the groups
+     *
+     * @access public
+     * @return array the options groupedBy Groups
+     */
+    public function getOptionsOrderedByGroups() {
+        $groups = array();
+        foreach ($this->groups as $group) {
+            $groups[$group->getName()] = $group->getOptions();
+        }
+        return $groups;
+    }
+
+    /**
+     * Initialize the groups from Groups.yml
+     *
+     * @access protected
+     * @param array $groups groups from Groups.yml
+     */
+    protected function initializeGroups($groups) {
+        if (!isset($groups)) {
+            $groups = array();
+        }
+        $groups[] = array(
+            "name" => "others_group",
+            "color" => '#fff',
+            "translation" => array(
+                1 => "andere Optionen",
+                2 => "other options" ,
+            ),
+        );
+        foreach ($groups as $key => $group) {
+            $this->groups[$group['name']] = new Group(
+                $group['name'],
+                $group['color'],
+                $group['translation'],
+                $key
+            );
+        }
     }
 }
 

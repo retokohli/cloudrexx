@@ -65,22 +65,32 @@ class OptionSetFileStorage implements Storable
      */
     public function retrieve($name)
     {
-        $file = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()->getFilePath(
-            $this->path
-            . '/' . $name . '/options/options.yml'
-        );
+        $optionSetFilePath = $this->path . '/' . $name . '/options';
+        $optionSetOptionsFile = $optionSetFilePath. '/Options.yml';
+        $optionSetGroupsFile = $optionSetFilePath. '/Groups.yml';
+        $data = $this->retrieveFile($optionSetOptionsFile);
+        $data['groups'] = $this->retrieveFile($optionSetGroupsFile);
+        return $data;
+    }
+
+    /**
+     * @param  String $fileName  the file to load including its path
+     * @return array             the data from the file
+     * @throws ParserException   thrown if the file is not found or empty
+     */
+    protected function retrieveFile($fileName){
+        $file = \Cx\Core\Core\Controller\Cx::instanciate()->getClassLoader()
+            ->getFilePath($fileName);
         if (!$file) {
             throw new ParserException(
-                "File" . $this->path
-                . '/' . $name . '/options/options.yml not found'
+                "File" . $fileName . 'not found'
             );
         }
 
         $content = file_get_contents($file);
         if (!$content) {
             throw new ParserException(
-                "File" . $this->path
-                . '/' . $name . '/options/options.yml not found'
+                "File" . $fileName . 'is empty'
             );
         }
 
@@ -107,7 +117,7 @@ class OptionSetFileStorage implements Storable
         mkdir($this->path . '/' . $name . '/options');
         return file_put_contents(
             $this->path
-            . '/' . $name . '/options/options.yml',
+            . '/' . $name . '/options/Options.yml',
             Yaml::dump($data->yamlSerialize(), 6)
         );
     }
