@@ -311,7 +311,7 @@ class CalendarRegistration extends CalendarLibrary
             $endDate->modify('+10 years');
 
             $eventManager = new CalendarEventManager(null, $endDate);
-            $eventManager->getEvent($objEvent, $eventDate, false);
+            $eventManager->getEvent($objEvent, $eventDate, true);
             $objEvent = $eventManager->eventList[0];
             if (empty($objEvent)) {
                 return false;

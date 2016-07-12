@@ -537,11 +537,11 @@ class CalendarEventManager extends CalendarLibrary
      * @param mixed   $event         \Cx\Modules\Calendar\Controller\CalendarEvent
      *                                or Event id
      * @param integer $eventStartDate Unix timestamp of start date
-     * @param boolean $checkMode      Flag to identify whether mode has to be checked or not
+     * @param boolean $forceCalculateSeries  Whether or not to calculate the event's next serie's occurrence. Default to FALSE to only perform the calculation in FRONTEND-Mode
      *
      * @return null
      */
-    function getEvent($event, $eventStartDate, $checkMode = true) {
+    function getEvent($event, $eventStartDate, $forceCalculateSeries = false) {
         global $objInit;
 
         if ($event instanceof \Cx\Modules\Calendar\Controller\CalendarEvent) {
@@ -553,7 +553,7 @@ class CalendarEventManager extends CalendarLibrary
         $this->eventList[] = $objEvent;
 
         if (   $objEvent->seriesStatus == 1
-            && (!$checkMode || $objInit->mode == 'frontend')
+            && ($forceCalculateSeries || $objInit->mode == 'frontend')
         ) {
             self::_setNextSeriesElement($objEvent);
         }
