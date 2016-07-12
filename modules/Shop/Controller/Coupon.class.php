@@ -1162,8 +1162,31 @@ class Coupon
         $objCouponEdit->customer_id($customer_id);
         $objCouponEdit->product_id($product_id);
         global $_CONFIG;
+
+        $todayTime = time();
         foreach ($arrCoupons as $index => $objCoupon) {
+            //Get the coupon status
+            $scheduledStatus = 'scheduled inactive';
+            if (   (   !empty($objCoupon->start_time)
+                    && !empty($objCoupon->end_time)
+                    && $objCoupon->start_time < $todayTime
+                    && $objCoupon->end_time > $todayTime
+                   )
+                || (   !empty($objCoupon->start_time)
+                    && empty($objCoupon->end_time)
+                    && $objCoupon->start_time < $todayTime
+                   )
+                || (   empty($objCoupon->start_time)
+                    && !empty($objCoupon->end_time)
+                    && $objCoupon->end_time > $todayTime
+                   )
+            ) {
+                $scheduledStatus = 'scheduled active';
+            }
             $coupon_uri_id = 'coupon_uri_'.$index;
+            $couponEditLink = ADMIN_SCRIPT_PATH .
+                '?cmd=Shop&amp;act=settings&amp;tpl=coupon&amp;edit='
+                . urlencode($index);
             $objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => 'row'.(++$row % 2 + 1),
                 'SHOP_DISCOUNT_COUPON_CODE' => $objCoupon->code,
@@ -1237,13 +1260,15 @@ class Coupon
                       : $_ARRAYLANG['TXT_SHOP_PAYMENT_ANY']),
                 'SHOP_DISCOUNT_COUPON_FUNCTIONS' => \Html::getBackendFunctions(
                     array(
-                        'edit' =>
-                            ADMIN_SCRIPT_PATH.
-                            '?cmd=Shop&amp;act=settings&amp;tpl=coupon&amp;edit='.
-                            urlencode($index),
+                        'edit'   => $couponEditLink,
                         'delete' =>
                             "javascript:delete_coupon('".urlencode($index)."');",
                     )),
+                'SHOP_DISCOUNT_COUPON_EDIT_LINK' => $couponEditLink,
+                'SHOP_DISCOUNT_COUPON_STATUS'    => $scheduledStatus,
+                'SHOP_DISCOUNT_COUPON_STATUS_TOOLTIP' =>
+                    $_ARRAYLANG['TXT_SHOP_COUPON_'.
+                        strtoupper(str_replace(' ', '_', $scheduledStatus))]
             ));
             $objTemplate->parse('shopDiscountCouponView');
             if ($index === $edit) $objCouponEdit = $objCoupon;
