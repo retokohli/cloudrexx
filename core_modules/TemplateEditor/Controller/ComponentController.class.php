@@ -89,7 +89,10 @@ class ComponentController extends SystemComponentController
                 : null;
             $theme = $themeID ? $themeRepository->findById(
                 (int)$themeID
-            ) : $themeRepository->getDefaultTheme();
+            ) : $themeRepository->getDefaultTheme(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB, FRONTEND_LANG_ID);
+            if (!$theme) {
+                $theme = $themeRepository->getDefaultTheme(\Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB);
+            }
             $themeOptions = $themeOptionRepository->get(
                 $theme
             );
