@@ -95,9 +95,9 @@ CKEDITOR.editorConfig = function( config )
     config.baseHref = '<?php
         $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
         $offset = $cx->getWebsiteOffsetPath();
-        $requestUrl = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET);
-        echo $requestUrl->getProtocol() . '://' . $requestUrl->getDomain() . $cx->getWebsiteOffsetPath();
-    ?>/';
+        $requestUrl = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, array());
+        echo $requestUrl->toString();
+    ?>';
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
     
