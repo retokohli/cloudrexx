@@ -380,3 +380,7 @@ $_ARRAYLANG['TXT_NEWS_NO_CATEGORY'] = "Weisen Sie der Meldung eine Rubrik zu.";
 $_ARRAYLANG['TXT_NEWS_NO_TITLE_AND_CATEGORY'] = "Setzen Sie einen Titel und weisen Sie die Meldung einer Rubrik zu";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_ID_DESCRIPTION'] = "ID der News Rubrik";
 $_ARRAYLANG['TXT_CATEGORY_SELECT'] = "Kategorie auswählen";
+$_ARRAYLANG['TXT_NEWS_OVERVIEW_ACTIVE_STATUS_TOOLTIP'] = $_ARRAYLANG['TXT_ACTIVE'];
+$_ARRAYLANG['TXT_NEWS_OVERVIEW_INACTIVE_STATUS_TOOLTIP'] = 'Inaktiv';
+$_ARRAYLANG['TXT_NEWS_OVERVIEW_ACTIVE_SCHEDULED_PUBLISHING_STATUS_TOOLTIP'] = 'Zeitgesteuerte Veröffentlichung aktiv';
+$_ARRAYLANG['TXT_NEWS_OVERVIEW_INACTIVE_SCHEDULED_PUBLISHING_STATUS_TOOLTIP'] = 'Deaktiviert aufgrund der zeitgesteuerten Veröffentlichung';
