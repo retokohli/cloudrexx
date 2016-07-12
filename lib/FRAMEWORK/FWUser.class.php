@@ -224,7 +224,10 @@ class FWUser extends User_Setting
 
         $pathOffset = ASCMS_PATH_OFFSET;
 
-        $redirect = $baseUrl = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . (!empty($pathOffset) ? $pathOffset : '/');
+        $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
+        $offset = \Cx\Core\Core\Controller\Cx::instanciate()->getWebsiteOffsetPath();
+        $redirect = $baseUrl = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, array())->toString();
+
         $rawUrl   = trim(self::getRawUrL(urldecode($redirectUrl), $baseUrl));
 
         if (
