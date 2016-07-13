@@ -395,12 +395,11 @@ class Forum extends ForumLibrary {
      *
      * @global  ADONewConnection
      * @global     array
-     * @global   Cache
      * @param    integer        $intForumId: The id of the forum which should be shown
      */
     function showForum($intForumId)
     {
-        global $objDatabase, $_ARRAYLANG, $objCache, $_LANGID, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID, $_CORELANG;
 
         if ($intForumId == 0) {
             //wrong id, redirect
@@ -599,9 +598,8 @@ class Forum extends ForumLibrary {
                 $this->_updateNotification($intLastThreadId);
                 $this->_sendNotifications($intLastThreadId, $subject, $content);
                 $this->updateViewsNewItem($intForumId, $lastInsertId);
-                $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-                $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                $cacheManager->deleteSingleFile($pageId);
+                $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                $cache->cleanContrexxCaching();
             }
             \Cx\Core\Csrf\Controller\Csrf::header('Location: ?section=Forum&cmd=board&id='.$intForumId);
             die();
@@ -617,7 +615,7 @@ class Forum extends ForumLibrary {
      */
     function showThread($intThreadId)
     {
-        global $objDatabase, $_ARRAYLANG, $objCache;
+        global $objDatabase, $_ARRAYLANG;
 
         $objFWUser = \FWUser::getFWUserObject();
         $this->_communityLogin();
@@ -957,9 +955,8 @@ class Forum extends ForumLibrary {
                 $this->updateViewsNewItem($intCatId, $lastInsertId, true);
                 $this->_updateNotification($intThreadId);
                 $this->_sendNotifications($intThreadId, $subject, $content);
-                $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-                $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                $cacheManager->deleteSingleFile($pageId);
+                $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                $cache->cleanContrexxCaching();
             }
             \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
             die();
@@ -1057,9 +1054,8 @@ class Forum extends ForumLibrary {
 
             if($objDatabase->Execute($updateQuery) !== false){
                 $this->updateViews($intThreadId, $intPostId);
-                $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-                $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                $cacheManager->deleteSingleFile($pageId);
+                $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                $cache->cleanContrexxCaching();
             }
 
             \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));

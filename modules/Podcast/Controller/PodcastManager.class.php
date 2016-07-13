@@ -343,9 +343,8 @@ class PodcastManager extends PodcastLib
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_DELETE_MEDIUM_SUCCESSFULL_MSG'], $arrMedium['title']);
                 }
 
-                $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-                $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                $cacheManager->deleteSingleFile($pageId);
+                $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                $cache->cleanContrexxCaching();
                 $this->_createRSS();
             } else {
                 if (count($arrRemoveMediumIds) > 1) {
@@ -455,9 +454,8 @@ class PodcastManager extends PodcastLib
                 if ($categoryId > 0) {
                     if ($this->_updateCategory($categoryId, $categoryTitle, $categoryDescription, $categoryAssociatedLangIds, $categoryStatus)) {
                         $this->_strOkMessage = $_ARRAYLANG['TXT_PODCAST_CATEGORY_UPDATED_SUCCESSFULL'];
-                        $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-                        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                        $cacheManager->deleteSingleFile($pageId);
+                        $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                        $cache->cleanContrexxCaching();
                         $this->_createRSS();
                         return $this->_categories();
                     } else {
@@ -466,9 +464,8 @@ class PodcastManager extends PodcastLib
                 } else {
                     if ($this->_addCategory($categoryTitle, $categoryDescription, $categoryAssociatedLangIds, $categoryStatus)) {
                         $this->_strOkMessage = $_ARRAYLANG['TXT_PODCAST_CATEGORY_CREATED_SUCCESSFULL'];
-                        $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-                        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                        $cacheManager->deleteSingleFile($pageId);
+                        $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                        $cache->cleanContrexxCaching();
                         $this->_createRSS();
                         return $this->_categories();
                     } else {
@@ -531,9 +528,8 @@ class PodcastManager extends PodcastLib
             if ($this->_getMediaCount($categoryId) == 0) {
                 if ($this->_deleteCategory($categoryId)) {
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_DELETE_CATEGORY_SUCCESSFULL_MSG'], $arrCategory['title']);
-                    $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-                    $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                    $cacheManager->deleteSingleFile($pageId);
+                    $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                    $cache->cleanContrexxCaching();
                     $this->_createRSS();
                 } else {
                     $this->_strErrMessage = sprintf($_ARRAYLANG['TXT_PODCAST_DELETE_CATEGORY_FAILED_MSG'], $arrCategory['title']);
@@ -638,9 +634,8 @@ class PodcastManager extends PodcastLib
                 if ($templateId > 0 ) {
                     if ($this->_updateTemplate($templateId, $description, $template, $extensions)) {
                         $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_TEMPLATE_UPDATED_SUCCESSFULL'], $description);
-                        $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-                        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                        $cacheManager->deleteSingleFile($pageId);
+                        $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                        $cache->cleanContrexxCaching();
                         $this->_createRSS();
                         return $this->_templates();
                     } else {
@@ -649,9 +644,8 @@ class PodcastManager extends PodcastLib
                 } else {
                     if ($this->_addTemplate($description, $template, $extensions)) {
                         $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_TEMPLATE_ADDED_SUCCESSFULL'], $description);
-                        $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-                        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                        $cacheManager->deleteSingleFile($pageId);
+                        $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                        $cache->cleanContrexxCaching();
                         $this->_createRSS();
                         return $this->_templates();
                     } else {
@@ -695,9 +689,8 @@ class PodcastManager extends PodcastLib
             if (!$this->_isTemplateInUse($templateId)) {
                 if ($this ->_deleteTemplate($templateId)) {
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_PODCAST_TEMPLATE_DELETED_SUCCESSFULL'], $arrTemplate['description']);
-                    $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-                    $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                    $cacheManager->deleteSingleFile($pageId);
+                    $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                    $cache->cleanContrexxCaching();
                     $this->_createRSS();
                 } else {
                     $this->_strErrMessage = sprintf($_ARRAYLANG['TXT_PODCAST_TEMPLATE_DELETED_FAILURE'], $arrTemplate['description']);
@@ -902,4 +895,3 @@ class PodcastManager extends PodcastLib
         return $status;
     }
 }
-?>

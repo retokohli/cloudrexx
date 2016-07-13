@@ -1137,9 +1137,8 @@ EOF;
                         $this->_strOkMessage = $_ARRAYLANG['TXT_PODCAST_MEDIUM_ADDED_SUCCESSFULL'];
                         // Class in /core_modules/index.class.php is named Cache
                         // Class in /core_modules/admin.class.php is named CacheManager
-                        $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-                        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                        $cacheManager->deleteSingleFile($pageId);
+                        $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                        $cache->cleanContrexxCaching();
                         $this->_createRSS();
                         return $this->_media();
                     } else {
@@ -1149,9 +1148,8 @@ EOF;
                     if ($this->_addMedium($mediumTitle, $mediumYoutubeID, $mediumAuthor, $mediumDescription, $mediumSource, $mediumThumbnail, $mediumTemplate, $mediumWidth, $mediumHeight, $mediumPlaylength, $mediumSize, $mediumCategories, $mediumStatus)) {
                         // Class in /core_modules/index.class.php is named Cache
                         // Class in /core_modules/admin.class.php is named CacheManager
-                        $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-                        $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-                        $cacheManager->deleteSingleFile($pageId);
+                        $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+                        $cache->cleanContrexxCaching();
                         $this->_createRSS();
 
                         if($_REQUEST['section'] != 'Podcast'){

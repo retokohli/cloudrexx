@@ -119,8 +119,8 @@ class Gallery
                 exit;
             }
 
-            if ($this->arrSettings['enable_popups'] == "on" ) {
                 $this->showPicture(intval($_GET['pId']));
+            if ($this->arrSettings['enable_popups'] == "on" ) {
             } else {
                 $this->showPictureNoPop(intval($_GET['pId']));
             }
@@ -1228,11 +1228,10 @@ END;
     /**
     * Add a new comment to database
     * @global     ADONewConnection
-    * @global     Cache
     */
     function addComment()
     {
-        global $objDatabase, $objCache;
+        global $objDatabase;
 
         $intPicId    = intval($_POST['frmGalComAdd_PicId']);
         $categoryId = $this->getCategoryId($intPicId);
@@ -1274,7 +1273,8 @@ END;
                 'INSERT INTO '.DBPREFIX.'module_gallery_comments '.
                 'SET picid='.$intPicId.', date='.time().', ip="'.$_SERVER['REMOTE_ADDR'].'", '.
                 'name="'.$strName.'", email="'.$strEmail.'", www="'.$strWWW.'", comment="'.$strComment.'"');
-            $objCache->deleteAllFiles();
+            $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+            $cache->cleanContrexxCaching();
         }
     }
 
@@ -1282,7 +1282,6 @@ END;
     /**
     * Add a new voting to database
     * @global     ADONewConnection
-    * @global     Cache
     * @param     integer        $intPicId: The picture with this id will be rated
     * @param     integer        $intMark: This mark will be set for the picture
     */
@@ -1329,9 +1328,8 @@ END;
                 "SET picid=$intPicId, date=".time().", ip='".$_SERVER['REMOTE_ADDR']."', ".
                 "md5='".$strMd5."', mark=$intMark");
             setcookie('Gallery_Voting_'.$intPicId,$intMark,$intCookieTime, ASCMS_PATH_OFFSET.'/');
-            $pageId = \Cx\Core\Core\Controller\Cx::instanciate()->getPage()->getId();
-            $cacheManager = new \Cx\Core_Modules\Cache\Controller\CacheManager();
-            $cacheManager->deleteSingleFile($pageId);
+            $cache = new \Cx\Core_Modules\Cache\Controller\Cache();
+            $cache->cleanContrexxCaching();
         }
     }
 
@@ -1405,5 +1403,3 @@ END;
         return $objRs->fields['catid'];
     }
 }
-
-?>
