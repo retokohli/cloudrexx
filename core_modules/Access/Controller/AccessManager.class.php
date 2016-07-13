@@ -1229,8 +1229,13 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     {
         global $_ARRAYLANG;
 
-        // only administrators are allowed to delete a user account
-        if (!\Permission::hasAllAccess()) {
+        // only administrators and group with ACCESS_MANAGE_USER_STATIC_ID
+        // are allowed to change the status of user account
+        if (   !\Permission::hasAllAccess()
+            && !\Permission::checkAccess(
+                    AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true
+               )
+        ) {
             \Permission::noAccess();
         }
 
@@ -1260,8 +1265,13 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     {
         global $_ARRAYLANG;
 
-        // only administrators are allowed to delete a user account
-        if (!\Permission::hasAllAccess()) {
+        // only administrators and group with ACCESS_MANAGE_USER_STATIC_ID
+        // are allowed to delete a user account
+        if (   !\Permission::hasAllAccess()
+            && !\Permission::checkAccess(
+                    AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true
+               )
+        ) {
             \Permission::noAccess();
         }
 
@@ -1424,6 +1434,9 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $this->attachJavaScriptFunction('accessRemoveGroupFromList');
             $this->attachJavaScriptFunction('accessAssignGroupToUser');
             $this->attachJavaScriptFunction('confirmUserNotification');
+        } else if (\Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true)) {
+            $this->_objTpl->hideBlock('access_user_administrator');
+            $this->_objTpl->hideBlock('access_profile_group_assignment');
         } else {
             $this->_objTpl->hideBlock('access_profile_group_assignment');
         }
