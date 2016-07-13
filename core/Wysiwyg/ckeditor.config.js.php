@@ -92,7 +92,12 @@ CKEDITOR.editorConfig = function( config )
     config.protectedSource.push(/<a[^>]*><\/a>/g);
 
     config.tabSpaces = 4;
-    config.baseHref = '<?php echo $cx->getRequest()->getUrl()->getProtocol() . '://' . $mainDomain . $cx->getWebsiteOffsetPath(); ?>/';
+    config.baseHref = '<?php
+        $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
+        $offset = $cx->getWebsiteOffsetPath();
+        $requestUrl = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, array());
+        echo $requestUrl->toString();
+    ?>';
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
     
