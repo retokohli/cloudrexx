@@ -110,6 +110,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $this->syncs[$entityClassName] = array();
             }
             $this->syncs[$entityClassName][] = $sync;
+            $sync->setOldHostEntitiesIncludingLegacy($sync->getHostEntitiesIncludingLegacy());
             /*foreach ($doctrineEvents as $doctrineEvent) {
                 $this->cx->getEvents()->addModelListener(
                     $entityClassName,
@@ -205,13 +206,30 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     
     public function postFinalize() {
+        // persist spooler
+        if ($this->unspooling || !isset($this->spooler)) {
+            return;
+        }
+        $this->unspooling = true;
         $em = $this->cx->getDb()->getEntityManager();
+        foreach ($this->spooler->getSpool() as $i=>$change) {
+            $change->setHosts($change->getSync()->getRelatedHosts($change->getOriginEntityIndexData()));
+            if (!count($change->getHosts())) {
+                continue;
+            }
+            $em->persist($change);
+        }
+        $em->flush();
+        $this->spooler = new \Cx\Core_Modules\Sync\Model\Entity\Spooler();
+        $this->unspooling = false;
+        
+        // trigger async process
         $changeRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Change');
-        // do not trigger another instance if we're already syncing
-        if ($changeRepo->findOneBy(array('status' => 1))) {
+        if (!$changeRepo->findOneBy(array())) {
             // no changes
             return;
         }
+        
         // execute `./cx sync push` asynchronously
         $this->getComponent('Core')->execAsync(
             'sync',
@@ -237,16 +255,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             throw new \BadMethodCallException('Unsupported API version: "' . $apiVersion . '"');
         }
         
-        $elementId = array();
-        $argumentKeys = array_keys($arguments);
-        for ($i = 2; $i < count($arguments); $i++) {
-            if (!is_numeric($argumentKeys[$i])) {
-                break;
-            }
-            $elementId[] = $arguments[$i];
-        }
-        $this->currentInsertId = $elementId;
-    
         $em = $this->cx->getDb()->getEntityManager();
         $dataAccessRepo = $em->getRepository('Cx\Core_Modules\DataAccess\Model\Entity\DataAccess');
         $dataAccess = $dataAccessRepo->findOneBy(array('name' => $arguments[1]));
@@ -254,6 +262,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             throw new \Exception('No such DataSource: ' . $name);
         }
         $entityType = $dataAccess->getDataSource()->getIdentifier();
+        
+        $argumentKeys = array_keys($arguments);
+        $metaData = $em->getClassMetadata($entityType);
+        $primaryKeyNames = $metaData->getIdentifierFieldNames();
+        for ($i = 0; $i < count($arguments) - 2; $i++) {
+            if (!is_numeric($argumentKeys[$i + 2])) {
+                break;
+            }
+            $elementId[] = $arguments[$i + 2];
+            if (!isset($dataArguments[$primaryKeyNames[$i]])) {
+                $dataArguments[$primaryKeyNames[$i]] = $arguments[$i + 2];
+            }
+        }
+        $this->currentInsertId = $elementId;
+    
         $referrerParts = parse_url($_SERVER['HTTP_REFERRER']);
         $foreignHost = $referrerParts['host'];
         
@@ -305,15 +328,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $response->send($this->getComponent('DataAccess')->getController('JsonOutput'));
                 return;
             }
-        } else if ($method == 'put') {
-            $entityRepository = $em->getRepository($entityType);
-            $entity = $entityRepository->findOneBy($mapping->getLocalId());
-            if (!$entity) {
-                // we have a mapping for a non-existing entity. This shouldn't
-                // happen. Let's self-heal:
-                $em->remove($mapping);
-                $em->flush();
-            }
         }
         
         // foreach ID and foreign key
@@ -329,16 +343,18 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $fieldMapping = $metaData->getFieldMapping($fieldName);
             $primaryKeyColumnNames[$fieldMapping['columnName']] = $fieldName;
         }
-        $associationMappings = $metaData->getAssociationMappings();
-        foreach ($associationMappings as $fieldName => $associationMapping) {
-            if (!isset($associationMapping['targetEntity'])) {
-                continue;
-            }
-            $replacement = $this->replaceKey($foreignHost, $associationMapping['targetEntity'], $fieldName, $dataArguments);
-            
-            $joinColumn = current($associationMapping['joinColumns']);
-            if ($replacement && isset($primaryKeyColumnNames[$joinColumn['name']])) {
-                $dataArguments[$primaryKeyColumnNames[$joinColumn['name']]] = $replacement;
+        if ($method != 'delete') {
+            $associationMappings = $metaData->getAssociationMappings();
+            foreach ($associationMappings as $fieldName => $associationMapping) {
+                if (!isset($associationMapping['targetEntity'])) {
+                    continue;
+                }
+                $replacement = $this->replaceKey($foreignHost, $associationMapping['targetEntity'], $fieldName, $dataArguments);
+                
+                $joinColumn = current($associationMapping['joinColumns']);
+                if ($replacement && isset($primaryKeyColumnNames[$joinColumn['name']])) {
+                    $dataArguments[$primaryKeyColumnNames[$joinColumn['name']]] = $replacement;
+                }
             }
         }
         $i = 2;
@@ -356,36 +372,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             $arguments,
             $dataArguments
         );
-    }
-    
-    protected function replaceKey($foreignHost, $entityType, $fieldName, &$fieldData, $foreignId = array()) {
-        if (!count($foreignId)) {
-            $foreignId = array($fieldData[$fieldName]);
-        }
-        
-        $em = $this->cx->getDb()->getEntityManager();
-        
-        $mapping = $this->getIdMapping($entityType, $foreignHost, $foreignId);
-
-        // if yes:
-        //if (count($mapping) && current($mapping)) {
-        if ($mapping) {
-            // replace ID by our ID
-            //$localId = current($mapping)->getLocalId();
-            $localId = $mapping->getLocalId();
-            $newValue = isset($localId[$fieldName]) ? $localId[$fieldName] : current($localId);
-            $fieldData[$fieldName] = $newValue;
-            return $newValue;
-            
-        // if no:
-        } else {
-            // if auto-increment (assuming all 'id' fields are auto-incremented)
-            if ($fieldName == 'id') {
-                unset($fieldData[$fieldName]);
-            }
-            // else
-                // use provided key -> do nothing
-        }
     }
     
     /**
@@ -423,17 +409,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $this->removeIds[$entityClassName] = array();
                 }
                 $this->removeIds[$entityClassName][] = $entityIndexData;
-                
-                foreach ($this->syncs as $syncEntityClassName=>$syncs) {
-                    foreach ($syncs as $sync) {
-                        $sync->setOldHostEntitiesIncludingLegacy($sync->getHostEntitiesIncludingLegacy());
-                        }
-                    }
                 break;
                 
             case \Doctrine\ORM\Events::postRemove:
                 // local side code
-                $this->spoolSync('delete', $entityClassName, $entityIndexData, $entity);
+                $this->handleChange('delete', $entityClassName, $entityIndexData, $entity);
                 break;
             // entity was added
             case \Doctrine\ORM\Events::postPersist:
@@ -452,7 +432,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
                 
                 // local side code
-                $this->spoolSync('post', $entityClassName, $entityIndexData, $entity);
+                $this->handleChange('post', $entityClassName, $entityIndexData, $entity);
                 break;
             // entity was updated
             case \Doctrine\ORM\Events::postUpdate:
@@ -470,15 +450,17 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $em->flush();*/
                 
                 // local side code
-                $this->spoolSync('put', $entityClassName, $entityIndexData, $entity);
+                $this->handleChange('put', $entityClassName, $entityIndexData, $entity);
                 break;
             case \Doctrine\ORM\Events::postFlush:
                 // remote side code
+                $doFlush = count($this->addIds) || count($this->removeIds);
                 foreach ($this->addIds as $entityClassName=>$addIds) {
                     foreach ($addIds as $i=>$mapping) {
                         $em->persist($mapping);
                         unset($this->addIds[$entityClassName][$i]);
                     }
+                    unset($this->addIds[$entityClassName]);
                 }
                 foreach ($this->removeIds as $entityClassName=>$removeIds) {
                     foreach ($removeIds as $i=>$indexData) {
@@ -488,11 +470,11 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         }
                         unset($this->removeIds[$entityClassName][$i]);
                     }
+                    unset($this->removeIds[$entityClassName]);
                 }
-                
-                // local side code
-                $this->unspool();
-                $em->flush();
+                if ($doFlush) {
+                    $em->flush();
+                }
                 break;
             default:
                 return;
@@ -508,7 +490,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @todo: Push relations first
      * @todo: This does not spool yet, instead it writes changes instantly
      */
-    public function spoolSync($eventType, $entityClassName, $entityIndexData, $entity) {
+    public function handleChange($eventType, $entityClassName, $entityIndexData, $entity) {
         if (!isset($this->spooler)) {
             $this->spooler = new \Cx\Core_Modules\Sync\Model\Entity\Spooler();
         }
@@ -523,88 +505,65 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return;
         }
         
-        // push changes
-        // @todo: This should write to a spooling table for asynchronous sync
-        $this->pushedEntities = array();
-        foreach ($this->syncs[$entityClassName] as $sync) {
-            $this->pushSync($sync, $eventType, $entityIndexData, $entity);
-        }
-    }
-    
-    protected function pushSync($sync, $eventType, $entityIndexData, $entity, $prevRelationConfig = null, $recursive = false) {
+        // calculate relations
         $entityClassName = get_class($entity);
         if ($entityClassName == 'Doctrine\ORM\PersistentCollection') {
             $entityClassName = $entity->getTypeClass()->name;
         }
-        
-        $hosts = array();
-        foreach ($sync->getHostEntitiesIncludingLegacy(false) as $hostEntity) {
-            if (in_array($hostEntity['host'], $hosts)) {
-                continue;
-            }
-            $hosts[] = $hostEntity['host'];
+        foreach ($this->syncs[$entityClassName] as $sync) {
+            $sync->calculateRelations($this->spooler, $eventType, $entityClassName, $entityIndexData, $entity);
         }
-        foreach ($sync->getOldHostEntitiesIncludingLegacy() as $hostEntity) {
-            if (in_array($hostEntity['host'], $hosts)) {
-                continue;
-            }
-            $hosts[] = $hostEntity['host'];
-        }
-        if (count($hosts)) {
-            //echo 'Spooling sync "' . $eventType . '" for ' . $entityClassName . ' #' . implode('/', $entityIndexData) . '<br />';
-        }
-        foreach ($hosts as $host) {
-            $host->handleModelChange($entityIndexData, $entityClassName, $entity, $eventType, $this->spooler, $sync);
-        }
-        }
-        
-    protected function unspool() {
-        if ($this->unspooling || !isset($this->spooler)) {
-            return;
-        }
-        $this->unspooling = true;
-            $em = $this->cx->getDb()->getEntityManager();
-        foreach ($this->spooler->getSpool() as $i=>$change) {
-            $change->getHost()->addContentsToChangeset($change);
-            $em->persist($change);
-                }
-        //$em->flush();
-        $this->spooler = new \Cx\Core_Modules\Sync\Model\Entity\Spooler();
-        $this->unspooling = false;
-                    }
-                    
+    }
+    
     protected function pushChanges() {
         $em = $this->cx->getDb()->getEntityManager();
-        $changeRepo = $em->getRepository($this->getNamespace() . '\Model\Entity\Change');
         ob_start();
-                    
-        echo 'Pushing ' . count($changeRepo->findAll()) . ' changes<br />';
+        
         $i = 0;
         $severity = 'INFO';
-
-        // ensure we get the latest data from the spooling table
-        $em->clear();
-        while ($change = $changeRepo->findOneBy(array())) {
-            if ($change->getStatus() == 1) {
-                echo 'Another instance is already syncing, abort!';
+        // for as long as there are changes of non-locked hosts
+        $query = $em->createQuery('SELECT h FROM ' . $this->getNamespace() . '\Model\Entity\Host h WHERE h.state = 0');
+        $nonLockedHosts = $query->getResult();
+        $hasNonLockedChanges = false;
+        foreach ($nonLockedHosts as $host) {
+            if (count($host->getChanges())) {
+                $hasNonLockedChanges = true;
                 break;
+            }
+        }
+        while ($hasNonLockedChanges) {
+            // foreach host
+            echo 'Processing changes to ' . count($nonLockedHosts) . ' host(s)' . "\n";
+            foreach ($nonLockedHosts as $host) {
+                // skip if locked
+                if (!$host->lock()) {
+                    echo 'Host ' . $host->getHost() . ' locked, skipping' . "\n";
+                    continue;
+                }
+                // sync all changes
+                echo 'Processing ' . count($host->getChanges()) . ' change(s)' . "\n";
+                foreach ($host->getChanges() as $change) {
+                    if (!$host->handleChange($change)) {
+                        $severity = 'WARNING';
+                        $host->disable();
+                        break 2;
                     }
-            // 1 => in progress
-            $change->setStatus(1);
-            $em->flush();
-        
-            if (!$change->getHost()->sendChange($change)) {
-                // 2 => failed
-                $change->setStatus(2);
-                $severity = 'WARNING';
-                break;
+                    $i++;
+                    $em->remove($change);
+                }
+                $host->removeLock();
+            }
+            $query = $em->createQuery('SELECT h FROM ' . $this->getNamespace() . '\Model\Entity\Host h WHERE h.state = 0');
+            $nonLockedHosts = $query->getResult();
+            $hasNonLockedChanges = false;
+            foreach ($nonLockedHosts as $host) {
+                if (count($host->getChanges())) {
+                    $hasNonLockedChanges = true;
+                    break;
+                }
+            }
         }
         
-            $i++;
-            $em->remove($change);
-            $em->flush();
-            $em->clear();
-        }
         $logContents = ob_get_contents();
         ob_end_clean();
         echo $logContents;
@@ -615,10 +574,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         
         $this->cx->getEvents()->triggerEvent('SysLog/Add', array(
            'severity' => $severity,
-           'message' => 'Sent ' . $i . ' change(s)',
+           'message' => 'Processed ' . $i . ' change(s)',
            'data' => $logContents,
         ));
-        $em->flush();
     }
     
     /**
@@ -627,7 +585,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     public function getEntityIndexData($entity) {
         $em = $this->cx->getDb()->getEntityManager();
         $entityClassName = get_class($entity);
-        if (substr($entityClassName, -5, 5) == 'Proxy') {
+        if (substr($entityClassName, 0, 16) == 'Cx\Model\Proxies') {
             return $em->getUnitOfWork()->getEntityIdentifier($entity);
         }
         $entityMetaData = $em->getClassMetadata($entityClassName);
@@ -720,5 +678,38 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             }
         } catch (\Doctrine\ORM\NoResultException $e) {}
         return $mapping;
+    }
+    
+    /**
+     * @todo: this belongs to Host entity
+     */
+    protected function replaceKey($foreignHost, $entityType, $fieldName, &$fieldData, $foreignId = array()) {
+        if (!count($foreignId)) {
+            $foreignId = array($fieldData[$fieldName]);
+        }
+        
+        $em = $this->cx->getDb()->getEntityManager();
+        
+        $mapping = $this->getIdMapping($entityType, $foreignHost, $foreignId);
+
+        // if yes:
+        //if (count($mapping) && current($mapping)) {
+        if ($mapping) {
+            // replace ID by our ID
+            //$localId = current($mapping)->getLocalId();
+            $localId = $mapping->getLocalId();
+            $newValue = isset($localId[$fieldName]) ? $localId[$fieldName] : current($localId);
+            $fieldData[$fieldName] = $newValue;
+            return $newValue;
+            
+        // if no:
+        } else {
+            // if auto-increment (assuming all 'id' fields are auto-incremented)
+            if ($fieldName == 'id') {
+                unset($fieldData[$fieldName]);
+            }
+            // else
+                // use provided key -> do nothing
+        }
     }
 }

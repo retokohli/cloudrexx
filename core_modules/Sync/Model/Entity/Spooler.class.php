@@ -48,9 +48,13 @@ class Spooler extends \Cx\Model\Base\EntityBase
 {
     protected $spool = array();
     
-    public function addChangeset($host, $changeset) {
+    public function addChangeset($changeset) {
         //echo 'Add changeset to spooler (' . count($changeset->getChanges()) . ')<br />';
         foreach ($changeset->getChanges() as $change) {
+            // since php does loose comparison by default, this sorts out equal changesets
+            if (in_array($change, $this->spool)) {
+                continue;
+            }
             $this->spool[] = $change;
         }
     }

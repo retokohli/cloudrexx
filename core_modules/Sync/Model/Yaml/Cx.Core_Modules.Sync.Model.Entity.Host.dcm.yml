@@ -23,13 +23,18 @@ Cx\Core_Modules\Sync\Model\Entity\Host:
     urlTemplate:
       type: string
       column: url_template
+    state:
+      type: integer
+      length: 1
   uniqueConstraints:
-    host_UNIQUE:
-      columns: [ host ]
+      host_UNIQUE:
+        columns: [ host ]
   oneToMany: # inverse side
-    hostEntities:
-      targetEntity: Cx\Core_Modules\Sync\Model\Entity\HostEntity
-      mappedBy: host
+      hostEntities:
+        targetEntity: Cx\Core_Modules\Sync\Model\Entity\HostEntity
+        mappedBy: host
+  manyToMany:
     changes:
       targetEntity: Cx\Core_Modules\Sync\Model\Entity\Change
-      mappedBy: host
+      mappedBy: hosts
+
