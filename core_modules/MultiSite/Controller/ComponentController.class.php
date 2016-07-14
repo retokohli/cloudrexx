@@ -196,6 +196,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         echo $this->executeCommandEmail($objTemplate, $arguments);
                         break;
                     
+                    case 'list':
+                        echo $this->executeCommandList($arguments);
+                        break;
+
                     default:
                         break;
                 }
@@ -1816,6 +1820,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $cron = $this->getController('Cron');
         $cron->sendNotificationMails();
     }
+    
+    public function executeCommandList($arguments) {
+        $em = $this->cx->getDb()->getEntityManager();
+        $multiSiteRepo = $em->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $websites = $multiSiteRepo->findAll();
+        
+        foreach ($websites as $website) {
+            if (
+                (!isset($arguments[1]) || $arguments[1] != '--all') &&
+                $website->getStatus() != \Cx\Core_Modules\MultiSite\Model\Entity\Website::STATE_ONLINE
+            ) {
+                continue;
+            }
+            echo $website->getName() . "\n";
+        }
+    }
 
     /**
      * Create new payment (handler Payrexx)
@@ -2822,7 +2842,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $evm->addModelListener('terminated',                    'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
         $evm->addModelListener('payComplete',                   'Cx\\Modules\\Order\\Model\\Entity\\Subscription', $orderSubscriptionEventListener);
     }
-
+    
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
         global $_CONFIG;
 
@@ -2844,7 +2864,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 // we need to exit this method and proceed
                 // with the regular bootstrap process.
                 // This case is required by the cx-mode MODE_MINIMAL.
-                if ($this->deployWebsite($cx)) {
+                if ($this->deployWebsiteFromRequest($cx)) {
                     return;
                 }
                 $this->verifyRequest($cx);
@@ -2906,6 +2926,37 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             header('Location: '.$this->getApiProtocol().$marketingWebsiteDomainName, true, 301);
             exit;
         }
+        // Allow access to command-mode only through Manager domain (-> Main Domain) and Customer Panel domain
+        // Other requests will be forwarded to the Marketing Website of MultiSite.
+        if (   $cx->getMode() == $cx::MODE_COMMAND
+            && php_sapi_name() == 'cli'
+        ) {
+            global $argv;
+            
+            if (!isset($argv[1]) || $argv[1] != $this->getName()) {
+                return;
+            }
+            if (!isset($argv[2]) || $argv[2] != 'pass') {
+                return;
+            }
+            if (!isset($argv[3])) {
+                echo 'Not enough arguments' . "\n";
+                return;
+            }
+            
+            $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\FileSystemWebsiteRepository();
+            $website = $multiSiteRepo->findByName(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/', $argv[3]);
+            
+            if (!$website) {
+                die('No such website: "' . $argv[3] . '"' . "\n");
+            }
+            
+            array_shift($argv); // MultiSite
+            array_shift($argv); // pass
+            array_shift($argv); // <websiteName>
+            $websiteCx = $this->deployWebsite($cx, $website);
+            die();
+        }
 
         // Allow access to frontend only on domain of Marketing Website and Customer Panel.
         // Other requests will be forwarded to the Marketing Website of MultiSite.
@@ -2931,7 +2982,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
     }
 
-    protected function deployWebsite(\Cx\Core\Core\Controller\Cx $cx) {
+    protected function deployWebsiteFromRequest(\Cx\Core\Core\Controller\Cx $cx) {
         $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\FileSystemWebsiteRepository();
 
         // dynamic mapping of <website>.cloudrexx.website
@@ -2939,6 +2990,21 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         $website = $multiSiteRepo->findByDomain(\Cx\Core\Setting\Controller\Setting::getValue('websitePath','MultiSite').'/', $_SERVER['HTTP_HOST']);
         if ($website) {
+            $this->deployWebsite($cx, $website);
+            exit;
+        }
+
+        // no website found. Abort website-deployment and let Contrexx process with the regular system initialization (i.e. most likely with the Website Service Website)
+        $requestInfo =    isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'JsonData'
+                       && isset($_REQUEST['object']) && $_REQUEST['object'] == 'MultiSite'
+                       && isset($_REQUEST['act'])
+                            ? '(API-call: '.$_REQUEST['act'].')'
+                            : '';
+        \DBG::msg("MultiSite: Loading Website Service...".$requestInfo);
+        return false;
+    }
+    
+    protected function deployWebsite($cx, $website) {
             // Recheck the system state of the Website Service Server (1st check
             // has already been performed before executing the preInit-Hooks),
             // but this time also lock the backend in case the system has been
@@ -2954,6 +3020,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                                 ? '(API-call: '.$_REQUEST['act'].')'
                                 : $_SERVER['REQUEST_URI'];
             \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...".$requestInfo);
+            \DBG::setLogPrefix($website->getName());
             // set SERVER_NAME to BaseDN of Website
             $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain','MultiSite');
             \Cx\Core\Core\Controller\Cx::instanciate($cx->getMode(), true, $configFile, true);
@@ -2969,17 +3036,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             if ($cx->getMode() == $cx::MODE_MINIMAL) {
                 throw new \Cx\Core\Core\Controller\InstanceException();
             }
-            exit;
-        }
-
-        // no website found. Abort website-deployment and let Contrexx process with the regular system initialization (i.e. most likely with the Website Service Website)
-        $requestInfo =    isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'JsonData'
-                       && isset($_REQUEST['object']) && $_REQUEST['object'] == 'MultiSite'
-                       && isset($_REQUEST['act'])
-                            ? '(API-call: '.$_REQUEST['act'].')'
-                            : '';
-        \DBG::msg("MultiSite: Loading Website Service...".$requestInfo);
-        return false;
     }
 
     /**
@@ -3143,22 +3199,36 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public static function getServerWebsiteList()
     {
-        $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode','MultiSite');
+        $mode = \Cx\Core\Setting\Controller\Setting::getValue(
+            'mode',
+            'MultiSite'
+        );
         if ($mode !== self::MODE_WEBSITE) {
             return '';
         }
 
         $ownerId     = \FWUser::getFWUserObject()->objUser->getId();
-        if ($ownerId != \Cx\Core\Setting\Controller\Setting::getValue('websiteUserId','MultiSite')) {
+        $websiteUserId = \Cx\Core\Setting\Controller\Setting::getValue(
+            'websiteUserId',
+            'MultiSite'
+        );
+        if ($ownerId != $websiteUserId) {
             return '';
         }
 
-        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue('websiteName','MultiSite');
+        $websiteName = \Cx\Core\Setting\Controller\Setting::getValue(
+            'websiteName',
+            'MultiSite'
+        );
         $response    = JsonMultiSiteController::executeCommandOnMyServiceServer(
             'getServerWebsiteList',
             array('websiteName' => $websiteName)
         );
-        if (!$response || $response->status === 'error' || empty($response->data->websiteList)) {
+
+        if (    !$response
+            ||  $response->status === 'error'
+            ||  empty($response->data->websiteList)
+        ) {
             return '';
         }
 

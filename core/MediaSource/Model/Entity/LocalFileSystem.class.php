@@ -44,6 +44,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
      * Without ending directory separator.
      */
     private $rootPath;
+    protected $fileListCache;
 
     function __construct($path) {
         if (!$path) {
@@ -67,6 +68,9 @@ class LocalFileSystem extends EntityBase implements FileSystem
      * @todo    Option $recursive does not work. It always acts as recursive is set to TRUE
      */
     public function getFileList($directory, $recursive = false, $readonly = false) {
+        if (isset($this->fileListCache[$directory][$recursive][$readonly])) {
+            return $this->fileListCache[$directory][$recursive][$readonly];
+        }
 
         $dirPath = rtrim($this->rootPath . '/' . $directory,'/');
         if (!file_exists($dirPath)) {
@@ -173,6 +177,7 @@ class LocalFileSystem extends EntityBase implements FileSystem
             $jsonFileArray = $this->array_merge_recursive($jsonFileArray, $path);
         }
         $jsonFileArray = $this->utf8EncodeArray($jsonFileArray);
+        $this->fileListCache[$directory][$recursive][$readonly] = $jsonFileArray;
         return $jsonFileArray;
     }
     

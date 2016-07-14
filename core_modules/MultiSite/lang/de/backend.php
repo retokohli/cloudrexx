@@ -362,9 +362,6 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_ERROR_MSG'] = 'Das Update 
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_UPDATE_STATUS_ERROR_MSG'] = 'Beim Senden des Update-Informationsmails ist ein Fehler aufgetreten';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_UPDATE_CODEBASE_ERROR_MSG'] = 'Das Update der Code-Basis der Webseite ist fehlgeschlagen';
 
-//get website list
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']= 'Failed to get the website list.';
-
 //get server website path
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_SERVER_WEBSITE_PATH_ERROR']= 'Failed to get the server website path.';
 
