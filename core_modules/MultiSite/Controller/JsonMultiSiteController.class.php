@@ -1787,8 +1787,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                )
         ) {
             \DBG::msg(
-                'JsonMultiSiteController::setWebsiteDetails() failed:
-                Insufficient arguments supplied: ' . var_export($params, true)
+                'JsonMultiSiteController::setWebsiteDetails() failed: Insufficient arguments supplied: ' . var_export($params, true)
             );
             throw new MultiSiteJsonException(
                 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']
@@ -1820,8 +1819,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
             $website  = current($websites);
             if (!$website) {
                 \DBG::log(
-                    'JsonMultiSiteController::setWebsiteDetails() failed:
-                    Website by ID/NAME not found.'
+                    'JsonMultiSiteController::setWebsiteDetails() failed: Website by ID/NAME not found.'
                 );
                 throw new MultiSiteJsonException(
                     $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_SET_WEBSITE_DETAILS_ERROR']
@@ -1867,8 +1865,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                     );
                 if (!$serverWebsite) {
                     \DBG::log(
-                        'JsonMultiSiteController::setWebsiteDetails() failed:
-                        server Website by ID ' .
+                        'JsonMultiSiteController::setWebsiteDetails() failed: server Website by ID ' .
                         $params['post']['serverWebsiteId'] . ' not found.'
                     );
                     throw new MultiSiteJsonException(
@@ -2271,8 +2268,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
                 case ComponentController::MODE_MANAGER:
                 case ComponentController::MODE_HYBRID:
                     \DBG::msg(
-                        __METHOD__ . ' (' . $command . '): executing locally on
-                        manager (not going to execute through JsonData adapter)'
+                        __METHOD__ . ' (' . $command . '): executing locally on manager (not going to execute through JsonData adapter)'
                     );
                     $config = \Env::get('config');
                     $params['auth'] = json_encode(
@@ -7346,8 +7342,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
 
         if (empty($params['post']) || empty($params['post']['websiteName'])) {
             \DBG::msg(
-                'JsonMultiSiteController::getWebsiteList() failed:
-                Insufficient arguments supplied: ' . var_export($params, true));
+                'JsonMultiSiteController::getWebsiteList() failed: Insufficient arguments supplied: ' . var_export($params, true));
             throw new MultiSiteJsonException(
                 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_GET_WEBSITE_LIST_ERROR']
             );
@@ -7445,8 +7440,7 @@ class JsonMultiSiteController extends    \Cx\Core\Core\Model\Entity\Controller
         global $_ARRAYLANG;
 
         if (empty($params['post']) || empty($params['post']['websiteName'])) {
-            \DBG::msg('JsonMultiSiteController::checkServerWebsiteAccessedByClient()
-                failed: Insufficient arguments supplied: ' .
+            \DBG::msg('JsonMultiSiteController::checkServerWebsiteAccessedByClient() failed: Insufficient arguments supplied: ' .
                 var_export($params, true)
             );
             throw new MultiSiteJsonException(
