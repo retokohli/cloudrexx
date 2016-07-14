@@ -257,7 +257,7 @@ class ViewManager
     function viewManager() {
        global $_ARRAYLANG, $objTemplate, $objDatabase; 
        
-       \Permission::checkAccess(47, 'static');
+       \Permission::checkAccess(21, 'static');
        
        $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_overview', 'skins_overview.html');
               
@@ -415,9 +415,6 @@ class ViewManager
             case 'examples':
                 $this->examples();
                 break;
-            case 'manage':
-                $this->manage();
-                break;
             default :
                 $this->_activate();   
         }
@@ -431,8 +428,7 @@ class ViewManager
     }
     
     /**
-     * show the overview page
-     * @access   public
+     * Show the Template Manager (advanced HTML/CSS/JS editor)
      */
     private function overview()
     {
@@ -637,8 +633,8 @@ CODE;
     }
     
     /**
-     * set up Import/Export page
-     * call specific function depending on $_GET
+     * Export theme as ZIP archive
+     *
      * @access private
      */
     private function manage()
@@ -1257,7 +1253,7 @@ CODE;
     {
         global $_ARRAYLANG, $_CONFIG, $objTemplate;
 
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(46, 'static');
 
         // initialize variables
         $objTemplate->addBlockfile('SETTINGS_CONTENT', 'skins_examples', 'skins_examples.html');
