@@ -70,6 +70,11 @@ class Resolver {
     protected $page = null;
 
     /**
+     * @var Cx\Core\ContentManager\Model\Entity\Page
+     */
+    protected $urlPage = null;
+
+    /**
      * Doctrine Cx\Core\ContentManager\Model\Repository\PageRepository
      */
     protected $pageRepo = null;
@@ -436,9 +441,11 @@ class Resolver {
             ($this->page->isTargetInternal() && preg_match('/[?&]external=permanent/', $this->page->getTarget()))
         ) {
             if ($this->page->isTargetInternal()) {
-                $params = array();
+                if (isset($params['external']) && $params['external'] == 'permanent') {
+                    unset($params['external']);
+                }
                 if (trim($this->page->getTargetQueryString()) != '') {
-                    $params = explode('&', $this->page->getTargetQueryString());
+                    $params = array_merge($params, explode('&', $this->page->getTargetQueryString()));
                 }
                 $target = \Cx\Core\Routing\Url::fromNodeId($this->page->getTargetNodeId(), $this->page->getTargetLangId(), $params);
             } else {
