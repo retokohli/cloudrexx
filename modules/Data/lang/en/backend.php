@@ -160,4 +160,8 @@ $_ARRAYLANG['TXT_DATA_WIDTH'] = "Width";
 $_ARRAYLANG['TXT_DATA_HEIGHT'] = "Height";
 $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'] = "Attachment description";
 $_ARRAYLANG['TXT_SAVE'] = "Save";
-?>
+$_ARRAYLANG['TXT_DATA_LOADING'] = "Loading ...";
+$_ARRAYLANG['TXT_DATA_ACTIVE'] = "Active";
+$_ARRAYLANG['TXT_DATA_INACTIVE'] = 'Inactive';
+$_ARRAYLANG['TXT_DATA_SCHEDULED_ACTIVE'] = 'Activated by scheduled publishing';
+$_ARRAYLANG['TXT_DATA_SCHEDULED_INACTIVE'] = 'Deactivated due to scheduled publishing';

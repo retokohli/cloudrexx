@@ -4,6 +4,13 @@
 arrTabToDiv = new Array();
 {EDIT_JS_TAB_TO_DIV}
 
+jQuery(document).ready(function() {
+    var locationHash = window.location.hash;
+    if (locationHash != '') {
+        selectTab(locationHash.substr(1));
+    }
+});
+
 function switchBoxAndTab(objElement, strTabId) {
 
     if (countActiveLanguages() == 0) {

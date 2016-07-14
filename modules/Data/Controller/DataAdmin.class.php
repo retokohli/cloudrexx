@@ -928,10 +928,15 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
             'TXT_ENTRIES_DESELECT_ALL'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DESELECT'],
             'TXT_ENTRIES_SUBMIT_SELECT'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_ACTION'],
             'TXT_ENTRIES_SUBMIT_DELETE'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_MANAGE_SUBMIT_DELETE'],
-               'TXT_ENTRIES_SUBMIT_DELETE_JS'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_SUBMIT_DELETE_JS'],
-               'TXT_ENTRIES_SUBTITLE_CATEGORY'     =>  $_ARRAYLANG['TXT_DATA_CATEGORY'],
-               'TXT_ENTRIES_SUBTITLE_MODE'         =>  $_ARRAYLANG['TXT_DATA_ENTRY_MODE']
-           ));
+            'TXT_ENTRIES_SUBMIT_DELETE_JS'      => $_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_SUBMIT_DELETE_JS'],
+            'TXT_ENTRIES_SUBTITLE_CATEGORY'     => $_ARRAYLANG['TXT_DATA_CATEGORY'],
+            'TXT_ENTRIES_SUBTITLE_MODE'         => $_ARRAYLANG['TXT_DATA_ENTRY_MODE'],
+            'TXT_DATA_LOADING'                  => $_ARRAYLANG['TXT_DATA_LOADING'],
+            'TXT_DATA_ACTIVE'                   => $_ARRAYLANG['TXT_DATA_ACTIVE'],
+	    'TXT_DATA_INACTIVE'                 => $_ARRAYLANG['TXT_DATA_INACTIVE'],
+	    'TXT_DATA_SCHEDULED_ACTIVE'		=> $_ARRAYLANG['TXT_DATA_SCHEDULED_ACTIVE'],
+	    'TXT_DATA_SCHEDULED_INACTIVE'	=> $_ARRAYLANG['TXT_DATA_SCHEDULED_INACTIVE'],
+        ));
 
            if ($intSelectedCategory == 0) {
                $this->sortEntriesAlphabetical();
@@ -989,8 +994,23 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
 				}
 				// cut off the last ", ".
 				$catList = substr($catList, 0, -2);
-				
-				
+                $entryStatusClass = 'inactive';
+                if ($arrEntryValues['active']) {
+                    $start = $arrEntryValues['release_time'];
+                    $end   = $arrEntryValues['release_time_end'];
+
+                    $entryStatusClass = 'scheduled active';
+                    if (empty($start) && empty($end)) {
+                        $entryStatusClass = 'active';
+                    } elseif (
+                           (!empty($start) && empty($end) && ($start > time()))
+                        || (empty($start) && !empty($end) && ($end < time()))
+                        || (!empty($start) && !empty($end) && !($start < time() && $end > time()))
+                    ) {
+                        $entryStatusClass = 'scheduled inactive';
+                    }
+                }
+
                    $this->_objTpl->setVariable(array(
                        'ENTRY_ROWCLASS'        =>    ($intRowClass % 2 == 0) ? 'row1' : 'row2',
                        'ENTRY_ID'                =>    $intEntryId,
@@ -1003,10 +1023,10 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
                        //'ENTRY_COMMENTS'        =>    $arrEntryValues['comments'].'&nbsp;'.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_COMMENTS'],
                        //'ENTRY_VOTES'            =>    '&#216;&nbsp;'.$arrEntryValues['votes_avg'].'&nbsp;/&nbsp;'.$arrEntryValues['votes'].' '.$_ARRAYLANG['TXT_DATA_ENTRY_MANAGE_VOTES'],
                        //'ENTRY_USER'            =>    $arrEntryValues['user_name'],
-                       'ACTIVE_LED'            =>  ($arrEntryValues['active']) ? "green" : "red",
-                       'ACTIVE_STATE'          =>  ($arrEntryValues['active']) ? 0 : 1,
-                       'ENTRY_CATEGORY'        =>  $catList, //$arrCategories[$category_keys[0]][$this->_intLanguageId]['name'],
-                       'ENTRY_MODE'            =>  $mode
+                       'ACTIVE_STATE'         =>  ($arrEntryValues['active']) ? 0 : 1,
+                       'ENTRY_STATUS_CLASS'   => $entryStatusClass,
+                       'ENTRY_CATEGORY'       =>  $catList, //$arrCategories[$category_keys[0]][$this->_intLanguageId]['name'],
+                       'ENTRY_MODE'           =>  $mode
                    ));
 
                    if ($intSelectedCategory == 0) {

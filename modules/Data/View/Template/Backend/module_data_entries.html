@@ -24,16 +24,23 @@ function selectMultiAction() {
 
 var switchActive = function(id, obj, action)
 {
+    if (cx.jQuery(obj).hasClass("scheduled")) {
+        window.location.href = 'index.php?cmd=Data&act=editEntry&csrf='+ cx.variables.get('csrf', 'contrexx') +'&id=' + id + '#advSettings';
+        return;
+    }
+
+    cx.tools.StatusMessage.showMessage('<div id="loading">{TXT_DATA_LOADING}</div>');
     cx.jQuery.get('index.php', {cmd: 'Data', act: 'switchEntryState', id: id, switchTo: action}).success(function() {
+        cx.jQuery(obj).removeClass('active inactive');
         if (action) {
-            path = '../core/Core/View/Media/icons/led_green.gif';
+            cx.jQuery(obj).addClass('active');
             action = 0;
         } else {
-            path = '../core/Core/View/Media/icons/led_red.gif';
+            cx.jQuery(obj).addClass('inactive');
             action = 1;
         }
-        cx.jQuery(obj).children('img:first').attr('src', path);
         cx.jQuery(obj).attr('onclick', 'switchActive('+id+', this, '+action+')');
+        cx.tools.StatusMessage.removeAllDialogs();
     });
 }
 
@@ -59,9 +66,63 @@ $J(document).ready(function () {
         helper: fixHelper
     }).disableSelection();
 });
+cx.ready(function(){
+    cx.jQuery('.entry_status')
+        .tooltip({
+            tip: '#tooltip_message',
+            position: 'top right',
+            track: true,
+            predelay: 200,
+            onBeforeShow: function() {
+                var statuses   = new Array();
+                var objTrigger = this.getTrigger();
+                var objTip     = this.getTip();
+                objTip.html('');
+
+                if (objTrigger.hasClass('scheduled')) {
+                    if (objTrigger.hasClass('active')) {
+                        statuses.push('{TXT_DATA_SCHEDULED_ACTIVE}');
+                    } else {
+                        statuses.push('{TXT_DATA_SCHEDULED_INACTIVE}');
+                    }
+                } else if (objTrigger.hasClass('active')) {
+                    statuses.push('{TXT_DATA_ACTIVE}');
+                } else {
+                    statuses.push('{TXT_DATA_INACTIVE}');
+                }
+
+                if (statuses.length > 0) {
+                    objTip.html(statuses.join('<br />'));
+                }
+            }
+        });
+});
 //]]>
 </script>
-
+<style type="text/css">
+  .entry_status {
+      width: 18px;
+      height: 16px;
+      margin-top: 3px;
+      display: inline-block;
+  }
+  .entry_status.active {
+      background: url('/core/Core/View/Media/icons/led_green.gif') no-repeat;
+  }
+  .entry_status.inactive {
+      background: url('/core/Core/View/Media/icons/led_red.gif') no-repeat;
+  }
+  .entry_status.scheduled {
+      background: url('/core/Core/View/Media/icons/status_schedule_publish.png') no-repeat;
+  }
+  .entry_status.scheduled.active {
+      background-position: -34px -5px;
+  }
+  .entry_status.scheduled.inactive {
+      background-position: -6px -5px;
+  }
+</style>
+<div id="tooltip_message" class="tooltip-message"></div>
 <table>
     <tr>
         <td style="float: left; width: 200px; padding: 0; margin-right: 15px; vertical-align: top;">
@@ -88,7 +149,7 @@ $J(document).ready(function () {
                     </tr>
                     <tr class="row3" style="font-weight: bold;">
                         <td nowrap="nowrap" style="width: 2%; padding-left: 1em;">#</td>
-                        <td style="width: 2%;">&nbsp;</td>
+                        <td style="width: 5%;">&nbsp;</td>
                         <td style="width: 6%;">&nbsp;</td>
                         <td nowrap="nowrap" style="width: 27%;">{TXT_ENTRIES_SUBTITLE_SUBJECT}</td>
                         <td nowrap="nowrap" style="width: 15%;">{TXT_ENTRIES_SUBTITLE_PLACEHOLDER}</td>
@@ -104,7 +165,7 @@ $J(document).ready(function () {
                         <tr class="{ENTRY_ROWCLASS}" id="entry_{ENTRY_ID}">
                             <td><input type="checkbox" name="selectedEntriesId[]" value="{ENTRY_ID}" /></td>
                             <td>
-                                <a href="javascript: void(0);" onclick="switchActive({ENTRY_ID}, this, {ACTIVE_STATE})"><img src="../core/Core/View/Media/icons/led_{ACTIVE_LED}.gif" style="border: none;" alt=""/></a>
+                                <a class="entry_status {ENTRY_STATUS_CLASS}" href="javascript:void(0);" onclick="switchActive({ENTRY_ID}, this, {ACTIVE_STATE})"></a>
                             </td>
                             <td>
                                 <!-- BEGIN sort_buttons -->
