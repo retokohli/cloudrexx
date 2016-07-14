@@ -1360,8 +1360,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $objUser->setProfile($arrProfile);
             }
 
-            // only administrators are allowed to change the group assigement
-            if (\Permission::hasAllAccess()) {
+            // only administrators and group with ACCESS_MANAGE_USER_GROUPS_STATIC_ID
+            // are allowed to change the group assigement
+            if (   \Permission::hasAllAccess()
+                || \Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_GROUPS_STATIC_ID, 'static', true)
+            ) {
                 if (isset($_POST['access_user_associated_groups']) && is_array($_POST['access_user_associated_groups'])) {
                     $objUser->setGroups($_POST['access_user_associated_groups']);
                 } else {
@@ -1417,7 +1420,12 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $this->_objTpl->hideBlock('access_user_active_notification_function_call');
         }
 
-        if (\Permission::hasAllAccess()) {
+        $this->_objTpl->hideBlock('access_profile_group_assignment');
+        // only administrators and group with ACCESS_MANAGE_USER_GROUPS_STATIC_ID
+        // are allowed to change the group assigement
+        if (   \Permission::hasAllAccess()
+            || \Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_GROUPS_STATIC_ID, 'static', true)
+        ) {
             $objGroup = $objFWUser->objGroup->getGroups();
             while (!$objGroup->EOF) {
                 $var = in_array($objGroup->getId(), $objUser->getAssociatedGroupIds()) ? 'associatedGroups' : 'notAssociatedGroups';
@@ -1434,12 +1442,16 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $this->attachJavaScriptFunction('accessRemoveGroupFromList');
             $this->attachJavaScriptFunction('accessAssignGroupToUser');
             $this->attachJavaScriptFunction('confirmUserNotification');
-        } else if (\Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true)) {
-            $this->_objTpl->hideBlock('access_user_administrator');
-            $this->_objTpl->hideBlock('access_profile_group_assignment');
-        } else {
-            $this->_objTpl->hideBlock('access_profile_group_assignment');
         }
+
+        // user group with ACCESS_MANAGE_USER_STATIC_ID
+        // are not allowed to set the admin flag
+        if (   !\Permission::hasAllAccess()
+            && \Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true)
+        ) {
+            $this->_objTpl->hideBlock('access_user_administrator');
+        }
+
         $this->attachJavaScriptFunction('accessSetWebsite');
         $passwordInfo = self::getPasswordInfo();
         $this->_objTpl->setVariable(array(

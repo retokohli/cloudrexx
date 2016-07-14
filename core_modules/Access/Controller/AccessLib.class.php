@@ -92,6 +92,10 @@ class AccessLib
      * Static Access id to manage the users(add/edit)
      */
     const ACCESS_MANAGE_USER_STATIC_ID = 202;
+    /**
+     * Static Access id to manage the user groups
+     */
+    const ACCESS_MANAGE_USER_GROUPS_STATIC_ID = 203;
 
     /**
      * This library can be used to parse/generate the HTML code of a user's

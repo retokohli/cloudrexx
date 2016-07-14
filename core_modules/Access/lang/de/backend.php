@@ -338,3 +338,4 @@ $_ARRAYLANG['TXT_ACCESS_PASSWORD_GENERATED'] = "Automatisch und an die E-Mail Ad
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION'] = "Konformität Pflichtfelder (Profil Eigenschaften)";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'] = "Die Pflichtfelder müssen geprüft und gesetzt sein";
 $_ARRAYLANG['TXT_CORE_MODULE_ACCESS_MANAGE_USERS'] = "Benutzer verwalten";
+$_ARRAYLANG['TXT_CORE_MODULE_ACCESS_MANAGE_USER_GROUPS'] = "Benutzer verwalten";
