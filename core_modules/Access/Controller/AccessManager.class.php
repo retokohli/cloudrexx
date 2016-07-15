@@ -87,11 +87,12 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
               $_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'" class="'.($this->act == '' ? 'active' : '').'">'.
               $_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'</a>'.*/
             (   \Permission::checkAccess(18, 'static', true)
-             || \Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true)
+             || \Permission::checkAccess(AccessLib::MANAGE_USER_ACCESS_ID, 'static', true)
               ? '<a href="index.php?cmd=Access&amp;act=user" title="'.
               $_ARRAYLANG['TXT_ACCESS_USERS'].'" class="'.(($this->act == '' || $this->act == 'user') ? 'active' : '').'">'.
               $_ARRAYLANG['TXT_ACCESS_USERS'].'</a>' : '').
-            (\Permission::checkAccess(18, 'static', true)
+            (   \Permission::checkAccess(18, 'static', true)
+             || \Permission::checkAccess(AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true)
               ? '<a href="index.php?cmd=Access&amp;act=group" title="'.
               $_ARRAYLANG['TXT_ACCESS_GROUPS'].'" class="'.($this->act == 'group' ? 'active' : '').'">'.
               $_ARRAYLANG['TXT_ACCESS_GROUPS'].'</a>' : '').
@@ -293,7 +294,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             break;
             case 'user':
                 if (   \Permission::checkAccess(18, 'static', true)
-                    || \Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true)
+                    || \Permission::checkAccess(AccessLib::MANAGE_USER_ACCESS_ID, 'static', true)
                     || (isset($_REQUEST['id']) && $_REQUEST['id'] == $objFWUser->objUser->getId() && \Permission::checkAccess(31, 'static', true))
                 ) {
                     $this->user();
@@ -304,8 +305,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 break;
 
             case 'group':
-                 \Permission::checkAccess(18, 'static');
-                $this->_group();
+                if (   \Permission::checkAccess(18, 'static', true)
+                    || \Permission::checkAccess(AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true)
+                ) {
+                    $this->_group();
+                } else {
+                    header('Location: index.php?cmd=noaccess');
+                    exit;
+                }
                 break;
 
             case 'config':
@@ -580,7 +587,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         $objGroup = $objFWUser->objGroup->getGroup(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
         if (isset($_POST['access_save_group'])) {
             // only administrators are allowed to modify a group
-            if (!\Permission::hasAllAccess()) {
+            if (   !\Permission::hasAllAccess()
+                && !\Permission::checkAccess(
+                       AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+                   )
+            ) {
                 \Permission::noAccess();
             }
 
@@ -990,7 +1001,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         global $_ARRAYLANG;
 
         // only administrators are allowed to delete a group
-        if (!\Permission::hasAllAccess()) {
+        if (   !\Permission::hasAllAccess()
+            && !\Permission::checkAccess(
+                   AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+               )
+        ) {
             \Permission::noAccess();
         }
 
@@ -1016,7 +1031,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         global $_ARRAYLANG;
 
         // only administrators are allowed to delete a group
-        if (!\Permission::hasAllAccess()) {
+        if (   !\Permission::hasAllAccess()
+            && !\Permission::checkAccess(
+                   AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+               )
+        ) {
             \Permission::noAccess();
         }
 
@@ -1229,11 +1248,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     {
         global $_ARRAYLANG;
 
-        // only administrators and group with ACCESS_MANAGE_USER_STATIC_ID
+        // only administrators and group with MANAGE_USER_ACCESS_ID
         // are allowed to change the status of user account
         if (   !\Permission::hasAllAccess()
             && !\Permission::checkAccess(
-                    AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true
+                   AccessLib::MANAGE_USER_ACCESS_ID, 'static', true
                )
         ) {
             \Permission::noAccess();
@@ -1265,11 +1284,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     {
         global $_ARRAYLANG;
 
-        // only administrators and group with ACCESS_MANAGE_USER_STATIC_ID
+        // only administrators and group with MANAGE_USER_ACCESS_ID
         // are allowed to delete a user account
         if (   !\Permission::hasAllAccess()
             && !\Permission::checkAccess(
-                    AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true
+                   AccessLib::MANAGE_USER_ACCESS_ID, 'static', true
                )
         ) {
             \Permission::noAccess();
@@ -1320,6 +1339,12 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $cssDisplayStatus = '';
         }
 
+        $manageUserAccess = \Permission::checkAccess(
+            AccessLib::MANAGE_USER_ACCESS_ID, 'static', true
+        );
+        $manageGroupAccess = \Permission::checkAccess(
+            AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+        );
         if (isset($_POST['access_save_user'])) {
             $arrSettings = \User_Setting::getSettings();
 
@@ -1328,7 +1353,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 && (   $objUser->getId() != $objFWUser->objUser->getId()
                     || !\Permission::checkAccess(31, 'static', true)
                    )
-                && !\Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true)
+                && !$manageUserAccess
             ) {
                 \Permission::noAccess();
             }
@@ -1360,10 +1385,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                 $objUser->setProfile($arrProfile);
             }
 
-            // only administrators and group with ACCESS_MANAGE_USER_GROUPS_STATIC_ID
+            // only administrators and group with MANAGE_GROUPS_ACCESS_ID
             // are allowed to change the group assigement
             if (   \Permission::hasAllAccess()
-                || \Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_GROUPS_STATIC_ID, 'static', true)
+                || $manageGroupAccess
+                || $manageUserAccess
             ) {
                 if (isset($_POST['access_user_associated_groups']) && is_array($_POST['access_user_associated_groups'])) {
                     $objUser->setGroups($_POST['access_user_associated_groups']);
@@ -1421,10 +1447,11 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         }
 
         $this->_objTpl->hideBlock('access_profile_group_assignment');
-        // only administrators and group with ACCESS_MANAGE_USER_GROUPS_STATIC_ID
+        // only administrators and group with MANAGE_GROUPS_ACCESS_ID
         // are allowed to change the group assigement
         if (   \Permission::hasAllAccess()
-            || \Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_GROUPS_STATIC_ID, 'static', true)
+            || $manageGroupAccess
+            || $manageUserAccess
         ) {
             $objGroup = $objFWUser->objGroup->getGroups();
             while (!$objGroup->EOF) {
@@ -1444,11 +1471,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $this->attachJavaScriptFunction('confirmUserNotification');
         }
 
-        // user group with ACCESS_MANAGE_USER_STATIC_ID
-        // are not allowed to set the admin flag
-        if (   !\Permission::hasAllAccess()
-            && \Permission::checkAccess(AccessLib::ACCESS_MANAGE_USER_STATIC_ID, 'static', true)
-        ) {
+        // only administrators are not allowed to set the admin flag
+        if (!\Permission::hasAllAccess()) {
             $this->_objTpl->hideBlock('access_user_administrator');
         }
 
