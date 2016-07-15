@@ -1250,11 +1250,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         // only administrators and group with MANAGE_USER_ACCESS_ID
         // are allowed to change the status of user account
-        if (   !\Permission::hasAllAccess()
-            && !\Permission::checkAccess(
-                   AccessLib::MANAGE_USER_ACCESS_ID, 'static', true
-               )
-        ) {
+        $manageUserAccess = \Permission::checkAccess(
+            AccessLib::MANAGE_USER_ACCESS_ID, 'static', true
+        );
+        if (!\Permission::hasAllAccess() && !$manageUserAccess) {
             \Permission::noAccess();
         }
 
@@ -1263,6 +1262,9 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             if($userId==$objFWUser->objUser->getId()) {
                 self::$arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_USER_WITH_SAME_ID']);
             } else {
+                if ($manageUserAccess && $objUser->getAdminStatus()) {
+                    \Permission::noAccess();
+                }
                 $objUser->setActiveStatus(!$objUser->getActiveStatus());
                 if ($objUser->store()) {
                     if (isset($_GET['notifyUser']) && $_GET['notifyUser'] == '1') {
@@ -1286,16 +1288,15 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         // only administrators and group with MANAGE_USER_ACCESS_ID
         // are allowed to delete a user account
-        if (   !\Permission::hasAllAccess()
-            && !\Permission::checkAccess(
-                   AccessLib::MANAGE_USER_ACCESS_ID, 'static', true
-               )
-        ) {
+        $manageUserAccess = \Permission::checkAccess(
+            AccessLib::MANAGE_USER_ACCESS_ID, 'static', true
+        );
+        if (!\Permission::hasAllAccess() && !$manageUserAccess) {
             \Permission::noAccess();
         }
 
-		if (isset($_POST['access_user_id']) && is_array($_POST['access_user_id'])) {
-			$_REQUEST['id'] = $_POST['access_user_id'];
+        if (isset($_POST['access_user_id']) && is_array($_POST['access_user_id'])) {
+            $_REQUEST['id'] = $_POST['access_user_id'];
         }
 
         $arrIds = !empty($_REQUEST['id']) ? is_array($_REQUEST['id']) ? $_REQUEST['id'] : array($_REQUEST['id']) : array();
@@ -1305,6 +1306,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             foreach ($arrIds as $id) {
                 $objUser = $objFWUser->objUser->getUser($id);
                 if ($objUser) {
+                    if ($manageUserAccess && $objUser->getAdminStatus()) {
+                        self::$arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_CORE_MODULE_ACCESS_NO_PERMISSION_DELETE_ADMIN_USER'], contrexx_raw2xhtml($objUser->getUsername()));
+                        continue;
+                    }
                     if ($objUser->delete()) {
                         self::$arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_USER_SUCCESSFULLY_DELETED'], contrexx_raw2xhtml($objUser->getUsername()));
                     } else {
