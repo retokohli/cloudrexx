@@ -1262,6 +1262,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             if($userId==$objFWUser->objUser->getId()) {
                 self::$arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_USER_WITH_SAME_ID']);
             } else {
+                //User with permission MANAGE_USER_ACCESS_ID 
+                //have no access to change the status of admin user
                 if ($manageUserAccess && $objUser->getAdminStatus()) {
                     \Permission::noAccess();
                 }
@@ -1306,6 +1308,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             foreach ($arrIds as $id) {
                 $objUser = $objFWUser->objUser->getUser($id);
                 if ($objUser) {
+                    //User with permission MANAGE_USER_ACCESS_ID 
+                    //have no access to delete admin user
                     if ($manageUserAccess && $objUser->getAdminStatus()) {
                         self::$arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_CORE_MODULE_ACCESS_NO_PERMISSION_DELETE_ADMIN_USER'], contrexx_raw2xhtml($objUser->getUsername()));
                         continue;
@@ -1476,7 +1480,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $this->attachJavaScriptFunction('confirmUserNotification');
         }
 
-        // only administrators are not allowed to set the admin flag
+        // only administrators are allowed to set the admin flag
         if (!\Permission::hasAllAccess()) {
             $this->_objTpl->hideBlock('access_user_administrator');
         }
