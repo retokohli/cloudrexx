@@ -2448,4 +2448,935 @@ CREATE TABLE `contrexx_module_news_comments` (
   `newsid` int(6) unsigned NOT NULL DEFAULT '0',
   `date` int(14) DEFAULT NULL,
   `poster_name` varchar(255) NOT NULL DEFAULT '',
-  `user
+  `userid` int(5) unsigned NOT NULL DEFAULT '0',
+  `ip_address` varchar(15) NOT NULL DEFAULT '0.0.0.0',
+  `is_active` enum('0','1') NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_news_locale` (
+  `news_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `lang_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `is_active` int(1) unsigned NOT NULL DEFAULT '1',
+  `title` varchar(250) NOT NULL DEFAULT '',
+  `text` mediumtext NOT NULL,
+  `teaser_text` text NOT NULL,
+  PRIMARY KEY (`news_id`,`lang_id`),
+  FULLTEXT KEY `newsindex` (`text`,`title`,`teaser_text`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_news_settings` (
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `value` varchar(250) NOT NULL DEFAULT '',
+  KEY `name` (`name`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_news_settings_locale` (
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `lang_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `value` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`name`,`lang_id`),
+  FULLTEXT KEY `name` (`name`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_news_stats_view` (
+  `user_sid` char(32) NOT NULL,
+  `news_id` int(6) unsigned NOT NULL,
+  `time` timestamp NOT NULL,
+  KEY `idx_user_sid` (`user_sid`),
+  KEY `idx_news_id` (`news_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_news_teaser_frame` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `lang_id` int(3) unsigned NOT NULL DEFAULT '0',
+  `frame_template_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `name` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_news_teaser_frame_templates` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `description` varchar(100) NOT NULL DEFAULT '',
+  `html` text NOT NULL,
+  `source_code_mode` enum('0','1') NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_news_ticker` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `charset` enum('ISO-8859-1','UTF-8') NOT NULL DEFAULT 'ISO-8859-1',
+  `urlencode` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `prefix` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_news_types` (
+  `typeid` int(2) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`typeid`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_news_types_locale` (
+  `lang_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `type_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `name` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`lang_id`,`type_id`),
+  FULLTEXT KEY `name` (`name`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `subject` varchar(255) NOT NULL DEFAULT '',
+  `template` int(11) NOT NULL DEFAULT '0',
+  `content` text NOT NULL,
+  `attachment` enum('0','1') NOT NULL DEFAULT '0',
+  `priority` tinyint(1) NOT NULL DEFAULT '0',
+  `sender_email` varchar(255) NOT NULL DEFAULT '',
+  `sender_name` varchar(255) NOT NULL DEFAULT '',
+  `return_path` varchar(255) NOT NULL DEFAULT '',
+  `smtp_server` int(10) unsigned NOT NULL DEFAULT '0',
+  `status` int(1) NOT NULL DEFAULT '0',
+  `count` int(11) NOT NULL DEFAULT '0',
+  `recipient_count` int(11) unsigned NOT NULL DEFAULT '0',
+  `date_create` int(14) unsigned NOT NULL DEFAULT '0',
+  `date_sent` int(14) unsigned NOT NULL DEFAULT '0',
+  `tmp_copy` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_newsletter_access_user` (
+  `accessUserID` int(5) unsigned NOT NULL,
+  `newsletterCategoryID` int(11) NOT NULL,
+  `code` varchar(255) NOT NULL DEFAULT '',
+  UNIQUE KEY `rel` (`accessUserID`,`newsletterCategoryID`),
+  KEY `accessUserID` (`accessUserID`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_attachment` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `newsletter` int(11) NOT NULL DEFAULT '0',
+  `file_name` varchar(255) NOT NULL DEFAULT '',
+  `file_nr` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `newsletter` (`newsletter`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `notification_email` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `name` (`name`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_newsletter_confirm_mail` (
+  `id` int(1) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `content` longtext NOT NULL,
+  `recipients` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_newsletter_email_link` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `email_id` int(11) unsigned NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `email_id` (`email_id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_newsletter_email_link_feedback` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `link_id` int(11) unsigned NOT NULL,
+  `email_id` int(11) unsigned NOT NULL,
+  `recipient_id` int(11) unsigned NOT NULL,
+  `recipient_type` enum('access','newsletter') NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `link_id` (`link_id`,`email_id`,`recipient_id`,`recipient_type`),
+  KEY `email_id` (`email_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_rel_cat_news` (
+  `newsletter` int(11) NOT NULL DEFAULT '0',
+  `category` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`newsletter`,`category`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_rel_user_cat` (
+  `user` int(11) NOT NULL DEFAULT '0',
+  `category` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user`,`category`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_rel_usergroup_newsletter` (
+  `userGroup` int(10) unsigned NOT NULL,
+  `newsletter` int(10) unsigned NOT NULL,
+  UNIQUE KEY `uniq` (`userGroup`,`newsletter`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_settings` (
+  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
+  `setname` varchar(250) NOT NULL DEFAULT '',
+  `setvalue` text NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`setid`),
+  UNIQUE KEY `setname` (`setname`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_newsletter_template` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `html` text NOT NULL,
+  `required` int(1) NOT NULL DEFAULT '0',
+  `type` enum('e-mail','news') NOT NULL DEFAULT 'e-mail',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_newsletter_tmp_sending` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `newsletter` int(11) NOT NULL DEFAULT '0',
+  `email` varchar(255) NOT NULL DEFAULT '',
+  `sendt` tinyint(1) NOT NULL DEFAULT '0',
+  `type` enum('access','newsletter','core') NOT NULL DEFAULT 'newsletter',
+  `code` varchar(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_email` (`newsletter`,`email`),
+  KEY `email` (`email`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) NOT NULL DEFAULT '',
+  `email` varchar(255) NOT NULL DEFAULT '',
+  `uri` varchar(255) NOT NULL DEFAULT '',
+  `sex` enum('m','f') DEFAULT NULL,
+  `salutation` int(10) unsigned NOT NULL DEFAULT '0',
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `lastname` varchar(255) NOT NULL DEFAULT '',
+  `firstname` varchar(255) NOT NULL DEFAULT '',
+  `position` varchar(255) NOT NULL DEFAULT '',
+  `company` varchar(255) NOT NULL DEFAULT '',
+  `industry_sector` varchar(255) NOT NULL DEFAULT '',
+  `address` varchar(255) NOT NULL DEFAULT '',
+  `zip` varchar(255) NOT NULL DEFAULT '',
+  `city` varchar(255) NOT NULL DEFAULT '',
+  `country_id` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `phone_office` varchar(255) NOT NULL DEFAULT '',
+  `phone_private` varchar(255) NOT NULL DEFAULT '',
+  `phone_mobile` varchar(255) NOT NULL DEFAULT '',
+  `fax` varchar(255) NOT NULL DEFAULT '',
+  `notes` text NOT NULL,
+  `birthday` varchar(10) NOT NULL DEFAULT '00-00-0000',
+  `status` int(1) NOT NULL DEFAULT '0',
+  `emaildate` int(14) unsigned NOT NULL DEFAULT '0',
+  `language` int(3) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),
+  KEY `status` (`status`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_newsletter_user_title` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `title` (`title`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_podcast_category` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `podcastindex` (`title`,`description`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_podcast_medium` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `youtube_id` varchar(25) NOT NULL DEFAULT '',
+  `author` varchar(255) NOT NULL DEFAULT '',
+  `description` text NOT NULL,
+  `source` text NOT NULL,
+  `thumbnail` varchar(255) NOT NULL DEFAULT '',
+  `template_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `width` int(10) unsigned NOT NULL DEFAULT '0',
+  `height` int(10) unsigned NOT NULL DEFAULT '0',
+  `playlenght` int(10) unsigned NOT NULL DEFAULT '0',
+  `size` int(10) unsigned NOT NULL DEFAULT '0',
+  `views` int(10) unsigned NOT NULL DEFAULT '0',
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `date_added` int(14) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `podcastindex` (`title`,`description`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_podcast_rel_category_lang` (
+  `category_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `lang_id` int(10) unsigned NOT NULL DEFAULT '0'
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_podcast_rel_medium_category` (
+  `medium_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `category_id` int(10) unsigned NOT NULL DEFAULT '0'
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_podcast_settings` (
+  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
+  `setname` varchar(250) NOT NULL DEFAULT '',
+  `setvalue` text NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`setid`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_podcast_template` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `template` text NOT NULL,
+  `extensions` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `description` (`description`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_recommend` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `value` text NOT NULL,
+  `lang_id` int(11) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_repository` (
+  `id` int(6) unsigned NOT NULL AUTO_INCREMENT,
+  `moduleid` int(5) unsigned NOT NULL DEFAULT '0',
+  `content` mediumtext NOT NULL,
+  `title` varchar(250) NOT NULL DEFAULT '',
+  `cmd` varchar(20) NOT NULL DEFAULT '',
+  `expertmode` set('y','n') NOT NULL DEFAULT 'n',
+  `parid` int(5) unsigned NOT NULL DEFAULT '0',
+  `displaystatus` set('on','off') NOT NULL DEFAULT 'on',
+  `username` varchar(250) NOT NULL DEFAULT '',
+  `displayorder` smallint(6) NOT NULL DEFAULT '100',
+  UNIQUE KEY `contentid` (`id`),
+  FULLTEXT KEY `fulltextindex` (`title`,`content`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_article_group` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_attribute` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `type` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_categories` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `ord` int(5) unsigned NOT NULL DEFAULT '0',
+  `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `picture` varchar(255) NOT NULL DEFAULT '',
+  `flags` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `flags` (`flags`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_currencies` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` char(3) NOT NULL DEFAULT '',
+  `symbol` varchar(20) NOT NULL DEFAULT '',
+  `rate` decimal(10,4) unsigned NOT NULL DEFAULT '1.0000',
+  `ord` int(5) unsigned NOT NULL DEFAULT '0',
+  `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `default` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `increment` decimal(6,5) unsigned NOT NULL DEFAULT '0.01000',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_customer_group` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_discount_coupon` (
+  `code` varchar(20) NOT NULL DEFAULT '',
+  `customer_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `payment_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `product_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `start_time` int(10) unsigned NOT NULL DEFAULT '0',
+  `end_time` int(10) unsigned NOT NULL DEFAULT '0',
+  `uses` int(10) unsigned NOT NULL DEFAULT '0',
+  `global` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `minimum_amount` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
+  `discount_amount` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
+  `discount_rate` decimal(3,0) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`code`,`customer_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_shop_discountgroup_count_name` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_discountgroup_count_rate` (
+  `group_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `count` int(10) unsigned NOT NULL DEFAULT '1',
+  `rate` decimal(5,2) unsigned NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`group_id`,`count`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_shop_importimg` (
+  `img_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `img_name` varchar(255) NOT NULL DEFAULT '',
+  `img_cats` text NOT NULL,
+  `img_fields_file` text NOT NULL,
+  `img_fields_db` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`img_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_shop_lsv` (
+  `order_id` int(10) unsigned NOT NULL,
+  `holder` tinytext NOT NULL,
+  `bank` tinytext NOT NULL,
+  `blz` tinytext NOT NULL,
+  PRIMARY KEY (`order_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_shop_manufacturer` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_option` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `attribute_id` int(10) unsigned NOT NULL,
+  `price` decimal(9,2) NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_order_attributes` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `item_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `attribute_name` varchar(255) NOT NULL DEFAULT '',
+  `option_name` varchar(255) NOT NULL DEFAULT '',
+  `price` decimal(9,2) NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`id`),
+  KEY `item_id` (`item_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_shop_order_items` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `order_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `product_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `product_name` varchar(255) NOT NULL DEFAULT '',
+  `price` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
+  `quantity` int(10) unsigned NOT NULL DEFAULT '0',
+  `vat_rate` decimal(5,2) unsigned DEFAULT NULL,
+  `weight` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `order` (`order_id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_orders` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `customer_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `currency_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `sum` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
+  `date_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `gender` varchar(50) DEFAULT NULL,
+  `company` varchar(100) DEFAULT NULL,
+  `firstname` varchar(40) DEFAULT NULL,
+  `lastname` varchar(100) DEFAULT NULL,
+  `address` varchar(40) DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `zip` varchar(10) DEFAULT NULL,
+  `country_id` int(10) unsigned DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `vat_amount` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
+  `shipment_amount` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
+  `shipment_id` int(10) unsigned DEFAULT NULL,
+  `payment_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `payment_amount` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
+  `ip` varchar(50) NOT NULL DEFAULT '',
+  `host` varchar(100) NOT NULL DEFAULT '',
+  `lang_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `browser` varchar(255) NOT NULL DEFAULT '',
+  `note` text NOT NULL,
+  `modified_on` timestamp NULL DEFAULT NULL,
+  `modified_by` varchar(50) DEFAULT NULL,
+  `billing_gender` varchar(50) DEFAULT NULL,
+  `billing_company` varchar(100) DEFAULT NULL,
+  `billing_firstname` varchar(40) DEFAULT NULL,
+  `billing_lastname` varchar(100) DEFAULT NULL,
+  `billing_address` varchar(40) DEFAULT NULL,
+  `billing_city` varchar(50) DEFAULT NULL,
+  `billing_zip` varchar(10) DEFAULT NULL,
+  `billing_country_id` int(10) unsigned DEFAULT NULL,
+  `billing_phone` varchar(20) DEFAULT NULL,
+  `billing_fax` varchar(20) DEFAULT NULL,
+  `billing_email` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `status` (`status`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_payment` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `processor_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `fee` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
+  `free_from` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
+  `ord` int(5) unsigned NOT NULL DEFAULT '0',
+  `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_payment_processors` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `type` enum('internal','external') NOT NULL DEFAULT 'internal',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `description` text NOT NULL,
+  `company_url` varchar(255) NOT NULL DEFAULT '',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `picture` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_pricelists` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(25) NOT NULL DEFAULT '',
+  `lang_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `border_on` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `header_on` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `header_left` text,
+  `header_right` text,
+  `footer_on` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `footer_left` text,
+  `footer_right` text,
+  `categories` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_products` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `picture` varchar(4096) DEFAULT NULL,
+  `category_id` varchar(255) NOT NULL DEFAULT '',
+  `distribution` varchar(16) NOT NULL DEFAULT '',
+  `normalprice` decimal(9,2) NOT NULL DEFAULT '0.00',
+  `resellerprice` decimal(9,2) NOT NULL DEFAULT '0.00',
+  `stock` int(10) NOT NULL DEFAULT '10',
+  `stock_visible` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `discountprice` decimal(9,2) NOT NULL DEFAULT '0.00',
+  `discount_active` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `b2b` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `b2c` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `date_start` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_end` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `manufacturer_id` int(10) unsigned DEFAULT NULL,
+  `ord` int(10) NOT NULL DEFAULT '0',
+  `vat_id` int(10) unsigned DEFAULT NULL,
+  `weight` int(10) unsigned DEFAULT NULL,
+  `flags` varchar(4096) DEFAULT NULL,
+  `group_id` int(10) unsigned DEFAULT NULL,
+  `article_id` int(10) unsigned DEFAULT NULL,
+  `usergroup_ids` varchar(4096) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `group_id` (`group_id`),
+  KEY `article_id` (`article_id`),
+  FULLTEXT KEY `flags` (`flags`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_rel_countries` (
+  `zone_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `country_id` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`country_id`,`zone_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_shop_rel_customer_coupon` (
+  `code` varchar(20) NOT NULL DEFAULT '',
+  `customer_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `order_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  `amount` decimal(9,2) unsigned NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`code`,`customer_id`,`order_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_shop_rel_discount_group` (
+  `customer_group_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `article_group_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `rate` decimal(9,2) NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`customer_group_id`,`article_group_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_shop_rel_payment` (
+  `zone_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `payment_id` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`zone_id`,`payment_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_shop_rel_product_attribute` (
+  `product_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `option_id` int(10) unsigned NOT NULL,
+  `ord` int(10) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`product_id`,`option_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_shop_rel_shipper` (
+  `zone_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `shipper_id` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`shipper_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_shop_shipment_cost` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `shipper_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `max_weight` int(10) unsigned DEFAULT NULL,
+  `fee` decimal(9,2) unsigned DEFAULT NULL,
+  `free_from` decimal(9,2) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_shipper` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `ord` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_vat` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `rate` decimal(5,2) unsigned NOT NULL DEFAULT '0.00',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_shop_zones` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_survey_addtionalfields` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `survey_id` varchar(10) NOT NULL,
+  `salutation` varchar(400) NOT NULL,
+  `nickname` varchar(400) NOT NULL,
+  `forename` varchar(400) NOT NULL,
+  `surname` varchar(400) NOT NULL,
+  `agegroup` varchar(400) NOT NULL,
+  `phone` varchar(400) NOT NULL,
+  `street` varchar(400) NOT NULL,
+  `zip` varchar(400) NOT NULL,
+  `email` varchar(400) NOT NULL,
+  `city` varchar(400) NOT NULL,
+  `added_date` timestamp NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_survey_columnChoices` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `question_id` int(10) NOT NULL,
+  `choice` varchar(400) NOT NULL,
+  `votes` int(10) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_survey_email` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `survey_id` int(10) NOT NULL,
+  `email` varchar(400) NOT NULL,
+  `voted` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_survey_poll_result` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `survey_id` int(10) NOT NULL,
+  `question_id` int(10) NOT NULL,
+  `user_id` int(10) NOT NULL,
+  `comment` text NOT NULL,
+  `answers` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_module_survey_settings` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `salutation` text NOT NULL,
+  `agegroup` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_survey_surveyAnswers` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `question_id` int(10) NOT NULL,
+  `answer` varchar(400) NOT NULL,
+  `votes` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_survey_surveyQuestions` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `survey_id` int(10) NOT NULL,
+  `created` timestamp NOT NULL,
+  `isActive` int(2) NOT NULL DEFAULT '1',
+  `isCommentable` int(2) NOT NULL DEFAULT '0',
+  `QuestionType` int(10) NOT NULL,
+  `Question` varchar(1000) NOT NULL,
+  `pos` int(10) NOT NULL DEFAULT '0',
+  `votes` int(10) NOT NULL DEFAULT '0',
+  `skipped` int(10) NOT NULL DEFAULT '0',
+  `column_choice` varchar(400) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_survey_surveygroup` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `title` varchar(400) NOT NULL,
+  `UserRestriction` varchar(100) NOT NULL,
+  `description` text NOT NULL,
+  `isActive` int(2) NOT NULL DEFAULT '1',
+  `isHomeBox` int(2) NOT NULL DEFAULT '0',
+  `created` timestamp NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `votes` int(10) NOT NULL DEFAULT '0',
+  `additional_salutation` tinyint(1) NOT NULL,
+  `additional_nickname` tinyint(1) NOT NULL,
+  `additional_forename` tinyint(1) NOT NULL,
+  `additional_surname` tinyint(1) NOT NULL,
+  `additional_agegroup` tinyint(1) NOT NULL,
+  `additional_phone` tinyint(1) NOT NULL,
+  `additional_street` tinyint(1) NOT NULL,
+  `additional_zip` tinyint(1) NOT NULL,
+  `additional_email` tinyint(1) NOT NULL,
+  `additional_city` tinyint(1) NOT NULL,
+  `textAfterButton` text NOT NULL,
+  `text1` text NOT NULL,
+  `text2` text NOT NULL,
+  `thanksMSG` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_module_u2u_address_list` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `buddies_id` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_module_u2u_message_log` (
+  `message_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `message_text` text NOT NULL,
+  `message_title` text NOT NULL,
+  PRIMARY KEY (`message_id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_module_u2u_sent_messages` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userid` int(11) unsigned NOT NULL DEFAULT '0',
+  `message_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `receiver_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `mesage_open_status` enum('0','1') NOT NULL DEFAULT '0',
+  `date_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_module_u2u_settings` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `value` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB ;
+CREATE TABLE `contrexx_module_u2u_user_log` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userid` int(11) unsigned NOT NULL DEFAULT '0',
+  `user_sent_items` int(11) unsigned NOT NULL DEFAULT '0',
+  `user_unread_items` int(11) unsigned NOT NULL DEFAULT '0',
+  `user_status` enum('0','1') NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_modules` (
+  `id` int(2) unsigned DEFAULT NULL,
+  `name` varchar(250) NOT NULL DEFAULT '',
+  `distributor` char(50) NOT NULL,
+  `description_variable` varchar(50) NOT NULL DEFAULT '',
+  `status` set('y','n') NOT NULL DEFAULT 'n',
+  `is_required` tinyint(1) NOT NULL DEFAULT '0',
+  `is_core` tinyint(4) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '0',
+  `is_licensed` tinyint(1) NOT NULL,
+  UNIQUE KEY `id` (`id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_session_variable` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) NOT NULL,
+  `sessionid` varchar(32) NOT NULL DEFAULT '',
+  `lastused` timestamp NOT NULL,
+  `key` varchar(40) NOT NULL DEFAULT '',
+  `value` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `key_index` (`parent_id`,`key`,`sessionid`)
+) ENGINE=InnoDB ;
+CREATE TABLE `contrexx_sessions` (
+  `sessionid` varchar(255) NOT NULL DEFAULT '',
+  `remember_me` int(1) NOT NULL DEFAULT '0',
+  `startdate` varchar(14) NOT NULL DEFAULT '',
+  `lastupdated` varchar(14) NOT NULL DEFAULT '',
+  `status` varchar(20) NOT NULL DEFAULT '',
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`sessionid`),
+  KEY `LastUpdated` (`lastupdated`)
+) ENGINE=InnoDB;
+CREATE TABLE `contrexx_settings` (
+  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
+  `setname` varchar(250) NOT NULL DEFAULT '',
+  `setvalue` text NOT NULL,
+  `setmodule` tinyint(2) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`setid`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_settings_image` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `value` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_settings_smtp` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `hostname` varchar(255) NOT NULL,
+  `port` smallint(5) unsigned NOT NULL DEFAULT '25',
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_skins` (
+  `id` int(2) unsigned NOT NULL AUTO_INCREMENT,
+  `themesname` varchar(50) NOT NULL DEFAULT '',
+  `foldername` varchar(50) NOT NULL DEFAULT '',
+  `expert` int(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `theme_unique` (`themesname`),
+  UNIQUE KEY `folder_unique` (`foldername`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_stats_browser` (
+  `id` int(6) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) binary NOT NULL DEFAULT '',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`name`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_colourdepth` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `depth` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`depth`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL DEFAULT '',
+  `value` varchar(255) NOT NULL DEFAULT '',
+  `status` int(1) DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_stats_country` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `country` varchar(100) binary NOT NULL DEFAULT '',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`country`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_hostname` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `hostname` varchar(255) binary NOT NULL DEFAULT '',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`hostname`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_javascript` (
+  `id` int(3) unsigned NOT NULL AUTO_INCREMENT,
+  `support` enum('0','1') DEFAULT '0',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_operatingsystem` (
+  `id` int(6) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) binary NOT NULL DEFAULT '',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`name`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_referer` (
+  `id` int(8) unsigned NOT NULL AUTO_INCREMENT,
+  `uri` varchar(255) binary NOT NULL DEFAULT '',
+  `timestamp` int(11) unsigned NOT NULL DEFAULT '0',
+  `count` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `sid` varchar(32) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`uri`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_requests` (
+  `id` int(9) unsigned NOT NULL AUTO_INCREMENT,
+  `timestamp` int(11) DEFAULT '0',
+  `pageId` int(6) unsigned NOT NULL DEFAULT '0',
+  `page` varchar(255) binary NOT NULL DEFAULT '',
+  `visits` int(9) unsigned NOT NULL DEFAULT '0',
+  `sid` varchar(32) NOT NULL DEFAULT '',
+  `pageTitle` varchar(250) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`page`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_requests_summary` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(10) NOT NULL DEFAULT '',
+  `timestamp` int(11) NOT NULL DEFAULT '0',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`type`,`timestamp`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_screenresolution` (
+  `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `resolution` varchar(11) NOT NULL DEFAULT '',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`resolution`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_search` (
+  `id` int(5) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) binary NOT NULL DEFAULT '',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  `sid` varchar(32) NOT NULL DEFAULT '',
+  `external` enum('0','1') NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`name`,`external`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_spiders` (
+  `id` int(9) unsigned NOT NULL AUTO_INCREMENT,
+  `last_indexed` int(14) DEFAULT NULL,
+  `page` varchar(100) binary DEFAULT NULL,
+  `pageId` mediumint(6) unsigned NOT NULL DEFAULT '0',
+  `count` int(11) NOT NULL DEFAULT '0',
+  `spider_useragent` varchar(255) DEFAULT NULL,
+  `spider_ip` varchar(100) DEFAULT NULL,
+  `spider_host` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`page`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_spiders_summary` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) binary NOT NULL DEFAULT '',
+  `timestamp` int(11) NOT NULL DEFAULT '0',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`name`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_visitors` (
+  `id` int(8) unsigned NOT NULL AUTO_INCREMENT,
+  `sid` varchar(32) NOT NULL DEFAULT '',
+  `timestamp` int(11) NOT NULL DEFAULT '0',
+  `client_ip` varchar(100) DEFAULT NULL,
+  `client_host` varchar(255) DEFAULT NULL,
+  `client_useragent` varchar(255) DEFAULT NULL,
+  `proxy_ip` varchar(100) DEFAULT NULL,
+  `proxy_host` varchar(255) DEFAULT NULL,
+  `proxy_useragent` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`sid`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_stats_visitors_summary` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(10) NOT NULL DEFAULT '',
+  `timestamp` int(11) NOT NULL DEFAULT '0',
+  `count` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`type`,`timestamp`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_voting_additionaldata` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nickname` varchar(80) NOT NULL DEFAULT '',
+  `surname` varchar(80) NOT NULL DEFAULT '',
+  `phone` varchar(80) NOT NULL DEFAULT '',
+  `street` varchar(80) NOT NULL DEFAULT '',
+  `zip` varchar(30) NOT NULL DEFAULT '',
+  `city` varchar(80) NOT NULL DEFAULT '',
+  `email` varchar(80) NOT NULL DEFAULT '',
+  `comment` text NOT NULL,
+  `voting_system_id` int(11) NOT NULL DEFAULT '0',
+  `date_entered` timestamp NOT NULL,
+  `forename` varchar(80) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `voting_system_id` (`voting_system_id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_voting_email` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) NOT NULL,
+  `valid` enum('0','1') NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_voting_rel_email_system` (
+  `email_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `system_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `voting_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `valid` enum('0','1') NOT NULL DEFAULT '0',
+  UNIQUE KEY `email_id` (`email_id`,`system_id`)
+) ENGINE=MyISAM;
+CREATE TABLE `contrexx_voting_results` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `voting_system_id` int(11) DEFAULT NULL,
+  `question` char(200) DEFAULT NULL,
+  `votes` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
+CREATE TABLE `contrexx_voting_system` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date` timestamp NOT NULL,
+  `title` varchar(60) NOT NULL DEFAULT '',
+  `question` text,
+  `status` tinyint(1) DEFAULT '1',
+  `submit_check` enum('cookie','email') NOT NULL DEFAULT 'cookie',
+  `votes` int(11) DEFAULT '0',
+  `additional_nickname` tinyint(1) NOT NULL DEFAULT '0',
+  `additional_forename` tinyint(1) NOT NULL DEFAULT '0',
+  `additional_surname` tinyint(1) NOT NULL DEFAULT '0',
+  `additional_phone` tinyint(1) NOT NULL DEFAULT '0',
+  `additional_street` tinyint(1) NOT NULL DEFAULT '0',
+  `additional_zip` tinyint(1) NOT NULL DEFAULT '0',
+  `additional_email` tinyint(1) NOT NULL DEFAULT '0',
+  `additional_city` tinyint(1) NOT NULL DEFAULT '0',
+  `additional_comment` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM ;
