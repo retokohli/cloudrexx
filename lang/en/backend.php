@@ -316,6 +316,7 @@ $_ARRAYLANG['TXT_EDIT_GROUPS'] = "Edit Groups";
 $_ARRAYLANG['TXT_RESET_STATS'] = "Reset statistics";
 $_ARRAYLANG['TXT_ACTIVATE_SKINS'] = "Activate themes";
 $_ARRAYLANG['TXT_EDIT_SKINS'] = "Manage themes";
+$_ARRAYLANG['TXT_CORE_VIEWMANAGER_TEMPLATE_EDITOR_ACCESS'] = 'Customize themes with the Template Editor';
 $_ARRAYLANG['TXT_EDIT_LANGUAGE_SETTINGS'] = "Edit Language settings";
 $_ARRAYLANG['TXT_DELETE_LANGUAGES'] = "Delete Languages";
 $_ARRAYLANG['TXT_REGISTER_MODULES'] = "Register Modules";

@@ -184,7 +184,7 @@ class MediaManager extends MediaLibrary
 
         switch ($this->archive) {
             case 'themes':
-                \Permission::checkAccess(21, 'static');
+                \Permission::checkAccess(\Cx\Core\ViewManager\Controller\ViewManager::VIEW_MANAGER_ACCESS_ID, 'static');
                 $objTemplate->setVariable("CONTENT_NAVIGATION",
                    "<a href='index.php?cmd=Media&amp;archive=content'>". $_ARRAYLANG['TXT_IMAGE_CONTENT'] ."</a>
                     <a href='index.php?cmd=Media&amp;archive=attach'>". $_ARRAYLANG['TXT_MODULE'] ."</a>

@@ -136,6 +136,30 @@ class ViewManager
 
     private $act = '';
 
+    /**
+     * Access id to view the viewManager section
+     */
+    const VIEW_MANAGER_ACCESS_ID = 21;
+
+    /**
+     * Access id to activate/deactivate themes
+     */
+    const ENABLE_THEMES_ACCESS_ID = 46;
+
+    /**
+     * Access id to add/edit themes
+     */
+    const EDIT_THEMES_ACCESS_ID = 47;
+
+    /**
+     * Access id to import and export themes
+     */
+    const THEMES_IMPORT_EXPORT_ACCESS_ID = 102;
+
+    /**
+     * Access id to use template editor
+     */
+    const TEMPLATE_EDITOR_ACCESS_ID = 204;
     
     function __construct()
     {
@@ -190,12 +214,20 @@ class ViewManager
     {
         global $objTemplate, $_ARRAYLANG;
 
-        $objTemplate->setVariable("CONTENT_NAVIGATION","
-            <a href='index.php?cmd=ViewManager' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_OVERVIEW']."</a>
-            <a href='index.php?cmd=ViewManager&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_TEMPLATES']."</a>
-            <a href='index.php?cmd=ViewManager&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_SETTINGS']."</a>"
-        );
+        $navigation = '';
+        if (\Permission::checkAccess(self::VIEW_MANAGER_ACCESS_ID, 'static', true)) {
+            $navigation .= "<a href='index.php?cmd=ViewManager' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_OVERVIEW']."</a>";
+        }
+        if (   \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true)
+            || \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)
+        ) {
+            $navigation .= "<a href='index.php?cmd=ViewManager&amp;act=templates' class='".($this->act == 'templates' || $this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_TEMPLATES']."</a>";
+        }
+        if (\Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static', true)) {
+            $navigation .= "<a href='index.php?cmd=ViewManager&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_DESIGN_SETTINGS']."</a>";
+        }
 
+        $objTemplate->setVariable("CONTENT_NAVIGATION", $navigation);
     }
 
     /**
@@ -256,9 +288,9 @@ class ViewManager
      */
     function viewManager() {
        global $_ARRAYLANG, $objTemplate, $objDatabase; 
-       
-       \Permission::checkAccess(21, 'static');
-       
+
+       \Permission::checkAccess(self::VIEW_MANAGER_ACCESS_ID, 'static');
+
        $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_overview', 'skins_overview.html');
               
        $subTypeArray = array(
@@ -295,8 +327,15 @@ class ViewManager
                 $this->parseThemesData($theme, $subType);
             }
         }
-        
-       $objTemplate->setGlobalVariable(array(
+
+        \ContrexxJavascript::getInstance()->setVariable(array(
+            'view_manager_access'          => \Permission::checkAccess(self::VIEW_MANAGER_ACCESS_ID, 'static', true),
+            'enable_theme_access'          => \Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static', true),
+            'edit_theme_access'            => \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true),
+            'theme_import_export_access'   => \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true),
+            'theme_template_editor_access' => \Permission::checkAccess(self::TEMPLATE_EDITOR_ACCESS_ID, 'static', true),
+        ), 'viewManager');
+        $objTemplate->setGlobalVariable(array(
             'TXT_DELETE'                         => $_ARRAYLANG['TXT_DELETE'],
             'TXT_EDIT'                           => $_ARRAYLANG['TXT_SETTINGS_MODFIY'],
             'TXT_THEME_PREVIEW'                  => $_ARRAYLANG['TXT_THEME_PREVIEW'],
@@ -316,7 +355,7 @@ class ViewManager
             'CONTREXX_BASE_URL'                  => \Env::get('cx')->getWebsiteOffsetPath() . '/',
             'THEMES_LANG_ACTIVE_COUNT'           => count(\FWLanguage::getActiveFrontendLanguages()),
             'CONTREXX_BACKEND_URL_LINK'          => \Env::get('cx')->getWebsiteBackendPath() . '/', 
-       ));
+        ));
     }
     
     /**
@@ -412,6 +451,9 @@ class ViewManager
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_settings', 'skins_settings.html');
         $tpl = isset($_REQUEST['tpl']) ? $_REQUEST['tpl'] : '';
         switch ($tpl) {
+            case 'manage':
+                $this->manage();
+                break;
             case 'examples':
                 $this->examples();
                 break;
@@ -434,8 +476,14 @@ class ViewManager
     {
         global $_ARRAYLANG, $objTemplate;
 
-        \Permission::checkAccess(47, 'static');
-        
+        if (   !\Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true)
+            && \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)
+        ) {
+            $this->import();
+            return;
+        }
+        \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static');
+
         \JS::activate("cx");
         \JS::activate("jqueryui");
         \JS::activate('jstree');
@@ -572,7 +620,9 @@ CODE;
             'TXT_THEME_RESET'                 => $_ARRAYLANG['TXT_THEME_RESET'],
             'TXT_THEME_FILE_FOLDER_NAME_EX_CONTENT' => $_ARRAYLANG['TXT_THEME_FILE_FOLDER_NAME_EX_CONTENT'],    
         ));
-        
+        if (!\Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)) {
+            $objTemplate->hideBlock('view_manager_import_navigation');
+        }
     }
 
     /**
@@ -583,9 +633,9 @@ CODE;
     private function import()
     {
         global $_ARRAYLANG, $objTemplate;
-        
-        \Permission::checkAccess(102, 'static');
-       
+
+        \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static');
+
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'skins_import', 'skins_import.html');
         $this->pageTitle = $_ARRAYLANG['TXT_THEME_IMPORT'];
         
@@ -629,7 +679,10 @@ CODE;
             'THEMES_UPLOADER_CODE'   => $uploader->getXHtml(),
             'THEMES_UPLOADER_ID'     => $uploader->getId(),
         ));
-        
+
+        if (!\Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static', true)) {
+            $objTemplate->hideBlock('view_manager_manage_theme');
+        }
     }
     
     /**
@@ -638,9 +691,9 @@ CODE;
      * @access private
      */
     private function manage()
-    {        
-        \Permission::checkAccess(102, 'static');
-       
+    {
+        \Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static');
+
         //check GETs for action
         $themeId = isset($_GET['export']) ? contrexx_input2raw($_GET['export']) : 0;
         if (!empty($themeId)) {
@@ -1170,7 +1223,7 @@ CODE;
     {
         global $objDatabase, $_ARRAYLANG, $objTemplate;
 
-        \Permission::checkAccess(46, 'static');
+        \Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static');
 
         $objTemplate->addBlockfile('SETTINGS_CONTENT', 'skins_activate', 'skins_activate.html');
         $this->pageTitle = $_ARRAYLANG['TXT_OVERVIEW'];
@@ -1253,7 +1306,7 @@ CODE;
     {
         global $_ARRAYLANG, $_CONFIG, $objTemplate;
 
-        \Permission::checkAccess(46, 'static');
+        \Permission::checkAccess(self::ENABLE_THEMES_ACCESS_ID, 'static');
 
         // initialize variables
         $objTemplate->addBlockfile('SETTINGS_CONTENT', 'skins_examples', 'skins_examples.html');
@@ -1283,7 +1336,7 @@ CODE;
     {
         global $_ARRAYLANG, $objTemplate;
 
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static');
 
         $this->webPath = $this->arrWebPaths[0];
         
@@ -1310,6 +1363,9 @@ CODE;
         ));
         
         $this->checkTable($this->oldTable);
+        if (!\Permission::checkAccess(self::THEMES_IMPORT_EXPORT_ACCESS_ID, 'static', true)) {
+            $objTemplate->hideBlock('view_manager_import_navigation');
+        }
 //      $this->newdir();
     }
 
@@ -1331,7 +1387,7 @@ CODE;
     {
         global $_ARRAYLANG;
 
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static');
 
         $themeName          = !empty($_POST['dbName']) && !stristr($_POST['dbName'], '..') ? contrexx_input2raw($_POST['dbName']) : null;
         $copyFromTheme      = !empty($_POST['fromTheme']) && !stristr($_POST['fromTheme'], '..') ? contrexx_input2raw($_POST['fromTheme']) : null;        
@@ -1539,7 +1595,7 @@ CODE;
      */
     function update()
     {
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(self::EDIT_THEMES_ACCESS_ID, 'static');
         
         $themes = !empty($_POST['themes']) && !stristr($_POST['themes'], '..') ? contrexx_input2raw($_POST['themes']) : null;
         $themesPage = !empty($_POST['themesPage']) &&  !stristr($_POST['themesPage'], '..') ? contrexx_input2raw($_POST['themesPage']) : null;

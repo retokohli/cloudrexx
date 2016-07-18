@@ -63,14 +63,14 @@ class JsonViewManager implements \Cx\Core\Json\JsonAdapter {
      */
     public function getAccessableMethods() {
         return array(
-            'activateTheme'             => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(46), null),
-            'activateLanguages'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(46), null),
-            'checkThemeExistsByThemeId' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(47), null),
-            'deleteThemeById'           => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(47), null),
-            'delete'                    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(47), null),
-            'rename'                    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(47), null),
-            'newWithin'                 => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(47), null),
-            );
+            'activateTheme'             => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(ViewManager::ENABLE_THEMES_ACCESS_ID), null),
+            'activateLanguages'         => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(ViewManager::ENABLE_THEMES_ACCESS_ID), null),
+            'checkThemeExistsByThemeId' => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(ViewManager::EDIT_THEMES_ACCESS_ID), null),
+            'deleteThemeById'           => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(ViewManager::EDIT_THEMES_ACCESS_ID), null),
+            'delete'                    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(ViewManager::EDIT_THEMES_ACCESS_ID), null),
+            'rename'                    => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(ViewManager::EDIT_THEMES_ACCESS_ID), null),
+            'newWithin'                 => new \Cx\Core_Modules\Access\Model\Entity\Permission(array('http', 'https'), array('post'), true, null, array(ViewManager::EDIT_THEMES_ACCESS_ID), null),
+        );
     }
 
     /**

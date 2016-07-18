@@ -103,7 +103,7 @@ class BackendController extends SystemComponentBackendController
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd)
     {
-        \Permission::checkAccess(47, 'static');
+        \Permission::checkAccess(\Cx\Core\ViewManager\Controller\ViewManager::TEMPLATE_EDITOR_ACCESS_ID, 'static');
         $fileStorage                 = new OptionSetFileStorage(
             $this->cx->getWebsiteThemesPath()
         );

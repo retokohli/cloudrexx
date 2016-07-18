@@ -315,6 +315,7 @@ $_ARRAYLANG['TXT_EDIT_GROUPS'] = "Gruppen editieren";
 $_ARRAYLANG['TXT_RESET_STATS'] = "Statistiken zurücksetzen";
 $_ARRAYLANG['TXT_ACTIVATE_SKINS'] = "Aktivierung von Webdesign Templates";
 $_ARRAYLANG['TXT_EDIT_SKINS'] = "Verwaltung von Webdesign Templates";
+$_ARRAYLANG['TXT_CORE_VIEWMANAGER_TEMPLATE_EDITOR_ACCESS'] = 'Webdesign Templates mit Template Editor anpassen';
 $_ARRAYLANG['TXT_EDIT_LANGUAGE_SETTINGS'] = "Sprachvariablen mutieren";
 $_ARRAYLANG['TXT_DELETE_LANGUAGES'] = "Sprachen löschen";
 $_ARRAYLANG['TXT_REGISTER_MODULES'] = "Module registrieren";
