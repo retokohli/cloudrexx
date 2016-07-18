@@ -294,24 +294,29 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             break;
             case 'user':
                 if (   \Permission::checkAccess(18, 'static', true)
-                    || \Permission::checkAccess(AccessLib::MANAGE_USER_ACCESS_ID, 'static', true)
-                    || (isset($_REQUEST['id']) && $_REQUEST['id'] == $objFWUser->objUser->getId() && \Permission::checkAccess(31, 'static', true))
+                    || \Permission::checkAccess(
+                           AccessLib::MANAGE_USER_ACCESS_ID, 'static', true
+                       )
+                    || (   isset($_REQUEST['id'])
+                        && $_REQUEST['id'] == $objFWUser->objUser->getId()
+                        && \Permission::checkAccess(31, 'static', true)
+                       )
                 ) {
                     $this->user();
                 } else {
-                    header('Location: index.php?cmd=noaccess');
-                    exit;
+                    \Permission::noAccess();
                 }
                 break;
 
             case 'group':
                 if (   \Permission::checkAccess(18, 'static', true)
-                    || \Permission::checkAccess(AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true)
+                    || \Permission::checkAccess(
+                           AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+                       )
                 ) {
                     $this->_group();
                 } else {
-                    header('Location: index.php?cmd=noaccess');
-                    exit;
+                    \Permission::noAccess();
                 }
                 break;
 
@@ -586,7 +591,8 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $objGroup = $objFWUser->objGroup->getGroup(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
         if (isset($_POST['access_save_group'])) {
-            // only administrators are allowed to modify a group
+            // only administrators and the user with permission MANAGE_GROUPS_ACCESS_ID
+            // are allowed to modify a group
             if (   !\Permission::hasAllAccess()
                 && !\Permission::checkAccess(
                        AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
@@ -651,6 +657,21 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $objGroup->setDynamicPermissionIds($arrCurrentAccessIds);
 
             if (isset($_POST['access_save_group'])) {
+                // If the user with permission MANAGE_GROUPS_ACCESS_ID
+                // and the group give access permission MANAGE_GROUPS_ACCESS_ID to the user
+                // it should not allowed to modify a group
+                if (   !\Permission::hasAllAccess()
+                    && \Permission::checkAccess(
+                           AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+                       )
+                    && in_array(
+                           AccessLib::MANAGE_GROUPS_ACCESS_ID,
+                           $objGroup->getStaticPermissionIds()
+                       )
+                ) {
+                    \Permission::noAccess();
+                }
+
                 if ($objGroup->store()) {
                     self::$arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_GROUP_STORED_SUCCESSFULLY'];
                     $objFWUser->objUser->getDynamicPermissionIds(true);
@@ -1000,18 +1021,30 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     {
         global $_ARRAYLANG;
 
-        // only administrators are allowed to delete a group
-        if (   !\Permission::hasAllAccess()
-            && !\Permission::checkAccess(
-                   AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+        $id = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+        $objFWUser = \FWUser::getFWUserObject();
+        $objGroup = $objFWUser->objGroup->getGroup($id);
+
+        // only administrators and the user with permission MANAGE_GROUPS_ACCESS_ID
+        // are allowed to change the status of group
+        if (   (   !\Permission::hasAllAccess()
+                && !\Permission::checkAccess(
+                    AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+                   )
+               )
+            || (   !\Permission::hasAllAccess()
+                && \Permission::checkAccess(
+                    AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+                   )
+                && in_array(
+                        AccessLib::MANAGE_GROUPS_ACCESS_ID,
+                        $objGroup->getStaticPermissionIds()
+                   )
                )
         ) {
             \Permission::noAccess();
         }
 
-        $id = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-        $objFWUser = \FWUser::getFWUserObject();
-        $objGroup = $objFWUser->objGroup->getGroup($id);
         if ($objGroup->getId()) {
             $objGroup->setActiveStatus(!$objGroup->getActiveStatus());
             if ($objGroup->store()) {
@@ -1030,18 +1063,30 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
     {
         global $_ARRAYLANG;
 
-        // only administrators are allowed to delete a group
-        if (   !\Permission::hasAllAccess()
-            && !\Permission::checkAccess(
-                   AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+        $id = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+        $objFWUser = \FWUser::getFWUserObject();
+        $objGroup = $objFWUser->objGroup->getGroup($id);
+
+            // only administrators and the user with permission MANAGE_GROUPS_ACCESS_ID
+            // are allowed to delete a group
+        if (   (   !\Permission::hasAllAccess()
+                && !\Permission::checkAccess(
+                    AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+                   )
+               )
+            || (   !\Permission::hasAllAccess()
+                && \Permission::checkAccess(
+                    AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+                   )
+                && in_array(
+                        AccessLib::MANAGE_GROUPS_ACCESS_ID,
+                        $objGroup->getStaticPermissionIds()
+                   )
                )
         ) {
             \Permission::noAccess();
         }
 
-        $id = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-        $objFWUser = \FWUser::getFWUserObject();
-        $objGroup = $objFWUser->objGroup->getGroup($id);
         if ($objGroup->getId()) {
             if ($objGroup->delete()) {
                 self::$arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_GROUP_SUCCESSFULLY_DELETED'], contrexx_raw2xhtml($objGroup->getName()));
@@ -1262,9 +1307,12 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             if($userId==$objFWUser->objUser->getId()) {
                 self::$arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NO_USER_WITH_SAME_ID']);
             } else {
-                //User with permission MANAGE_USER_ACCESS_ID 
+                //User with permission MANAGE_USER_ACCESS_ID
                 //have no access to change the status of admin user
-                if ($manageUserAccess && $objUser->getAdminStatus()) {
+                if (   !\Permission::hasAllAccess()
+                    && $manageUserAccess
+                    && $objUser->getAdminStatus()
+                ) {
                     \Permission::noAccess();
                 }
                 $objUser->setActiveStatus(!$objUser->getActiveStatus());
@@ -1308,9 +1356,12 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             foreach ($arrIds as $id) {
                 $objUser = $objFWUser->objUser->getUser($id);
                 if ($objUser) {
-                    //User with permission MANAGE_USER_ACCESS_ID 
+                    //User with permission MANAGE_USER_ACCESS_ID
                     //have no access to delete admin user
-                    if ($manageUserAccess && $objUser->getAdminStatus()) {
+                    if (   !\Permission::hasAllAccess()
+                        && $manageUserAccess
+                        && $objUser->getAdminStatus()
+                    ) {
                         self::$arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_CORE_MODULE_ACCESS_NO_PERMISSION_DELETE_ADMIN_USER'], contrexx_raw2xhtml($objUser->getUsername()));
                         continue;
                     }

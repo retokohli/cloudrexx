@@ -340,4 +340,4 @@ $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_VERIFICATION_TEXT'] = "The mandatory fields
 $_ARRAYLANG['TXT_CORE_MODULE_ACCESS_PERMISSION_SET_VIRTUAL_ERROR_MSG'] = "Could not set instance as non-virtual since instance contains callback.";
 $_ARRAYLANG['TXT_CORE_MODULE_ACCESS_PERMISSION_SET_CALLBACK_ERROR_MSG'] = "Could not set callback for non-virtual instance.";
 $_ARRAYLANG['TXT_CORE_MODULE_ACCESS_MANAGE_USER_GROUPS'] = "Manage user groups";
-$_ARRAYLANG['TXT_CORE_MODULE_ACCESS_NO_PERMISSION_DELETE_ADMIN_USER'] = "You have no permission to delete the user(%s)";
+$_ARRAYLANG['TXT_CORE_MODULE_ACCESS_NO_PERMISSION_DELETE_ADMIN_USER'] = "You have not sufficient permission to delete the account %s";
