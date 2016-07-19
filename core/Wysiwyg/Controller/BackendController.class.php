@@ -119,43 +119,44 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 // check if the toolbar shall be saved
                 if (isset($_POST) && isset($_POST['save'])) {
                     // Get the database connection
-                    $pdo = $this->cx->getDb()->getPdoConnection();
+                    $dbCon = $this->cx->getDb()->getAdoDb();
                     // Get the available functions
-                    $availableFunctions = $toolbarController->getAsOldSyntax($_POST['removedButtons'], 'defaultFull');
+                    $availableFunctions = $toolbarController->getAsOldSyntax(
+                        $_POST['removedButtons'], 
+                        'defaultFull'
+                    );
                     // Check if there is already a default toolbar
-                    $defaultToolbar = $pdo->query('
+                    $defaultToolbar = $dbCon->Execute('
                         SELECT `id` FROM `' . DBPREFIX . 'core_wysiwyg_toolbar`
                         WHERE `is_default` = 1
                         LIMIT 1');
                     // Check if the query did not fail
-                    if ($defaultToolbar !== false) {
-                        // Load the saved default toolbar
-                        $toolbarId = $defaultToolbar->fetch(\PDO::FETCH_ASSOC);
-                        // Check if there is already a default toolbar saved
-                        if (!empty($toolbarId) && $toolbarId !== false) {
-                            // Update the available functions
-                            $query = 'UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`'
-                                   . 'SET `available_functions` = \'' .
-                                        contrexx_input2db($availableFunctions) . '\',
+                    if (!$defaultToolbar) {
+                        throw new \Exception('Failed to check for existing default toolbar!');
+                    }
+                    // Get the default toolbar id
+                    $toolbarId = $defaultToolbar->fields;
+                    // Check if there is already a default toolbar saved
+                    if (!empty($toolbarId)) {
+                        // Update the available functions
+                        $query = 'UPDATE `' . DBPREFIX . 'core_wysiwyg_toolbar`'
+                            . 'SET `available_functions` = \'' .
+                            contrexx_input2db($availableFunctions) . '\',
                                         `removed_buttons` = \'' .
-                                        contrexx_input2db($_POST['removedButtons']) . '\'
+                            contrexx_input2db($_POST['removedButtons']) . '\'
                                       WHERE `id` = ' . intval($toolbarId['id']) . '
                                       AND `is_default` = 1';
-                            $pdo->exec($query);
-                        } else {
-                            // Store the configuration as a new default toolbar
-                            $query = '
+                    } else {
+                        // Store the configuration as a new default toolbar
+                        $query = '
                             INSERT INTO `' . DBPREFIX . 'core_wysiwyg_toolbar`(
                                 `available_functions`, `removed_buttons`,
                                 `is_default`)
                             VALUES (\'' . $availableFunctions . '\', \'' .
-                                contrexx_input2db($_POST['removedButtons']) . '\',
+                            contrexx_input2db($_POST['removedButtons']) . '\',
                                 1)';
-                            $pdo->exec($query);
-                        }
-                    } else {
-                        //TODO: Do something since we could not submit a query
                     }
+                    $dbCon->Execute($query);
                 }
                 $toolbarConfigurator = $toolbarController->getToolbarConfiguratorTemplate(
                     $this->getDirectory(false, true),
