@@ -2161,4 +2161,51 @@ JS
         
         return $uploader;
     }
+
+    /**
+     * Additional permission check for user with access permission MANAGE_GROUPS_ACCESS_ID.
+     * Check if the user group(with access permission MANAGE_GROUPS_ACCESS_ID)
+     * count is one and user going to edit that group or not
+     *
+     * @param integer $groupId group id
+     *
+     * @return boolean
+     */
+    public function checkManageGroupAccessPermission($groupId)
+    {
+        $objFWUser  = \FWUser::getFWUserObject();
+        $userGroups = $objFWUser->objUser->getAssociatedGroupIds();
+
+        //Check if the current user have only one group
+        //(that group have access permission MANAGE_GROUPS_ACCESS_ID)
+        //and that group is edited then return false
+        if (count($userGroups) == 1 && in_array($groupId, $userGroups)) {
+            return false;
+        }
+
+        //find the group ids which are all have the access permission
+        //AccessLib::MANAGE_GROUPS_ACCESS_ID
+        $groupIds  = array();
+        $groups    = $objFWUser->objGroup->getGroups(
+            array(
+                'static'    => AccessLib::MANAGE_GROUPS_ACCESS_ID,
+                'is_active' => true
+            )
+        );
+        if ($groups) {
+            while(!$groups->EOF) {
+                $groupIds[] = $groups->getId();
+                $groups->next();
+            }
+        }
+
+        //Check if the user group(with access permission MANAGE_GROUPS_ACCESS_ID)
+        //count is one and that group is edited then return false
+        $intersectGrps = array_intersect($userGroups, $groupIds);
+        if (count($intersectGrps) == 1 && in_array($groupId, $intersectGrps)) {
+            return false;
+        }
+
+        return true;
+    }
 }

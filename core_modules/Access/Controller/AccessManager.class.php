@@ -607,7 +607,24 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $objGroup->setType(!empty($_POST['access_group_type']) ? $_POST['access_group_type'] : '');
             $objGroup->setHomepage(!empty($_POST['access_group_homepage']) ? trim(contrexx_input2raw($_POST['access_group_homepage'])) : '');
             $objGroup->setUsers(isset($_POST['access_group_associated_users']) && is_array($_POST['access_group_associated_users']) ? $_POST['access_group_associated_users'] : array());
-            $objGroup->setStaticPermissionIds(isset($_POST['access_area_id']) && is_array($_POST['access_area_id']) ? $_POST['access_area_id'] : array());
+
+            $accessAreaIds =
+                (   isset($_POST['access_area_id'])
+                &&  is_array($_POST['access_area_id'])
+                ) ? $_POST['access_area_id'] : array();
+
+            if (   isset($_REQUEST['id'])
+                && !\Permission::hasAllAccess()
+                &&  \Permission::checkAccess(
+                    AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+                )
+                && !$this->checkManageGroupAccessPermission($objGroup->getId())
+            ) {
+                $oldStaticIds   = $objGroup->getStaticPermissionIds();
+                $deactivatedIds = array_diff($oldStaticIds, $accessAreaIds);
+                $accessAreaIds  = array_merge($deactivatedIds, $accessAreaIds);
+            }
+            $objGroup->setStaticPermissionIds($accessAreaIds);
 
             // set dynamic access ids
             $arrSelectedPageIds = isset($_POST['access_page_id']) && is_array($_POST['access_page_id']) ? $_POST['access_page_id'] : array();
@@ -657,21 +674,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             $objGroup->setDynamicPermissionIds($arrCurrentAccessIds);
 
             if (isset($_POST['access_save_group'])) {
-                // If the user with permission MANAGE_GROUPS_ACCESS_ID
-                // and the group give access permission MANAGE_GROUPS_ACCESS_ID to the user
-                // it should not allowed to modify a group
-                if (   !\Permission::hasAllAccess()
-                    && \Permission::checkAccess(
-                           AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
-                       )
-                    && in_array(
-                           AccessLib::MANAGE_GROUPS_ACCESS_ID,
-                           $objGroup->getStaticPermissionIds()
-                       )
-                ) {
-                    \Permission::noAccess();
-                }
-
                 if ($objGroup->store()) {
                     self::$arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ACCESS_GROUP_STORED_SUCCESSFULLY'];
                     $objFWUser->objUser->getDynamicPermissionIds(true);
@@ -1029,17 +1031,14 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         // are allowed to change the status of group
         if (   (   !\Permission::hasAllAccess()
                 && !\Permission::checkAccess(
-                    AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+                       AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
                    )
                )
             || (   !\Permission::hasAllAccess()
                 && \Permission::checkAccess(
-                    AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+                       AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
                    )
-                && in_array(
-                        AccessLib::MANAGE_GROUPS_ACCESS_ID,
-                        $objGroup->getStaticPermissionIds()
-                   )
+                && !$this->checkManageGroupAccessPermission($objGroup->getId())
                )
         ) {
             \Permission::noAccess();
@@ -1067,21 +1066,18 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         $objFWUser = \FWUser::getFWUserObject();
         $objGroup = $objFWUser->objGroup->getGroup($id);
 
-            // only administrators and the user with permission MANAGE_GROUPS_ACCESS_ID
-            // are allowed to delete a group
+        // only administrators and the user with permission MANAGE_GROUPS_ACCESS_ID
+        // are allowed to delete a group
         if (   (   !\Permission::hasAllAccess()
                 && !\Permission::checkAccess(
-                    AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+                       AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
                    )
                )
             || (   !\Permission::hasAllAccess()
                 && \Permission::checkAccess(
-                    AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
+                       AccessLib::MANAGE_GROUPS_ACCESS_ID, 'static', true
                    )
-                && in_array(
-                        AccessLib::MANAGE_GROUPS_ACCESS_ID,
-                        $objGroup->getStaticPermissionIds()
-                   )
+                && !$this->checkManageGroupAccessPermission($objGroup->getId())
                )
         ) {
             \Permission::noAccess();
